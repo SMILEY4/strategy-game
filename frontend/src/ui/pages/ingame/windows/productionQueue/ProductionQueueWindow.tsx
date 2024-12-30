@@ -12,6 +12,7 @@ import {CgClose} from "react-icons/cg";
 import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Header1} from "../../../../components/header/Header";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface ProductionQueueWindowProps {
     windowId: string;
@@ -25,29 +26,33 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
         <DecoratedWindow windowId={props.windowId} withCloseButton>
             <VBox padding_l gap_m fullSize>
 
-                <VBox dontShrink dontGrow>
-                    <Header1>Production</Header1>
+                <VBox gap_xs dontShrink dontGrow>
+                    <Header1>Production Queue</Header1>
                     <Text>{data.settlement.identifier.name}</Text>
                 </VBox>
 
-                <InsetPanel shrink grow>
-                    <VBox fullSize gap_s padding_s scrollable>
+                <Divider line/>
 
-                        {data.entries.length === 0 && (
-                            <Text secondary>Nothing in queue.</Text>
-                        )}
+                {data.entries.length === 0 && (
+                    <Text center secondary>Nothing in queue.</Text>
+                )}
 
-                        {data.entries.map((entry, index) => (
-                            <QueueEntry
-                                key={entry.entryId}
-                                data={data}
-                                entry={entry}
-                                position={index + 1}
-                            />
-                        ))}
+                {data.entries.length > 0 && (
+                    <InsetPanel shrink grow>
+                        <VBox gap_s padding_s fullSize scrollable>
 
-                    </VBox>
-                </InsetPanel>
+                            {data.entries.map((entry, index) => (
+                                <QueueEntry
+                                    key={entry.entryId}
+                                    data={data}
+                                    entry={entry}
+                                    position={index + 1}
+                                />
+                            ))}
+
+                        </VBox>
+                    </InsetPanel>
+                )}
 
             </VBox>
         </DecoratedWindow>
@@ -75,7 +80,7 @@ function QueueEntry(props: {
                 />
             }
         >
-            <HBox fullSize centerVertical spaceBetween gap_s padding_s>
+            <HBox padding_s gap_s centerVertical spaceBetween fullSize>
 
                 <Text
                     grow

@@ -111,7 +111,7 @@ function DetailSection(props: {
             <If condition={props.details.length > 0}>
                 <Then>
                     <InsetPanel>
-                        <VBox padding_xs gap_xs>
+                        <VBox padding_xs gap_xs fullSize>
                             {props.details.map(detail => (
                                 <EnrichedText key={detail.key}>
                                     <ETNumber type={props.type}

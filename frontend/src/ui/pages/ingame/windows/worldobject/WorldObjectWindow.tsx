@@ -8,6 +8,8 @@ import {DecoratedWindow} from "../../../../components/window/decorated/Decorated
 import {Banner} from "../../../../components/banner/Banner";
 import {FiHexagon} from "react-icons/fi";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {Divider} from "../../../../components/divider/Divider";
+import {Header2} from "../../../../components/header/Header";
 
 export interface WorldObjectWindowProps {
     windowId: string;
@@ -40,14 +42,14 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
                         <Button circle small onClick={data.open.tile}><FiHexagon/></Button>
                     </Banner>
 
-                    <VBox grow shrink scrollable gap_s padding_m>
-
-                        <If condition={data.worldObject.country.isUserCountry}>
-                            <Then>
-                                <Text>Available Actions:</Text>
+                    <VBox padding_l gap_m scrollable grow shrink>
+                        {data.worldObject.country.isUserCountry && (
+                            <>
+                                <Header2 centered>Actions</Header2>
+                                <Divider line/>
 
                                 <InsetPanel dontShrink dontGrow>
-                                    <VBox  fullSize padding_s gap_s>
+                                    <VBox padding_s gap_s fullSize>
 
                                         <When condition={data.movement.possible}>
                                             <If condition={data.movement.canCancel}>
@@ -72,9 +74,8 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 
                                     </VBox>
                                 </InsetPanel>
-                            </Then>
-                        </If>
-
+                            </>
+                        )}
                     </VBox>
                 </VBox>
             </DecoratedWindow>

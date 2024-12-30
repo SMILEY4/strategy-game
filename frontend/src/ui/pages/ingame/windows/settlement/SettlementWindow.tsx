@@ -41,7 +41,7 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton>
                 <VBox fullSize center>
-                    <Text>No settlement selected.</Text>
+                    <Text secondary>No settlement selected.</Text>
                 </VBox>
             </DecoratedWindow>
         );
@@ -62,25 +62,25 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
                     <TabBar initial="Overview">
 
                         <TabOption name="Overview">
-                            <VBox grow shrink scrollable gap_s padding_s>
+                            <VBox grow shrink scrollable padding_s gap_m>
                                 <PanelOverview {...data}/>
                             </VBox>
                         </TabOption>
 
                         <TabOption name="Industry">
-                            <VBox grow shrink scrollable gap_s padding_s>
+                            <VBox grow shrink scrollable padding_s gap_m>
                                 <PanelIndustry {...data}/>
                             </VBox>
                         </TabOption>
 
                         <TabOption name="Population">
-                            <VBox grow shrink scrollable gap_s padding_s>
+                            <VBox grow shrink scrollable padding_s gap_m>
                                 <PanelPopulation {...data}/>
                             </VBox>
                         </TabOption>
 
                         <TabOption name="D" circle>
-                            <VBox grow shrink scrollable gap_s padding_s>
+                            <VBox grow shrink scrollable padding_s gap_m>
                                 <PanelDebug {...data}/>
                             </VBox>
                         </TabOption>
@@ -97,45 +97,26 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 function PanelOverview(props: UseSettlementWindow.Data): ReactElement {
     return (
         <>
-            <InsetKeyValueGrid dontGrow dontShrink>
-
-                <EnrichedText>Name:</EnrichedText>
-                <EnrichedText>{props.settlement.identifier.name}</EnrichedText>
-
-                <EnrichedText>Country:</EnrichedText>
-                <EnrichedText>{props.settlement.country.name}</EnrichedText>
-
-                <EnrichedText>Population:</EnrichedText>
-                <EnrichedText>{props.settlement.population.size}</EnrichedText>
-
-            </InsetKeyValueGrid>
-
-            <VSpacer size_s/>
-
+            <SectionBaseInfo {...props}/>
             <SectionRoutes {...props}/>
         </>
     );
 }
 
-
 function PanelIndustry(props: UseSettlementWindow.Data): ReactElement {
     return (
         <>
             <SectionProduction {...props}/>
-            <VSpacer size_s/>
             <SectionResourceBalance {...props}/>
-            <VSpacer size_s/>
             <SectionBuildings {...props}/>
         </>
     );
 }
 
-
 function PanelPopulation(props: UseSettlementWindow.Data): ReactElement {
     return (
         <>
             <SectionPopulationSize {...props}/>
-            <VSpacer size_s/>
             <SectionGrowthOverview {...props}/>
         </>
     );
@@ -160,27 +141,45 @@ function PanelDebug(props: UseSettlementWindow.Data): ReactElement {
     );
 }
 
+
+function SectionBaseInfo(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <InsetKeyValueGrid dontGrow dontShrink>
+
+            <EnrichedText>Name:</EnrichedText>
+            <EnrichedText>{props.settlement.identifier.name}</EnrichedText>
+
+            <EnrichedText>Country:</EnrichedText>
+            <EnrichedText>{props.settlement.country.name}</EnrichedText>
+
+            <EnrichedText>Population:</EnrichedText>
+            <EnrichedText>{props.settlement.population.size}</EnrichedText>
+
+        </InsetKeyValueGrid>
+    );
+}
+
 function SectionRoutes(props: UseSettlementWindow.Data): ReactElement {
     return (
-        <>
+        <VBox gap_s dontGrow dontShrink>
+
+            <VSpacer size_s/>
             <Header2 centered>Connections</Header2>
             <Divider line/>
 
             <InsetPanel dontShrink dontGrow>
-                <VBox padding_xs gap_xs fullSize>
+                <VBox padding_s gap_s fullSize>
 
                     {props.settlement.routes.length === 0 && (
-                        <Text secondary>No connected settlements.</Text>
+                        <Text center secondary>No connected settlements.</Text>
                     )}
 
                     {props.settlement.routes.map(route => (
-
                         <DecoratedPanel
                             key={route.id}
                             pattern
                             blue
-                            background={<DecoratedPanel.ColorBackground
-                                color={Color.toCss(route.targetCountry.color)}/>}
+                            background={<DecoratedPanel.ColorBackground color={Color.toCss(route.targetCountry.color)}/>}
                         >
                             <HBox fullSize padding_s gap_s>
                                 <EnrichedText>
@@ -192,66 +191,69 @@ function SectionRoutes(props: UseSettlementWindow.Data): ReactElement {
                                 </EnrichedText>
                             </HBox>
                         </DecoratedPanel>
-
                     ))}
+
                 </VBox>
             </InsetPanel>
-        </>
+        </VBox>
     );
 }
 
 function SectionResourceBalance(props: UseSettlementWindow.Data) {
     return (
-        <>
+        <VBox gap_s dontGrow dontShrink>
+
+            <VSpacer size_s/>
             <Header2 centered>Resource Balance</Header2>
             <Divider line/>
 
             <InsetPanel dontShrink dontGrow>
-                {!props.settlement.resources.visible && (
-                    <Text secondary>Unknown</Text>
-                )}
-                {(props.settlement.resources.visible && props.settlement.resources.value.length == 0) && (
-                    <Text secondary>No resources.</Text>
-                )}
-                {(props.settlement.resources.visible && props.settlement.resources.value.length > 0) && (
-                    <HBox fullSize padding_s gap_s left wrap>
-                        {props.settlement.resources.value.map(entry => (
-                            <ResourceLedgerBox {...entry} key={entry.type}/>
-                        ))}
-                    </HBox>
-                )}
+                <HBox padding_s gap_s left wrap fullSize>
+                    {!props.settlement.resources.visible && (
+                        <Text grow secondary>Unknown</Text>
+                    )}
+                    {(props.settlement.resources.visible && props.settlement.resources.value.length == 0) && (
+                        <Text grow secondary>No resources.</Text>
+                    )}
+                    {(props.settlement.resources.visible && props.settlement.resources.value.length > 0) && props.settlement.resources.value.map(entry => (
+                        <ResourceLedgerBox {...entry} key={entry.type}/>
+                    ))}
+                </HBox>
             </InsetPanel>
-        </>
+        </VBox>
     );
 }
 
 function SectionBuildings(props: UseSettlementWindow.Data) {
     return (
-        <>
+        <VBox gap_s dontGrow dontShrink>
+
+            <VSpacer size_s/>
             <Header2 centered>Buildings</Header2>
             <Divider line/>
+
             <InsetPanel dontShrink dontGrow>
-                {!props.settlement.buildings.visible && (
-                    <Text secondary center>Unknown</Text>
-                )}
-                {(props.settlement.buildings.visible && props.settlement.buildings.value.length == 0) && (
-                    <Text secondary center>No buildings constructed.</Text>
-                )}
-                {(props.settlement.buildings.visible && props.settlement.buildings.value.length > 0) && (
-                    <HBox fullSize padding_s gap_s left wrap>
-                        {props.settlement.buildings.value.map((entry, i) => (
-                            <BuildingBox building={entry} key={i}/>
-                        ))}
-                    </HBox>
-                )}
+                <HBox padding_s gap_s left wrap fullSize>
+                    {!props.settlement.buildings.visible && (
+                        <Text grow secondary center>Unknown</Text>
+                    )}
+                    {(props.settlement.buildings.visible && props.settlement.buildings.value.length == 0) && (
+                        <Text grow secondary center>No buildings constructed.</Text>
+                    )}
+                    {(props.settlement.buildings.visible && props.settlement.buildings.value.length > 0) && props.settlement.buildings.value.map((entry, i) => (
+                        <BuildingBox building={entry} key={i}/>
+                    ))}
+                </HBox>
             </InsetPanel>
-        </>
+        </VBox>
     );
 }
 
 function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
     return (
-        <>
+        <VBox gap_s dontGrow dontShrink>
+
+            <VSpacer size_s/>
             <Header2 centered>Production</Header2>
             <Divider line/>
 
@@ -287,8 +289,7 @@ function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
 
             )}
 
-
-        </>
+        </VBox>
     );
 }
 
@@ -310,8 +311,9 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
     const expectedPopulationChange = totalProgress >= 0 ? +1 : -1;
 
     return (
-        <>
+        <VBox gap_s dontGrow dontShrink>
 
+            <VSpacer size_s/>
             <Header2 centered>Growth</Header2>
             <Divider line/>
 
@@ -324,7 +326,7 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
                     <HBox gap_s stretch centerVertical>
                         <ProgressCircle totalProgress={totalProgress} currentChange={lastProgress}/>
                         <InsetPanel grow shrink>
-                            <VBox left centerVertical padding_s gap_xs>
+                            <VBox padding_s gap_xs left centerVertical fullSize>
                                 <EnrichedText>
                                     <ETNumber percentage unsigned>{totalProgress}</ETNumber>
                                     <ETText> total progress until </ETText>
@@ -340,7 +342,7 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
                     </HBox>
 
                     <InsetPanel dontShrink dontGrow>
-                        <VBox padding_s gap_s>
+                        <VBox padding_s gap_s fullSize>
                             {props.settlement.population.growth.value.details.map(detail => (
                                 <DecoratedPanel
                                     key={detail.key + "" + detail.amount}
@@ -365,6 +367,6 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
                     </InsetPanel>
                 </>
             )}
-        </>
+        </VBox>
     );
 }

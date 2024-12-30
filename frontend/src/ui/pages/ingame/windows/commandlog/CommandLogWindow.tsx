@@ -34,16 +34,16 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            <VBox padding_l gap_s fullSize>
+            <VBox padding_l gap_m fullSize>
 
-                <Header1>Commands</Header1>
+                <Header1 centered>Commands</Header1>
 
                 <Divider line/>
 
                 <If condition={data.commands.length > 0}>
                     <Then>
                         <InsetPanel shrink>
-                            <VBox scrollable padding_s gap_s fullSize>
+                            <VBox padding_s gap_s fullSize scrollable>
                                 {data.commands.map(command => (
                                     <CommandEntry data={data} command={command} key={command.id}/>
                                 ))}
@@ -52,7 +52,7 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
                     </Then>
                     <Else>
                         <VBox fullSize>
-                            <Text secondary>No commands given this turn.</Text>
+                            <Text secondary center>No commands given this turn.</Text>
                         </VBox>
                     </Else>
                 </If>

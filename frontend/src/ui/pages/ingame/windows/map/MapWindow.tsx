@@ -20,9 +20,9 @@ export function MapWindow(props: MapWindowProps): ReactElement {
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            <VBox padding_l top gap_s fullSize>
+            <VBox padding_l gap_m fullSize>
 
-                <Header1>Map</Header1>
+                <Header1 centered>Map</Header1>
 
                 <Divider line/>
 

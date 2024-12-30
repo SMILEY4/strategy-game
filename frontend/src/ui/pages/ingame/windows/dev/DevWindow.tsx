@@ -1,6 +1,5 @@
 import React, {ReactElement} from "react";
 import {Button} from "../../../../components/button/primary/Button";
-import {Spacer, VSpacer} from "../../../../components/spacer/Spacer";
 import {UseDevWindow} from "./useDevWindow";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
@@ -8,6 +7,7 @@ import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface DevWindowProps {
     windowId: string;
@@ -19,24 +19,25 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            <VBox fullSize gap_s padding_l scrollable>
+            <VBox padding_l gap_m fullSize scrollable>
 
-                <Header1>Dev / Debug</Header1>
+                <Header1 centered>Dev / Debug</Header1>
 
-                <VSpacer size_s/>
+                <Divider line/>
 
                 <BaseInformation {...data}/>
+
                 <Button onClick={data.open.devStats}>More Statistics</Button>
 
-                <VSpacer size_s/>
+                <VBox gap_s>
+                    <Button onClick={data.fullscreen.enter}>Enter Fullscreen</Button>
+                    <Button onClick={data.fullscreen.exit}>Exit Fullscreen</Button>
+                </VBox>
 
-                <Button onClick={data.fullscreen.enter}>Enter Fullscreen</Button>
-                <Button onClick={data.fullscreen.exit}>Exit Fullscreen</Button>
-
-                <VSpacer size_s/>
-
-                <Button onClick={data.webgl.loose}>Loose WebGL-Context</Button>
-                <Button onClick={data.webgl.restore}>Restore WebGL-Context</Button>
+                <VBox gap_s>
+                    <Button onClick={data.webgl.loose}>Loose WebGL-Context</Button>
+                    <Button onClick={data.webgl.restore}>Restore WebGL-Context</Button>
+                </VBox>
 
             </VBox>
         </DecoratedWindow>

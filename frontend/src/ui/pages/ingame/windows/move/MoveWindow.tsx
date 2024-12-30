@@ -2,11 +2,11 @@ import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {UseMoveWindow} from "./useMoveWindow";
-import {Header1} from "../../../../components/header/Header";
+import {Header2} from "../../../../components/header/Header";
 import {Button} from "../../../../components/button/primary/Button";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
-import {Spacer} from "../../../../components/spacer/Spacer";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface MoveWindowProps {
 	windowId: string;
@@ -21,7 +21,7 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 		return (
 			<DecoratedWindow windowId={props.windowId} withCloseButton>
 				<VBox fullSize center>
-					<Text secondary>No object selected</Text>
+					<Text center secondary>No object selected</Text>
 				</VBox>
 			</DecoratedWindow>
 		);
@@ -33,15 +33,14 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 				noPadding={false}
 				style={{
 					minWidth: "280px",
-					maxWidth: "280px",
-					minHeight: "170px",
-					maxHeight: "170px",
+					minHeight: "180px",
+					maxHeight: "180px",
 				}}
 			>
-				<VBox fullSize gap_m padding_m>
-					<Header1>Move Unit</Header1>
+				<VBox padding_l gap_m fullSize>
+					<Header2>Move Unit</Header2>
+					<Divider line/>
 					<Text>{data.remainingPoints + "/" + data.totalPoints + " Movement Points left"}</Text>
-					<Spacer size="s"/>
 					<HBox right gap_s>
 						<Button warn onClick={data.cancel}>Cancel</Button>
 						<Button success onClick={data.accept}>Accept</Button>

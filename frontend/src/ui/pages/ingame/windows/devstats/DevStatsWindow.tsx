@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {Spacer, VSpacer} from "../../../../components/spacer/Spacer";
+import { VSpacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {UseDevStatsWindow} from "./useDevStatsWindow";
 import {Area, Bar, BarChart, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, YAxis} from "recharts";
@@ -10,6 +10,7 @@ import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Header1} from "../../../../components/header/Header";
 import {VBox} from "../../../../components/layout/vbox/VBox";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface DevStatsWindowProps {
     windowId: string;
@@ -21,11 +22,10 @@ export function DevStatsWindow(props: DevStatsWindowProps): ReactElement {
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            <VBox fullSize gap_s padding_l scrollable>
-                <Header1>Dev Statistics</Header1>
-                <VSpacer size_s/>
+            <VBox padding_l gap_m fullSize scrollable>
+                <Header1 centered>Dev Statistics</Header1>
+                <Divider line/>
                 <MonitoringInformation {...data}/>
-                <VSpacer size_s/>
                 <FPSChart {...data}/>
                 <NextTurnDurationChart {...data}/>
             </VBox>

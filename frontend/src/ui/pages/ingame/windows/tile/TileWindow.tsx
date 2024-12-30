@@ -11,7 +11,6 @@ import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
 import {Case, Switch} from "react-if";
 import {TileResourceType} from "../../../../../models/base/TileResourceType";
-import {VSpacer} from "../../../../components/spacer/Spacer";
 import {Header2, Header3} from "../../../../components/header/Header";
 import {Divider} from "../../../../components/divider/Divider";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
@@ -21,6 +20,7 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Banner} from "../../../../components/banner/Banner";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Visibility} from "../../../../../models/base/visibility";
+import {VSpacer} from "../../../../components/spacer/Spacer";
 
 export interface TileWindowProps {
     windowId: string;
@@ -35,12 +35,11 @@ export function TileWindow(props: TileWindowProps): ReactElement {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton>
                 <VBox fullSize center>
-                    <Text secondary>No tile selected.</Text>
+                    <Text secondary center>No tile selected.</Text>
                 </VBox>
             </DecoratedWindow>
         );
     } else {
-
 
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
@@ -55,19 +54,19 @@ export function TileWindow(props: TileWindowProps): ReactElement {
                     <TabBar initial="Overview">
 
                         <TabOption name="Overview">
-                            <VBox grow shrink scrollable gap_s padding_s>
+                            <VBox grow shrink scrollable padding_s gap_m>
                                 <PanelOverview {...data}/>
                             </VBox>
                         </TabOption>
 
                         <TabOption name="Political">
-                            <VBox grow shrink scrollable gap_s padding_s>
+                            <VBox grow shrink scrollable padding_s gap_m>
                                 <PanelPolitical {...data}/>
                             </VBox>
                         </TabOption>
 
                         <TabOption name="D" circle>
-                            <VBox grow shrink scrollable gap_s padding_s>
+                            <VBox grow shrink scrollable padding_s gap_m>
                                 <PanelDebug {...data}/>
                             </VBox>
                         </TabOption>
@@ -85,7 +84,6 @@ function PanelOverview(props: UseTileWindow.Data): ReactElement {
     return (
         <>
             <SectionBaseInformation {...props}/>
-            <VSpacer size_s/>
             <SectionContent {...props}/>
         </>
     );
@@ -150,20 +148,21 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
     return (
         <VBox dontShrink gap_xs>
 
+            <VSpacer size_s/>
             <Header2 centered>Content</Header2>
-
             <Divider line/>
 
-            <InsetPanel grow>
+            {(props.tile.visibility !== Visibility.VISIBLE) && (
+                <Text center secondary>Unknown</Text>
+            )}
 
-                {(props.tile.objects.length === 0 && props.tile.visibility === Visibility.VISIBLE) && (
-                    <VBox padding_m center>
-                        <Text secondary>Nothing on this tile.</Text>
-                    </VBox>
-                )}
+            {(props.tile.visibility === Visibility.VISIBLE && props.tile.objects.length === 0) && (
+                <Text center secondary>Nothing on this tile.</Text>
+            )}
 
-                {props.tile.objects.length > 0 && (
-                    <VBox padding_s gap_s>
+            {props.tile.objects.length > 0 && (
+                <InsetPanel grow>
+                    <VBox padding_s gap_s fullSize>
                         {props.tile.objects.map(tileObject => (
 
                             <DecoratedPanel
@@ -171,21 +170,24 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
                                 background={
                                     <DecoratedPanel.ColorBackground color={Color.toCss(tileObject.country.color)}/>
                                 }
-                                dontGrow dontShrink
+                                blue
+                                pattern
+                                dontGrow
+                                dontShrink
                             >
                                 <Switch>
                                     <Case condition={tileObject.settlement != null}>
-                                        <HBox padding_s spaceBetween centerVertical>
+                                        <HBox padding_s gap_s spaceBetween centerVertical>
                                             <EnrichedText><ETLink
                                                 onClick={() => props.open.tileObject(tileObject)}>{tileObject.settlement?.name}</ETLink></EnrichedText>
-                                            <Text type="secondary">Settlement</Text>
+                                            <Text secondary>Settlement</Text>
                                         </HBox>
                                     </Case>
                                     <Case condition={tileObject.worldObject != null}>
-                                        <HBox padding_s spaceBetween centerVertical>
+                                        <HBox padding_s gap_s spaceBetween centerVertical>
                                             <EnrichedText><ETLink
                                                 onClick={() => props.open.tileObject(tileObject)}>{tileObject.worldObject?.type.id}</ETLink></EnrichedText>
-                                            <Text type="secondary">Unit</Text>
+                                            <Text secondary>Unit</Text>
                                         </HBox>
                                     </Case>
                                 </Switch>
@@ -193,10 +195,8 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
 
                         ))}
                     </VBox>
-                )}
-
-
-            </InsetPanel>
+                </InsetPanel>
+            )}
         </VBox>
     );
 }
@@ -204,7 +204,7 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
 function SectionControlledBy(props: UseTileWindow.Data): ReactElement {
     return (
         <InsetPanel dontShrink>
-            <VBox padding_s gap_s>
+            <VBox padding_s gap_s fullSize>
 
                 <Text secondary>Controlled by:</Text>
 
@@ -218,6 +218,8 @@ function SectionControlledBy(props: UseTileWindow.Data): ReactElement {
 
                 {(props.tile.political.visible && props.tile.political.value.controlledBy != null) && (
                     <DecoratedPanel
+                        blue
+                        pattern
                         background={
                             <DecoratedPanel.ColorBackground
                                 color={Color.toCss(props.tile.political.value.controlledBy?.country.color!)}

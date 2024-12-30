@@ -10,6 +10,7 @@ import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {Text} from "../../../../components/text/Text";
 import {Header2} from "../../../../components/header/Header";
 import {VBox} from "../../../../components/layout/vbox/VBox";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface FoundSettlementWindowProps {
     windowId: string;
@@ -29,11 +30,13 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
                 windowId={props.windowId}
                 style={{minHeight: "150px",}}
             >
-                <VBox fullSize gap_m padding_m>
+                <VBox padding_l gap_m fullSize>
 
                     <Header2>Found Settlement</Header2>
 
-                    <HBox>
+                    <Divider line/>
+
+                    <HBox gap_none>
                         <TextField
                             value={data.input.name.value}
                             placeholder={"Settlement Name"}
@@ -45,7 +48,7 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
                         </Button>
                     </HBox>
 
-                    <HBox right centerVertical gap_s>
+                    <HBox right gap_s>
                         <Button warn onClick={data.cancel}>
                             Cancel
                         </Button>
