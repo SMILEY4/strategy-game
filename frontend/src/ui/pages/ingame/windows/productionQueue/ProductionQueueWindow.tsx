@@ -27,7 +27,7 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
 
                 <VBox dontShrink dontGrow>
                     <Header1>Production</Header1>
-                    <Text>{data.settlement.name}</Text>
+                    <Text>{data.settlement.identifier.name}</Text>
                 </VBox>
 
                 <InsetPanel shrink grow>
@@ -97,7 +97,7 @@ function QueueEntry(props: {
                     />
                 )}
 
-                {props.data.ownedByPlayer && (
+                {props.data.settlement.country.isUserCountry && (
                     <Button
                         className="queue-entry__add"
                         square circle small

@@ -89,10 +89,10 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const worldObjects = context.worldObjects;
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
-			if (worldObject.type === WorldObjectType.SCOUT) {
+			if (worldObject.identifier.type === WorldObjectType.SCOUT) {
 				this.addScout(this.spriteBuffer, worldObject, scoutAtlasEntry);
 			}
-			if (worldObject.type === WorldObjectType.SETTLER) {
+			if (worldObject.identifier.type === WorldObjectType.SETTLER) {
 				this.addSettler(this.spriteBuffer, worldObject, settlerAtlasEntry);
 			}
 		}

@@ -72,16 +72,16 @@ export namespace UseWorldObjectWindow {
             return {
                 worldObject: worldObject,
                 movement: {
-                    possible: worldObject.ownedByPlayer,
+                    possible: worldObject.country.isUserCountry,
                     enabled: !hasCommand,
                     canCancel: hasMoveCommand,
-                    start: () => identifier && openMoveWindow(worldObject.id),
+                    start: () => identifier && openMoveWindow(worldObject.identifier.id),
                     cancel: () => cancelMovementCommand(worldObject),
                 },
                 settlement: {
-                    possible: worldObject.ownedByPlayer && worldObject.type === WorldObjectType.SETTLER,
+                    possible: worldObject.country.isUserCountry && worldObject.identifier.type === WorldObjectType.SETTLER,
                     enabled: !hasCommand && (tile?.isValidSettlementLocation ?? false),
-                    start: () => openFoundSettlementWindow(worldObject.tile, worldObject.id),
+                    start: () => openFoundSettlementWindow(worldObject.tile, worldObject.identifier.id),
                 },
                 open: {
                     tile: () => openTileWindow(tile?.identifier ?? null)

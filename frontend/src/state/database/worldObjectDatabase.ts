@@ -7,7 +7,7 @@ import {MapUniqueSupportingStorage} from "../../common/db/storage/supporting/map
 import {WorldObject} from "../../models/base/worldObject";
 
 function provideId(e: WorldObject): string {
-    return e.id;
+    return e.identifier.id;
 }
 
 interface WorldObjectStorageConfig extends DatabaseStorageConfig<WorldObject, string> {

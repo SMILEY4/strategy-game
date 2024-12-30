@@ -5,7 +5,6 @@ import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {If, Then} from "react-if";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {Spacer} from "../../../../components/spacer/Spacer";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";

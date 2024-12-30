@@ -62,7 +62,7 @@ export namespace UseMoveWindow {
 
 		useEffect(() => {
 			if (worldObject) {
-				movementService.startMovement(worldObject.id, worldObject.tile).then(_ => undefined);
+				movementService.startMovement(worldObject.identifier.id, worldObject.tile).then(_ => undefined);
 			}
 		}, []);
 

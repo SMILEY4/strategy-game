@@ -32,7 +32,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
                 <VBox fullSize>
 
                     <Banner
-                        title={data.worldObject.type.id}
+                        title={data.worldObject.identifier.type.id}
                         subtitle={"World Object"}
                         color={data.worldObject.country.color}
                         spaceAbove
@@ -42,7 +42,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 
                     <VBox grow shrink scrollable gap_s padding_m>
 
-                        <If condition={data.worldObject.ownedByPlayer}>
+                        <If condition={data.worldObject.country.isUserCountry}>
                             <Then>
                                 <Text>Available Actions:</Text>
 

@@ -12,7 +12,6 @@ import {HiddenType} from "../../common/hiddenType";
 
 export interface SettlementAggregate {
 	identifier: SettlementIdentifier,
-	ownedByPlayer: boolean,
 	country: CountryIdentifier
 	tile: TileIdentifier,
 	population: SettlementPopulation,

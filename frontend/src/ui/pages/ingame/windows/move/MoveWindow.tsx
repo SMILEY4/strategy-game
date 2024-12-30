@@ -2,7 +2,7 @@ import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {UseMoveWindow} from "./useMoveWindow";
-import {Header1, Header2} from "../../../../components/header/Header";
+import {Header1} from "../../../../components/header/Header";
 import {Button} from "../../../../components/button/primary/Button";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";

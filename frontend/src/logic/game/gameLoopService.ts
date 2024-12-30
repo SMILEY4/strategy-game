@@ -103,7 +103,7 @@ export class GameLoopService {
 
 					if (worldObjects.length === 1) {
 						AudioType.CLICK_PRIMARY.play(this.audioService);
-						UseWorldObjectWindow.open(worldObjects[0].id);
+						UseWorldObjectWindow.open(worldObjects[0].identifier.id);
 						return;
 					}
 

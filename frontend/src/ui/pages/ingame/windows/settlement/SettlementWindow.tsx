@@ -263,7 +263,7 @@ function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
 
                 <HBox dontShrink dontGrow centerVertical left gap_s>
 
-                    {props.settlement.ownedByPlayer && (
+                    {props.settlement.country.isUserCountry && (
                         <Button square onClick={props.productionQueue.add}><FiPlus/></Button>
                     )}
 
@@ -279,7 +279,7 @@ function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
                         </Text>
                     </ProgressBar>
 
-                    {props.settlement.ownedByPlayer && (
+                    {props.settlement.country.isUserCountry && (
                         <Button square circle small onClick={props.productionQueue.cancel}><CgClose/></Button>
                     )}
 

@@ -5,7 +5,6 @@ import {buildMap} from "../../../common/utils";
 import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {GameHtmlRenderContext} from "../gameRenderContext";
-import {WorldObjectType} from "../../../models/base/worldObjectType";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 
 export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
@@ -62,7 +61,7 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 				addElement({
 					type: "unit",
 					tile: worldObject.tile,
-					name: worldObject.type.id,
+					name: worldObject.identifier.type.id,
 					color: `rgb(${worldObject.country.color.red},${worldObject.country.color.green},${worldObject.country.color.blue})`,
 					index: 0,
 				});

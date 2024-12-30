@@ -10,7 +10,6 @@ import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UseTileWindow} from "../tile/useTileWindow";
-import {Simulate} from "react-dom/test-utils";
 
 export namespace UseSettlementWindow {
 
@@ -73,7 +72,7 @@ export namespace UseSettlementWindow {
                     add: () => openProductionWindow(identifier!),
                     open: () => openProductionQueueWindow(identifier!),
                     cancel: () => {
-                        if (settlement.ownedByPlayer && settlement.production.queue.visible) {
+                        if (settlement.country.isUserCountry && settlement.production.queue.visible) {
                             settlement.production.queue.value.length > 0 && service.cancelProductionQueue(settlement.identifier, settlement.production.queue.value[0]);
                         }
                     },
