@@ -1,4 +1,4 @@
-import {CSSProperties, ReactElement} from "react";
+import {ReactElement} from "react";
 import {joinClassNames} from "../window/utils";
 import "./header.scoped.less";
 import {BaseProps} from "../base/base";

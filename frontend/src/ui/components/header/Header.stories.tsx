@@ -1,6 +1,6 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
-import {DecoratedPanel, DecoratedPanelColor} from "../panels/decorated/DecoratedPanel";
+import {DecoratedPanel} from "../panels/decorated/DecoratedPanel";
 import {Header, Header1, Header2, Header3, Header4, Header5, HeaderProps} from "./Header";
 
 const meta = {
@@ -12,26 +12,20 @@ const meta = {
     tags: ["autodocs"],
     argTypes: {},
 };
-type Story = StoryObj<HeaderProps & { panelColor: DecoratedPanelColor }>
+type Story = StoryObj<HeaderProps>
 export default meta;
 
 
 export const Default: Story = {
-    args: {
-        panelColor: "red",
-    },
+    args: {},
     argTypes: {
-        panelColor: {
-            options: ["red", "green", "blue", "paper"],
-            control: {type: "select"},
-        },
         level: {
             options: [1, 2, 3, 4],
             control: {type: "select"},
         },
     },
     render: (args) => (
-        <DecoratedPanel color={args.panelColor}>
+        <DecoratedPanel>
             <div style={{padding: "50px"}}>
                 <Header level={args.level}>Header</Header>
             </div>
@@ -41,17 +35,8 @@ export const Default: Story = {
 
 
 export const Stacked: Story = {
-    args: {
-        panelColor: "red",
-    },
-    argTypes: {
-        panelColor: {
-            options: ["red", "green", "blue", "paper"],
-            control: {type: "select"},
-        },
-    },
     render: (args) => (
-        <DecoratedPanel color={args.panelColor}>
+        <DecoratedPanel>
             <div style={{
                 padding: "50px",
                 display: "flex",

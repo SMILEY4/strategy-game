@@ -21,7 +21,7 @@ export function Tooltip(props: TooltipProps): ReactElement | null {
                 </TooltipTrigger>
                 <TooltipContent>
                     <TooltipPanel>
-                        <VBox padding_m gap_xs fillParent>
+                        <VBox padding_m gap_xs fullSize>
                             {content}
                         </VBox>
                     </TooltipPanel>

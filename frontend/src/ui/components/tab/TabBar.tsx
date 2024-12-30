@@ -3,10 +3,11 @@ import {VBox} from "../layout/vbox/VBox";
 import {HBox} from "../layout/hbox/HBox";
 import {Button} from "../button/primary/Button";
 import {Divider} from "../divider/Divider";
+import {BaseProps} from "../base/base";
+import {joinClassNames} from "../window/utils";
 
-export interface TabBarProps {
+export interface TabBarProps extends BaseProps {
     initial: string,
-    className?: string,
     children?: any,
 }
 
@@ -17,31 +18,35 @@ export function TabBar(props: TabBarProps): ReactElement {
     const options = collectOptions();
     const selectedOption = options.find(it => it.name === selected);
 
-    function collectOptions(): ({element: ReactElement, name: string, circle: boolean})[] {
-        const options: ({element: ReactElement, name: string, circle: boolean})[] = []
-        for(let child of props.children) {
-            if(child.type.name === "TabOption") {
+    function collectOptions(): ({ element: ReactElement, name: string, circle: boolean })[] {
+        const options: ({ element: ReactElement, name: string, circle: boolean })[] = [];
+        for (let child of props.children) {
+            if (child.type.name === "TabOption") {
                 options.push({
                     element: child,
                     name: child.props.name,
-                    circle: child.props.circle === true
-                })
+                    circle: child.props.circle === true,
+                });
             }
         }
         return options;
     }
 
     return (
-        <VBox gap_s top stretch padding_m>
+        <VBox
+            gap_s
+            padding_m
+            className={joinClassNames(["tabs", ...BaseProps.buildBaseClassNames(props),])}
+            style={props.style}
+        >
 
-            <HBox centerHorizontal gap_xs centerVertical fillParentWidth>
+            <HBox dontGrow dontShrink centerHorizontal gap_xs centerVertical fullWidth>
                 {options.map(option => (
                     <Button
                         key={option.name}
                         small
                         rounded={!option.circle}
                         circle={option.circle}
-                        active={selected === option.name}
                         onClick={() => setSelected(option.name)}
                     >
                         {option.name}
@@ -49,7 +54,7 @@ export function TabBar(props: TabBarProps): ReactElement {
                 ))}
             </HBox>
 
-            <Divider type="simple"/>
+            <Divider line/>
 
             {selectedOption?.element}
 

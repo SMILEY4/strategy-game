@@ -22,7 +22,7 @@ export function ChangeInfoText(props: ChangeInfoTextProps): ReactElement {
                 props.className
             ])}
             centerVertical
-            fillParent={props.fillParent}
+            fullSize={props.fillParent}
         >
 
             <Text className="change-info-text__prev">{props.prevValue}</Text>
