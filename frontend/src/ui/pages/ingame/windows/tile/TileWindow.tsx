@@ -9,7 +9,7 @@ import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
-import {Case, Else, If, Switch, Then} from "react-if";
+import {Case, Switch} from "react-if";
 import {TileResourceType} from "../../../../../models/base/TileResourceType";
 import {VSpacer} from "../../../../components/spacer/Spacer";
 import {Header2, Header3} from "../../../../components/header/Header";
@@ -20,6 +20,7 @@ import {ETLink} from "../../../../components/textenriched/elements/ETLink";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Banner} from "../../../../components/banner/Banner";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
+import {Visibility} from "../../../../../models/base/visibility";
 
 export interface TileWindowProps {
     windowId: string;
@@ -117,19 +118,25 @@ function SectionBaseInformation(props: UseTileWindow.Data): ReactElement {
         <InsetKeyValueGrid dontGrow dontShrink>
 
             <EnrichedText>Terrain:</EnrichedText>
-            <EnrichedText>{props.tile.base.value.terrainType.id}</EnrichedText>
+            {!props.tile.base.visible && (
+                <EnrichedText>unknown</EnrichedText>
+            )}
+            {props.tile.base.visible && (
+                <EnrichedText>{props.tile.base.value.terrainType.id}</EnrichedText>
+            )}
 
             <EnrichedText>Resource:</EnrichedText>
-            <If condition={props.tile.base.value.resourceType === TileResourceType.NONE}>
-                <Then>
-                    <EnrichedText>{props.tile.base.value.resourceType.id}</EnrichedText>
-                </Then>
-                <Else>
-                    <EnrichedText><ETImageIcon
-                        url={props.tile.base.value.resourceType.getIconPath()}/> {props.tile.base.value.resourceType.id}
-                    </EnrichedText>
-                </Else>
-            </If>
+            {!props.tile.base.visible && (
+                <EnrichedText>unknown</EnrichedText>
+            )}
+            {(props.tile.base.visible && props.tile.base.value.resourceType === TileResourceType.NONE) && (
+                <EnrichedText>{props.tile.base.value.resourceType.id}</EnrichedText>
+            )}
+            {(props.tile.base.visible && props.tile.base.value.resourceType !== TileResourceType.NONE) && (
+                <EnrichedText><ETImageIcon
+                    url={props.tile.base.value.resourceType.getIconPath()}/> {props.tile.base.value.resourceType.id}
+                </EnrichedText>
+            )}
 
             <EnrichedText>Location:</EnrichedText>
             <EnrichedText>{props.tile.identifier.q + "," + props.tile.identifier.r}</EnrichedText>
@@ -149,7 +156,7 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
 
             <InsetPanel grow>
 
-                {props.tile.objects.length === 0 && (
+                {(props.tile.objects.length === 0 && props.tile.visibility === Visibility.VISIBLE) && (
                     <VBox padding_m center>
                         <Text secondary>Nothing on this tile.</Text>
                     </VBox>
@@ -201,26 +208,29 @@ function SectionControlledBy(props: UseTileWindow.Data): ReactElement {
 
                 <Text secondary>Controlled by:</Text>
 
-                <If condition={props.tile.political.value.controlledBy == null}>
-                    <Then>
-                        <Text secondary center>nobody</Text>
-                    </Then>
-                    <Else>
-                        <DecoratedPanel
-                            background={
-                                <DecoratedPanel.ColorBackground
-                                    color={Color.toCss(props.tile.political.value.controlledBy?.country.color!)}
-                                />
-                            }
-                        >
-                            <VBox padding_m gap_xs>
-                                <EnrichedText><Header3>{props.tile.political.value.controlledBy?.country.name}</Header3></EnrichedText>
-                                <EnrichedText><ETLink
-                                    onClick={props.open.controllingSettlement}>{props.tile.political.value.controlledBy?.settlement.name}</ETLink></EnrichedText>
-                            </VBox>
-                        </DecoratedPanel>
-                    </Else>
-                </If>
+                {!props.tile.political.visible && (
+                    <Text secondary center>Unknown</Text>
+                )}
+
+                {(props.tile.political.visible && props.tile.political.value.controlledBy == null) && (
+                    <Text secondary center>Unclaimed</Text>
+                )}
+
+                {(props.tile.political.visible && props.tile.political.value.controlledBy != null) && (
+                    <DecoratedPanel
+                        background={
+                            <DecoratedPanel.ColorBackground
+                                color={Color.toCss(props.tile.political.value.controlledBy?.country.color!)}
+                            />
+                        }
+                    >
+                        <VBox padding_m gap_xs>
+                            <EnrichedText><Header3>{props.tile.political.value.controlledBy?.country.name}</Header3></EnrichedText>
+                            <EnrichedText><ETLink
+                                onClick={props.open.controllingSettlement}>{props.tile.political.value.controlledBy?.settlement.name}</ETLink></EnrichedText>
+                        </VBox>
+                    </DecoratedPanel>
+                )}
 
             </VBox>
         </InsetPanel>

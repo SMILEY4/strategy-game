@@ -9,15 +9,17 @@ import {CommandDatabase} from "./database/commandDatabase";
 import {CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../models/base/command";
 import {ProductionQueueEntry} from "../models/base/Settlement";
 import {ProductionOption} from "../models/base/productionOption";
-import {getHiddenOrDefault} from "../common/hiddenType";
+import {getHiddenOrDefault, mapHidden, mapHiddenOrDefault} from "../common/hiddenType";
 import {RouteDatabase} from "./database/routeDatabase";
 import {Route} from "../models/base/route";
+import {CountryDatabase} from "./database/countryDatabase";
 
 export namespace SettlementAggregateAccess {
 
 	export function useSettlementAggregate(settlementId: string | null): SettlementAggregate | null {
 
 		const settlement = useQuerySingle(AppCtx.SettlementDatabase(), SettlementDatabase.QUERY_BY_ID, settlementId);
+		const country = useQuerySingle(AppCtx.CountryDatabase(), CountryDatabase.QUERY_BY_ID, settlement?.country?.id)!;
 		const commands = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null);
 		const routes = useQueryMultiple(AppCtx.RouteDatabase(), RouteDatabase.QUERY_BY_SETTLEMENT, settlementId)
 
@@ -35,11 +37,13 @@ export namespace SettlementAggregateAccess {
 			.map(it => it as ProductionQueueCancelCommand)
 			.filter(it => it.settlement.id === settlementId);
 
-		const productionQueue = buildQueueEntries(getHiddenOrDefault(settlement.productionQueue, []), addProductionQueueCommands, cancelProductionQueueCommands);
-		const productionOptions = buildProductionOptions(getHiddenOrDefault(settlement.productionOptions, []), productionQueue);
+		const productionQueue = mapHidden(settlement.productionQueue, queue => buildQueueEntries(queue, addProductionQueueCommands, cancelProductionQueueCommands))
+		const productionOptions = buildProductionOptions(getHiddenOrDefault(settlement.productionOptions, []), getHiddenOrDefault(productionQueue, []));
+
 
 		return {
 			identifier: settlement.identifier,
+			ownedByPlayer: country.ownedByPlayer,
 			country: settlement.country,
 			tile: settlement.tile,
 			population: settlement.population,
@@ -47,8 +51,8 @@ export namespace SettlementAggregateAccess {
 				options: productionOptions,
 				queue: productionQueue,
 			},
-			buildings: getHiddenOrDefault(settlement.buildings, []),
-			resources: getHiddenOrDefault(settlement.resources, []),
+			buildings: settlement.buildings,
+			resources: settlement.resources,
 			routes: routes.map(route => buildRoute(route)),
 		};
 

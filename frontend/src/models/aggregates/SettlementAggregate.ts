@@ -8,18 +8,20 @@ import {
 } from "../base/Settlement";
 import {Building} from "../base/building";
 import {Route} from "../base/route";
+import {HiddenType} from "../../common/hiddenType";
 
 export interface SettlementAggregate {
 	identifier: SettlementIdentifier,
+	ownedByPlayer: boolean,
 	country: CountryIdentifier
 	tile: TileIdentifier,
 	population: SettlementPopulation,
 	production: {
 		options: ProductionOptionAggregate[],
-		queue: ProductionQueueEntry[],
+		queue: HiddenType<ProductionQueueEntry[]>,
 	},
-	buildings: Building[],
-	resources: ResourceLedgerEntry[],
+	buildings: HiddenType<Building[]>,
+	resources: HiddenType<ResourceLedgerEntry[]>,
 	routes: RouteAggregate[]
 }
 

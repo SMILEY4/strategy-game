@@ -9,7 +9,6 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Button} from "../../../../components/button/primary/Button";
 import "./settlementWindow.less";
 import {Header2} from "../../../../components/header/Header";
-import {Else, If, Then} from "react-if";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Banner} from "../../../../components/banner/Banner";
 import {Divider} from "../../../../components/divider/Divider";
@@ -170,7 +169,7 @@ function SectionRoutes(props: UseSettlementWindow.Data): ReactElement {
             <InsetPanel dontShrink dontGrow>
                 <VBox padding_xs gap_xs fullSize>
 
-                    {props.settlement.routes.length === 0&& (
+                    {props.settlement.routes.length === 0 && (
                         <Text secondary>No connected settlements.</Text>
                     )}
 
@@ -208,18 +207,19 @@ function SectionResourceBalance(props: UseSettlementWindow.Data) {
             <Divider line/>
 
             <InsetPanel dontShrink dontGrow>
-                <If condition={props.settlement.resources.length > 0}>
-                    <Then>
-                        <HBox fullSize padding_s gap_s left wrap>
-                            {props.settlement.resources.map(entry => (
-                                <ResourceLedgerBox {...entry} key={entry.type}/>
-                            ))}
-                        </HBox>
-                    </Then>
-                    <Else>
-                        <Text secondary center>No resources present.</Text>
-                    </Else>
-                </If>
+                {!props.settlement.resources.visible && (
+                    <Text secondary>Unknown</Text>
+                )}
+                {(props.settlement.resources.visible && props.settlement.resources.value.length == 0) && (
+                    <Text secondary>No resources.</Text>
+                )}
+                {(props.settlement.resources.visible && props.settlement.resources.value.length > 0) && (
+                    <HBox fullSize padding_s gap_s left wrap>
+                        {props.settlement.resources.value.map(entry => (
+                            <ResourceLedgerBox {...entry} key={entry.type}/>
+                        ))}
+                    </HBox>
+                )}
             </InsetPanel>
         </>
     );
@@ -230,21 +230,20 @@ function SectionBuildings(props: UseSettlementWindow.Data) {
         <>
             <Header2 centered>Buildings</Header2>
             <Divider line/>
-
             <InsetPanel dontShrink dontGrow>
-                <If condition={props.settlement.buildings.length > 0}>
-                    <Then>
-                        <HBox fullSize padding_s gap_s left wrap>
-                            {props.settlement.buildings.map((entry, i) => (
-                                <BuildingBox building={entry} key={i}/>
-                            ))}
-                        </HBox>
-                    </Then>
-                    <Else>
-                        <Text secondary center>No buildings constructed.</Text>
-                    </Else>
-                </If>
-
+                {!props.settlement.buildings.visible && (
+                    <Text secondary center>Unknown</Text>
+                )}
+                {(props.settlement.buildings.visible && props.settlement.buildings.value.length == 0) && (
+                    <Text secondary center>No buildings constructed.</Text>
+                )}
+                {(props.settlement.buildings.visible && props.settlement.buildings.value.length > 0) && (
+                    <HBox fullSize padding_s gap_s left wrap>
+                        {props.settlement.buildings.value.map((entry, i) => (
+                            <BuildingBox building={entry} key={i}/>
+                        ))}
+                    </HBox>
+                )}
             </InsetPanel>
         </>
     );
@@ -256,23 +255,38 @@ function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
             <Header2 centered>Production</Header2>
             <Divider line/>
 
-            <HBox dontShrink dontGrow centerVertical left gap_s>
+            {!props.settlement.production.queue.visible && (
+                <Text secondary center>Unknown</Text>
+            )}
 
-                <Button square onClick={props.productionQueue.add}><FiPlus/></Button>
+            {props.settlement.production.queue.visible && (
 
-                <ProgressBar
-                    progress={props.productionQueue.activeEntry === null ? 0 : props.productionQueue.activeEntry.progress}
-                    onClick={props.productionQueue.open}
-                    className="production_queue__progress"
-                >
-                    <Text>
-                        {props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}
-                    </Text>
-                </ProgressBar>
+                <HBox dontShrink dontGrow centerVertical left gap_s>
 
-                <Button square circle small onClick={props.productionQueue.cancel}><CgClose/></Button>
+                    {props.settlement.ownedByPlayer && (
+                        <Button square onClick={props.productionQueue.add}><FiPlus/></Button>
+                    )}
 
-            </HBox>
+                    <ProgressBar
+                        grow
+                        shrink
+                        progress={props.productionQueue.activeEntry === null ? 0 : props.productionQueue.activeEntry.progress}
+                        onClick={props.productionQueue.open}
+                        className="production_queue__progress"
+                    >
+                        <Text>
+                            {props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}
+                        </Text>
+                    </ProgressBar>
+
+                    {props.settlement.ownedByPlayer && (
+                        <Button square circle small onClick={props.productionQueue.cancel}><CgClose/></Button>
+                    )}
+
+                </HBox>
+
+            )}
+
 
         </>
     );
@@ -291,7 +305,7 @@ function SectionPopulationSize(props: UseSettlementWindow.Data): ReactElement {
 
 
 function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
-    const totalProgress = props.settlement.population.growth.value.progress;
+    const totalProgress = props.settlement.population.growth.value?.progress ?? 0;
     const lastProgress = 0.25; // todo: get actual value from server
     const expectedPopulationChange = totalProgress >= 0 ? +1 : -1;
 
@@ -301,49 +315,56 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
             <Header2 centered>Growth</Header2>
             <Divider line/>
 
-            <HBox gap_s stretch centerVertical>
-                <ProgressCircle totalProgress={totalProgress} currentChange={lastProgress}/>
-                <InsetPanel grow shrink>
-                    <VBox left centerVertical padding_s gap_xs>
-                        <EnrichedText>
-                            <ETNumber percentage unsigned>{totalProgress}</ETNumber>
-                            <ETText> total progress until </ETText>
-                            <ETNumber signed>{expectedPopulationChange}</ETNumber>
-                            <ETText> population</ETText>
-                        </EnrichedText>
-                        <EnrichedText>
-                            <ETNumber percentage signed>{lastProgress}</ETNumber>
-                            <ETText> Growth last turn</ETText>
-                        </EnrichedText>
-                    </VBox>
-                </InsetPanel>
-            </HBox>
+            {!props.settlement.population.growth.visible && (
+                <Text secondary center>Unknown</Text>
+            )}
 
-            <InsetPanel dontShrink dontGrow>
-                <VBox padding_s gap_s>
-                    {props.settlement.population.growth.value.details.map(detail => (
-                        <DecoratedPanel
-                            key={detail.key + "" + detail.amount}
-                            blue
-                            pattern
-                            background={
-                                <DecoratedPanel.ColorBackground
-                                    color={detail.amount > 0 ? CSS_COLOR_SUCCESS_LIGHT : CSS_COLOR_WARN_LIGHT}
-                                />
-                            }
-                        >
-                            <HBox padding_s>
+            {props.settlement.population.growth.visible && (
+                <>
+                    <HBox gap_s stretch centerVertical>
+                        <ProgressCircle totalProgress={totalProgress} currentChange={lastProgress}/>
+                        <InsetPanel grow shrink>
+                            <VBox left centerVertical padding_s gap_xs>
                                 <EnrichedText>
-                                    <ETNumber percentage>{detail.amount}</ETNumber>
-                                    <ETSpacer size="xs"/>
-                                    <ETText>{detail.key}</ETText>
+                                    <ETNumber percentage unsigned>{totalProgress}</ETNumber>
+                                    <ETText> total progress until </ETText>
+                                    <ETNumber signed>{expectedPopulationChange}</ETNumber>
+                                    <ETText> population</ETText>
                                 </EnrichedText>
-                            </HBox>
-                        </DecoratedPanel>
-                    ))}
-                </VBox>
-            </InsetPanel>
+                                <EnrichedText>
+                                    <ETNumber percentage signed>{lastProgress}</ETNumber>
+                                    <ETText> Growth last turn</ETText>
+                                </EnrichedText>
+                            </VBox>
+                        </InsetPanel>
+                    </HBox>
 
+                    <InsetPanel dontShrink dontGrow>
+                        <VBox padding_s gap_s>
+                            {props.settlement.population.growth.value.details.map(detail => (
+                                <DecoratedPanel
+                                    key={detail.key + "" + detail.amount}
+                                    blue
+                                    pattern
+                                    background={
+                                        <DecoratedPanel.ColorBackground
+                                            color={detail.amount > 0 ? CSS_COLOR_SUCCESS_LIGHT : CSS_COLOR_WARN_LIGHT}
+                                        />
+                                    }
+                                >
+                                    <HBox padding_s>
+                                        <EnrichedText>
+                                            <ETNumber percentage>{detail.amount}</ETNumber>
+                                            <ETSpacer size="xs"/>
+                                            <ETText>{detail.key}</ETText>
+                                        </EnrichedText>
+                                    </HBox>
+                                </DecoratedPanel>
+                            ))}
+                        </VBox>
+                    </InsetPanel>
+                </>
+            )}
         </>
     );
 }

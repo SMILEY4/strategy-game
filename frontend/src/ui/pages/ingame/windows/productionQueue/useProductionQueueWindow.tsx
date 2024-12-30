@@ -6,6 +6,7 @@ import {SettlementService} from "../../../../../logic/game/settlementService";
 import {ProductionQueueEntry, SettlementIdentifier} from "../../../../../models/base/Settlement";
 import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
+import {mapHiddenOrDefault} from "../../../../../common/hiddenType";
 
 export namespace UseProductionQueueWindow {
 
@@ -31,6 +32,7 @@ export namespace UseProductionQueueWindow {
     }
 
     export interface Data {
+        ownedByPlayer: boolean,
         settlement: SettlementIdentifier,
         entries: ProductionQueueEntry[],
         cancel: (entry: ProductionQueueEntry) => void
@@ -41,8 +43,9 @@ export namespace UseProductionQueueWindow {
         const settlement = SettlementAggregateAccess.useSettlementAggregate(settlementId)!;
         const service = useDI<SettlementService>(SettlementService.name);
         return {
+            ownedByPlayer: settlement.ownedByPlayer,
             settlement: settlement.identifier,
-            entries: settlement.production.queue,
+            entries: mapHiddenOrDefault(settlement.production.queue, [], it => it),
             cancel: (entry: ProductionQueueEntry) => service.cancelProductionQueue(settlement.identifier, entry),
         };
     }

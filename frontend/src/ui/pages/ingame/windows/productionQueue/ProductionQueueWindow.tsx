@@ -97,14 +97,16 @@ function QueueEntry(props: {
                     />
                 )}
 
-                <Button
-                    className="queue-entry__add"
-                    square circle small
-                    onClick={() => props.data.cancel(props.entry)}
-                    soundId={AudioType.CLICK_CLOSE.id}
-                >
-                    <CgClose/>
-                </Button>
+                {props.data.ownedByPlayer && (
+                    <Button
+                        className="queue-entry__add"
+                        square circle small
+                        onClick={() => props.data.cancel(props.entry)}
+                        soundId={AudioType.CLICK_CLOSE.id}
+                    >
+                        <CgClose/>
+                    </Button>
+                )}
 
             </HBox>
         </DecoratedPanel>

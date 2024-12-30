@@ -42,34 +42,38 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 
                     <VBox grow shrink scrollable gap_s padding_m>
 
-                        <Text>Available Actions:</Text>
+                        <If condition={data.worldObject.ownedByPlayer}>
+                            <Then>
+                                <Text>Available Actions:</Text>
 
-                        <InsetPanel dontShrink dontGrow>
-                            <VBox  fullSize padding_s gap_s>
+                                <InsetPanel dontShrink dontGrow>
+                                    <VBox  fullSize padding_s gap_s>
 
-                                <When condition={data.movement.possible}>
-                                    <If condition={data.movement.canCancel}>
-                                        <Then>
-                                            <Button onClick={data.movement.cancel}>
-                                                Cancel Movement
+                                        <When condition={data.movement.possible}>
+                                            <If condition={data.movement.canCancel}>
+                                                <Then>
+                                                    <Button onClick={data.movement.cancel}>
+                                                        Cancel Movement
+                                                    </Button>
+                                                </Then>
+                                                <Else>
+                                                    <Button onClick={data.movement.start} disabled={!data.movement.enabled}>
+                                                        Move
+                                                    </Button>
+                                                </Else>
+                                            </If>
+                                        </When>
+
+                                        <When condition={data.settlement.possible}>
+                                            <Button onClick={data.settlement.start} disabled={!data.settlement.enabled}>
+                                                Found Settlement
                                             </Button>
-                                        </Then>
-                                        <Else>
-                                            <Button onClick={data.movement.start} disabled={!data.movement.enabled}>
-                                                Move
-                                            </Button>
-                                        </Else>
-                                    </If>
-                                </When>
+                                        </When>
 
-                                <When condition={data.settlement.possible}>
-                                    <Button onClick={data.settlement.start} disabled={!data.settlement.enabled}>
-                                        Found Settlement
-                                    </Button>
-                                </When>
-
-                            </VBox>
-                        </InsetPanel>
+                                    </VBox>
+                                </InsetPanel>
+                            </Then>
+                        </If>
 
                     </VBox>
                 </VBox>
