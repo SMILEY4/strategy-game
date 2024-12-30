@@ -5,7 +5,6 @@ import {DecoratedWindow} from "../../../../components/window/decorated/Decorated
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Button} from "../../../../components/button/primary/Button";
 import {UseFoundSettlementWindow} from "./useFoundSettlementWindow";
-import {Spacer} from "../../../../components/spacer/Spacer";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {Text} from "../../../../components/text/Text";
@@ -28,15 +27,11 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
 
             <DecoratedWindow
                 windowId={props.windowId}
-                style={{
-                    minHeight: "150px",
-                }}
+                style={{minHeight: "150px",}}
             >
-                <VBox fillParent gap_s top stretch padding_xs>
+                <VBox fullSize gap_m padding_m>
 
                     <Header2>Found Settlement</Header2>
-
-                    <Spacer size="s"/>
 
                     <HBox>
                         <TextField
@@ -49,8 +44,6 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
                             Random
                         </Button>
                     </HBox>
-
-                    <Spacer size="s"/>
 
                     <HBox right centerVertical gap_s>
                         <Button warn onClick={data.cancel}>

@@ -2,7 +2,7 @@ import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {UseMoveWindow} from "./useMoveWindow";
-import {Header1} from "../../../../components/header/Header";
+import {Header1, Header2} from "../../../../components/header/Header";
 import {Button} from "../../../../components/button/primary/Button";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
@@ -20,8 +20,8 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 	if (data === null) {
 		return (
 			<DecoratedWindow windowId={props.windowId} withCloseButton>
-				<VBox fillParent center>
-					<Text>No object selected</Text>
+				<VBox fullSize center>
+					<Text secondary>No object selected</Text>
 				</VBox>
 			</DecoratedWindow>
 		);
@@ -32,13 +32,13 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 				withCloseButton={false}
 				noPadding={false}
 				style={{
-					minHeight: "180px",
 					minWidth: "280px",
-					maxHeight: "180px",
-					maxWidth: "280px"
+					maxWidth: "280px",
+					minHeight: "170px",
+					maxHeight: "170px",
 				}}
 			>
-				<VBox fillParent gap_s top stretch>
+				<VBox fullSize gap_m padding_m>
 					<Header1>Move Unit</Header1>
 					<Text>{data.remainingPoints + "/" + data.totalPoints + " Movement Points left"}</Text>
 					<Spacer size="s"/>

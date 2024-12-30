@@ -20,7 +20,6 @@ import {IndentBox} from "../../../../components/layout/indent/IndentBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Else, If, Then} from "react-if";
-import {arrayOfSize} from "../../../../../common/utils";
 
 export interface CommandLogWindowProps {
     windowId: string;

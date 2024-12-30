@@ -169,6 +169,11 @@ function SectionRoutes(props: UseSettlementWindow.Data): ReactElement {
 
             <InsetPanel dontShrink dontGrow>
                 <VBox padding_xs gap_xs fullSize>
+
+                    {props.settlement.routes.length === 0&& (
+                        <Text secondary>No connected settlements.</Text>
+                    )}
+
                     {props.settlement.routes.map(route => (
 
                         <DecoratedPanel
