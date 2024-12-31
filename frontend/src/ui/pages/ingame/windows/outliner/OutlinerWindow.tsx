@@ -24,7 +24,7 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
     const data = UseOutlinerWindow.useData();
 
     return (
-        <DecoratedWindow windowId={props.windowId} withCloseButton>
+        <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
             <VBox padding_l gap_m fullSize>
 
                 <Header1 centered>Outliner</Header1>

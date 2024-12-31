@@ -14,27 +14,31 @@ import {openWindow, useOpenWindow} from "../../../../components/window/windowHoo
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UseTileWindow} from "../tile/useTileWindow";
 import {CameraService} from "../../../../../logic/game/cameraService";
+import {WindowGroup} from "../windowGroups";
+import {UID} from "../../../../../common/uid";
 
 export namespace UseWorldObjectWindow {
 
     export function useOpen() {
-        const WINDOW_ID = "menubar-window";
         const open = useOpenWindow();
         return (identifier: string | null) => {
+            const windowId = UID.generate();
             open({
-                id: WINDOW_ID,
+                id: windowId,
+                groupId: WindowGroup.LEFT_SIDEBAR,
                 anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <WorldObjectWindow windowId={WINDOW_ID} identifier={identifier}/>,
+                content: <WorldObjectWindow windowId={windowId} identifier={identifier}/>,
             });
         };
     }
 
     export function open(identifier: string | null) {
-        const WINDOW_ID = "menubar-window";
+        const windowId = UID.generate();
         openWindow({
-            id: WINDOW_ID,
+            id: windowId,
+            groupId: WindowGroup.LEFT_SIDEBAR,
             anchor: WindowStore.ANCHOR_LEFT_SIDE,
-            content: <WorldObjectWindow windowId={WINDOW_ID} identifier={identifier}/>,
+            content: <WorldObjectWindow windowId={windowId} identifier={identifier}/>,
         });
     }
 
@@ -88,9 +92,9 @@ export namespace UseWorldObjectWindow {
                     start: () => openFoundSettlementWindow(worldObject.tile, worldObject.identifier.id),
                 },
                 open: {
-                    tile: () => openTileWindow(tile?.identifier ?? null)
+                    tile: () => openTileWindow(tile?.identifier ?? null),
                 },
-                centerCamera: () => cameraService.centerCameraOnTile(worldObject.tile)
+                centerCamera: () => cameraService.centerCameraOnTile(worldObject.tile),
             };
         } else {
             return null;

@@ -6,10 +6,12 @@ import {CgClose} from "react-icons/cg";
 import "./decoratedWindow.less";
 import {AudioType} from "../../../../common/audioService";
 import {useWindowInteractions} from "../windowHooks";
+import {RiPushpinFill} from "react-icons/ri";
 
 export interface DecoratedWindowProps {
     windowId: string;
     withCloseButton?: boolean;
+    withPinButton?: boolean;
     onClose?: () => void;
     style?: CSSProperties
     noPadding?: boolean,
@@ -23,7 +25,8 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
         dragProps,
         resizerProps,
         refContent,
-        closeWindow
+        closeWindow,
+        pinWindow,
     } = useWindowInteractions(props.windowId);
 
     function handleClose() {
@@ -39,7 +42,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
             style={{
                 minWidth: "min-content",
                 minHeight: "200px",
-                ...props.style
+                ...props.style,
             }}
         >
 
@@ -50,6 +53,12 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
             <div {...dragProps} className="decorated-window__drag-area"/>
 
             <div {...resizerProps} className="decorated-window__resize-area"/>
+
+            {props.withPinButton && (
+                <Button warn circle className="decorated-window__pin" onClick={pinWindow} soundId={AudioType.CLICK_PRIMARY.id}>
+                    <RiPushpinFill/> {/* Note: unpin-variant: <RiUnpinFill />*/}
+                </Button>
+            )}
 
             {props.withCloseButton && (
                 <Button warn circle className="decorated-window__close" onClick={handleClose} soundId={AudioType.CLICK_CLOSE.id}>

@@ -1,5 +1,6 @@
 export interface WindowProperties {
-    id: string,
+    id?: string,
+    groupId?: string,
     anchor: string,
     blockOthers?: boolean
     preferredHeight?: string,

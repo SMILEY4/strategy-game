@@ -23,7 +23,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 
     if (data === null) {
         return (
-            <DecoratedWindow windowId={props.windowId} withCloseButton>
+            <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
                 <VBox fullSize center>
                     <Text secondary>No object selected</Text>
                 </VBox>
@@ -31,7 +31,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
         );
     } else {
         return (
-            <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
+            <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton noPadding>
                 <VBox fullSize>
 
                     <Banner

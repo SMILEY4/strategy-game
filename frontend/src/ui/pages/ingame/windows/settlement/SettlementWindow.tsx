@@ -40,7 +40,7 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 
     if (data === null) {
         return (
-            <DecoratedWindow windowId={props.windowId} withCloseButton>
+            <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
                 <VBox fullSize center>
                     <Text secondary>No settlement selected.</Text>
                 </VBox>
@@ -48,7 +48,7 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
         );
     } else {
         return (
-            <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
+            <DecoratedWindow windowId={props.windowId} withCloseButton noPadding withPinButton>
                 <VBox fullSize>
 
                     <Banner

@@ -33,7 +33,7 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
     const data: UseCommandLogWindow.Data = UseCommandLogWindow.useData();
 
     return (
-        <DecoratedWindow windowId={props.windowId} withCloseButton>
+        <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
             <VBox padding_l gap_m fullSize>
 
                 <Header1 centered>Commands</Header1>

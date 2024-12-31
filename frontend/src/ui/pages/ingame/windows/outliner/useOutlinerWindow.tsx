@@ -1,8 +1,8 @@
 import {SettlementRepository} from "../../../../../state/repository/settlementRepository";
 import {WorldObjectRepository} from "../../../../../state/repository/worldObjectRepository";
 import {CountryRepository} from "../../../../../state/repository/countryRepository";
-import {Settlement, SettlementIdentifier} from "../../../../../models/base/Settlement";
-import {WorldObject, WorldObjectIdentifier} from "../../../../../models/base/worldObject";
+import {Settlement} from "../../../../../models/base/Settlement";
+import {WorldObject} from "../../../../../models/base/worldObject";
 import {useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import React from "react";
@@ -12,17 +12,20 @@ import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {useDI} from "../../../../../appContext";
 import {CameraService} from "../../../../../logic/game/cameraService";
 import {Country} from "../../../../../models/base/country";
+import {WindowGroup} from "../windowGroups";
+import {UID} from "../../../../../common/uid";
 
 export namespace UseOutlinerWindow {
 
     export function useOpen() {
-        const WINDOW_ID = "menubar-window";
         const open = useOpenWindow();
         return () => {
+            const windowId = UID.generate();
             open({
-                id: WINDOW_ID,
+                id: windowId,
+                groupId: WindowGroup.LEFT_SIDEBAR,
                 anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <OutlinerWindow windowId={WINDOW_ID}/>,
+                content: <OutlinerWindow windowId={windowId}/>,
             });
         };
     }
@@ -75,7 +78,7 @@ export namespace UseOutlinerWindow {
                     .sort((a, _) => a.identifier.isUserCountry ? +1 : -1),
                 open: () => undefined, // todo
                 focusCamera: () => undefined, // todo
-            }
+            },
         };
     }
 

@@ -4,32 +4,24 @@ import {ProductionOptionAggregate} from "../../../../../models/aggregates/Settle
 import {useDI} from "../../../../../appContext";
 import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
 import {SettlementService} from "../../../../../logic/game/settlementService";
-import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import {useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {SettlementIdentifier} from "../../../../../models/base/Settlement";
+import {UID} from "../../../../../common/uid";
 
 export namespace UseProductionWindow {
 
     export function useOpen() {
-        const WINDOW_ID = "production";
         const open = useOpenWindow();
         return (settlementId: string) => {
+            const windowId = UID.generate();
             open({
-                id: WINDOW_ID,
+                id: windowId,
                 anchor: WindowStore.ANCHOR_CENTER_POINT,
                 preferredHeight: "50vh",
-                content: <ProductionWindow windowId={WINDOW_ID} settlementId={settlementId}/>,
+                content: <ProductionWindow windowId={windowId} settlementId={settlementId}/>,
             });
         };
-    }
-
-    export function open(settlementId: string) {
-        const WINDOW_ID = "production";
-        openWindow({
-            id: WINDOW_ID,
-            anchor: WindowStore.ANCHOR_CENTER_POINT,
-            content: <ProductionWindow windowId={WINDOW_ID} settlementId={settlementId}/>,
-        });
     }
 
     export interface Data {

@@ -4,17 +4,20 @@ import {DevStatsWindow} from "./DevStatsWindow";
 import {MonitoringRepository} from "../../../../../state/repository/monitoringRepository";
 import {useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
+import {WindowGroup} from "../windowGroups";
+import {UID} from "../../../../../common/uid";
 
 export namespace UseDevStatsWindow {
 
     export function useOpen() {
-        const WINDOW_ID = "menubar-window";
         const open = useOpenWindow();
         return () => {
+            const windowId = UID.generate();
             open({
-                id: WINDOW_ID,
+                id: windowId,
+                groupId: WindowGroup.LEFT_SIDEBAR,
                 anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <DevStatsWindow windowId={WINDOW_ID}/>,
+                content: <DevStatsWindow windowId={windowId}/>,
             });
         };
     }
