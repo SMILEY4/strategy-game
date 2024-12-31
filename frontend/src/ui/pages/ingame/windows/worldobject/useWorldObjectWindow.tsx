@@ -13,6 +13,7 @@ import {MovementService} from "../../../../../logic/game/movementService";
 import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UseTileWindow} from "../tile/useTileWindow";
+import {CameraService} from "../../../../../logic/game/cameraService";
 
 export namespace UseWorldObjectWindow {
 
@@ -54,9 +55,12 @@ export namespace UseWorldObjectWindow {
         open: {
             tile: () => void
         }
+        centerCamera: () => void,
     }
 
     export function useData(identifier: string | null): UseWorldObjectWindow.Data | null {
+
+        const cameraService = useDI<CameraService>(CameraService.name);
 
         const worldObject = WorldObjectRepository.useById(identifier);
         const tile = TileRepository.useById(worldObject?.tile);
@@ -85,7 +89,8 @@ export namespace UseWorldObjectWindow {
                 },
                 open: {
                     tile: () => openTileWindow(tile?.identifier ?? null)
-                }
+                },
+                centerCamera: () => cameraService.centerCameraOnTile(worldObject.tile)
             };
         } else {
             return null;

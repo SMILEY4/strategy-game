@@ -10,6 +10,7 @@ import {FiHexagon} from "react-icons/fi";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Header2} from "../../../../components/header/Header";
+import {RxEyeOpen} from "react-icons/rx";
 
 export interface WorldObjectWindowProps {
     windowId: string;
@@ -40,6 +41,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
                         spaceAbove
                     >
                         <Button circle small onClick={data.open.tile}><FiHexagon/></Button>
+                        <Button circle small onClick={data.centerCamera}><RxEyeOpen/></Button>
                     </Banner>
 
                     <VBox padding_l gap_m scrollable grow shrink>

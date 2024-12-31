@@ -38,6 +38,7 @@ import {MapService} from "./logic/game/mapService";
 import {RouteDatabase} from "./state/database/routeDatabase";
 import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
 import {RouteRepository} from "./state/repository/routeRepository";
+import {CameraService} from "./logic/game/cameraService";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -66,6 +67,7 @@ interface AppCtxDef {
 	GameIdProvider: () => GameIdProvider,
 	SettlementService: () => SettlementService,
 	MapService: () => MapService,
+	CameraService: () => CameraService,
 
 	GameRenderer: () => GameRenderer,
 	ChangeProvider: () => GameChangeProvider,
@@ -227,6 +229,12 @@ export const AppCtx: AppCtxDef = {
 		MapService.name,
 		ctx => new MapService(
 			ctx.get<SessionRepository>(SessionRepository.name),
+		),
+	),
+	CameraService: diContext.register(
+		CameraService.name,
+		ctx => new CameraService(
+			ctx.get<CameraRepository>(CameraRepository.name),
 		),
 	),
 

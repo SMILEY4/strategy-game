@@ -6,6 +6,8 @@ import {openWindow, useOpenWindow} from "../../../../components/window/windowHoo
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
+import {useDI} from "../../../../../appContext";
+import {CameraService} from "../../../../../logic/game/cameraService";
 
 export namespace UseTileWindow {
 
@@ -36,12 +38,15 @@ export namespace UseTileWindow {
             controllingSettlement: () => void,
 			tileObject: (tileObject: TileObject) => void,
         };
+        centerCamera: () => void,
     }
 
     export function useData(overwriteTile: TileIdentifier | null): UseTileWindow.Data | null {
 
         const openSettlement = UseSettlementWindow.useOpen();
 		const openWorldObject = UseWorldObjectWindow.useOpen();
+
+        const cameraService = useDI<CameraService>(CameraService.name);
 
         const selectedTileIdentifier = TileRepository.useSelected();
         const tile = TileRepository.useById((overwriteTile ?? selectedTileIdentifier) ?? null);
@@ -65,6 +70,7 @@ export namespace UseTileWindow {
 						}
 					}
                 },
+                centerCamera: () => cameraService.centerCameraOnTile(tile.identifier)
             };
         } else {
             return null;
