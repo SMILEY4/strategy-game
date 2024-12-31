@@ -57,6 +57,4 @@ export namespace ArrayExtensions {
 
     }
 
-
 }
-

@@ -7,7 +7,7 @@ import {TilePosition} from "../../models/base/tilePosition";
 import {CommandDatabase} from "../database/commandDatabase";
 import {CommandType, MoveCommand} from "../../models/base/command";
 import {useDI} from "../../appContext";
-import {useQuerySingle} from "../../common/db/adapters/databaseHooks";
+import {useQueryMultiple, useQuerySingle} from "../../common/db/adapters/databaseHooks";
 
 export class WorldObjectRepository {
 
@@ -23,12 +23,20 @@ export class WorldObjectRepository {
 		return this.worldObjectDb.querySingle(WorldObjectDatabase.QUERY_BY_ID, worldObjectId);
 	}
 
-	public getByTile(tileId: TileIdentifier): WorldObject | null {
+	public getOneByTile(tileId: TileIdentifier): WorldObject | null {
 		return this.worldObjectDb.querySingle(WorldObjectDatabase.QUERY_BY_POSITION, [tileId.q, tileId.r]);
+	}
+
+	public getByTile(tileId: TileIdentifier): WorldObject[] {
+		return this.worldObjectDb.queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [tileId.q, tileId.r]);
 	}
 
 	public getAll(): WorldObject[] {
 		return this.worldObjectDb.queryMany(WorldObjectDatabase.QUERY_ALL, null);
+	}
+
+	public getWorldObjectsRevId(): string {
+		return this.worldObjectDb.getRevId();
 	}
 
 	public getCurrentMovementModeState(): {
@@ -74,6 +82,11 @@ export namespace WorldObjectRepository {
 	export function useById(worldObjectId: string | null): WorldObject | null {
 		const db = useDI<WorldObjectDatabase>(WorldObjectDatabase.name);
 		return useQuerySingle(db, WorldObjectDatabase.QUERY_BY_ID, worldObjectId);
+	}
+
+	export function useByPosition(pos: [number, number]): WorldObject[] {
+		const db = useDI<WorldObjectDatabase>(WorldObjectDatabase.name);
+		return useQueryMultiple(db, WorldObjectDatabase.QUERY_BY_POSITION, pos);
 	}
 
 	export function useCurrentMovementPath(): MovementTarget[] {

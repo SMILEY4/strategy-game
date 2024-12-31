@@ -3,14 +3,14 @@ import {GLUniformType, GLUniformValueType} from "../../../common/webgl/glTypes";
 
 export class ProgramUniformEntry {
     readonly valueConstant: GLUniformValueType | null;
-    readonly valueProvider: (() => GLUniformValueType) | null;
+    readonly valueProvider: ((context: any) => GLUniformValueType) | null;
     readonly binding: string;
     readonly type: GLUniformType;
 
 
     constructor(props: {
         valueConstant: GLUniformValueType | null,
-        valueProvider: (() => GLUniformValueType) | null,
+        valueProvider: ((context: any) => GLUniformValueType) | null,
         binding: string,
         type: GLUniformType,
     }) {

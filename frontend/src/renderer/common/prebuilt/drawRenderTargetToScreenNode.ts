@@ -5,12 +5,13 @@ import {NodeOutput} from "../graph/nodeOutput";
 
 export class DrawRenderTargetToScreenNode extends DrawRenderNode {
 
+    public static readonly ID = "drawnode.rendertarget2screen";
     public static readonly SHADER_ID_VERTEX = "rendertarget2screen.vert"
     public static readonly SHADER_ID_FRAGMENT = "rendertarget2screen.frag"
 
     constructor(renderTargetId: string) {
         super({
-            id: "drawnode.rendertarget2screen",
+            id: DrawRenderTargetToScreenNode.ID,
             input: [
                 new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 1],

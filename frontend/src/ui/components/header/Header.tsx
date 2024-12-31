@@ -1,12 +1,12 @@
 import {ReactElement} from "react";
-import {joinClassNames} from "../utils";
+import {joinClassNames} from "../window/utils";
 import "./header.scoped.less";
+import {BaseProps} from "../base/base";
 
-export interface HeaderProps {
+export interface HeaderProps extends BaseProps {
     level?: 1 | 2 | 3 | 4 | 5,
     centered?: boolean,
-    onLight?: boolean,
-    className?: string,
+    inline?: boolean,
     children?: string
 }
 
@@ -14,15 +14,15 @@ export function Header(props: HeaderProps): ReactElement {
     const classNames = joinClassNames([
         "header",
         props.centered ? "header--centered" : null,
-        props.onLight ? "header--on-light" : null,
-        props.className
+        props.inline ? "header--inline" : null,
+        ...BaseProps.buildBaseClassNames(props)
     ]);
     const level = props.level || 1
-    if (level === 1) return <h1 className={classNames}>{props.children}</h1>;
-    if (level === 2) return <h2 className={classNames}>{props.children}</h2>;
-    if (level === 3) return <h3 className={classNames}>{props.children}</h3>;
-    if (level === 4) return <h4 className={classNames}>{props.children}</h4>;
-    if (level === 5) return <h5 className={classNames}>{props.children}</h5>;
+    if (level === 1) return <h1 className={classNames} style={props.style}>{props.children}</h1>;
+    if (level === 2) return <h2 className={classNames} style={props.style}>{props.children}</h2>;
+    if (level === 3) return <h3 className={classNames} style={props.style}>{props.children}</h3>;
+    if (level === 4) return <h4 className={classNames} style={props.style}>{props.children}</h4>;
+    if (level === 5) return <h5 className={classNames} style={props.style}>{props.children}</h5>;
     return null as any;
 }
 

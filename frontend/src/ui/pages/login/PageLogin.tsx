@@ -2,13 +2,13 @@ import React, {ReactElement} from "react";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
 import {Header1} from "../../components/header/Header";
-import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {TextField} from "../../components/textfield/TextField";
-import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {Button} from "../../components/button/primary/Button";
 import {HBox} from "../../components/layout/hbox/HBox";
-import {Spacer} from "../../components/spacer/Spacer";
+import {VSpacer} from "../../components/spacer/Spacer";
 import {GotoHooks} from "../../hooks/goto";
 import {LoginHooks} from "./login";
+import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 
 
 export function PageLogin(): ReactElement {
@@ -25,13 +25,14 @@ export function PageLogin(): ReactElement {
 	const gotoSignup = GotoHooks.useSignup();
 
 	return (
-		<BackgroundImagePanel fillParent centerContent image="/images/image_1.png">
-			<DecoratedPanel red floating>
-				<VBox gap_s centerVertical stretch>
+		<BackgroundPanel image="/images/image_1.png">
+
+			<DecoratedPanel ornament>
+				<VBox padding_l centerVertical gap_s>
 
 					<Header1>Login</Header1>
 
-					<Spacer size="s"/>
+					<VSpacer size_s/>
 
 					<TextField
 						value={email}
@@ -47,20 +48,16 @@ export function PageLogin(): ReactElement {
 						onChange={setPassword}
 					/>
 
-					<Spacer size="s"/>
+					<VSpacer size_s/>
 
-					<HBox gap_s centerVertical right>
-						<ButtonPrimary blue onClick={gotoSignup}>
-							Sign-Up
-						</ButtonPrimary>
-						<ButtonPrimary green onClick={login}>
-							Login
-						</ButtonPrimary>
+					<HBox right gap_s>
+						<Button info onClick={gotoSignup}>Sign-Up</Button>
+						<Button success onClick={login}>Login</Button>
 					</HBox>
-
 
 				</VBox>
 			</DecoratedPanel>
-		</BackgroundImagePanel>
+
+		</BackgroundPanel>
 	);
 }

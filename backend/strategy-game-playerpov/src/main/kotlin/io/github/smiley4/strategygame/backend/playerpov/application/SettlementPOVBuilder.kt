@@ -39,6 +39,7 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                 "growth" to hidden(povCache.povCountryId == settlement.country) {
                     obj {
                         "progress" to settlement.population.growthProgress
+                        "amount" to settlement.population.growthAmount
                         "details" to settlement.population.growthDetails.map {
                             obj {
                                 "key" to it.key

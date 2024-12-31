@@ -1,27 +1,19 @@
-import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
+import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
-import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {TilePosition} from "../../../models/base/tilePosition";
-import {WorldObjectRepository} from "../../../state/repository/worldObjectRepository";
+import {GameHtmlRenderContext} from "../gameRenderContext";
 
-export class PathsHtmlNode extends HtmlRenderNode {
+export class PathsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
 	public static readonly ID = "htmlnode.paths";
 
-	private readonly changeProvider: ChangeProvider;
-	private readonly worldObjectRepository: WorldObjectRepository;
-	private readonly camera: () => Camera;
-
-	constructor(
-		changeProvider: ChangeProvider,
-		worldObjectRepository: WorldObjectRepository,
-		camera: () => Camera,
-	) {
+	constructor() {
 		super({
 			id: PathsHtmlNode.ID,
+			changeKey: PathsHtmlNode.ID,
 			input: [],
 			output: [
 				new NodeOutput.HtmlContainer({
@@ -29,23 +21,17 @@ export class PathsHtmlNode extends HtmlRenderNode {
 				}),
 				new NodeOutput.HtmlData({
 					name: "htmldata.paths",
-					renderFunction: (element: any, html: HTMLElement) => render(this.camera(), element, html),
+					renderFunction: (context: GameHtmlRenderContext, element: any, html: HTMLElement) => render(context.camera, element, html),
 				}),
 			],
 		});
-		this.changeProvider = changeProvider;
-		this.worldObjectRepository = worldObjectRepository;
-		this.camera = camera;
 	}
 
-	public execute(): HtmlDataResource {
-		if (!this.changeProvider.hasChange(this.id)) {
-			return EMPTY_HTML_DATA_RESOURCE;
-		}
+	public execute(context: GameHtmlRenderContext): HtmlDataResource {
 
 		const elements: PathsElement[] = [];
 
-		const paths = this.worldObjectRepository.getMovementPaths();
+		const paths = context.movementPaths;
 		for (let i = 0, n = paths.length; i < n; i++) {
 			elements.push({
 				path: paths[i].positions,

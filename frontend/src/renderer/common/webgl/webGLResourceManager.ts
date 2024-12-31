@@ -15,24 +15,30 @@ import ManagedTexture = WebGLResourceManager.ManagedTexture;
 import ManagedFramebuffer = WebGLResourceManager.ManagedFramebuffer;
 import ManagedVertexBuffer = WebGLResourceManager.ManagedVertexBuffer;
 import ManagedVertexData = WebGLResourceManager.ManagedVertexData;
+import ManagedTextureAtlas = WebGLResourceManager.ManagedTextureAtlas;
 import VertexAttribute = NodeOutput.VertexAttribute;
 import VertexBuffer = NodeOutput.VertexBuffer;
+import {TextureAtlas} from "../../../common/webgl/textureAtlas";
+import {WebGLTextureAtlasDataManager} from "./webGLTextureAtlasDataManager";
 
 export class WebGLResourceManager implements ResourceManager {
 
 	private readonly gl: WebGL2RenderingContext;
 	private readonly shaderSourceManager: WebGLShaderSourceManager;
+	private readonly textureAtlasDataManager: WebGLTextureAtlasDataManager;
 
 	private readonly vertexData = new Map<string, ManagedVertexData>();
 	private readonly vertexBuffers = new Map<string, ManagedVertexBuffer>();
 	private readonly shaders = new Map<string, ManagedProgram>();
 	private readonly textures = new Map<string, ManagedTexture>();
+	private readonly textureAtlases = new Map<string, ManagedTextureAtlas>();
 	private readonly framebuffers = new Map<string, ManagedFramebuffer>();
 
 
-	constructor(gl: WebGL2RenderingContext, shaderSourceManager: WebGLShaderSourceManager) {
+	constructor(gl: WebGL2RenderingContext, shaderSourceManager: WebGLShaderSourceManager, textureAtlasDataManager: WebGLTextureAtlasDataManager) {
 		this.gl = gl;
 		this.shaderSourceManager = shaderSourceManager;
+		this.textureAtlasDataManager = textureAtlasDataManager;
 	}
 
 
@@ -41,6 +47,14 @@ export class WebGLResourceManager implements ResourceManager {
 		nodes.forEach(node => {
 			console.debug("Initializing webgl resources for node", node.id, node);
 			if (node instanceof VertexRenderNode) {
+				for (let input of node.config.input) {
+					if (input instanceof NodeInput.VertexBuffer) {
+						this.initializeVertexBuffer(input.name, node);
+					}
+					if (input instanceof NodeInput.TextureAtlasData) {
+						this.initializeTextureAtlas(input.path);
+					}
+				}
 				for (let output of node.config.output) {
 					if (output instanceof NodeOutput.VertexDescriptor) {
 						this.initializeVertexDescriptor(output.name, output.type, output.buffers, node, nodes);
@@ -58,6 +72,9 @@ export class WebGLResourceManager implements ResourceManager {
 					if (input instanceof NodeInput.Texture) {
 						this.initializeTexture(input.path);
 					}
+					if (input instanceof NodeInput.TextureAtlas) {
+						this.initializeTextureAtlas(input.path);
+					}
 				}
 				for (let output of node.config.output) {
 					// noinspection SuspiciousTypeOfGuard
@@ -69,7 +86,7 @@ export class WebGLResourceManager implements ResourceManager {
 		});
 	}
 
-	private initializeVertexBuffer(id: string, node: VertexRenderNode): ManagedVertexBuffer {
+	private initializeVertexBuffer(id: string, node: VertexRenderNode<any>): ManagedVertexBuffer {
 		console.debug("Loading vertex-buffer with id", id);
 
 		if (this.vertexBuffers.has(id)) {
@@ -88,7 +105,7 @@ export class WebGLResourceManager implements ResourceManager {
 		return managedBuffer;
 	}
 
-	private initializeVertexDescriptor(id: string, type: "standart" | "instanced", bufferIds: string[], node: VertexRenderNode, nodes: AbstractRenderNode[]): ManagedVertexData {
+	private initializeVertexDescriptor(id: string, type: "standart" | "instanced", bufferIds: string[], node: VertexRenderNode<any>, nodes: AbstractRenderNode[]): ManagedVertexData {
 		console.debug("initializing vertex descriptor", id, type, bufferIds);
 
 		// already initialized
@@ -200,6 +217,19 @@ export class WebGLResourceManager implements ResourceManager {
 		return managedProgram;
 	}
 
+	private initializeTextureAtlas(path: string): ManagedTextureAtlas {
+		console.debug("Loading texture atlas", path);
+		if (this.textureAtlases.has(path)) {
+			return this.textureAtlases.get(path)!;
+		}
+		const managedTextureAtlas: ManagedTextureAtlas = {
+			id: path,
+			textureAtlas: TextureAtlas.createFromData(this.gl, path, this.textureAtlasDataManager.getData(path))
+		}
+		this.textureAtlases.set(managedTextureAtlas.id, managedTextureAtlas)
+		return managedTextureAtlas;
+	}
+
 	private initializeTexture(path: string): ManagedTexture {
 		console.debug("Loading texture", path);
 		if (this.textures.has(path)) {
@@ -249,6 +279,11 @@ export class WebGLResourceManager implements ResourceManager {
 		});
 		this.textures.clear();
 
+		this.textureAtlases.forEach((atlas, _) => {
+			atlas.textureAtlas.dispose();
+		});
+		this.textureAtlases.clear();
+
 		this.framebuffers.forEach((framebuffer, _) => {
 			framebuffer.framebuffer.dispose();
 		});
@@ -287,12 +322,21 @@ export class WebGLResourceManager implements ResourceManager {
 		return vertex + "-" + fragment;
 	}
 
-	public getTexture(pathOrRtId: string): ManagedTexture {
-		const managed = this.textures.get(pathOrRtId);
+	public getTexture(path: string): ManagedTexture {
+		const managed = this.textures.get(path);
 		if (managed) {
 			return managed;
 		} else {
-			throw new Error("No texture with id " + pathOrRtId + " found");
+			throw new Error("No texture with id " + path + " found");
+		}
+	}
+
+	public getTextureAtlas(path: string): ManagedTextureAtlas {
+		const managed = this.textureAtlases.get(path);
+		if (managed) {
+			return managed;
+		} else {
+			throw new Error("No texture atlas with id " + path + " found");
 		}
 	}
 
@@ -336,6 +380,11 @@ export namespace WebGLResourceManager {
 		id: string,
 		path: string,
 		texture: GLTexture
+	}
+
+	export interface ManagedTextureAtlas {
+		id: string,
+		textureAtlas: TextureAtlas
 	}
 
 	export interface ManagedFramebuffer {

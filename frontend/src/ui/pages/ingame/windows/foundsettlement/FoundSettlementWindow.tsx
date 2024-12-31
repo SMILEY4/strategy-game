@@ -1,69 +1,75 @@
 import {TileIdentifier} from "../../../../../models/base/tile";
 import React from "react";
 import {TextField} from "../../../../components/textfield/TextField";
-import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
+import {Button} from "../../../../components/button/primary/Button";
 import {UseFoundSettlementWindow} from "./useFoundSettlementWindow";
+import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
+import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
+import {Text} from "../../../../components/text/Text";
+import {Header2} from "../../../../components/header/Header";
+import {VBox} from "../../../../components/layout/vbox/VBox";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface FoundSettlementWindowProps {
-	windowId: string;
-	tile: TileIdentifier,
-	worldObjectId: string | null
+    windowId: string;
+    tile: TileIdentifier,
+    worldObjectId: string
 }
 
 
 export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
 
-	const data: UseFoundSettlementWindow.Data = UseFoundSettlementWindow.useData(props.windowId, props.tile, props.worldObjectId);
+    const data: UseFoundSettlementWindow.Data = UseFoundSettlementWindow.useData(props.windowId, props.tile, props.worldObjectId);
 
-	return (
-		<>
+    return (
+        <>
 
-			<DefaultDecoratedWindowWithHeader
-				windowId={props.windowId}
-				minHeight="150px"
-				withoutScroll
-				header={2}
-				title={"Found Settlement"}
-			>
+            <DecoratedWindow
+                windowId={props.windowId}
+                style={{minHeight: "150px",}}
+            >
+                <VBox padding_l gap_m fullSize>
 
-				<HBox>
+                    <Header2>Found Settlement</Header2>
 
-					<TextField
-						value={data.input.name.value}
-						placeholder={"Settlement Name"}
-						type="text"
-						onChange={data.input.name.set}
-					/>
+                    <Divider line/>
 
-					<ButtonPrimary blue onClick={data.randomizeName}>
-						Random
-					</ButtonPrimary>
+                    <HBox gap_none>
+                        <TextField
+                            value={data.input.name.value}
+                            placeholder={"Settlement Name"}
+                            type="text"
+                            onChange={data.input.name.set}
+                        />
+                        <Button info onClick={data.randomizeName}>
+                            Random
+                        </Button>
+                    </HBox>
 
-				</HBox>
+                    <HBox right gap_s>
+                        <Button warn onClick={data.cancel}>
+                            Cancel
+                        </Button>
 
-
-				<HBox right centerVertical gap_s>
-
-					<ButtonPrimary red onClick={data.cancel}>
-						Cancel
-					</ButtonPrimary>
-
-					<BasicTooltip
-						enabled={!data.input.valid}
-						delay={500}
-						content={<ul>{data.input.reasonsInvalid.map(e => (<li>{e}</li>))}</ul>}
-					>
-						<ButtonPrimary green disabled={!data.input.valid} onClick={data.create}>
-							Create
-						</ButtonPrimary>
-					</BasicTooltip>
-
-				</HBox>
-
-			</DefaultDecoratedWindowWithHeader>
-		</>
-	);
+                        <TooltipContext enabled={!data.input.valid}>
+                            <TooltipTrigger>
+                                <Button success disabled={!data.input.valid} onClick={data.create}>
+                                    Create
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <TooltipPanel>
+                                    {data.input.reasonsInvalid.map(e => (
+                                        <Text type="negative">{e}</Text>
+                                    ))}
+                                </TooltipPanel>
+                            </TooltipContent>
+                        </TooltipContext>
+                    </HBox>
+                </VBox>
+            </DecoratedWindow>
+        </>
+    );
 }

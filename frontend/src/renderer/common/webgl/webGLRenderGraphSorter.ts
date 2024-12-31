@@ -42,7 +42,7 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
     /**
      * Return the ids of nodes on which the given node depends on (e.g. via render-target)
      */
-    private findOutgoing(renderNode: AbstractRenderNode, renderNodes: AbstractRenderNode[]): string[] {
+    private findOutgoing(renderNode: AbstractRenderNode, renderNodes: AbstractRenderNode[]): string[] { // todo: better / clearer / more correct name for method
         const outgoing: string[] = [];
 
         // render-target dependencies
@@ -59,6 +59,15 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
         renderNodes.forEach(other => {
             const inputVertexData = this.getInputVertexDescriptors(other);
             if (outputVertexData.some(e => inputVertexData.indexOf(e) !== -1)) {
+                outgoing.push(other.id);
+            }
+        });
+
+        // vertex-buffer dependencies
+        const outputVertexBuffer = this.getOutputVertexBuffers(renderNode);
+        renderNodes.forEach(other => {
+            const inputVertexBuffer = this.getInputVertexBuffers(other);
+            if (outputVertexBuffer.some(e => inputVertexBuffer.indexOf(e) !== -1)) {
                 outgoing.push(other.id);
             }
         });
@@ -122,6 +131,32 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
             return renderNode.config.output
                 .filter(e => e instanceof NodeOutput.VertexDescriptor)
                 .map(e => (e as NodeOutput.VertexDescriptor).name);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Returns the ids of all input vertex buffers of the given node
+     */
+    private getInputVertexBuffers(renderNode: AbstractRenderNode): string[] {
+        if (renderNode instanceof VertexRenderNode) {
+            return renderNode.config.input
+                .filter(e => e instanceof NodeInput.VertexBuffer)
+                .map(e => (e as NodeInput.VertexBuffer).name);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Returns the ids of all output vertex buffers of the given node
+     */
+    private getOutputVertexBuffers(renderNode: AbstractRenderNode): string[] {
+        if (renderNode instanceof VertexRenderNode) {
+            return renderNode.config.output
+                .filter(e => e instanceof NodeOutput.VertexBuffer)
+                .map(e => (e as NodeOutput.VertexBuffer).name);
         } else {
             return [];
         }

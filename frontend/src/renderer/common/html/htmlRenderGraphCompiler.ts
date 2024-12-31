@@ -3,9 +3,15 @@ import {HtmlRenderCommand} from "./htmlRenderCommand";
 import {AbstractRenderNode} from "../graph/abstractRenderNode";
 import {HtmlRenderNode} from "../graph/htmlRenderNode";
 import {NodeOutput} from "../graph/nodeOutput";
+import {ChangeProvider} from "../graph/changeProvider";
 
 export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCommand.Base> {
 
+    private readonly changeProvider: ChangeProvider;
+
+    constructor(changeProvider: ChangeProvider) {
+        this.changeProvider = changeProvider;
+    }
 
     public validate(nodes: AbstractRenderNode[]): [boolean, string] {
         if (nodes.length === 0) {
@@ -29,7 +35,7 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
         // data update
         for (let node of nodes) {
             if (node instanceof HtmlRenderNode) {
-                commands.push(new HtmlRenderCommand.UpdateData(node));
+                commands.push(new HtmlRenderCommand.UpdateData(node, this.changeProvider));
             }
         }
 
@@ -48,7 +54,7 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
     }
 
 
-    private getContainerId(node: HtmlRenderNode): string {
+    private getContainerId(node: HtmlRenderNode<any>): string {
         for (const config of node.config.output) {
             if (config instanceof NodeOutput.HtmlContainer) {
                 return config.id;
@@ -57,8 +63,8 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
         throw new Error("no container configured");
     }
 
-    private getNodes(nodes: AbstractRenderNode[], containerId: string): HtmlRenderNode[] {
-        const filtered: HtmlRenderNode[] = [];
+    private getNodes(nodes: AbstractRenderNode[], containerId: string): HtmlRenderNode<any>[] {
+        const filtered: HtmlRenderNode<any>[] = [];
         for (let node of nodes) {
             if (node instanceof HtmlRenderNode && this.getContainerId(node) === containerId) {
                 filtered.push(node);

@@ -2,7 +2,7 @@ import {GameSessionClient} from "./gameSessionClient";
 import {handleResponseError} from "../../common/httpClient";
 import {UnauthorizedError} from "../../common/UnauthorizedError";
 import {GameSessionMeta} from "../../models/base/gameSessionMeta";
-import {RenderGraphPreloader} from "../../renderer/common/graph/renderGraphPreloader";
+import {RenderGraphPreloader} from "../../renderer/game/renderGraphPreloader";
 import {SessionRepository} from "../../state/repository/sessionRepository";
 import {TurnStartService} from "../game/turnStartService";
 import {GameStateMessage} from "./models/gameStateMessage";

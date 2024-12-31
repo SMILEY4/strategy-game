@@ -18,6 +18,7 @@ internal class SettlementEntity(
     val buildings: List<BuildingEntity>,
     val populationSize: Int,
     val populationGrowthProgress: Float,
+    val populationGrowthAmount: Float,
     val populationGrowthDetails: Map<String, Float>,
     val resourceLedger: ResourceLedgerEntity,
     key: String? = null,
@@ -37,6 +38,7 @@ internal class SettlementEntity(
             resourceLedger = ResourceLedgerEntity.of(serviceModel.resourceLedger),
             populationSize = serviceModel.population.size,
             populationGrowthProgress = serviceModel.population.growthProgress,
+            populationGrowthAmount = serviceModel.population.growthAmount,
             populationGrowthDetails = serviceModel.population.growthDetails
         )
     }
@@ -57,7 +59,8 @@ internal class SettlementEntity(
         population = Settlement.Population(
             size = this.populationSize,
             growthProgress = this.populationGrowthProgress,
-            growthDetails = this.populationGrowthDetails.toMutableMap()
+            growthAmount = this.populationGrowthAmount,
+            growthDetails = this.populationGrowthDetails.toMutableMap(),
         ),
         resourceLedger = this.resourceLedger.asServiceModel()
     )

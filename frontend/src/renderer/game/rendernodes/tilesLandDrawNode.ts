@@ -2,12 +2,13 @@ import {GLUniformType} from "../../../common/webgl/glTypes";
 import {DrawRenderNode} from "../../common/graph/drawRenderNode";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {NodeOutput} from "../../common/graph/nodeOutput";
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
-export class TilesLandDrawNode extends DrawRenderNode {
+export class TilesLandDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
 
     public static readonly ID = "drawnode.tilesland"
 
-    constructor(vpMatrixProvider: () => Float32Array) {
+    constructor() {
         super({
             id: TilesLandDrawNode.ID,
             input: [
@@ -29,7 +30,7 @@ export class TilesLandDrawNode extends DrawRenderNode {
                     binding: "u_viewProjection",
                     type: GLUniformType.MAT3,
                     valueConstant: null,
-                    valueProvider: vpMatrixProvider,
+                    valueProvider: context => context.camera.getViewProjectionMatrixOrThrow(),
                 })
             ],
             output: [

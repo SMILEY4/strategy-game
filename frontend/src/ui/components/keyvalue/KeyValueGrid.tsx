@@ -1,16 +1,22 @@
 import {ReactElement} from "react";
 import "./keyValueGrid.scoped.less";
-import {joinClassNames} from "../utils";
+import {joinClassNames} from "../window/utils";
 import {InsetPanel} from "../panels/inset/InsetPanel";
+import {BaseProps} from "../base/base";
 
-export interface KeyValueGridProps {
-    className?: string,
-    children?: any
+export interface KeyValueGridProps extends BaseProps {
+    children?: any;
 }
 
 export function KeyValueGrid(props: KeyValueGridProps): ReactElement {
     return (
-        <div className={joinClassNames(["key-value-grid", props.className])}>
+        <div
+            className={joinClassNames([
+                "key-value-grid",
+                ...BaseProps.buildBaseClassNames(props),
+            ])}
+            style={props.style}
+        >
             {props.children}
         </div>
     );
@@ -18,7 +24,7 @@ export function KeyValueGrid(props: KeyValueGridProps): ReactElement {
 
 export function InsetKeyValueGrid(props: KeyValueGridProps): ReactElement {
     return (
-        <InsetPanel>
+        <InsetPanel {...props}>
             <KeyValueGrid {...props}/>
         </InsetPanel>
     );

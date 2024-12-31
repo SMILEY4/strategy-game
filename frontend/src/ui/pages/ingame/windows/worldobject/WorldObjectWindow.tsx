@@ -1,80 +1,85 @@
 import React, {ReactElement} from "react";
-import {
-	DefaultDecoratedWindow,
-	DefaultDecoratedWindowWithBanner,
-} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
-import {WindowSection} from "../../../../components/section/ContentSection";
-import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
-import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {UseWorldObjectWindow} from "./useWorldObjectWindow";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {Button} from "../../../../components/button/primary/Button";
 import {Else, If, Then, When} from "react-if";
+import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
+import {Banner} from "../../../../components/banner/Banner";
+import {FiHexagon} from "react-icons/fi";
+import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {Divider} from "../../../../components/divider/Divider";
+import {Header2} from "../../../../components/header/Header";
 
 export interface WorldObjectWindowProps {
-	windowId: string;
-	identifier: string | null;
+    windowId: string;
+    identifier: string | null;
 }
 
 export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 
-	const data: UseWorldObjectWindow.Data | null = UseWorldObjectWindow.useData(props.identifier);
+    const data: UseWorldObjectWindow.Data | null = UseWorldObjectWindow.useData(props.identifier);
 
-	if (data === null) {
-		return (
-			<DefaultDecoratedWindow windowId={props.windowId}>
-				<VBox fillParent center>
-					<Text>No object selected</Text>
-				</VBox>
-			</DefaultDecoratedWindow>
-		);
-	} else {
-		return (
-			<DefaultDecoratedWindowWithBanner
-				windowId={props.windowId}
-				title={data.worldObject.type.id}
-				subtitle={"World Object"}
-			>
+    if (data === null) {
+        return (
+            <DecoratedWindow windowId={props.windowId} withCloseButton>
+                <VBox fullSize center>
+                    <Text secondary>No object selected</Text>
+                </VBox>
+            </DecoratedWindow>
+        );
+    } else {
+        return (
+            <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
+                <VBox fullSize>
 
-				<WindowSection>
-					<InsetKeyValueGrid>
+                    <Banner
+                        title={data.worldObject.identifier.type.id}
+                        subtitle={"World Object"}
+                        color={data.worldObject.country.color}
+                        spaceAbove
+                    >
+                        <Button circle small onClick={data.open.tile}><FiHexagon/></Button>
+                    </Banner>
 
-						<EnrichedText>Id</EnrichedText>
-						<EnrichedText>{data.worldObject.id}</EnrichedText>
+                    <VBox padding_l gap_m scrollable grow shrink>
+                        {data.worldObject.country.isUserCountry && (
+                            <>
+                                <Header2 centered>Actions</Header2>
+                                <Divider line/>
 
-						<EnrichedText>Position</EnrichedText>
-						<EnrichedText>{data.worldObject.tile.q + ", " + data.worldObject.tile.r}</EnrichedText>
+                                <InsetPanel dontShrink dontGrow>
+                                    <VBox padding_s gap_s fullSize>
 
-						<EnrichedText>Country</EnrichedText>
-						<EnrichedText>{data.worldObject.country.name}</EnrichedText>
+                                        <When condition={data.movement.possible}>
+                                            <If condition={data.movement.canCancel}>
+                                                <Then>
+                                                    <Button onClick={data.movement.cancel}>
+                                                        Cancel Movement
+                                                    </Button>
+                                                </Then>
+                                                <Else>
+                                                    <Button onClick={data.movement.start} disabled={!data.movement.enabled}>
+                                                        Move
+                                                    </Button>
+                                                </Else>
+                                            </If>
+                                        </When>
 
-					</InsetKeyValueGrid>
-				</WindowSection>
+                                        <When condition={data.settlement.possible}>
+                                            <Button onClick={data.settlement.start} disabled={!data.settlement.enabled}>
+                                                Found Settlement
+                                            </Button>
+                                        </When>
 
-				<When condition={data.movement.possible}>
-					<If condition={data.movement.canCancel}>
-						<Then>
-							<ButtonPrimary color="blue" onClick={data.movement.cancel}>
-								Cancel Movement
-							</ButtonPrimary>
-						</Then>
-						<Else>
-							<ButtonPrimary color="blue" onClick={data.movement.start} disabled={!data.movement.enabled}>
-								Move
-							</ButtonPrimary>
-						</Else>
-					</If>
-				</When>
-
-				<When condition={data.settlement.possible}>
-					<ButtonPrimary color="blue" onClick={data.settlement.start} disabled={!data.settlement.enabled}>
-						Found Settlement
-					</ButtonPrimary>
-				</When>
-
-			</DefaultDecoratedWindowWithBanner>
-		);
-	}
+                                    </VBox>
+                                </InsetPanel>
+                            </>
+                        )}
+                    </VBox>
+                </VBox>
+            </DecoratedWindow>
+        );
+    }
 
 }

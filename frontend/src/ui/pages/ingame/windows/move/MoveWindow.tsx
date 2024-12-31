@@ -1,11 +1,12 @@
 import React, {ReactElement} from "react";
-import {DecoratedWindow, DefaultDecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
-import {UseMoveWindow} from "./useWorldObjectWindow";
-import {Header1} from "../../../../components/header/Header";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {UseMoveWindow} from "./useMoveWindow";
+import {Header2} from "../../../../components/header/Header";
+import {Button} from "../../../../components/button/primary/Button";
 import {HBox} from "../../../../components/layout/hbox/HBox";
+import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface MoveWindowProps {
 	windowId: string;
@@ -18,11 +19,11 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 
 	if (data === null) {
 		return (
-			<DefaultDecoratedWindow windowId={props.windowId}>
-				<VBox fillParent center>
-					<Text>No object selected</Text>
+			<DecoratedWindow windowId={props.windowId} withCloseButton>
+				<VBox fullSize center>
+					<Text center secondary>No object selected</Text>
 				</VBox>
-			</DefaultDecoratedWindow>
+			</DecoratedWindow>
 		);
 	} else {
 		return (
@@ -31,16 +32,18 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 				withCloseButton={false}
 				noPadding={false}
 				style={{
-					minWidth: "fit-content",
-					minHeight: "160px",
+					minWidth: "280px",
+					minHeight: "180px",
+					maxHeight: "180px",
 				}}
 			>
-				<VBox fillParent gap_s top stretch>
-					<Header1>Move Unit</Header1>
-					<Text>{data.remainingPoints + "/" + data.totalPoints + "Movement Points left"}</Text>
+				<VBox padding_l gap_m fullSize>
+					<Header2>Move Unit</Header2>
+					<Divider line/>
+					<Text>{data.remainingPoints + "/" + data.totalPoints + " Movement Points left"}</Text>
 					<HBox right gap_s>
-						<ButtonPrimary color="red" onClick={data.cancel}>Cancel</ButtonPrimary>
-						<ButtonPrimary color="green" onClick={data.accept}>Accept</ButtonPrimary>
+						<Button warn onClick={data.cancel}>Cancel</Button>
+						<Button success onClick={data.accept}>Accept</Button>
 					</HBox>
 				</VBox>
 			</DecoratedWindow>

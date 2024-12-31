@@ -4,27 +4,28 @@ import {NodeOutput} from "./nodeOutput";
 /**
  * Node in render graph that renders/creates html elements
  */
-export abstract class HtmlRenderNode extends AbstractRenderNode {
+export abstract class HtmlRenderNode<TContext> extends AbstractRenderNode {
 
-    public readonly config: HtmlRenderNodeConfig;
+    public readonly config: HtmlRenderNodeConfig<TContext>;
 
 
-    protected constructor(config: HtmlRenderNodeConfig) {
+    protected constructor(config: HtmlRenderNodeConfig<TContext>) {
         super(config.id);
         this.config = config;
     }
 
-    public abstract execute(): HtmlDataResource;
+    public abstract execute(context: TContext): HtmlDataResource;
 
 }
 
 /**
  * The configuration of the html node
  */
-export interface HtmlRenderNodeConfig {
+export interface HtmlRenderNodeConfig<TContext> {
     id: string,
+    changeKey: string | null,
     input: never[],
-    output: (NodeOutput.HtmlContainer | NodeOutput.HtmlData)[]
+    output: (NodeOutput.HtmlContainer | NodeOutput.HtmlData<TContext>)[]
 }
 
 /**

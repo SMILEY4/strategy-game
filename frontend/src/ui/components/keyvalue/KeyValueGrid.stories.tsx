@@ -27,7 +27,7 @@ export const Default: Story = {
         },
     },
     render: (args) => (
-        <DecoratedPanel red>
+        <DecoratedPanel>
             <div style={{
                 width: args.width === "thin" ? "150px" : (args.width === "wide" ? "600px" : undefined),
                 maxWidth: args.width === "thin" ? "150px" : (args.width === "wide" ? "600px" : undefined),

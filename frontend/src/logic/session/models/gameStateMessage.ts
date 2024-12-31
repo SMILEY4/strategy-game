@@ -65,6 +65,7 @@ export interface SettlementMessage {
 		size: number,
 		growth: HiddenType<({
 			progress: number,
+			amount: number,
 			details: ({
 				key: string,
 				amount: number

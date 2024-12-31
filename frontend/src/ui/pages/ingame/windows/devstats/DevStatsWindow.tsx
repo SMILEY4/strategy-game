@@ -1,6 +1,5 @@
 import React, {ReactElement} from "react";
-import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
-import {Spacer} from "../../../../components/spacer/Spacer";
+import { VSpacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {UseDevStatsWindow} from "./useDevStatsWindow";
 import {Area, Bar, BarChart, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, YAxis} from "recharts";
@@ -8,6 +7,10 @@ import {Text} from "../../../../components/text/Text";
 import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
+import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
+import {Header1} from "../../../../components/header/Header";
+import {VBox} from "../../../../components/layout/vbox/VBox";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface DevStatsWindowProps {
     windowId: string;
@@ -18,26 +21,31 @@ export function DevStatsWindow(props: DevStatsWindowProps): ReactElement {
     const data: UseDevStatsWindow.Data = UseDevStatsWindow.useData();
 
     return (
-        <DefaultDecoratedWindowWithHeader windowId={props.windowId} title={"Dev Statistics"}>
-            <MonitoringInformation {...data}/>
-            <Spacer size="s"/>
-            <FPSChart {...data}/>
-            <NextTurnDurationChart {...data}/>
-        </DefaultDecoratedWindowWithHeader>
+        <DecoratedWindow windowId={props.windowId} withCloseButton>
+            <VBox padding_l gap_m fullSize scrollable>
+                <Header1 centered>Dev Statistics</Header1>
+                <Divider line/>
+                <MonitoringInformation {...data}/>
+                <FPSChart {...data}/>
+                <NextTurnDurationChart {...data}/>
+            </VBox>
+        </DecoratedWindow>
     );
 }
 
 function MonitoringInformation(props: UseDevStatsWindow.Data): ReactElement {
     return (
-        <InsetPanel>
+        <InsetPanel dontGrow dontShrink>
 
             <KeyValueGrid>
 
                 <EnrichedText>FPS:</EnrichedText>
-                <EnrichedText><ETNumber unstyled int>{props.rendering.webGLMonitorData.fps.getAverage()}</ETNumber></EnrichedText>
+                <EnrichedText><ETNumber unstyled
+                                        int>{props.rendering.webGLMonitorData.fps.getAverage()}</ETNumber></EnrichedText>
 
                 <EnrichedText>Frame Duration:</EnrichedText>
-                <EnrichedText><ETNumber unstyled decPlaces={3}>{props.rendering.webGLMonitorData.frameDuration.getAverage()}</ETNumber> ms</EnrichedText>
+                <EnrichedText><ETNumber unstyled
+                                        decPlaces={3}>{props.rendering.webGLMonitorData.frameDuration.getAverage()}</ETNumber> ms</EnrichedText>
 
                 <EnrichedText>Draw Calls:</EnrichedText>
                 <EnrichedText>{props.rendering.webGLMonitorData.countDrawCalls}</EnrichedText>
@@ -73,7 +81,7 @@ function FPSChart(props: UseDevStatsWindow.Data): ReactElement {
     }));
 
     return (
-        <InsetPanel>
+        <InsetPanel dontGrow dontShrink>
             <Text>Performance</Text>
             <ResponsiveContainer width="100%" height={200}>
                 <ComposedChart
@@ -89,10 +97,12 @@ function FPSChart(props: UseDevStatsWindow.Data): ReactElement {
                     <YAxis yAxisId="left" orientation="left" domain={[0, 80]} unit={"fps"}/>
                     <ReferenceLine yAxisId="left" y={60} stroke="white" strokeDasharray="3 3"/>
                     <ReferenceLine yAxisId="left" y={30} stroke="white" strokeDasharray="3 3"/>
-                    <Area yAxisId="left" type="monotone" dataKey="fps" stroke="#8884d8" fill="#8884d8" animateNewValues={false}
+                    <Area yAxisId="left" type="monotone" dataKey="fps" stroke="#8884d8" fill="#8884d8"
+                          animateNewValues={false}
                           animationDuration={0}/>
                     <YAxis yAxisId="right" orientation="right" domain={[0, 20]} unit={"ms"}/>
-                    <Line yAxisId="right" type="monotone" dataKey="delta" stroke="#82ca9d" animateNewValues={false} animationDuration={0}/>
+                    <Line yAxisId="right" type="monotone" dataKey="delta" stroke="#82ca9d" animateNewValues={false}
+                          animationDuration={0}/>
                 </ComposedChart>
             </ResponsiveContainer>
         </InsetPanel>
@@ -110,7 +120,7 @@ function NextTurnDurationChart(props: UseDevStatsWindow.Data): ReactElement {
     }));
 
     return (
-        <InsetPanel>
+        <InsetPanel dontGrow dontShrink>
             <Text>Next-Turn Durations</Text>
             <ResponsiveContainer width="100%" height={200}>
                 <BarChart

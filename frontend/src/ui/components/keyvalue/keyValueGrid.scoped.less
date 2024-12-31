@@ -2,9 +2,10 @@
 
 
 .key-value-grid {
-  display: grid;
+  padding:               @spacing-s;
+  display:               grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: @spacing-s;
+  column-gap:            @spacing-s;
 
   /deep/ *:nth-of-type(even) {
     justify-self: start;

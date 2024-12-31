@@ -1,11 +1,13 @@
 import React, {ReactElement} from "react";
-import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {Spacer} from "../../../../components/spacer/Spacer";
+import {Button} from "../../../../components/button/primary/Button";
 import {UseDevWindow} from "./useDevWindow";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
+import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
+import {VBox} from "../../../../components/layout/vbox/VBox";
+import {Header1} from "../../../../components/header/Header";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface DevWindowProps {
     windowId: string;
@@ -16,32 +18,41 @@ export function DevWindow(props: DevWindowProps): ReactElement {
     const data: UseDevWindow.Data = UseDevWindow.useData();
 
     return (
-        <DefaultDecoratedWindowWithHeader windowId={props.windowId} title="Dev / Debug">
+        <DecoratedWindow windowId={props.windowId} withCloseButton>
+            <VBox padding_l gap_m fullSize scrollable>
 
-            <BaseInformation {...data}/>
-            <ButtonPrimary blue onClick={data.open.devStats}>More Statistics</ButtonPrimary>
+                <Header1 centered>Dev / Debug</Header1>
 
-            <Spacer size="s"/>
+                <Divider line/>
 
-            <ButtonPrimary blue onClick={data.fullscreen.enter}>Enter Fullscreen</ButtonPrimary>
-            <ButtonPrimary blue onClick={data.fullscreen.exit}>Exit Fullscreen</ButtonPrimary>
+                <BaseInformation {...data}/>
 
-            <Spacer size="xs"/>
+                <Button onClick={data.open.devStats}>More Statistics</Button>
 
-            <ButtonPrimary blue onClick={data.webgl.loose}>Loose WebGL-Context</ButtonPrimary>
-            <ButtonPrimary blue onClick={data.webgl.restore}>Restore WebGL-Context</ButtonPrimary>
+                <VBox gap_s>
+                    <Button onClick={data.fullscreen.enter}>Enter Fullscreen</Button>
+                    <Button onClick={data.fullscreen.exit}>Exit Fullscreen</Button>
+                </VBox>
 
-        </DefaultDecoratedWindowWithHeader>
+                <VBox gap_s>
+                    <Button onClick={data.webgl.loose}>Loose WebGL-Context</Button>
+                    <Button onClick={data.webgl.restore}>Restore WebGL-Context</Button>
+                </VBox>
+
+            </VBox>
+        </DecoratedWindow>
     );
 }
 
 
 function BaseInformation(props: UseDevWindow.Data): ReactElement {
     return (
-        <InsetKeyValueGrid>
+        <InsetKeyValueGrid dontShrink dontGrow>
+
             <EnrichedText>Camera.Pos</EnrichedText>
             <EnrichedText>
-                <ETNumber unstyled decPlaces={2}>{props.camera.x}</ETNumber>, <ETNumber unstyled decPlaces={2}>{props.camera.y}</ETNumber>
+                <ETNumber unstyled decPlaces={2}>{props.camera.x}</ETNumber>, <ETNumber unstyled
+                                                                                        decPlaces={2}>{props.camera.y}</ETNumber>
             </EnrichedText>
 
             <EnrichedText>Camera.Zoom</EnrichedText>

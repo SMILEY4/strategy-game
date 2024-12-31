@@ -1,22 +1,19 @@
-import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {WebGLMonitor} from "../../../../../common/webgl/monitor/webGLMonitor";
 import {DevStatsWindow} from "./DevStatsWindow";
 import {MonitoringRepository} from "../../../../../state/repository/monitoringRepository";
+import {useOpenWindow} from "../../../../components/window/windowHooks";
+import {WindowStore} from "../../../../components/window/windowStore";
 
 export namespace UseDevStatsWindow {
 
     export function useOpen() {
         const WINDOW_ID = "menubar-window";
-        const addWindow = useOpenWindow();
+        const open = useOpenWindow();
         return () => {
-            addWindow({
+            open({
                 id: WINDOW_ID,
-                className: "dev-stats-window",
-                left: 25,
-                top: 60,
-                bottom: 25,
-                width: 450,
+                anchor: WindowStore.ANCHOR_LEFT_SIDE,
                 content: <DevStatsWindow windowId={WINDOW_ID}/>,
             });
         };

@@ -30,6 +30,7 @@ class Settlement(
     class Population(
         var size: Int,
         var growthProgress: Float,
+        var growthAmount: Float,
         val growthDetails: MutableMap<String, Float> = mutableMapOf(),
     )
 

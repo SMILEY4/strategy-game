@@ -16,11 +16,15 @@ flat out int v_borderMask;
 out vec3 v_cornerData;
 flat out int v_directionData;
 
+#include random
+
 void main() {
     v_textureCoordinates = in_textureCoordinates;
     v_depth = in_depth;
     v_borderMask = in_borderMask;
     v_cornerData = in_cornerData;
     v_directionData = in_directionData;
-    gl_Position = vec4((u_viewProjection * vec3(in_vertexPosition + in_worldPosition, 1.0)).xy, 0.0, 1.0);
+
+    vec2 vertexPosition = offsetVertexPosition(in_vertexPosition, in_worldPosition, 20.0, 1.0);
+    gl_Position = vec4((u_viewProjection * vec3(vertexPosition + in_worldPosition, 1.0)).xy, 0.0, 1.0);
 }

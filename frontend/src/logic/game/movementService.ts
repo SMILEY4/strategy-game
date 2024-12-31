@@ -108,7 +108,7 @@ export class MovementService {
 
 	private async getAvailableTargets(tile: TileIdentifier, worldObject: WorldObject, points: number): Promise<MovementTarget[]> {
 		try {
-			return await this.gameClient.getAvailableMovementPositions(worldObject.id, tile, points);
+			return await this.gameClient.getAvailableMovementPositions(worldObject.identifier.id, tile, points);
 		} catch (e) {
 			return [];
 		}
@@ -120,8 +120,9 @@ export class MovementService {
 	public cancelMovementCommand(worldObject: WorldObject) {
 		this.worldObjectRepository.setCurrentMovementModeState(null, [], []);
 
-		const command = this.commandRepository.getAllByType<MoveCommand>(CommandType.MOVE)
-			.find(it => it.worldObjectId === worldObject.id);
+		const command = this.commandRepository
+			.getAllByType<MoveCommand>(CommandType.MOVE)
+			.find(it => it.worldObjectId === worldObject.identifier.id);
 
 		if (command) {
 			this.commandService.cancelCommand(command.id);

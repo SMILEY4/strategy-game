@@ -21,8 +21,8 @@ internal data class ResourceLedgerEntryEntity(
             produced = serviceModel.produced.amount,
             consumed = serviceModel.consumed.amount,
             missing = serviceModel.missing.amount,
-            detailsConsumed = serviceModel.produced.details,
-            detailsProduced = serviceModel.consumed.details,
+            detailsProduced = serviceModel.produced.details,
+            detailsConsumed = serviceModel.consumed.details,
             detailsMissing = serviceModel.missing.details,
         )
 

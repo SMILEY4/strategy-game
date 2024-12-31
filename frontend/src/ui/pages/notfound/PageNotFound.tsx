@@ -2,21 +2,21 @@ import React, {ReactElement} from "react";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {Header1} from "../../components/header/Header";
 import {VBox} from "../../components/layout/vbox/VBox";
-import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {Text} from "../../components/text/Text";
-import {Spacer} from "../../components/spacer/Spacer";
+import {VSpacer} from "../../components/spacer/Spacer";
+import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 
 
 export function PageNotFound(): ReactElement {
     return (
-        <BackgroundImagePanel fillParent centerContent image="/images/image_4.bmp">
-            <DecoratedPanel red floating>
-                <VBox gap_s centerVertical left>
+        <BackgroundPanel image="/images/image_4.bmp">
+            <DecoratedPanel ornament>
+                <VBox padding_l centerVertical left gap_s>
                     <Header1>404</Header1>
-                    <Spacer size="s"/>
+                    <VSpacer size_s/>
                     <Text>The requested page does not exist.</Text>
                 </VBox>
             </DecoratedPanel>
-        </BackgroundImagePanel>
+        </BackgroundPanel>
     );
 }

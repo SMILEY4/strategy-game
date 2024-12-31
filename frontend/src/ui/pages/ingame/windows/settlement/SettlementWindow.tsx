@@ -1,351 +1,372 @@
 import React, {ReactElement} from "react";
-import {
-	DefaultDecoratedWindow,
-	DefaultDecoratedWindowWithBanner,
-} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
-import {WindowSection} from "../../../../components/section/ContentSection";
-import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {UseSettlementWindow} from "./useSettlementWindow";
-import {Spacer} from "../../../../components/spacer/Spacer";
+import {VSpacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {FiPlus} from "react-icons/fi";
+import {Button} from "../../../../components/button/primary/Button";
+import "./settlementWindow.less";
+import {Header2} from "../../../../components/header/Header";
+import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
+import {Banner} from "../../../../components/banner/Banner";
+import {Divider} from "../../../../components/divider/Divider";
+import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {Color} from "../../../../../models/base/color";
+import {ETText} from "../../../../components/textenriched/elements/ETText";
+import {ETLink} from "../../../../components/textenriched/elements/ETLink";
+import {ETSpacer} from "../../../../components/textenriched/elements/ETSpacer";
+import {ResourceLedgerBox} from "./ResourceLedgerBox";
+import {BuildingBox} from "./BuildingBox";
+import {FiHexagon, FiPlus} from "react-icons/fi";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {CgClose} from "react-icons/cg";
-import "./settlementWindow.less";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
-import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
-import {Header4} from "../../../../components/header/Header";
-import {joinClassNames} from "../../../../components/utils";
+import {CSS_COLOR_SUCCESS_LIGHT, CSS_COLOR_WARN_LIGHT} from "../../../../components/commonColors";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
-import {If, Then} from "react-if";
-import {Building} from "../../../../../models/base/building";
+import {ProgressCircle} from "./ProgressCircle";
+import {TabBar, TabOption} from "../../../../components/tab/TabBar";
+import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 
 export interface SettlementWindowProps {
-	windowId: string;
-	identifier: string | null;
+    windowId: string;
+    identifier: string | null;
 }
 
 export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 
-	const data: UseSettlementWindow.Data | null = UseSettlementWindow.useData(props.identifier);
+    const data: UseSettlementWindow.Data | null = UseSettlementWindow.useData(props.identifier);
 
-	if (data === null) {
-		return (
-			<DefaultDecoratedWindow windowId={props.windowId}>
-				<VBox fillParent center>
-					<Text>No settlement selected</Text>
-				</VBox>
-			</DefaultDecoratedWindow>
-		);
-	} else {
-		return (
-			<DefaultDecoratedWindowWithBanner
-				windowId={props.windowId}
-				title={data.settlement.identifier.name}
-				subtitle={"Settlement"}
-			>
+    if (data === null) {
+        return (
+            <DecoratedWindow windowId={props.windowId} withCloseButton>
+                <VBox fullSize center>
+                    <Text secondary>No settlement selected.</Text>
+                </VBox>
+            </DecoratedWindow>
+        );
+    } else {
+        return (
+            <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
+                <VBox fullSize>
 
-				<WindowSection>
-					<InsetKeyValueGrid>
+                    <Banner
+                        title={data.settlement.identifier.name}
+                        subtitle={"Settlement"}
+                        color={data.settlement.country.color}
+                        spaceAbove
+                    >
+                        <Button circle small onClick={data.open.tile}><FiHexagon/></Button>
+                    </Banner>
 
-						<EnrichedText>Id</EnrichedText>
-						<EnrichedText>{data.settlement.identifier.id}</EnrichedText>
+                    <TabBar initial="Overview">
 
-						<EnrichedText>Position</EnrichedText>
-						<EnrichedText>{data.settlement.tile.q + ", " + data.settlement.tile.r}</EnrichedText>
+                        <TabOption name="Overview">
+                            <VBox grow shrink scrollable padding_s gap_m>
+                                <PanelOverview {...data}/>
+                            </VBox>
+                        </TabOption>
 
-						<EnrichedText>Country</EnrichedText>
-						<EnrichedText>{data.settlement.country.name}</EnrichedText>
+                        <TabOption name="Industry">
+                            <VBox grow shrink scrollable padding_s gap_m>
+                                <PanelIndustry {...data}/>
+                            </VBox>
+                        </TabOption>
 
-					</InsetKeyValueGrid>
-				</WindowSection>
+                        <TabOption name="Population">
+                            <VBox grow shrink scrollable padding_s gap_m>
+                                <PanelPopulation {...data}/>
+                            </VBox>
+                        </TabOption>
 
-				<Spacer size="m"/>
+                        <TabOption name="D" circle>
+                            <VBox grow shrink scrollable padding_s gap_m>
+                                <PanelDebug {...data}/>
+                            </VBox>
+                        </TabOption>
 
-				<WindowSection title="Routes">
-					<InsetPanel>
-						{data.settlement.routes.map(route => {
-							return route.settlementA.id === data.settlement.identifier.id
-								? <EnrichedText key={route.id}>{"-> " + route.settlementB.name}</EnrichedText>
-								: <EnrichedText key={route.id}>{"-> " + route.settlementA.name}</EnrichedText>;
-						})}
-					</InsetPanel>
-				</WindowSection>
+                    </TabBar>
 
-				<Spacer size="m"/>
-
-				<WindowSection title={"Population"}>
-					<InsetPanel>
-						<InsetKeyValueGrid>
-
-							<EnrichedText>Size</EnrichedText>
-							<EnrichedText>{data.settlement.population.size}</EnrichedText>
-
-							<If condition={data.settlement.population.growth.visible}>
-								<Then>
-									<EnrichedText>Growth Progress</EnrichedText>
-									<EnrichedText><ETNumber percentage>{data.settlement.population.growth.value.progress}</ETNumber></EnrichedText>
-
-									<EnrichedText>Details</EnrichedText>
-									<ul>
-										{data.settlement.population.growth.value.details.map(detail => (
-											<li><EnrichedText>{detail.key} <ETNumber percentage>{detail.amount}</ETNumber></EnrichedText></li>
-										))}
-									</ul>
-
-
-								</Then>
-							</If>
-
-						</InsetKeyValueGrid>
-					</InsetPanel>
-				</WindowSection>
-
-				<Spacer size="m"/>
-
-				<WindowSection title={"Resources"}>
-					<ResourcesSection {...data}/>
-				</WindowSection>
-
-				<Spacer size="m"/>
-
-				<WindowSection title={"Production"}>
-					<ProductionQueueSection {...data}/>
-				</WindowSection>
-
-				<Spacer size="m"/>
-
-				<WindowSection title={"Buildings"}>
-					<BuildingList {...data}/>
-				</WindowSection>
-
-			</DefaultDecoratedWindowWithBanner>
-		);
-	}
-
+                </VBox>
+            </DecoratedWindow>
+        );
+    }
 }
 
-function ResourcesSection(props: UseSettlementWindow.Data) {
-	return (
-		<InsetPanel>
-			<HBox fillParent gap_s left wrap>
-				{props.settlement.resources.map(res => (
-					<TooltipContext key={res.type}>
 
-						<TooltipTrigger>
-							<InsetPanel className="resource-box">
-								<div
-									className="resource-box__icon"
-									style={{backgroundImage: "url('/icons/resources/" + res.type + ".png')"}}
-								/>
-								<EnrichedText>
-									<ETNumber>{res.amount}</ETNumber>
-								</EnrichedText>
-							</InsetPanel>
-						</TooltipTrigger>
-
-						<TooltipContent>
-							<TooltipPanel>
-								<VBox padding_m gap_xs fillParent>
-
-									<Header4>{res.type}</Header4>
-
-									<EnrichedText>
-										<ETNumber typeAuto signed>{res.produced.amount}</ETNumber> Produced
-									</EnrichedText>
-									<If condition={res.produced.details.length > 0}>
-										<Then>
-											<InsetPanel>
-												<VBox padding_xs gap_xs>
-													{res.produced.details.map(detail => (
-														<EnrichedText key={detail.key}>
-															<ETNumber type="pos"
-																	  signed>{detail.amount}</ETNumber> {detail.key}
-														</EnrichedText>
-													))}
-												</VBox>
-											</InsetPanel>
-										</Then>
-									</If>
-
-									<EnrichedText>
-										<ETNumber typeAuto signed>{-res.consumed.amount}</ETNumber> Consumed
-									</EnrichedText>
-									<If condition={res.consumed.details.length > 0}>
-										<Then>
-											<InsetPanel>
-												<VBox padding_xs gap_xs>
-													{res.consumed.details.map(detail => (
-														<EnrichedText key={detail.key}>
-															<ETNumber type="neg"
-																	  signed>{-detail.amount}</ETNumber> {detail.key}
-														</EnrichedText>
-													))}
-												</VBox>
-											</InsetPanel>
-										</Then>
-									</If>
-
-									<EnrichedText>
-										<ETNumber typeAutoInv unsigned>{res.missing.amount}</ETNumber> Missing
-									</EnrichedText>
-									<If condition={res.missing.details.length > 0}>
-										<Then>
-											<InsetPanel>
-												<VBox padding_xs gap_xs>
-													{res.missing.details.map(detail => (
-														<EnrichedText key={detail.key}>
-															<ETNumber type="neg"
-																	  unsigned>{detail.amount}</ETNumber> {detail.key}
-														</EnrichedText>
-													))}
-												</VBox>
-											</InsetPanel>
-										</Then>
-									</If>
-
-								</VBox>
-							</TooltipPanel>
-						</TooltipContent>
-
-					</TooltipContext>
-				))}
-			</HBox>
-		</InsetPanel>
-	);
+function PanelOverview(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <>
+            <SectionBaseInfo {...props}/>
+            <SectionRoutes {...props}/>
+        </>
+    );
 }
 
-function ProductionQueueSection(props: UseSettlementWindow.Data) {
-	return (
-		<HBox centerVertical left gap_s>
-			<ProductionQueueAddButton {...props}/>
-			<ProductionQueueProgressBar {...props}/>
-			<ProductionQueueCancelButton {...props}/>
-		</HBox>
-	);
+function PanelIndustry(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <>
+            <SectionProduction {...props}/>
+            <SectionResourceBalance {...props}/>
+            <SectionBuildings {...props}/>
+        </>
+    );
 }
 
-function ProductionQueueAddButton(props: UseSettlementWindow.Data): ReactElement {
-	return (
-		<ButtonPrimary square onClick={props.productionQueue.add}>
-			<FiPlus/>
-		</ButtonPrimary>
-	);
+function PanelPopulation(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <>
+            <SectionPopulationSize {...props}/>
+            <SectionGrowthOverview {...props}/>
+        </>
+    );
 }
 
-function ProductionQueueProgressBar(props: UseSettlementWindow.Data): ReactElement {
-	return (
-		<ProgressBar
-			progress={props.productionQueue.activeEntry === null ? 0 : props.productionQueue.activeEntry.progress}
-			onClick={props.productionQueue.open}
-			className="production_queue__progress"
-		>
-			<Text relative>
-				{props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}
-			</Text>
-		</ProgressBar>
-	);
+function PanelDebug(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <>
+            <InsetKeyValueGrid dontShrink dontGrow>
+
+                <EnrichedText>Settlement Id:</EnrichedText>
+                <EnrichedText>{props.settlement.identifier.id}</EnrichedText>
+
+                <EnrichedText>Country Id:</EnrichedText>
+                <EnrichedText>{props.settlement.country.id}</EnrichedText>
+
+                <EnrichedText>Tile:</EnrichedText>
+                <EnrichedText>{props.settlement.tile.q + ", " + props.settlement.tile.r}</EnrichedText>
+
+            </InsetKeyValueGrid>
+        </>
+    );
 }
 
-function ProductionQueueCancelButton(props: UseSettlementWindow.Data): ReactElement {
-	return (
-		<ButtonPrimary square round small onClick={props.productionQueue.cancel}>
-			<CgClose/>
-		</ButtonPrimary>
-	);
+
+function SectionBaseInfo(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <InsetKeyValueGrid dontGrow dontShrink>
+
+            <EnrichedText>Name:</EnrichedText>
+            <EnrichedText>{props.settlement.identifier.name}</EnrichedText>
+
+            <EnrichedText>Country:</EnrichedText>
+            <EnrichedText>{props.settlement.country.name}</EnrichedText>
+
+            <EnrichedText>Population:</EnrichedText>
+            <EnrichedText>{props.settlement.population.size}</EnrichedText>
+
+        </InsetKeyValueGrid>
+    );
 }
 
-function BuildingList(props: UseSettlementWindow.Data): ReactElement {
-	return (
-		<>
-			<HBox gap_s centerVertical left>
-				<Text>{"Building-Slots: " + props.settlement.buildings.length + "/" + "?"}</Text>
-			</HBox>
-			<HBox gap_s top left wrap>
-				{props.settlement.buildings.map((building, index) => (
-					<BuildingEntry key={index} data={props} building={building}/>
-				))}
-			</HBox>
-		</>
-	);
+function SectionRoutes(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <VBox gap_s dontGrow dontShrink>
+
+            <VSpacer size_s/>
+            <Header2 centered>Connections</Header2>
+            <Divider line/>
+
+            <InsetPanel dontShrink dontGrow>
+                <VBox padding_s gap_s fullSize>
+
+                    {props.settlement.routes.length === 0 && (
+                        <Text center secondary>No connected settlements.</Text>
+                    )}
+
+                    {props.settlement.routes.map(route => (
+                        <DecoratedPanel
+                            key={route.id}
+                            pattern
+                            blue
+                            background={<DecoratedPanel.ColorBackground color={Color.toCss(route.targetCountry.color)}/>}
+                        >
+                            <HBox fullSize padding_s gap_s>
+                                <EnrichedText>
+                                    <ETText>to</ETText>
+                                    <ETSpacer size={"xs"}/>
+                                    <ETLink onClick={() => props.open.settlement(route.targetSettlement.id)}>
+                                        {route.targetSettlement.name}
+                                    </ETLink>
+                                </EnrichedText>
+                            </HBox>
+                        </DecoratedPanel>
+                    ))}
+
+                </VBox>
+            </InsetPanel>
+        </VBox>
+    );
 }
 
-function BuildingEntry(props: { data: UseSettlementWindow.Data, building: Building }): ReactElement {
-	return (
-		<BuildingInfoTooltip building={props.building}>
-			<div
-				className={joinClassNames([
-					"settlement-content-box",
-					(props.building.validity.workTile && props.building.validity.inputResources) ? null : "settlement-content-box--disabled",
-				])}
-				style={{
-					backgroundImage: "url('" + "icons/production/" + props.building.type + ".png')",
-				}}
-			/>
-		</BuildingInfoTooltip>
-	);
+function SectionResourceBalance(props: UseSettlementWindow.Data) {
+    return (
+        <VBox gap_s dontGrow dontShrink>
+
+            <VSpacer size_s/>
+            <Header2 centered>Resource Balance</Header2>
+            <Divider line/>
+
+            <InsetPanel dontShrink dontGrow>
+                <HBox padding_s gap_s left wrap fullSize>
+                    {!props.settlement.resources.visible && (
+                        <Text grow secondary>Unknown</Text>
+                    )}
+                    {(props.settlement.resources.visible && props.settlement.resources.value.length == 0) && (
+                        <Text grow secondary>No resources.</Text>
+                    )}
+                    {(props.settlement.resources.visible && props.settlement.resources.value.length > 0) && props.settlement.resources.value.map(entry => (
+                        <ResourceLedgerBox {...entry} key={entry.type}/>
+                    ))}
+                </HBox>
+            </InsetPanel>
+        </VBox>
+    );
 }
 
-export function BuildingInfoTooltip(props: { building: Building, children?: any }) {
-	return (
-		<TooltipContext>
-			<TooltipTrigger>
-				{props.children}
-			</TooltipTrigger>
-			<TooltipContent>
-				<TooltipPanel>
-					<VBox padding_m gap_s fillParent>
+function SectionBuildings(props: UseSettlementWindow.Data) {
+    return (
+        <VBox gap_s dontGrow dontShrink>
 
-						<Header4>{props.building.type}</Header4>
+            <VSpacer size_s/>
+            <Header2 centered>Buildings</Header2>
+            <Divider line/>
 
-						<If condition={props.building.activity.consumed.length > 0}>
-							<Then>
-								{props.building.activity.consumed.map(entry => (
-									<EnrichedText key={entry.type}>
-										<ETNumber typeAuto signed>{-entry.amount}</ETNumber> {entry.type}
-									</EnrichedText>
-								))}
-							</Then>
-						</If>
+            <InsetPanel dontShrink dontGrow>
+                <HBox padding_s gap_s left wrap fullSize>
+                    {!props.settlement.buildings.visible && (
+                        <Text grow secondary center>Unknown</Text>
+                    )}
+                    {(props.settlement.buildings.visible && props.settlement.buildings.value.length == 0) && (
+                        <Text grow secondary center>No buildings constructed.</Text>
+                    )}
+                    {(props.settlement.buildings.visible && props.settlement.buildings.value.length > 0) && props.settlement.buildings.value.map((entry, i) => (
+                        <BuildingBox building={entry} key={i}/>
+                    ))}
+                </HBox>
+            </InsetPanel>
+        </VBox>
+    );
+}
 
-						<If condition={props.building.activity.produced.length > 0}>
-							<Then>
-								{props.building.activity.produced.map(entry => (
-									<EnrichedText key={entry.type}>
-										<ETNumber typeAuto signed>{entry.amount}</ETNumber> {entry.type}
-									</EnrichedText>
-								))}
-							</Then>
-						</If>
+function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <VBox gap_s dontGrow dontShrink>
+
+            <VSpacer size_s/>
+            <Header2 centered>Production</Header2>
+            <Divider line/>
+
+            {!props.settlement.production.queue.visible && (
+                <Text secondary center>Unknown</Text>
+            )}
+
+            {props.settlement.production.queue.visible && (
+
+                <HBox dontShrink dontGrow centerVertical left gap_s>
+
+                    {props.settlement.country.isUserCountry && (
+                        <Button square onClick={props.productionQueue.add}><FiPlus/></Button>
+                    )}
+
+                    <ProgressBar
+                        grow
+                        shrink
+                        progress={props.productionQueue.activeEntry === null ? 0 : props.productionQueue.activeEntry.progress}
+                        onClick={props.productionQueue.open}
+                        className="production_queue__progress"
+                    >
+                        <Text>
+                            {props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}
+                        </Text>
+                    </ProgressBar>
+
+                    {props.settlement.country.isUserCountry && (
+                        <Button square circle small onClick={props.productionQueue.cancel}><CgClose/></Button>
+                    )}
+
+                </HBox>
+
+            )}
+
+        </VBox>
+    );
+}
+
+function SectionPopulationSize(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <InsetKeyValueGrid dontGrow dontShrink>
+
+            <EnrichedText>Population Size:</EnrichedText>
+            <EnrichedText>{props.settlement.population.size}</EnrichedText>
+
+        </InsetKeyValueGrid>
+    );
+}
 
 
-						<If condition={props.building.activity.missing.length > 0 || !props.building.validity.workTile}>
-							<Then>
-								<Spacer size="s"/>
-								<EnrichedText>
-									Missing:
-								</EnrichedText>
-								{!props.building.validity.workTile && (
-									<EnrichedText style={{color: "hsl(0, 87%, 65%)"}}>
-										{"Tile to work on: " + props.building.workTile.requiredTerrain?.id + " " + props.building.workTile.requiredResource?.id}
-									</EnrichedText>
-								)}
-								{props.building.activity.missing.map(entry => (
-									<EnrichedText key={entry.type}>
-										<ETNumber neg unsigned>{entry.amount}</ETNumber> {entry.type}
-									</EnrichedText>
-								))}
-							</Then>
-						</If>
+function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
+    const totalProgress = props.settlement.population.growth.value?.progress ?? 0;
+    const lastProgress = props.settlement.population.growth.value?.amount ?? 0;
+    const expectedPopulationChange = totalProgress >= 0 ? +1 : -1;
 
-					</VBox>
-				</TooltipPanel>
-			</TooltipContent>
-		</TooltipContext>
-	);
+    return (
+        <VBox gap_s dontGrow dontShrink>
+
+            <VSpacer size_s/>
+            <Header2 centered>Growth</Header2>
+            <Divider line/>
+
+            {!props.settlement.population.growth.visible && (
+                <Text secondary center>Unknown</Text>
+            )}
+
+            {props.settlement.population.growth.visible && (
+                <>
+                    <HBox gap_s stretch centerVertical>
+                        <ProgressCircle totalProgress={totalProgress} currentChange={lastProgress}/>
+                        <InsetPanel grow shrink>
+                            <VBox padding_s gap_xs left centerVertical fullSize>
+                                <EnrichedText>
+                                    <ETNumber percentage unsigned>{totalProgress}</ETNumber>
+                                    <ETText> total progress until </ETText>
+                                    <ETNumber signed>{expectedPopulationChange}</ETNumber>
+                                    <ETText> population</ETText>
+                                </EnrichedText>
+                                <EnrichedText>
+                                    <ETNumber percentage signed>{lastProgress}</ETNumber>
+                                    <ETText> Growth last turn</ETText>
+                                </EnrichedText>
+                            </VBox>
+                        </InsetPanel>
+                    </HBox>
+
+                    <InsetPanel dontShrink dontGrow>
+                        <VBox padding_s gap_s fullSize>
+                            {props.settlement.population.growth.value.details.map(detail => (
+                                <DecoratedPanel
+                                    key={detail.key + "" + detail.amount}
+                                    blue
+                                    pattern
+                                    background={
+                                        <DecoratedPanel.ColorBackground
+                                            color={detail.amount > 0 ? CSS_COLOR_SUCCESS_LIGHT : CSS_COLOR_WARN_LIGHT}
+                                        />
+                                    }
+                                >
+                                    <HBox padding_s>
+                                        <EnrichedText>
+                                            <ETNumber percentage>{detail.amount}</ETNumber>
+                                            <ETSpacer size="xs"/>
+                                            <ETText>{detail.key}</ETText>
+                                        </EnrichedText>
+                                    </HBox>
+                                </DecoratedPanel>
+                            ))}
+                        </VBox>
+                    </InsetPanel>
+                </>
+            )}
+        </VBox>
+    );
 }

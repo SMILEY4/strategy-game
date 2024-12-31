@@ -1,79 +1,90 @@
-import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {SettlementWindow} from "./SettlementWindow";
 import {useDI} from "../../../../../appContext";
 import {UseProductionWindow} from "../production/useProductionWindow";
-import {
-	SettlementAggregate,
-} from "../../../../../models/aggregates/SettlementAggregate";
+import {SettlementAggregate} from "../../../../../models/aggregates/SettlementAggregate";
 import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
 import {UseProductionQueueWindow} from "../productionQueue/useProductionQueueWindow";
 import {SettlementService} from "../../../../../logic/game/settlementService";
 import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
+import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import {WindowStore} from "../../../../components/window/windowStore";
+import {UseTileWindow} from "../tile/useTileWindow";
 
 export namespace UseSettlementWindow {
 
-	export function useOpen() {
-		const WINDOW_ID = "menubar-window";
-		const openWindow = useOpenWindow();
-		return (identifier: string | null) => {
-			openWindow({
-				id: WINDOW_ID,
-				className: "settlement-window",
-				left: 25,
-				top: 60,
-				bottom: 25,
-				width: 360,
-				content: <SettlementWindow windowId={WINDOW_ID} identifier={identifier}/>,
-			});
-		};
-	}
 
-	export function open(identifier: string | null) {
-		const WINDOW_ID = "menubar-window";
-		openWindow({
-			id: WINDOW_ID,
-			className: "settlement-window",
-			left: 25,
-			top: 60,
-			bottom: 25,
-			width: 360,
-			content: <SettlementWindow windowId={WINDOW_ID} identifier={identifier}/>,
-		});
-	}
 
-	export interface Data {
-		settlement: SettlementAggregate;
-		productionQueue: {
-			activeEntry: ProductionQueueEntry | null
-			add: () => void
-			open: () => void,
-			cancel: () => void,
-		};
-	}
+    export function useOpen() {
+        const WINDOW_ID = "menubar-window";
+        const open = useOpenWindow();
+        return (identifier: string | null) => {
+            open({
+                id: WINDOW_ID,
+                anchor: WindowStore.ANCHOR_LEFT_SIDE,
+                content: <SettlementWindow windowId={WINDOW_ID} identifier={identifier}/>,
+            });
+        };
+    }
 
-	export function useData(identifier: string | null): UseSettlementWindow.Data | null {
+    export function open(identifier: string | null) {
+        const WINDOW_ID = "menubar-window";
+        openWindow({
+            id: WINDOW_ID,
+            anchor: WindowStore.ANCHOR_LEFT_SIDE,
+            content: <SettlementWindow windowId={WINDOW_ID} identifier={identifier}/>,
+        });
+    }
 
-		const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
+    export interface Data {
+        settlement: SettlementAggregate;
+        productionQueue: {
+            activeEntry: ProductionQueueEntry | null
+            add: () => void
+            open: () => void,
+            cancel: () => void,
+        };
+        open: {
+            settlement: (settlementId: string) => void,
+            tile: () => void
+        };
+    }
 
-		const service = useDI<SettlementService>(SettlementService.name);
+    export function useData(identifier: string | null): UseSettlementWindow.Data | null {
 
-		const openProductionWindow = UseProductionWindow.useOpen();
-		const openProductionQueueWindow = UseProductionQueueWindow.useOpen();
+        const openSettlement = UseSettlementWindow.useOpen();
+        const openTile = UseTileWindow.useOpen();
 
-		if (settlement) {
-			return {
-				settlement: settlement,
-				productionQueue: {
-					activeEntry: settlement.production.queue.length === 0 ? null : settlement.production.queue[0],
-					add: () => openProductionWindow(identifier!),
-					open: () => openProductionQueueWindow(identifier!),
-					cancel: () => settlement.production.queue.length > 0 && service.cancelProductionQueue(settlement.identifier, settlement.production.queue[0]),
-				},
-			};
-		} else {
-			return null;
-		}
-	}
+        const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
+
+        const service = useDI<SettlementService>(SettlementService.name);
+
+        const openProductionWindow = UseProductionWindow.useOpen();
+        const openProductionQueueWindow = UseProductionQueueWindow.useOpen();
+
+        if (settlement) {
+            return {
+                settlement: settlement,
+                productionQueue: {
+                    activeEntry: settlement.production.queue.visible
+                        ? settlement.production.queue.value.length === 0 ? null : settlement.production.queue.value[0]
+                        : null,
+                    add: () => openProductionWindow(identifier!),
+                    open: () => openProductionQueueWindow(identifier!),
+                    cancel: () => {
+                        if (settlement.country.isUserCountry && settlement.production.queue.visible) {
+                            settlement.production.queue.value.length > 0 && service.cancelProductionQueue(settlement.identifier, settlement.production.queue.value[0]);
+                        }
+                    },
+                },
+                open: {
+                    settlement: (settlementId) => openSettlement(settlementId),
+                    tile: () => openTile(settlement.tile),
+                },
+            };
+        } else {
+            return null;
+        }
+    }
 
 }

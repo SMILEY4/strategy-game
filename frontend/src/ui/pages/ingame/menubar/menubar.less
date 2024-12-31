@@ -1,0 +1,25 @@
+@import "./../../../components/common.less";
+
+.menubar {
+  position:      absolute;
+  left:          0;
+  right:         0;
+  top:           0;
+  height:        @height-s;
+  border-bottom: 1px solid transparent;
+  background:    @gradient-border-primary;
+
+  .menubar__inner {
+    position:   absolute;
+    left:       0;
+    right:      0;
+    top:        0;
+    bottom:     0;
+    background: @gradient-background;
+  }
+
+  .menubar__content {
+    transform: translate(0, 50%);
+  }
+
+}

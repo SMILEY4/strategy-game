@@ -39,23 +39,12 @@ struct FogData {
 
 uniform FogData u_fog;
 
-struct DetailsData {
+
+struct MapDetailsData {
     sampler2D layer;
 };
 
-uniform DetailsData u_details;
-
-struct EntitiesData {
-    sampler2D layer;
-};
-
-uniform EntitiesData u_entities;
-
-struct RoutesData {
-    sampler2D layer;
-};
-
-uniform RoutesData u_routes;
+uniform MapDetailsData u_mapDetails;
 
 
 struct OverlayData {
@@ -86,7 +75,6 @@ out vec4 outColor;
 
 
 #include color
-
 #include map
 
 /*
@@ -182,31 +170,12 @@ vec4 getLayerFog() {
     return color;
 }
 
-
 // ==================================//
-//          LAYER: DETAILS           //
-// ==================================//
-
-vec4 getLayerDetail() {
-    return framebuffer(u_details.layer, v_textureCoordinates);
-}
-
-
-// ==================================//
-//          LAYER: ENTITIES          //
+//          LAYER: MAP DETAILS       //
 // ==================================//
 
-vec4 getLayerEntities() {
-    return framebuffer(u_entities.layer, v_textureCoordinates);
-}
-
-
-// ==================================//
-//          LAYER: ROUTES            //
-// ==================================//
-
-vec4 getLayerRoutes() {
-    return framebuffer(u_routes.layer, v_textureCoordinates);
+vec4 getLayerMapDetails() {
+    return framebuffer(u_mapDetails.layer, v_textureCoordinates);
 }
 
 
@@ -259,27 +228,23 @@ void main() {
     vec4 water = getLayerWater();
     vec4 land = getLayerLand();
     vec4 fog = getLayerFog();
-    vec4 entities = getLayerEntities();
-    vec4 details = getLayerDetail();
-    vec4 routes = getLayerRoutes();
+    vec4 mapDetails = getLayerMapDetails();
     vec4 overlay = getLayerOverlay();
 
     // grayscale
     if (u_common.isGrayscale > 0) {
         water = convertGrayscale(water);
         land = convertGrayscale(land);
-        details = convertGrayscale(details);
+        mapDetails = convertGrayscale(mapDetails);
     }
 
     // combine layers
     vec4 color = vec4(0.0);
-    color = mix(color, water, water.a);
-    color = mix(color, land, land.a);
-    color = mix(color, details, details.a);
-    color = mix(color, routes, routes.a);
-    color = mix(color, entities, entities.a);
-    color = mix(color, fog, fog.a);
-    color = mix(color, overlay, overlay.a);
+    color = clr_blend(water, color);
+    color = clr_blend(land, color);
+    color = clr_blend(mapDetails, color);
+    color = clr_blend(fog, color);
+    color = clr_blend(overlay, color);
 
     // apply paper effect
     color = applyEffectPaper(color);

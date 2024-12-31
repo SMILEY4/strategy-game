@@ -1,60 +1,117 @@
-import {joinClassNames} from "../../utils";
+import {joinClassNames} from "../../window/utils";
 import "./decoratedPanel.scoped.less";
-import {CSSProperties} from "react";
+import React, {ReactElement} from "react";
+import {BaseProps} from "../../base/base";
 
-export type DecoratedPanelColor = "blue" | "red" | "green" | "paper"
+export interface DecoratedPanelProps extends BaseProps {
 
-export interface DecoratedPanelProps {
-    red?: boolean,
-    green?: boolean,
-    blue?: boolean,
-    paper?: boolean,
-    color?: DecoratedPanelColor;
-    simpleBorder?: boolean,
-    pattern?: boolean,
-    floating?: boolean,
-    fillParent?: boolean,
-    noPadding?: boolean,
-    paddingSmall?: boolean,
-    className?: string,
-    style?: CSSProperties,
+    ornament?: boolean,
+    simple?: boolean
+    simpleDashed?: boolean
+
+    blue?: boolean
+
+    pattern?: boolean
+
     background?: any,
-    children?: any;
+
     elementRef?: any,
+
+    children?: any;
 }
 
+
+/**
+ * Displays a customizable panel with different styles.
+ * Used for windows, sections, elements, items, ...
+ */
 export function DecoratedPanel(props: DecoratedPanelProps) {
     return (
         <div
             className={joinClassNames([
                 "decorated-panel",
-                "panel--" + getColor(props),
-                props.floating ? "decorated-panel--floating" : null,
-                props.noPadding ? "decorated-panel--no-padding" : null,
-                props.paddingSmall ? "decorated-panel--small-padding" : null,
-                props.simpleBorder ? "decorated-panel--simplified" : null,
-                props.fillParent ? "decorated-panel--fill-parent" : null,
-                props.className,
+                "decorated-panel--" + getColor(props),
+                "decorated-panel--" + getBorder(props),
+                props.pattern ? "decorated-panel--pattern" : null,
+                ...BaseProps.buildBaseClassNames(props),
             ])}
             style={props.style}
             ref={props.elementRef}
         >
-            <div className="background"/>
-            {props.pattern && (<div className="background-pattern"/>)}
+
+            <div className="decorated-panel__texture"/>
+
+            {props.pattern && (<div className="decorated-panel__pattern"/>)}
+
             {props.background}
-            <div className="content">
+
+            <div className="decorated-panel__border"/>
+
+            <div className="decorated-panel__content">
                 {props.children}
             </div>
-            <div className="border"/>
+
         </div>
     );
 
-    function getColor(props: DecoratedPanelProps): DecoratedPanelColor {
-        return props.color
-            || (props.red ? "red" : undefined)
-            || (props.green ? "green" : undefined)
-            || (props.blue ? "blue" : undefined)
-            || (props.paper ? "paper" : undefined)
-            || "red";
+    function getColor(props: DecoratedPanelProps): "default" | "blue" {
+        if (props.blue) return "blue";
+        return "default";
     }
+
+    function getBorder(props: DecoratedPanelProps): "ornament" | "simple" | "simple-dashed" {
+        if (props.ornament) return "ornament";
+        if (props.simple) return "simple";
+        if (props.simpleDashed) return "simple-dashed";
+        return "simple";
+    }
+}
+
+export namespace DecoratedPanel {
+
+    export interface ImageBackgroundProps extends BaseProps {
+        url: string,
+        gradient?: boolean,
+        desaturated?: boolean,
+        reducedOpacity?: boolean,
+    }
+
+    export function ImageBackground(props: ImageBackgroundProps): ReactElement {
+        return (
+            <div
+                className={joinClassNames([
+                    "decorated-panel-image-background",
+                    props.gradient ? "decorated-panel-image-background--gradient" : null,
+                    props.desaturated ? "decorated-panel-image-background--desaturated" : null,
+                    props.reducedOpacity ? "decorated-panel-image-background--reducedOpacity" : null,
+                    ...BaseProps.buildBaseClassNames(props),
+                ])}
+                style={{
+                    backgroundImage: "url('" + props.url + "')",
+                    ...props.style,
+                }}
+            />
+        );
+    }
+
+    export interface ColorBackgroundProps extends BaseProps {
+        color: string,
+    }
+
+    export function ColorBackground(props: ColorBackgroundProps): ReactElement {
+        return (
+            <div
+                className={joinClassNames([
+                    "decorated-panel-color-background",
+                    ...BaseProps.buildBaseClassNames(props),
+                ])}
+                style={{
+                    background: "linear-gradient(to left, transparent 25%, " + props.color + " 75%)",
+                    ...props.style,
+                }}
+            />
+        );
+    }
+
+
 }

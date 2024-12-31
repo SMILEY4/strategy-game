@@ -3,21 +3,17 @@ import {VertexFullQuadNode} from "../../common/prebuilt/vertexFullquadNode";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {GLUniformType} from "../../../common/webgl/glTypes";
-import {Camera} from "../../../common/webgl/camera";
 import {mat3} from "../../../common/webgl/mat3";
-import {SessionRepository} from "../../../state/repository/sessionRepository";
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
 /**
- * Combines all individual (non-html) layers into the final image.
+ * Combines all individual (non-html) layers into the "final" image.
  */
-export class CombineLayersDrawNode extends DrawRenderNode {
+export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
 
 	public static readonly ID = "drawnode.combinelayers";
 
-	private readonly camera: () => Camera;
-	private readonly sessionRepository: SessionRepository;
-
-	constructor(sessionRepository: SessionRepository, camera: () => Camera) {
+	constructor() {
 		super({
 			id: CombineLayersDrawNode.ID,
 			input: [
@@ -36,19 +32,19 @@ export class CombineLayersDrawNode extends DrawRenderNode {
 					binding: "u_common.invViewProjection",
 					type: GLUniformType.MAT3,
 					valueConstant: null,
-					valueProvider: () => mat3.inverse(this.camera().getViewProjectionMatrixOrThrow()),
+					valueProvider: context => mat3.inverse(context.camera.getViewProjectionMatrixOrThrow()),
 				}),
 				new NodeInput.Property({
 					binding: "u_common.timestamp",
 					type: GLUniformType.FLOAT,
 					valueConstant: null,
-					valueProvider: () => (Date.now() / 1000) % 10000,
+					valueProvider: context => context.timestamp,
 				}),
 				new NodeInput.Property({
 					binding: "u_common.isGrayscale",
 					type: GLUniformType.INT,
 					valueConstant: null,
-					valueProvider: () => this.sessionRepository.getMapMode().renderData.grayscale ? 1 : 0,
+					valueProvider: context => context.mapMode.renderData.grayscale ? 1 : 0,
 				}),
 				new NodeInput.Texture({
 					binding: "u_common.noise",
@@ -124,20 +120,10 @@ export class CombineLayersDrawNode extends DrawRenderNode {
 					type: GLUniformType.VEC4,
 					valueConstant: [0.149, 0.122, 0.082, 0.6],
 				}),
-				//==== DETAILS =======================================
+				//==== MAP DETAILS ===================================
 				new NodeInput.RenderTarget({
-					renderTargetId: "rendertarget.details",
-					binding: "u_details.layer",
-				}),
-				//==== ENTITIES ======================================
-				new NodeInput.RenderTarget({
-					renderTargetId: "rendertarget.entities",
-					binding: "u_entities.layer",
-				}),
-				//==== ROUTES ========================================
-				new NodeInput.RenderTarget({
-					renderTargetId: "rendertarget.routes",
-					binding: "u_routes.layer",
+					renderTargetId: "rendertarget.mapdetails",
+					binding: "u_mapDetails.layer",
 				}),
 				//==== OVERLAY =======================================
 				new NodeInput.RenderTarget({
@@ -229,7 +215,5 @@ export class CombineLayersDrawNode extends DrawRenderNode {
 				new NodeOutput.Screen(),
 			],
 		});
-		this.camera = camera;
-		this.sessionRepository = sessionRepository;
 	}
 }

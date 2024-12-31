@@ -6,6 +6,17 @@ import {GLUniformType, GLUniformValueType} from "../../../common/webgl/glTypes";
 export namespace NodeInput {
 
     /**
+     * Vertex buffer
+     */
+    export class VertexBuffer {
+        readonly name: string;
+
+        constructor(props: { name: string }) {
+            this.name = props.name;
+        }
+    }
+
+    /**
      * Vertex data
      */
     export class VertexDescriptor {
@@ -39,6 +50,30 @@ export namespace NodeInput {
         constructor(props: { path: string, binding: string }) {
             this.path = props.path;
             this.binding = props.binding;
+        }
+    }
+
+    /**
+     * Texture Atlas
+     */
+    export class TextureAtlas {
+        readonly path: string;
+        readonly binding: string;
+
+        constructor(props: { path: string, binding: string }) {
+            this.path = props.path;
+            this.binding = props.binding;
+        }
+    }
+
+    /**
+     * Texture Atlas data (data only, no textures)
+     */
+    export class TextureAtlasData {
+        readonly path: string;
+
+        constructor(props: { path: string }) {
+            this.path = props.path;
         }
     }
 
@@ -81,15 +116,15 @@ export namespace NodeInput {
     /**
      * Property, usually accessible in the shader
      */
-    export class Property {
+    export class Property<TContext> {
         readonly valueConstant: GLUniformValueType | null;
-        readonly valueProvider: (() => GLUniformValueType) | null;
+        readonly valueProvider: ((context: TContext) => GLUniformValueType) | null;
         readonly type: GLUniformType;
         readonly binding: string;
 
         constructor(props: {
             valueConstant?: GLUniformValueType | null,
-            valueProvider?: (() => GLUniformValueType) | null,
+            valueProvider?: ((context: TContext) => GLUniformValueType) | null,
             type: GLUniformType,
             binding: string
         }) {

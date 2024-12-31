@@ -105,3 +105,14 @@ export function buildMap<K, V>(content: BuildMapContent<V>) {
     }
     return map;
 }
+
+export function emptyMap<K,V>() {
+    return new Map<string, V>();
+}
+
+/**
+ * "arrayOfSize(4)" returns "[0, 1, 2, 3]"
+ */
+export function arrayOfSize(n: number): number[] {
+    return Array.from(Array(n).keys());
+}

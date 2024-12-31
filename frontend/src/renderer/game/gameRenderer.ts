@@ -1,7 +1,7 @@
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {Camera} from "../../common/webgl/camera";
 import {GameRenderConfig} from "./gameRenderConfig";
-import {ChangeProvider} from "./changeProvider";
+import {GameChangeProvider} from "./gameChangeProvider";
 import {GameRenderGraph} from "./gameRenderGraph";
 import {CameraRepository} from "../../state/repository/cameraRepository";
 import {TileRepository} from "../../state/repository/tileRepository";
@@ -15,7 +15,7 @@ import {RouteRepository} from "../../state/repository/routeRepository";
  */
 export class GameRenderer {
 
-	private readonly changeProvider: ChangeProvider;
+	private readonly changeProvider: GameChangeProvider;
 	private readonly cameraRepository: CameraRepository;
 	private readonly tileRepository: TileRepository;
 	private readonly sessionRepository: SessionRepository;
@@ -27,7 +27,7 @@ export class GameRenderer {
 	private renderGraph: GameRenderGraph | null = null;
 
 	constructor(
-		changeProvider: ChangeProvider,
+		changeProvider: GameChangeProvider,
 		cameraRepository: CameraRepository,
 		tileRepository: TileRepository,
 		sessionRepository: SessionRepository,
@@ -48,18 +48,17 @@ export class GameRenderer {
 	 * Initialize the renderer for the given canvas
 	 */
 	public initialize(canvasHandle: CanvasHandle,): void {
-		this.changeProvider.reset()
 		GameRenderConfig.initialize();
 		this.renderGraph = new GameRenderGraph(
 			this.changeProvider,
-			canvasHandle.getGL(), () => this.renderConfig!,
+			canvasHandle.getGL(),
 			this.tileRepository,
 			this.sessionRepository,
 			this.worldObjectRepository,
 			this.settlementRepository,
 			this.routeRepository,
 		);
-		this.renderGraph.initialize();
+		this.renderGraph.initialize(GameRenderConfig.load());
 	}
 
 	/**
@@ -70,12 +69,10 @@ export class GameRenderer {
 			return;
 		}
 
-		const camera = this.getRenderCamera(canvasHandle);
-		this.changeProvider.prepareFrame(camera);
 		this.renderConfig = GameRenderConfig.load();
 
-		this.renderGraph?.updateCamera(camera);
-		this.renderGraph?.execute();
+		const camera = this.getRenderCamera(canvasHandle);
+		this.renderGraph?.execute(camera, this.renderConfig!);
 
 		this.checkWebGLErrors(canvasHandle.getGL())
 	}
@@ -103,7 +100,6 @@ export class GameRenderer {
 	public dispose() {
 		this.renderGraph?.dispose();
 		this.renderGraph = null;
-		this.changeProvider.reset();
 	}
 
 	private getRenderCamera(canvasHandle: CanvasHandle): Camera {

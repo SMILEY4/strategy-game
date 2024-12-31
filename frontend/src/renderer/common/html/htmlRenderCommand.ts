@@ -3,112 +3,117 @@ import {HtmlResourceManager} from "./htmlResourceManager";
 import {NodeOutput} from "../graph/nodeOutput";
 import {HtmlRenderNode} from "../graph/htmlRenderNode";
 import HtmlData = NodeOutput.HtmlData;
+import {ChangeProvider} from "../graph/changeProvider";
 
 export namespace HtmlRenderCommand {
 
-    export interface Context {
-    }
+	export interface Context {
+	}
 
-    export interface Base extends RenderCommand<HtmlResourceManager, Context> {
-    }
-
-
-    export class UpdateData implements Base {
-
-        private readonly node: HtmlRenderNode;
-
-        constructor(node: HtmlRenderNode) {
-            this.node = node;
-        }
-
-        public execute(resourceManager: HtmlResourceManager, context: Context): void {
-            const modified = this.node.execute();
-            if (modified.elements.size > 0) {
-                for (let [modifiedId, modifiedData] of modified.elements) {
-                    resourceManager.setElements(modifiedId, modifiedData);
-                }
-            }
-        }
-
-    }
+	export interface Base extends RenderCommand<HtmlResourceManager, Context> {
+	}
 
 
-    export class Draw implements Base {
+	export class UpdateData implements Base {
 
-        private readonly containerId: string;
-        private readonly nodes: HtmlRenderNode[];
+		private readonly node: HtmlRenderNode<any>;
+		private readonly changeProvider: ChangeProvider;
 
-        constructor(containerId: string, nodes: HtmlRenderNode[]) {
-            this.containerId = containerId;
-            this.nodes = nodes;
-        }
+		constructor(node: HtmlRenderNode<any>, changeProvider: ChangeProvider) {
+			this.node = node;
+			this.changeProvider = changeProvider;
+		}
 
-        public execute(resourceManager: HtmlResourceManager, context: Context): void {
+		public execute(resourceManager: HtmlResourceManager, context: Context): void {
+			if (this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
+				const modified = this.node.execute(context);
+				if (modified.elements.size > 0) {
+					for (let [modifiedId, modifiedData] of modified.elements) {
+						resourceManager.setElements(modifiedId, modifiedData);
+					}
+				}
+			}
+		}
 
-            // prepare html-element pool
-            let totalCount = 0;
-            for (let node of this.nodes) {
-                for (let out of node.config.output) {
-                    if(out instanceof HtmlData) {
-                        totalCount += resourceManager.getElements(out.name).length
-                    }
-                }
-            }
-            const container = resourceManager.getContainer(this.containerId);
-            const availableHtmlElements = this.prepareElements(totalCount, container);
+	}
 
-            // reset elements
-            for (let i = 0, n=availableHtmlElements.length; i < n; i++) {
-                const element = availableHtmlElements[i]
-                element.replaceChildren()
-                element.getAttributeNames().forEach(it => element.removeAttribute(it))
-            }
 
-            // update elements
-            let index = 0;
-            for (let node of this.nodes) {
-                for (let out of node.config.output) {
-                    if(out instanceof HtmlData) {
-                        const elements = resourceManager.getElements(out.name)
-                        for (let i = 0; i < elements.length; i++) {
-                            const htmlElement = availableHtmlElements[index++];
-                            out.renderFunction(elements[i], htmlElement);
-                        }
-                    }
-                }
-            }
-        }
+	export class Draw implements Base {
 
-        private prepareElements(required: number, container: HTMLElement): HTMLElement[] {
-            const sizeDiff = required - container.childElementCount;
+		private readonly containerId: string;
+		private readonly nodes: HtmlRenderNode<any>[];
 
-            if (Math.abs(sizeDiff) < 100) {
+		constructor(containerId: string, nodes: HtmlRenderNode<any>[]) {
+			this.containerId = containerId;
+			this.nodes = nodes;
+		}
 
-                if (sizeDiff < 0) {
-                    for (let i = -sizeDiff; i >= 0; i--) {
-                        container.children.item(required + i)?.remove();
-                    }
-                }
-                if (sizeDiff > 0) {
-                    for (let i = 0; i < sizeDiff; i++) {
-                        container.appendChild(document.createElement("div"));
-                    }
-                }
-                const pool = [...container.children];
-                return pool as HTMLElement[];
+		public execute(resourceManager: HtmlResourceManager, context: Context): void {
 
-            } else {
+			// prepare html-element pool
+			let totalCount = 0;
+			for (let node of this.nodes) {
+				for (let out of node.config.output) {
+					if (out instanceof HtmlData) {
+						totalCount += resourceManager.getElements(out.name).length;
+					}
+				}
+			}
+			const container = resourceManager.getContainer(this.containerId);
+			const availableHtmlElements = this.prepareElements(totalCount, container);
 
-                const elements: HTMLElement[] = [];
-                for (let i = 0; i < required; i++) {
-                    elements.push(document.createElement("div"));
-                }
-                container.replaceChildren(...elements);
-                return elements;
-            }
+			// reset elements
+			for (let i = 0, n = availableHtmlElements.length; i < n; i++) {
+				const element = availableHtmlElements[i];
+				element.replaceChildren();
+				element.getAttributeNames().forEach(it => element.removeAttribute(it));
+			}
 
-        }
+			// update elements
+			let index = 0;
+			for (let node of this.nodes) {
+				for (let out of node.config.output) {
+					if (out instanceof HtmlData) {
+						const elements = resourceManager.getElements(out.name);
+						for (let i = 0; i < elements.length; i++) {
+							const htmlElement = availableHtmlElements[index++];
+							out.renderFunction(context, elements[i], htmlElement);
+						}
+					}
+				}
+			}
+		}
 
-    }
+		private prepareElements(required: number, container: HTMLElement): HTMLElement[] {
+			const sizeDiff = required - container.childElementCount;
+
+			if (Math.abs(sizeDiff) < 100) {
+
+				if (sizeDiff < 0) {
+					for (let i = -sizeDiff; i >= 0; i--) {
+						container.children.item(required + i)?.remove();
+					}
+				}
+				if (sizeDiff > 0) {
+					for (let i = 0; i < sizeDiff; i++) {
+						container.appendChild(document.createElement("div"));
+					}
+				}
+				const pool = [...container.children];
+				return pool as HTMLElement[];
+
+			} else {
+
+				const elements: HTMLElement[] = [];
+				for (let i = 0; i < required; i++) {
+					elements.push(document.createElement("div"));
+				}
+				container.replaceChildren(...elements);
+				return elements;
+			}
+
+		}
+
+	}
 
 }
