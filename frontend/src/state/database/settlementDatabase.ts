@@ -5,6 +5,7 @@ import {DatabaseStorage, DatabaseStorageConfig} from "../../common/db/storage/da
 import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySupportingStorage";
 import {Settlement} from "../../models/base/Settlement";
 import {MapUniqueSupportingStorage} from "../../common/db/storage/supporting/mapUniqueSupportingStorage";
+import {MapSupportingStorage} from "../../common/db/storage/supporting/mapSupportingStorage";
 
 function provideId(e: Settlement): string {
 	return e.identifier.id;
@@ -14,7 +15,8 @@ interface SettlementStorageConfig extends DatabaseStorageConfig<Settlement, stri
 	primary: MapPrimaryStorage<Settlement, string>,
 	supporting: {
 		array: ArraySupportingStorage<Settlement>,
-		byPos: MapUniqueSupportingStorage<Settlement, string>
+		byPos: MapUniqueSupportingStorage<Settlement, string>,
+		byCountry: MapSupportingStorage<Settlement, string>
 	}
 }
 
@@ -30,6 +32,7 @@ class SettlementStorage extends DatabaseStorage<SettlementStorageConfig, Settlem
 			supporting: {
 				array: new ArraySupportingStorage<Settlement>(),
 				byPos: new MapUniqueSupportingStorage<Settlement, string>(e => SettlementStorage.toKey(e.tile.q, e.tile.r)),
+				byCountry: new MapSupportingStorage<Settlement, string>(e => e.country.id),
 			},
 		});
 	}
@@ -47,6 +50,12 @@ interface SettlementQuery<ARGS> extends Query<SettlementStorage, Settlement, str
 
 export namespace SettlementDatabase {
 
+	export const QUERY_ALL: SettlementQuery<void> = {
+		run(storage: SettlementStorage, args: void): Settlement[] {
+			return storage.config.supporting.array.getAll();
+		},
+	};
+
 	export const QUERY_BY_ID: SettlementQuery<string | null> = {
 		run(storage: SettlementStorage, args: string): Settlement | null {
 			if (args === null) {
@@ -62,9 +71,9 @@ export namespace SettlementDatabase {
 		},
 	};
 
-	export const QUERY_ALL: SettlementQuery<void> = {
-		run(storage: SettlementStorage, args: void): Settlement[] {
-			return storage.config.supporting.array.getAll();
+	export const QUERY_BY_COUNTRY_ID: SettlementQuery<string> = {
+		run(storage: SettlementStorage, args: string): Settlement[]{
+			return storage.config.supporting.byCountry.getByKey(args);
 		},
 	};
 

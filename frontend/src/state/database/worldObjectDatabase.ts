@@ -5,6 +5,8 @@ import {DatabaseStorage, DatabaseStorageConfig} from "../../common/db/storage/da
 import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySupportingStorage";
 import {MapUniqueSupportingStorage} from "../../common/db/storage/supporting/mapUniqueSupportingStorage";
 import {WorldObject} from "../../models/base/worldObject";
+import {MapSupportingStorage} from "../../common/db/storage/supporting/mapSupportingStorage";
+import {Settlement} from "../../models/base/Settlement";
 
 function provideId(e: WorldObject): string {
     return e.identifier.id;
@@ -14,7 +16,8 @@ interface WorldObjectStorageConfig extends DatabaseStorageConfig<WorldObject, st
     primary: MapPrimaryStorage<WorldObject, string>,
     supporting: {
         array: ArraySupportingStorage<WorldObject>,
-        byPos: MapUniqueSupportingStorage<WorldObject, string>
+        byPos: MapUniqueSupportingStorage<WorldObject, string>,
+        byCountry: MapSupportingStorage<WorldObject, string>
     }
 }
 
@@ -30,6 +33,7 @@ class WorldObjectStorage extends DatabaseStorage<WorldObjectStorageConfig, World
             supporting: {
                 array: new ArraySupportingStorage<WorldObject>(),
                 byPos: new MapUniqueSupportingStorage<WorldObject, string>(e => WorldObjectStorage.toKey(e.tile.q, e.tile.r)),
+                byCountry: new MapSupportingStorage<WorldObject, string>(e => e.country.id)
             },
         });
     }
@@ -47,6 +51,12 @@ interface WorldObjectQuery<ARGS> extends Query<WorldObjectStorage, WorldObject, 
 
 export namespace WorldObjectDatabase {
 
+    export const QUERY_ALL: WorldObjectQuery<void> = {
+        run(storage: WorldObjectStorage, args: void): WorldObject[] {
+            return storage.config.supporting.array.getAll();
+        },
+    };
+
     export const QUERY_BY_ID: WorldObjectQuery<string | null> = {
         run(storage: WorldObjectStorage, args: string): WorldObject | null {
             if (args === null) {
@@ -57,14 +67,14 @@ export namespace WorldObjectDatabase {
     };
 
     export const QUERY_BY_POSITION: WorldObjectQuery<[number, number]> = {
-        run(storage: WorldObjectStorage, args: [number, number]): WorldObject | null{
+        run(storage: WorldObjectStorage, args: [number, number]): WorldObject | null {
             return storage.config.supporting.byPos.getByKey(WorldObjectStorage.toKey(args[0], args[1]));
         },
     };
 
-    export const QUERY_ALL: WorldObjectQuery<void> = {
-        run(storage: WorldObjectStorage, args: void): WorldObject[] {
-            return storage.config.supporting.array.getAll();
+    export const QUERY_BY_COUNTRY_ID: WorldObjectQuery<string> = {
+        run(storage: WorldObjectStorage, args: string): WorldObject[] {
+            return storage.config.supporting.byCountry.getByKey(args)
         },
     };
 

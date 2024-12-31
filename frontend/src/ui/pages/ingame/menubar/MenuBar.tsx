@@ -3,24 +3,24 @@ import {Button} from "../../../components/button/primary/Button";
 import {HBox} from "../../../components/layout/hbox/HBox";
 import {HSpacer} from "../../../components/spacer/Spacer";
 import {CgDebug} from "react-icons/cg";
-import {FiHexagon, FiMap} from "react-icons/fi";
+import {FiMap} from "react-icons/fi";
 import "./menubar.less";
 import {UseDevWindow} from "../windows/dev/useDevWindow";
 import {UseMapWindow} from "../windows/map/useMapWindow";
-import {UseTileWindow} from "../windows/tile/useTileWindow";
-import {PiScrollBold} from "react-icons/pi";
+import {PiListBold, PiScrollBold} from "react-icons/pi";
 import {UseCommandLogWindow} from "../windows/commandlog/useCommandLogWindow";
 import {useDI} from "../../../../appContext";
 import {TurnEndService} from "../../../../logic/game/turnEndService";
 import {SessionRepository} from "../../../../state/repository/sessionRepository";
 import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
+import {UseOutlinerWindow} from "../windows/outliner/useOutlinerWindow";
 
 export function MenuBar(): ReactElement {
 
     const openDevMenu = UseDevWindow.useOpen();
     const openMapMenu = UseMapWindow.useOpen();
     const openCommandLogMenu = UseCommandLogWindow.useOpen();
-    const openTileMenu = UseTileWindow.useOpen();
+    const openOutlinerMenu = UseOutlinerWindow.useOpen();
     const currentTurn = SessionRepository.useTurn();
     const isBlocked = useIsBlockingWindowOpen();
     const [endTurnDisabled, endTurn] = useEndTurn(isBlocked);
@@ -33,7 +33,8 @@ export function MenuBar(): ReactElement {
                     <Button circle onClick={openDevMenu} disabled={isBlocked}><CgDebug/></Button>
                     <Button circle onClick={openMapMenu} disabled={isBlocked}><FiMap/></Button>
                     <Button circle onClick={openCommandLogMenu} disabled={isBlocked}><PiScrollBold/></Button>
-                    <Button circle onClick={() => openTileMenu(null)} disabled={isBlocked}><FiHexagon/></Button>
+                    <Button circle onClick={openOutlinerMenu} disabled={isBlocked}><PiListBold  /></Button>
+
 
                     <HSpacer fullWidth/>
 

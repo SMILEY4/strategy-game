@@ -8,6 +8,7 @@ import {CommandDatabase} from "../database/commandDatabase";
 import {CommandType, MoveCommand} from "../../models/base/command";
 import {useDI} from "../../appContext";
 import {useQueryMultiple, useQuerySingle} from "../../common/db/adapters/databaseHooks";
+import {CountryIdentifier} from "../../models/base/country";
 
 export class WorldObjectRepository {
 
@@ -87,6 +88,11 @@ export namespace WorldObjectRepository {
 	export function useByPosition(pos: [number, number]): WorldObject[] {
 		const db = useDI<WorldObjectDatabase>(WorldObjectDatabase.name);
 		return useQueryMultiple(db, WorldObjectDatabase.QUERY_BY_POSITION, pos);
+	}
+
+	export function useByCountry(country: CountryIdentifier): WorldObject[] {
+		const db = useDI<WorldObjectDatabase>(WorldObjectDatabase.name);
+		return useQueryMultiple(db, WorldObjectDatabase.QUERY_BY_COUNTRY_ID, country.id);
 	}
 
 	export function useCurrentMovementPath(): MovementTarget[] {
