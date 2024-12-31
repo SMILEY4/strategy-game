@@ -31,7 +31,7 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
 
                 <Divider line/>
 
-                <TabBar initial={"All"}>
+                <TabBar noPadding initial={"All"}>
 
                     <TabOption name="All">
                         <InsetPanel shrink>

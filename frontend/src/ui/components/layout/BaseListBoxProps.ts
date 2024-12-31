@@ -1,6 +1,6 @@
 import {BaseBoxProps} from "./BaseBoxProps";
 
-export interface BaseListBoxProps extends BaseBoxProps{
+export interface BaseListBoxProps extends BaseBoxProps {
 
     scrollable?: boolean,
 

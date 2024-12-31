@@ -8,40 +8,20 @@ import {joinClassNames} from "../window/utils";
 
 export interface TabBarProps extends BaseProps {
     initial: string,
+    noPadding?: boolean,
     children?: any,
 }
 
 export function TabBar(props: TabBarProps): ReactElement {
 
     const [selected, setSelected] = useState(props.initial);
-
     const options = collectOptions(props.children);
     const selectedOption = options.find(it => it.name === selected);
-
-    function collectOptions(children: any[]): ({ element: ReactElement, name: string, circle: boolean })[] {
-        const options: ({ element: ReactElement, name: string, circle: boolean })[] = [];
-        for (let child of children) {
-            if(Array.isArray(child)) {
-                options.push(...collectOptions(child))
-            } else {
-                if (child.type.name === "TabOption") {
-                    options.push({
-                        element: child,
-                        name: child.props.name,
-                        circle: child.props.circle === true,
-                    });
-                }
-            }
-        }
-        return options;
-    }
-
-
 
     return (
         <VBox
             gap_s
-            padding_m
+            padding_m={props.noPadding === true ? undefined : true}
             className={joinClassNames(["tabs", ...BaseProps.buildBaseClassNames(props),])}
             style={props.style}
         >
@@ -66,6 +46,25 @@ export function TabBar(props: TabBarProps): ReactElement {
 
         </VBox>
     );
+
+    function collectOptions(children: any[]): ({ element: ReactElement, name: string, circle: boolean })[] {
+        const options: ({ element: ReactElement, name: string, circle: boolean })[] = [];
+        for (let child of children) {
+            if(Array.isArray(child)) {
+                options.push(...collectOptions(child))
+            } else {
+                if (child.type.name === "TabOption") {
+                    options.push({
+                        element: child,
+                        name: child.props.name,
+                        circle: child.props.circle === true,
+                    });
+                }
+            }
+        }
+        return options;
+    }
+
 }
 
 export interface TabOptionProps {
