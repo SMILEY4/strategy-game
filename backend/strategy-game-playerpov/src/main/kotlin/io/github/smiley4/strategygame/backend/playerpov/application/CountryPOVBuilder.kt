@@ -11,7 +11,7 @@ internal class  CountryPOVBuilder {
     fun build(country: Country, userId: User.Id): JsonType {
         return obj {
             "id" to country.id.value
-            "name" to country.id.value // todo -> name
+            "name" to country.name
             "color" to obj {
                 "red" to country.color.red
                 "green" to country.color.green
@@ -19,7 +19,7 @@ internal class  CountryPOVBuilder {
             }
             "player" to obj {
                 "userId" to country.user.value
-                "name" to country.user.value // todo -> name
+                "name" to country.user.value // todo -> username
             }
             "ownedByUser" to (country.user == userId)
         }

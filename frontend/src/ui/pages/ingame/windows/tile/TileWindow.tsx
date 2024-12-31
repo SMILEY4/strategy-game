@@ -104,7 +104,7 @@ function PanelDebug(props: UseTileWindow.Data): ReactElement {
         <>
             <InsetKeyValueGrid dontGrow dontShrink>
 
-                <EnrichedText>Id:</EnrichedText>
+                <EnrichedText>Tile Id:</EnrichedText>
                 <EnrichedText>{props.tile.identifier.id}</EnrichedText>
 
                 <EnrichedText>Location:</EnrichedText>

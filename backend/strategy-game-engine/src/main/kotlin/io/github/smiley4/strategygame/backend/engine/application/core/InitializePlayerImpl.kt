@@ -15,9 +15,10 @@ import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer
+import io.github.smiley4.strategygame.backend.worldgen.lib.NameGenerator
 
 
-internal class InitializePlayerImpl : InitializePlayer {
+internal class InitializePlayerImpl(private val nameGenerator: NameGenerator) : InitializePlayer {
 
     private val metricId = MetricId.action(InitializePlayer::class)
 
@@ -32,9 +33,9 @@ internal class InitializePlayerImpl : InitializePlayer {
 
     private fun findSpawnLocation(game: GameExtended): TileRef {
 
-        for(i in 1..20) {
+        for (i in 1..20) {
             val spawnTile = game.tiles.random()
-            if(!isValidSpawnTile(spawnTile)) {
+            if (!isValidSpawnTile(spawnTile)) {
                 continue
             }
 
@@ -43,7 +44,7 @@ internal class InitializePlayerImpl : InitializePlayer {
                 .filter { isValidSpawnTile(it) }
                 .size + 1
 
-            if(validTileCount >= 5) {
+            if (validTileCount >= 5) {
                 return spawnTile.ref()
             }
         }
@@ -56,6 +57,7 @@ internal class InitializePlayerImpl : InitializePlayer {
             id = Country.Id.gen(),
             user = userId,
             color = COUNTRY_COLORS[game.countries.size % COUNTRY_COLORS.size],
+            name = nameGenerator.generateCountryName(),
         ).also { game.countries.add(it) }.id
     }
 

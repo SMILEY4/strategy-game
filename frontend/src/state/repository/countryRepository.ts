@@ -6,6 +6,11 @@ import {CountryDatabase} from "../database/countryDatabase";
 
 export namespace CountryRepository {
 
+    export function useAll(): Country[] {
+        const db = useDI<CountryDatabase>(CountryDatabase.name);
+        return useQueryMultiple(db, CountryDatabase.QUERY_ALL, null)
+    }
+
     export function usePlayerCountry(): Country {
         const db = useDI<CountryDatabase>(CountryDatabase.name);
         const country = useQueryMultiple(db, CountryDatabase.QUERY_ALL, null).find(it => it.identifier.isUserCountry);

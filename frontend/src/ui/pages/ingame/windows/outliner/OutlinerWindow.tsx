@@ -36,8 +36,17 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
                     <TabOption name="All">
                         <InsetPanel shrink>
                             <VBox scrollable padding_s gap_s fullSize>
+                                <SectionCountries {...data}/>
                                 <SectionSettlements {...data}/>
                                 <SectionWorldObjects {...data}/>
+                            </VBox>
+                        </InsetPanel>
+                    </TabOption>
+
+                    <TabOption name="Countries">
+                        <InsetPanel shrink>
+                            <VBox scrollable padding_s gap_s fullSize>
+                                <SectionCountries {...data}/>
                             </VBox>
                         </InsetPanel>
                     </TabOption>
@@ -66,6 +75,34 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
     );
 }
 
+function SectionCountries(props: UseOutlinerWindow.Data): ReactElement {
+    return (
+        <>
+            {props.countries.entries.length > 0 && (
+                <Text>Countries</Text>
+            )}
+            {props.countries.entries.map(country => (
+                <DecoratedPanel
+                    key={country.identifier.id}
+                    pattern
+                    blue
+                >
+                    <HBox fullSize gap_s padding_s>
+                        <EnrichedText>
+                            <ETLink disabled onClick={() => props.countries.open(country)}>
+                                {country.identifier.name}
+                            </ETLink>
+                        </EnrichedText>
+                        <HSpacer grow/>
+                        <Button circle small disabled onClick={() => props.countries.focusCamera(country)}>
+                            <RxEyeOpen/>
+                        </Button>
+                    </HBox>
+                </DecoratedPanel>
+            ))}
+        </>
+    );
+}
 
 function SectionSettlements(props: UseOutlinerWindow.Data): ReactElement {
     return (

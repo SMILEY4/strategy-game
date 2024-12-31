@@ -11,6 +11,7 @@ import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {useDI} from "../../../../../appContext";
 import {CameraService} from "../../../../../logic/game/cameraService";
+import {Country} from "../../../../../models/base/country";
 
 export namespace UseOutlinerWindow {
 
@@ -37,7 +38,11 @@ export namespace UseOutlinerWindow {
             open: (entry: WorldObject) => void,
             focusCamera: (entry: WorldObject) => void,
         },
-
+        countries: {
+            entries: Country[],
+            open: (entry: Country) => void,
+            focusCamera: (entry: Country) => void,
+        }
     }
 
     export function useData(): UseOutlinerWindow.Data {
@@ -50,6 +55,7 @@ export namespace UseOutlinerWindow {
         const country = CountryRepository.usePlayerCountry();
         const settlements = SettlementRepository.useByCountry(country.identifier);
         const worldObjects = WorldObjectRepository.useByCountry(country.identifier);
+        const countries = CountryRepository.useAll();
 
         return {
             settlements: {
@@ -64,6 +70,12 @@ export namespace UseOutlinerWindow {
                 open: (entry: WorldObject) => openWorldObject(entry.identifier.id),
                 focusCamera: (entry: WorldObject) => cameraService.centerCameraOnTile(entry.tile),
             },
+            countries: {
+                entries: countries
+                    .sort((a, _) => a.identifier.isUserCountry ? +1 : -1),
+                open: () => undefined, // todo
+                focusCamera: () => undefined, // todo
+            }
         };
     }
 
