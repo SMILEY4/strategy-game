@@ -11,7 +11,9 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETLink} from "../../../../components/textenriched/elements/ETLink";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
-import {arrayOfSize} from "../../../../../common/utils";
+import {HSpacer} from "../../../../components/spacer/Spacer";
+import {Button} from "../../../../components/button/primary/Button";
+import {RxEyeOpen} from "react-icons/rx";
 
 export interface OutlinerWindowProps {
     windowId: string,
@@ -68,49 +70,57 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
 function SectionSettlements(props: UseOutlinerWindow.Data): ReactElement {
     return (
         <>
-            {props.settlements.length > 0 && (
+            {props.settlements.entries.length > 0 && (
                 <Text>Settlements</Text>
             )}
-            {props.settlements.map(settlement => (
+            {props.settlements.entries.map(settlement => (
                 <DecoratedPanel
-                    key={settlement.id}
+                    key={settlement.identifier.id}
                     pattern
                     blue
                 >
                     <HBox fullSize gap_s padding_s>
                         <EnrichedText>
-                            <ETLink onClick={() => props.openSettlement(settlement)}>
-                                {settlement.name}
+                            <ETLink onClick={() => props.settlements.open(settlement)}>
+                                {settlement.identifier.name}
                             </ETLink>
                         </EnrichedText>
+                        <HSpacer grow/>
+                        <Button circle small onClick={() => props.settlements.focusCamera(settlement)}>
+                            <RxEyeOpen/>
+                        </Button>
                     </HBox>
                 </DecoratedPanel>
             ))}
         </>
-    )
+    );
 }
 
 function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
     return (
         <>
-            {props.worldObjects.length > 0 && (
+            {props.worldObjects.entries.length > 0 && (
                 <Text>Units</Text>
             )}
-            {props.worldObjects.map(worldObject => (
+            {props.worldObjects.entries.map(worldObject => (
                 <DecoratedPanel
-                    key={worldObject.id}
+                    key={worldObject.identifier.id}
                     pattern
                     blue
                 >
                     <HBox fullSize gap_s padding_s>
                         <EnrichedText>
-                            <ETLink onClick={() => props.openWorldObject(worldObject)}>
-                                {worldObject.type.id}
+                            <ETLink onClick={() => props.worldObjects.open(worldObject)}>
+                                {worldObject.identifier.type.id}
                             </ETLink>
                         </EnrichedText>
+                        <HSpacer grow/>
+                        <Button circle small onClick={() => props.worldObjects.focusCamera(worldObject)}>
+                            <RxEyeOpen/>
+                        </Button>
                     </HBox>
                 </DecoratedPanel>
             ))}
         </>
-    )
+    );
 }

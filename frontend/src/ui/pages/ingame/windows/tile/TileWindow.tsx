@@ -21,6 +21,8 @@ import {Banner} from "../../../../components/banner/Banner";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Visibility} from "../../../../../models/base/visibility";
 import {VSpacer} from "../../../../components/spacer/Spacer";
+import {Button} from "../../../../components/button/primary/Button";
+import {RxEyeOpen} from "react-icons/rx";
 
 export interface TileWindowProps {
     windowId: string;
@@ -49,7 +51,9 @@ export function TileWindow(props: TileWindowProps): ReactElement {
                         title={mapHiddenOrDefault(data.tile.base, "Undiscovered", base => base.terrainType.id)}
                         subtitle={"Tile"}
                         spaceAbove
-                    />
+                    >
+                        <Button circle small onClick={data.centerCamera}><RxEyeOpen/></Button>
+                    </Banner>
 
                     <TabBar initial="Overview">
 

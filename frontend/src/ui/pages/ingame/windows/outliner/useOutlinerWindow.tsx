@@ -1,14 +1,16 @@
 import {SettlementRepository} from "../../../../../state/repository/settlementRepository";
 import {WorldObjectRepository} from "../../../../../state/repository/worldObjectRepository";
 import {CountryRepository} from "../../../../../state/repository/countryRepository";
-import {SettlementIdentifier} from "../../../../../models/base/Settlement";
-import {WorldObjectIdentifier} from "../../../../../models/base/worldObject";
+import {Settlement, SettlementIdentifier} from "../../../../../models/base/Settlement";
+import {WorldObject, WorldObjectIdentifier} from "../../../../../models/base/worldObject";
 import {useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import React from "react";
 import {OutlinerWindow} from "./OutlinerWindow";
 import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
+import {useDI} from "../../../../../appContext";
+import {CameraService} from "../../../../../logic/game/cameraService";
 
 export namespace UseOutlinerWindow {
 
@@ -25,14 +27,22 @@ export namespace UseOutlinerWindow {
     }
 
     export interface Data {
-        settlements: SettlementIdentifier[],
-        worldObjects: WorldObjectIdentifier[],
-        openSettlement: (id: SettlementIdentifier) => void,
-        openWorldObject: (id: WorldObjectIdentifier) => void,
+        settlements: {
+            entries: Settlement[],
+            open: (entry: Settlement) => void,
+            focusCamera: (entry: Settlement) => void,
+        },
+        worldObjects: {
+            entries: WorldObject[],
+            open: (entry: WorldObject) => void,
+            focusCamera: (entry: WorldObject) => void,
+        },
 
     }
 
     export function useData(): UseOutlinerWindow.Data {
+
+        const cameraService = useDI<CameraService>(CameraService.name);
 
         const openSettlement = UseSettlementWindow.useOpen();
         const openWorldObject = UseWorldObjectWindow.useOpen();
@@ -42,14 +52,18 @@ export namespace UseOutlinerWindow {
         const worldObjects = WorldObjectRepository.useByCountry(country.identifier);
 
         return {
-            settlements: settlements
-                .sort((a, b) => b.population.size - a.population.size)
-                .map(it => it.identifier),
-            worldObjects: worldObjects
-                .sort((a, b) => a.identifier.type.id.localeCompare(b.identifier.type.id))
-                .map(it => it.identifier),
-            openSettlement: (id: SettlementIdentifier) => openSettlement(id.id),
-            openWorldObject: (id: WorldObjectIdentifier) => openWorldObject(id.id)
+            settlements: {
+                entries: settlements
+                    .sort((a, b) => b.population.size - a.population.size),
+                open: (entry: Settlement) => openSettlement(entry.identifier.id),
+                focusCamera: (entry: Settlement) => cameraService.centerCameraOnTile(entry.tile),
+            },
+            worldObjects: {
+                entries: worldObjects
+                    .sort((a, b) => a.identifier.type.id.localeCompare(b.identifier.type.id)),
+                open: (entry: WorldObject) => openWorldObject(entry.identifier.id),
+                focusCamera: (entry: WorldObject) => cameraService.centerCameraOnTile(entry.tile),
+            },
         };
     }
 

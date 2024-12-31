@@ -27,6 +27,7 @@ import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {ProgressCircle} from "./ProgressCircle";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
+import {RxEyeOpen} from "react-icons/rx";
 
 export interface SettlementWindowProps {
     windowId: string;
@@ -57,6 +58,7 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
                         spaceAbove
                     >
                         <Button circle small onClick={data.open.tile}><FiHexagon/></Button>
+                        <Button circle small onClick={data.centerCamera}><RxEyeOpen/></Button>
                     </Banner>
 
                     <TabBar initial="Overview">

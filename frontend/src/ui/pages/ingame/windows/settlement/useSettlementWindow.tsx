@@ -10,6 +10,7 @@ import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UseTileWindow} from "../tile/useTileWindow";
+import {CameraService} from "../../../../../logic/game/cameraService";
 
 export namespace UseSettlementWindow {
 
@@ -48,6 +49,7 @@ export namespace UseSettlementWindow {
             settlement: (settlementId: string) => void,
             tile: () => void
         };
+        centerCamera: () => void,
     }
 
     export function useData(identifier: string | null): UseSettlementWindow.Data | null {
@@ -57,7 +59,8 @@ export namespace UseSettlementWindow {
 
         const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
 
-        const service = useDI<SettlementService>(SettlementService.name);
+        const settlementService = useDI<SettlementService>(SettlementService.name);
+        const cameraService = useDI<CameraService>(CameraService.name);
 
         const openProductionWindow = UseProductionWindow.useOpen();
         const openProductionQueueWindow = UseProductionQueueWindow.useOpen();
@@ -73,7 +76,7 @@ export namespace UseSettlementWindow {
                     open: () => openProductionQueueWindow(identifier!),
                     cancel: () => {
                         if (settlement.country.isUserCountry && settlement.production.queue.visible) {
-                            settlement.production.queue.value.length > 0 && service.cancelProductionQueue(settlement.identifier, settlement.production.queue.value[0]);
+                            settlement.production.queue.value.length > 0 && settlementService.cancelProductionQueue(settlement.identifier, settlement.production.queue.value[0]);
                         }
                     },
                 },
@@ -81,6 +84,7 @@ export namespace UseSettlementWindow {
                     settlement: (settlementId) => openSettlement(settlementId),
                     tile: () => openTile(settlement.tile),
                 },
+                centerCamera: () => cameraService.centerCameraOnTile(settlement.tile)
             };
         } else {
             return null;
