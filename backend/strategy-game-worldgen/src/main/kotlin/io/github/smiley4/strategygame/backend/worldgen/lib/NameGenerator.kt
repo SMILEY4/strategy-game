@@ -10,4 +10,10 @@ interface NameGenerator {
      */
     fun generateSettlementName(): String
 
+
+    /**
+     * Generate a pseudo-random name for a country.
+     */
+    fun generateCountryName(): String
+
 }

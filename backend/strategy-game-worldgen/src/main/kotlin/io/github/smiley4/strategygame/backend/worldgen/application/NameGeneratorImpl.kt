@@ -111,10 +111,69 @@ internal class NameGeneratorImpl : NameGenerator {
             "Windgulch",
         )
 
+        // names copied from
+        // https://www.fantasynamegenerators.com/country-names.php
+        private val COUNTRY_NAMES = setOf(
+            "Lewhoastein",
+            "Geglaijan",
+            "Vebrad",
+            "Satrium",
+            "Pluburg",
+            "Druece",
+            "Oswar",
+            "Ogrua",
+            "Croag Shar",
+            "Truit Flana",
+            "Wufriuburg",
+            "Raskiavania",
+            "Askon",
+            "Buspye",
+            "Spiacor",
+            "Fruynia",
+            "Uwhesh",
+            "Ugrines",
+            "Stuo Blos",
+            "Skeyk Clait",
+            "Raclaygua",
+            "Qestuybar",
+            "Jufla",
+            "Ruscor",
+            "Dreatan",
+            "Pliyca",
+            "Uplil",
+            "Rprait",
+            "Glayg Chein",
+            "Swauq Thon",
+            "Reswuaso",
+            "Jescoirus",
+            "Wutral",
+            "Joshye",
+            "Snuynia",
+            "Bludal",
+            "Eskaria",
+            "Ublea",
+            "Fluz Swil",
+            "Bruik Snen",
+            "Ruscioce",
+            "Bobreura",
+            "Nothil",
+            "Busmana",
+            "Cluador",
+            "Truwana",
+            "Astrain",
+            "Uskor",
+            "Troe Clain",
+            "Scouw Blad",
+        )
+
     }
 
     override fun generateSettlementName(): String {
         return SETTLEMENT_NAMES.random()
+    }
+
+    override fun generateCountryName(): String {
+        return COUNTRY_NAMES.random()
     }
 
 }

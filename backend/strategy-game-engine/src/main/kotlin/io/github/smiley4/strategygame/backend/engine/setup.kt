@@ -39,7 +39,7 @@ import org.koin.core.module.dsl.withOptions
 fun Module.dependenciesEngine() {
 
     single<GameStep> { GameStepImpl(get()) }
-    single<InitializePlayer> { InitializePlayerImpl() }
+    single<InitializePlayer> { InitializePlayerImpl(get()) }
     single<InitializeWorld> { InitializeWorldImpl(get()) }
     single<MovementService> { MovementServiceImpl() }
 
