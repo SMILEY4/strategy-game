@@ -15,22 +15,28 @@ export function TabBar(props: TabBarProps): ReactElement {
 
     const [selected, setSelected] = useState(props.initial);
 
-    const options = collectOptions();
+    const options = collectOptions(props.children);
     const selectedOption = options.find(it => it.name === selected);
 
-    function collectOptions(): ({ element: ReactElement, name: string, circle: boolean })[] {
+    function collectOptions(children: any[]): ({ element: ReactElement, name: string, circle: boolean })[] {
         const options: ({ element: ReactElement, name: string, circle: boolean })[] = [];
-        for (let child of props.children) {
-            if (child.type.name === "TabOption") {
-                options.push({
-                    element: child,
-                    name: child.props.name,
-                    circle: child.props.circle === true,
-                });
+        for (let child of children) {
+            if(Array.isArray(child)) {
+                options.push(...collectOptions(child))
+            } else {
+                if (child.type.name === "TabOption") {
+                    options.push({
+                        element: child,
+                        name: child.props.name,
+                        circle: child.props.circle === true,
+                    });
+                }
             }
         }
         return options;
     }
+
+
 
     return (
         <VBox
@@ -40,7 +46,7 @@ export function TabBar(props: TabBarProps): ReactElement {
             style={props.style}
         >
 
-            <HBox dontGrow dontShrink centerHorizontal gap_xs centerVertical fullWidth>
+            <HBox dontGrow dontShrink centerHorizontal gap_xs centerVertical fullWidth wrap>
                 {options.map(option => (
                     <Button
                         key={option.name}
