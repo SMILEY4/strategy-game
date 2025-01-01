@@ -159,7 +159,7 @@ export function useWindowInteractions(id: string) {
     }
 
     if (!data) {
-        return {
+        return { // todo: hack ???
             resizerProps: {
                 ref: undefined as unknown as RefObject<HTMLDivElement>,
                 onMouseDown: () => undefined,
@@ -170,6 +170,7 @@ export function useWindowInteractions(id: string) {
             },
             closeWindow: () => undefined,
             pinWindow: () => undefined,
+            isPinned: false,
             refContent: undefined as unknown as RefObject<HTMLDivElement>,
         }
         // throw new Error("Could not find window with id " + id);
@@ -186,6 +187,7 @@ export function useWindowInteractions(id: string) {
         },
         refContent: refContent,
         closeWindow: () => close(id),
+        isPinned: data.isPinned,
         pinWindow: () => pin(id),
     };
 }

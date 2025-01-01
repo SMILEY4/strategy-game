@@ -126,7 +126,11 @@ export namespace WindowStore {
                 }
                 return {
                     ...state,
-                    windows: [...state.windows.filter(it => it.id !== id), {...window, groupId: UID.generate()}],
+                    windows: [...state.windows.filter(it => it.id !== id), {
+                        ...window,
+                        groupId: UID.generate(),
+                        isPinned: true,
+                    }],
                 };
             }),
         };
@@ -171,6 +175,7 @@ export namespace WindowStore {
         return {
             id: properties.id ? properties.id : UID.generate(),
             groupId: properties.groupId ? properties.groupId : UID.generate(),
+            isPinned: false,
             blockOthers: properties.blockOthers === true,
             content: properties.content,
             position: position,

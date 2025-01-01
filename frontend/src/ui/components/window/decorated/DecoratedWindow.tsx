@@ -27,6 +27,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
         refContent,
         closeWindow,
         pinWindow,
+        isPinned
     } = useWindowInteractions(props.windowId);
 
     function handleClose() {
@@ -55,7 +56,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
             <div {...resizerProps} className="decorated-window__resize-area"/>
 
             {props.withPinButton && (
-                <Button warn circle className="decorated-window__pin" onClick={pinWindow} soundId={AudioType.CLICK_PRIMARY.id}>
+                <Button warn circle className="decorated-window__pin" disabled={isPinned} onClick={pinWindow} soundId={AudioType.CLICK_PRIMARY.id}>
                     <RiPushpinFill/> {/* Note: unpin-variant: <RiUnpinFill />*/}
                 </Button>
             )}

@@ -3,6 +3,7 @@ import {CssValue} from "./cssValue";
 export interface WindowData {
     id: string,
     groupId: string,
+    isPinned: boolean,
     content: any,
     blockOthers: boolean,
     position: WindowPosition
