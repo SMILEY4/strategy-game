@@ -8,17 +8,20 @@ import {GameLoopService} from "../../../../../logic/game/gameLoopService";
 import {CameraRepository} from "../../../../../state/repository/cameraRepository";
 import {useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
+import {UID} from "../../../../../common/uid";
+import {WindowGroup} from "../windowGroups";
 
 export namespace UseDevWindow {
 
     export function useOpen() {
-        const WINDOW_ID = "menubar-window";
         const open = useOpenWindow();
         return () => {
+            const windowId = UID.generate();
             open({
-                id: WINDOW_ID,
+                id: windowId,
+                groupId: WindowGroup.LEFT_SIDEBAR,
                 anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <DevWindow windowId={WINDOW_ID}/>,
+                content: <DevWindow windowId={windowId}/>,
             });
         };
     }

@@ -35,7 +35,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 
     if (data === null) {
         return (
-            <DecoratedWindow windowId={props.windowId} withCloseButton>
+            <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
                 <VBox fullSize center>
                     <Text secondary center>No tile selected.</Text>
                 </VBox>
@@ -44,7 +44,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
     } else {
 
         return (
-            <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
+            <DecoratedWindow windowId={props.windowId} withCloseButton  withPinButton noPadding>
                 <VBox fullSize>
 
                     <Banner

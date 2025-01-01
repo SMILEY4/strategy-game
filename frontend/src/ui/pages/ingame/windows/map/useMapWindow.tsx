@@ -6,6 +6,8 @@ import {useDI} from "../../../../../appContext";
 import {MapService} from "../../../../../logic/game/mapService";
 import {useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
+import {UID} from "../../../../../common/uid";
+import {WindowGroup} from "../windowGroups";
 
 export namespace UseMapWindow {
 
@@ -13,13 +15,14 @@ export namespace UseMapWindow {
      * Returns a function to open the map modes window
      */
     export function useOpen() {
-        const WINDOW_ID = "menubar-window";
         const open = useOpenWindow();
         return () => {
+            const windowId = UID.generate();
             open({
-                id: WINDOW_ID,
+                id: windowId,
+                groupId: WindowGroup.LEFT_SIDEBAR,
                 anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <MapWindow windowId={WINDOW_ID}/>,
+                content: <MapWindow windowId={windowId}/>,
             });
         };
     }

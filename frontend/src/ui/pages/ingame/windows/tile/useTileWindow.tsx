@@ -8,27 +8,31 @@ import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {useDI} from "../../../../../appContext";
 import {CameraService} from "../../../../../logic/game/cameraService";
+import {UID} from "../../../../../common/uid";
+import {WindowGroup} from "../windowGroups";
 
 export namespace UseTileWindow {
 
     export function useOpen() {
-        const WINDOW_ID = "menubar-window";
         const open = useOpenWindow();
         return (identifier: TileIdentifier | null) => {
+            const windowId = UID.generate();
             open({
-                id: WINDOW_ID,
+                id: windowId,
+                groupId: WindowGroup.LEFT_SIDEBAR,
                 anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <TileWindow windowId={WINDOW_ID} identifier={identifier}/>,
+                content: <TileWindow windowId={windowId} identifier={identifier}/>,
             });
         };
     }
 
     export function open(identifier: TileIdentifier | null) {
-        const WINDOW_ID = "menubar-window";
+        const windowId = UID.generate();
         openWindow({
-            id: WINDOW_ID,
+            id: windowId,
+            groupId: WindowGroup.LEFT_SIDEBAR,
             anchor: WindowStore.ANCHOR_LEFT_SIDE,
-            content: <TileWindow windowId={WINDOW_ID} identifier={identifier}/>,
+            content: <TileWindow windowId={windowId} identifier={identifier}/>,
         });
     }
 
@@ -36,7 +40,7 @@ export namespace UseTileWindow {
         tile: Tile;
         open: {
             controllingSettlement: () => void,
-			tileObject: (tileObject: TileObject) => void,
+            tileObject: (tileObject: TileObject) => void,
         };
         centerCamera: () => void,
     }
@@ -44,7 +48,7 @@ export namespace UseTileWindow {
     export function useData(overwriteTile: TileIdentifier | null): UseTileWindow.Data | null {
 
         const openSettlement = UseSettlementWindow.useOpen();
-		const openWorldObject = UseWorldObjectWindow.useOpen();
+        const openWorldObject = UseWorldObjectWindow.useOpen();
 
         const cameraService = useDI<CameraService>(CameraService.name);
 
@@ -61,16 +65,16 @@ export namespace UseTileWindow {
                             openSettlement(tile.political.value?.controlledBy?.settlement!.id);
                         }
                     },
-					tileObject: (tileObject) => {
-						if(tileObject.worldObject !== null) {
-							openWorldObject(tileObject.worldObject.id)
-						}
-						if(tileObject.settlement !== null) {
-							openSettlement(tileObject.settlement.id)
-						}
-					}
+                    tileObject: (tileObject) => {
+                        if (tileObject.worldObject !== null) {
+                            openWorldObject(tileObject.worldObject.id);
+                        }
+                        if (tileObject.settlement !== null) {
+                            openSettlement(tileObject.settlement.id);
+                        }
+                    },
                 },
-                centerCamera: () => cameraService.centerCameraOnTile(tile.identifier)
+                centerCamera: () => cameraService.centerCameraOnTile(tile.identifier),
             };
         } else {
             return null;

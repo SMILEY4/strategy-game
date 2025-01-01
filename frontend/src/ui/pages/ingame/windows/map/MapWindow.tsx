@@ -19,7 +19,7 @@ export function MapWindow(props: MapWindowProps): ReactElement {
     const data: UseMapWindow.Data = UseMapWindow.useData();
 
     return (
-        <DecoratedWindow windowId={props.windowId} withCloseButton>
+        <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
             <VBox padding_l gap_m fullSize>
 
                 <Header1 centered>Map</Header1>

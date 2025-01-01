@@ -6,6 +6,8 @@ import {CommandRepository} from "../../../../../state/repository/commandReposito
 import {CommandService} from "../../../../../logic/game/commandService";
 import {useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
+import {UID} from "../../../../../common/uid";
+import {WindowGroup} from "../windowGroups";
 
 export namespace UseCommandLogWindow {
 
@@ -14,13 +16,14 @@ export namespace UseCommandLogWindow {
      * Returns a function to open the command log window
      */
     export function useOpen() {
-        const WINDOW_ID = "menubar-window";
         const open = useOpenWindow();
         return () => {
+            const windowId = UID.generate();
             open({
-                id: WINDOW_ID,
+                id: windowId,
+                groupId: WindowGroup.LEFT_SIDEBAR,
                 anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <CommandLogWindow windowId={WINDOW_ID}/>,
+                content: <CommandLogWindow windowId={windowId}/>,
             });
         };
     }

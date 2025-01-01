@@ -1,22 +1,18 @@
 import {WindowData, WindowPosition} from "./windowData";
-import {
-    WindowAnchor,
-    WindowAreaAnchor,
-    WindowHorizontalLineAnchor,
-    WindowPointAnchor,
-    WindowVerticalLineAnchor,
-} from "./windowAnchor";
+import {WindowAnchor, WindowAreaAnchor, WindowHorizontalLineAnchor, WindowPointAnchor, WindowVerticalLineAnchor} from "./windowAnchor";
 import {SetState} from "../../../common/zustandUtils";
 import create from "zustand";
 import {CssValue} from "./cssValue";
 import {WindowProperties} from "./windowProperties";
+import {UID} from "../../../common/uid";
 
 export namespace WindowStore {
 
-    export const ANCHOR_LEFT_SIDE = "left-side"
-    export const ANCHOR_RIGHT_SIDE = "right-side"
-    export const ANCHOR_CENTER_POINT = "center-point"
-    export const ANCHOR_BOTTOM_POINT = "bottom-point"
+
+    export const ANCHOR_LEFT_SIDE = "left-side";
+    export const ANCHOR_RIGHT_SIDE = "right-side";
+    export const ANCHOR_CENTER_POINT = "center-point";
+    export const ANCHOR_BOTTOM_POINT = "bottom-point";
 
 
     interface StateValues {
@@ -50,7 +46,7 @@ export namespace WindowStore {
                 left: CssValue.percent(50),
                 bottom: null,
                 right: null,
-                side: "centered"
+                side: "centered",
             } as WindowPointAnchor,
             {
                 id: ANCHOR_BOTTOM_POINT,
@@ -60,7 +56,7 @@ export namespace WindowStore {
                 top: null,
                 right: null,
                 autoMargin: true,
-                side: "above"
+                side: "above",
             } as WindowPointAnchor,
         ],
     };
@@ -70,6 +66,7 @@ export namespace WindowStore {
         remove: (id: string) => void,
         modifyPosition: (id: string, action: (position: WindowPosition) => WindowPosition) => void,
         bringToFront: (id: string) => void,
+        pin: (id: string) => void,
     }
 
     export interface State extends StateValues, StateActions {
@@ -88,7 +85,7 @@ export namespace WindowStore {
                 const data = createWindowData(properties, state.anchors);
                 return {
                     ...state,
-                    windows: [...state.windows.filter(it => it.id !== data.id), data],
+                    windows: [...state.windows.filter(it => it.groupId !== data.groupId), data],
                 };
             }),
             remove: (id: string) => set((state: State) => {
@@ -101,11 +98,11 @@ export namespace WindowStore {
                 return {
                     ...state,
                     windows: state.windows.map(it => {
-                        if(it.id === id) {
+                        if (it.id === id) {
                             return {
                                 ...it,
-                                position: action(it.position)
-                            }
+                                position: action(it.position),
+                            };
                         } else {
                             return it;
                         }
@@ -113,14 +110,28 @@ export namespace WindowStore {
                 };
             }),
             bringToFront: (id: string) => set((state: State) => {
-                const window = state.windows.find(it => it.id === id)
-                if(!window) {
+                const window = state.windows.find(it => it.id === id);
+                if (!window) {
                     return state;
                 }
                 return {
                     ...state,
-                    windows: [...state.windows.filter(it => it.id !== id), window]
+                    windows: [...state.windows.filter(it => it.id !== id), window],
+                };
+            }),
+            pin: (id: string) => set((state: State) => {
+                const window = state.windows.find(it => it.id === id);
+                if (!window) {
+                    return state;
                 }
+                return {
+                    ...state,
+                    windows: [...state.windows.filter(it => it.id !== id), {
+                        ...window,
+                        groupId: UID.generate(),
+                        isPinned: true,
+                    }],
+                };
             }),
         };
     }
@@ -144,11 +155,11 @@ export namespace WindowStore {
 
         if (anchor.type === "point") {
             position = WindowPointAnchor.buildPosition(anchor as WindowPointAnchor);
-            if(properties.preferredWidth) {
-                position.width = CssValue.raw(properties.preferredWidth)
+            if (properties.preferredWidth) {
+                position.width = CssValue.raw(properties.preferredWidth);
             }
-            if(properties.preferredHeight) {
-                position.height = CssValue.raw(properties.preferredHeight)
+            if (properties.preferredHeight) {
+                position.height = CssValue.raw(properties.preferredHeight);
             }
         }
         if (anchor.type === "line_vertical") {
@@ -162,7 +173,9 @@ export namespace WindowStore {
         }
 
         return {
-            id: properties.id,
+            id: properties.id ? properties.id : UID.generate(),
+            groupId: properties.groupId ? properties.groupId : UID.generate(),
+            isPinned: false,
             blockOthers: properties.blockOthers === true,
             content: properties.content,
             position: position,

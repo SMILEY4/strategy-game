@@ -18,7 +18,7 @@ export function DevWindow(props: DevWindowProps): ReactElement {
     const data: UseDevWindow.Data = UseDevWindow.useData();
 
     return (
-        <DecoratedWindow windowId={props.windowId} withCloseButton>
+        <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
             <VBox padding_l gap_m fullSize scrollable>
 
                 <Header1 centered>Dev / Debug</Header1>

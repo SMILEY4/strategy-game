@@ -1,5 +1,4 @@
 import React, {ReactElement} from "react";
-import { VSpacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {UseDevStatsWindow} from "./useDevStatsWindow";
 import {Area, Bar, BarChart, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, YAxis} from "recharts";
@@ -21,7 +20,7 @@ export function DevStatsWindow(props: DevStatsWindowProps): ReactElement {
     const data: UseDevStatsWindow.Data = UseDevStatsWindow.useData();
 
     return (
-        <DecoratedWindow windowId={props.windowId} withCloseButton>
+        <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
             <VBox padding_l gap_m fullSize scrollable>
                 <Header1 centered>Dev Statistics</Header1>
                 <Divider line/>

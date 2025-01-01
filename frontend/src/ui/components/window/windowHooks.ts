@@ -2,7 +2,7 @@ import {WindowStore} from "./windowStore";
 import {WindowProperties} from "./windowProperties";
 import {CssValue} from "./cssValue";
 import {useDraggable} from "../headless/useDraggable";
-import {MouseEvent, useRef} from "react";
+import {MouseEvent, RefObject, useRef} from "react";
 
 
 const WINDOW_STACK_ID = "window-stack"
@@ -22,6 +22,13 @@ export function useCloseWindow(): (windowId: string) => void {
     const remove = WindowStore.useState(state => state.remove);
     return (windowId) => {
         remove(windowId)
+    }
+}
+
+export function usePinWindow(): (windowId: string) => void {
+    const pin = WindowStore.useState(state => state.pin);
+    return (windowId) => {
+        pin(windowId)
     }
 }
 
@@ -68,17 +75,19 @@ export function useWindowData(id: string) {
 export function useWindowInteractions(id: string) {
 
     const data = WindowStore.useState(state => state.windows.find(it => it.id === id));
-    if (!data) {
-        throw new Error("Could not find window with id " + id);
-    }
 
     const modifyPosition = WindowStore.useState(state => state.modifyPosition);
     const bringToFront = WindowStore.useState(state => state.bringToFront);
 
     const close = useCloseWindow()
+    const pin = usePinWindow()
     const refContent = useRef<HTMLDivElement>(null);
     const [refDrag, onMouseDownDrag] = useDraggable(filterCanDrag, onPrepare, onDrag);
     const [refResize, onMouseDownResize] = useDraggable(filterCanResize, onPrepare, onResize);
+
+    if (!data) {
+        throw new Error("Could not find window with id " + id);
+    }
 
     function filterCanDrag(e: MouseEvent<any>): boolean {
         return e.button === 0;
@@ -162,7 +171,9 @@ export function useWindowInteractions(id: string) {
             ref: refDrag,
             onMouseDown: onMouseDownDrag,
         },
+        refContent: refContent,
         closeWindow: () => close(id),
-        refContent,
+        isPinned: data.isPinned,
+        pinWindow: () => pin(id),
     };
 }
