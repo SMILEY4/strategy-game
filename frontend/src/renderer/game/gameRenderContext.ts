@@ -15,6 +15,10 @@ import {WorldObjectRepository} from "../../state/repository/worldObjectRepositor
 import {SettlementRepository} from "../../state/repository/settlementRepository";
 import {RouteRepository} from "../../state/repository/routeRepository";
 import {BaseRenderer} from "../../common/webgl/baseRenderer";
+import {Command} from "../../models/base/command";
+import {CommandRepository} from "../../state/repository/commandRepository";
+import {Country} from "../../models/base/country";
+import {CountryRepository} from "../../state/repository/countryRepository";
 
 export interface GameWebGLRenderContext extends WebGLRenderCommand.Context {
 	timestamp: number,
@@ -30,10 +34,12 @@ export interface GameWebGLRenderContext extends WebGLRenderCommand.Context {
 }
 
 export interface GameHtmlRenderContext extends HtmlRenderCommand.Context {
+	playerCountry: Country,
 	camera: Camera,
 	mapMode: MapMode,
 	tiles: Tile[],
 	settlements: Settlement[],
+	commands: Command[],
 	worldObjects: WorldObject[]
 	movementPaths: { positions: TilePosition[], pending: boolean }[],
 }
@@ -45,23 +51,36 @@ export class RenderContextFactory {
 	private readonly renderer: BaseRenderer;
 	private readonly tileRepository: TileRepository;
 	private readonly sessionRepository: SessionRepository;
+	private readonly commandRepository: CommandRepository;
 	private readonly worldObjectRepository: WorldObjectRepository;
 	private readonly settlementRepository: SettlementRepository;
 	private readonly routeRepository: RouteRepository;
+	private readonly countryRepository: CountryRepository;
 
 	private tileCache: { items: Tile[], revId: string } = {items: [], revId: ""};
 	private settlementCache: { items: Settlement[], revId: string } = {items: [], revId: ""};
 	private worldObjectCache: { items: WorldObject[], revId: string } = {items: [], revId: ""};
 	private routeCache: { items: Route[], revId: string } = {items: [], revId: ""};
 
-	constructor(gl: WebGL2RenderingContext, renderer: BaseRenderer, tileRepository: TileRepository, sessionRepository: SessionRepository, worldObjectRepository: WorldObjectRepository, settlementRepository: SettlementRepository, routeRepository: RouteRepository) {
+	constructor(
+		gl: WebGL2RenderingContext,
+		renderer: BaseRenderer,
+		tileRepository: TileRepository,
+		sessionRepository: SessionRepository,
+		worldObjectRepository: WorldObjectRepository,
+		settlementRepository: SettlementRepository,
+		routeRepository: RouteRepository,
+		commandRepository: CommandRepository,
+		countryRepository: CountryRepository) {
 		this.gl = gl;
 		this.renderer = renderer;
 		this.tileRepository = tileRepository;
 		this.sessionRepository = sessionRepository;
+		this.commandRepository = commandRepository;
 		this.worldObjectRepository = worldObjectRepository;
 		this.settlementRepository = settlementRepository;
 		this.routeRepository = routeRepository;
+		this.countryRepository = countryRepository;
 	}
 
 	public createWebGLContext(camera: Camera, renderConfig: GameRenderConfig): GameWebGLRenderContext {
@@ -84,8 +103,10 @@ export class RenderContextFactory {
 
 	public createHtmlContext(camera: Camera): GameHtmlRenderContext {
 		return {
+			playerCountry: this.countryRepository.getPlayerCountry(),
 			camera: camera,
 			mapMode: this.sessionRepository.getMapMode(),
+			commands: this.commandRepository.getAll(),
 			tiles: this.getTilesAll(),
 			settlements: this.getSettlementsAll(),
 			worldObjects: this.getWorldObjectsAll(),

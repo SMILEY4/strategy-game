@@ -33,6 +33,10 @@ export class CommandRepository {
 		this.commandDb.deleteAll();
 	}
 
+	public getRevId(): string {
+		return this.commandDb.getRevId();
+	}
+
 }
 
 export namespace CommandRepository {
