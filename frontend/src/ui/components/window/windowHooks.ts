@@ -85,6 +85,10 @@ export function useWindowInteractions(id: string) {
     const [refDrag, onMouseDownDrag] = useDraggable(filterCanDrag, onPrepare, onDrag);
     const [refResize, onMouseDownResize] = useDraggable(filterCanResize, onPrepare, onResize);
 
+    if (!data) {
+        throw new Error("Could not find window with id " + id);
+    }
+
     function filterCanDrag(e: MouseEvent<any>): boolean {
         return e.button === 0;
     }
@@ -156,24 +160,6 @@ export function useWindowInteractions(id: string) {
             console.warn("No frame-stack found for layout-calculation", WINDOW_STACK_ID);
             return {width: 1, height: 1};
         }
-    }
-
-    if (!data) {
-        return { // todo: hack ???
-            resizerProps: {
-                ref: undefined as unknown as RefObject<HTMLDivElement>,
-                onMouseDown: () => undefined,
-            },
-            dragProps: {
-                ref:undefined as unknown as RefObject<HTMLDivElement>,
-                onMouseDown: () => undefined,
-            },
-            closeWindow: () => undefined,
-            pinWindow: () => undefined,
-            isPinned: false,
-            refContent: undefined as unknown as RefObject<HTMLDivElement>,
-        }
-        // throw new Error("Could not find window with id " + id);
     }
 
     return {
