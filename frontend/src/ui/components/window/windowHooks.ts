@@ -45,19 +45,20 @@ export function useIsBlockingWindowOpen(): boolean {
         .some(it => it)
 }
 
-export function useWindowStack(): string[] {
-    return WindowStore.useState(state => state.windows.map(it => it.id));
+export function useWindowIds(): string[] {
+    return WindowStore.useState(state => state.windowIds);
 }
 
 export function useWindowData(id: string) {
-    const data = WindowStore.useState(state => state.windows.find(it => it.id === id));
-    const blockingWindows = WindowStore.useState(state => state.windows.filter(it => it.blockOthers).map(it => it.id));
+    const data = WindowStore.useState(state => state.windows.find(it => it.windowId === id));
+    const blockingWindows = WindowStore.useState(state => state.windows.filter(it => it.blockOthers).map(it => it.windowId));
     if (!data) {
         throw new Error("Could not find window with id " + id);
     }
     return {
         elementProps: {
             style: {
+                zIndex: data.stackIndex * 10,
                 left: CssValue.format(data.position.left),
                 right: CssValue.format(data.position.right),
                 top: CssValue.format(data.position.top),
@@ -74,7 +75,7 @@ export function useWindowData(id: string) {
 
 export function useWindowInteractions(id: string) {
 
-    const data = WindowStore.useState(state => state.windows.find(it => it.id === id));
+    const data = WindowStore.useState(state => state.windows.find(it => it.windowId === id));
 
     const modifyPosition = WindowStore.useState(state => state.modifyPosition);
     const bringToFront = WindowStore.useState(state => state.bringToFront);
