@@ -1,8 +1,9 @@
 import {CssValue} from "./cssValue";
 
 export interface WindowData {
-    id: string,
+    windowId: string,
     groupId: string,
+    stackIndex: number,
     isPinned: boolean,
     content: any,
     blockOthers: boolean,

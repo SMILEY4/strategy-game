@@ -17,11 +17,13 @@ export namespace WindowStore {
 
     interface StateValues {
         windows: WindowData[],
+        windowIds: string[],
         anchors: WindowAnchor[],
     }
 
     const initialStateValues: StateValues = {
         windows: [],
+        windowIds: [],
         anchors: [
             {
                 id: ANCHOR_LEFT_SIDE,
@@ -83,22 +85,28 @@ export namespace WindowStore {
         return {
             add: (properties: WindowProperties) => set((state: State) => {
                 const data = createWindowData(properties, state.anchors);
+                const windows = [...state.windows.filter(it => it.groupId !== data.groupId), data];
+                recalculateStackIndices(windows);
                 return {
                     ...state,
-                    windows: [...state.windows.filter(it => it.groupId !== data.groupId), data],
+                    windows: windows,
+                    windowIds: windows.map(it => it.windowId),
                 };
             }),
             remove: (id: string) => set((state: State) => {
+                const windows = state.windows.filter(it => it.windowId !== id);
+                recalculateStackIndices(windows);
                 return {
                     ...state,
-                    windows: state.windows.filter(it => it.id !== id),
+                    windows: windows,
+                    windowIds: state.windowIds.filter(it => it !== id),
                 };
             }),
             modifyPosition: (id: string, action: (position: WindowPosition) => WindowPosition) => set((state: State) => {
                 return {
                     ...state,
                     windows: state.windows.map(it => {
-                        if (it.id === id) {
+                        if (it.windowId === id) {
                             return {
                                 ...it,
                                 position: action(it.position),
@@ -110,23 +118,26 @@ export namespace WindowStore {
                 };
             }),
             bringToFront: (id: string) => set((state: State) => {
-                const window = state.windows.find(it => it.id === id);
+                const window = state.windows.find(it => it.windowId === id);
                 if (!window) {
                     return state;
                 }
+                window.stackIndex = 999999;
+                const windows = [...state.windows]
+                recalculateStackIndices(windows)
                 return {
                     ...state,
-                    windows: [...state.windows.filter(it => it.id !== id), window],
+                    windows: windows,
                 };
             }),
             pin: (id: string) => set((state: State) => {
-                const window = state.windows.find(it => it.id === id);
+                const window = state.windows.find(it => it.windowId === id);
                 if (!window) {
                     return state;
                 }
                 return {
                     ...state,
-                    windows: [...state.windows.filter(it => it.id !== id), {
+                    windows: [...state.windows.filter(it => it.windowId !== id), {
                         ...window,
                         groupId: UID.generate(),
                         isPinned: true,
@@ -173,13 +184,20 @@ export namespace WindowStore {
         }
 
         return {
-            id: properties.id ? properties.id : UID.generate(),
+            windowId: properties.id ? properties.id : UID.generate(),
             groupId: properties.groupId ? properties.groupId : UID.generate(),
+            stackIndex: 999999,
             isPinned: false,
             blockOthers: properties.blockOthers === true,
             content: properties.content,
             position: position,
         };
+    }
+
+    function recalculateStackIndices(windows: WindowData[]): WindowData[] {
+        windows.sort((a, b) => a.stackIndex - b.stackIndex);
+        windows.forEach((it, index) => it.stackIndex = index);
+        return windows;
     }
 
 }
