@@ -14,6 +14,8 @@ import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {HSpacer} from "../../../../components/spacer/Spacer";
 import {Button} from "../../../../components/button/primary/Button";
 import {RxEyeOpen} from "react-icons/rx";
+import {ETSpacer} from "../../../../components/textenriched/elements/ETSpacer";
+import {ETText} from "../../../../components/textenriched/elements/ETText";
 
 export interface OutlinerWindowProps {
     windowId: string,
@@ -150,6 +152,12 @@ function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
                             <ETLink onClick={() => props.worldObjects.open(worldObject)}>
                                 {worldObject.identifier.type.id}
                             </ETLink>
+                            <ETSpacer size="s"/>
+                            {props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id) && (
+                                <ETText>
+                                    {"( -> " + props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id)?.name + ")"}
+                                </ETText>
+                            )}
                         </EnrichedText>
                         <HSpacer grow/>
                         <Button circle small onClick={() => props.worldObjects.focusCamera(worldObject)}>

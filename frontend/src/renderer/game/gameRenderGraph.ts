@@ -33,6 +33,8 @@ import {GameHtmlRenderContext, GameWebGLRenderContext, RenderContextFactory} fro
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
 import {MapDetailsDrawNode} from "./rendernodes/mapDetailsDrawNode";
 import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
+import {CommandRepository} from "../../state/repository/commandRepository";
+import {CountryRepository} from "../../state/repository/countryRepository";
 
 export class GameRenderGraph {
 
@@ -53,6 +55,8 @@ export class GameRenderGraph {
 		worldObjectRepository: WorldObjectRepository,
 		settlementRepository: SettlementRepository,
 		routeRepository: RouteRepository,
+		commandRepository: CommandRepository,
+		countryRepository: CountryRepository,
 	) {
 
 		this.changeProvider = changeProvider;
@@ -66,6 +70,8 @@ export class GameRenderGraph {
 			worldObjectRepository,
 			settlementRepository,
 			routeRepository,
+			commandRepository,
+			countryRepository,
 		);
 
 		this.renderGraphWebGl = new RenderGraph<GameWebGLRenderContext>({

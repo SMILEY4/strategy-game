@@ -12,6 +12,7 @@ import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
+import {CommandRepository} from "../../state/repository/commandRepository";
 
 interface Changes {
 	initFrame: boolean,
@@ -19,6 +20,7 @@ interface Changes {
 	mapMode: boolean,
 	camera: boolean,
 	movementPaths: boolean,
+	commands: boolean,
 }
 
 /**
@@ -28,11 +30,13 @@ export class GameChangeProvider implements ChangeProvider {
 
 	private readonly sessionRepository: SessionRepository;
 	private readonly worldObjectRepository: WorldObjectRepository;
+	private readonly commandRepository: CommandRepository;
 
 	private readonly detectorCamera = new ChangeDetector();
 	private readonly detectorCurrentTurn = new ChangeDetector();
 	private readonly detectorMapMode = new ChangeDetector();
 	private readonly detectorMovementPaths = new ChangeDetector();
+	private readonly detectorCommands = new ChangeDetector();
 
 	private frame: number = 0;
 	private changes: Changes = {
@@ -41,14 +45,17 @@ export class GameChangeProvider implements ChangeProvider {
 		mapMode: true,
 		camera: true,
 		movementPaths: true,
+		commands: true,
 	};
 
 	constructor(
 		sessionRepository: SessionRepository,
 		worldObjectRepository: WorldObjectRepository,
+		commandRepository: CommandRepository
 	) {
 		this.sessionRepository = sessionRepository;
 		this.worldObjectRepository = worldObjectRepository;
+		this.commandRepository = commandRepository;
 	}
 
 	/**
@@ -62,6 +69,7 @@ export class GameChangeProvider implements ChangeProvider {
 			mapMode: true,
 			camera: true,
 			movementPaths: true,
+			commands: true,
 		};
 	}
 
@@ -79,6 +87,7 @@ export class GameChangeProvider implements ChangeProvider {
 		this.changes.mapMode = this.detectorMapMode.check(this.sessionRepository.getMapMode());
 		this.changes.camera = this.detectorCamera.check(camera.getHash());
 		this.changes.movementPaths = this.detectorMovementPaths.check(this.getMovementPathsCheckId());
+		this.changes.commands = this.detectorCommands.check(this.commandRepository.getRevId());
 	}
 
 	/**
@@ -113,7 +122,7 @@ export class GameChangeProvider implements ChangeProvider {
 			return this.changes.turn || this.changes.camera || this.changes.movementPaths;
 		}
 		if (key === LabelsHtmlNode.ID) {
-			return this.changes.turn || this.changes.camera;
+			return this.changes.turn || this.changes.camera || this.changes.commands;
 		}
 		return true;
 	}

@@ -14,6 +14,8 @@ import {CameraService} from "../../../../../logic/game/cameraService";
 import {Country} from "../../../../../models/base/country";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
+import {CommandRepository} from "../../../../../state/repository/commandRepository";
+import {CommandType, CreateSettlement} from "../../../../../models/base/command";
 
 export namespace UseOutlinerWindow {
 
@@ -45,7 +47,8 @@ export namespace UseOutlinerWindow {
             entries: Country[],
             open: (entry: Country) => void,
             focusCamera: (entry: Country) => void,
-        }
+        },
+        commandsCreateSettlement: CreateSettlement[]
     }
 
     export function useData(): UseOutlinerWindow.Data {
@@ -59,6 +62,7 @@ export namespace UseOutlinerWindow {
         const settlements = SettlementRepository.useByCountry(country.identifier);
         const worldObjects = WorldObjectRepository.useByCountry(country.identifier);
         const countries = CountryRepository.useAll();
+        const commandsCreateSettlement = CommandRepository.useAllByType<CreateSettlement>(CommandType.CREATE_SETTLEMENT)
 
         return {
             settlements: {
@@ -79,6 +83,7 @@ export namespace UseOutlinerWindow {
                 open: () => undefined, // todo
                 focusCamera: () => undefined, // todo
             },
+            commandsCreateSettlement: commandsCreateSettlement
         };
     }
 
