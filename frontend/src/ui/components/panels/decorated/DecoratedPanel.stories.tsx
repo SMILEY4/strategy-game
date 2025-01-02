@@ -1,7 +1,4 @@
-import {
-    DecoratedPanel,
-    DecoratedPanelProps,
-} from "./DecoratedPanel";
+import {DecoratedPanel, DecoratedPanelProps} from "./DecoratedPanel";
 import {StoryObj} from "@storybook/react";
 import React from "react";
 import {VBox} from "../../layout/vbox/VBox";
@@ -28,7 +25,6 @@ export const Default: Story = {
             ornament={args.ornament}
             simple={args.simple}
             simpleDashed={args.simpleDashed}
-            paddingNone={args.paddingNone}
             blue={args.blue}
             pattern={args.pattern}
         >

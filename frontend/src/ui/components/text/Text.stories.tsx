@@ -1,6 +1,6 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
-import {DecoratedPanel, DecoratedPanelColor} from "../panels/decorated/DecoratedPanel";
+import {DecoratedPanel} from "../panels/decorated/DecoratedPanel";
 import {Text, TextProps} from "./Text";
 
 const meta = {
@@ -12,27 +12,17 @@ const meta = {
     tags: ["autodocs"],
     argTypes: {},
 };
-type Story = StoryObj<TextProps & { panelColor: DecoratedPanelColor }>
+type Story = StoryObj<TextProps>
 export default meta;
 
 
 export const Default: Story = {
-    args: {
-        panelColor: "red",
-    },
-    argTypes: {
-        panelColor: {
-            options: ["red", "green", "blue", "paper"],
-            control: {type: "select"},
-        },
-    },
     render: (args) => (
-        <DecoratedPanel color={args.panelColor}>
+        <DecoratedPanel>
             <div style={{padding: "50px"}}>
                 <Text
                     type={args.type}
                     strikethrough={args.strikethrough}
-                    onLight={args.onLight}
                 >
                     Hello World!
                 </Text>
@@ -43,17 +33,8 @@ export const Default: Story = {
 
 
 export const Stacked: Story = {
-    args: {
-        panelColor: "red",
-    },
-    argTypes: {
-        panelColor: {
-            options: ["red", "green", "blue", "paper"],
-            control: {type: "select"},
-        },
-    },
     render: (args) => (
-        <DecoratedPanel color={args.panelColor}>
+        <DecoratedPanel>
             <div style={{
                 padding: "50px",
                 display: "flex",
