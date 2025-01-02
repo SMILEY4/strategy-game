@@ -24,7 +24,7 @@ export default meta;
 
 export const Default: Story = {
     render: () => (
-        <DecoratedPanel red>
+        <DecoratedPanel>
             <div style={{padding: "50px"}}>
                 <VBox gap_none>
 

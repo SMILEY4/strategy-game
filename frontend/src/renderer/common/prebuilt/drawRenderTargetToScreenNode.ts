@@ -2,8 +2,9 @@ import {DrawRenderNode, } from "../graph/drawRenderNode";
 import {VertexFullQuadNode} from "./vertexFullquadNode";
 import {NodeInput} from "../graph/nodeInput";
 import {NodeOutput} from "../graph/nodeOutput";
+import {WebGLRenderCommand} from "../webgl/webGLRenderCommand";
 
-export class DrawRenderTargetToScreenNode extends DrawRenderNode {
+export class DrawRenderTargetToScreenNode extends DrawRenderNode<WebGLRenderCommand.Context> {
 
     public static readonly ID = "drawnode.rendertarget2screen";
     public static readonly SHADER_ID_VERTEX = "rendertarget2screen.vert"

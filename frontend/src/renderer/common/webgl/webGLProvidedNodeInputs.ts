@@ -26,7 +26,9 @@ export class WebGlProvidedNodeInputs implements ProvidedNodeInputs {
 			console.warn("Could not find texture atlas entry with path '" + atlasPath + "' and name '" + entryName + "'");
 			return {
 				name: entryName,
-				vertices: []
+				origin: [0,0],
+				vertices: [],
+				textureCoordinates: [],
 			}
 		}
 	}
