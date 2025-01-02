@@ -15,7 +15,7 @@ export interface MoveWindowProps {
 
 export function MoveWindow(props: MoveWindowProps): ReactElement {
 
-	const data: UseMoveWindow.Data | null = UseMoveWindow.useData(props.identifier);
+	const data: UseMoveWindow.Data | null = UseMoveWindow.useData(props.windowId, props.identifier);
 
 	if (data === null) {
 		return (

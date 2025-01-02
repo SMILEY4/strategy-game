@@ -16,6 +16,7 @@ import {Button} from "../../../../components/button/primary/Button";
 import {RxEyeOpen} from "react-icons/rx";
 import {ETSpacer} from "../../../../components/textenriched/elements/ETSpacer";
 import {ETText} from "../../../../components/textenriched/elements/ETText";
+import {ETIcon} from "../../../../components/textenriched/elements/ETIcon";
 
 export interface OutlinerWindowProps {
     windowId: string,
@@ -154,9 +155,12 @@ function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
                             </ETLink>
                             <ETSpacer size="s"/>
                             {props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id) && (
-                                <ETText>
-                                    {"( -> " + props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id)?.name + ")"}
-                                </ETText>
+                                <>
+                                    <ETIcon name="command"/>
+                                    <ETText>
+                                        {props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id)?.name + ""}
+                                    </ETText>
+                                </>
                             )}
                         </EnrichedText>
                         <HSpacer grow/>

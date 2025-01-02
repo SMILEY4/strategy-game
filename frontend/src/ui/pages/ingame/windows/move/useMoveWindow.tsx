@@ -53,7 +53,7 @@ export namespace UseMoveWindow {
     /**
      * Provides the data and functions required by the window
      */
-    export function useData(worldObjectId: string | null): UseMoveWindow.Data | null {
+    export function useData(windowId: string, worldObjectId: string | null): UseMoveWindow.Data | null {
 
         useRerenderOnPathChange();
 
@@ -74,11 +74,11 @@ export namespace UseMoveWindow {
                 totalPoints: movementService.getMaxPathCost(worldObject),
                 cancel: () => {
                     movementService.cancelMovement();
-                    closeWindow("move-command");
+                    closeWindow(windowId);
                 },
                 accept: () => {
                     movementService.completeMovement();
-                    closeWindow("move-command");
+                    closeWindow(windowId);
                 },
             };
         } else {
