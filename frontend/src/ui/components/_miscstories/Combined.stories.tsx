@@ -6,7 +6,6 @@ import {InsetPanel} from "../panels/inset/InsetPanel";
 import {arrayOfSize} from "../../../common/utils";
 import {HBox} from "../layout/hbox/HBox";
 import "../base/base.less"
-import {Text} from "../text_basic/Text"
 import {Txt} from "../text/Txt";
 import {Button} from "../button/Button";
 
@@ -40,7 +39,7 @@ export const BasicWindowLayout: Story = {
                                 {arrayOfSize(10).map(it => (
                                     <DecoratedPanel simple dontShrink dontGrow>
                                         <HBox padding_s centerVertical>
-                                            <Text grow>{"Item " + it + ".".repeat(it)}</Text>
+                                            <Txt.Body grow><Txt.String>{"Item " + it + ".".repeat(it)}</Txt.String></Txt.Body>
                                             <Button small>Add</Button>
                                             <Button small>Remove</Button>
                                         </HBox>

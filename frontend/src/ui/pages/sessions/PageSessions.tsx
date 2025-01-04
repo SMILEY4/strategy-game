@@ -1,316 +1,331 @@
 import React, {ReactElement, useEffect, useState} from "react";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
-import {Header1, Header3} from "../../components/header/Header";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {Button} from "../../components/button/Button";
 import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
-import {Spacer, VSpacer} from "../../components/spacer/Spacer";
+import {VSpacer} from "../../components/spacer/Spacer";
 import {AudioType} from "../../../common/audioService";
-import {Text} from "../../components/text_basic/Text";
 import {GameSessionMeta} from "../../../models/base/gameSessionMeta";
 import {SessionHooks} from "./sessions";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {ModalWindow} from "../../components/modal/ModalWindow";
+import {Txt} from "../../components/text/Txt";
 
 
 export function PageSessions(): ReactElement {
 
-    const {
-        sessions,
-        loadSessions,
-    } = useSessionData();
+	const {
+		sessions,
+		loadSessions,
+	} = useSessionData();
 
-    const {
-        startCreateSession,
-        cancelCreateSession,
-        acceptCreateSession,
-        showCreateSession,
-        seed,
-        setSeed,
-        name,
-        setName,
-    } = useCreateSession(loadSessions);
+	const {
+		startCreateSession,
+		cancelCreateSession,
+		acceptCreateSession,
+		showCreateSession,
+		seed,
+		setSeed,
+		name,
+		setName,
+	} = useCreateSession(loadSessions);
 
-    const {
-        startJoinSession,
-        cancelJoinSession,
-        acceptJoinSession,
-        showJoinSession,
-        sessionIdJoin,
-        setSessionIdJoin,
-    } = useJoinSession(loadSessions);
+	const {
+		startJoinSession,
+		cancelJoinSession,
+		acceptJoinSession,
+		showJoinSession,
+		sessionIdJoin,
+		setSessionIdJoin,
+	} = useJoinSession(loadSessions);
 
-    const deleteSession = useDeleteSession(loadSessions);
-    const connectSession = useStartSession();
+	const deleteSession = useDeleteSession(loadSessions);
+	const connectSession = useStartSession();
 
-    useEffect(() => {
-        loadSessions();
-    }, []);
+	useEffect(() => {
+		loadSessions();
+	}, []);
 
-    return (
-        <BackgroundPanel image="/images/image_2.bmp">
+	return (
+		<BackgroundPanel image="/images/image_2.bmp">
 
-            <DecoratedPanel ornament style={{
-                width: "min(70%, 700px)",
-                height: "min(80%, 600px)",
-            }}>
-                <VBox fullSize padding_l centerVertical stretch gap_s>
+			<DecoratedPanel ornament style={{
+				width: "min(70%, 700px)",
+				height: "min(80%, 600px)",
+			}}>
+				<VBox fullSize padding_l centerVertical stretch gap_s>
 
-                    <Header1>Game Sessions</Header1>
+					<Txt.Header1>
+						<Txt.String>Game Sessions</Txt.String>
+					</Txt.Header1>
 
-                    <VSpacer size_s/>
+					<VSpacer size_s/>
 
-                    <InsetPanel grow shrink>
-                        <VBox scrollable padding_s fullSize>
-                            {sessions.map(session => (
-                                <GameSessionEntry
-                                    key={session.id}
-                                    session={session}
-                                    onConnect={() => connectSession(session.id)}
-                                    onDelete={() => deleteSession(session.id)}
-                                />
-                            ))}
+					<InsetPanel grow shrink>
+						<VBox scrollable padding_s fullSize>
+							{sessions.map(session => (
+								<GameSessionEntry
+									key={session.id}
+									session={session}
+									onConnect={() => connectSession(session.id)}
+									onDelete={() => deleteSession(session.id)}
+								/>
+							))}
 
-                        </VBox>
-                    </InsetPanel>
+						</VBox>
+					</InsetPanel>
 
-                    <VSpacer size_s/>
+					<VSpacer size_s/>
 
-                    <HBox right gap_s dontGrow dontShrink>
-                        <Button success onClick={startCreateSession}>Create</Button>
-                        <Button success onClick={startJoinSession}>Join</Button>
-                    </HBox>
+					<HBox right gap_s dontGrow dontShrink>
+						<Button success onClick={startCreateSession}>Create</Button>
+						<Button success onClick={startJoinSession}>Join</Button>
+					</HBox>
 
-                </VBox>
-            </DecoratedPanel>
+				</VBox>
+			</DecoratedPanel>
 
-            {showJoinSession && (
-                <ModalJoinGame
-                    sessionId={sessionIdJoin}
-                    onSessionId={setSessionIdJoin}
-                    onCancel={cancelJoinSession}
-                    onAccept={acceptJoinSession}
-                    acceptDisabled={!sessionIdJoin}
-                />
-            )}
+			{showJoinSession && (
+				<ModalJoinGame
+					sessionId={sessionIdJoin}
+					onSessionId={setSessionIdJoin}
+					onCancel={cancelJoinSession}
+					onAccept={acceptJoinSession}
+					acceptDisabled={!sessionIdJoin}
+				/>
+			)}
 
-            {showCreateSession && (
-                <ModalCreateGame
-                    name={name}
-                    setName={setName}
-                    seed={seed}
-                    onSeed={setSeed}
-                    onCancel={cancelCreateSession}
-                    onAccept={acceptCreateSession}
-                />
-            )}
+			{showCreateSession && (
+				<ModalCreateGame
+					name={name}
+					setName={setName}
+					seed={seed}
+					onSeed={setSeed}
+					onCancel={cancelCreateSession}
+					onAccept={acceptCreateSession}
+				/>
+			)}
 
-        </BackgroundPanel>
-    );
+		</BackgroundPanel>
+	);
 }
 
 function GameSessionEntry(props: {
-    session: GameSessionMeta,
-    onConnect: () => void,
-    onDelete: () => void
+	session: GameSessionMeta,
+	onConnect: () => void,
+	onDelete: () => void
 }): ReactElement {
-    return (
-        <DecoratedPanel pattern blue>
-            <HBox padding_m gap_s>
-                <VBox grow shrink gap_xs>
-                    <Header3>{props.session.name}</Header3>
-                    <HBox gap_xs wrap>
-                        <Text style={{marginRight: "16px"}} type="secondary">
-                            {"Created: " + new Date(props.session.creationTimestamp).toLocaleDateString(undefined, {})}
-                        </Text>
-                        <Text style={{marginRight: "16px"}} type="secondary">
-                            {"Id: " + props.session.id}
-                        </Text>
-                        <Text style={{marginRight: "16px"}} type="secondary">
-                            {"Players: " + props.session.players}
-                        </Text>
-                        <Text style={{marginRight: "16px"}} type="secondary">
-                            {"Turn: " + props.session.currentTurn}
-                        </Text>
-                    </HBox>
-                </VBox>
-                <Button info onClick={props.onConnect}>Connect</Button>
-                <Button warn onClick={props.onDelete} soundId={AudioType.CLICK_CLOSE.id}>Delete</Button>
-            </HBox>
-        </DecoratedPanel>
-    );
+	return (
+		<DecoratedPanel pattern blue>
+			<HBox padding_m gap_s>
+				<VBox grow shrink gap_xs>
+					<Txt.Header3>
+						<Txt.String>{props.session.name}</Txt.String>
+					</Txt.Header3>
+					<HBox gap_xs wrap>
+						<Txt.Body secondary style={{marginRight: "16px"}}>
+							<Txt.String>
+								{"Created: " + new Date(props.session.creationTimestamp).toLocaleDateString(undefined, {})}
+							</Txt.String>
+						</Txt.Body>
+						<Txt.Body secondary style={{marginRight: "16px"}}>
+							<Txt.String>
+								{"Id: " + props.session.id}
+							</Txt.String>
+						</Txt.Body>
+						<Txt.Body secondary style={{marginRight: "16px"}}>
+							<Txt.String>
+								{"Players: " + props.session.players}
+							</Txt.String>
+						</Txt.Body>
+						<Txt.Body secondary style={{marginRight: "16px"}}>
+							<Txt.String>
+								{"Turn: " + props.session.currentTurn}
+							</Txt.String>
+						</Txt.Body>
+					</HBox>
+				</VBox>
+				<Button info onClick={props.onConnect}>Connect</Button>
+				<Button warn onClick={props.onDelete} soundId={AudioType.CLICK_CLOSE.id}>Delete</Button>
+			</HBox>
+		</DecoratedPanel>
+	);
 }
 
 function ModalJoinGame(props: {
-    sessionId: string,
-    onSessionId: (id: string) => void,
-    onCancel: () => void,
-    onAccept: () => void,
-    acceptDisabled: boolean
+	sessionId: string,
+	onSessionId: (id: string) => void,
+	onCancel: () => void,
+	onAccept: () => void,
+	acceptDisabled: boolean
 }): ReactElement {
-    return (
-        <ModalWindow>
-            <DecoratedPanel ornament>
-                <VBox padding_l gap_m>
+	return (
+		<ModalWindow>
+			<DecoratedPanel ornament>
+				<VBox padding_l gap_m>
 
-                    <Header1>Join</Header1>
+                    <Txt.Header1>
+                        <Txt.String>Join</Txt.String>
+                    </Txt.Header1>
 
-                    <TextField
-                        value={props.sessionId}
-                        placeholder={"Session-Id"}
-                        type="text"
-                        onChange={props.onSessionId}
-                    />
+					<TextField
+						value={props.sessionId}
+						placeholder={"Session-Id"}
+						type="text"
+						onChange={props.onSessionId}
+					/>
 
-                    <HBox right gap_xs>
-                        <Button warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>Cancel</Button>
-                        <Button success onClick={props.onAccept} disabled={props.acceptDisabled}>Join</Button>
-                    </HBox>
+					<HBox right gap_xs>
+						<Button warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>Cancel</Button>
+						<Button success onClick={props.onAccept} disabled={props.acceptDisabled}>Join</Button>
+					</HBox>
 
-                </VBox>
-            </DecoratedPanel>
-        </ModalWindow>
-    );
+				</VBox>
+			</DecoratedPanel>
+		</ModalWindow>
+	);
 }
 
 function ModalCreateGame(props: {
-    name: string,
-    setName: (name: string) => void,
-    seed: string,
-    onSeed: (seed: string) => void,
-    onCancel: () => void,
-    onAccept: () => void,
+	name: string,
+	setName: (name: string) => void,
+	seed: string,
+	onSeed: (seed: string) => void,
+	onCancel: () => void,
+	onAccept: () => void,
 }): ReactElement {
-    return (
-        <ModalWindow>
-            <DecoratedPanel ornament>
-                <VBox padding_l gap_m>
+	return (
+		<ModalWindow>
+			<DecoratedPanel ornament>
+				<VBox padding_l gap_m>
 
-                    <Header1>Create</Header1>
+                    <Txt.Header1>
+                        <Txt.String>Create</Txt.String>
+                    </Txt.Header1>
 
-                    <VBox gap_s>
+					<VBox gap_s>
 
-                        <TextField
-                            value={props.name}
-                            placeholder={"Name"}
-                            type="text"
-                            onChange={props.setName}
-                        />
+						<TextField
+							value={props.name}
+							placeholder={"Name"}
+							type="text"
+							onChange={props.setName}
+						/>
 
-                        <TextField
-                            value={props.seed}
-                            placeholder={"Seed (Optional)"}
-                            type="text"
-                            onChange={props.onSeed}
-                        />
+						<TextField
+							value={props.seed}
+							placeholder={"Seed (Optional)"}
+							type="text"
+							onChange={props.onSeed}
+						/>
 
-                    </VBox>
+					</VBox>
 
-                    <HBox right gap_xs>
-                        <Button warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>Cancel</Button>
-                        <Button success onClick={props.onAccept}>Create</Button>
-                    </HBox>
+					<HBox right gap_xs>
+						<Button warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>Cancel</Button>
+						<Button success onClick={props.onAccept}>Create</Button>
+					</HBox>
 
-                </VBox>
-            </DecoratedPanel>
-        </ModalWindow>
-    );
+				</VBox>
+			</DecoratedPanel>
+		</ModalWindow>
+	);
 }
 
 
 function useSessionData() {
-    const [sessions, setSessions] = useState<GameSessionMeta[]>([]);
-    const loadGameSessions = SessionHooks.useLoadGameSessions();
+	const [sessions, setSessions] = useState<GameSessionMeta[]>([]);
+	const loadGameSessions = SessionHooks.useLoadGameSessions();
 
-    return {
-        sessions: sessions,
-        loadSessions: () => {
-            loadGameSessions().then((list: GameSessionMeta[]) => setSessions(list));
-        },
-    };
+	return {
+		sessions: sessions,
+		loadSessions: () => {
+			loadGameSessions().then((list: GameSessionMeta[]) => setSessions(list));
+		},
+	};
 }
 
 function useCreateSession(reloadSessions: () => void) {
-    const createGameSession = SessionHooks.useCreateGameSession();
-    const [show, setShow] = useState(false);
-    const [seed, setSeed] = useState("");
-    const [name, setName] = useState("New Game");
+	const createGameSession = SessionHooks.useCreateGameSession();
+	const [show, setShow] = useState(false);
+	const [seed, setSeed] = useState("");
+	const [name, setName] = useState("New Game");
 
-    function getCleanSeed(seed: string) {
-        let cleanSeed = seed.trim();
-        if (cleanSeed.length === 0) {
-            return null;
-        } else {
-            return cleanSeed;
-        }
-    }
+	function getCleanSeed(seed: string) {
+		let cleanSeed = seed.trim();
+		if (cleanSeed.length === 0) {
+			return null;
+		} else {
+			return cleanSeed;
+		}
+	}
 
-    return {
-        startCreateSession: () => {
-            setSeed("");
-            setShow(true);
-        },
-        cancelCreateSession: () => {
-            setSeed("");
-            setShow(false);
-        },
-        acceptCreateSession: () => {
-            setSeed("");
-            setShow(false);
-            createGameSession(name, getCleanSeed(seed))
-                .then(() => reloadSessions())
-                .catch(console.error);
-        },
-        showCreateSession: show,
-        seed: seed,
-        setSeed: setSeed,
-        name: name,
-        setName: setName,
-    };
+	return {
+		startCreateSession: () => {
+			setSeed("");
+			setShow(true);
+		},
+		cancelCreateSession: () => {
+			setSeed("");
+			setShow(false);
+		},
+		acceptCreateSession: () => {
+			setSeed("");
+			setShow(false);
+			createGameSession(name, getCleanSeed(seed))
+				.then(() => reloadSessions())
+				.catch(console.error);
+		},
+		showCreateSession: show,
+		seed: seed,
+		setSeed: setSeed,
+		name: name,
+		setName: setName,
+	};
 
 }
 
 function useJoinSession(reloadSessions: () => void) {
-    const joinGameSession = SessionHooks.useJoinGameSession();
-    const [show, setShow] = useState(false);
-    const [sessionId, setSessionId] = useState("");
+	const joinGameSession = SessionHooks.useJoinGameSession();
+	const [show, setShow] = useState(false);
+	const [sessionId, setSessionId] = useState("");
 
-    return {
-        startJoinSession: () => {
-            setSessionId("");
-            setShow(true);
-        },
-        cancelJoinSession: () => {
-            setSessionId("");
-            setShow(false);
-        },
-        acceptJoinSession: () => {
-            setSessionId("");
-            setShow(false);
-            joinGameSession(sessionId)
-                .then(() => reloadSessions())
-                .catch(console.error);
-        },
-        showJoinSession: show,
-        sessionIdJoin: sessionId,
-        setSessionIdJoin: setSessionId,
-    };
+	return {
+		startJoinSession: () => {
+			setSessionId("");
+			setShow(true);
+		},
+		cancelJoinSession: () => {
+			setSessionId("");
+			setShow(false);
+		},
+		acceptJoinSession: () => {
+			setSessionId("");
+			setShow(false);
+			joinGameSession(sessionId)
+				.then(() => reloadSessions())
+				.catch(console.error);
+		},
+		showJoinSession: show,
+		sessionIdJoin: sessionId,
+		setSessionIdJoin: setSessionId,
+	};
 }
 
 function useDeleteSession(reloadSessions: () => void) {
-    const deleteGameSession = SessionHooks.useDeleteGameSession();
-    return (id: string) => {
-        deleteGameSession(id)
-            .then(() => reloadSessions())
-            .catch(console.error);
-    };
+	const deleteGameSession = SessionHooks.useDeleteGameSession();
+	return (id: string) => {
+		deleteGameSession(id)
+			.then(() => reloadSessions())
+			.catch(console.error);
+	};
 }
 
 function useStartSession() {
-    const startGameSession = SessionHooks.useStartGameSession();
-    return (id: string) => {
-        startGameSession(id);
-    };
+	const startGameSession = SessionHooks.useStartGameSession();
+	return (id: string) => {
+		startGameSession(id);
+	};
 }

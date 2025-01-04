@@ -1,6 +1,5 @@
 import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Text} from "../../../../components/text_basic/Text";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {UseSettlementWindow} from "./useSettlementWindow";
 import {VSpacer} from "../../../../components/spacer/Spacer";
@@ -8,7 +7,6 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Button} from "../../../../components/button/Button";
 import "./settlementWindow.less";
-import {Header2} from "../../../../components/header/Header";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Banner} from "../../../../components/banner/Banner";
 import {Divider} from "../../../../components/divider/Divider";
@@ -28,6 +26,7 @@ import {ProgressCircle} from "./ProgressCircle";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {RxEyeOpen} from "react-icons/rx";
+import {Txt} from "../../../../components/text/Txt";
 
 export interface SettlementWindowProps {
     windowId: string;
@@ -41,9 +40,9 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
     if (data === null) {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
-                <VBox fullSize center>
-                    <Text secondary>No settlement selected.</Text>
-                </VBox>
+                <Txt.Body center fullSize>
+                    <Txt.String>No settlement selected</Txt.String>
+                </Txt.Body>
             </DecoratedWindow>
         );
     } else {
@@ -166,14 +165,18 @@ function SectionRoutes(props: UseSettlementWindow.Data): ReactElement {
         <VBox gap_s dontGrow dontShrink>
 
             <VSpacer size_s/>
-            <Header2 centered>Connections</Header2>
+            <Txt.Header2 center>
+                <Txt.String>Connections</Txt.String>
+            </Txt.Header2>
             <Divider line/>
 
             <InsetPanel dontShrink dontGrow>
                 <VBox padding_s gap_s fullSize>
 
                     {props.settlement.routes.length === 0 && (
-                        <Text center secondary>No connected settlements.</Text>
+                        <Txt.Body center secondary>
+                            <Txt.String>No connected settlements.</Txt.String>
+                        </Txt.Body>
                     )}
 
                     {props.settlement.routes.map(route => (
@@ -206,16 +209,22 @@ function SectionResourceBalance(props: UseSettlementWindow.Data) {
         <VBox gap_s dontGrow dontShrink>
 
             <VSpacer size_s/>
-            <Header2 centered>Resource Balance</Header2>
+            <Txt.Header2 center>
+                <Txt.String>Resource Balance</Txt.String>
+            </Txt.Header2>
             <Divider line/>
 
             <InsetPanel dontShrink dontGrow>
                 <HBox padding_s gap_s left wrap fullSize>
                     {!props.settlement.resources.visible && (
-                        <Text grow secondary>Unknown</Text>
+                        <Txt.Body grow secondary>
+                            <Txt.String>Unknown</Txt.String>
+                        </Txt.Body>
                     )}
                     {(props.settlement.resources.visible && props.settlement.resources.value.length == 0) && (
-                        <Text grow secondary>No resources.</Text>
+                        <Txt.Body grow secondary>
+                            <Txt.String>No resources.</Txt.String>
+                        </Txt.Body>
                     )}
                     {(props.settlement.resources.visible && props.settlement.resources.value.length > 0) && props.settlement.resources.value.map(entry => (
                         <ResourceLedgerBox {...entry} key={entry.type}/>
@@ -231,16 +240,22 @@ function SectionBuildings(props: UseSettlementWindow.Data) {
         <VBox gap_s dontGrow dontShrink>
 
             <VSpacer size_s/>
-            <Header2 centered>Buildings</Header2>
+            <Txt.Header2 center>
+                <Txt.String>Buildings</Txt.String>
+            </Txt.Header2>
             <Divider line/>
 
             <InsetPanel dontShrink dontGrow>
                 <HBox padding_s gap_s left wrap fullSize>
                     {!props.settlement.buildings.visible && (
-                        <Text grow secondary center>Unknown</Text>
+                        <Txt.Body grow secondary center>
+                            <Txt.String>Unknown.</Txt.String>
+                        </Txt.Body>
                     )}
                     {(props.settlement.buildings.visible && props.settlement.buildings.value.length == 0) && (
-                        <Text grow secondary center>No buildings constructed.</Text>
+                        <Txt.Body grow secondary center>
+                            <Txt.String>No buildings constructed.</Txt.String>
+                        </Txt.Body>
                     )}
                     {(props.settlement.buildings.visible && props.settlement.buildings.value.length > 0) && props.settlement.buildings.value.map((entry, i) => (
                         <BuildingBox building={entry} key={i}/>
@@ -256,11 +271,15 @@ function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
         <VBox gap_s dontGrow dontShrink>
 
             <VSpacer size_s/>
-            <Header2 centered>Production</Header2>
+            <Txt.Header2 center>
+                <Txt.String>Production</Txt.String>
+            </Txt.Header2>
             <Divider line/>
 
             {!props.settlement.production.queue.visible && (
-                <Text secondary center>Unknown</Text>
+                <Txt.Body secondary center>
+                    <Txt.String>Unknown</Txt.String>
+                </Txt.Body>
             )}
 
             {props.settlement.production.queue.visible && (
@@ -278,9 +297,9 @@ function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
                         onClick={props.productionQueue.open}
                         className="production_queue__progress"
                     >
-                        <Text>
-                            {props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}
-                        </Text>
+                        <Txt.Body>
+                            <Txt.String>{props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}</Txt.String>
+                        </Txt.Body>
                     </ProgressBar>
 
                     {props.settlement.country.isUserCountry && (
@@ -316,11 +335,15 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
         <VBox gap_s dontGrow dontShrink>
 
             <VSpacer size_s/>
-            <Header2 centered>Growth</Header2>
+            <Txt.Header2 center>
+                <Txt.String>Growth</Txt.String>
+            </Txt.Header2>
             <Divider line/>
 
             {!props.settlement.population.growth.visible && (
-                <Text secondary center>Unknown</Text>
+                <Txt.Body secondary center>
+                    <Txt.String>Unknown</Txt.String>
+                </Txt.Body>
             )}
 
             {props.settlement.population.growth.visible && (

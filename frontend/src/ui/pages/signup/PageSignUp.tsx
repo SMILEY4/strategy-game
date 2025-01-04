@@ -1,7 +1,6 @@
 import React, {ReactElement} from "react";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
-import {Header1} from "../../components/header/Header";
 import {TextField} from "../../components/textfield/TextField";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {Button} from "../../components/button/Button";
@@ -9,64 +8,68 @@ import {VSpacer} from "../../components/spacer/Spacer";
 import {SignupHooks} from "./signup";
 import {GotoHooks} from "../../hooks/goto";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
+import {Txt} from "../../components/text/Txt";
 
 
 export function PageSignUp(): ReactElement {
 
-    const {
-        username,
-        setUsername,
-        email,
-        setEmail,
-        password,
-        setPassword,
-        signUp,
-        error,
-    } = SignupHooks.useSignup();
+	const {
+		username,
+		setUsername,
+		email,
+		setEmail,
+		password,
+		setPassword,
+		signUp,
+		error,
+	} = SignupHooks.useSignup();
 
-    const gotoLogin = GotoHooks.useLogin();
+	const gotoLogin = GotoHooks.useLogin();
 
-    return (
-        <BackgroundPanel image="/images/image_3.bmp">
+	return (
+		<BackgroundPanel image="/images/image_3.bmp">
 
-            <DecoratedPanel ornament>
-                <VBox padding_l centerVertical gap_s>
+			<DecoratedPanel ornament>
+				<VBox padding_l centerVertical gap_s>
 
-                    <Header1>Sign-Up</Header1>
+					<Txt.Header1>
+						<Txt.String>Sign-Up</Txt.String>
+					</Txt.Header1>
 
-                    <VSpacer size_s/>
 
-                    <TextField
-                        value={username}
-                        placeholder={"Username"}
-                        type="text"
-                        onChange={setUsername}
-                    />
+					<VSpacer size_s/>
 
-                    <TextField
-                        value={email}
-                        placeholder={"Email"}
-                        type="email"
-                        onChange={setEmail}
-                    />
+					<TextField
+						value={username}
+						placeholder={"Username"}
+						type="text"
+						onChange={setUsername}
+					/>
 
-                    <TextField
-                        value={password}
-                        placeholder={"Password"}
-                        type="password"
-                        onChange={setPassword}
-                    />
+					<TextField
+						value={email}
+						placeholder={"Email"}
+						type="email"
+						onChange={setEmail}
+					/>
 
-                    <VSpacer size_s/>
+					<TextField
+						value={password}
+						placeholder={"Password"}
+						type="password"
+						onChange={setPassword}
+					/>
 
-                    <HBox right gap_s>
-                        <Button info onClick={gotoLogin}>Login</Button>
-                        <Button success onClick={signUp}>Sign-Up</Button>
-                    </HBox>
+					<VSpacer size_s/>
 
-                </VBox>
-            </DecoratedPanel>
+					<HBox right gap_s>
+						<Button info onClick={gotoLogin}>Login</Button>
+						<Button success onClick={signUp}>Sign-Up</Button>
+					</HBox>
 
-        </BackgroundPanel>
-    );
+				</VBox>
+			</DecoratedPanel>
+
+		</BackgroundPanel>
+	);
 }

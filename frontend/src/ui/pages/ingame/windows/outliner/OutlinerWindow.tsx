@@ -1,11 +1,9 @@
 import React, {ReactElement} from "react";
 import {UseOutlinerWindow} from "./useOutlinerWindow";
-import {Header1} from "../../../../components/header/Header";
 import {Divider} from "../../../../components/divider/Divider";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {Text} from "../../../../components/text_basic/Text";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
@@ -17,6 +15,7 @@ import {RxEyeOpen} from "react-icons/rx";
 import {ETSpacer} from "../../../../components/textenriched/elements/ETSpacer";
 import {ETText} from "../../../../components/textenriched/elements/ETText";
 import {ETIcon} from "../../../../components/textenriched/elements/ETIcon";
+import {Txt} from "../../../../components/text/Txt";
 
 export interface OutlinerWindowProps {
     windowId: string,
@@ -30,7 +29,9 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
         <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
             <VBox padding_l gap_m fullSize>
 
-                <Header1 centered>Outliner</Header1>
+                <Txt.Header1 center>
+                    <Txt.String>Outliner</Txt.String>
+                </Txt.Header1>
 
                 <Divider line/>
 
@@ -82,7 +83,9 @@ function SectionCountries(props: UseOutlinerWindow.Data): ReactElement {
     return (
         <>
             {props.countries.entries.length > 0 && (
-                <Text>Countries</Text>
+                <Txt.Header5>
+                    <Txt.String>Countries</Txt.String>
+                </Txt.Header5>
             )}
             {props.countries.entries.map(country => (
                 <DecoratedPanel
@@ -111,7 +114,9 @@ function SectionSettlements(props: UseOutlinerWindow.Data): ReactElement {
     return (
         <>
             {props.settlements.entries.length > 0 && (
-                <Text>Settlements</Text>
+                <Txt.Header5>
+                    <Txt.String>Settlements</Txt.String>
+                </Txt.Header5>
             )}
             {props.settlements.entries.map(settlement => (
                 <DecoratedPanel
@@ -140,7 +145,9 @@ function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
     return (
         <>
             {props.worldObjects.entries.length > 0 && (
-                <Text>Units</Text>
+                <Txt.Header5>
+                    <Txt.String>Units</Txt.String>
+                </Txt.Header5>
             )}
             {props.worldObjects.entries.map(worldObject => (
                 <DecoratedPanel

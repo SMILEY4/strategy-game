@@ -1,6 +1,5 @@
 import {ResourceLedgerEntry} from "../../../../../models/base/Settlement";
 import React, {ReactElement} from "react";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
@@ -10,21 +9,22 @@ import {If, Then} from "react-if";
 import "./resourceLedgerBox.less";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
-import {Header4} from "../../../../components/header/Header";
 import {Divider} from "../../../../components/divider/Divider";
 import {ETText} from "../../../../components/textenriched/elements/ETText";
+import { Tooltip } from "../../../../components/tooltip/Tooltip";
+import {Txt} from "../../../../components/text/Txt";
 
 export function ResourceLedgerBox(props: ResourceLedgerEntry): ReactElement {
 
     return (
-        <TooltipContext>
-            <TooltipTrigger>
+        <Tooltip.Context>
+            <Tooltip.Trigger>
                 <Box {...props}/>
-            </TooltipTrigger>
-            <TooltipContent>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
                 <Details {...props}/>
-            </TooltipContent>
-        </TooltipContext>
+            </Tooltip.Content>
+        </Tooltip.Context>
     );
 }
 
@@ -53,10 +53,11 @@ function Details(props: ResourceLedgerEntry): ReactElement {
         <TooltipPanel>
             <VBox fullSize padding_s gap_xs>
 
-                <EnrichedText>
-                    <ETImageIcon url={"/icons/resources/" + props.type + ".png"}/> <Header4
-                    inline>{props.type}</Header4>
-                </EnrichedText>
+                <Txt.Header4>
+                    <Txt.Icon name={props.type}/>
+                    <Txt.Whitespace/>
+                    <Txt.String>{props.type}</Txt.String>
+                </Txt.Header4>
 
                 <Divider line/>
 

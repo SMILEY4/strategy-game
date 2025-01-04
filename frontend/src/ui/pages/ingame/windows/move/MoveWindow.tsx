@@ -1,12 +1,11 @@
 import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Text} from "../../../../components/text_basic/Text";
 import {UseMoveWindow} from "./useMoveWindow";
-import {Header2} from "../../../../components/header/Header";
 import {Button} from "../../../../components/button/Button";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Divider} from "../../../../components/divider/Divider";
+import {Txt} from "../../../../components/text/Txt";
 
 export interface MoveWindowProps {
 	windowId: string;
@@ -20,9 +19,9 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 	if (data === null) {
 		return (
 			<DecoratedWindow windowId={props.windowId} withCloseButton>
-				<VBox fullSize center>
-					<Text center secondary>No object selected</Text>
-				</VBox>
+				<Txt.Header1 center fullSize>
+					<Txt.String>No object selected</Txt.String>
+				</Txt.Header1>
 			</DecoratedWindow>
 		);
 	} else {
@@ -38,9 +37,13 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 				}}
 			>
 				<VBox padding_l gap_m fullSize>
-					<Header2>Move Unit</Header2>
+					<Txt.Header2>
+						<Txt.String>Move Unit</Txt.String>
+					</Txt.Header2>
 					<Divider line/>
-					<Text>{data.remainingPoints + "/" + data.totalPoints + " Movement Points left"}</Text>
+					<Txt.Body>
+						<Txt.String>{data.remainingPoints + "/" + data.totalPoints + " Movement Points left"}</Txt.String>
+					</Txt.Body>
 					<HBox right gap_s>
 						<Button warn onClick={data.cancel}>Cancel</Button>
 						<Button success onClick={data.accept}>Accept</Button>

@@ -6,22 +6,22 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {If, Then} from "react-if";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
-import {Header4} from "../../../../components/header/Header";
 import {Divider} from "../../../../components/divider/Divider";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
+import { Tooltip } from "../../../../components/tooltip/Tooltip";
+import {Txt} from "../../../../components/text/Txt";
 
 export function BuildingBox(props: { building: Building }): ReactElement {
     return (
-        <TooltipContext>
-            <TooltipTrigger>
+        <Tooltip.Context>
+            <Tooltip.Trigger>
                 <Box building={props.building}/>
-            </TooltipTrigger>
-            <TooltipContent>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
                 <Details building={props.building}/>
-            </TooltipContent>
-        </TooltipContext>
+            </Tooltip.Content>
+        </Tooltip.Context>
     );
 }
 
@@ -48,9 +48,9 @@ function Details(props: { building: Building }): ReactElement {
         <TooltipPanel>
             <VBox padding_s gap_s>
 
-                <EnrichedText>
-                    <Header4 inline>{props.building.type}</Header4>
-                </EnrichedText>
+                    <Txt.Header4>
+                        <Txt.String>{props.building.type}</Txt.String>
+                    </Txt.Header4>
 
                 <Divider line/>
 

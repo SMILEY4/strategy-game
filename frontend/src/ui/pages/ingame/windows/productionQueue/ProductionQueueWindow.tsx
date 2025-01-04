@@ -3,7 +3,6 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {Text} from "../../../../components/text_basic/Text";
 import {Button} from "../../../../components/button/Button";
 import {UseProductionQueueWindow} from "./useProductionQueueWindow";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
@@ -11,8 +10,8 @@ import {AudioType} from "../../../../../common/audioService";
 import {CgClose} from "react-icons/cg";
 import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
-import {Header1} from "../../../../components/header/Header";
 import {Divider} from "../../../../components/divider/Divider";
+import {Txt} from "../../../../components/text/Txt";
 
 export interface ProductionQueueWindowProps {
     windowId: string;
@@ -27,14 +26,20 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
             <VBox padding_l gap_m fullSize>
 
                 <VBox gap_xs dontShrink dontGrow>
-                    <Header1>Production Queue</Header1>
-                    <Text>{data.settlement.identifier.name}</Text>
+                    <Txt.Header1>
+                        <Txt.String>Production Queue</Txt.String>
+                    </Txt.Header1>
+                    <Txt.Body>
+                        <Txt.String>{data.settlement.identifier.name}</Txt.String>
+                    </Txt.Body>
                 </VBox>
 
                 <Divider line/>
 
                 {data.entries.length === 0 && (
-                    <Text center secondary>Nothing in queue.</Text>
+                    <Txt.Body secondary center>
+                        <Txt.String>Nothing in queue</Txt.String>
+                    </Txt.Body>
                 )}
 
                 {data.entries.length > 0 && (
@@ -67,7 +72,6 @@ function QueueEntry(props: {
 }): ReactElement {
     return (
         <DecoratedPanel
-            className="queue-entry"
             dontGrow
             dontShrink
             simpleDashed={props.entry.isCommand}
@@ -82,14 +86,9 @@ function QueueEntry(props: {
         >
             <HBox padding_s gap_s centerVertical spaceBetween fullSize>
 
-                <Text
-                    grow
-                    shrink
-                    secondary={props.entry.isCommand}
-                    className="queue-entry__name"
-                >
-                    {props.position + ". " + props.entry.type}
-                </Text>
+                <Txt.Body grow shrink secondary={props.entry.isCommand}>
+                    <Txt.String>{props.position + ". " + props.entry.type}</Txt.String>
+                </Txt.Body>
 
                 {!props.entry.isCommand && props.position === 1 && (
                     <ProgressBar
@@ -98,13 +97,11 @@ function QueueEntry(props: {
                         small
                         border
                         progress={props.entry.progress}
-                        className="queue-entry__progress"
                     />
                 )}
 
                 {props.data.settlement.country.isUserCountry && (
                     <Button
-                        className="queue-entry__add"
                         square circle small
                         onClick={() => props.data.cancel(props.entry)}
                         soundId={AudioType.CLICK_CLOSE.id}
