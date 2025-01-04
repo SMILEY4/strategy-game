@@ -3,7 +3,7 @@ import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
 import {Header1} from "../../components/header/Header";
 import {TextField} from "../../components/textfield/TextField";
-import {Button} from "../../components/button/primary/Button";
+import {Button} from "../../components/button/Button";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {VSpacer} from "../../components/spacer/Spacer";
 import {GotoHooks} from "../../hooks/goto";

@@ -2,7 +2,7 @@ import React, {ReactElement} from "react";
 import {TileIdentifier} from "../../../../../models/base/tile";
 import {UseTileWindow} from "./useTileWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Text} from "../../../../components/text/Text";
+import {Text} from "../../../../components/text_basic/Text";
 import {mapHiddenOrDefault} from "../../../../../common/hiddenType";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
@@ -21,7 +21,7 @@ import {Banner} from "../../../../components/banner/Banner";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Visibility} from "../../../../../models/base/visibility";
 import {VSpacer} from "../../../../components/spacer/Spacer";
-import {Button} from "../../../../components/button/primary/Button";
+import {Button} from "../../../../components/button/Button";
 import {RxEyeOpen} from "react-icons/rx";
 
 export interface TileWindowProps {

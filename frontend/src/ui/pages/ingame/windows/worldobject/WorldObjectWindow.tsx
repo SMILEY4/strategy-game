@@ -1,8 +1,8 @@
 import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Text} from "../../../../components/text/Text";
+import {Text} from "../../../../components/text_basic/Text";
 import {UseWorldObjectWindow} from "./useWorldObjectWindow";
-import {Button} from "../../../../components/button/primary/Button";
+import {Button} from "../../../../components/button/Button";
 import {Else, If, Then, When} from "react-if";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Banner} from "../../../../components/banner/Banner";

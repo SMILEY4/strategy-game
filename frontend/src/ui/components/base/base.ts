@@ -3,7 +3,6 @@ import {CSSProperties} from "react";
 export interface BaseProps {
 
     // 100% width & height
-    noFullSize?: boolean;
     fullWidth?: boolean,
     fullHeight?: boolean,
     fullSize?: boolean,
@@ -27,7 +26,6 @@ export namespace BaseProps {
     export function buildBaseClassNames(props: BaseProps): (string | null | undefined)[] {
         return [
 
-            props.noFullSize ? "base--no-full-size" : null,
             props.fullWidth ? "base--full-width" : null,
             props.fullHeight ? "base--full-height" : null,
             props.fullSize ? "base--full-size" : null,

@@ -8,12 +8,12 @@ import {
     ProductionQueueAddCommand,
     ProductionQueueCancelCommand,
 } from "../../../../../models/base/command";
-import {Text} from "../../../../components/text/Text";
+import {Text} from "../../../../components/text_basic/Text";
 import {Header1, Header4} from "../../../../components/header/Header";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Button} from "../../../../components/button/primary/Button";
+import {Button} from "../../../../components/button/Button";
 import {CgClose} from "react-icons/cg";
 import {Divider} from "../../../../components/divider/Divider";
 import {IndentBox} from "../../../../components/layout/indent/IndentBox";

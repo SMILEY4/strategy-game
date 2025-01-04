@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {Button} from "../../../components/button/primary/Button";
+import {Button} from "../../../components/button/Button";
 import {HBox} from "../../../components/layout/hbox/HBox";
 import {HSpacer} from "../../../components/spacer/Spacer";
 import {CgDebug} from "react-icons/cg";

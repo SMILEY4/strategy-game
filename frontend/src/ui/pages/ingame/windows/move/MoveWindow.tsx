@@ -1,9 +1,9 @@
 import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Text} from "../../../../components/text/Text";
+import {Text} from "../../../../components/text_basic/Text";
 import {UseMoveWindow} from "./useMoveWindow";
 import {Header2} from "../../../../components/header/Header";
-import {Button} from "../../../../components/button/primary/Button";
+import {Button} from "../../../../components/button/Button";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Divider} from "../../../../components/divider/Divider";

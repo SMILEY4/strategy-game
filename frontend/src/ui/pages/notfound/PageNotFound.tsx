@@ -2,7 +2,7 @@ import React, {ReactElement} from "react";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {Header1} from "../../components/header/Header";
 import {VBox} from "../../components/layout/vbox/VBox";
-import {Text} from "../../components/text/Text";
+import {Text} from "../../components/text_basic/Text";
 import {VSpacer} from "../../components/spacer/Spacer";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 

@@ -1,10 +1,10 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
 import {Button, ButtonProps} from "./Button";
-import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
+import {DecoratedPanel} from "../panels/decorated/DecoratedPanel";
 import {FaHome, FaSearch} from "react-icons/fa";
-import {HBox} from "../../layout/hbox/HBox";
-import {TextField} from "../../textfield/TextField";
+import {HBox} from "../layout/hbox/HBox";
+import {TextField} from "../textfield/TextField";
 
 const meta = {
     title: "Controls/Button/Primary",

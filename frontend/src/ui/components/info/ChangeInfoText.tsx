@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
 import {HBox} from "../layout/hbox/HBox";
-import {Text} from "../text/Text";
+import {Text} from "../text_basic/Text";
 import {BiSolidRightArrowAlt} from "react-icons/bi";
 import {joinClassNames} from "../window/utils";
 import "./changeInfoText.less";

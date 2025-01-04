@@ -4,7 +4,7 @@ import {Canvas} from "./canvas/Canvas";
 import {MenuBar} from "./menubar/MenuBar";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
-import {Text} from "../../components/text/Text";
+import {Text} from "../../components/text_basic/Text";
 import "./pageInGame.scoped.less";
 import {SessionHooks} from "../sessions/sessions";
 import {useDI} from "../../../appContext";

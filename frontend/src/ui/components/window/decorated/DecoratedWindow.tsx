@@ -1,7 +1,7 @@
 import React, {CSSProperties, ReactElement} from "react";
 import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
 import {joinClassNames} from "../utils";
-import {Button} from "../../button/primary/Button";
+import {Button} from "../../button/Button";
 import {CgClose} from "react-icons/cg";
 import "./decoratedWindow.less";
 import {AudioType} from "../../../../common/audioService";

@@ -1,12 +1,12 @@
 import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Text} from "../../../../components/text/Text";
+import {Text} from "../../../../components/text_basic/Text";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {UseSettlementWindow} from "./useSettlementWindow";
 import {VSpacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {Button} from "../../../../components/button/primary/Button";
+import {Button} from "../../../../components/button/Button";
 import "./settlementWindow.less";
 import {Header2} from "../../../../components/header/Header";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";

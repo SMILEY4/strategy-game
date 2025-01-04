@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {Text} from "../text/Text";
+import {Text} from "../text_basic/Text";
 import {formatPercentage, joinClassNames} from "../window/utils";
 import "./progressBar.scoped.less";
 import {BaseProps} from "../base/base";

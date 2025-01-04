@@ -4,6 +4,7 @@ import {autoUpdate, flip, shift, useFloating, useHover, useInteractions, useRole
 export function useTooltip(delay: number | undefined) {
 
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenOverwrite, setOpenOverwrite] = useState(false);
 
     const {refs, floatingStyles, context} = useFloating({
         open: isOpen,
@@ -17,11 +18,14 @@ export function useTooltip(delay: number | undefined) {
     const {getReferenceProps, getFloatingProps} = useInteractions([hover, role]);
 
     return {
-        isOpen: isOpen,
+        isOpen: isOpen || isOpenOverwrite,
         refTrigger: refs.setReference,
-        propsTrigger: getReferenceProps(),
+        propsTrigger: {
+            ...getReferenceProps(),
+            onMouseDown: (e: any) => e.button === 1 && setOpenOverwrite(!isOpenOverwrite),
+        },
         refTooltip: refs.setFloating,
         propsTooltip: getFloatingProps(),
-        styleTooltip: floatingStyles
-    }
+        styleTooltip: floatingStyles,
+    };
 }

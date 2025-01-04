@@ -4,7 +4,7 @@ import {VBox} from "../../components/layout/vbox/VBox";
 import {Header1} from "../../components/header/Header";
 import {TextField} from "../../components/textfield/TextField";
 import {HBox} from "../../components/layout/hbox/HBox";
-import {Button} from "../../components/button/primary/Button";
+import {Button} from "../../components/button/Button";
 import {VSpacer} from "../../components/spacer/Spacer";
 import {SignupHooks} from "./signup";
 import {GotoHooks} from "../../hooks/goto";
