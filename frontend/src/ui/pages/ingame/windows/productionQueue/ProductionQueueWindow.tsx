@@ -7,7 +7,6 @@ import {Button} from "../../../../components/button/Button";
 import {UseProductionQueueWindow} from "./useProductionQueueWindow";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {AudioType} from "../../../../../common/audioService";
-import {CgClose} from "react-icons/cg";
 import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Divider} from "../../../../components/divider/Divider";
@@ -106,7 +105,7 @@ function QueueEntry(props: {
                         onClick={() => props.data.cancel(props.entry)}
                         soundId={AudioType.CLICK_CLOSE.id}
                     >
-                        <CgClose/>
+                        <Txt.Icon.Close/>
                     </Button>
                 )}
 

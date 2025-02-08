@@ -2,72 +2,73 @@ import React, {CSSProperties, ReactElement} from "react";
 import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
 import {joinClassNames} from "../utils";
 import {Button} from "../../button/Button";
-import {CgClose} from "react-icons/cg";
 import "./decoratedWindow.less";
 import {AudioType} from "../../../../common/audioService";
 import {useWindowInteractions} from "../windowHooks";
-import {RiPushpinFill} from "react-icons/ri";
+import {Txt} from "../../text/Txt";
 
 export interface DecoratedWindowProps {
-    windowId: string;
-    withCloseButton?: boolean;
-    withPinButton?: boolean;
-    onClose?: () => void;
-    style?: CSSProperties
-    noPadding?: boolean,
-    className?: string,
-    children?: any;
+	windowId: string;
+	withCloseButton?: boolean;
+	withPinButton?: boolean;
+	onClose?: () => void;
+	style?: CSSProperties
+	noPadding?: boolean,
+	className?: string,
+	children?: any;
 }
 
 export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
 
-    const {
-        dragProps,
-        resizerProps,
-        refContent,
-        closeWindow,
-        pinWindow,
-        isPinned
-    } = useWindowInteractions(props.windowId);
+	const {
+		dragProps,
+		resizerProps,
+		refContent,
+		closeWindow,
+		pinWindow,
+		isPinned,
+	} = useWindowInteractions(props.windowId);
 
-    function handleClose() {
-        props.onClose && props.onClose();
-        closeWindow();
-    }
+	function handleClose() {
+		props.onClose && props.onClose();
+		closeWindow();
+	}
 
-    return (
-        <DecoratedPanel
-            ornament
-            className={joinClassNames(["decorated-window", props.className])}
-            elementRef={refContent}
-            style={{
-                minWidth: "min-content",
-                minHeight: "200px",
-                ...props.style,
-            }}
-        >
+	return (
+		<DecoratedPanel
+			ornament
+			className={joinClassNames(["decorated-window", props.className])}
+			elementRef={refContent}
+			style={{
+				minWidth: "min-content",
+				minHeight: "200px",
+				...props.style,
+			}}
+		>
 
-            <div className="decorated-window__content">
-                {props.children}
-            </div>
+			<div className="decorated-window__content">
+				{props.children}
+			</div>
 
-            <div {...dragProps} className="decorated-window__drag-area"/>
+			<div {...dragProps} className="decorated-window__drag-area"/>
 
-            <div {...resizerProps} className="decorated-window__resize-area"/>
+			<div {...resizerProps} className="decorated-window__resize-area"/>
 
-            {props.withPinButton && (
-                <Button warn circle className="decorated-window__pin" disabled={isPinned} onClick={pinWindow} soundId={AudioType.CLICK_PRIMARY.id}>
-                    <RiPushpinFill/> {/* Note: unpin-variant: <RiUnpinFill />*/}
-                </Button>
-            )}
+			{props.withPinButton && (
+				<Button warn circle className="decorated-window__pin" disabled={isPinned} onClick={pinWindow}
+						soundId={AudioType.CLICK_PRIMARY.id}>
+					<Txt.Icon.Pin/>
+				</Button>
+			)}
 
-            {props.withCloseButton && (
-                <Button warn circle className="decorated-window__close" onClick={handleClose} soundId={AudioType.CLICK_CLOSE.id}>
-                    <CgClose/>
-                </Button>
-            )}
+			{props.withCloseButton && (
+				<Button warn circle className="decorated-window__close" onClick={handleClose}
+						soundId={AudioType.CLICK_CLOSE.id}>
+					<Txt.Icon.Close/>
+				</Button>
+			)}
 
 
-        </DecoratedPanel>
-    );
+		</DecoratedPanel>
+	);
 }

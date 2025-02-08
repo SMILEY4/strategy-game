@@ -1,128 +1,132 @@
 import {ResourceLedgerEntry} from "../../../../../models/base/Settlement";
 import React, {ReactElement} from "react";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
-import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {If, Then} from "react-if";
 import "./resourceLedgerBox.less";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
-import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
 import {Divider} from "../../../../components/divider/Divider";
-import {ETText} from "../../../../components/textenriched/elements/ETText";
-import { Tooltip } from "../../../../components/tooltip/Tooltip";
+import {Tooltip} from "../../../../components/tooltip/Tooltip";
 import {Txt} from "../../../../components/text/Txt";
 
 export function ResourceLedgerBox(props: ResourceLedgerEntry): ReactElement {
 
-    return (
-        <Tooltip.Context>
-            <Tooltip.Trigger>
-                <Box {...props}/>
-            </Tooltip.Trigger>
-            <Tooltip.Content>
-                <Details {...props}/>
-            </Tooltip.Content>
-        </Tooltip.Context>
-    );
+	return (
+		<Tooltip.Context>
+			<Tooltip.Trigger>
+				<Box {...props}/>
+			</Tooltip.Trigger>
+			<Tooltip.Content>
+				<Details {...props}/>
+			</Tooltip.Content>
+		</Tooltip.Context>
+	);
 }
 
 function Box(props: ResourceLedgerEntry): ReactElement {
-    return (
-        <DecoratedPanel blue pattern className="resource-ledger-box">
-            <div
-                className="resource-ledger-box__icon"
-                style={{backgroundImage: "url('/icons/resources/" + props.type + ".png')"}}
-            />
-            <EnrichedText className="resource-ledger-box__label">
-                <ETNumber>{props.amount}</ETNumber>
-                {props.missing.amount > 0 && (
-                    <>
-                        <ETText>/</ETText>
-                        <ETNumber neg unsigned>{props.missing.amount}</ETNumber>
-                    </>
-                )}
-            </EnrichedText>
-        </DecoratedPanel>
-    );
+	return (
+		<DecoratedPanel blue pattern className="resource-ledger-box">
+			<div
+				className="resource-ledger-box__icon"
+				style={{backgroundImage: "url('/icons/resources/" + props.type + ".png')"}}
+			/>
+			<Txt.Body className="resource-ledger-box__label">
+				<Txt.Number>{props.amount}</Txt.Number>
+				{props.missing.amount > 0
+					? (
+						<>
+							<Txt.String>/</Txt.String>
+							<Txt.Number behaviour="less-is-better"
+										signBehaviour="never">{props.missing.amount}</Txt.Number>
+						</>
+					)
+					: undefined}
+			</Txt.Body>
+		</DecoratedPanel>
+	);
 }
 
 function Details(props: ResourceLedgerEntry): ReactElement {
-    return (
-        <TooltipPanel>
-            <VBox fullSize padding_s gap_xs>
+	return (
+		<VBox fullSize padding_s gap_xs>
 
-                <Txt.Header4>
-                    <Txt.Icon name={props.type}/>
-                    <Txt.Whitespace/>
-                    <Txt.String>{props.type}</Txt.String>
-                </Txt.Header4>
+			<Txt.Header4>
+				<Txt.Icon name={props.type.toLowerCase()}/>
+				<Txt.Whitespace/>
+				<Txt.String>{props.type}</Txt.String>
+			</Txt.Header4>
 
-                <Divider line/>
+			<Divider line/>
 
-                <DetailSection
-                    title="Produced"
-                    format="signed"
-                    type="pos"
-                    amountMod={+1}
-                    amount={props.produced.amount}
-                    details={props.produced.details}
-                />
+			<If condition={props.produced.amount > 0 && props.produced.details.length > 0}>
+				<Then>
+					<Txt.Body>
+						<Txt.Number behaviour="more-is-better"
+									signBehaviour="always">{props.produced.amount}</Txt.Number>
+						<Txt.Whitespace/>
+						<Txt.String>Produced</Txt.String>
+					</Txt.Body>
+					<InsetPanel>
+						<VBox padding_xs gap_xs fullSize>
+							{props.produced.details.map(detail => (
+								<Txt.Body>
+									<Txt.Number behaviour="more-is-better"
+												signBehaviour="always">{detail.amount}</Txt.Number>
+									<Txt.Whitespace/>
+									<Txt.String>{detail.key}</Txt.String>
+								</Txt.Body>
+							))}
+						</VBox>
+					</InsetPanel>
+				</Then>
+			</If>
 
-                <DetailSection
-                    title="Consumed"
-                    format="signed"
-                    type="neg"
-                    amountMod={-1}
-                    amount={props.consumed.amount}
-                    details={props.consumed.details}
-                />
+			<If condition={props.consumed.amount > 0 && props.consumed.details.length > 0}>
+				<Then>
+					<Txt.Body>
+						<Txt.Number behaviour="more-is-better" signBehaviour="always"
+									zeroClassification="neutral">{-props.consumed.amount}</Txt.Number>
+						<Txt.Whitespace/>
+						<Txt.String>Consumed</Txt.String>
+					</Txt.Body>
+					<InsetPanel>
+						<VBox padding_xs gap_xs fullSize>
+							{props.consumed.details.map(detail => (
+								<Txt.Body>
+									<Txt.Number behaviour="more-is-better" signBehaviour="always"
+												zeroClassification="neutral">{-detail.amount}</Txt.Number>
+									<Txt.Whitespace/>
+									<Txt.String>{detail.key}</Txt.String>
+								</Txt.Body>
+							))}
+						</VBox>
+					</InsetPanel>
+				</Then>
+			</If>
 
-                <DetailSection
-                    title="Missing"
-                    format="unsigned"
-                    amountMod={1}
-                    type="neg"
-                    amount={props.missing.amount}
-                    details={props.missing.details}
-                />
+			<If condition={props.missing.amount > 0 && props.missing.details.length > 0}>
+				<Then>
+					<Txt.Body>
+						<Txt.Number behaviour="less-is-better" signBehaviour="never"
+									zeroClassification="neutral">{props.missing.amount}</Txt.Number>
+						<Txt.Whitespace/>
+						<Txt.String>Missing</Txt.String>
+					</Txt.Body>
+					<InsetPanel>
+						<VBox padding_xs gap_xs fullSize>
+							{props.missing.details.map(detail => (
+								<Txt.Body>
+									<Txt.Number behaviour="less-is-better" signBehaviour="never"
+												zeroClassification="neutral">{detail.amount}</Txt.Number>
+									<Txt.Whitespace/>
+									<Txt.String>{detail.key}</Txt.String>
+								</Txt.Body>
+							))}
+						</VBox>
+					</InsetPanel>
+				</Then>
+			</If>
 
-            </VBox>
-        </TooltipPanel>
-    );
-}
-
-function DetailSection(props: {
-    title: string,
-    format: "signed" | "signed-0p" | "signed-0n" | "unsigned"
-    type: "none" | "pos" | "neg" | "info" | "auto" | "auto-inv",
-    amountMod: 1 | -1,
-    amount: number,
-    details: ({ key: string, amount: number })[]
-}) {
-
-    return (
-        <>
-            <EnrichedText>
-                <ETNumber typeAuto format={props.format}
-                          type={props.type}>{props.amount * props.amountMod}</ETNumber> {props.title}
-            </EnrichedText>
-
-            <If condition={props.details.length > 0}>
-                <Then>
-                    <InsetPanel>
-                        <VBox padding_xs gap_xs fullSize>
-                            {props.details.map(detail => (
-                                <EnrichedText key={detail.key}>
-                                    <ETNumber type={props.type}
-                                              format={props.format}>{detail.amount * props.amountMod}</ETNumber> {detail.key}
-                                </EnrichedText>
-                            ))}
-                        </VBox>
-                    </InsetPanel>
-                </Then>
-            </If>
-        </>
-    );
+		</VBox>
+	);
 }

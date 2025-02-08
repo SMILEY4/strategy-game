@@ -45,7 +45,9 @@ export function MapWindow(props: MapWindowProps): ReactElement {
                                     </Tooltip.Trigger>
                                     <Tooltip.Content>
                                         <TooltipPanel>
-                                            {mapMode.description}
+                                            <Txt.Body>
+                                                <Txt.String>{mapMode.description}</Txt.String>
+                                            </Txt.Body>
                                         </TooltipPanel>
                                     </Tooltip.Content>
                                 </Tooltip.Context>

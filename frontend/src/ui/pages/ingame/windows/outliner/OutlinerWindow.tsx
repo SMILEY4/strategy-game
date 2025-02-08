@@ -6,15 +6,9 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {ETLink} from "../../../../components/textenriched/elements/ETLink";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {HSpacer} from "../../../../components/spacer/Spacer";
 import {Button} from "../../../../components/button/Button";
-import {RxEyeOpen} from "react-icons/rx";
-import {ETSpacer} from "../../../../components/textenriched/elements/ETSpacer";
-import {ETText} from "../../../../components/textenriched/elements/ETText";
-import {ETIcon} from "../../../../components/textenriched/elements/ETIcon";
 import {Txt} from "../../../../components/text/Txt";
 
 export interface OutlinerWindowProps {
@@ -94,14 +88,14 @@ function SectionCountries(props: UseOutlinerWindow.Data): ReactElement {
                     blue
                 >
                     <HBox fullSize gap_s padding_s>
-                        <EnrichedText>
-                            <ETLink disabled onClick={() => props.countries.open(country)}>
-                                {country.identifier.name}
-                            </ETLink>
-                        </EnrichedText>
+                        <Txt.Body>
+                            <Txt.Link onClick={() => props.countries.open(country)}>
+                                <Txt.String>{country.identifier.name}</Txt.String>
+                            </Txt.Link>
+                        </Txt.Body>
                         <HSpacer grow/>
                         <Button circle small disabled onClick={() => props.countries.focusCamera(country)}>
-                            <RxEyeOpen/>
+                            <Txt.Icon.Eye/>
                         </Button>
                     </HBox>
                 </DecoratedPanel>
@@ -125,14 +119,14 @@ function SectionSettlements(props: UseOutlinerWindow.Data): ReactElement {
                     blue
                 >
                     <HBox fullSize gap_s padding_s>
-                        <EnrichedText>
-                            <ETLink onClick={() => props.settlements.open(settlement)}>
-                                {settlement.identifier.name}
-                            </ETLink>
-                        </EnrichedText>
+                        <Txt.Body>
+                            <Txt.Link onClick={() => props.settlements.open(settlement)}>
+                                <Txt.String>{settlement.identifier.name}</Txt.String>
+                            </Txt.Link>
+                        </Txt.Body>
                         <HSpacer grow/>
                         <Button circle small onClick={() => props.settlements.focusCamera(settlement)}>
-                            <RxEyeOpen/>
+                            <Txt.Icon.Eye/>
                         </Button>
                     </HBox>
                 </DecoratedPanel>
@@ -156,23 +150,21 @@ function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
                     blue
                 >
                     <HBox fullSize gap_s padding_s>
-                        <EnrichedText>
-                            <ETLink onClick={() => props.worldObjects.open(worldObject)}>
-                                {worldObject.identifier.type.id}
-                            </ETLink>
-                            <ETSpacer size="s"/>
+                        <Txt.Body>
+                            <Txt.Link onClick={() => props.worldObjects.open(worldObject)}>
+                                <Txt.String>{worldObject.identifier.type.id}</Txt.String>
+                            </Txt.Link>
                             {props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id) && (
                                 <>
-                                    <ETIcon name="command"/>
-                                    <ETText>
-                                        {props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id)?.name + ""}
-                                    </ETText>
+                                    <Txt.Whitespace/>
+                                    <Txt.Icon.Command/>
+                                    <Txt.String>{props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id)?.name + ""}</Txt.String>
                                 </>
                             )}
-                        </EnrichedText>
+                        </Txt.Body>
                         <HSpacer grow/>
                         <Button circle small onClick={() => props.worldObjects.focusCamera(worldObject)}>
-                            <RxEyeOpen/>
+                            <Txt.Icon.Eye/>
                         </Button>
                     </HBox>
                 </DecoratedPanel>

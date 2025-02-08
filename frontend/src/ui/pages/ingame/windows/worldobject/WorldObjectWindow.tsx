@@ -5,10 +5,8 @@ import {Button} from "../../../../components/button/Button";
 import {Else, If, Then, When} from "react-if";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Banner} from "../../../../components/banner/Banner";
-import {FiHexagon} from "react-icons/fi";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
-import {RxEyeOpen} from "react-icons/rx";
 import {Txt} from "../../../../components/text/Txt";
 
 export interface WorldObjectWindowProps {
@@ -39,8 +37,8 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 						color={data.worldObject.country.color}
 						spaceAbove
 					>
-						<Button circle small onClick={data.open.tile}><FiHexagon/></Button>
-						<Button circle small onClick={data.centerCamera}><RxEyeOpen/></Button>
+						<Button circle small onClick={data.open.tile}><Txt.Icon.Tile/></Button>
+						<Button circle small onClick={data.centerCamera}><Txt.Icon.Eye/></Button>
 					</Banner>
 
 					<VBox padding_l gap_m scrollable grow shrink>

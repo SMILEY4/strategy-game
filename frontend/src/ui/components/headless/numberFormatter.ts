@@ -11,6 +11,9 @@ export namespace NumberFormatter {
 
         // determines general format of the given number
         decimalPlaces: number,
+
+        // suffix to append after the number
+        suffix?: string,
     }
 
     export interface Result {
@@ -19,21 +22,27 @@ export namespace NumberFormatter {
     }
 
     export function format(value: number, config: Config): Result {
-        let strValue = "";
 
         // apply decimal places
         const d = Math.pow(10, config.decimalPlaces);
         const preparedValue = Math.abs(Math.round(value * d) / d);
-        strValue = strValue + preparedValue;
+        let strValue = "" + preparedValue;
 
         // apply sign
         const signConfig = buildSignConfig(config);
-        if (preparedValue < 0) strValue = signConfig.negative + strValue;
-        if (preparedValue == 0) strValue = signConfig.zero + strValue;
-        if (preparedValue > 0) strValue = signConfig.positive + strValue;
+        if (value < 0) strValue = signConfig.negative + strValue;
+        if (value == 0) strValue = signConfig.zero + strValue;
+        if (value > 0) strValue = signConfig.positive + strValue;
 
-        // determine classification
-        const classification = classify(preparedValue, config)
+        // apply suffix
+        if(config.suffix) {
+            strValue = strValue + config.suffix
+        }
+
+        // determine classification (good / bad / neutral)
+        const classification = classify(value, config)
+
+        console.log(value, classification, config, strValue)
 
         return {
             value: strValue,

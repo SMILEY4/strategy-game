@@ -1,99 +1,108 @@
 import "./buildingBox.less";
 import React, {ReactElement} from "react";
 import {Building} from "../../../../../models/base/building";
-import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {If, Then} from "react-if";
-import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
-import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
 import {Divider} from "../../../../components/divider/Divider";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
-import { Tooltip } from "../../../../components/tooltip/Tooltip";
+import {Tooltip} from "../../../../components/tooltip/Tooltip";
 import {Txt} from "../../../../components/text/Txt";
 
 export function BuildingBox(props: { building: Building }): ReactElement {
-    return (
-        <Tooltip.Context>
-            <Tooltip.Trigger>
-                <Box building={props.building}/>
-            </Tooltip.Trigger>
-            <Tooltip.Content>
-                <Details building={props.building}/>
-            </Tooltip.Content>
-        </Tooltip.Context>
-    );
+	return (
+		<Tooltip.Context>
+			<Tooltip.Trigger>
+				<Box building={props.building}/>
+			</Tooltip.Trigger>
+			<Tooltip.Content>
+				<Details building={props.building}/>
+			</Tooltip.Content>
+		</Tooltip.Context>
+	);
 }
 
 
 function Box(props: { building: Building }): ReactElement {
-    const active = (props.building.validity.workTile && props.building.validity.inputResources)
-    return (
-        <DecoratedPanel
-            className={"building-box"}
-            blue
-            pattern
-            background={
-                <DecoratedPanel.ImageBackground
-                    url={"icons/production/" + props.building.type + ".png"}
-                    desaturated={!active}
-                />
-            }
-        />
-    );
+	const active = (props.building.validity.workTile && props.building.validity.inputResources);
+	return (
+		<DecoratedPanel
+			className={"building-box"}
+			blue
+			pattern
+			background={
+				<DecoratedPanel.ImageBackground
+					url={"icons/production/" + props.building.type + ".png"}
+					desaturated={!active}
+				/>
+			}
+		/>
+	);
 }
 
 function Details(props: { building: Building }): ReactElement {
-    return (
-        <TooltipPanel>
-            <VBox padding_s gap_s>
+	return (
+		<VBox padding_s gap_s>
 
-                    <Txt.Header4>
-                        <Txt.String>{props.building.type}</Txt.String>
-                    </Txt.Header4>
+			<Txt.Header4>
+				<Txt.String>{props.building.type}</Txt.String>
+			</Txt.Header4>
 
-                <Divider line/>
+			<Divider line/>
 
-                <If condition={props.building.activity.consumed.length > 0}>
-                    <Then>
-                        {props.building.activity.consumed.map(entry => (
-                            <EnrichedText key={entry.type}>
-                                <ETNumber typeAuto signed>{-entry.amount}</ETNumber> <ETImageIcon url={"icons/resources/" + entry.type + ".png"} /> {entry.type}
-                            </EnrichedText>
-                        ))}
-                    </Then>
-                </If>
+			<If condition={props.building.activity.consumed.length > 0}>
+				<Then>
+					{props.building.activity.consumed.map(entry => (
+                        <Txt.Body key={entry.type}>
+                            <Txt.Number behaviour="more-is-better" signBehaviour="always">{-entry.amount}</Txt.Number>
+                            <Txt.Whitespace/>
+                            <Txt.Icon name={entry.type.toLowerCase()}/>
+                            <Txt.Whitespace/>
+                            <Txt.String>{entry.type}</Txt.String>
+                        </Txt.Body>
+					))}
+				</Then>
+			</If>
 
-                <If condition={props.building.activity.produced.length > 0}>
-                    <Then>
-                        {props.building.activity.produced.map(entry => (
-                            <EnrichedText key={entry.type}>
-                                <ETNumber typeAuto signed>{entry.amount}</ETNumber> <ETImageIcon url={"icons/resources/" + entry.type + ".png"} /> {entry.type}
-                            </EnrichedText>
-                        ))}
-                    </Then>
-                </If>
+			<If condition={props.building.activity.produced.length > 0}>
+				<Then>
+					{props.building.activity.produced.map(entry => (
+                        <Txt.Body key={entry.type}>
+                            <Txt.Number behaviour="more-is-better" signBehaviour="always">{entry.amount}</Txt.Number>
+                            <Txt.Whitespace/>
+                            <Txt.Icon name={entry.type.toLowerCase()}/>
+                            <Txt.Whitespace/>
+                            <Txt.String>{entry.type}</Txt.String>
+                        </Txt.Body>
+					))}
+				</Then>
+			</If>
 
 
-                <If condition={props.building.activity.missing.length > 0 || !props.building.validity.workTile}>
-                    <Then>
-                        <EnrichedText>
-                            Missing:
-                        </EnrichedText>
-                        {!props.building.validity.workTile && (
-                            <EnrichedText style={{color: "hsl(0, 87%, 65%)"}}>
+			<If condition={props.building.activity.missing.length > 0 || !props.building.validity.workTile}>
+				<Then>
+                    <Txt.Body>
+                        <Txt.String>Missing:</Txt.String>
+                    </Txt.Body>
+
+					{!props.building.validity.workTile && (
+                        <Txt.Body>
+                            <Txt.String negative>
                                 {"Tile to work on: " + props.building.workTile.requiredTerrain?.id + " " + props.building.workTile.requiredResource?.id}
-                            </EnrichedText>
-                        )}
-                        {props.building.activity.missing.map(entry => (
-                            <EnrichedText key={entry.type}>
-                                <ETNumber neg unsigned>{entry.amount}</ETNumber> <ETImageIcon url={"icons/resources/" + entry.type + ".png"} /> {entry.type}
-                            </EnrichedText>
-                        ))}
-                    </Then>
-                </If>
+                            </Txt.String>
+                        </Txt.Body>
+					)}
+					{props.building.activity.missing.map(entry => (
+                        <Txt.Body key={entry.type}>
+                            <Txt.Number behaviour="less-is-better" signBehaviour="never">{entry.amount}</Txt.Number>
+                            <Txt.Whitespace/>
+                            <Txt.Icon name={entry.type.toLowerCase()}/>
+                            <Txt.Whitespace/>
+                            <Txt.String>{entry.type}</Txt.String>
+                        </Txt.Body>
+					))}
+				</Then>
+			</If>
 
-            </VBox>
-        </TooltipPanel>
-    );
+		</VBox>
+	);
 }

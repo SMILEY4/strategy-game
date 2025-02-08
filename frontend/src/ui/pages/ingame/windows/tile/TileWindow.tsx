@@ -6,8 +6,6 @@ import {mapHiddenOrDefault} from "../../../../../common/hiddenType";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
-import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
 import {Case, Switch} from "react-if";
 import {TileResourceType} from "../../../../../models/base/TileResourceType";
 import {Divider} from "../../../../components/divider/Divider";
@@ -19,7 +17,6 @@ import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedP
 import {Visibility} from "../../../../../models/base/visibility";
 import {VSpacer} from "../../../../components/spacer/Spacer";
 import {Button} from "../../../../components/button/Button";
-import {RxEyeOpen} from "react-icons/rx";
 import {Txt} from "../../../../components/text/Txt";
 
 export interface TileWindowProps {
@@ -50,7 +47,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 						subtitle={"Tile"}
 						spaceAbove
 					>
-						<Button circle small onClick={data.centerCamera}><RxEyeOpen/></Button>
+						<Button circle small onClick={data.centerCamera}><Txt.Icon.Eye/></Button>
 					</Banner>
 
 					<TabBar initial="Overview">
@@ -102,11 +99,11 @@ function PanelDebug(props: UseTileWindow.Data): ReactElement {
 		<>
 			<InsetKeyValueGrid dontGrow dontShrink>
 
-				<EnrichedText>Tile Id:</EnrichedText>
-				<EnrichedText>{props.tile.identifier.id}</EnrichedText>
+				<Txt.Body><Txt.String>Tile Id:</Txt.String></Txt.Body>
+				<Txt.Body><Txt.String>{props.tile.identifier.id}</Txt.String></Txt.Body>
 
-				<EnrichedText>Location:</EnrichedText>
-				<EnrichedText>{props.tile.identifier.q + "," + props.tile.identifier.r}</EnrichedText>
+				<Txt.Body><Txt.String>Location:</Txt.String></Txt.Body>
+				<Txt.Body><Txt.String>{props.tile.identifier.q + "," + props.tile.identifier.r}</Txt.String></Txt.Body>
 
 			</InsetKeyValueGrid>
 		</>
@@ -117,29 +114,30 @@ function SectionBaseInformation(props: UseTileWindow.Data): ReactElement {
 	return (
 		<InsetKeyValueGrid dontGrow dontShrink>
 
-			<EnrichedText>Terrain:</EnrichedText>
+			<Txt.Body><Txt.String>Terrain:</Txt.String></Txt.Body>
 			{!props.tile.base.visible && (
-				<EnrichedText>unknown</EnrichedText>
+				<Txt.Body><Txt.String>unknown</Txt.String></Txt.Body>
 			)}
 			{props.tile.base.visible && (
-				<EnrichedText>{props.tile.base.value.terrainType.id}</EnrichedText>
+				<Txt.Body><Txt.String>{props.tile.base.value.terrainType.id}</Txt.String></Txt.Body>
 			)}
 
-			<EnrichedText>Resource:</EnrichedText>
+			<Txt.Body><Txt.String>Resource:</Txt.String></Txt.Body>
 			{!props.tile.base.visible && (
-				<EnrichedText>unknown</EnrichedText>
+				<Txt.Body><Txt.String>unknown</Txt.String></Txt.Body>
 			)}
 			{(props.tile.base.visible && props.tile.base.value.resourceType === TileResourceType.NONE) && (
-				<EnrichedText>{props.tile.base.value.resourceType.id}</EnrichedText>
+				<Txt.Body><Txt.String>{props.tile.base.value.resourceType.id}</Txt.String></Txt.Body>
 			)}
 			{(props.tile.base.visible && props.tile.base.value.resourceType !== TileResourceType.NONE) && (
-				<EnrichedText><ETImageIcon
-					url={props.tile.base.value.resourceType.getIconPath()}/> {props.tile.base.value.resourceType.id}
-				</EnrichedText>
+				<Txt.Body>
+					<Txt.Icon name={props.tile.base.value.resourceType.id.toLowerCase()}/>
+					<Txt.String>{props.tile.base.value.resourceType.id}</Txt.String>
+				</Txt.Body>
 			)}
 
-			<EnrichedText>Location:</EnrichedText>
-			<EnrichedText>{props.tile.identifier.q + "," + props.tile.identifier.r}</EnrichedText>
+			<Txt.Body><Txt.String>Location:</Txt.String></Txt.Body>
+			<Txt.Body><Txt.String>{props.tile.identifier.q + "," + props.tile.identifier.r}</Txt.String></Txt.Body>
 
 		</InsetKeyValueGrid>
 	);

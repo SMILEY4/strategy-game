@@ -2,8 +2,6 @@ import React, {ReactElement} from "react";
 import {Button} from "../../../../components/button/Button";
 import {UseDevWindow} from "./useDevWindow";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
-import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Divider} from "../../../../components/divider/Divider";
@@ -51,16 +49,15 @@ function BaseInformation(props: UseDevWindow.Data): ReactElement {
 	return (
 		<InsetKeyValueGrid dontShrink dontGrow>
 
-			<EnrichedText>Camera.Pos</EnrichedText>
-			<EnrichedText>
-				<ETNumber unstyled decPlaces={2}>{props.camera.x}</ETNumber>, <ETNumber unstyled
-																						decPlaces={2}>{props.camera.y}</ETNumber>
-			</EnrichedText>
+			<Txt.Body><Txt.String>Camera Pos:</Txt.String></Txt.Body>
+			<Txt.Body>
+				<Txt.Number behaviour="neutral" decimalPlaces={2}>{props.camera.x}</Txt.Number>
+				<Txt.String>, </Txt.String>
+				<Txt.Number behaviour="neutral" decimalPlaces={2}>{props.camera.y}</Txt.Number>
+			</Txt.Body>
 
-			<EnrichedText>Camera.Zoom</EnrichedText>
-			<EnrichedText>
-				<ETNumber unstyled decPlaces={4}>{props.camera.zoom}</ETNumber>
-			</EnrichedText>
+			<Txt.Body><Txt.String>Camera Zoom:</Txt.String></Txt.Body>
+			<Txt.Body><Txt.Number behaviour="neutral" decimalPlaces={4}>{props.camera.zoom}</Txt.Number></Txt.Body>
 
 		</InsetKeyValueGrid>
 	);

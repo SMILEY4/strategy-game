@@ -45,23 +45,23 @@
     background: @gradient-warn;
   }
 
-  .progress-circle__arrow {
+  /deep/ .progress-circle__arrow {
     position: absolute;
     width:    70%;
     height:   70%;
     filter: drop-shadow(@shadow-text) drop-shadow(0 0 1px rgba(0, 0, 0, 30%));
   }
 
-  .progress-circle__arrow--positive {
-    color: @color-success-light;
+  /deep/ .progress-circle__arrow--positive {
+    color: @color-success-content;
   }
 
-  .progress-circle__arrow--negative {
-    color: @color-warn-light;
+  /deep/ .progress-circle__arrow--negative {
+    color: @color-warn-content;
   }
 
-  .progress-circle__arrow--neutral {
-    color: @color-info-light;
+  /deep/ .progress-circle__arrow--neutral {
+    color: @color-info-content;
   }
 
 }

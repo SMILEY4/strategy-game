@@ -1754,3 +1754,20 @@ Ingame:
         - never connect if route would pass through territory of third party
     - trade power of a node determines priority in economy simulation step -> higher priority -> higher chance of recieving resources 
 
+
+## Combat Resolution Ideas
+
+- Simulate units on grid simular to Conquest of Elysium 5
+  - https://www.youtube.com/watch?v=5liGCHFcHOQ
+
+
+
+## Types for Magic and Similar
+
+- necromancy
+- biomancy
+- demonic / dark magic
+- arcane magic
+- divine magic
+
+-> types can be combined, some borders are blurry
