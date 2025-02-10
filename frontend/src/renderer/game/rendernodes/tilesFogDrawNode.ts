@@ -13,7 +13,7 @@ export class TilesFogDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
             id: TilesFogDrawNode.ID,
             input: [
                 new NodeInput.ClearColor({
-                    clearColor: [0, 0, 0, 0],
+                    clearColor: [0, 0, 0, 1],
                 }),
                 new NodeInput.BlendMode({
                     func: gl => gl.blendFuncSeparate(

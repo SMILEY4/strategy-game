@@ -42,8 +42,6 @@ export namespace NumberFormatter {
         // determine classification (good / bad / neutral)
         const classification = classify(value, config)
 
-        console.log(value, classification, config, strValue)
-
         return {
             value: strValue,
             classification: classification,

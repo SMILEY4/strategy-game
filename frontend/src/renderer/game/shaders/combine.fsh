@@ -165,9 +165,9 @@ vec4 getLayerLand() {
 
 vec4 getLayerFog() {
     vec4 layer = framebuffer(u_fog.layer, v_textureCoordinates);
-    vec4 color = mix(u_fog.colorDiscovered, u_fog.colorUnknown, layer.r) * layer.a;
-//    vec4 color = u_fog.colorUnknown * layer.a;
-    return color;
+    float factorUnknown = 1.0 - clamp(layer.r+layer.g+layer.b, 0.0, 1.0);
+    float factorVisible = layer.r;
+    return mix(mix(u_fog.colorDiscovered, vec4(0.0), factorVisible), u_fog.colorUnknown, factorUnknown);
 }
 
 // ==================================//

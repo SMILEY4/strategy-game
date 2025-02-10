@@ -227,7 +227,7 @@ export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 	//===== FOG INSTANCES ===========================================
 
 	private isFog(tile: Tile): boolean {
-		return tile.visibility === Visibility.UNKNOWN || tile.visibility === Visibility.DISCOVERED;
+		return tile.visibility !== Visibility.UNKNOWN;
 	}
 
 	private appendFogInstance(tile: Tile, cursor: MixedArrayBufferCursor) {

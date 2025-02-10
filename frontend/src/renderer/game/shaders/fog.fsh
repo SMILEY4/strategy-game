@@ -10,12 +10,18 @@ out vec4 outColor;
 
 
 void main() {
-    vec3 idUnknown = vec3(1.0, 0.0, 0.0);
-    vec3 idDiscovered = vec3(0.0, 1.0, 0.0);
     vec4 texture = texture(u_texture, v_textureCoordinates);
-    if(v_visibility == 1) {
-        outColor = vec4(idDiscovered, texture.a);
-    } else {
-        outColor = vec4(idUnknown, texture.a);
+    vec3 color = vec3(1.0);
+
+    if(v_visibility == 0) { // visible
+        color = vec3(1.0, 0.0, 0.0);
     }
+    if(v_visibility == 1) { // discovered
+        color = vec3(0.0, 1.0, 0.0);
+    }
+    if(v_visibility == 2) { // unknown
+        color = vec3(0.0, 0.0, 1.0);
+    }
+
+    outColor = vec4(color, texture.a);
 }
