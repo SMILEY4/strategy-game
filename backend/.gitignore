@@ -9,3 +9,4 @@ test.db
 dev.db
 *.jks
 env
+.kotlin

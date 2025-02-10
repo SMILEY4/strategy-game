@@ -3,15 +3,12 @@ import {UseProductionWindow} from "./useProductionWindow";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
-import {formatNumber} from "../../../../components/window/utils";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {Text} from "../../../../components/text/Text";
-import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
-import {Button} from "../../../../components/button/primary/Button";
+import {Button} from "../../../../components/button/Button";
 import {ProductionOptionAggregate} from "../../../../../models/aggregates/SettlementAggregate";
-import {Header1} from "../../../../components/header/Header";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
+import {Txt} from "../../../../components/text/Txt";
 
 export interface ProductionWindowProps {
     windowId: string;
@@ -29,14 +26,20 @@ export function ProductionWindow(props: ProductionWindowProps): ReactElement {
             <VBox padding_l gap_m fullSize>
 
                 <VBox gap_xs dontShrink dontGrow>
-                    <Header1>Production</Header1>
-                    <Text>{data.settlement.name}</Text>
+                    <Txt.Header1>
+                        <Txt.String>Production</Txt.String>
+                    </Txt.Header1>
+                    <Txt.Body>
+                        <Txt.String>{data.settlement.name}</Txt.String>
+                    </Txt.Body>
                 </VBox>
 
                 <Divider line/>
 
                 {data.entries.length === 0 && (
-                    <Text secondary center>Nothing available.</Text>
+                    <Txt.Body secondary center>
+                        <Txt.String>Nothing available</Txt.String>
+                    </Txt.Body>
                 )}
 
                 {data.entries.length > 0 && (
@@ -77,14 +80,14 @@ function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: Pro
             }
         >
             <HBox gap_s padding_s fullSize>
-                <Text grow shrink>
-                    {props.entry.type}
-                </Text>
-                <ChangeInfoText
-                    secondary
-                    prevValue={formatNumber(props.entry.queueCount, true, true)}
-                    nextValue={formatNumber(props.entry.queueCount + props.entry.commandCount, true, true)}
-                />
+                <Txt.Body grow shrink>
+                    <Txt.String>{props.entry.type}</Txt.String>
+                </Txt.Body>
+                <Txt.Body secondary dontGrow dontShrink>
+                    <Txt.Number signBehaviour="always">{props.entry.queueCount}</Txt.Number>
+                    <Txt.Icon.ArrowRight/>
+                    <Txt.Number signBehaviour="always">{props.entry.queueCount + props.entry.commandCount}</Txt.Number>
+                </Txt.Body>
                 <Button
                     small
                     disabled={!props.entry.available}

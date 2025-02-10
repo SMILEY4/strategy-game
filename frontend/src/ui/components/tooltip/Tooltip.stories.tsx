@@ -1,10 +1,10 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "./TooltipContext";
+import {Tooltip} from "./Tooltip";
 
 const meta = {
     title: "Controls/Tooltip",
-    component: TooltipContext,
+    component: Tooltip.Context,
     parameters: {
         layout: "centered",
     },
@@ -17,13 +17,13 @@ export default meta;
 
 export const Default: Story = {
     render: (args) => (
-        <TooltipContext>
-            <TooltipTrigger>
+        <Tooltip.Context>
+            <Tooltip.Trigger>
                 <div>Hover!</div>
-            </TooltipTrigger>
-            <TooltipContent>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
                 <div>Tooltip</div>
-            </TooltipContent>
-        </TooltipContext>
+            </Tooltip.Content>
+        </Tooltip.Context>
     ),
 };

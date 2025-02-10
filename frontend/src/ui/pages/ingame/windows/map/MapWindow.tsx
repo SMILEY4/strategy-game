@@ -1,14 +1,14 @@
 import React, {ReactElement} from "react";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
-import {Button} from "../../../../components/button/primary/Button";
+import {Button} from "../../../../components/button/Button";
 import {MapMode} from "../../../../../models/base/mapMode";
 import {UseMapWindow} from "./useMapWindow";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1} from "../../../../components/header/Header";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
+import {Txt} from "../../../../components/text/Txt";
+import { Tooltip } from "../../../../components/tooltip/Tooltip";
 
 export interface MapWindowProps {
     windowId: string;
@@ -22,7 +22,9 @@ export function MapWindow(props: MapWindowProps): ReactElement {
         <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
             <VBox padding_l gap_m fullSize>
 
-                <Header1 centered>Map</Header1>
+                <Txt.Header1 center>
+                    <Txt.String>Map</Txt.String>
+                </Txt.Header1>
 
                 <Divider line/>
 
@@ -31,8 +33,8 @@ export function MapWindow(props: MapWindowProps): ReactElement {
 
                         {MapMode.getValues().map(mapMode => {
                             return (
-                                <TooltipContext key={mapMode.id}>
-                                    <TooltipTrigger>
+                                <Tooltip.Context key={mapMode.id}>
+                                    <Tooltip.Trigger>
                                         <Button
                                             info
                                             onClick={() => data.setMapMode(mapMode)}
@@ -40,13 +42,15 @@ export function MapWindow(props: MapWindowProps): ReactElement {
                                         >
                                             {mapMode.displayString}
                                         </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Content>
                                         <TooltipPanel>
-                                            {mapMode.description}
+                                            <Txt.Body>
+                                                <Txt.String>{mapMode.description}</Txt.String>
+                                            </Txt.Body>
                                         </TooltipPanel>
-                                    </TooltipContent>
-                                </TooltipContext>
+                                    </Tooltip.Content>
+                                </Tooltip.Context>
                             );
                         })}
 

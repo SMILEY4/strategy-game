@@ -1,9 +1,7 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
 import {ProgressBar, ProgressBarProps} from "./ProgressBar";
-import {Text} from "../text/Text";
 import {DecoratedPanel} from "../panels/decorated/DecoratedPanel";
-import {HBox} from "../layout/hbox/HBox";
 import {VBox} from "../layout/vbox/VBox";
 
 const meta = {
@@ -34,7 +32,7 @@ export const Default: Story = {
 
 
                 <ProgressBar progress={args.progress}>
-                    <Text>Progress</Text>
+                    {/*<Text>Progress</Text>*/}
                 </ProgressBar>
 
                 <ProgressBar progress={args.progress}/>

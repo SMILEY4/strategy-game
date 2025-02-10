@@ -1,11 +1,10 @@
 import React, {ReactElement} from "react";
 import {joinClassNames} from "../window/utils";
 import "./banner.scoped.less";
-import {Text} from "../text/Text";
-import {Header2} from "../header/Header";
 import {Color} from "../../../models/base/color";
 import {HBox} from "../layout/hbox/HBox";
 import {BaseProps} from "../base/base";
+import {Txt} from "../text/Txt";
 
 export interface BannerProps extends BaseProps {
     color?: Color
@@ -30,15 +29,14 @@ export function Banner(props: BannerProps): ReactElement {
 
             <div className="banner__inner" style={{background: getGradient()}}>
                 {props.title && (
-                    <Header2 centered>{props.title}</Header2>
+                    <Txt.Header2 center>
+                        <Txt.String>{props.title}</Txt.String>
+                    </Txt.Header2>
                 )}
                 {props.subtitle && (
-                    <Text
-                        align={"center"}
-                        className={"banner__subtitle"}
-                    >
-                        {props.subtitle}
-                    </Text>
+                    <Txt.Body center className="banner__subtitle">
+                        <Txt.String>{props.subtitle}</Txt.String>
+                    </Txt.Body>
                 )}
                 {props.children && (
                     <HBox right centerVertical gap_xs className="banner__children-container">

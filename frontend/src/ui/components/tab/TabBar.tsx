@@ -1,7 +1,7 @@
 import React, {ReactElement, useState} from "react";
 import {VBox} from "../layout/vbox/VBox";
 import {HBox} from "../layout/hbox/HBox";
-import {Button} from "../button/primary/Button";
+import {Button} from "../button/Button";
 import {Divider} from "../divider/Divider";
 import {BaseProps} from "../base/base";
 import {joinClassNames} from "../window/utils";

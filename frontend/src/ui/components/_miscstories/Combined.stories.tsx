@@ -2,13 +2,12 @@ import {StoryObj} from "@storybook/react";
 import React from "react";
 import {DecoratedPanel} from "../panels/decorated/DecoratedPanel";
 import {VBox} from "../layout/vbox/VBox";
-import {Header2} from "../header/Header";
 import {InsetPanel} from "../panels/inset/InsetPanel";
 import {arrayOfSize} from "../../../common/utils";
 import {HBox} from "../layout/hbox/HBox";
 import "../base/base.less"
-import {Text} from "../text/Text"
-import {Button} from "../button/primary/Button";
+import {Txt} from "../text/Txt";
+import {Button} from "../button/Button";
 
 const meta = {
     title: "Combined",
@@ -30,7 +29,9 @@ export const BasicWindowLayout: Story = {
             <DecoratedPanel ornament fullSize>
                 <VBox padding_l gap_m fullSize>
 
-                    <Header2 dontGrow dontShrink>Some Header</Header2>
+                    <Txt.Header2 dontGrow dontShrink>
+                        <Txt.String>Some Header</Txt.String>
+                    </Txt.Header2>
 
                     <InsetPanel grow shrink>
                         <VBox scrollable padding_s fullSize>
@@ -38,7 +39,7 @@ export const BasicWindowLayout: Story = {
                                 {arrayOfSize(10).map(it => (
                                     <DecoratedPanel simple dontShrink dontGrow>
                                         <HBox padding_s centerVertical>
-                                            <Text grow>{"Item " + it + ".".repeat(it)}</Text>
+                                            <Txt.Body grow><Txt.String>{"Item " + it + ".".repeat(it)}</Txt.String></Txt.Body>
                                             <Button small>Add</Button>
                                             <Button small>Remove</Button>
                                         </HBox>

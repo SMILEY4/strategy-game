@@ -2,14 +2,11 @@ import React, {ReactElement} from "react";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {UseDevStatsWindow} from "./useDevStatsWindow";
 import {Area, Bar, BarChart, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, YAxis} from "recharts";
-import {Text} from "../../../../components/text/Text";
 import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
-import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
-import {Header1} from "../../../../components/header/Header";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Divider} from "../../../../components/divider/Divider";
+import {Txt} from "../../../../components/text/Txt";
 
 export interface DevStatsWindowProps {
     windowId: string;
@@ -22,7 +19,9 @@ export function DevStatsWindow(props: DevStatsWindowProps): ReactElement {
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
             <VBox padding_l gap_m fullSize scrollable>
-                <Header1 centered>Dev Statistics</Header1>
+                <Txt.Header1 center>
+                    <Txt.String>Dev Statistics</Txt.String>
+                </Txt.Header1>
                 <Divider line/>
                 <MonitoringInformation {...data}/>
                 <FPSChart {...data}/>
@@ -38,31 +37,34 @@ function MonitoringInformation(props: UseDevStatsWindow.Data): ReactElement {
 
             <KeyValueGrid>
 
-                <EnrichedText>FPS:</EnrichedText>
-                <EnrichedText><ETNumber unstyled
-                                        int>{props.rendering.webGLMonitorData.fps.getAverage()}</ETNumber></EnrichedText>
+                <Txt.Body><Txt.String>FPS:</Txt.String></Txt.Body>
+                <Txt.Body>
+                    <Txt.Number behaviour="neutral">{props.rendering.webGLMonitorData.fps.getAverage()}</Txt.Number>
+                </Txt.Body>
 
-                <EnrichedText>Frame Duration:</EnrichedText>
-                <EnrichedText><ETNumber unstyled
-                                        decPlaces={3}>{props.rendering.webGLMonitorData.frameDuration.getAverage()}</ETNumber> ms</EnrichedText>
+                <Txt.Body><Txt.String>Frame Duration:</Txt.String></Txt.Body>
+                <Txt.Body>
+                    <Txt.Number behaviour="neutral" decimalPlaces={3}>{props.rendering.webGLMonitorData.frameDuration.getAverage()}</Txt.Number>
+                    <Txt.String> ms</Txt.String>
+                </Txt.Body>
 
-                <EnrichedText>Draw Calls:</EnrichedText>
-                <EnrichedText>{props.rendering.webGLMonitorData.countDrawCalls}</EnrichedText>
+                <Txt.Body><Txt.String>Draw Calls:</Txt.String></Txt.Body>
+                <Txt.Body><Txt.Number behaviour="neutral">{props.rendering.webGLMonitorData.countDrawCalls}</Txt.Number></Txt.Body>
 
-                <EnrichedText>GLObjects.Buffers:</EnrichedText>
-                <EnrichedText>{props.rendering.webGLMonitorData.countBuffers}</EnrichedText>
+                <Txt.Body><Txt.String>GLObjects.Buffers:</Txt.String></Txt.Body>
+                <Txt.Body><Txt.Number behaviour="neutral">{props.rendering.webGLMonitorData.countBuffers}</Txt.Number></Txt.Body>
 
-                <EnrichedText>GLObjects.VertexArray:</EnrichedText>
-                <EnrichedText>{props.rendering.webGLMonitorData.countVertexArrays}</EnrichedText>
+                <Txt.Body><Txt.String>GLObjects.VertexArray:</Txt.String></Txt.Body>
+                <Txt.Body><Txt.Number behaviour="neutral">{props.rendering.webGLMonitorData.countVertexArrays}</Txt.Number></Txt.Body>
 
-                <EnrichedText>GLObjects.Textures:</EnrichedText>
-                <EnrichedText>{props.rendering.webGLMonitorData.countTextures}</EnrichedText>
+                <Txt.Body><Txt.String>GLObjects.Textures:</Txt.String></Txt.Body>
+                <Txt.Body><Txt.Number behaviour="neutral">{props.rendering.webGLMonitorData.countTextures}</Txt.Number></Txt.Body>
 
-                <EnrichedText>GLObjects.Framebuffers:</EnrichedText>
-                <EnrichedText>{props.rendering.webGLMonitorData.countFramebuffers}</EnrichedText>
+                <Txt.Body><Txt.String>GLObjects.Framebuffers:</Txt.String></Txt.Body>
+                <Txt.Body><Txt.Number behaviour="neutral">{props.rendering.webGLMonitorData.countFramebuffers}</Txt.Number></Txt.Body>
 
-                <EnrichedText>GLObjects.Programs:</EnrichedText>
-                <EnrichedText>{props.rendering.webGLMonitorData.countPrograms}</EnrichedText>
+                <Txt.Body><Txt.String>GLObjects.Programs:</Txt.String></Txt.Body>
+                <Txt.Body><Txt.Number behaviour="neutral">{props.rendering.webGLMonitorData.countPrograms}</Txt.Number></Txt.Body>
 
             </KeyValueGrid>
         </InsetPanel>
@@ -81,7 +83,9 @@ function FPSChart(props: UseDevStatsWindow.Data): ReactElement {
 
     return (
         <InsetPanel dontGrow dontShrink>
-            <Text>Performance</Text>
+            <Txt.Header5>
+                <Txt.String>Performance</Txt.String>
+            </Txt.Header5>
             <ResponsiveContainer width="100%" height={200}>
                 <ComposedChart
                     data={data}
@@ -120,7 +124,9 @@ function NextTurnDurationChart(props: UseDevStatsWindow.Data): ReactElement {
 
     return (
         <InsetPanel dontGrow dontShrink>
-            <Text>Next-Turn Durations</Text>
+            <Txt.Header5>
+                <Txt.String>Next-Turn Durations</Txt.String>
+            </Txt.Header5>
             <ResponsiveContainer width="100%" height={200}>
                 <BarChart
                     data={data}

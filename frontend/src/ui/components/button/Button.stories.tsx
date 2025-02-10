@@ -1,10 +1,10 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
 import {Button, ButtonProps} from "./Button";
-import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
-import {FaHome, FaSearch} from "react-icons/fa";
-import {HBox} from "../../layout/hbox/HBox";
-import {TextField} from "../../textfield/TextField";
+import {DecoratedPanel} from "../panels/decorated/DecoratedPanel";
+import {HBox} from "../layout/hbox/HBox";
+import {TextField} from "../textfield/TextField";
+import {Txt} from "../text/Txt"
 
 const meta = {
     title: "Controls/Button/Primary",
@@ -47,7 +47,7 @@ export const Round: Story = {
         <DecoratedPanel>
             <div style={{padding: "50px"}}>
                 <Button circle info>
-                        <FaHome style={{width: "100%", height: "100%", display: "block"}}/>
+                    <Txt.Icon.Home/>
                 </Button>
             </div>
         </DecoratedPanel>
@@ -61,7 +61,7 @@ export const NextToTextField: Story = {
                 <HBox gap_none>
                     <TextField value={""}/>
                     <Button success>
-                        <FaSearch style={{width: "100%", height: "100%", display: "block"}}/>
+                        <Txt.Icon.Search/>
                     </Button>
                 </HBox>
             </div>

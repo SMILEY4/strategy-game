@@ -1,8 +1,8 @@
 import {ReactElement} from "react";
-import {useButton, UseButtonProps} from "../../headless/useButton";
-import {joinClassNames} from "../../window/utils";
+import {useButton, UseButtonProps} from "../headless/useButton";
+import {joinClassNames} from "../window/utils";
 import "./button.scoped.less";
-import {BaseProps} from "../../base/base";
+import {BaseProps} from "../base/base";
 
 
 export interface ButtonProps extends UseButtonProps, BaseProps {

@@ -3,14 +3,13 @@ import React from "react";
 import {TextField} from "../../../../components/textfield/TextField";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {Button} from "../../../../components/button/primary/Button";
+import {Button} from "../../../../components/button/Button";
 import {UseFoundSettlementWindow} from "./useFoundSettlementWindow";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
-import {Text} from "../../../../components/text/Text";
-import {Header2} from "../../../../components/header/Header";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Divider} from "../../../../components/divider/Divider";
+import {Txt} from "../../../../components/text/Txt";
+import { Tooltip } from "../../../../components/tooltip/Tooltip";
 
 export interface FoundSettlementWindowProps {
     windowId: string;
@@ -32,7 +31,9 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
             >
                 <VBox padding_l gap_m fullSize>
 
-                    <Header2>Found Settlement</Header2>
+                    <Txt.Header2>
+                        <Txt.String>Found Settlement</Txt.String>
+                    </Txt.Header2>
 
                     <Divider line/>
 
@@ -53,20 +54,20 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
                             Cancel
                         </Button>
 
-                        <TooltipContext enabled={!data.input.valid}>
-                            <TooltipTrigger>
+                        <Tooltip.Context enabled={!data.input.valid}>
+                            <Tooltip.Trigger>
                                 <Button success disabled={!data.input.valid} onClick={data.create}>
                                     Create
                                 </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>
                                 <TooltipPanel>
                                     {data.input.reasonsInvalid.map(e => (
-                                        <Text type="negative">{e}</Text>
+                                        <Txt.Body><Txt.String>{e}</Txt.String></Txt.Body>
                                     ))}
                                 </TooltipPanel>
-                            </TooltipContent>
-                        </TooltipContext>
+                            </Tooltip.Content>
+                        </Tooltip.Context>
                     </HBox>
                 </VBox>
             </DecoratedWindow>

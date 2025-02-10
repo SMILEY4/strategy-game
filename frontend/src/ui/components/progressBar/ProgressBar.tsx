@@ -1,8 +1,8 @@
 import React, {ReactElement} from "react";
-import {Text} from "../text/Text";
 import {formatPercentage, joinClassNames} from "../window/utils";
 import "./progressBar.scoped.less";
 import {BaseProps} from "../base/base";
+import {Txt} from "../text/Txt";
 
 export interface ProgressBarProps extends BaseProps {
 
@@ -31,7 +31,9 @@ export function ProgressBar(props: ProgressBarProps): ReactElement {
         >
             <div className="progress-bar__bar" style={{right: (100 - props.progress * 100) + "%"}}/>
             {props.children || <div/>}
-            <Text className={"progress-bar__value"}>{formatPercentage(props.progress, false)}</Text>
+            <Txt.Body className="progress-bar__value">
+                <Txt.String>{formatPercentage(props.progress, false)}</Txt.String>
+            </Txt.Body>
         </div>
     );
 }

@@ -2,8 +2,6 @@ import {StoryObj} from "@storybook/react";
 import React from "react";
 import {TextField, TextFieldProps} from "./TextField";
 import {DecoratedPanel} from "../panels/decorated/DecoratedPanel";
-import {CssValue} from "../window/cssValue";
-import px = CssValue.px;
 
 const meta = {
     title: "Controls/Input/TextField",

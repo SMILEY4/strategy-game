@@ -16,6 +16,8 @@ import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
 import {CommandRepository} from "../../../../../state/repository/commandRepository";
 import {CommandType, CreateSettlement} from "../../../../../models/base/command";
+import {AudioService, AudioType} from "../../../../../common/audioService";
+import {UIAudio} from "../../../../components/window/audio";
 
 export namespace UseOutlinerWindow {
 
@@ -54,6 +56,7 @@ export namespace UseOutlinerWindow {
     export function useData(): UseOutlinerWindow.Data {
 
         const cameraService = useDI<CameraService>(CameraService.name);
+        const playClickSound = UIAudio.usePlayAudio(AudioType.CLICK_PRIMARY.id);
 
         const openSettlement = UseSettlementWindow.useOpen();
         const openWorldObject = UseWorldObjectWindow.useOpen();
@@ -64,18 +67,31 @@ export namespace UseOutlinerWindow {
         const countries = CountryRepository.useAll();
         const commandsCreateSettlement = CommandRepository.useAllByType<CreateSettlement>(CommandType.CREATE_SETTLEMENT)
 
+
         return {
             settlements: {
                 entries: settlements
                     .sort((a, b) => b.population.size - a.population.size),
-                open: (entry: Settlement) => openSettlement(entry.identifier.id),
-                focusCamera: (entry: Settlement) => cameraService.centerCameraOnTile(entry.tile),
+                open: (entry: Settlement) => {
+                    openSettlement(entry.identifier.id);
+                    playClickSound();
+                },
+                focusCamera: (entry: Settlement) => {
+                    cameraService.centerCameraOnTile(entry.tile);
+                    playClickSound();
+                },
             },
             worldObjects: {
                 entries: worldObjects
                     .sort((a, b) => a.identifier.type.id.localeCompare(b.identifier.type.id)),
-                open: (entry: WorldObject) => openWorldObject(entry.identifier.id),
-                focusCamera: (entry: WorldObject) => cameraService.centerCameraOnTile(entry.tile),
+                open: (entry: WorldObject) => {
+                    openWorldObject(entry.identifier.id);
+                    playClickSound();
+                },
+                focusCamera: (entry: WorldObject) => {
+                    cameraService.centerCameraOnTile(entry.tile);
+                    playClickSound();
+                },
             },
             countries: {
                 entries: countries
