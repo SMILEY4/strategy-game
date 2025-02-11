@@ -82,7 +82,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
-			this.addSettlement(this.spriteBuffer, settlement, settlementAtlasEntry);
+			// this.addSettlement(this.spriteBuffer, settlement, settlementAtlasEntry);
 		}
 
 		// world objects
@@ -90,10 +90,10 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
 			if (worldObject.identifier.type === WorldObjectType.SCOUT) {
-				this.addScout(this.spriteBuffer, worldObject, scoutAtlasEntry);
+				// this.addScout(this.spriteBuffer, worldObject, scoutAtlasEntry);
 			}
 			if (worldObject.identifier.type === WorldObjectType.SETTLER) {
-				this.addSettler(this.spriteBuffer, worldObject, settlerAtlasEntry);
+				// this.addSettler(this.spriteBuffer, worldObject, settlerAtlasEntry);
 			}
 		}
 
@@ -101,7 +101,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const routes = context.routes;
 		for (let i = 0, n = routes.length; i < n; i++) {
 			const route = routes[i];
-			this.addRoute(this.spriteBuffer, route, roadAtlasEntry);
+			// this.addRoute(this.spriteBuffer, route, roadAtlasEntry);
 		}
 
 		// terrain todo: temporary until real terrain
@@ -109,7 +109,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		for (let i = 0, n = tiles.length; i < n; i++) {
 			const tile = tiles[i];
 			if (tile.visibility !== Visibility.UNKNOWN && tile.base.value.terrainType === TerrainType.LAND) {
-				this.addTerrain(this.spriteBuffer, tile.identifier, mountainAtlasEntry, hillsAtlasEntry, forestAtlasEntry);
+				// this.addTerrain(this.spriteBuffer, tile.identifier, mountainAtlasEntry, hillsAtlasEntry, forestAtlasEntry);
 			}
 		}
 
