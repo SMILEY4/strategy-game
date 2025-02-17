@@ -1,6 +1,6 @@
 import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../common/webgl/glTypes";
-import {buildMap} from "../../../common/utils";
+import {buildMap, chooseRandom} from "../../../common/utils";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {GameWebGLRenderContext} from "../gameRenderContext";
 import {NodeInput} from "../../common/graph/nodeInput";
@@ -20,6 +20,7 @@ import VertexDescriptor = NodeOutput.VertexDescriptor;
 import TextureAtlasData = NodeInput.TextureAtlasData;
 import {Route} from "../../../models/base/route";
 import {RouteSpriteBuilder} from "./utils/routeSpriteBuilder";
+import {map} from "curve-interpolator";
 
 export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -33,7 +34,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			changeKey: MapDetailsVertexNode.ID,
 			input: [
 				new TextureAtlasData({
-					path: "/icons/tileset.png",
+					path: "/icons/full_color.png",
 				}),
 			],
 			output: [
@@ -70,46 +71,72 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 		this.spriteBuffer.clear();
 
-		const settlementAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "settlement1");
-		const scoutAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "eye");
-		const settlerAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "marker");
-		const mountainAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "mountains");
-		const forestAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "forest");
-		const hillsAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "hills");
-		const roadAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "road");
+		const entriesHouseLvl1 = inputs
+			.getTextureAtlasEntryNames("/icons/full_color.png")
+			.filter(it => it.startsWith("house_lvl1"))
+			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
+
+		const entriesHouseLvl2 = inputs
+			.getTextureAtlasEntryNames("/icons/full_color.png")
+			.filter(it => it.startsWith("house_lvl2"))
+			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
+
+		const entriesVillageDecoration = inputs
+			.getTextureAtlasEntryNames("/icons/full_color.png")
+			.filter(it => it.startsWith("village_decoration"))
+			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
+
+		const entriesMountain = inputs
+			.getTextureAtlasEntryNames("/icons/full_color.png")
+			.filter(it => it.startsWith("mountain"))
+			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
+
+		const entriesForest = inputs
+			.getTextureAtlasEntryNames("/icons/full_color.png")
+			.filter(it => it.startsWith("forest"))
+			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
+
+		const entriesHills = inputs
+			.getTextureAtlasEntryNames("/icons/full_color.png")
+			.filter(it => it.startsWith("hill"))
+			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
+
+		const terrainDecoration = inputs
+			.getTextureAtlasEntryNames("/icons/full_color.png")
+			.filter(it => it.startsWith("tree") || it.startsWith("rock") || it.startsWith("grass"))
+			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
+
+
+
+		const entryUnit = inputs.getTextureAtlasEntry("/icons/full_color.png", "unit")
 
 		// settlements
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
-			// this.addSettlement(this.spriteBuffer, settlement, settlementAtlasEntry);
+			this.addSettlement(this.spriteBuffer, settlement, entriesHouseLvl1, entriesHouseLvl2, entriesVillageDecoration);
 		}
 
 		// world objects
 		const worldObjects = context.worldObjects;
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
-			if (worldObject.identifier.type === WorldObjectType.SCOUT) {
-				// this.addScout(this.spriteBuffer, worldObject, scoutAtlasEntry);
-			}
-			if (worldObject.identifier.type === WorldObjectType.SETTLER) {
-				// this.addSettler(this.spriteBuffer, worldObject, settlerAtlasEntry);
-			}
+			this.addUnit(this.spriteBuffer, worldObject, entryUnit);
 		}
 
-		// routes
-		const routes = context.routes;
-		for (let i = 0, n = routes.length; i < n; i++) {
-			const route = routes[i];
-			// this.addRoute(this.spriteBuffer, route, roadAtlasEntry);
-		}
+		// // routes
+		// const routes = context.routes;
+		// for (let i = 0, n = routes.length; i < n; i++) {
+		// 	const route = routes[i];
+		// 	// this.addRoute(this.spriteBuffer, route, roadAtlasEntry);
+		// }
 
 		// terrain todo: temporary until real terrain
 		const tiles = context.tiles;
 		for (let i = 0, n = tiles.length; i < n; i++) {
 			const tile = tiles[i];
 			if (tile.visibility !== Visibility.UNKNOWN && tile.base.value.terrainType === TerrainType.LAND) {
-				// this.addTerrain(this.spriteBuffer, tile.identifier, mountainAtlasEntry, hillsAtlasEntry, forestAtlasEntry);
+				this.addTerrain(this.spriteBuffer, tile.identifier, entriesMountain, entriesHills, entriesForest, terrainDecoration);
 			}
 		}
 
@@ -126,42 +153,62 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		});
 	}
 
-	private addSettlement(spriteBuffer: SpriteBuffer, settlement: Settlement, atlasEntry: TextureAtlasEntry) {
+	private addSettlement(spriteBuffer: SpriteBuffer, settlement: Settlement, houseLevel1: TextureAtlasEntry[], houseLevel2: TextureAtlasEntry[], decorations: TextureAtlasEntry[]) {
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, settlement.tile.q, settlement.tile.r);
-		for (let i = 0; i < settlement.population.size; i++) {
+
+		// houses lvl 1
+		for (let i = 0; i < (Math.random()*6) + 5 ; i++) {
+			const atlasEntry = chooseRandom(houseLevel1)
 			const rngOffsetX = seedrandom(settlement.identifier.id + i + "x").quick();
 			const rngOffsetY = seedrandom(settlement.identifier.id + i + "y").quick();
 			spriteBuffer.add({
 				atlasEntry: atlasEntry,
 				x: tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2),
 				y: tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2),
-				scaleX: 20,
-				scaleY: 20,
+				scaleX: 4,
+				scaleY: 4,
+				zOffset: 0,
+			});
+		}
+
+		for (let i = 0; i < (Math.random()*2) + 1 ; i++) {
+			const atlasEntry = chooseRandom(houseLevel2)
+			const rngOffsetX = seedrandom(settlement.identifier.id + i + "x").quick();
+			const rngOffsetY = seedrandom(settlement.identifier.id + i + "y").quick();
+			spriteBuffer.add({
+				atlasEntry: atlasEntry,
+				x: tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2),
+				y: tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2),
+				scaleX: 4,
+				scaleY: 4,
+				zOffset: 0,
+			});
+		}
+
+		// decorations
+		for (let i = 0; i < settlement.population.size-1; i++) {
+			const atlasEntry = chooseRandom(decorations)
+			const rngOffsetX = seedrandom(settlement.identifier.id + i + "x").quick();
+			const rngOffsetY = seedrandom(settlement.identifier.id + i + "y").quick();
+			spriteBuffer.add({
+				atlasEntry: atlasEntry,
+				x: tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2),
+				y: tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2),
+				scaleX: 4,
+				scaleY: 4,
 				zOffset: 0,
 			});
 		}
 	}
 
-	private addSettler(spriteBuffer: SpriteBuffer, settler: WorldObject, atlasEntry: TextureAtlasEntry) {
-		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, settler.tile.q, settler.tile.r);
+	private addUnit(spriteBuffer: SpriteBuffer, worldObject: WorldObject, atlasEntry: TextureAtlasEntry) {
+		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, worldObject.tile.q, worldObject.tile.r);
 		spriteBuffer.add({
 			atlasEntry: atlasEntry,
 			x: tileCenter[0],
 			y: tileCenter[1],
-			scaleX: 20,
-			scaleY: 20,
-			zOffset: 0,
-		});
-	}
-
-	private addScout(spriteBuffer: SpriteBuffer, scout: WorldObject, atlasEntry: TextureAtlasEntry) {
-		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, scout.tile.q, scout.tile.r);
-		spriteBuffer.add({
-			atlasEntry: atlasEntry,
-			x: tileCenter[0],
-			y: tileCenter[1],
-			scaleX: 20,
-			scaleY: 20,
+			scaleX: 6,
+			scaleY: 6,
 			zOffset: 0,
 		});
 	}
@@ -171,13 +218,13 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		spriteBuffer.addRaw(vertexData)
 	}
 
-	private addTerrain(spriteBuffer: SpriteBuffer, tile: TileIdentifier, atlasEntryMountain: TextureAtlasEntry, atlasEntryHill: TextureAtlasEntry, atlasEntryForest: TextureAtlasEntry) {
+	private addTerrain(spriteBuffer: SpriteBuffer, tile: TileIdentifier, mountains: TextureAtlasEntry[], hills: TextureAtlasEntry[], forests: TextureAtlasEntry[], plainsDecoration: TextureAtlasEntry[]) {
 		const terrainName = this.getRandomTerrainAtlasName(tile);
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.q, tile.r);
 
 		if (terrainName === "mountain") {
 			spriteBuffer.add({
-				atlasEntry: atlasEntryMountain,
+				atlasEntry: chooseRandom(mountains),
 				x: tileCenter[0],
 				y: tileCenter[1],
 				scaleX: 20,
@@ -188,7 +235,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 		if (terrainName === "hill") {
 			spriteBuffer.add({
-				atlasEntry: atlasEntryHill,
+				atlasEntry: chooseRandom(hills),
 				x: tileCenter[0],
 				y: tileCenter[1],
 				scaleX: 20,
@@ -199,13 +246,28 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 		if (terrainName === "forest") {
 			spriteBuffer.add({
-				atlasEntry: atlasEntryForest,
+				atlasEntry: chooseRandom(forests),
 				x: tileCenter[0],
 				y: tileCenter[1],
 				scaleX: 20,
 				scaleY: 20,
 				zOffset: TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2,
 			});
+		}
+
+		if(terrainName === "none") {
+			for (let i = 0; i < (Math.random()*5) + 1 ; i++) {
+				const rngOffsetX = seedrandom(tile.id + i + "x").quick();
+				const rngOffsetY = seedrandom(tile.id + i + "y").quick();
+				spriteBuffer.add({
+					atlasEntry: chooseRandom(plainsDecoration),
+					x: tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2),
+					y: tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2),
+					scaleX: 4,
+					scaleY: 4,
+					zOffset: TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2,
+				});
+			}
 		}
 	}
 

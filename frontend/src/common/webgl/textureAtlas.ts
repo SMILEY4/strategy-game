@@ -34,6 +34,10 @@ export class TextureAtlas implements GLDisposable {
 		return entry ? entry : null;
 	}
 
+	public getEntryNames(): string[] {
+		return Array.from(this.data.keys())
+	}
+
 	public setData(data: Map<string, TextureAtlasEntry>) {
 		this.data.clear();
 		data.forEach((value, key) => this.data.set(key, value));

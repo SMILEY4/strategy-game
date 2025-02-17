@@ -65,7 +65,8 @@ export namespace TilemapUtils {
         }
     }
 
-    export const DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 10], 0, 0);
+    // export const DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 10], 0, 0);
+    export const DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 7], 0, 0);
 
     export function hexToPixel(layout: TilemapUtils.HexLayout, q: number, r: number): [number, number] {
         const M = layout.orientation;

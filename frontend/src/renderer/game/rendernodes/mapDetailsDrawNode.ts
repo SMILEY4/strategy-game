@@ -16,7 +16,7 @@ export class MapDetailsDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
                     clearColor: [0, 0, 0, 0],
                 }),
                 new NodeInput.TextureAtlas({
-                    path: "/icons/tileset.png",
+                    path: "/icons/full_color.png",
                     binding: "u_texture",
                 }),
                 new NodeInput.Shader({

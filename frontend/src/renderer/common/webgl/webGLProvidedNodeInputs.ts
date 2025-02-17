@@ -17,6 +17,16 @@ export class WebGlProvidedNodeInputs implements ProvidedNodeInputs {
 		})
 	}
 
+	public getTextureAtlasEntryNames(atlasPath: string): string[] {
+		const atlas = this.textureAtlasEntries.get(atlasPath);
+		if(atlas) {
+			return atlas.getEntryNames()
+		} else {
+			console.warn("Could not find texture atlas with path '" + atlasPath + "'");
+			return []
+		}
+	}
+
 
 	public getTextureAtlasEntry(atlasPath: string, entryName: string): TextureAtlasEntry {
 		const entry = this.textureAtlasEntries.get(atlasPath)?.getEntryOrNull(entryName);
