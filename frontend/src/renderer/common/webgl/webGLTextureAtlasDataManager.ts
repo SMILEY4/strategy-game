@@ -6,10 +6,30 @@ export class WebGLTextureAtlasDataManager {
 
 	public register(atlasPath: string, data: string | TextureAtlasEntry[]) {
 		if (typeof data === "string") {
-			this.data.set(atlasPath, JSON.parse(data));
+			this.setData(atlasPath, JSON.parse(data));
 		} else {
-			this.data.set(atlasPath, data);
+			this.setData(atlasPath, data);
 		}
+	}
+
+	private setData(atlasPath: string, entries: TextureAtlasEntry[]) {
+		this.data.set(atlasPath, entries.map(entry => {
+			return {
+				...entry,
+				textureCoordinates: entry.textureCoordinates.map(uv => {
+					return [
+						uv[0],
+						1 - uv[1]
+					]
+				}),
+				vertices: entry.vertices.map(vertex => {
+					return [
+						vertex[0],
+						1-vertex[1],
+					]
+				}),
+			}
+		}));
 	}
 
 	public getData(atlasPath: string): TextureAtlasEntry[] {

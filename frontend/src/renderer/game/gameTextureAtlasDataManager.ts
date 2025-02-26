@@ -1,5 +1,5 @@
 import {WebGLTextureAtlasDataManager} from "../common/webgl/webGLTextureAtlasDataManager";
-// import ATLAS_DATA_TILESET from "./textureatlas/tileset.json?raw";
+import ATLAS_DATA_TILESET from "./textureatlas/tileset.json?raw";
 import {TextureAtlasEntry} from "../../common/webgl/textureAtlas";
 
 
@@ -8,9 +8,8 @@ export class GameTextureAtlasDataManager extends WebGLTextureAtlasDataManager {
 
 	constructor() {
 		super();
-		// this.register("/icons/tileset.png", ATLAS_DATA_TILESET)
-		console.log("ATLAS", this.buildTileSetAtlasData())
-		this.register("/icons/full_color.png", this.buildTileSetAtlasData());
+		this.register("/icons/full_color.png", ATLAS_DATA_TILESET)
+		// this.register("/icons/full_color.png", this.buildTileSetAtlasData());
 	}
 
 	private buildTileSetAtlasData(): TextureAtlasEntry[] {

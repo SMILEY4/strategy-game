@@ -6,7 +6,6 @@ import {GameWebGLRenderContext} from "../gameRenderContext";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {ProvidedNodeInputs} from "../../common/graph/providedNodeInputs";
 import {TilemapUtils} from "../../../common/tilemapUtils";
-import {WorldObjectType} from "../../../models/base/worldObjectType";
 import {SpriteBuffer} from "../../../common/webgl/spriteBuffer";
 import {Settlement} from "../../../models/base/Settlement";
 import {TextureAtlasEntry} from "../../../common/webgl/textureAtlas";
@@ -20,7 +19,6 @@ import VertexDescriptor = NodeOutput.VertexDescriptor;
 import TextureAtlasData = NodeInput.TextureAtlasData;
 import {Route} from "../../../models/base/route";
 import {RouteSpriteBuilder} from "./utils/routeSpriteBuilder";
-import {map} from "curve-interpolator";
 
 export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -73,12 +71,12 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 		const entriesHouseLvl1 = inputs
 			.getTextureAtlasEntryNames("/icons/full_color.png")
-			.filter(it => it.startsWith("house_lvl1"))
+			.filter(it => it.startsWith("house_lvl1_"))
 			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
 
 		const entriesHouseLvl2 = inputs
 			.getTextureAtlasEntryNames("/icons/full_color.png")
-			.filter(it => it.startsWith("house_lvl2"))
+			.filter(it => it.startsWith("house_lvl2_") || it.startsWith("house_lvl3_"))
 			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
 
 		const entriesVillageDecoration = inputs
@@ -88,22 +86,22 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 		const entriesMountain = inputs
 			.getTextureAtlasEntryNames("/icons/full_color.png")
-			.filter(it => it.startsWith("mountain"))
+			.filter(it => it.startsWith("mountain_"))
 			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
 
 		const entriesForest = inputs
 			.getTextureAtlasEntryNames("/icons/full_color.png")
-			.filter(it => it.startsWith("forest"))
+			.filter(it => it.startsWith("forest_"))
 			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
 
 		const entriesHills = inputs
 			.getTextureAtlasEntryNames("/icons/full_color.png")
-			.filter(it => it.startsWith("hill"))
+			.filter(it => it.startsWith("hill_") || it.startsWith("fields_"))
 			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
 
 		const terrainDecoration = inputs
 			.getTextureAtlasEntryNames("/icons/full_color.png")
-			.filter(it => it.startsWith("tree") || it.startsWith("rock") || it.startsWith("grass"))
+			.filter(it => it.startsWith("tree_") || it.startsWith("rock_") || it.startsWith("grass_"))
 			.map(it => inputs.getTextureAtlasEntry("/icons/full_color.png", it))
 
 
