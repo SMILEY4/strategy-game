@@ -79,6 +79,7 @@ export function TextureAtlasEditor(): ReactElement {
 					baseY: 0,
 					width: 200,
 					height: 200,
+					type: "billboard"
 				}]);
 				setSelected(id);
 			}}>
@@ -119,6 +120,20 @@ export function TextureAtlasEditor(): ReactElement {
 					return it;
 				}));
 			}}/>
+
+			<button onClick={() => {
+				setEntries(entries.map(it => {
+					if (it.id === selectedId) {
+						return {
+							...it,
+							type: it.type === "billboard" ? "ground" : "billboard",
+						};
+					}
+					return it;
+				}));
+			}}>
+				{selectedId != null ? (entries.find(it => it.id === selectedId)!!.type === "billboard" ? "Toggle Type (Ground)" : "Toggle Type (Billboard)") : "Toggle Type"}
+			</button>
 
 			<Stage
 				className="stage"
@@ -166,7 +181,8 @@ function loadFromClipboard(str: string, totalWidth: number, totalHeight: number)
 			y: entry.textureCoordinates[0][1] * totalHeight,
 			width: (entry.textureCoordinates[2][0] * totalWidth) - (entry.textureCoordinates[0][0] * totalWidth),
 			height: (entry.textureCoordinates[2][1] * totalHeight) - (entry.textureCoordinates[0][1] * totalHeight),
-			baseY: entry.origin[1] * ((entry.textureCoordinates[2][1] * totalHeight) - (entry.textureCoordinates[0][1] * totalHeight))
+			baseY: entry.offset * ((entry.textureCoordinates[2][1] * totalHeight) - (entry.textureCoordinates[0][1] * totalHeight)),
+			type: entry.mode,
 		}
 	})
 }
@@ -180,7 +196,7 @@ function copyToClipboard(entries: AtlasEntryData[], totalWidth: number, totalHei
 		const v1 = (entry.y + entry.height) / totalHeight;
 		return {
 			name: entry.name,
-			origin: [0.5, entry.baseY / entry.height],
+			offset: entry.baseY / entry.height,
 			vertices: [
 				[0, 0],
 				[1, 0],
@@ -197,6 +213,7 @@ function copyToClipboard(entries: AtlasEntryData[], totalWidth: number, totalHei
 				[u1, v1],
 				[u0, v1],
 			],
+			mode: entry.type === "billboard" ? "billboard" : "ground",
 		};
 	});
 	console.log("saving atlas data", data)

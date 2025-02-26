@@ -10,6 +10,7 @@ export interface AtlasEntryData {
 	baseY: number,
 	width: number,
 	height: number,
+	type: "billboard" | "ground"
 }
 
 
@@ -54,7 +55,7 @@ export function AtlasEntry(props: { data: AtlasEntryData, isSelected: boolean, o
 				y={props.data.y}
 				width={props.data.width}
 				height={props.data.height}
-				fill={"blue"}
+				fill={props.data.type === "billboard" ? "blue" : "green"}
 				opacity={0.2}
 				draggable={props.isSelected}
 				onDragEnd={(e) => {

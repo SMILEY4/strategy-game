@@ -16,12 +16,14 @@ export class WebGLTextureAtlasDataManager {
 		this.data.set(atlasPath, entries.map(entry => {
 			return {
 				...entry,
+				// fix uv axis (0,0 = top left)
 				textureCoordinates: entry.textureCoordinates.map(uv => {
 					return [
 						uv[0],
 						1 - uv[1]
 					]
 				}),
+				// flip y after fixed uv axis
 				vertices: entry.vertices.map(vertex => {
 					return [
 						vertex[0],

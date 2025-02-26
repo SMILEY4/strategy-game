@@ -48,9 +48,10 @@ export class TextureAtlas implements GLDisposable {
 
 export interface TextureAtlasEntry {
 	name: string,
-	origin: [number, number],
 	vertices: ([number, number])[],
 	textureCoordinates: ([number, number])[],
+	offset: number,
+	mode: "billboard" | "ground"
 }
 
 export namespace TextureAtlas {
