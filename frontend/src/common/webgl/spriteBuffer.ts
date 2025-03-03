@@ -14,6 +14,7 @@ export class SpriteBuffer {
 
 	/**
 	 * Add a new sprite to the buffer at the given x,y,z position. All vertices have the same z, meaning the sprite is a flat plane facing the camera.
+	 * Sprite is centered on x and aligned top of y.
 	 * Uses entry.z as a single number.
 	 */
 	public addBillboardSprite(entry: SpriteBuffer.Entry) {
@@ -23,9 +24,13 @@ export class SpriteBuffer {
 		for (let i = 0, n = atlasEntry.vertices.length; i < n; i++) {
 
 			const vertexCoords = atlasEntry.vertices[i];
-			vertexData.push(entry.x + vertexCoords[0] * entry.scaleX);
-			vertexData.push(entry.y + vertexCoords[1] * entry.scaleY);
-			vertexData.push(entry.z as number);
+			const x = entry.x + vertexCoords[0] * entry.scaleX - entry.scaleX / 2
+			const y = entry.y + vertexCoords[1] * entry.scaleY
+			const z = entry.z as number
+
+			vertexData.push(x);
+			vertexData.push(y);
+			vertexData.push(z);
 
 			const textureCoords = atlasEntry.textureCoordinates[i];
 			vertexData.push(textureCoords[0]);
@@ -37,6 +42,7 @@ export class SpriteBuffer {
 
 	/**
 	 * Add a new sprite to the buffer at given x,y,z position. The sprite is a flat plane perpendicular to the ground.
+	 * Sprite is centered on x and aligned top of y.
 	 * Z is interpolated based on (untransformed) vertex y coordinate (y=0 => z[0], y=1 => z[1]).
 	 * Uses entry.z as an array of two numbers (minZ, maxZ).
 	 */
@@ -48,9 +54,13 @@ export class SpriteBuffer {
 		for (let i = 0, n = atlasEntry.vertices.length; i < n; i++) {
 
 			const vertexCoords = atlasEntry.vertices[i];
-			vertexData.push(entry.x + vertexCoords[0] * entry.scaleX);
-			vertexData.push(entry.y + vertexCoords[1] * entry.scaleY);
-			vertexData.push(minZ + (maxZ-minZ) * vertexCoords[1]);
+			const x = entry.x + vertexCoords[0] * entry.scaleX - entry.scaleX / 2
+			const y = entry.y + vertexCoords[1] * entry.scaleY
+			const z = minZ + (maxZ-minZ) * vertexCoords[1]
+
+			vertexData.push(x);
+			vertexData.push(y);
+			vertexData.push(z);
 
 			const textureCoords = atlasEntry.textureCoordinates[i];
 			vertexData.push(textureCoords[0]);

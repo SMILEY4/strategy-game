@@ -17,6 +17,8 @@ import seedrandom from "seedrandom";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import TextureAtlasData = NodeInput.TextureAtlasData;
+import {RouteSpriteBuilder} from "./utils/routeSpriteBuilder";
+import {Route} from "../../../models/base/route";
 
 export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -100,6 +102,8 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 		const entryUnit = inputs.getTextureAtlasEntry("/icons/full_color.png", "unit");
 
+		const entryRoad = inputs.getTextureAtlasEntry("/icons/full_color.png", "road");
+
 		// settlements
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
@@ -114,12 +118,12 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			this.addUnit(this.spriteBuffer, worldObject, entryUnit);
 		}
 
-		// // routes
-		// const routes = context.routes;
-		// for (let i = 0, n = routes.length; i < n; i++) {
-		// 	const route = routes[i];
-		// 	// this.addRoute(this.spriteBuffer, route, roadAtlasEntry);
-		// }
+		// routes
+		const routes = context.routes;
+		for (let i = 0, n = routes.length; i < n; i++) {
+			const route = routes[i];
+			this.addRoute(this.spriteBuffer, route, entryRoad);
+		}
 
 		// terrain todo: temporary until real terrain
 		const tiles = context.tiles;
@@ -153,7 +157,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			const rngOffsetY = seedrandom(settlement.identifier.id + i + "y").quick();
 			const x = tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
 			const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
-			const z = y;
+			const z = y - 1;
 			spriteBuffer.addBillboardSprite({
 				atlasEntry: atlasEntry,
 				x: x,
@@ -170,7 +174,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			const rngOffsetY = seedrandom(settlement.identifier.id + i + "y").quick();
 			const x = tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
 			const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
-			const z = y;
+			const z = y - 1;
 			spriteBuffer.addBillboardSprite({
 				atlasEntry: atlasEntry,
 				x: x,
@@ -188,7 +192,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			const rngOffsetY = seedrandom(settlement.identifier.id + i + "y").quick();
 			const x = tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
 			const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
-			const z = y;
+			const z = y - 1;
 			spriteBuffer.addBillboardSprite({
 				atlasEntry: atlasEntry,
 				x: x,
@@ -204,7 +208,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, worldObject.tile.q, worldObject.tile.r);
 		const x = tileCenter[0];
 		const y = tileCenter[1];
-		const z = y;
+		const z = y - 1;
 		spriteBuffer.addBillboardSprite({
 			atlasEntry: atlasEntry,
 			x: x,
@@ -215,10 +219,10 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		});
 	}
 
-	// private addRoute(spriteBuffer: SpriteBuffer, route: Route, atlasEntry: TextureAtlasEntry){
-	// 	const vertexData = RouteSpriteBuilder.build(route, atlasEntry);
-	// 	spriteBuffer.addRaw(vertexData)
-	// }
+	private addRoute(spriteBuffer: SpriteBuffer, route: Route, atlasEntry: TextureAtlasEntry){
+		const vertexData = RouteSpriteBuilder.build(route, atlasEntry);
+		spriteBuffer.addRaw(vertexData)
+	}
 
 	private addTerrain(spriteBuffer: SpriteBuffer, tile: TileIdentifier, mountains: TextureAtlasEntry[], hills: TextureAtlasEntry[], forests: TextureAtlasEntry[], plainsDecoration: TextureAtlasEntry[]) {
 		const terrainName = this.getRandomTerrainAtlasName(tile);
@@ -230,7 +234,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 				const rngOffsetY = seedrandom(tile.id + i + "y").quick();
 				const x = tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
 				const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
-				const z = y;
+				const z = y - 1;
 				spriteBuffer.addBillboardSprite({
 					atlasEntry: chooseRandom(plainsDecoration),
 					x: x,
@@ -243,9 +247,10 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 		} else {
 			const x = tileCenter[0];
-			const y = tileCenter[1];
-			const zMin = y - 8;
-			const zMax = y + 8;
+			const y = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
+			const randZ = seedrandom(""+tile.q).quick() * 0.1
+			const zMin = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] + randZ;
+			const zMax = tileCenter[1] + TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] + randZ;
 
 			if (terrainName === "mountain") {
 				spriteBuffer.addGroundSprite({
@@ -253,8 +258,8 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 					x: x,
 					y: y,
 					z: [zMin, zMax],
-					scaleX: 20,
-					scaleY: 20,
+					scaleX: 22,
+					scaleY: 16,
 				});
 			}
 
@@ -264,8 +269,8 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 					x: x,
 					y: y,
 					z: [zMin, zMax],
-					scaleX: 20,
-					scaleY: 20,
+					scaleX: 22,
+					scaleY: 16,
 				});
 			}
 
@@ -275,8 +280,8 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 					x: x,
 					y: y,
 					z: [zMin, zMax],
-					scaleX: 20,
-					scaleY: 20,
+					scaleX: 22,
+					scaleY: 16,
 				});
 			}
 		}

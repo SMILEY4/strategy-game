@@ -75,12 +75,10 @@ export namespace RouteSpriteBuilder {
 
 	function appendVertex(outVertexData: number[], vertexData: number[], uvBounds: [number, number, number, number], numTiles: number) {
 
-		// (x,y)
+		// (x,y,z)
 		outVertexData.push(vertexData[0]);
 		outVertexData.push(vertexData[1]);
-
-		// sprite y
-		outVertexData.push(vertexData[1] + 2); // todo: temp +2 offset until other sprites' origins are correctly fixed
+		outVertexData.push(vertexData[1] - 2);
 
 		// (u,v)
 		const u = (triangleFunction(vertexData[2], (numTiles - 1) / 2) + 1) / 2 // remap from "start = 0 -> 1 = end" to oscillate along path, i.e. "start = 0 -> 1 -> 0 -> 1 = end"

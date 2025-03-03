@@ -7,6 +7,8 @@ in vec2 v_textureCoordinates;
 
 out vec4 outColor;
 
+in float v_depth;
+
 
 void main() {
     vec4 color = texture(u_texture, v_textureCoordinates);
@@ -14,4 +16,5 @@ void main() {
         discard; // note: transparency does not work with depth testing
     }
     outColor = vec4(color.rgb, 1.0);
+//    outColor = vec4(v_depth, v_depth, v_depth, 1.0);
 }

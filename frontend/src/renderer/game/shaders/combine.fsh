@@ -252,7 +252,5 @@ void main() {
     // color correct
     color = applyEffectColorCorrection(color);
 
-    float depth =
-
     outColor = color;
 }
