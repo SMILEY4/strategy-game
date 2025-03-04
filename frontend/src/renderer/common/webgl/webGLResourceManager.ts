@@ -10,6 +10,8 @@ import {GLTexture} from "../../../common/webgl/glTexture";
 import {GLFramebuffer} from "../../../common/webgl/glFramebuffer";
 import {NodeInput} from "../graph/nodeInput";
 import {NodeOutput} from "../graph/nodeOutput";
+import {TextureAtlas} from "../../../common/webgl/textureAtlas";
+import {WebGLTextureAtlasDataManager} from "./webGLTextureAtlasDataManager";
 import ManagedProgram = WebGLResourceManager.ManagedProgram;
 import ManagedTexture = WebGLResourceManager.ManagedTexture;
 import ManagedFramebuffer = WebGLResourceManager.ManagedFramebuffer;
@@ -18,8 +20,6 @@ import ManagedVertexData = WebGLResourceManager.ManagedVertexData;
 import ManagedTextureAtlas = WebGLResourceManager.ManagedTextureAtlas;
 import VertexAttribute = NodeOutput.VertexAttribute;
 import VertexBuffer = NodeOutput.VertexBuffer;
-import {TextureAtlas} from "../../../common/webgl/textureAtlas";
-import {WebGLTextureAtlasDataManager} from "./webGLTextureAtlasDataManager";
 
 export class WebGLResourceManager implements ResourceManager {
 
@@ -176,7 +176,7 @@ export class WebGLResourceManager implements ResourceManager {
 						stride: attribute.attribute.stride,
 						offset: attribute.attribute.offset,
 						divisor: attribute.attribute.divisor,
-						debugName: program.vertex + "-" + program.fragment + "/" + attribute.attribute.name
+						debugName: program.vertex + "-" + program.fragment + "/" + attribute.attribute.name,
 					})),
 			);
 			vertexArrays.set(program.id, vertexArray);
@@ -224,9 +224,14 @@ export class WebGLResourceManager implements ResourceManager {
 		}
 		const managedTextureAtlas: ManagedTextureAtlas = {
 			id: path,
-			textureAtlas: TextureAtlas.createFromData(this.gl, path, this.textureAtlasDataManager.getData(path))
-		}
-		this.textureAtlases.set(managedTextureAtlas.id, managedTextureAtlas)
+			textureAtlas: TextureAtlas.createFromData(
+				this.gl,
+				path,
+				this.textureAtlasDataManager.getEntries(path),
+				this.textureAtlasDataManager.getGroupDefinitions(path),
+			),
+		};
+		this.textureAtlases.set(managedTextureAtlas.id, managedTextureAtlas);
 		return managedTextureAtlas;
 	}
 
