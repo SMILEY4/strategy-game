@@ -12,6 +12,36 @@ export class GameTextureAtlasDataManager extends WebGLTextureAtlasDataManager {
 			ATLAS_DATA_TILESET,
 			[
 				{
+					name: "rock_01",
+					scale: 0.5,
+				},
+				{
+					name: "rock_02",
+					scale: 0.5,
+				},
+				{
+					name: "grass_01",
+					scale: 0.5,
+				},
+				{
+					name: "grass_02",
+					scale: 0.5,
+				},
+				{
+					name: "grass_03",
+					scale: 0.5,
+				},
+				{
+					name: "grass_04",
+					scale: 0.5,
+				},
+				{
+					name: "unit",
+					scale: 1.25,
+				},
+			],
+			[
+				{
 					name: "settlement_houses_lvl1",
 					entrySelector: name => name.startsWith("house_lvl1_")
 				},

@@ -4,35 +4,63 @@ export class WebGLTextureAtlasDataManager {
 
 	private readonly textureAtlases = new Map<string, [TextureAtlasEntry[], TextureAtlasGroupDefinition[]]>();
 
-	public register(atlasPath: string, data: string | TextureAtlasEntry[], groupDefinitions: TextureAtlasGroupDefinition[]) {
+	public register(
+		atlasPath: string,
+		data: string | TextureAtlasEntry[],
+		overwrites: TextureAtlasEntryOverwrite[],
+		groupDefinitions: TextureAtlasGroupDefinition[],
+	) {
 		if (typeof data === "string") {
-			this.setData(atlasPath, JSON.parse(data), groupDefinitions);
+			this.setData(atlasPath, JSON.parse(data), overwrites, groupDefinitions);
 		} else {
-			this.setData(atlasPath, data, groupDefinitions);
+			this.setData(atlasPath, data, overwrites, groupDefinitions);
 		}
 	}
 
-	private setData(atlasPath: string, entries: TextureAtlasEntry[], groupDefinitions: TextureAtlasGroupDefinition[]) {
+	private setData(
+		atlasPath: string,
+		entries: TextureAtlasEntry[],
+		overwrites: TextureAtlasEntryOverwrite[],
+		groupDefinitions: TextureAtlasGroupDefinition[],
+	) {
 		const atlasEntries: TextureAtlasEntry[] = entries.map(entry => {
+			const overwrite = overwrites.find(it => it.name === entry.name);
 			return {
 				...entry,
-				// fix uv axis (0,0 = top left)
-				textureCoordinates: entry.textureCoordinates.map(uv => {
-					return [
-						uv[0],
-						1 - uv[1]
-					]
-				}),
-				// flip y after fixed uv axis
-				vertices: entry.vertices.map(vertex => {
-					return [
-						vertex[0],
-						1-vertex[1],
-					]
-				}),
-			}
+				textureCoordinates: this.buildTextureCoordinates(entry, overwrite),
+				vertices: this.buildVertices(entry, overwrite),
+				scale: this.buildScale(entry, overwrite),
+			};
 		});
 		this.textureAtlases.set(atlasPath, [atlasEntries, groupDefinitions]);
+	}
+
+	private buildTextureCoordinates(entry: TextureAtlasEntry, overwrite: TextureAtlasEntryOverwrite | undefined): ([number, number])[] {
+		return entry.textureCoordinates.map(uv => {
+			// fix v axis (0,0 = top left)
+			return [
+				uv[0],
+				1 - uv[1],
+			];
+		});
+	}
+
+	private buildVertices(entry: TextureAtlasEntry, overwrite: TextureAtlasEntryOverwrite | undefined): ([number, number])[] {
+		return entry.vertices.map(vertex => {
+			// flip y after fixed uv axis
+			return [
+				vertex[0],
+				1 - vertex[1],
+			];
+		});
+	}
+
+	private buildScale(entry: TextureAtlasEntry, overwrite: TextureAtlasEntryOverwrite | undefined): number {
+		if (overwrite && overwrite.scale) {
+			return overwrite.scale;
+		} else {
+			return entry.scale ? entry.scale : 1;
+		}
 	}
 
 	public getEntries(atlasPath: string): TextureAtlasEntry[] {
@@ -53,5 +81,9 @@ export class WebGLTextureAtlasDataManager {
 		}
 	}
 
+}
 
+export interface TextureAtlasEntryOverwrite {
+	name: string,
+	scale?: number,
 }

@@ -20,12 +20,15 @@ export class SpriteBuffer {
 	public addBillboardSprite(entry: SpriteBuffer.Entry) {
 		const atlasEntry = entry.atlasEntry;
 
+		const scaleX = entry.scaleX * atlasEntry.scale
+		const scaleY = entry.scaleY * atlasEntry.scale
+
 		const vertexData: number[] = [];
 		for (let i = 0, n = atlasEntry.vertices.length; i < n; i++) {
 
 			const vertexCoords = atlasEntry.vertices[i];
-			const x = entry.x + vertexCoords[0] * entry.scaleX - entry.scaleX / 2
-			const y = entry.y + vertexCoords[1] * entry.scaleY
+			const x = entry.x + vertexCoords[0] * scaleX - scaleX / 2
+			const y = entry.y + vertexCoords[1] * scaleY
 			const z = entry.z as number
 
 			vertexData.push(x);
@@ -50,12 +53,15 @@ export class SpriteBuffer {
 		const atlasEntry = entry.atlasEntry;
 		const [minZ, maxZ] = (entry.z as [number, number]);
 
+		const scaleX = entry.scaleX * atlasEntry.scale
+		const scaleY = entry.scaleY * atlasEntry.scale
+
 		const vertexData: number[] = [];
 		for (let i = 0, n = atlasEntry.vertices.length; i < n; i++) {
 
 			const vertexCoords = atlasEntry.vertices[i];
-			const x = entry.x + vertexCoords[0] * entry.scaleX - entry.scaleX / 2
-			const y = entry.y + vertexCoords[1] * entry.scaleY
+			const x = entry.x + vertexCoords[0] * scaleX - scaleX / 2
+			const y = entry.y + vertexCoords[1] * scaleY
 			const z = minZ + (maxZ-minZ) * vertexCoords[1]
 
 			vertexData.push(x);

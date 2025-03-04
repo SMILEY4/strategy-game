@@ -86,6 +86,7 @@ export interface TextureAtlasEntry {
 	vertices: ([number, number])[],
 	textureCoordinates: ([number, number])[],
 	offset: number,
+	scale: number,
 	mode: "billboard" | "ground"
 }
 

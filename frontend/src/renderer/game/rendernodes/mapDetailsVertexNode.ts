@@ -151,10 +151,10 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 	}
 
 	private addUnit(spriteBuffer: SpriteBuffer, worldObject: WorldObject, inputs: ProvidedNodeInputs) {
-		const atlasEntriesUnit = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "settlement_decoration")
+		const atlasEntriesUnit = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "unit")
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, worldObject.tile.q, worldObject.tile.r);
 		const x = tileCenter[0];
-		const y = tileCenter[1];
+		const y = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2;
 		const z = y - 1;
 		spriteBuffer.addBillboardSprite({
 			atlasEntry: atlasEntriesUnit[0],
@@ -185,7 +185,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 				const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
 				const z = y - 1;
 				spriteBuffer.addBillboardSprite({
-					atlasEntry: Random.chooseRandom(atlasEntriesDecorations, tile.id),
+					atlasEntry: Random.chooseRandom(atlasEntriesDecorations, tile.id + i),
 					x: x,
 					y: y,
 					z: z,

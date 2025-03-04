@@ -20,7 +20,8 @@ export namespace Random {
 		if (!array) {
 			throw new Error("Cannot choose random item from empty array");
 		}
-		return array[Math.floor(normalized(seed) * array.length)];
+		const index = Math.floor(normalized(seed) * array.length);
+		return array[index];
 	}
 
 	/**
@@ -30,7 +31,8 @@ export namespace Random {
 		if (!array) {
 			return null;
 		}
-		return array[Math.floor(normalized(seed) * array.length)];
+		const index = Math.floor(normalized(seed) * array.length);
+		return array[index];
 	}
 
 }
