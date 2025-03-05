@@ -9,7 +9,7 @@ import {TilemapUtils} from "../../../common/tilemapUtils";
 import {SpriteBuffer} from "../../../common/webgl/spriteBuffer";
 import {Settlement} from "../../../models/base/Settlement";
 import {WorldObject} from "../../../models/base/worldObject";
-import {TileIdentifier} from "../../../models/base/tile";
+import {Tile, TileIdentifier} from "../../../models/base/tile";
 import {Visibility} from "../../../models/base/visibility";
 import {TerrainType} from "../../../models/base/TerrainType";
 import VertexBuffer = NodeOutput.VertexBuffer;
@@ -18,6 +18,7 @@ import TextureAtlasData = NodeInput.TextureAtlasData;
 import {RouteSpriteBuilder} from "./utils/routeSpriteBuilder";
 import {Route} from "../../../models/base/route";
 import {Random} from "../../../common/random";
+import {Color} from "../../../models/base/color";
 
 export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -49,6 +50,16 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 							name: "in_textureCoordinates",
 							type: GLAttributeType.FLOAT,
 							amountComponents: 2,
+						},
+						{
+							name: "in_baseTileColor",
+							type: GLAttributeType.FLOAT,
+							amountComponents: 3,
+						},
+						{
+							name: "in_countryColor",
+							type: GLAttributeType.FLOAT,
+							amountComponents: 3,
 						},
 					],
 				}),
@@ -90,7 +101,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		for (let i = 0, n = tiles.length; i < n; i++) {
 			const tile = tiles[i];
 			if (tile.visibility !== Visibility.UNKNOWN && tile.base.value.terrainType === TerrainType.LAND) {
-				this.addTerrain(this.spriteBuffer, tile.identifier, inputs);
+				this.addTerrain(this.spriteBuffer, tile, inputs, context);
 			}
 		}
 
@@ -113,7 +124,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 		// houses
 		const atlasEntriesHouses = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "settlement_houses_all")
-		for (let i = 0; i <= settlement.population.size - 1; i++) {
+		for (let i = 0; i <= settlement.population.size + 1; i++) {
 			const atlasEntry = Random.chooseRandom(atlasEntriesHouses, settlement.identifier.id + "_" + i);
 			const rngOffsetX = Random.normalized(settlement.identifier.id + i + "x");
 			const rngOffsetY = Random.normalized(settlement.identifier.id + i + "y");
@@ -127,6 +138,8 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 				z: z,
 				scaleX: 4,
 				scaleY: 4,
+				colorCountry: [0,0,0],
+				colorBaseTile: [0,0,0]
 			});
 		}
 
@@ -146,6 +159,8 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 				z: z,
 				scaleX: 4,
 				scaleY: 4,
+				colorCountry: [0,0,0],
+				colorBaseTile: [0,0,0]
 			});
 		}
 	}
@@ -156,6 +171,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const x = tileCenter[0];
 		const y = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2;
 		const z = y - 1;
+
 		spriteBuffer.addBillboardSprite({
 			atlasEntry: atlasEntriesUnit[0],
 			x: x,
@@ -163,6 +179,8 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			z: z,
 			scaleX: 6,
 			scaleY: 6,
+			colorCountry: Color.colorToRgbArray(worldObject.country.color),
+			colorBaseTile: [0,0,0]
 		});
 	}
 
@@ -172,68 +190,80 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		spriteBuffer.addRaw(vertexData)
 	}
 
-	private addTerrain(spriteBuffer: SpriteBuffer, tile: TileIdentifier, inputs: ProvidedNodeInputs) {
-		const terrainName = this.getRandomTerrainAtlasName(tile);
-		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.q, tile.r);
+	private addTerrain(spriteBuffer: SpriteBuffer, tile: Tile, inputs: ProvidedNodeInputs, context: GameWebGLRenderContext) {
+		const terrainName = this.getRandomTerrainAtlasName(tile.identifier);
+		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.identifier.q, tile.identifier.r);
+
+		// tile color todo: copied from tiles vertex node -> duplicate !!!
+		const heightJitter = Random.normalized(tile.identifier.id) * 0.1 - 0.5;
+		const color = this.mix(context.renderConfig.land.colorLight, context.renderConfig.land.colorDark, tile.base.value.height * 2 + heightJitter);
 
 		if (terrainName === "none") {
 			const atlasEntriesDecorations = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_decoration")
-			for (let i = 0; i < (Random.normalized(tile.id) * 5) + 1; i++) {
-				const rngOffsetX = Random.normalized(tile.id + i + "x");
-				const rngOffsetY = Random.normalized(tile.id + i + "y");
+			for (let i = 0; i < (Random.normalized(tile.identifier.id) * 5) + 1; i++) {
+				const rngOffsetX = Random.normalized(tile.identifier.id + i + "x");
+				const rngOffsetY = Random.normalized(tile.identifier.id + i + "y");
 				const x = tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
 				const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
 				const z = y - 1;
 				spriteBuffer.addBillboardSprite({
-					atlasEntry: Random.chooseRandom(atlasEntriesDecorations, tile.id + i),
+					atlasEntry: Random.chooseRandom(atlasEntriesDecorations, tile.identifier.id + i),
 					x: x,
 					y: y,
 					z: z,
 					scaleX: 4,
 					scaleY: 4,
+					colorCountry: Color.colorToRgbArray(Color.BLACK),
+					colorBaseTile: color
 				});
 			}
 
 		} else {
 			const x = tileCenter[0];
 			const y = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-			const randZ = Random.normalized(""+tile.q) * 0.1
+			const randZ = Random.normalized(""+tile.identifier.q) * 0.1
 			const zMin = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] + randZ;
 			const zMax = tileCenter[1] + TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] + randZ;
 
 			if (terrainName === "mountain") {
 				const atlasEntriesMountain = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_mountain")
 				spriteBuffer.addGroundSprite({
-					atlasEntry: Random.chooseRandom(atlasEntriesMountain, tile.id),
+					atlasEntry: Random.chooseRandom(atlasEntriesMountain, tile.identifier.id),
 					x: x,
 					y: y,
 					z: [zMin, zMax],
 					scaleX: 22,
 					scaleY: 16,
+					colorCountry: [0,0,0],
+					colorBaseTile: color
 				});
 			}
 
 			if (terrainName === "hill") {
 				const atlasEntriesHill = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_hill")
 				spriteBuffer.addGroundSprite({
-					atlasEntry: Random.chooseRandom(atlasEntriesHill, tile.id),
+					atlasEntry: Random.chooseRandom(atlasEntriesHill, tile.identifier.id),
 					x: x,
 					y: y,
 					z: [zMin, zMax],
 					scaleX: 22,
 					scaleY: 16,
+					colorCountry: [0,0,0],
+					colorBaseTile: color
 				});
 			}
 
 			if (terrainName === "forest") {
 				const atlasEntriesForest = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_forest")
 				spriteBuffer.addGroundSprite({
-					atlasEntry: Random.chooseRandom(atlasEntriesForest, tile.id),
+					atlasEntry: Random.chooseRandom(atlasEntriesForest, tile.identifier.id),
 					x: x,
 					y: y,
 					z: [zMin, zMax],
 					scaleX: 22,
 					scaleY: 16,
+					colorCountry: [0,0,0],
+					colorBaseTile: color
 				});
 			}
 		}
@@ -250,6 +280,21 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		} else {
 			return "none";
 		}
+	}
+
+	//===== UTILITIES ===============================================
+
+	private mix(x: [number, number, number], y: [number, number, number], a: number): [number, number, number] {
+		const clampedA = this.clamp(0, a, 1);
+		return [
+			x[0] * (1 - clampedA) + y[0] * clampedA,
+			x[1] * (1 - clampedA) + y[1] * clampedA,
+			x[2] * (1 - clampedA) + y[2] * clampedA,
+		];
+	}
+
+	private clamp(min: number, value: number, max: number): number {
+		return Math.max(min, Math.min(value, max));
 	}
 
 }

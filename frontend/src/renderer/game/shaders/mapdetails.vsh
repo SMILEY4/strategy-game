@@ -4,10 +4,12 @@ uniform mat3 u_viewProjection;
 
 in vec3 in_worldPosition;
 in vec2 in_textureCoordinates;
+in vec3 in_baseTileColor;
+in vec3 in_countryColor;
 
 out vec2 v_textureCoordinates;
-
-out float v_depth;
+out vec3 v_baseTileColor;
+out vec3 v_countryColor;
 
 void main() {
     v_textureCoordinates = in_textureCoordinates;
@@ -23,7 +25,8 @@ void main() {
     float range1 = +2.0;
     screenZ = (screenZ - range0) / (range1 - range0);
 
-    v_depth = screenZ;
+    v_baseTileColor = in_baseTileColor;
+    v_countryColor = in_countryColor;
 
     // output sprite screen coordinates with calculated z/depth
     gl_Position = vec4(screenPos, screenZ, 1.0);

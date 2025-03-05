@@ -1,5 +1,6 @@
 import {TextureAtlasEntry} from "./textureAtlas";
 import {MixedArrayBuffer, MixedArrayBufferType} from "./mixedArrayBuffer";
+import {Color} from "../../models/base/color";
 
 export class SpriteBuffer {
 
@@ -31,13 +32,21 @@ export class SpriteBuffer {
 			const y = entry.y + vertexCoords[1] * scaleY
 			const z = entry.z as number
 
+			// vertex position (x,y,z)
 			vertexData.push(x);
 			vertexData.push(y);
 			vertexData.push(z);
 
+			// texture coords (u,v)
 			const textureCoords = atlasEntry.textureCoordinates[i];
 			vertexData.push(textureCoords[0]);
 			vertexData.push(textureCoords[1]);
+
+			// tile base color (r,g,b)
+			vertexData.push(...entry.colorBaseTile);
+
+			// country color (r,g,b)
+			vertexData.push(...entry.colorCountry);
 		}
 
 		this.addRaw(vertexData);
@@ -64,13 +73,21 @@ export class SpriteBuffer {
 			const y = entry.y + vertexCoords[1] * scaleY
 			const z = minZ + (maxZ-minZ) * vertexCoords[1]
 
+			// vertex position (x,y,z)
 			vertexData.push(x);
 			vertexData.push(y);
 			vertexData.push(z);
 
+			// texture coords (u,v)
 			const textureCoords = atlasEntry.textureCoordinates[i];
 			vertexData.push(textureCoords[0]);
 			vertexData.push(textureCoords[1]);
+
+			// tile base color (r,g,b)
+			vertexData.push(...entry.colorBaseTile);
+
+			// country color (r,g,b)
+			vertexData.push(...entry.colorCountry);
 		}
 
 		this.addRaw(vertexData);
@@ -106,6 +123,8 @@ export namespace SpriteBuffer {
 		z: number | [number, number],
 		scaleX: number,
 		scaleY: number,
+		colorBaseTile: [number, number, number],
+		colorCountry: [number, number, number]
 	}
 
 	export const BUFFER_LAYOUT_PATTERN = [
@@ -113,6 +132,10 @@ export namespace SpriteBuffer {
 		...MixedArrayBufferType.VEC3,
 		// texture coords (u,v)
 		...MixedArrayBufferType.VEC2,
+		// tile base color (r,g,b)
+		...MixedArrayBufferType.VEC3,
+		// country color (r,g,b)
+		...MixedArrayBufferType.VEC3,
 	];
 
 }

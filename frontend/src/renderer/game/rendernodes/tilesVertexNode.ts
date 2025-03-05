@@ -3,7 +3,6 @@ import {GLAttributeType} from "../../../common/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {Tile} from "../../../models/base/tile";
-import seedrandom from "seedrandom";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {buildMap, shuffleArray} from "../../../common/utils";
 import {TerrainType} from "../../../models/base/TerrainType";
@@ -16,6 +15,7 @@ import {TilesBaseVertexNode} from "./tilesBaseVertexNode";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {GameWebGLRenderContext} from "../gameRenderContext";
+import {Random} from "../../../common/random";
 
 export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -260,7 +260,7 @@ export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 		cursor.append(center[1]);
 
 		// color
-		const heightJitter = seedrandom(tile.identifier.id).quick() * 0.1 - 0.5;
+		const heightJitter = Random.normalized(tile.identifier.id) * 0.1 - 0.5;
 		cursor.append(1 - this.clamp(0, (tile.base.value.height + 1) * 2 + heightJitter, 1));
 
 		// water border mask
@@ -289,7 +289,7 @@ export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 		cursor.append(center[1]);
 
 		// color
-		const heightJitter = seedrandom(tile.identifier.id).quick() * 0.1 - 0.5;
+		const heightJitter = Random.normalized(tile.identifier.id) * 0.1 - 0.5;
 		const color = this.mix(context.renderConfig.land.colorLight, context.renderConfig.land.colorDark, tile.base.value.height * 2 + heightJitter);
 		cursor.append(color);
 	}

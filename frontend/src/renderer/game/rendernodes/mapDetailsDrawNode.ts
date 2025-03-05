@@ -19,6 +19,10 @@ export class MapDetailsDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
                     path: "/icons/full_color.png",
                     binding: "u_texture",
                 }),
+                new NodeInput.Texture({
+                    path: "/icons/full_masks_2_1.png",
+                    binding: "u_textureMask",
+                }),
                 new NodeInput.Shader({
                     vertexId: "mapdetails.vert",
                     fragmentId: "mapdetails.frag",
