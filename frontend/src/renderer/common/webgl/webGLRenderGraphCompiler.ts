@@ -103,6 +103,8 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 			.map(e => {
 				if (e instanceof NodeInput.Texture) {
 					return e.path;
+				} else if (e instanceof NodeInput.ConditionalTexture) {
+					return e.id;
 				} else if (e instanceof NodeInput.TextureAtlas) {
 					return e.path;
 				} else if (e instanceof NodeInput.RenderTarget) {
@@ -118,6 +120,11 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 				const textureId = input.path;
 				const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
 				outCommands.push(new WebGLRenderCommand.BindTexture(textureId, textureUnit));
+			}
+			if (input instanceof NodeInput.ConditionalTexture) {
+				const textureId = input.id;
+				const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
+				outCommands.push(new WebGLRenderCommand.BindConditionalTexture(textureId, textureUnit, input.paths));
 			}
 			if (input instanceof NodeInput.TextureAtlas) {
 				const textureId = input.path;
@@ -148,6 +155,15 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 			}
 			if (input instanceof NodeInput.Texture) {
 				const textureId = input.path;
+				uniforms.push(new ProgramUniformEntry({
+					valueConstant: null,
+					valueProvider: () => textureBindingHandler.getUnit(textureId)!,
+					binding: input.binding,
+					type: GLUniformType.SAMPLER_2D,
+				}));
+			}
+			if (input instanceof NodeInput.ConditionalTexture) {
+				const textureId = input.id;
 				uniforms.push(new ProgramUniformEntry({
 					valueConstant: null,
 					valueProvider: () => textureBindingHandler.getUnit(textureId)!,

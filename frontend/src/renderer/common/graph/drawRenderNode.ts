@@ -26,6 +26,6 @@ export class DrawRenderNode<TContext> extends AbstractRenderNode {
  */
 export interface DrawRenderNodeConfig<TContext> {
     id: string,
-    input: (NodeInput.VertexDescriptor | NodeInput.Shader | NodeInput.Texture | NodeInput.TextureAtlas | NodeInput.RenderTarget | NodeInput.Property<TContext> | NodeInput.ClearColor | NodeInput.BlendMode)[]
+    input: (NodeInput.VertexDescriptor | NodeInput.Shader | NodeInput.Texture | NodeInput.ConditionalTexture<TContext> | NodeInput.TextureAtlas | NodeInput.RenderTarget | NodeInput.Property<TContext> | NodeInput.ClearColor | NodeInput.BlendMode)[]
     output: (NodeOutput.RenderTarget | NodeOutput.Screen)[]
 }

@@ -8,6 +8,7 @@ import {PageNotFound} from "./notfound/PageNotFound";
 import {RequireAuth} from "../components/headless/RequireAuth";
 import {PageSessions} from "./sessions/PageSessions";
 import {PageInGame} from "./ingame/PageInGame";
+import {TextureAtlasEditor} from "../../tools/textureatlaseditor/TextureAtlasEditor";
 
 
 export function App() {
@@ -28,6 +29,9 @@ export function App() {
 					    <PageInGame/>
 					// </RequireAuth>
 				}/>
+				<Route path="tools">
+					<Route path="textureatlaseditor" element={<TextureAtlasEditor/>}/>
+				</Route>
 				<Route path="*" element={<PageNotFound/>}/>
 			</Routes>
 		</BrowserRouter>

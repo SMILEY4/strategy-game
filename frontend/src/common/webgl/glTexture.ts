@@ -5,17 +5,19 @@ export class GLTexture implements GLDisposable {
 
     private readonly gl: WebGL2RenderingContext;
     private readonly handle: WebGLTexture;
+    private readonly dimensions: 2 | 3;
     private lastBoundTextureUnit: number = -1;
 
-    constructor(gl: WebGL2RenderingContext, handle: WebGLTexture) {
+    constructor(gl: WebGL2RenderingContext, dimensions: 2 | 3, handle: WebGLTexture) {
         this.gl = gl;
         this.handle = handle;
+        this.dimensions = dimensions;
     }
 
-    public bind(textureUnit: number) {
+    public bind(textureUnit: number) { // todo: 3d
         this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
         GLError.check(this.gl, "activeTexture", "set active texture unit");
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.handle);
+        this.gl.bindTexture(this.getGlDimension(), this.handle);
         GLError.check(this.gl, "bindTexture", "binding texture");
         this.lastBoundTextureUnit = textureUnit;
     }
@@ -27,6 +29,16 @@ export class GLTexture implements GLDisposable {
 
     public getLastBoundTextureUnit(): number {
         return this.lastBoundTextureUnit;
+    }
+
+    private getGlDimension(): GLenum {
+        if(this.dimensions === 2) {
+            return this.gl.TEXTURE_2D;
+        }
+        if(this.dimensions === 3) {
+            return this.gl.TEXTURE_3D;
+        }
+        throw new Error("Unsupported amount of dimensions")
     }
 
 }
@@ -142,7 +154,7 @@ export namespace GLTexture {
 
         });
 
-        return new GLTexture(gl, texture);
+        return new GLTexture(gl, 2, texture);
     }
 
 
@@ -167,7 +179,7 @@ export namespace GLTexture {
         gl.generateMipmap(gl.TEXTURE_2D);
         GLError.check(gl, "generateMipmap", "generate mipmaps");
 
-        return new GLTexture(gl, texture);
+        return new GLTexture(gl, 2, texture);
     }
 
 
@@ -192,7 +204,7 @@ export namespace GLTexture {
         gl.generateMipmap(gl.TEXTURE_2D);
         GLError.check(gl, "generateMipmap", "generate mipmaps");
 
-        return new GLTexture(gl, texture);
+        return new GLTexture(gl, 2, texture);
     }
 
 }

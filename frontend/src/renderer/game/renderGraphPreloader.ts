@@ -43,6 +43,9 @@ export namespace RenderGraphPreloader {
 					if (input instanceof NodeInput.Texture) {
 						textures.push(input.path);
 					}
+					if (input instanceof NodeInput.ConditionalTexture) {
+						input.paths.forEach(it => textures.push(it.path))
+					}
 				});
 			}
 		});

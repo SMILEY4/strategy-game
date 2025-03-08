@@ -5,6 +5,7 @@ import SHADER_COMMON_COLOR from "./shaders/common/color.glsl?raw";
 import SHADER_COMMON_MAP from "./shaders/common/map.glsl?raw";
 import SHADER_COMMON_BORDER from "./shaders/common/border.glsl?raw";
 import SHADER_COMMON_RANDOM from "./shaders/common/random.glsl?raw";
+import SHADER_COMMON_LUT from "./shaders/common/lut.glsl?raw";
 
 import SHADER_WATER_VERT from "./shaders/water.vsh?raw";
 import SHADER_WATER_FRAG from "./shaders/water.fsh?raw";
@@ -31,6 +32,7 @@ export class GameShaderSourceManager extends WebGLShaderSourceManager {
 		this.register("map", SHADER_COMMON_MAP);
 		this.register("border", SHADER_COMMON_BORDER);
 		this.register("random", SHADER_COMMON_RANDOM);
+		this.register("lut", SHADER_COMMON_LUT);
 
 		this.register("water.vert", SHADER_WATER_VERT);
 		this.register("water.frag", SHADER_WATER_FRAG);

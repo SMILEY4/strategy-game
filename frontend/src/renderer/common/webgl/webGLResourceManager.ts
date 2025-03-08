@@ -10,6 +10,8 @@ import {GLTexture} from "../../../common/webgl/glTexture";
 import {GLFramebuffer} from "../../../common/webgl/glFramebuffer";
 import {NodeInput} from "../graph/nodeInput";
 import {NodeOutput} from "../graph/nodeOutput";
+import {TextureAtlas} from "../../../common/webgl/textureAtlas";
+import {WebGLTextureAtlasDataManager} from "./webGLTextureAtlasDataManager";
 import ManagedProgram = WebGLResourceManager.ManagedProgram;
 import ManagedTexture = WebGLResourceManager.ManagedTexture;
 import ManagedFramebuffer = WebGLResourceManager.ManagedFramebuffer;
@@ -18,8 +20,6 @@ import ManagedVertexData = WebGLResourceManager.ManagedVertexData;
 import ManagedTextureAtlas = WebGLResourceManager.ManagedTextureAtlas;
 import VertexAttribute = NodeOutput.VertexAttribute;
 import VertexBuffer = NodeOutput.VertexBuffer;
-import {TextureAtlas} from "../../../common/webgl/textureAtlas";
-import {WebGLTextureAtlasDataManager} from "./webGLTextureAtlasDataManager";
 
 export class WebGLResourceManager implements ResourceManager {
 
@@ -70,7 +70,12 @@ export class WebGLResourceManager implements ResourceManager {
 						this.initializeShaderProgram(input.vertexId, input.fragmentId);
 					}
 					if (input instanceof NodeInput.Texture) {
-						this.initializeTexture(input.path);
+						this.initializeTexture(input.path, input.config);
+					}
+					if (input instanceof NodeInput.ConditionalTexture) {
+						input.paths.forEach(path => {
+							this.initializeTexture(path.path, (input as NodeInput.ConditionalTexture<any>).config);
+						})
 					}
 					if (input instanceof NodeInput.TextureAtlas) {
 						this.initializeTextureAtlas(input.path);
@@ -176,7 +181,7 @@ export class WebGLResourceManager implements ResourceManager {
 						stride: attribute.attribute.stride,
 						offset: attribute.attribute.offset,
 						divisor: attribute.attribute.divisor,
-						debugName: program.vertex + "-" + program.fragment + "/" + attribute.attribute.name
+						debugName: program.vertex + "-" + program.fragment + "/" + attribute.attribute.name,
 					})),
 			);
 			vertexArrays.set(program.id, vertexArray);
@@ -224,21 +229,26 @@ export class WebGLResourceManager implements ResourceManager {
 		}
 		const managedTextureAtlas: ManagedTextureAtlas = {
 			id: path,
-			textureAtlas: TextureAtlas.createFromData(this.gl, path, this.textureAtlasDataManager.getData(path))
-		}
-		this.textureAtlases.set(managedTextureAtlas.id, managedTextureAtlas)
+			textureAtlas: TextureAtlas.createFromData(
+				this.gl,
+				path,
+				this.textureAtlasDataManager.getEntries(path),
+				this.textureAtlasDataManager.getGroupDefinitions(path),
+			),
+		};
+		this.textureAtlases.set(managedTextureAtlas.id, managedTextureAtlas);
 		return managedTextureAtlas;
 	}
 
-	private initializeTexture(path: string): ManagedTexture {
-		console.debug("Loading texture", path);
+	private initializeTexture(path: string, config: GLTexture.Config): WebGLResourceManager.ManagedTexture {
+		console.debug("Initializing texture", path, config);
 		if (this.textures.has(path)) {
 			return this.textures.get(path)!;
 		}
 		const managedTexture: ManagedTexture = {
 			id: path,
 			path: path,
-			texture: GLTexture.createFromPath(this.gl, path),
+			texture:  GLTexture.createFromPath(this.gl, path, config)
 		};
 		this.textures.set(managedTexture.id, managedTexture);
 		return managedTexture;

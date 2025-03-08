@@ -1,3 +1,5 @@
+import seedrandom from "seedrandom";
+
 export function mapValue<T,R>(value: T, mapping: (value: T) => R): R {
     return mapping(value);
 }
@@ -81,10 +83,6 @@ export function mapRecord<K extends keyof any, I, O>(record: Record<K, I>, trans
         transformed[key as K] = transform(key as K, value as I);
     }
     return transformed;
-}
-
-export function chooseRandom<T>(array: T[]): T {
-    return array[Math.floor(Math.random() * array.length)];
 }
 
 export function shuffleArray<T>(array: T[]) {

@@ -5,6 +5,8 @@ import {NodeInput} from "../../common/graph/nodeInput";
 import {GLUniformType} from "../../../common/webgl/glTypes";
 import {mat3} from "../../../common/webgl/mat3";
 import {GameWebGLRenderContext} from "../gameRenderContext";
+import {GLTextureMagFilter, GLTextureMinFilter, GLTextureWrap} from "../../../common/webgl/glTexture";
+
 
 /**
  * Combines all individual (non-html) layers into the "final" image.
@@ -39,12 +41,6 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 					type: GLUniformType.FLOAT,
 					valueConstant: null,
 					valueProvider: context => context.timestamp,
-				}),
-				new NodeInput.Property({
-					binding: "u_common.isGrayscale",
-					type: GLUniformType.INT,
-					valueConstant: null,
-					valueProvider: context => context.mapMode.renderData.grayscale ? 1 : 0,
 				}),
 				new NodeInput.Texture({
 					binding: "u_common.noise",
@@ -209,6 +205,31 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 					binding: "u_paper.clouds.contrast",
 					type: GLUniformType.FLOAT,
 					valueConstant: 1.0,
+				}),
+				//==== COLOR CORRECTION ==============================
+				new NodeInput.ConditionalTexture({
+					binding: "u_lutColorCorrection",
+					id: "lut_colorCorrection",
+					paths: [
+						{
+							path: "/lut/lut_64_corrected.png",
+							condition: ctx => !ctx.mapMode.renderData.grayscale,
+						},
+						{
+							path: "/lut/lut_64_sepia.png",
+							condition: ctx => ctx.mapMode.renderData.grayscale,
+						}
+					],
+					config: {
+						filterMin: GLTextureMinFilter.NEAREST,
+						filterMag: GLTextureMagFilter.NEAREST,
+						wrap: GLTextureWrap.CLAMP_TO_EDGE
+					}
+				}),
+				new NodeInput.Property({
+					binding: "u_lutSize",
+					type: GLUniformType.FLOAT,
+					valueConstant: 64.0,
 				}),
 			],
 			output: [
