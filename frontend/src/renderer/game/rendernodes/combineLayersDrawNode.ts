@@ -212,11 +212,11 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 					id: "lut_colorCorrection",
 					paths: [
 						{
-							path: "/lut_neutral.png",
+							path: "/lut/lut_64_corrected.png",
 							condition: ctx => !ctx.mapMode.renderData.grayscale,
 						},
 						{
-							path: "/lut_grayscale.png",
+							path: "/lut/lut_64_sepia.png",
 							condition: ctx => ctx.mapMode.renderData.grayscale,
 						}
 					],
@@ -229,7 +229,7 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 				new NodeInput.Property({
 					binding: "u_lutSize",
 					type: GLUniformType.FLOAT,
-					valueConstant: 32.0,
+					valueConstant: 64.0,
 				}),
 			],
 			output: [
