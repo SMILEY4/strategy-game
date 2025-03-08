@@ -69,6 +69,9 @@ struct PaperData {
 
 uniform PaperData u_paper;
 
+uniform float u_lutSize;
+uniform sampler2D u_lutColorCorrection;
+
 in vec2 v_textureCoordinates;
 
 out vec4 outColor;
@@ -76,6 +79,7 @@ out vec4 outColor;
 
 #include color
 #include map
+#include lut
 
 /*
  * sample the pixel-color from a framebuffer at the given uv-coords
@@ -196,17 +200,19 @@ float getPaperLayer(PaperLayerData data, vec2 mapPosition) {
     return pow(value, data.contrast);
 }
 
-vec3 getPaperTexture() {
+vec3 getPaperTexture(float whitepoint) {
     vec2 mapPosition = map_screenToWorld(u_common.invViewProjection, v_textureCoordinates);
     float large = getPaperLayer(u_paper.large, mapPosition);
     float medium = getPaperLayer(u_paper.medium, mapPosition);
     float small = getPaperLayer(u_paper.small, mapPosition);
     float clouds = getPaperLayer(u_paper.clouds, mapPosition);
-    return vec3(large * medium * small * clouds);
+    float combined = large * medium * small * clouds;
+    combined = combined * (1.0 / whitepoint);
+    return vec3(combined);
 }
 
 vec4 applyEffectPaper(vec4 color) {
-    vec3 paper = getPaperTexture();
+    vec3 paper = getPaperTexture(0.85882);
     return vec4(color.rgb * paper, color.a);
 }
 
@@ -215,9 +221,8 @@ vec4 applyEffectPaper(vec4 color) {
 // ==================================//
 
 vec4 applyEffectColorCorrection(vec4 color) {
-    vec4 result = vec4(pow(color.r, 0.75), pow(color.g, 0.75), pow(color.b, 0.75), color.a);
-    result.rgb = clr_saturation(result.rgb, 1.2);
-    return result;
+    vec3 lutColor = lut_sample(u_lutColorCorrection, clamp(color.rgb, vec3(0.0), vec3(1.0)), u_lutSize).rgb;
+    return vec4(lutColor, color.a);
 }
 
 // ==================================//
@@ -243,14 +248,16 @@ void main() {
     color = clr_blend(water, color);
     color = clr_blend(land, color);
     color = clr_blend(mapDetails, color);
+
+    // color correct
+    color = applyEffectColorCorrection(color);
+
+    // apply remaining layers
     color = clr_blend(fog, color);
     color = clr_blend(overlay, color);
 
     // apply paper effect
     color = applyEffectPaper(color);
-
-    // color correct
-    color = applyEffectColorCorrection(color);
 
     outColor = color;
 }

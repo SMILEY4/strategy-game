@@ -1,4 +1,5 @@
 import {GLUniformType, GLUniformValueType} from "../../../common/webgl/glTypes";
+import {GLTexture} from "../../../common/webgl/glTexture";
 
 /**
  * Inputs of render nodes
@@ -41,15 +42,17 @@ export namespace NodeInput {
     }
 
     /**
-     * Texture
+     * Texture (2d or 3d lut cube)
      */
     export class Texture {
         readonly path: string;
         readonly binding: string;
+        readonly config: GLTexture.Config;
 
-        constructor(props: { path: string, binding: string }) {
+        constructor(props: { path: string, binding: string, config?: GLTexture.Config}) {
             this.path = props.path;
             this.binding = props.binding;
+            this.config = props.config ? props.config : {};
         }
     }
 

@@ -70,7 +70,7 @@ export class WebGLResourceManager implements ResourceManager {
 						this.initializeShaderProgram(input.vertexId, input.fragmentId);
 					}
 					if (input instanceof NodeInput.Texture) {
-						this.initializeTexture(input.path);
+						this.initializeTexture(input.path, input.config);
 					}
 					if (input instanceof NodeInput.TextureAtlas) {
 						this.initializeTextureAtlas(input.path);
@@ -235,15 +235,14 @@ export class WebGLResourceManager implements ResourceManager {
 		return managedTextureAtlas;
 	}
 
-	private initializeTexture(path: string): ManagedTexture {
-		console.debug("Loading texture", path);
+	private initializeTexture(path: string, config: GLTexture.Config): WebGLResourceManager.ManagedTexture {
 		if (this.textures.has(path)) {
 			return this.textures.get(path)!;
 		}
 		const managedTexture: ManagedTexture = {
 			id: path,
 			path: path,
-			texture: GLTexture.createFromPath(this.gl, path),
+			texture:  GLTexture.createFromPath(this.gl, path, config)
 		};
 		this.textures.set(managedTexture.id, managedTexture);
 		return managedTexture;

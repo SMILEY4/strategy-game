@@ -5,6 +5,8 @@ import {NodeInput} from "../../common/graph/nodeInput";
 import {GLUniformType} from "../../../common/webgl/glTypes";
 import {mat3} from "../../../common/webgl/mat3";
 import {GameWebGLRenderContext} from "../gameRenderContext";
+import {GLTextureMagFilter, GLTextureMinFilter, GLTextureWrap} from "../../../common/webgl/glTexture";
+
 
 /**
  * Combines all individual (non-html) layers into the "final" image.
@@ -209,6 +211,21 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 					binding: "u_paper.clouds.contrast",
 					type: GLUniformType.FLOAT,
 					valueConstant: 1.0,
+				}),
+				//==== COLOR CORRECTION ==============================
+				new NodeInput.Texture({
+					binding: "u_lutColorCorrection",
+					path: "/lut_test.png",
+					config: {
+						filterMin: GLTextureMinFilter.NEAREST,
+						filterMag: GLTextureMagFilter.NEAREST,
+						wrap: GLTextureWrap.CLAMP_TO_EDGE
+					}
+				}),
+				new NodeInput.Property({
+					binding: "u_lutSize",
+					type: GLUniformType.FLOAT,
+					valueConstant: 32.0,
 				}),
 			],
 			output: [
