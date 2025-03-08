@@ -72,6 +72,11 @@ export class WebGLResourceManager implements ResourceManager {
 					if (input instanceof NodeInput.Texture) {
 						this.initializeTexture(input.path, input.config);
 					}
+					if (input instanceof NodeInput.ConditionalTexture) {
+						input.paths.forEach(path => {
+							this.initializeTexture(path.path, (input as NodeInput.ConditionalTexture<any>).config);
+						})
+					}
 					if (input instanceof NodeInput.TextureAtlas) {
 						this.initializeTextureAtlas(input.path);
 					}

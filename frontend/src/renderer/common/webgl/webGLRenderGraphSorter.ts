@@ -174,6 +174,9 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
                 ...renderNode.config.input
                     .filter(e => e instanceof NodeInput.Texture)
                     .map(e => "texture:" + (e as NodeInput.Texture).path),
+                ...renderNode.config.input
+                    .filter(e => e instanceof NodeInput.ConditionalTexture)
+                    .flatMap(e => (e as NodeInput.ConditionalTexture<any>).paths.map(it => "texture:" + it.path)),
             ];
         } else {
             return [];

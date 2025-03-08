@@ -207,22 +207,19 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 					valueConstant: 1.0,
 				}),
 				//==== COLOR CORRECTION ==============================
-				new NodeInput.Texture({
+				new NodeInput.ConditionalTexture({
 					binding: "u_lutColorCorrection",
 					id: "lut_colorCorrection",
-					path: "/lut_neutral.png",
-					condition: ctx => !ctx.mapMode.renderData.grayscale,
-					config: {
-						filterMin: GLTextureMinFilter.NEAREST,
-						filterMag: GLTextureMagFilter.NEAREST,
-						wrap: GLTextureWrap.CLAMP_TO_EDGE
-					}
-				}),
-				new NodeInput.Texture({
-					binding: "u_lutColorCorrection",
-					id: "lut_colorCorrection",
-					path: "/lut_grayscale.png",
-					condition: ctx => ctx.mapMode.renderData.grayscale,
+					paths: [
+						{
+							path: "/lut_neutral.png",
+							condition: ctx => !ctx.mapMode.renderData.grayscale,
+						},
+						{
+							path: "/lut_grayscale.png",
+							condition: ctx => ctx.mapMode.renderData.grayscale,
+						}
+					],
 					config: {
 						filterMin: GLTextureMinFilter.NEAREST,
 						filterMag: GLTextureMagFilter.NEAREST,

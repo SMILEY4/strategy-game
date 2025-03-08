@@ -112,33 +112,60 @@ export namespace WebGLRenderCommand {
 	 */
 	export class BindTexture implements Base {
 
-		private readonly id: string;
-        private readonly path: string;
+		private readonly path: string;
 		private readonly textureUnit: number;
-		private readonly condition: (ctx: Context) => boolean;
 
-		constructor(id: string, path: string, slot: number, condition: (ctx: Context) => boolean) {
-			this.id = id;
-            this.path = path;
+		constructor(path: string, slot: number) {
+			this.path = path;
 			this.textureUnit = slot;
-			this.condition = condition;
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            if (this.condition(context)) {
-				resourceManager.getTexture(this.path).texture.bind(this.textureUnit);
-			}
+			resourceManager.getTexture(this.path).texture.bind(this.textureUnit);
 		}
 
 		public getDebugData(): any {
 			return {
 				command: "BindTexture",
-				texture: this.id,
-				path: this.path,
-                textureUnit: this.textureUnit,
+				texture: this.path,
+				textureUnit: this.textureUnit,
 			};
 		}
 	}
+
+    /**
+     * Bind a conditional texture to the given texture textureUnit
+     */
+    export class BindConditionalTexture implements Base {
+
+        private readonly id: string;
+        private readonly paths: ({ path: string, condition: (ctx: Context) => boolean })[];
+        private readonly textureUnit: number;
+
+        constructor(id: string, slot: number, paths: ({ path: string, condition: (ctx: Context) => boolean })[]) {
+            this.id = id;
+            this.paths = paths;
+            this.textureUnit = slot;
+        }
+
+        public execute(resourceManager: WebGLResourceManager, context: Context): void {
+            for (let i = 0; i < this.paths.length; i++) {
+                const entry = this.paths[i];
+                if(entry.condition(context)) {
+                    resourceManager.getTexture(entry.path).texture.bind(this.textureUnit);
+                    break;
+                }
+            }
+        }
+
+        public getDebugData(): any {
+            return {
+                command: "BindTexture",
+                texture: this.id,
+                textureUnit: this.textureUnit,
+            };
+        }
+    }
 
 	/**
 	 * Bind a texture atlas to the given texture textureUnit
