@@ -10,352 +10,359 @@ import {WebGlProvidedNodeInputs} from "./webGLProvidedNodeInputs";
 
 export namespace WebGLRenderCommand {
 
-    export interface Context {
-        gl: WebGL2RenderingContext,
-        renderer: BaseRenderer,
-        camera: Camera
-    }
+	export interface Context {
+		gl: WebGL2RenderingContext,
+		renderer: BaseRenderer,
+		camera: Camera
+	}
 
-    /**
-     * base webgl command
-     */
-    export interface Base extends RenderCommand<WebGLResourceManager, Context> {
-        getDebugData(): any
-    }
+	/**
+	 * base webgl command
+	 */
+	export interface Base extends RenderCommand<WebGLResourceManager, Context> {
+		getDebugData(): any;
+	}
 
 
-    /**
-     * Update data of a vertex buffer
-     */
-    export class UpdateVertexBufferData implements Base {
-        private readonly node: VertexRenderNode<any>;
-        private readonly changeProvider: ChangeProvider;
+	/**
+	 * Update data of a vertex buffer
+	 */
+	export class UpdateVertexBufferData implements Base {
+		private readonly node: VertexRenderNode<any>;
+		private readonly changeProvider: ChangeProvider;
 
-        constructor(node: VertexRenderNode<any>, changeProvider: ChangeProvider) {
-            this.node = node;
-            this.changeProvider = changeProvider;
-        }
+		constructor(node: VertexRenderNode<any>, changeProvider: ChangeProvider) {
+			this.node = node;
+			this.changeProvider = changeProvider;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            if(this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
-                const providedInputs = new WebGlProvidedNodeInputs(this.node.config.input, resourceManager);
-                const modified = this.node.execute(context, providedInputs);
-                if (modified.buffers.size > 0) {
-                    for (let [modifiedId, modifiedData] of modified.buffers) {
-                        const buffer = resourceManager.getVertexBuffer(modifiedId).buffer;
-                        buffer.setData(modifiedData.data, true);
-                    }
-                }
-                if (modified.outputs.size > 0) {
-                    for (let [modifiedId, modifiedData] of modified.outputs) {
-                        const data = resourceManager.getVertexData(modifiedId);
-                        data.vertexCount = modifiedData.vertexCount;
-                        data.instanceCount = modifiedData.instanceCount;
-                    }
-                }
-            }
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			if (this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
+				const providedInputs = new WebGlProvidedNodeInputs(this.node.config.input, resourceManager);
+				const modified = this.node.execute(context, providedInputs);
+				if (modified.buffers.size > 0) {
+					for (let [modifiedId, modifiedData] of modified.buffers) {
+						const buffer = resourceManager.getVertexBuffer(modifiedId).buffer;
+						buffer.setData(modifiedData.data, true);
+					}
+				}
+				if (modified.outputs.size > 0) {
+					for (let [modifiedId, modifiedData] of modified.outputs) {
+						const data = resourceManager.getVertexData(modifiedId);
+						data.vertexCount = modifiedData.vertexCount;
+						data.instanceCount = modifiedData.instanceCount;
+					}
+				}
+			}
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "UpdateVertexBufferData",
-                node: this.node.id,
-            }
-        }
+		public getDebugData(): any {
+			return {
+				command: "UpdateVertexBufferData",
+				node: this.node.id,
+			};
+		}
 
-    }
+	}
 
-    /**
-     * Bind a render-target to start rendering to  it
-     */
-    export class BindFramebuffer implements Base {
+	/**
+	 * Bind a render-target to start rendering to  it
+	 */
+	export class BindFramebuffer implements Base {
 
-        private readonly name: string;
+		private readonly name: string;
 
-        constructor(name: string) {
-            this.name = name;
-        }
+		constructor(name: string) {
+			this.name = name;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            const data = resourceManager.getFramebuffer(this.name);
-            const framebuffer = data.framebuffer
-            framebuffer.bind();
-            framebuffer.resize(context.camera.getWidth() * data.scale, context.camera.getHeight() * data.scale);
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			const data = resourceManager.getFramebuffer(this.name);
+			const framebuffer = data.framebuffer;
+			framebuffer.bind();
+			framebuffer.resize(context.camera.getWidth() * data.scale, context.camera.getHeight() * data.scale);
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "BindFramebuffer",
-                framebuffer: this.name,
-            }
-        }
-    }
+		public getDebugData(): any {
+			return {
+				command: "BindFramebuffer",
+				framebuffer: this.name,
+			};
+		}
+	}
 
-    /**
-     * Unbind the active render-target to stop rendering to it
-     */
-    export class UnbindFramebuffer implements Base {
+	/**
+	 * Unbind the active render-target to stop rendering to it
+	 */
+	export class UnbindFramebuffer implements Base {
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            GLFramebuffer.unbind(context.gl);
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			GLFramebuffer.unbind(context.gl);
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "UnbindFramebuffer",
-            }
-        }
-    }
+		public getDebugData(): any {
+			return {
+				command: "UnbindFramebuffer",
+			};
+		}
+	}
 
-    /**
-     * Bind a texture to the given texture textureUnit
-     */
-    export class BindTexture implements Base {
+	/**
+	 * Bind a texture to the given texture textureUnit
+	 */
+	export class BindTexture implements Base {
 
-        private readonly name: string;
-        private readonly textureUnit: number;
+		private readonly id: string;
+        private readonly path: string;
+		private readonly textureUnit: number;
+		private readonly condition: (ctx: Context) => boolean;
 
-        constructor(name: string, slot: number) {
-            this.name = name;
-            this.textureUnit = slot;
-        }
+		constructor(id: string, path: string, slot: number, condition: (ctx: Context) => boolean) {
+			this.id = id;
+            this.path = path;
+			this.textureUnit = slot;
+			this.condition = condition;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            resourceManager.getTexture(this.name).texture.bind(this.textureUnit);
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+            if (this.condition(context)) {
+				resourceManager.getTexture(this.path).texture.bind(this.textureUnit);
+			}
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "BindTexture",
-                texture: this.name,
+		public getDebugData(): any {
+			return {
+				command: "BindTexture",
+				texture: this.id,
+				path: this.path,
                 textureUnit: this.textureUnit,
-            }
-        }
-    }
+			};
+		}
+	}
 
-    /**
-     * Bind a texture atlas to the given texture textureUnit
-     */
-    export class BindTextureAtlas implements Base {
+	/**
+	 * Bind a texture atlas to the given texture textureUnit
+	 */
+	export class BindTextureAtlas implements Base {
 
-        private readonly name: string;
-        private readonly textureUnit: number;
+		private readonly name: string;
+		private readonly textureUnit: number;
 
-        constructor(name: string, slot: number) {
-            this.name = name;
-            this.textureUnit = slot;
-        }
+		constructor(name: string, slot: number) {
+			this.name = name;
+			this.textureUnit = slot;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            resourceManager.getTextureAtlas(this.name).textureAtlas.bind(this.textureUnit);
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			resourceManager.getTextureAtlas(this.name).textureAtlas.bind(this.textureUnit);
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "BindTextureAtlas",
-                atlas: this.name,
-                textureUnit: this.textureUnit,
-            }
-        }
-    }
+		public getDebugData(): any {
+			return {
+				command: "BindTextureAtlas",
+				atlas: this.name,
+				textureUnit: this.textureUnit,
+			};
+		}
+	}
 
-    /**
-     * Bind the texture of a render-target to the given texture textureUnit
-     */
-    export class BindFramebufferTexture implements Base {
+	/**
+	 * Bind the texture of a render-target to the given texture textureUnit
+	 */
+	export class BindFramebufferTexture implements Base {
 
-        private readonly name: string;
-        private readonly textureUnit: number;
+		private readonly name: string;
+		private readonly textureUnit: number;
 
-        constructor(name: string, slot: number) {
-            this.name = name;
-            this.textureUnit = slot;
-        }
+		constructor(name: string, slot: number) {
+			this.name = name;
+			this.textureUnit = slot;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            resourceManager.getFramebuffer(this.name).framebuffer.bindTexture(this.textureUnit);
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			resourceManager.getFramebuffer(this.name).framebuffer.bindTexture(this.textureUnit);
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "BindFramebufferTexture",
-                framebuffer: this.name,
-                textureUnit: this.textureUnit,
-            }
-        }
-    }
+		public getDebugData(): any {
+			return {
+				command: "BindFramebufferTexture",
+				framebuffer: this.name,
+				textureUnit: this.textureUnit,
+			};
+		}
+	}
 
-    /**
-     * Bind a vertex-array to render it
-     */
-    export class BindVertexArray implements Base {
+	/**
+	 * Bind a vertex-array to render it
+	 */
+	export class BindVertexArray implements Base {
 
-        private readonly name: string;
-        private readonly vertex: string;
-        private readonly fragment: string;
+		private readonly name: string;
+		private readonly vertex: string;
+		private readonly fragment: string;
 
-        constructor(name: string, vertex: string, fragment: string) {
-            this.name = name;
-            this.vertex = vertex;
-            this.fragment = fragment;
-        }
+		constructor(name: string, vertex: string, fragment: string) {
+			this.name = name;
+			this.vertex = vertex;
+			this.fragment = fragment;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            const programId = resourceManager.getProgramId(this.vertex, this.fragment);
-            resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.bind();
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			const programId = resourceManager.getProgramId(this.vertex, this.fragment);
+			resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.bind();
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "BindVertexArray",
-                vertexShader: this.vertex,
-                fragmentShader: this.fragment,
-            }
-        }
-    }
+		public getDebugData(): any {
+			return {
+				command: "BindVertexArray",
+				vertexShader: this.vertex,
+				fragmentShader: this.fragment,
+			};
+		}
+	}
 
-    /**
-     * Unbind a vertex-array to stop using it
-     */
-    export class UnbindVertexArray implements Base {
+	/**
+	 * Unbind a vertex-array to stop using it
+	 */
+	export class UnbindVertexArray implements Base {
 
-        private readonly name: string;
-        private readonly vertex: string;
-        private readonly fragment: string;
+		private readonly name: string;
+		private readonly vertex: string;
+		private readonly fragment: string;
 
-        constructor(name: string, vertex: string, fragment: string) {
-            this.name = name;
-            this.vertex = vertex;
-            this.fragment = fragment;
-        }
+		constructor(name: string, vertex: string, fragment: string) {
+			this.name = name;
+			this.vertex = vertex;
+			this.fragment = fragment;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            const programId = resourceManager.getProgramId(this.vertex, this.fragment);
-            resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.unbind();
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			const programId = resourceManager.getProgramId(this.vertex, this.fragment);
+			resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.unbind();
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "UnbindVertexArray",
-                vertexShader: this.vertex,
-                fragmentShader: this.fragment,
-            }
-        }
-    }
+		public getDebugData(): any {
+			return {
+				command: "UnbindVertexArray",
+				vertexShader: this.vertex,
+				fragmentShader: this.fragment,
+			};
+		}
+	}
 
-    /**
-     * Start using the shader
-     */
-    export class UseShader implements Base {
+	/**
+	 * Start using the shader
+	 */
+	export class UseShader implements Base {
 
-        private readonly vertex: string;
-        private readonly fragment: string;
+		private readonly vertex: string;
+		private readonly fragment: string;
 
-        constructor(vertex: string, fragment: string) {
-            this.vertex = vertex;
-            this.fragment = fragment;
-        }
+		constructor(vertex: string, fragment: string) {
+			this.vertex = vertex;
+			this.fragment = fragment;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            resourceManager.getProgram(this.vertex, this.fragment).program.use();
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			resourceManager.getProgram(this.vertex, this.fragment).program.use();
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "UseShader",
-                vertexShader: this.vertex,
-                fragmentShader: this.fragment,
-            }
-        }
-    }
+		public getDebugData(): any {
+			return {
+				command: "UseShader",
+				vertexShader: this.vertex,
+				fragmentShader: this.fragment,
+			};
+		}
+	}
 
-    /**
-     * Set the shader uniform values
-     */
-    export class SetUniforms implements Base {
+	/**
+	 * Set the shader uniform values
+	 */
+	export class SetUniforms implements Base {
 
-        private readonly uniforms: ProgramUniformEntry[];
-        private readonly vertex: string;
-        private readonly fragment: string;
+		private readonly uniforms: ProgramUniformEntry[];
+		private readonly vertex: string;
+		private readonly fragment: string;
 
 
-        constructor(uniforms: ProgramUniformEntry[], vertex: string, fragment: string) {
-            this.uniforms = uniforms;
-            this.vertex = vertex;
-            this.fragment = fragment;
-        }
+		constructor(uniforms: ProgramUniformEntry[], vertex: string, fragment: string) {
+			this.uniforms = uniforms;
+			this.vertex = vertex;
+			this.fragment = fragment;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            const program = resourceManager.getProgram(this.vertex, this.fragment).program;
-            for (let i = 0; i < this.uniforms.length; i++) {
-                const uniform = this.uniforms[i];
-                if (uniform.valueConstant !== null) {
-                    program.setUniform(uniform.binding, uniform.type, uniform.valueConstant);
-                }
-                if (uniform.valueProvider !== null) {
-                    program.setUniform(uniform.binding, uniform.type, uniform.valueProvider(context));
-                }
-            }
-        }
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			const program = resourceManager.getProgram(this.vertex, this.fragment).program;
+			for (let i = 0; i < this.uniforms.length; i++) {
+				const uniform = this.uniforms[i];
+				if (uniform.valueConstant !== null) {
+					program.setUniform(uniform.binding, uniform.type, uniform.valueConstant);
+				}
+				if (uniform.valueProvider !== null) {
+					program.setUniform(uniform.binding, uniform.type, uniform.valueProvider(context));
+				}
+			}
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "SetUniforms",
-                uniforms: this.uniforms.map(it => it.binding),
-                vertexShader: this.vertex,
-                fragmentShader: this.fragment,
-            }
-        }
-    }
+		public getDebugData(): any {
+			return {
+				command: "SetUniforms",
+				uniforms: this.uniforms.map(it => it.binding),
+				vertexShader: this.vertex,
+				fragmentShader: this.fragment,
+			};
+		}
+	}
 
-    /**
-     * Make a draw call
-     */
-    export class Draw implements Base {
+	/**
+	 * Make a draw call
+	 */
+	export class Draw implements Base {
 
-        private readonly vertexDataId: string;
-        private readonly clearColor: [number, number, number, number];
-        private readonly blendFunction: ((gl: WebGL2RenderingContext) => void) | null;
-        private readonly renderToTexture: boolean;
-        private readonly renderScale: number;
-        private readonly depth: boolean;
+		private readonly vertexDataId: string;
+		private readonly clearColor: [number, number, number, number];
+		private readonly blendFunction: ((gl: WebGL2RenderingContext) => void) | null;
+		private readonly renderToTexture: boolean;
+		private readonly renderScale: number;
+		private readonly depth: boolean;
 
-        constructor(vertexDataId: string, clearColor: [number, number, number, number], blendFunction: ((gl: WebGL2RenderingContext) => void) | null, renderToTexture: boolean, renderScale: number, depth: boolean) {
-            this.vertexDataId = vertexDataId;
-            this.clearColor = clearColor;
-            this.blendFunction = blendFunction;
-            this.renderToTexture = renderToTexture;
-            this.renderScale = renderScale;
-            this.depth = depth;
-        }
+		constructor(vertexDataId: string, clearColor: [number, number, number, number], blendFunction: ((gl: WebGL2RenderingContext) => void) | null, renderToTexture: boolean, renderScale: number, depth: boolean) {
+			this.vertexDataId = vertexDataId;
+			this.clearColor = clearColor;
+			this.blendFunction = blendFunction;
+			this.renderToTexture = renderToTexture;
+			this.renderScale = renderScale;
+			this.depth = depth;
+		}
 
-        public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            context.renderer.prepareFrame(context.camera, this.clearColor, this.blendFunction, this.renderToTexture, this.renderScale, this.depth);
+		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.renderer.prepareFrame(context.camera, this.clearColor, this.blendFunction, this.renderToTexture, this.renderScale, this.depth);
 
-            const data = resourceManager.getVertexData(this.vertexDataId);
-            switch (data.type) {
-                case "standart": {
-                    context.renderer.draw(data.vertexCount);
-                    break;
-                }
-                case "instanced": {
-                    context.renderer.drawInstanced(data.vertexCount, data.instanceCount);
-                    break;
-                }
-            }
-        }
+			const data = resourceManager.getVertexData(this.vertexDataId);
+			switch (data.type) {
+				case "standart": {
+					context.renderer.draw(data.vertexCount);
+					break;
+				}
+				case "instanced": {
+					context.renderer.drawInstanced(data.vertexCount, data.instanceCount);
+					break;
+				}
+			}
+		}
 
-        public getDebugData(): any {
-            return {
-                command: "Draw",
-                vertexData: this.vertexDataId,
-                clearColor: this.clearColor,
-                renderToTexture: this.renderToTexture,
-                renderScale: this.renderScale,
-                depth: this.depth,
-            }
-        }
-    }
+		public getDebugData(): any {
+			return {
+				command: "Draw",
+				vertexData: this.vertexDataId,
+				clearColor: this.clearColor,
+				renderToTexture: this.renderToTexture,
+				renderScale: this.renderScale,
+				depth: this.depth,
+			};
+		}
+	}
 
 
 }

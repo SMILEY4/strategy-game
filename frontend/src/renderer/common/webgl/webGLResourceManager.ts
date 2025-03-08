@@ -236,6 +236,7 @@ export class WebGLResourceManager implements ResourceManager {
 	}
 
 	private initializeTexture(path: string, config: GLTexture.Config): WebGLResourceManager.ManagedTexture {
+		console.debug("Initializing texture", path, config);
 		if (this.textures.has(path)) {
 			return this.textures.get(path)!;
 		}

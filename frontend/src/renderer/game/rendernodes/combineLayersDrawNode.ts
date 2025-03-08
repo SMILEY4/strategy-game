@@ -42,12 +42,6 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 					valueConstant: null,
 					valueProvider: context => context.timestamp,
 				}),
-				new NodeInput.Property({
-					binding: "u_common.isGrayscale",
-					type: GLUniformType.INT,
-					valueConstant: null,
-					valueProvider: context => context.mapMode.renderData.grayscale ? 1 : 0,
-				}),
 				new NodeInput.Texture({
 					binding: "u_common.noise",
 					path: "/textures/noise_watercolor.png",
@@ -215,7 +209,20 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 				//==== COLOR CORRECTION ==============================
 				new NodeInput.Texture({
 					binding: "u_lutColorCorrection",
-					path: "/lut_test.png",
+					id: "lut_colorCorrection",
+					path: "/lut_neutral.png",
+					condition: ctx => !ctx.mapMode.renderData.grayscale,
+					config: {
+						filterMin: GLTextureMinFilter.NEAREST,
+						filterMag: GLTextureMagFilter.NEAREST,
+						wrap: GLTextureWrap.CLAMP_TO_EDGE
+					}
+				}),
+				new NodeInput.Texture({
+					binding: "u_lutColorCorrection",
+					id: "lut_colorCorrection",
+					path: "/lut_grayscale.png",
+					condition: ctx => ctx.mapMode.renderData.grayscale,
 					config: {
 						filterMin: GLTextureMinFilter.NEAREST,
 						filterMag: GLTextureMagFilter.NEAREST,

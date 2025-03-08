@@ -4,7 +4,6 @@ precision mediump float;
 struct CommonData {
     float timestamp;
     mat3 invViewProjection;
-    int isGrayscale;
     sampler2D noise;
 };
 
@@ -235,13 +234,6 @@ void main() {
     vec4 fog = getLayerFog();
     vec4 mapDetails = getLayerMapDetails();
     vec4 overlay = getLayerOverlay();
-
-    // grayscale
-    if (u_common.isGrayscale > 0) {
-        water = convertGrayscale(water);
-        land = convertGrayscale(land);
-        mapDetails = convertGrayscale(mapDetails);
-    }
 
     // combine layers
     vec4 color = vec4(0.0);

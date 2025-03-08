@@ -44,14 +44,18 @@ export namespace NodeInput {
     /**
      * Texture (2d or 3d lut cube)
      */
-    export class Texture {
+    export class Texture<TContext> {
+        readonly id: string;
         readonly path: string;
         readonly binding: string;
+        readonly condition: (ctx: TContext) => boolean;
         readonly config: GLTexture.Config;
 
-        constructor(props: { path: string, binding: string, config?: GLTexture.Config}) {
+        constructor(props: { path: string, id?: string, binding: string, condition?: (ctx: TContext) => boolean; config?: GLTexture.Config}) {
             this.path = props.path;
+            this.id = props.id ? props.id : props.path;
             this.binding = props.binding;
+            this.condition = props.condition ? props.condition : (_ => true);
             this.config = props.config ? props.config : {};
         }
     }

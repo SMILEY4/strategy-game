@@ -102,7 +102,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 		const inputTextureIds: string[] = node.config.input
 			.map(e => {
 				if (e instanceof NodeInput.Texture) {
-					return e.path;
+					return e.id;
 				} else if (e instanceof NodeInput.TextureAtlas) {
 					return e.path;
 				} else if (e instanceof NodeInput.RenderTarget) {
@@ -115,9 +115,9 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
 		for (let input of node.config.input) {
 			if (input instanceof NodeInput.Texture) {
-				const textureId = input.path;
+				const textureId = input.id;
 				const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
-				outCommands.push(new WebGLRenderCommand.BindTexture(textureId, textureUnit));
+				outCommands.push(new WebGLRenderCommand.BindTexture(textureId, input.path, textureUnit, input.condition));
 			}
 			if (input instanceof NodeInput.TextureAtlas) {
 				const textureId = input.path;
@@ -147,7 +147,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 				}));
 			}
 			if (input instanceof NodeInput.Texture) {
-				const textureId = input.path;
+				const textureId = input.id;
 				uniforms.push(new ProgramUniformEntry({
 					valueConstant: null,
 					valueProvider: () => textureBindingHandler.getUnit(textureId)!,
