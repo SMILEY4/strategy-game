@@ -19,10 +19,11 @@ import {ProgressCircle} from "./ProgressCircle";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Txt} from "../../../../components/text/Txt";
+import {SettlementIdentifier} from "../../../../../models/base/Settlement";
 
 export interface SettlementWindowProps {
 	windowId: string;
-	identifier: string | null;
+	identifier: SettlementIdentifier;
 }
 
 export function SettlementWindow(props: SettlementWindowProps): ReactElement {

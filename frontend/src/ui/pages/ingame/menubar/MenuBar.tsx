@@ -6,53 +6,37 @@ import "./menubar.less";
 import {UseDevWindow} from "../windows/dev/useDevWindow";
 import {UseMapWindow} from "../windows/map/useMapWindow";
 import {UseCommandLogWindow} from "../windows/commandlog/useCommandLogWindow";
-import {useDI} from "../../../../appContext";
-import {TurnEndService} from "../../../../logic/game/turnEndService";
-import {SessionRepository} from "../../../../state/repository/sessionRepository";
 import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
 import {UseOutlinerWindow} from "../windows/outliner/useOutlinerWindow";
-import { Txt } from "../../../components/text/Txt";
+import {Txt} from "../../../components/text/Txt";
+import {INTERFACE_SERVICE} from "../../../../logic/game/interfaceService";
+import {LocalStateHooks} from "../../../../state/local/access/localStateHooks";
 
 export function MenuBar(): ReactElement {
 
-    const openDevMenu = UseDevWindow.useOpen();
-    const openMapMenu = UseMapWindow.useOpen();
-    const openCommandLogMenu = UseCommandLogWindow.useOpen();
-    const openOutlinerMenu = UseOutlinerWindow.useOpen();
-    const currentTurn = SessionRepository.useTurn();
-    const isBlocked = useIsBlockingWindowOpen();
-    const [endTurnDisabled, endTurn] = useEndTurn(isBlocked);
+	const currentTurn = LocalStateHooks.useCurrentTurn();
+	const isWaiting = LocalStateHooks.useIsGameWaiting();
+	const isBlocked = useIsBlockingWindowOpen();
 
-    return (
-        <div className="menubar">
-            <div className="menubar__inner">
-                <HBox fullSize padding_xs gap_xs className="menubar__content">
+	return (
+		<div className="menubar">
+			<div className="menubar__inner">
+				<HBox fullSize padding_xs gap_xs className="menubar__content">
 
-                    <Button circle onClick={openDevMenu} disabled={isBlocked}><Txt.Icon.Debug/></Button>
-                    <Button circle onClick={openMapMenu} disabled={isBlocked}><Txt.Icon.Map/></Button>
-                    <Button circle onClick={openCommandLogMenu} disabled={isBlocked}><Txt.Icon.Command/></Button>
-                    <Button circle onClick={openOutlinerMenu} disabled={isBlocked}><Txt.Icon.List/></Button>
+					<Button circle onClick={UseDevWindow.open} disabled={isBlocked}><Txt.Icon.Debug/></Button>
+					<Button circle onClick={UseMapWindow.open} disabled={isBlocked}><Txt.Icon.Map/></Button>
+					<Button circle onClick={UseCommandLogWindow.open} disabled={isBlocked}><Txt.Icon.Command/></Button>
+					<Button circle onClick={UseOutlinerWindow.open} disabled={isBlocked}><Txt.Icon.List/></Button>
 
-                    <HSpacer fullWidth/>
+					<HSpacer fullWidth/>
 
-                    <Button success disabled={endTurnDisabled} onClick={endTurn}>{"End Turn " + currentTurn}</Button>
+					<Button success disabled={isBlocked || isWaiting} onClick={INTERFACE_SERVICE.endTurn}>
+						{"End Turn " + currentTurn}
+					</Button>
 
-                </HBox>
-            </div>
-        </div>
-    );
+				</HBox>
+			</div>
+		</div>
+	);
 
-}
-
-function useEndTurn(isBlocked: boolean): [boolean, () => void] {
-    const isWaiting = SessionRepository.useGameTurnState() === "waiting";
-    const isDisabled = isBlocked || isWaiting;
-
-    const endTurnService = useDI<TurnEndService>(TurnEndService.name);
-
-    function endTurn() {
-        endTurnService.endTurn();
-    }
-
-    return [isDisabled, endTurn];
 }

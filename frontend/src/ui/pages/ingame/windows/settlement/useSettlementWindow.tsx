@@ -1,36 +1,20 @@
 import React from "react";
 import {SettlementWindow} from "./SettlementWindow";
-import {useDI} from "../../../../../appContext";
 import {UseProductionWindow} from "../production/useProductionWindow";
 import {SettlementAggregate} from "../../../../../models/aggregates/SettlementAggregate";
-import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
 import {UseProductionQueueWindow} from "../productionQueue/useProductionQueueWindow";
-import {SettlementService} from "../../../../../logic/game/settlementService";
-import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
-import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import {ProductionQueueEntry, SettlementIdentifier} from "../../../../../models/base/Settlement";
+import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UseTileWindow} from "../tile/useTileWindow";
-import {CameraService} from "../../../../../logic/game/cameraService";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
+import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
 
 export namespace UseSettlementWindow {
 
-
-    export function useOpen() {
-        const open = useOpenWindow();
-        return (identifier: string | null) => {
-            const windowId = UID.generate();
-            open({
-                id: windowId,
-                groupId: WindowGroup.LEFT_SIDEBAR,
-                anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <SettlementWindow windowId={windowId} identifier={identifier}/>,
-            });
-        };
-    }
-
-    export function open(identifier: string | null) {
+    export function open(identifier: SettlementIdentifier) {
         const windowId = UID.generate();
         openWindow({
             id: windowId,
@@ -49,45 +33,35 @@ export namespace UseSettlementWindow {
             cancel: () => void,
         };
         open: {
-            settlement: (settlementId: string) => void,
+            settlement: (settlementId: SettlementIdentifier) => void,
             tile: () => void
         };
         centerCamera: () => void,
     }
 
-    export function useData(identifier: string | null): UseSettlementWindow.Data | null {
+    export function useData(identifier: SettlementIdentifier): UseSettlementWindow.Data | null {
 
-        const openSettlement = UseSettlementWindow.useOpen();
-        const openTile = UseTileWindow.useOpen();
-
-        const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
-
-        const settlementService = useDI<SettlementService>(SettlementService.name);
-        const cameraService = useDI<CameraService>(CameraService.name);
-
-        const openProductionWindow = UseProductionWindow.useOpen();
-        const openProductionQueueWindow = UseProductionQueueWindow.useOpen();
+        const settlement = LocalStateHooks.useSettlement(identifier)
+        const activeProductionEntry = LocalStateHooks.useProductionQueueActiveEntry()
 
         if (settlement) {
             return {
                 settlement: settlement,
                 productionQueue: {
-                    activeEntry: settlement.production.queue.visible
-                        ? settlement.production.queue.value.length === 0 ? null : settlement.production.queue.value[0]
-                        : null,
-                    add: () => openProductionWindow(identifier!),
-                    open: () => openProductionQueueWindow(identifier!),
+                    activeEntry: activeProductionEntry,
+                    add: () => UseProductionWindow.open(identifier),
+                    open: () => UseProductionQueueWindow.open(identifier),
                     cancel: () => {
-                        if (settlement.country.isUserCountry && settlement.production.queue.visible) {
-                            settlement.production.queue.value.length > 0 && settlementService.cancelProductionQueue(settlement.identifier, settlement.production.queue.value[0]);
+                        if(activeProductionEntry) {
+                            INTERFACE_SERVICE.cancelProduction(identifier, activeProductionEntry)
                         }
                     },
                 },
                 open: {
-                    settlement: (settlementId) => openSettlement(settlementId),
-                    tile: () => openTile(settlement.tile),
+                    settlement: (settlementId) => UseSettlementWindow.open(settlementId),
+                    tile: () => UseTileWindow.open(settlement.tile),
                 },
-                centerCamera: () => cameraService.centerCameraOnTile(settlement.tile),
+                centerCamera: () => INTERFACE_SERVICE.focusCamera(settlement.tile),
             };
         } else {
             return null;

@@ -8,10 +8,11 @@ import {Banner} from "../../../../components/banner/Banner";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
+import {WorldObjectIdentifier} from "../../../../../models/base/worldObject";
 
 export interface WorldObjectWindowProps {
 	windowId: string;
-	identifier: string | null;
+	identifier: WorldObjectIdentifier | null;
 }
 
 export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {

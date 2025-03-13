@@ -9,10 +9,11 @@ import {ProductionOptionAggregate} from "../../../../../models/aggregates/Settle
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
+import {SettlementIdentifier} from "../../../../../models/base/Settlement";
 
 export interface ProductionWindowProps {
     windowId: string;
-    settlementId: string;
+    settlementId: SettlementIdentifier;
 }
 
 export function ProductionWindow(props: ProductionWindowProps): ReactElement {

@@ -6,7 +6,6 @@ import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySu
 import {MapUniqueSupportingStorage} from "../../common/db/storage/supporting/mapUniqueSupportingStorage";
 import {WorldObject} from "../../models/base/worldObject";
 import {MapSupportingStorage} from "../../common/db/storage/supporting/mapSupportingStorage";
-import {Settlement} from "../../models/base/Settlement";
 
 function provideId(e: WorldObject): string {
     return e.identifier.id;

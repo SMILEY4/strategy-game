@@ -6,7 +6,11 @@ import {SessionRepository} from "../../state/repository/sessionRepository";
 /**
  * Service to handle the end of the current turn (for this player)
  */
-export class TurnEndService {
+export interface TurnEndService {
+	endTurn(): void;
+}
+
+export class TurnEndServiceImpl implements TurnEndService {
 
 	private readonly gameSessionService: GameSessionService;
 	private readonly movementService: MovementService;
@@ -26,14 +30,11 @@ export class TurnEndService {
 		this.sessionRepository = sessionRepository;
 	}
 
-	/**
-	 * End the current turn
-	 */
-	public endTurn() {
+	endTurn(): void {
 		this.movementService.cancelMovement();
 		this.gameSessionService.submitTurn(this.commandRepository.getAll());
 		this.commandRepository.clear();
-		this.sessionRepository.setTurnState("waiting")
+		this.sessionRepository.setTurnState("waiting");
 	}
 
 }

@@ -1,44 +1,36 @@
 import React from "react";
 import {ProductionQueueWindow} from "./ProductionQueueWindow";
-import {useDI} from "../../../../../appContext";
-import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
-import {SettlementService} from "../../../../../logic/game/settlementService";
-import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
-import {useOpenWindow} from "../../../../components/window/windowHooks";
+import {ProductionQueueEntry, SettlementIdentifier} from "../../../../../models/base/Settlement";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {mapHiddenOrDefault} from "../../../../../common/hiddenType";
-import {SettlementAggregate} from "../../../../../models/aggregates/SettlementAggregate";
 import {UID} from "../../../../../common/uid";
+import {openWindow} from "../../../../components/window/windowHooks";
+import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
 
 export namespace UseProductionQueueWindow {
 
-    export function useOpen() {
-        const open = useOpenWindow();
-        return (settlementId: string) => {
-            const windowId = UID.generate();
-            open({
-                id: windowId,
-                anchor: WindowStore.ANCHOR_CENTER_POINT,
-                content: <ProductionQueueWindow windowId={windowId} settlementId={settlementId}/>,
-            });
-        };
-    }
+	export function open(settlementId: SettlementIdentifier) {
+		const windowId = UID.generate();
+		openWindow({
+			id: windowId,
+			anchor: WindowStore.ANCHOR_CENTER_POINT,
+			content: <ProductionQueueWindow windowId={windowId} settlementId={settlementId}/>,
+		});
+	}
 
-    export interface Data {
-        settlement: SettlementAggregate,
-        entries: ProductionQueueEntry[],
-        cancel: (entry: ProductionQueueEntry) => void
-    }
+	export interface Data {
+		settlement: SettlementIdentifier,
+		entries: ProductionQueueEntry[],
+		cancel: (entry: ProductionQueueEntry) => void
+	}
 
 
-    export function useData(settlementId: string): UseProductionQueueWindow.Data {
-        const settlement = SettlementAggregateAccess.useSettlementAggregate(settlementId)!;
-        const service = useDI<SettlementService>(SettlementService.name);
-        return {
-            settlement: settlement,
-            entries: mapHiddenOrDefault(settlement.production.queue, [], it => it),
-            cancel: (entry: ProductionQueueEntry) => service.cancelProductionQueue(settlement.identifier, entry),
-        };
-    }
+	export function useData(settlementId: SettlementIdentifier): UseProductionQueueWindow.Data {
+		return {
+			settlement: settlementId,
+			entries: LocalStateHooks.useProductionQueue(settlementId),
+			cancel: (entry: ProductionQueueEntry) => INTERFACE_SERVICE.cancelProduction(settlementId, entry),
+		};
+	}
 
 }

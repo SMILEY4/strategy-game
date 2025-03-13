@@ -12,163 +12,151 @@ import {Button} from "../../../../components/button/Button";
 import {Txt} from "../../../../components/text/Txt";
 
 export interface OutlinerWindowProps {
-    windowId: string,
+	windowId: string,
 }
 
 export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
 
-    const data = UseOutlinerWindow.useData();
+	const data = UseOutlinerWindow.useData();
 
-    return (
-        <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
-            <VBox padding_l gap_m fullSize>
+	return (
+		<DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
+			<VBox padding_l gap_m fullSize>
 
-                <Txt.Header1 center>
-                    <Txt.String>Outliner</Txt.String>
-                </Txt.Header1>
+				<Txt.Header1 center>
+					<Txt.String>Outliner</Txt.String>
+				</Txt.Header1>
 
-                <Divider line/>
+				<Divider line/>
 
-                <TabBar noPadding initial={"All"}>
+				<TabBar noPadding initial={"All"}>
 
-                    <TabOption name="All">
-                        <InsetPanel shrink>
-                            <VBox scrollable padding_s gap_s fullSize>
-                                <SectionCountries {...data}/>
-                                <SectionSettlements {...data}/>
-                                <SectionWorldObjects {...data}/>
-                            </VBox>
-                        </InsetPanel>
-                    </TabOption>
+					<TabOption name="All">
+						<InsetPanel shrink>
+							<VBox scrollable padding_s gap_s fullSize>
+								<SectionCountries {...data}/>
+								<SectionSettlements {...data}/>
+								<SectionWorldObjects {...data}/>
+							</VBox>
+						</InsetPanel>
+					</TabOption>
 
-                    <TabOption name="Countries">
-                        <InsetPanel shrink>
-                            <VBox scrollable padding_s gap_s fullSize>
-                                <SectionCountries {...data}/>
-                            </VBox>
-                        </InsetPanel>
-                    </TabOption>
+					<TabOption name="Countries">
+						<InsetPanel shrink>
+							<VBox scrollable padding_s gap_s fullSize>
+								<SectionCountries {...data}/>
+							</VBox>
+						</InsetPanel>
+					</TabOption>
 
-                    <TabOption name="Settlements">
-                        <InsetPanel shrink>
-                            <VBox scrollable padding_s gap_s fullSize>
-                                <SectionSettlements {...data}/>
-                            </VBox>
-                        </InsetPanel>
-                    </TabOption>
+					<TabOption name="Settlements">
+						<InsetPanel shrink>
+							<VBox scrollable padding_s gap_s fullSize>
+								<SectionSettlements {...data}/>
+							</VBox>
+						</InsetPanel>
+					</TabOption>
 
-                    <TabOption name="Units">
-                        <InsetPanel shrink>
-                            <VBox scrollable padding_s gap_s fullSize>
-                                <SectionWorldObjects {...data}/>
-                            </VBox>
-                        </InsetPanel>
-                    </TabOption>
+					<TabOption name="Units">
+						<InsetPanel shrink>
+							<VBox scrollable padding_s gap_s fullSize>
+								<SectionWorldObjects {...data}/>
+							</VBox>
+						</InsetPanel>
+					</TabOption>
 
-                </TabBar>
+				</TabBar>
 
 
-            </VBox>
-        </DecoratedWindow>
-    );
+			</VBox>
+		</DecoratedWindow>
+	);
 }
 
 function SectionCountries(props: UseOutlinerWindow.Data): ReactElement {
-    return (
-        <>
-            {props.countries.entries.length > 0 && (
-                <Txt.Header5>
-                    <Txt.String>Countries</Txt.String>
-                </Txt.Header5>
-            )}
-            {props.countries.entries.map(country => (
-                <DecoratedPanel
-                    key={country.identifier.id}
-                    pattern
-                    blue
-                >
-                    <HBox fullSize gap_s padding_s>
-                        <Txt.Body>
-                            <Txt.Link onClick={() => props.countries.open(country)}>
-                                <Txt.String>{country.identifier.name}</Txt.String>
-                            </Txt.Link>
-                        </Txt.Body>
-                        <HSpacer grow/>
-                        <Button circle small disabled onClick={() => props.countries.focusCamera(country)}>
-                            <Txt.Icon.Eye/>
-                        </Button>
-                    </HBox>
-                </DecoratedPanel>
-            ))}
-        </>
-    );
+	return (
+		<>
+			{props.countries.entries.length > 0 && (
+				<Txt.Header5>
+					<Txt.String>Countries</Txt.String>
+				</Txt.Header5>
+			)}
+			{props.countries.entries.map(country => (
+				<DecoratedPanel
+					key={country.identifier.id}
+					pattern
+					blue
+				>
+					<HBox fullSize gap_s padding_s>
+						<Txt.Body>
+							<Txt.String>{country.identifier.name}</Txt.String>
+						</Txt.Body>
+						<HSpacer grow/>
+					</HBox>
+				</DecoratedPanel>
+			))}
+		</>
+	);
 }
 
 function SectionSettlements(props: UseOutlinerWindow.Data): ReactElement {
-    return (
-        <>
-            {props.settlements.entries.length > 0 && (
-                <Txt.Header5>
-                    <Txt.String>Settlements</Txt.String>
-                </Txt.Header5>
-            )}
-            {props.settlements.entries.map(settlement => (
-                <DecoratedPanel
-                    key={settlement.identifier.id}
-                    pattern
-                    blue
-                >
-                    <HBox fullSize gap_s padding_s>
-                        <Txt.Body>
-                            <Txt.Link onClick={() => props.settlements.open(settlement)}>
-                                <Txt.String>{settlement.identifier.name}</Txt.String>
-                            </Txt.Link>
-                        </Txt.Body>
-                        <HSpacer grow/>
-                        <Button circle small onClick={() => props.settlements.focusCamera(settlement)}>
-                            <Txt.Icon.Eye/>
-                        </Button>
-                    </HBox>
-                </DecoratedPanel>
-            ))}
-        </>
-    );
+	return (
+		<>
+			{props.settlements.entries.length > 0 && (
+				<Txt.Header5>
+					<Txt.String>Settlements</Txt.String>
+				</Txt.Header5>
+			)}
+			{props.settlements.entries.map(settlement => (
+				<DecoratedPanel
+					key={settlement.identifier.id}
+					pattern
+					blue
+				>
+					<HBox fullSize gap_s padding_s>
+						<Txt.Body>
+							<Txt.Link onClick={() => props.settlements.open(settlement)}>
+								<Txt.String>{settlement.identifier.name}</Txt.String>
+							</Txt.Link>
+						</Txt.Body>
+						<HSpacer grow/>
+						<Button circle small onClick={() => props.settlements.focusCamera(settlement)}>
+							<Txt.Icon.Eye/>
+						</Button>
+					</HBox>
+				</DecoratedPanel>
+			))}
+		</>
+	);
 }
 
 function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
-    return (
-        <>
-            {props.worldObjects.entries.length > 0 && (
-                <Txt.Header5>
-                    <Txt.String>Units</Txt.String>
-                </Txt.Header5>
-            )}
-            {props.worldObjects.entries.map(worldObject => (
-                <DecoratedPanel
-                    key={worldObject.identifier.id}
-                    pattern
-                    blue
-                >
-                    <HBox fullSize gap_s padding_s>
-                        <Txt.Body>
-                            <Txt.Link onClick={() => props.worldObjects.open(worldObject)}>
-                                <Txt.String>{worldObject.identifier.type.id}</Txt.String>
-                            </Txt.Link>
-                            {props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id) && (
-                                <>
-                                    <Txt.Whitespace/>
-                                    <Txt.Icon.Command/>
-                                    <Txt.String>{props.commandsCreateSettlement.find(it => it.worldObjectId === worldObject.identifier.id)?.name + ""}</Txt.String>
-                                </>
-                            )}
-                        </Txt.Body>
-                        <HSpacer grow/>
-                        <Button circle small onClick={() => props.worldObjects.focusCamera(worldObject)}>
-                            <Txt.Icon.Eye/>
-                        </Button>
-                    </HBox>
-                </DecoratedPanel>
-            ))}
-        </>
-    );
+	return (
+		<>
+			{props.worldObjects.entries.length > 0 && (
+				<Txt.Header5>
+					<Txt.String>Units</Txt.String>
+				</Txt.Header5>
+			)}
+			{props.worldObjects.entries.map(worldObject => (
+				<DecoratedPanel
+					key={worldObject.identifier.id}
+					pattern
+					blue
+				>
+					<HBox fullSize gap_s padding_s>
+						<Txt.Body>
+							<Txt.Link onClick={() => props.worldObjects.open(worldObject)}>
+								<Txt.String>{worldObject.identifier.type.id}</Txt.String>
+							</Txt.Link>
+						</Txt.Body>
+						<HSpacer grow/>
+						<Button circle small onClick={() => props.worldObjects.focusCamera(worldObject)}>
+							<Txt.Icon.Eye/>
+						</Button>
+					</HBox>
+				</DecoratedPanel>
+			))}
+		</>
+	);
 }

@@ -2,29 +2,39 @@ import {Camera} from "../../common/webgl/camera";
 import {Tile} from "../../models/base/tile";
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {Projections} from "../../common/webgl/projections";
-import {TileRepository} from "../../state/repository/tileRepository";
-import {CameraRepository} from "../../state/repository/cameraRepository";
+import {LocalTileDataAccess} from "../../state/local/access/localTileDataAccess";
+import {LocalGameDataAccess} from "../../state/local/access/localGameDataAccess";
+import {LocalTileIdentifier} from "../../state/local/localTile";
 
-export class TilePicker {
+export interface TilePicker {
+	tileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null;
+	tileIdAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): LocalTileIdentifier | null;
+}
 
-	private readonly tileRepository: TileRepository;
-	private readonly cameraRepository: CameraRepository;
+export class TilePickerImpl implements TilePicker {
 
-	constructor(tileRepository: TileRepository, cameraRepository: CameraRepository) {
-		this.tileRepository = tileRepository;
-		this.cameraRepository = cameraRepository;
+	private readonly localTileDataAccess: LocalTileDataAccess;
+	private readonly localGameDataAccess: LocalGameDataAccess;
+
+	constructor(localTileDataAccess: LocalTileDataAccess, localGameDataAccess: LocalGameDataAccess) {
+		this.localTileDataAccess = localTileDataAccess;
+		this.localGameDataAccess = localGameDataAccess;
 	}
 
-	/**
-	 * Get the tile at the given screen coordinates
-	 */
-	public tileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null {
+
+	tileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null {
 		const hexPos = Projections.screenToHex(this.camera(canvasHandle), screenX, screenY);
-		return this.tileRepository.getAt(hexPos.x, hexPos.y);
+		return this.localTileDataAccess.getAt(hexPos.x, hexPos.y);
+	}
+
+
+	tileIdAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): LocalTileIdentifier | null {
+		const tile = this.tileAt(screenX, screenY, canvasHandle);
+		return tile ? tile.identifier : null;
 	}
 
 	private camera(canvasHandle: CanvasHandle): Camera {
-		const cameraData = this.cameraRepository.get();
+		const cameraData = this.localGameDataAccess.getCamera();
 		return Camera.create(
 			cameraData,
 			canvasHandle.getCanvasWidth(), canvasHandle.getCanvasHeight(),

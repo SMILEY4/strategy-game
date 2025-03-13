@@ -1,7 +1,6 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
-import {useDI} from "../../../../appContext";
 import "./canvas.less";
-import {GameLoopService} from "../../../../logic/game/gameLoopService";
+import {INTERFACE_SERVICE} from "../../../../logic/game/interfaceService";
 
 
 export function Canvas() {
@@ -11,8 +10,6 @@ export function Canvas() {
 	const hasContext = useRef<boolean>(true);
 	const mouseDownInCanvas = useRef<boolean>(false);
 	const timestampMouseDown = useRef<number>(0);
-
-	const gameLoopService = useDI<GameLoopService>(GameLoopService.name);
 
 	useEffect(() => {
 		if (canvasRef.current) {
@@ -60,7 +57,7 @@ export function Canvas() {
 	}
 
 	function initialize(canvas: HTMLCanvasElement) {
-		console.log("Initializing canvas")
+		console.log("Initializing canvas");
 		onInitialize(canvas);
 		renderLoop();
 
@@ -75,7 +72,7 @@ export function Canvas() {
 	}
 
 	function mouseMove(e: MouseEvent) {
-		gameLoopService.mouseMove(
+		INTERFACE_SERVICE.mouseMoved(
 			e.movementX,
 			e.movementY,
 			e.clientX,
@@ -100,27 +97,27 @@ export function Canvas() {
 	}
 
 	function scroll(e: WheelEvent) {
-		gameLoopService.mouseScroll(e.deltaY, e.clientX, e.clientY);
+		INTERFACE_SERVICE.mouseScrolled(e.deltaY, e.clientX, e.clientY);
 	}
 
 	function click(duration: number, e: MouseEvent) {
 		if (duration < 150) {
-			gameLoopService.mouseClick(e.clientX, e.clientY).then(_ => undefined);
+			INTERFACE_SERVICE.mouseClicked(e.clientX, e.clientY);
 		}
 	}
 
 	function onInitialize(canvas: HTMLCanvasElement) {
-		gameLoopService.initializeCanvas(canvas);
+		INTERFACE_SERVICE.initialize(canvas);
 	}
 
 	function onRender() {
-		gameLoopService.update();
+		INTERFACE_SERVICE.update();
 	}
 
 	function onDispose() {
-		console.log("Disposing canvas")
+		console.log("Disposing canvas");
 		animationId.current && cancelAnimationFrame(animationId.current);
-		gameLoopService.disposeCanvas();
+		INTERFACE_SERVICE.dispose();
 	}
 
 	return (

@@ -10,13 +10,14 @@ import {useDI} from "../../../appContext";
 import {GameSessionService} from "../../../logic/session/gameSessionService";
 import {WindowStack} from "../../components/window/WindowStack";
 import {HBox} from "../../components/layout/hbox/HBox";
-import {SessionRepository} from "../../../state/repository/sessionRepository";
 import {Txt} from "../../components/text/Txt";
+import {LocalStateHooks} from "../../../state/local/access/localStateHooks";
 
 const USE_DUMMY_CANVAS = false;
 
 export function PageInGame(): ReactElement {
-	const currentState = SessionRepository.useGameSessionState();
+
+	const currentState = LocalStateHooks.useGameSessionState();
 	const loadGame = useLoadGame();
 
 	useEffect(() => {

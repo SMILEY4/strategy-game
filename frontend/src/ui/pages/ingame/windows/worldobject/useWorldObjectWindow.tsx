@@ -1,38 +1,21 @@
 import React from "react";
 import {WorldObjectWindow} from "./WorldObjectWindow";
-import {useDI} from "../../../../../appContext";
-import {WorldObject} from "../../../../../models/base/worldObject";
-import {UseMoveWindow} from "../move/useMoveWindow";
-import {CommandType, MoveCommand} from "../../../../../models/base/command";
-import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
+import {WorldObject, WorldObjectIdentifier} from "../../../../../models/base/worldObject";
 import {WorldObjectType} from "../../../../../models/base/worldObjectType";
-import {WorldObjectRepository} from "../../../../../state/repository/worldObjectRepository";
-import {TileRepository} from "../../../../../state/repository/tileRepository";
-import {CommandRepository} from "../../../../../state/repository/commandRepository";
-import {MovementService} from "../../../../../logic/game/movementService";
-import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {UseTileWindow} from "../tile/useTileWindow";
-import {CameraService} from "../../../../../logic/game/cameraService";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
+import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {UseMoveWindow} from "../move/useMoveWindow";
+import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
+import {UseTileWindow} from "../tile/useTileWindow";
+import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {CommandType} from "../../../../../models/base/command";
 
 export namespace UseWorldObjectWindow {
 
-    export function useOpen() {
-        const open = useOpenWindow();
-        return (identifier: string | null) => {
-            const windowId = UID.generate();
-            open({
-                id: windowId,
-                groupId: WindowGroup.LEFT_SIDEBAR,
-                anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <WorldObjectWindow windowId={windowId} identifier={identifier}/>,
-            });
-        };
-    }
-
-    export function open(identifier: string | null) {
+    export function open(identifier: WorldObjectIdentifier | null) {
         const windowId = UID.generate();
         openWindow({
             id: windowId,
@@ -62,19 +45,14 @@ export namespace UseWorldObjectWindow {
         centerCamera: () => void,
     }
 
-    export function useData(identifier: string | null): UseWorldObjectWindow.Data | null {
+    export function useData(identifier: WorldObjectIdentifier | null): UseWorldObjectWindow.Data | null {
 
-        const cameraService = useDI<CameraService>(CameraService.name);
+        const worldObject = LocalStateHooks.useWorldObject(identifier)
+        const tile = LocalStateHooks.useTile(worldObject?.tile ? worldObject?.tile : null)
 
-        const worldObject = WorldObjectRepository.useById(identifier);
-        const tile = TileRepository.useById(worldObject?.tile);
-
-        const hasCommand = CommandRepository.useAll().some(it => it.worldObjectId === identifier);
-        const hasMoveCommand = CommandRepository.useAllByType<MoveCommand>(CommandType.MOVE).some(it => it.worldObjectId === identifier);
-
-        const openTileWindow = UseTileWindow.useOpen();
-        const openMoveWindow = UseMoveWindow.useOpen();
-        const openFoundSettlementWindow = UseFoundSettlementWindow.useOpen();
+        const commands = LocalStateHooks.useCommands().filter(cmd => cmd.worldObjectId === identifier?.id)
+        const hasCommand = commands.length > 0
+        const moveCommand = commands.find(cmd => cmd.type === CommandType.MOVE)
 
         if (worldObject) {
             return {
@@ -82,28 +60,23 @@ export namespace UseWorldObjectWindow {
                 movement: {
                     possible: worldObject.country.isUserCountry,
                     enabled: !hasCommand,
-                    canCancel: hasMoveCommand,
-                    start: () => identifier && openMoveWindow(worldObject.identifier.id),
-                    cancel: () => cancelMovementCommand(worldObject),
+                    canCancel: !!moveCommand,
+                    start: () => identifier && UseMoveWindow.open(worldObject.identifier.id),
+                    cancel: () => moveCommand && INTERFACE_SERVICE.commandCancel(moveCommand),
                 },
                 settlement: {
                     possible: worldObject.country.isUserCountry && worldObject.identifier.type === WorldObjectType.SETTLER,
                     enabled: !hasCommand && (tile?.isValidSettlementLocation ?? false),
-                    start: () => openFoundSettlementWindow(worldObject.tile, worldObject.identifier.id),
+                    start: () => UseFoundSettlementWindow.open(worldObject.tile, worldObject.identifier.id),
                 },
                 open: {
-                    tile: () => openTileWindow(tile?.identifier ?? null),
+                    tile: () => UseTileWindow.open(worldObject.tile ?? null),
                 },
-                centerCamera: () => cameraService.centerCameraOnTile(worldObject.tile),
+                centerCamera: () => INTERFACE_SERVICE.focusCamera(worldObject.tile),
             };
         } else {
             return null;
         }
-    }
-
-    function cancelMovementCommand(worldObject: WorldObject) {
-        const movementService = useDI<MovementService>(MovementService.name);
-        movementService.cancelMovementCommand(worldObject);
     }
 
 }

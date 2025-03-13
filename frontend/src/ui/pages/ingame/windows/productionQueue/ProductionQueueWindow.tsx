@@ -7,14 +7,14 @@ import {Button} from "../../../../components/button/Button";
 import {UseProductionQueueWindow} from "./useProductionQueueWindow";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {AudioType} from "../../../../../common/audioService";
-import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
+import {ProductionQueueEntry, SettlementIdentifier} from "../../../../../models/base/Settlement";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
 
 export interface ProductionQueueWindowProps {
     windowId: string;
-    settlementId: string;
+    settlementId: SettlementIdentifier;
 }
 
 export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactElement {
@@ -29,7 +29,7 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
                         <Txt.String>Production Queue</Txt.String>
                     </Txt.Header1>
                     <Txt.Body>
-                        <Txt.String>{data.settlement.identifier.name}</Txt.String>
+                        <Txt.String>{data.settlement.name}</Txt.String>
                     </Txt.Body>
                 </VBox>
 
