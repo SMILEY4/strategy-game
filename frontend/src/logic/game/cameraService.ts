@@ -1,10 +1,10 @@
-import {TileIdentifier} from "../../models/base/tile";
-import {LocalGameDataAccess} from "../../state/local/access/localGameDataAccess";
+import {LocalGameDataAccess} from "../../state/access/localGameDataAccess";
 import {GameStateWriter} from "../../state/gameStateWriter";
 import {Projections} from "../../common/webgl/projections";
+import {TilePosition} from "../../models/tile/tilePosition";
 
 export interface CameraService {
-	center(tile: TileIdentifier): void;
+	center(tile: TilePosition): void;
 	move(dx: number, dy: number): void;
 	zoom(d: number): void;
 }
@@ -19,7 +19,7 @@ export class CameraServiceImpl implements CameraService {
 		this.gameStateWriter = gameStateWriter;
 	}
 
-	center(tile: TileIdentifier): void {
+	center(tile: TilePosition): void {
 		const pos = Projections.hexToWorld(tile.q, tile.r);
 		const camera = this.localGameDataAccess.getCamera();
 		this.gameStateWriter.setCameraData({

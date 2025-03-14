@@ -7,14 +7,15 @@ import {WindowStore} from "../../../../components/window/windowStore";
 import {UseTileWindow} from "../tile/useTileWindow";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
 import {Settlement} from "../../../../../models/settlement/settlement";
 import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
+import {SettlementId} from "../../../../../models/settlement/settlementId";
 
 export namespace UseSettlementWindow {
 
-    export function open(settlementId: string) {
+    export function open(settlementId: SettlementId) {
         const windowId = UID.generate();
         openWindow({
             id: windowId,
@@ -38,7 +39,7 @@ export namespace UseSettlementWindow {
         centerCamera: () => void,
     }
 
-    export function useData(settlementId: string): UseSettlementWindow.Data | null {
+    export function useData(settlementId: SettlementId): UseSettlementWindow.Data | null {
 
         const settlement = LocalStateHooks.useSettlement(settlementId)
 
@@ -46,7 +47,7 @@ export namespace UseSettlementWindow {
             return {
                 settlement: settlement,
                 productionQueue: {
-                    addNew: () => UseProductionWindow.open(settlementId),
+                    addNew: () => UseProductionWindow.open(SettlementSummary.from(settlement)),
                     openList: () => UseProductionQueueWindow.open(SettlementSummary.from(settlement)),
                     cancelActive: () => {
                         if(settlement.productionQueueActive.value) {
@@ -56,9 +57,9 @@ export namespace UseSettlementWindow {
                 },
                 open: {
                     settlement: (settlementId) => UseSettlementWindow.open(settlementId),
-                    tile: () => UseTileWindow.open(settlement.tile),
+                    tile: () => UseTileWindow.open(settlement.tile.id),
                 },
-                centerCamera: () => INTERFACE_SERVICE.focusCamera(settlement.tile),
+                centerCamera: () => INTERFACE_SERVICE.focusCamera(settlement.tile.position),
             };
         } else {
             return null;

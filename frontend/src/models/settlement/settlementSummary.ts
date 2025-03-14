@@ -1,4 +1,4 @@
-import {Color} from "../base/color";
+import {Color} from "../../common/color";
 import {Settlement} from "./settlement";
 
 export interface SettlementSummary {
@@ -15,7 +15,7 @@ export namespace SettlementSummary {
 			id: settlement.id,
 			name: settlement.name,
 			color: settlement.color,
-			isUserControlled: settlement.country.isUserCountry,
+			isUserControlled: settlement.country.isUserControlled,
 		}
 	}
 

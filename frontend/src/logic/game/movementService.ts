@@ -2,7 +2,7 @@ import {TileIdentifier} from "../../models/base/tile";
 import {CommandService} from "./commandService";
 import {WorldObject} from "../../models/base/worldObject";
 import {GameClient} from "./gameClient";
-import {MovementTarget} from "../../models/base/movementTarget";
+import {MovementTarget} from "../../models/misc/movementTarget";
 import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
 import {CommandRepository} from "../../state/repository/commandRepository";
 import {CommandType, MoveCommand} from "../../models/base/command";

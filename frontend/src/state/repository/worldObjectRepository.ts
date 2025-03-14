@@ -1,9 +1,9 @@
 import {WorldObjectDatabase} from "../database/worldObjectDatabase";
 import {TileIdentifier} from "../../models/base/tile";
 import {WorldObject} from "../../models/base/worldObject";
-import {MovementTarget} from "../../models/base/movementTarget";
+import {MovementTarget} from "../../models/misc/movementTarget";
 import {MovementModeState} from "../database/movementModeState";
-import {TilePosition} from "../../models/base/tilePosition";
+import {TilePosition} from "../../models/tile/tilePosition";
 import {CommandDatabase} from "../database/commandDatabase";
 import {CommandType, MoveCommand} from "../../models/base/command";
 import {useDI} from "../../appContext";

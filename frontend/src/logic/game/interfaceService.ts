@@ -6,12 +6,15 @@ import {CameraService} from "./cameraService";
 import {MovementService} from "./movementService";
 import {AudioService, AudioType} from "../../common/audioService";
 import {TurnEndService} from "./turnEndService";
-import {Command} from "../../models/base/command";
-import {TileIdentifier} from "../../models/base/tile";
-import {MapMode} from "../../models/base/mapMode";
-import {ProductionQueueEntry, SettlementIdentifier} from "../../models/base/Settlement";
-import {ProductionOptionAggregate} from "../../models/aggregates/SettlementAggregate";
-import {SettlementProductionOption, SettlementProductionQueueEntry} from "../../models/settlement/settlement";
+import {MapMode} from "../../models/misc/mapMode";
+import {TilePosition} from "../../models/tile/tilePosition";
+import {Command} from "../../models/command/command";
+import {TileId} from "../../models/tile/tileId";
+import {SettlementId} from "../../models/settlement/settlementId";
+import {ProductionOptionEntity} from "../../models/settlement/settlementEntity";
+import {WorldObjectId} from "../../models/worldobject/worldObjectId";
+import {GameStateWriter} from "../../state/gameStateWriter";
+import {TileSummary} from "../../models/tile/tileSummary";
 
 export const INTERFACE_SERVICE: InterfaceService = (undefined as unknown) as InterfaceService; // todo
 
@@ -28,7 +31,7 @@ export interface InterfaceService {
 	mouseMoved(dx: number, dy: number, clientX: number, clientY: number, leftBtnDown: boolean): void;
 	mouseScrolled(d: number, clientX: number, clientY: number): void;
 	// camera
-	focusCamera(tile: TileIdentifier): void
+	focusCamera(tilePosition: TilePosition): void
 	// basic game functionality
 	endTurn(): void;
 	selectMapMode(mapMode: MapMode): void
@@ -36,12 +39,12 @@ export interface InterfaceService {
 	commandCancel(command: Command): void;
 	// settlements
 	getRandomSettlementName(): Promise<string>;
-	validateFoundSettlement(tile: TileIdentifier, name: string): string[];
-	foundSettlement(tile: TileIdentifier, worldObjectId: string, name: string): void;
-	addProduction(settlementId: SettlementIdentifier, entry: SettlementProductionOption): void,
-	cancelProduction(settlementId: string, entryId: string): void,
+	validateFoundSettlement(tile: TileId, name: string): string[];
+	foundSettlement(tile: TileId, worldObjectId: WorldObjectId, name: string): void;
+	addProduction(settlementId: SettlementId, entry: ProductionOptionEntity): void,
+	cancelProduction(settlementId: SettlementId, entryId: string): void,
 	// units / world objects
-	beginMovement(worldObjectId: string): void;
+	beginMovement(worldObjectId: WorldObjectId): void;
 	endMovement(commit: boolean): void;
 	getTotalMovement(): number;
 	// dev functions
@@ -58,6 +61,8 @@ export class InterfaceServiceImpl implements InterfaceService {
 	private readonly movementService: MovementService;
 	private readonly turnEndService: TurnEndService;
 
+	private readonly gameStateWriter: GameStateWriter;
+
 	private readonly audioService: AudioService;
 
 	private readonly canvasHandle: CanvasHandle;
@@ -69,6 +74,7 @@ export class InterfaceServiceImpl implements InterfaceService {
 		cameraService: CameraService,
 		movementService: MovementService,
 		turnEndService: TurnEndService,
+		gameStateWriter: GameStateWriter,
 		audioService: AudioService,
 	) {
 		this.gameRenderer = gameRenderer;
@@ -77,6 +83,7 @@ export class InterfaceServiceImpl implements InterfaceService {
 		this.cameraService = cameraService;
 		this.movementService = movementService;
 		this.turnEndService = turnEndService;
+		this.gameStateWriter = gameStateWriter;
 		this.audioService = audioService;
 		this.canvasHandle = new CanvasHandle();
 	}
@@ -100,10 +107,10 @@ export class InterfaceServiceImpl implements InterfaceService {
 	//========== GENERIC USER INTERACTIONS ====================================
 
 	mouseClicked(clientX: number, clientY: number): void {
-		const clickedTileId = this.tilePicker.tileIdAt(clientX, clientY, this.canvasHandle);
-		if (clickedTileId != null) {
+		const clickedTile = this.tilePicker.tileAt(clientX, clientY, this.canvasHandle);
+		if (clickedTile != null) {
 			if (this.movementService.isMovementMode()) {
-				this.movementService.addToPath(clickedTileId).then(added => {
+				this.movementService.addToPath(clickedTile.id).then(added => {
 					if (added) {
 						AudioType.CLICK_PRIMARY.play(this.audioService);
 					} else {
@@ -111,7 +118,7 @@ export class InterfaceServiceImpl implements InterfaceService {
 					}
 				});
 			} else {
-				this.tileService.clickTile(clickedTileId);
+				this.tileService.clickTile(TileSummary.from(clickedTile));
 			}
 		}
 	}
@@ -134,6 +141,13 @@ export class InterfaceServiceImpl implements InterfaceService {
 		this.tileService.mouseOver(mouseOverTile);
 	}
 
+	//========== CAMERA =======================================================
+
+	focusCamera(tilePosition: TilePosition): void {
+		this.cameraService.center(tilePosition);
+	}
+
+
 	//========== BASIC GAME FUNCTIONALITY =====================================
 
 	endTurn(): void {
@@ -141,25 +155,49 @@ export class InterfaceServiceImpl implements InterfaceService {
 	}
 
 	selectMapMode(mapMode: MapMode): void {
+		this.gameStateWriter.set
 	}
 
 	//========== COMMANDS =====================================================
 
-
 	commandCancel(command: Command): void {
+		// todo
 	}
 
 	//========== SETTLEMENTS ==================================================
 
 	getRandomSettlementName(): Promise<string> {
-		return Promise.resolve("");
+		return Promise.resolve(""); // todo
 	}
 
-	validateFoundSettlement(tile: TileIdentifier, name: string): string[] {
-		return [];
+	validateFoundSettlement(tile: TileId, name: string): string[] {
+		return []; // todo
 	}
 
-	foundSettlement(tile: TileIdentifier, worldObjectId: string, name: string): void {
+	foundSettlement(tile: TileId, worldObjectId: WorldObjectId, name: string): void {
+		// todo
+	}
+
+	addProduction(settlementId: SettlementId, entry: ProductionOptionEntity): void {
+		// todo
+	}
+
+	cancelProduction(settlementId: SettlementId, entryId: string): void {
+		// todo
+	}
+
+	//========== UNITS / WORLD OBJECTS ========================================
+
+	beginMovement(worldObjectId: WorldObjectId): void {
+		// todo
+	}
+
+	endMovement(commit: boolean): void {
+		// todo
+	}
+
+	getTotalMovement(): number {
+		return 0; // todo
 	}
 
 	//========== DEV FUNCTIONALITY ============================================

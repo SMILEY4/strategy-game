@@ -1,5 +1,6 @@
-import {Tile} from "./tile";
-import {Color} from "./color";
+import {Color} from "../../common/color";
+import {TileSummary} from "../tile/tileSummary";
+import {Tile} from "../tile/tile";
 
 export interface MapModeRenderData {
     /**

@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import {joinClassNames} from "../window/utils";
 import "./banner.scoped.less";
-import {Color} from "../../../models/base/color";
+import {Color} from "../../../common/color";
 import {HBox} from "../layout/hbox/HBox";
 import {BaseProps} from "../base/base";
 import {Txt} from "../text/Txt";

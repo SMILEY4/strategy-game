@@ -1,11 +1,11 @@
 import React from "react";
 import {MapWindow} from "./MapWindow";
-import {MapMode} from "../../../../../models/base/mapMode";
+import {MapMode} from "../../../../../models/misc/mapMode";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
 
 export namespace UseMapWindow {

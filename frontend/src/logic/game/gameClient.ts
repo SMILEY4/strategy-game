@@ -2,7 +2,7 @@ import {AuthProvider} from "../user/authProvider";
 import {HttpClient} from "../../common/httpClient";
 import {TileIdentifier} from "../../models/base/tile";
 import {GameIdProvider} from "../session/gameIdProvider";
-import {MovementTarget} from "../../models/base/movementTarget";
+import {MovementTarget} from "../../models/misc/movementTarget";
 
 /**
  * API-Client for ingame-operations

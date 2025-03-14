@@ -4,12 +4,13 @@ import React from "react";
 import {OutlinerWindow} from "./OutlinerWindow";
 import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
-import {CountryOutline} from "../../../../../models/base/country";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
-import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
 import {SettlementOutline} from "../../../../../models/settlement/settlementOutline";
+import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectOutline";
+import {CountryOutline} from "../../../../../models/country/countryOutline";
 
 export namespace UseOutlinerWindow {
 
@@ -43,7 +44,7 @@ export namespace UseOutlinerWindow {
 
 		const countries = LocalStateHooks.useOutlineCountries();
 		const settlements = LocalStateHooks.useOutlineSettlements();
-		const units = LocalStateHooks.useOutlineUnits();
+		const units = LocalStateHooks.useOutlineWorldObjects();
 
 		return {
 			settlements: {
@@ -53,7 +54,7 @@ export namespace UseOutlinerWindow {
 			},
 			worldObjects: {
 				entries: units,
-				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.identifier),
+				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.id),
 				focusCamera: (outline: WorldObjectOutline) => INTERFACE_SERVICE.focusCamera(outline.tile),
 			},
 			countries: {

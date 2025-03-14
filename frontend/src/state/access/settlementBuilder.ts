@@ -1,6 +1,4 @@
 import {HiddenType} from "../../common/hiddenType";
-import {Route} from "../../models/base/route";
-import {Command, CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../../models/base/command";
 import {ProductionQueueEntryEntity, SettlementEntity} from "../../models/settlement/settlementEntity";
 import {
 	Settlement,
@@ -9,11 +7,13 @@ import {
 } from "../../models/settlement/settlement";
 import visible = HiddenType.visible;
 import hidden = HiddenType.hidden;
-import {LocalStateHooks} from "./access/localStateHooks";
+import {RouteEntity} from "../../models/route/routeEntity";
+import {Command, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../../models/command/command";
+import {CommandType} from "../../models/command/commandType";
 
-export namespace LocalSettlementBuilder {
+export namespace SettlementBuilder {
 
-	export function buildSettlement(settlement: SettlementEntity, routes: Route[], settlements: SettlementEntity[], commands: Command[]): Settlement {
+	export function buildSettlement(settlement: SettlementEntity, routes: RouteEntity[], settlements: SettlementEntity[], commands: Command[]): Settlement {
 		return {
 			id: settlement.id,
 			name: settlement.name,
@@ -87,7 +87,7 @@ export namespace LocalSettlementBuilder {
 
 	export function buildProductionOptions(settlement: SettlementEntity, commands: Command[]): SettlementProductionOption[] {
 		const baseOptions = settlement.productionOptions.visible ? settlement.productionOptions.value : [];
-		const currentProductionQueue = LocalSettlementBuilder.buildProductionQueue(settlement, commands)
+		const currentProductionQueue = SettlementBuilder.buildProductionQueue(settlement, commands)
 
 		return baseOptions.map(baseOption => {
 

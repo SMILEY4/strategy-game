@@ -10,7 +10,7 @@ import {DecoratedWindow} from "../../../../components/window/decorated/Decorated
 import {Banner} from "../../../../components/banner/Banner";
 import {Divider} from "../../../../components/divider/Divider";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
-import {Color} from "../../../../../models/base/color";
+import {Color} from "../../../../../common/color";
 import {SettlementResourceBox} from "./SettlementResourceBox";
 import {BuildingBox} from "./BuildingBox";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
@@ -19,10 +19,11 @@ import {ProgressCircle} from "./ProgressCircle";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Txt} from "../../../../components/text/Txt";
+import {SettlementId} from "../../../../../models/settlement/settlementId";
 
 export interface SettlementWindowProps {
 	windowId: string;
-	settlementId: string;
+	settlementId: SettlementId;
 }
 
 export function SettlementWindow(props: SettlementWindowProps): ReactElement {
@@ -127,7 +128,7 @@ function PanelDebug(props: UseSettlementWindow.Data): ReactElement {
 				<Txt.Body><Txt.String>{props.settlement.country.id}</Txt.String></Txt.Body>
 
 				<Txt.Body><Txt.String>Tile:</Txt.String></Txt.Body>
-				<Txt.Body><Txt.String>{props.settlement.tile.q + ", " + props.settlement.tile.r}</Txt.String></Txt.Body>
+				<Txt.Body><Txt.String>{props.settlement.tile.position.q + ", " + props.settlement.tile.position.r}</Txt.String></Txt.Body>
 
 			</InsetKeyValueGrid>
 		</>
@@ -287,7 +288,7 @@ function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
 
 				<HBox dontShrink dontGrow centerVertical left gap_s>
 
-					{props.settlement.country.isUserCountry && (
+					{props.settlement.country.isUserControlled && (
 						<Button square onClick={props.productionQueue.addNew}><Txt.Icon.Plus/></Button>
 					)}
 
@@ -303,7 +304,7 @@ function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
 						</Txt.Body>
 					</ProgressBar>
 
-					{props.settlement.country.isUserCountry && (
+					{props.settlement.country.isUserControlled && (
 						<Button square circle small onClick={props.productionQueue.cancelActive}>
 							<Txt.Icon.Close/>
 						</Button>

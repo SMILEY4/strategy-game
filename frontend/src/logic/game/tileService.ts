@@ -1,15 +1,15 @@
-import {WorldObject} from "../../models/base/worldObject";
-import {Settlement} from "../../models/base/Settlement";
 import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
 import {UseWorldObjectWindow} from "../../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
 import {UseSettlementWindow} from "../../ui/pages/ingame/windows/settlement/useSettlementWindow";
 import {GameStateWriter} from "../../state/gameStateWriter";
-import {LocalTileDataAccess} from "../../state/local/access/localTileDataAccess";
-import {LocalTileIdentifier} from "../../state/local/localTile";
+import {LocalTileDataAccess} from "../../state/access/localTileDataAccess";
+import {TileSummary} from "../../models/tile/tileSummary";
+import {WorldObject} from "../../models/worldobject/worldObject";
+import {Settlement} from "../../models/settlement/settlement";
 
 export interface TileService {
-	clickTile(tile: LocalTileIdentifier): void;
-	mouseOver(tile: LocalTileIdentifier | null): void;
+	clickTile(tile: TileSummary): void;
+	mouseOver(tile: TileSummary | null): void;
 }
 
 export class TileServiceImpl implements TileService {
@@ -22,7 +22,7 @@ export class TileServiceImpl implements TileService {
 		this.localTileDataAccess = localTileDataAccess;
 	}
 
-	clickTile(tile: LocalTileIdentifier): void {
+	clickTile(tile: TileSummary): void {
 		const worldObjects: WorldObject[] = []; // todo
 		const settlement: Settlement | null = null as Settlement | null; // todo
 
@@ -31,23 +31,23 @@ export class TileServiceImpl implements TileService {
 		optionCount += worldObjects.length;
 
 		if (optionCount > 1) {
-			UseTileWindow.open(tile);
+			UseTileWindow.open(tile.id);
 			return;
 		}
 		if (worldObjects.length === 1) {
-			UseWorldObjectWindow.open(worldObjects[0].identifier.id);
+			UseWorldObjectWindow.open(worldObjects[0].id);
 			return;
 		}
 		if (settlement) {
-			UseSettlementWindow.open(settlement.identifier.id);
+			UseSettlementWindow.open(settlement.id);
 			return;
 		}
-		UseTileWindow.open(tile);
+		UseTileWindow.open(tile.id);
 		return;
 	}
 
-	mouseOver(tile: LocalTileIdentifier | null): void {
-		if (this.localTileDataAccess.getIdHovered() !== tile) {
+	mouseOver(tile: TileSummary | null): void {
+		if (this.localTileDataAccess.getHovered() !== tile) {
 			this.gameStateWriter.setHoveredTile(tile);
 		}
 	}

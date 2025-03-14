@@ -1,14 +1,14 @@
 import {WebGLRenderCommand} from "../common/webgl/webGLRenderCommand";
-import {MapMode} from "../../models/base/mapMode";
+import {MapMode} from "../../models/misc/mapMode";
 import {Tile, TileIdentifier} from "../../models/base/tile";
 import {Settlement} from "../../models/base/Settlement";
-import {MovementTarget} from "../../models/base/movementTarget";
+import {MovementTarget} from "../../models/misc/movementTarget";
 import {Route} from "../../models/base/route";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {TileRepository} from "../../state/repository/tileRepository";
 import {HtmlRenderCommand} from "../common/html/htmlRenderCommand";
 import {Camera} from "../../common/webgl/camera";
-import {TilePosition} from "../../models/base/tilePosition";
+import {TilePosition} from "../../models/tile/tilePosition";
 import {WorldObject} from "../../models/base/worldObject";
 import {SessionRepository} from "../../state/repository/sessionRepository";
 import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";

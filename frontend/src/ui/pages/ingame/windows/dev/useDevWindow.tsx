@@ -1,7 +1,7 @@
 import React from "react";
 import {DevWindow} from "./DevWindow";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
-import {CameraData} from "../../../../../models/base/cameraData";
+import {CameraEntity} from "../../../../../models/misc/cameraEntity";
 import {UseDevStatsWindow} from "../devstats/useDevStatsWindow";
 import {useDI} from "../../../../../appContext";
 import {CameraRepository} from "../../../../../state/repository/cameraRepository";
@@ -35,7 +35,7 @@ export namespace UseDevWindow {
 			loose: () => void,
 			restore: () => void
 		},
-		camera: CameraData,
+		camera: CameraEntity,
 	}
 
 	export function useData(): UseDevWindow.Data {

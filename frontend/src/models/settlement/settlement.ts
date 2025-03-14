@@ -1,17 +1,18 @@
-import {CountryIdentifier} from "../base/country";
-import {TileIdentifier} from "../base/tile";
 import {HiddenType} from "../../common/hiddenType";
-import {Color} from "../base/color";
-import {TerrainType} from "../base/TerrainType";
-import {TileResourceType} from "../base/TileResourceType";
+import {Color} from "../../common/color";
+import {TileResourceType} from "../tile/TileResourceType";
 import {SettlementSummary} from "./settlementSummary";
+import {CountrySummary} from "../country/countrySummary";
+import {SettlementId} from "./settlementId";
+import {TileSummary} from "../tile/tileSummary";
+import {TerrainType} from "../tile/terrainType";
 
 export interface Settlement {
-	id: string,
+	id: SettlementId,
 	name: string
 	color: Color,
-	country: CountryIdentifier,
-	tile: TileIdentifier,
+	country: CountrySummary,
+	tile: TileSummary,
 	population: {
 		size: HiddenType<SettlementPopulationSize>,
 		growth: HiddenType<SettlementPopulationGrowth>,
@@ -38,7 +39,7 @@ export interface SettlementPopulationGrowth {
 
 export interface SettlementRoute {
 	id: string,
-	targetCountry: CountryIdentifier,
+	targetCountry: CountrySummary,
 	targetSettlement: SettlementSummary,
 }
 
@@ -71,7 +72,7 @@ export interface SettlementBuilding {
 	workTile: {
 		requiredTerrain: TerrainType | null,
 		requiredResource: TileResourceType | null,
-		tile: TileIdentifier | null
+		tile: TileSummary | null
 	},
 	validity: {
 		workTile: boolean,

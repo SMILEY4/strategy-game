@@ -83,13 +83,13 @@ function SectionCountries(props: UseOutlinerWindow.Data): ReactElement {
 			)}
 			{props.countries.entries.map(country => (
 				<DecoratedPanel
-					key={country.identifier.id}
+					key={country.id}
 					pattern
 					blue
 				>
 					<HBox fullSize gap_s padding_s>
 						<Txt.Body>
-							<Txt.String>{country.identifier.name}</Txt.String>
+							<Txt.String>{country.name}</Txt.String>
 						</Txt.Body>
 						<HSpacer grow/>
 					</HBox>
@@ -109,14 +109,14 @@ function SectionSettlements(props: UseOutlinerWindow.Data): ReactElement {
 			)}
 			{props.settlements.entries.map(settlement => (
 				<DecoratedPanel
-					key={settlement.identifier.id}
+					key={settlement.id}
 					pattern
 					blue
 				>
 					<HBox fullSize gap_s padding_s>
 						<Txt.Body>
 							<Txt.Link onClick={() => props.settlements.open(settlement)}>
-								<Txt.String>{settlement.identifier.name}</Txt.String>
+								<Txt.String>{settlement.name}</Txt.String>
 							</Txt.Link>
 						</Txt.Body>
 						<HSpacer grow/>
@@ -140,14 +140,14 @@ function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
 			)}
 			{props.worldObjects.entries.map(worldObject => (
 				<DecoratedPanel
-					key={worldObject.identifier.id}
+					key={worldObject.id}
 					pattern
 					blue
 				>
 					<HBox fullSize gap_s padding_s>
 						<Txt.Body>
 							<Txt.Link onClick={() => props.worldObjects.open(worldObject)}>
-								<Txt.String>{worldObject.identifier.type.id}</Txt.String>
+								<Txt.String>{worldObject.type.id}</Txt.String>
 							</Txt.Link>
 						</Txt.Body>
 						<HSpacer grow/>

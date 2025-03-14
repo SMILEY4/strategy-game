@@ -1,9 +1,10 @@
-import {TileIdentifier} from "../base/tile";
-import {Color} from "../base/color";
+import {Color} from "../../common/color";
+import {SettlementId} from "./settlementId";
+import {TileSummary} from "../tile/tileSummary";
 
 export interface SettlementOutline {
-	id: string,
+	id: SettlementId,
 	name: string,
 	color: Color,
-	tile: TileIdentifier,
+	tile: TileSummary,
 }

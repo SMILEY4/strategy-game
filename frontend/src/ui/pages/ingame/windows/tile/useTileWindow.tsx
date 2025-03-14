@@ -1,4 +1,3 @@
-import {Tile, TileIdentifier, TileObject} from "../../../../../models/base/tile";
 import React from "react";
 import {TileWindow} from "./TileWindow";
 import {openWindow} from "../../../../components/window/windowHooks";
@@ -7,12 +6,15 @@ import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {TileId} from "../../../../../models/tile/tileId";
+import {Tile} from "../../../../../models/tile/tile";
+import {TileObject} from "../../../../../models/tile/tileObject";
 
 export namespace UseTileWindow {
 
-	export function open(identifier: TileIdentifier | null) {
+	export function open(identifier: TileId | null) {
 		const windowId = UID.generate();
 		openWindow({
 			id: windowId,
@@ -31,10 +33,10 @@ export namespace UseTileWindow {
 		centerCamera: () => void,
 	}
 
-	export function useData(overwriteTile: TileIdentifier | null): UseTileWindow.Data | null {
+	export function useData(overwriteTile: TileId | null): UseTileWindow.Data | null {
 
-		const selectedTileId = LocalStateHooks.useSelectedTileId();
-		const tile = LocalStateHooks.useTile((overwriteTile ?? selectedTileId) ?? null);
+		const selectedTile = LocalStateHooks.useSelectedTile();
+		const tile = LocalStateHooks.useTile((overwriteTile ?? selectedTile?.id) ?? null);
 
 		if (tile) {
 			return {
@@ -42,19 +44,19 @@ export namespace UseTileWindow {
 				open: {
 					controllingSettlement: () => {
 						if (tile.political.value?.controlledBy?.settlement) {
-							UseSettlementWindow.open(tile.political.value?.controlledBy?.settlement!);
+							UseSettlementWindow.open(tile.political.value?.controlledBy?.settlement!.id);
 						}
 					},
 					tileObject: (tileObject) => {
 						if (tileObject.worldObject !== null) {
-							UseWorldObjectWindow.open(tileObject.worldObject);
+							UseWorldObjectWindow.open(tileObject.worldObject.id);
 						}
 						if (tileObject.settlement !== null) {
-							UseSettlementWindow.open(tileObject.settlement);
+							UseSettlementWindow.open(tileObject.settlement.id);
 						}
 					},
 				},
-				centerCamera: () => INTERFACE_SERVICE.focusCamera(tile.identifier),
+				centerCamera: () => INTERFACE_SERVICE.focusCamera(tile.position),
 			};
 		} else {
 			return null;

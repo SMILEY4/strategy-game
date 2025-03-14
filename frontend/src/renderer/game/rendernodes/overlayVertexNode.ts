@@ -5,7 +5,7 @@ import {TilemapUtils} from "../../../common/tilemapUtils";
 import {Tile} from "../../../models/base/tile";
 import {BorderBuilder} from "./utils/borderBuilder";
 import {packBorder} from "./utils/packBorder";
-import {MapMode} from "../../../models/base/mapMode";
+import {MapMode} from "../../../models/misc/mapMode";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {buildMap} from "../../../common/utils";

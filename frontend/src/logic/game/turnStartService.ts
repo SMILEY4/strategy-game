@@ -2,12 +2,12 @@ import {CountryMessage, GameStateMessage, SettlementMessage, WorldObjectMessage}
 import {ValueHistory} from "../../common/valueHistory";
 import {MonitoringRepository} from "../../state/repository/monitoringRepository";
 import {Tile} from "../../models/base/tile";
-import {TerrainType} from "../../models/base/TerrainType";
-import {TileResourceType} from "../../models/base/TileResourceType";
-import {WorldObjectType} from "../../models/base/worldObjectType";
+import {TerrainType} from "../../models/tile/TerrainType";
+import {TileResourceType} from "../../models/tile/TileResourceType";
+import {WorldObjectType} from "../../models/worldobject/worldObjectType";
 import {WorldObject} from "../../models/base/worldObject";
 import {Country} from "../../models/base/country";
-import {Visibility} from "../../models/base/visibility";
+import {Visibility} from "../../models/misc/visibility";
 import {mapHidden} from "../../common/hiddenType";
 import {Settlement} from "../../models/base/Settlement";
 import {mapValue} from "../../common/utils";

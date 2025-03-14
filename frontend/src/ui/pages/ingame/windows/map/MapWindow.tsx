@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Button} from "../../../../components/button/Button";
-import {MapMode} from "../../../../../models/base/mapMode";
+import {MapMode} from "../../../../../models/misc/mapMode";
 import {UseMapWindow} from "./useMapWindow";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";

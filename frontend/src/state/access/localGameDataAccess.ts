@@ -1,8 +1,8 @@
-import {CameraData} from "../../../models/base/cameraData";
-import {CameraDatabase} from "../../database/cameraDatabase";
+import {CameraEntity} from "../../models/misc/cameraEntity";
+import {CameraDatabase} from "../database/cameraDatabase";
 
 export interface LocalGameDataAccess {
-	getCamera(): CameraData;
+	getCamera(): CameraEntity;
 }
 
 export class LocalGameDataAccessImpl implements LocalGameDataAccess {
@@ -13,7 +13,7 @@ export class LocalGameDataAccessImpl implements LocalGameDataAccess {
 		this.cameraDatabase = cameraDatabase;
 	}
 
-	getCamera(): CameraData {
+	getCamera(): CameraEntity {
 		return this.cameraDatabase.get();
 	}
 }

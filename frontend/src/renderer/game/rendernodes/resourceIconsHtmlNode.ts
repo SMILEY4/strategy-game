@@ -2,10 +2,10 @@ import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNod
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
 import {buildMap} from "../../../common/utils";
-import {MapMode} from "../../../models/base/mapMode";
+import {MapMode} from "../../../models/misc/mapMode";
 import {Tile, TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
-import {TileResourceType} from "../../../models/base/TileResourceType";
+import {TileResourceType} from "../../../models/tile/TileResourceType";
 import {GameHtmlRenderContext} from "../gameRenderContext";
 
 export class ResourceIconsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {

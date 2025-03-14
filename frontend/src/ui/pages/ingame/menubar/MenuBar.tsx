@@ -10,7 +10,7 @@ import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
 import {UseOutlinerWindow} from "../windows/outliner/useOutlinerWindow";
 import {Txt} from "../../../components/text/Txt";
 import {INTERFACE_SERVICE} from "../../../../logic/game/interfaceService";
-import {LocalStateHooks} from "../../../../state/local/access/localStateHooks";
+import {LocalStateHooks} from "../../../../state/access/localStateHooks";
 
 export function MenuBar(): ReactElement {
 

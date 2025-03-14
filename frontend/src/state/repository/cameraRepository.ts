@@ -1,5 +1,5 @@
 import {CameraDatabase} from "../database/cameraDatabase";
-import {CameraData} from "../../models/base/cameraData";
+import {CameraEntity} from "../../models/misc/cameraEntity";
 import {useSingletonEntity} from "../../common/db/adapters/databaseHooks";
 import {useDI} from "../../appContext";
 
@@ -11,11 +11,11 @@ export class CameraRepository {
 		this.cameraDb = cameraDb;
 	}
 
-	public get(): CameraData {
+	public get(): CameraEntity {
 		return this.cameraDb.get();
 	}
 
-	public set(camera: CameraData): void {
+	public set(camera: CameraEntity): void {
 		return this.cameraDb.set(camera);
 	}
 
@@ -23,7 +23,7 @@ export class CameraRepository {
 
 export namespace CameraRepository {
 
-	export function useCamera(): CameraData {
+	export function useCamera(): CameraEntity {
 		const db = useDI<CameraDatabase>(CameraDatabase.name);
 		return useSingletonEntity(db);
 	}

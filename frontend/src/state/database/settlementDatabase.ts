@@ -31,7 +31,7 @@ class SettlementStorage extends DatabaseStorage<SettlementStorageConfig, Settlem
 			primary: new MapPrimaryStorage<SettlementEntity, string>(provideId),
 			supporting: {
 				array: new ArraySupportingStorage<SettlementEntity>(),
-				byPos: new MapUniqueSupportingStorage<SettlementEntity, string>(e => SettlementStorage.toKey(e.tile.q, e.tile.r)),
+				byPos: new MapUniqueSupportingStorage<SettlementEntity, string>(e => SettlementStorage.toKey(e.tile.position.q, e.tile.position.r)),
 				byCountry: new MapSupportingStorage<SettlementEntity, string>(e => e.country.id),
 			},
 		});

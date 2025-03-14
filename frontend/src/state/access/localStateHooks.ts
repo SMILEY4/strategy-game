@@ -1,25 +1,29 @@
-import {Command} from "../../../models/base/command";
-import {MapMode} from "../../../models/base/mapMode";
-import {Tile, TileIdentifier} from "../../../models/base/tile";
-import {WorldObject, WorldObjectIdentifier, WorldObjectOutline} from "../../../models/base/worldObject";
-import {GameSessionState} from "../../../models/base/gameSessionState";
-import {GameSessionDatabase} from "../../database/gameSessionDatabase";
-import {usePartialSingletonEntity, useQueryMultiple, useQuerySingle} from "../../../common/db/adapters/databaseHooks";
-import {TileDatabase} from "../../database/tileDatabase";
-import {CommandDatabase} from "../../database/commandDatabase";
-import {SettlementDatabase} from "../../database/settlementDatabase";
-import {WorldObjectDatabase} from "../../database/worldObjectDatabase";
-import {MovementModeState} from "../../database/movementModeState";
-import {CountryOutline} from "../../../models/base/country";
-import {CountryDatabase} from "../../database/countryDatabase";
-import {LocalSettlementBuilder} from "../localSettlementBuilder";
-import {RouteDatabase} from "../../database/routeDatabase";
+import {MapMode} from "../../models/misc/mapMode";
+import {GameSessionState} from "../../models/misc/gameSessionState";
+import {GameSessionDatabase} from "../database/gameSessionDatabase";
+import {usePartialSingletonEntity, useQueryMultiple, useQuerySingle} from "../../common/db/adapters/databaseHooks";
+import {TileDatabase} from "../database/tileDatabase";
+import {CommandDatabase} from "../database/commandDatabase";
+import {SettlementDatabase} from "../database/settlementDatabase";
+import {WorldObjectDatabase} from "../database/worldObjectDatabase";
+import {MovementModeState} from "../database/movementModeState";
+import {CountryDatabase} from "../database/countryDatabase";
+import {RouteDatabase} from "../database/routeDatabase";
 import {
 	Settlement,
 	SettlementProductionOption,
 	SettlementProductionQueueEntry,
-} from "../../../models/settlement/settlement";
-import {SettlementOutline} from "../../../models/settlement/settlementOutline";
+} from "../../models/settlement/settlement";
+import {SettlementOutline} from "../../models/settlement/settlementOutline";
+import {Command} from "../../models/command/command";
+import {CountryOutline} from "../../models/country/countryOutline";
+import {WorldObjectOutline} from "../../models/worldobject/worldObjectOutline";
+import {TileSummary} from "../../models/tile/tileSummary";
+import {Tile} from "../../models/tile/tile";
+import {WorldObjectId} from "../../models/worldobject/worldObjectId";
+import {TileId} from "../../models/tile/tileId";
+import {WorldObject} from "../../models/worldobject/worldObject";
+import {SettlementBuilder} from "./settlementBuilder";
 
 export namespace LocalStateHooks {
 
@@ -75,10 +79,17 @@ export namespace LocalStateHooks {
 		return 0;// todo (calculate remaining movement points)
 	}
 
+	/**
+	 * Get the outline information about all countries
+	 */
 	export function useOutlineCountries(): CountryOutline[] {
 		return useQueryMultiple(countryDatabase, CountryDatabase.QUERY_ALL, null)
 			.map(it => ({
-				identifier: it.identifier,
+				id: it.id,
+				name: it.name,
+				color: it.color,
+				isUserControlled: it.isUserControlled,
+				playerName: it.player.name,
 			}));
 	}
 
@@ -95,11 +106,16 @@ export namespace LocalStateHooks {
 			}));
 	}
 
-	export function useOutlineUnits(): WorldObjectOutline[] {
+	/**
+	 * Get the outline information about all world objects
+	 */
+	export function useOutlineWorldObjects(): WorldObjectOutline[] {
 		return useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_ALL, null)
 			.map(it => ({
-				identifier: it.identifier,
+				id: it.id,
+				type: it.type,
 				tile: it.tile,
+				country: it.country,
 			}));
 	}
 
@@ -114,7 +130,7 @@ export namespace LocalStateHooks {
 		if (settlement == null) {
 			return null;
 		}
-		return LocalSettlementBuilder.buildSettlement(settlement, routes, settlements, commands);
+		return SettlementBuilder.buildSettlement(settlement, routes, settlements, commands);
 	}
 
 	/**
@@ -126,7 +142,7 @@ export namespace LocalStateHooks {
 		if (settlement == null) {
 			return [];
 		}
-		return LocalSettlementBuilder.buildProductionOptions(settlement, commands);
+		return SettlementBuilder.buildProductionOptions(settlement, commands);
 	}
 
 	/**
@@ -138,19 +154,28 @@ export namespace LocalStateHooks {
 		if (settlement == null) {
 			return [];
 		}
-		return LocalSettlementBuilder.buildProductionQueue(settlement, commands);
+		return SettlementBuilder.buildProductionQueue(settlement, commands);
 	}
 
-	export function useSelectedTileId(): TileIdentifier | null {
+	/**
+	 * Get the currently selected tile or null.
+	 */
+	export function useSelectedTile(): TileSummary | null {
 		return usePartialSingletonEntity(gameSessionDatabase, e => e.selectedTile);
 	}
 
-	export function useTile(tileId: TileIdentifier | null): Tile | null {
-		return useQuerySingle(tileDatabase, TileDatabase.QUERY_BY_ID, tileId?.id);
+	/**
+	 * Get the tile with the given id
+	 */
+	export function useTile(tileId: TileId | null): Tile | null {
+		return useQuerySingle(tileDatabase, TileDatabase.QUERY_BY_ID, tileId);
 	}
 
-	export function useWorldObject(id: WorldObjectIdentifier | null): WorldObject | null {
-		return useQuerySingle(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_ID, id?.id);
+	/**
+	 * Get the world object with the given id
+	 */
+	export function useWorldObject(id: WorldObjectId | null): WorldObject | null {
+		return useQuerySingle(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_ID, id);
 	}
 
 }

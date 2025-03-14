@@ -10,15 +10,15 @@ import {SpriteBuffer} from "../../../common/webgl/spriteBuffer";
 import {Settlement} from "../../../models/base/Settlement";
 import {WorldObject} from "../../../models/base/worldObject";
 import {Tile, TileIdentifier} from "../../../models/base/tile";
-import {Visibility} from "../../../models/base/visibility";
-import {TerrainType} from "../../../models/base/TerrainType";
+import {Visibility} from "../../../models/misc/visibility";
+import {TerrainType} from "../../../models/tile/TerrainType";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import TextureAtlasData = NodeInput.TextureAtlasData;
 import {RouteSpriteBuilder} from "./utils/routeSpriteBuilder";
 import {Route} from "../../../models/base/route";
 import {Random} from "../../../common/random";
-import {Color} from "../../../models/base/color";
+import {Color} from "../../../common/color";
 
 export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 

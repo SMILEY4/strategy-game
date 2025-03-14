@@ -3,7 +3,7 @@ import {ProductionWindow} from "./ProductionWindow";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {openWindow} from "../../../../components/window/windowHooks";
-import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
 import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
 import {SettlementProductionOption} from "../../../../../models/settlement/settlement";

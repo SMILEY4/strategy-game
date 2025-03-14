@@ -8,11 +8,11 @@ import {Banner} from "../../../../components/banner/Banner";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
-import {WorldObjectIdentifier} from "../../../../../models/base/worldObject";
+import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 
 export interface WorldObjectWindowProps {
 	windowId: string;
-	identifier: WorldObjectIdentifier | null;
+	identifier: WorldObjectId | null;
 }
 
 export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
@@ -33,7 +33,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 				<VBox fullSize>
 
 					<Banner
-						title={data.worldObject.identifier.type.id}
+						title={data.worldObject.type.id}
 						subtitle={"World Object"}
 						color={data.worldObject.country.color}
 						spaceAbove
@@ -43,7 +43,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 					</Banner>
 
 					<VBox padding_l gap_m scrollable grow shrink>
-						{data.worldObject.country.isUserCountry && (
+						{data.worldObject.country.isUserControlled && (
 							<>
 								<Txt.Header2 center>
 									<Txt.String>Actions</Txt.String>

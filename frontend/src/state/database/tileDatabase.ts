@@ -1,24 +1,24 @@
 import {MapPrimaryStorage} from "../../common/db/storage/primary/mapPrimaryStorage";
 import {AbstractDatabase} from "../../common/db/database/abstractDatabase";
 import {Query} from "../../common/db/query/query";
-import {Tile} from "../../models/base/tile";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../common/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySupportingStorage";
 import {MapUniqueSupportingStorage} from "../../common/db/storage/supporting/mapUniqueSupportingStorage";
+import {TileEntity} from "../../models/tile/tileEntity";
 
-function provideId(e: Tile): string {
-    return e.identifier.id;
+function provideId(e: TileEntity): string {
+    return e.id;
 }
 
-interface TileStorageConfig extends DatabaseStorageConfig<Tile, string> {
-    primary: MapPrimaryStorage<Tile, string>,
+interface TileStorageConfig extends DatabaseStorageConfig<TileEntity, string> {
+    primary: MapPrimaryStorage<TileEntity, string>,
     supporting: {
-        array: ArraySupportingStorage<Tile>,
-        byPos: MapUniqueSupportingStorage<Tile, string>
+        array: ArraySupportingStorage<TileEntity>,
+        byPos: MapUniqueSupportingStorage<TileEntity, string>
     }
 }
 
-class TileStorage extends DatabaseStorage<TileStorageConfig, Tile, string> {
+class TileStorage extends DatabaseStorage<TileStorageConfig, TileEntity, string> {
 
     public static toKey(q: number, r: number): string {
         return q + "/" + r;
@@ -26,29 +26,29 @@ class TileStorage extends DatabaseStorage<TileStorageConfig, Tile, string> {
 
     constructor() {
         super({
-            primary: new MapPrimaryStorage<Tile, string>(provideId),
+            primary: new MapPrimaryStorage<TileEntity, string>(provideId),
             supporting: {
-                array: new ArraySupportingStorage<Tile>(),
-                byPos: new MapUniqueSupportingStorage<Tile, string>(e => TileStorage.toKey(e.identifier.q, e.identifier.r)),
+                array: new ArraySupportingStorage<TileEntity>(),
+                byPos: new MapUniqueSupportingStorage<TileEntity, string>(e => TileStorage.toKey(e.position.q, e.position.r)),
             },
         });
     }
 }
 
-export class TileDatabase extends AbstractDatabase<TileStorage, Tile, string> {
+export class TileDatabase extends AbstractDatabase<TileStorage, TileEntity, string> {
     constructor() {
         super(new TileStorage(), provideId);
     }
 }
 
-interface TileQuery<ARGS> extends Query<TileStorage, Tile, string, ARGS> {
+interface TileQuery<ARGS> extends Query<TileStorage, TileEntity, string, ARGS> {
 }
 
 
 export namespace TileDatabase {
 
     export const QUERY_BY_ID: TileQuery<string | null> = {
-        run(storage: TileStorage, args: string): Tile | null {
+        run(storage: TileStorage, args: string): TileEntity | null {
             if (args === null) {
                 return null;
             }
@@ -57,13 +57,13 @@ export namespace TileDatabase {
     };
 
     export const QUERY_BY_POSITION: TileQuery<[number, number]> = {
-        run(storage: TileStorage, args: [number, number]): Tile | null{
+        run(storage: TileStorage, args: [number, number]): TileEntity | null{
             return storage.config.supporting.byPos.getByKey(TileStorage.toKey(args[0], args[1]));
         },
     };
 
     export const QUERY_ALL: TileQuery<void> = {
-        run(storage: TileStorage, args: void): Tile[] {
+        run(storage: TileStorage, args: void): TileEntity[] {
             return storage.config.supporting.array.getAll();
         },
     };

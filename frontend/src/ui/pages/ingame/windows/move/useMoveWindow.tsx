@@ -3,14 +3,15 @@ import {MoveWindow} from "./MoveWindow";
 import {openWindow, useCloseWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
-import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
+import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 
 export namespace UseMoveWindow {
 
 	/**
 	 * Opens the move world-object window
 	 */
-	export function open(worldObjectId: string) {
+	export function open(worldObjectId: WorldObjectId) {
 		const WINDOW_ID = "move-command";
 		openWindow({
 			id: WINDOW_ID,
@@ -33,7 +34,7 @@ export namespace UseMoveWindow {
 	/**
 	 * Provides the data and functions required by the window
 	 */
-	export function useData(windowId: string, worldObjectId: string | null): UseMoveWindow.Data | null {
+	export function useData(windowId: string, worldObjectId: WorldObjectId | null): UseMoveWindow.Data | null {
 
         const remainingMovement = LocalStateHooks.useRemainingMovementPoints()
         const closeWindow = useCloseWindow();

@@ -1,12 +1,12 @@
-import {Command} from "../../../../../models/base/command";
 import React from "react";
 import {CommandLogWindow} from "./CommandLogWindow";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
+import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {Command} from "../../../../../models/command/command";
 
 export namespace UseCommandLogWindow {
 

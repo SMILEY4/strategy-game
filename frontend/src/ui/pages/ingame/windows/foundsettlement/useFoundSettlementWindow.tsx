@@ -1,14 +1,15 @@
-import {TileIdentifier} from "../../../../../models/base/tile";
 import {FoundSettlementWindow} from "./FoundSettlementWindow";
 import {useEffect, useState} from "react";
 import {openWindow, useCloseWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {TileId} from "../../../../../models/tile/tileId";
+import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 
 export namespace UseFoundSettlementWindow {
 
-	export function open(tile: TileIdentifier, worldObjectId: string) {
+	export function open(tile: TileId, worldObjectId: WorldObjectId) {
 		const windowId = UID.generate();
 		openWindow({
 			id: windowId,
@@ -37,9 +38,9 @@ export namespace UseFoundSettlementWindow {
 	/**
 	 * Provides the data and functions required by the "found settlement" window
 	 */
-	export function useData(windowId: string, tileIdentifier: TileIdentifier, worldObjectId: string): UseFoundSettlementWindow.Data {
+	export function useData(windowId: string, tileId: TileId, worldObjectId: WorldObjectId): UseFoundSettlementWindow.Data {
 
-        const closeWindow = useCloseWindow();
+		const closeWindow = useCloseWindow();
 
 		const [name, setName] = useState("");
 		const [invalidReasons, setInvalidReasons] = useState<string[]>([]);
@@ -49,7 +50,7 @@ export namespace UseFoundSettlementWindow {
 		}, []);
 
 		useEffect(() => {
-			setInvalidReasons(INTERFACE_SERVICE.validateFoundSettlement(tileIdentifier, name));
+			setInvalidReasons(INTERFACE_SERVICE.validateFoundSettlement(tileId, name));
 		}, [name]);
 
 		return {
@@ -64,8 +65,8 @@ export namespace UseFoundSettlementWindow {
 			randomizeName: () => INTERFACE_SERVICE.getRandomSettlementName().then(setName),
 			cancel: () => closeWindow(windowId),
 			create: () => {
-				INTERFACE_SERVICE.foundSettlement(tileIdentifier, worldObjectId, name);
-                closeWindow(windowId);
+				INTERFACE_SERVICE.foundSettlement(tileId, worldObjectId, name);
+				closeWindow(windowId);
 			},
 		};
 	}

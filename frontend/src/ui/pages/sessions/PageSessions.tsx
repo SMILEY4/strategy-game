@@ -7,7 +7,7 @@ import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
 import {VSpacer} from "../../components/spacer/Spacer";
 import {AudioType} from "../../../common/audioService";
-import {GameSessionMeta} from "../../../models/base/gameSessionMeta";
+import {GameSessionMeta} from "../../../models/misc/gameSessionMeta";
 import {SessionHooks} from "./sessions";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {ModalWindow} from "../../components/modal/ModalWindow";

@@ -1,14 +1,12 @@
 import {Camera} from "../../common/webgl/camera";
-import {Tile} from "../../models/base/tile";
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {Projections} from "../../common/webgl/projections";
-import {LocalTileDataAccess} from "../../state/local/access/localTileDataAccess";
-import {LocalGameDataAccess} from "../../state/local/access/localGameDataAccess";
-import {LocalTileIdentifier} from "../../state/local/localTile";
+import {LocalTileDataAccess} from "../../state/access/localTileDataAccess";
+import {LocalGameDataAccess} from "../../state/access/localGameDataAccess";
+import {Tile} from "../../models/tile/tile";
 
 export interface TilePicker {
 	tileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null;
-	tileIdAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): LocalTileIdentifier | null;
 }
 
 export class TilePickerImpl implements TilePicker {
@@ -25,12 +23,6 @@ export class TilePickerImpl implements TilePicker {
 	tileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null {
 		const hexPos = Projections.screenToHex(this.camera(canvasHandle), screenX, screenY);
 		return this.localTileDataAccess.getAt(hexPos.x, hexPos.y);
-	}
-
-
-	tileIdAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): LocalTileIdentifier | null {
-		const tile = this.tileAt(screenX, screenY, canvasHandle);
-		return tile ? tile.identifier : null;
 	}
 
 	private camera(canvasHandle: CanvasHandle): Camera {

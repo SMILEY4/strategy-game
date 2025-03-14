@@ -1,8 +1,8 @@
 import {GameSessionDatabase} from "../database/gameSessionDatabase";
-import {MapMode} from "../../models/base/mapMode";
+import {MapMode} from "../../models/misc/mapMode";
 import {usePartialSingletonEntity} from "../../common/db/adapters/databaseHooks";
-import {GameSessionState} from "../../models/base/gameSessionState";
-import {GameTurnState} from "../../models/base/gameTurnState";
+import {GameSessionState} from "../../models/misc/gameSessionState";
+import {GameTurnState} from "../../models/misc/gameTurnState";
 import {useDI} from "../../appContext";
 
 export class SessionRepository {

@@ -11,7 +11,7 @@ import {GameSessionService} from "../../../logic/session/gameSessionService";
 import {WindowStack} from "../../components/window/WindowStack";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {Txt} from "../../components/text/Txt";
-import {LocalStateHooks} from "../../../state/local/access/localStateHooks";
+import {LocalStateHooks} from "../../../state/access/localStateHooks";
 
 const USE_DUMMY_CANVAS = false;
 

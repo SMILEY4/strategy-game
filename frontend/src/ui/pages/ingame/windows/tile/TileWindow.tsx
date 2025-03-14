@@ -1,5 +1,4 @@
 import React, {ReactElement} from "react";
-import {TileIdentifier} from "../../../../../models/base/tile";
 import {UseTileWindow} from "./useTileWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {mapHiddenOrDefault} from "../../../../../common/hiddenType";
@@ -7,21 +6,22 @@ import {DecoratedWindow} from "../../../../components/window/decorated/Decorated
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {Case, Switch} from "react-if";
-import {TileResourceType} from "../../../../../models/base/TileResourceType";
+import {TileResourceType} from "../../../../../models/tile/TileResourceType";
 import {Divider} from "../../../../components/divider/Divider";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {Color} from "../../../../../models/base/color";
+import {Color} from "../../../../../common/color";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Banner} from "../../../../components/banner/Banner";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
-import {Visibility} from "../../../../../models/base/visibility";
+import {Visibility} from "../../../../../models/misc/visibility";
 import {VSpacer} from "../../../../components/spacer/Spacer";
 import {Button} from "../../../../components/button/Button";
 import {Txt} from "../../../../components/text/Txt";
+import {TileId} from "../../../../../models/tile/tileId";
 
 export interface TileWindowProps {
 	windowId: string;
-	identifier: TileIdentifier | null;
+	identifier: TileId | null;
 }
 
 export function TileWindow(props: TileWindowProps): ReactElement {
@@ -100,10 +100,10 @@ function PanelDebug(props: UseTileWindow.Data): ReactElement {
 			<InsetKeyValueGrid dontGrow dontShrink>
 
 				<Txt.Body><Txt.String>Tile Id:</Txt.String></Txt.Body>
-				<Txt.Body><Txt.String>{props.tile.identifier.id}</Txt.String></Txt.Body>
+				<Txt.Body><Txt.String>{props.tile.id}</Txt.String></Txt.Body>
 
 				<Txt.Body><Txt.String>Location:</Txt.String></Txt.Body>
-				<Txt.Body><Txt.String>{props.tile.identifier.q + "," + props.tile.identifier.r}</Txt.String></Txt.Body>
+				<Txt.Body><Txt.String>{props.tile.position.q + "," + props.tile.position.r}</Txt.String></Txt.Body>
 
 			</InsetKeyValueGrid>
 		</>
@@ -137,7 +137,7 @@ function SectionBaseInformation(props: UseTileWindow.Data): ReactElement {
 			)}
 
 			<Txt.Body><Txt.String>Location:</Txt.String></Txt.Body>
-			<Txt.Body><Txt.String>{props.tile.identifier.q + "," + props.tile.identifier.r}</Txt.String></Txt.Body>
+			<Txt.Body><Txt.String>{props.tile.position.q + "," + props.tile.position.r}</Txt.String></Txt.Body>
 
 		</InsetKeyValueGrid>
 	);

@@ -81,7 +81,7 @@ export function Canvas() {
 		);
 	}
 
-	function mouseDown(e: MouseEvent) {
+	function mouseDown(_: MouseEvent) {
 		mouseDownInCanvas.current = true;
 		timestampMouseDown.current = Date.now();
 	}
@@ -92,7 +92,7 @@ export function Canvas() {
 		timestampMouseDown.current = 0;
 	}
 
-	function mouseLeave(e: MouseEvent) {
+	function mouseLeave(_: MouseEvent) {
 		mouseDownInCanvas.current = false;
 	}
 
