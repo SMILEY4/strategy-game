@@ -1,15 +1,15 @@
-import {ResourceLedgerEntry} from "../../../../../models/base/Settlement";
 import React, {ReactElement} from "react";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {If, Then} from "react-if";
-import "./resourceLedgerBox.less";
+import "./settlementResourceBox.less";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Tooltip} from "../../../../components/tooltip/Tooltip";
 import {Txt} from "../../../../components/text/Txt";
+import {SettlementResource} from "../../../../../models/settlement/settlement";
 
-export function ResourceLedgerBox(props: ResourceLedgerEntry): ReactElement {
+export function SettlementResourceBox(props: SettlementResource): ReactElement {
 
 	return (
 		<Tooltip.Context>
@@ -23,7 +23,7 @@ export function ResourceLedgerBox(props: ResourceLedgerEntry): ReactElement {
 	);
 }
 
-function Box(props: ResourceLedgerEntry): ReactElement {
+function Box(props: SettlementResource): ReactElement {
 	return (
 		<DecoratedPanel blue pattern className="resource-ledger-box">
 			<div
@@ -46,7 +46,7 @@ function Box(props: ResourceLedgerEntry): ReactElement {
 	);
 }
 
-function Details(props: ResourceLedgerEntry): ReactElement {
+function Details(props: SettlementResource): ReactElement {
 	return (
 		<VBox fullSize padding_s gap_xs>
 

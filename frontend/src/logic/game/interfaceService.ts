@@ -11,6 +11,7 @@ import {TileIdentifier} from "../../models/base/tile";
 import {MapMode} from "../../models/base/mapMode";
 import {ProductionQueueEntry, SettlementIdentifier} from "../../models/base/Settlement";
 import {ProductionOptionAggregate} from "../../models/aggregates/SettlementAggregate";
+import {SettlementProductionOption, SettlementProductionQueueEntry} from "../../models/settlement/settlement";
 
 export const INTERFACE_SERVICE: InterfaceService = (undefined as unknown) as InterfaceService; // todo
 
@@ -37,8 +38,8 @@ export interface InterfaceService {
 	getRandomSettlementName(): Promise<string>;
 	validateFoundSettlement(tile: TileIdentifier, name: string): string[];
 	foundSettlement(tile: TileIdentifier, worldObjectId: string, name: string): void;
-	addProduction(settlementId: SettlementIdentifier, entry: ProductionOptionAggregate): void,
-	cancelProduction(settlementId: SettlementIdentifier, entry: ProductionQueueEntry): void,
+	addProduction(settlementId: SettlementIdentifier, entry: SettlementProductionOption): void,
+	cancelProduction(settlementId: string, entryId: string): void,
 	// units / world objects
 	beginMovement(worldObjectId: string): void;
 	endMovement(commit: boolean): void;

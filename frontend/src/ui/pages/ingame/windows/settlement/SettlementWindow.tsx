@@ -11,7 +11,7 @@ import {Banner} from "../../../../components/banner/Banner";
 import {Divider} from "../../../../components/divider/Divider";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {Color} from "../../../../../models/base/color";
-import {ResourceLedgerBox} from "./ResourceLedgerBox";
+import {SettlementResourceBox} from "./SettlementResourceBox";
 import {BuildingBox} from "./BuildingBox";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {CSS_COLOR_SUCCESS_LIGHT, CSS_COLOR_WARN_LIGHT} from "../../../../components/commonColors";
@@ -19,16 +19,15 @@ import {ProgressCircle} from "./ProgressCircle";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Txt} from "../../../../components/text/Txt";
-import {SettlementIdentifier} from "../../../../../models/base/Settlement";
 
 export interface SettlementWindowProps {
 	windowId: string;
-	identifier: SettlementIdentifier;
+	settlementId: string;
 }
 
 export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 
-	const data: UseSettlementWindow.Data | null = UseSettlementWindow.useData(props.identifier);
+	const data: UseSettlementWindow.Data | null = UseSettlementWindow.useData(props.settlementId);
 
 	if (data === null) {
 		return (
@@ -44,7 +43,7 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 				<VBox fullSize>
 
 					<Banner
-						title={data.settlement.identifier.name}
+						title={data.settlement.name}
 						subtitle={"Settlement"}
 						color={data.settlement.country.color}
 						spaceAbove
@@ -122,7 +121,7 @@ function PanelDebug(props: UseSettlementWindow.Data): ReactElement {
 			<InsetKeyValueGrid dontShrink dontGrow>
 
 				<Txt.Body><Txt.String>Settlement Id:</Txt.String></Txt.Body>
-				<Txt.Body><Txt.String>{props.settlement.identifier.id}</Txt.String></Txt.Body>
+				<Txt.Body><Txt.String>{props.settlement.id}</Txt.String></Txt.Body>
 
 				<Txt.Body><Txt.String>Country Id:</Txt.String></Txt.Body>
 				<Txt.Body><Txt.String>{props.settlement.country.id}</Txt.String></Txt.Body>
@@ -140,14 +139,22 @@ function SectionBaseInfo(props: UseSettlementWindow.Data): ReactElement {
 	return (
 		<InsetKeyValueGrid dontGrow dontShrink>
 
-            <Txt.Body><Txt.String>Name:</Txt.String></Txt.Body>
-            <Txt.Body><Txt.String>{props.settlement.identifier.name}</Txt.String></Txt.Body>
+			<Txt.Body><Txt.String>Name:</Txt.String></Txt.Body>
+			<Txt.Body><Txt.String>{props.settlement.name}</Txt.String></Txt.Body>
 
-            <Txt.Body><Txt.String>Country:</Txt.String></Txt.Body>
-            <Txt.Body><Txt.String>{props.settlement.country.name}</Txt.String></Txt.Body>
+			<Txt.Body><Txt.String>Country:</Txt.String></Txt.Body>
+			<Txt.Body><Txt.String>{props.settlement.country.name}</Txt.String></Txt.Body>
 
-            <Txt.Body><Txt.String>Population:</Txt.String></Txt.Body>
-            <Txt.Body><Txt.Number behaviour="neutral" signBehaviour="never">{props.settlement.population.size}</Txt.Number></Txt.Body>
+			<Txt.Body><Txt.String>Population:</Txt.String></Txt.Body>
+			{props.settlement.population.size.visible && (
+				<Txt.Body><Txt.Number behaviour="neutral" signBehaviour="never">
+					{props.settlement.population.size.value.size}
+				</Txt.Number></Txt.Body>
+			)}
+			{!props.settlement.population.size.visible && (
+				<Txt.Body><Txt.String>?</Txt.String></Txt.Body>
+			)}
+
 
 		</InsetKeyValueGrid>
 	);
@@ -221,7 +228,7 @@ function SectionResourceBalance(props: UseSettlementWindow.Data) {
 						</Txt.Body>
 					)}
 					{(props.settlement.resources.visible && props.settlement.resources.value.length > 0) && props.settlement.resources.value.map(entry => (
-						<ResourceLedgerBox {...entry} key={entry.type}/>
+						<SettlementResourceBox {...entry} key={entry.type}/>
 					))}
 				</HBox>
 			</InsetPanel>
@@ -270,34 +277,36 @@ function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
 			</Txt.Header2>
 			<Divider line/>
 
-			{!props.settlement.production.queue.visible && (
+			{!props.settlement.productionQueueActive.visible && (
 				<Txt.Body secondary center>
 					<Txt.String>Unknown</Txt.String>
 				</Txt.Body>
 			)}
 
-			{props.settlement.production.queue.visible && (
+			{props.settlement.productionQueueActive.visible && (
 
 				<HBox dontShrink dontGrow centerVertical left gap_s>
 
 					{props.settlement.country.isUserCountry && (
-						<Button square onClick={props.productionQueue.add}><Txt.Icon.Plus/></Button>
+						<Button square onClick={props.productionQueue.addNew}><Txt.Icon.Plus/></Button>
 					)}
 
 					<ProgressBar
 						grow
 						shrink
-						progress={props.productionQueue.activeEntry === null ? 0 : props.productionQueue.activeEntry.progress}
-						onClick={props.productionQueue.open}
+						progress={props.settlement.productionQueueActive.value === null ? 0 : props.settlement.productionQueueActive.value.progress}
+						onClick={props.productionQueue.openList}
 						className="production_queue__progress"
 					>
 						<Txt.Body>
-							<Txt.String>{props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}</Txt.String>
+							<Txt.String>{props.settlement.productionQueueActive.value === null ? "" : props.settlement.productionQueueActive.value.type}</Txt.String>
 						</Txt.Body>
 					</ProgressBar>
 
 					{props.settlement.country.isUserCountry && (
-						<Button square circle small onClick={props.productionQueue.cancel}><Txt.Icon.Close/></Button>
+						<Button square circle small onClick={props.productionQueue.cancelActive}>
+							<Txt.Icon.Close/>
+						</Button>
 					)}
 
 				</HBox>
@@ -312,8 +321,16 @@ function SectionPopulationSize(props: UseSettlementWindow.Data): ReactElement {
 	return (
 		<InsetKeyValueGrid dontGrow dontShrink>
 
-            <Txt.Body><Txt.String>Population Size:</Txt.String></Txt.Body>
-            <Txt.Body><Txt.Number behaviour="neutral" signBehaviour="never">{props.settlement.population.size}</Txt.Number></Txt.Body>
+			<Txt.Body><Txt.String>Population Size:</Txt.String></Txt.Body>
+			<Txt.Body>
+				{props.settlement.population.size.visible
+					? (
+						<Txt.Number behaviour="neutral" signBehaviour="never">
+							{props.settlement.population.size.value.size}
+						</Txt.Number>
+					)
+					: (<Txt.String>?</Txt.String>)}
+			</Txt.Body>
 
 		</InsetKeyValueGrid>
 	);
@@ -321,10 +338,6 @@ function SectionPopulationSize(props: UseSettlementWindow.Data): ReactElement {
 
 
 function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
-	const totalProgress = props.settlement.population.growth.value?.progress ?? 0;
-	const lastProgress = props.settlement.population.growth.value?.amount ?? 0;
-	const expectedPopulationChange = totalProgress >= 0 ? +1 : -1;
-
 	return (
 		<VBox gap_s dontGrow dontShrink>
 
@@ -345,7 +358,7 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
 			{props.settlement.population.growth.visible && (
 				<>
 					<HBox gap_s stretch centerVertical>
-						<ProgressCircle totalProgress={totalProgress} currentChange={lastProgress}/>
+						<ProgressCircle totalProgress={props.settlement.population.growth.value.totalProgress} currentChange={props.settlement.population.growth.value.lastProgress}/>
 						<InsetPanel grow shrink>
 							<VBox padding_s gap_xs left centerVertical fullSize>
 								<Txt.Body>
@@ -354,7 +367,7 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
 										signBehaviour="minus-only"
 										zeroClassification="negative"
 									>
-										{totalProgress}
+										{props.settlement.population.growth.value.totalProgress}
 									</Txt.Percentage>
 									<Txt.Whitespace/>
 									<Txt.String>total progress for</Txt.String>
@@ -364,7 +377,7 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
 										signBehaviour="always"
 										zeroClassification="negative"
 									>
-										{expectedPopulationChange}
+										{props.settlement.population.growth.value.expectedPopulationSizeChange}
 									</Txt.Number>
 									<Txt.Whitespace/>
 									<Txt.String>population.</Txt.String>
@@ -375,7 +388,7 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
 										signBehaviour="always"
 										zeroClassification="negative"
 									>
-										{lastProgress}
+										{props.settlement.population.growth.value.lastProgress}
 									</Txt.Percentage>
 									<Txt.Whitespace/>
 									<Txt.String>growth since last turn.</Txt.String>

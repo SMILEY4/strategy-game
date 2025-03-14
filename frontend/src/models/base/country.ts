@@ -12,3 +12,7 @@ export interface CountryIdentifier {
 	color: Color,
 	isUserCountry: boolean,
 }
+
+export interface CountryOutline {
+	identifier: CountryIdentifier,
+}

@@ -13,3 +13,8 @@ export interface WorldObjectIdentifier {
     id: string;
     type: WorldObjectType,
 }
+
+export interface WorldObjectOutline {
+    identifier: WorldObjectIdentifier,
+    tile: TileIdentifier,
+}

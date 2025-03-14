@@ -1,35 +1,35 @@
 import React from "react";
 import {ProductionQueueWindow} from "./ProductionQueueWindow";
-import {ProductionQueueEntry, SettlementIdentifier} from "../../../../../models/base/Settlement";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
+import {SettlementProductionQueueEntry} from "../../../../../models/settlement/settlement";
 
 export namespace UseProductionQueueWindow {
 
-	export function open(settlementId: SettlementIdentifier) {
+	export function open(settlement: SettlementSummary) {
 		const windowId = UID.generate();
 		openWindow({
 			id: windowId,
 			anchor: WindowStore.ANCHOR_CENTER_POINT,
-			content: <ProductionQueueWindow windowId={windowId} settlementId={settlementId}/>,
+			content: <ProductionQueueWindow windowId={windowId} settlement={settlement}/>,
 		});
 	}
 
 	export interface Data {
-		settlement: SettlementIdentifier,
-		entries: ProductionQueueEntry[],
-		cancel: (entry: ProductionQueueEntry) => void
+		settlement: SettlementSummary,
+		entries: SettlementProductionQueueEntry[],
+		cancel: (entry: SettlementProductionQueueEntry) => void
 	}
 
-
-	export function useData(settlementId: SettlementIdentifier): UseProductionQueueWindow.Data {
+	export function useData(settlement: SettlementSummary): UseProductionQueueWindow.Data {
 		return {
-			settlement: settlementId,
-			entries: LocalStateHooks.useProductionQueue(settlementId),
-			cancel: (entry: ProductionQueueEntry) => INTERFACE_SERVICE.cancelProduction(settlementId, entry),
+			settlement: settlement,
+			entries: LocalStateHooks.useProductionQueue(settlement.id),
+			cancel: (entry: SettlementProductionQueueEntry) => INTERFACE_SERVICE.cancelProduction(settlement.id, entry.id),
 		};
 	}
 

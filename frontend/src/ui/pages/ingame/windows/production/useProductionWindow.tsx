@@ -1,37 +1,38 @@
 import React from "react";
 import {ProductionWindow} from "./ProductionWindow";
-import {ProductionOptionAggregate} from "../../../../../models/aggregates/SettlementAggregate";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {SettlementIdentifier} from "../../../../../models/base/Settlement";
 import {UID} from "../../../../../common/uid";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {LocalStateHooks} from "../../../../../state/local/access/localStateHooks";
 import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
+import {SettlementProductionOption} from "../../../../../models/settlement/settlement";
 
 export namespace UseProductionWindow {
 
-	export function open(settlementId: SettlementIdentifier) {
+	export function open(settlement: SettlementSummary) {
 		const windowId = UID.generate();
 		openWindow({
 			id: windowId,
 			anchor: WindowStore.ANCHOR_CENTER_POINT,
 			preferredHeight: "50vh",
-			content: <ProductionWindow windowId={windowId} settlementId={settlementId}/>,
+			content: <ProductionWindow windowId={windowId} settlement={settlement}/>,
 		});
 	}
 
 	export interface Data {
-		entries: ProductionOptionAggregate[];
-		settlement: SettlementIdentifier,
-		produce: (entry: ProductionOptionAggregate) => void;
+		settlement: SettlementSummary,
+		entries: SettlementProductionOption[];
+		produce: (entry: SettlementProductionOption) => void;
 	}
 
 
-	export function useData(settlementId: SettlementIdentifier): UseProductionWindow.Data {
+	export function useData(settlement: SettlementSummary): UseProductionWindow.Data {
+		const options = LocalStateHooks.useProductionOptions(settlement.id);
 		return {
-			settlement: settlementId,
-			entries: LocalStateHooks.useProductionOptions(settlementId),
-			produce: (entry: ProductionOptionAggregate) => INTERFACE_SERVICE.addProduction(settlementId, entry),
+			settlement: settlement,
+			entries: options,
+			produce: (entry: SettlementProductionOption) => INTERFACE_SERVICE.addProduction(settlement.id, entry),
 		};
 	}
 

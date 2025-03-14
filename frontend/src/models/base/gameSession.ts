@@ -1,8 +1,9 @@
 import {TileIdentifier} from "./tile";
 import {MapMode} from "./mapMode";
+import {GameSessionState} from "./gameSessionState";
 
 export interface GameSession {
-    sessionState: "none" | "loading" | "playing" | "error",
+    sessionState: GameSessionState,
     turnState: "playing" | "waiting"
     turn: number,
     selectedTile: TileIdentifier | null;
