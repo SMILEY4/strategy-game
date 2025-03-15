@@ -27,6 +27,7 @@ import {WorldObject} from "../models/worldobject/worldObject";
 import {SettlementBuilder} from "./settlementBuilder";
 import {CameraEntity} from "../models/misc/cameraEntity";
 import {CameraDatabase} from "./database/cameraDatabase";
+import {UserState} from "./database/userState";
 
 export namespace LocalStateHooks {
 
@@ -63,8 +64,11 @@ export namespace LocalStateHooks {
 		cameraDatabase = dependencies.cameraDatabase;
 	}
 
+	/**
+	 * Whether an authentication token is present
+	 */
 	export function useIsAuthenticated(): boolean {
-		return false // todo
+		return UserState.getState().token !== null;
 	}
 
 	/**
@@ -113,8 +117,14 @@ export namespace LocalStateHooks {
 	 * Get the remaining movement points of the currently moving game object
 	 */
 	export function useRemainingMovementPoints(): number {
+		const worldObjectId = MovementModeState.useState(state => state.worldObjectId);
 		const path = MovementModeState.useState(state => state.path);
-		return 0;// todo (calculate remaining movement points)
+		const worldObject = useWorldObject(worldObjectId);
+		if (worldObject) {
+			return worldObject.maxMovementPoints - path.sum(0, it => it.cost);
+		} else {
+			return 0;
+		}
 	}
 
 	/**

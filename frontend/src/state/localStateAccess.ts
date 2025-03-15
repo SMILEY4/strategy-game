@@ -8,13 +8,21 @@ import {WorldObject} from "../models/worldobject/worldObject";
 import {WorldObjectId} from "../models/worldobject/worldObjectId";
 import {MovementState} from "../models/misc/movementState";
 import {Settlement, SettlementProductionQueueEntry} from "../models/settlement/settlement";
-import {Command} from "../models/command/command";
+import {Command, MoveCommand} from "../models/command/command";
 import {CommandType} from "../models/command/commandType";
 import {SettlementId} from "../models/settlement/settlementId";
 import {MapMode} from "../models/misc/mapMode";
 import {Country} from "../models/country/country";
 import {Route} from "../models/route/route";
 import {GameSessionState} from "../models/misc/gameSessionState";
+import {UserState} from "./database/userState";
+import {CountryDatabase} from "./database/countryDatabase";
+import {WorldObjectDatabase} from "./database/worldObjectDatabase";
+import {MovementModeState} from "./database/movementModeState";
+import {SettlementDatabase} from "./database/settlementDatabase";
+import {RouteDatabase} from "./database/routeDatabase";
+import {CommandDatabase} from "./database/commandDatabase";
+import {SettlementBuilder} from "./settlementBuilder";
 
 export interface LocalStateAccess { // todo: check which consumers require "full" models and which can use reduced models
 	//user
@@ -40,7 +48,7 @@ export interface LocalStateAccess { // todo: check which consumers require "full
 	getWorldObjects(): WorldObject[]
 	getWorldObjectsRevId(): string
 	getCurrentMovementState(): MovementState | null
-	getMovePaths(): ({tiles: TileSummary[], pending: boolean})[]
+	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[]
 	getMoveTargets(): TileSummary[]
 	// settlements
 	getSettlementsRevId(): string
@@ -61,17 +69,36 @@ export class LocalStateAccessImpl implements LocalStateAccess {
 	private readonly cameraDatabase: CameraDatabase;
 	private readonly tileDatabase: TileDatabase;
 	private readonly gameSessionDatabase: GameSessionDatabase;
+	private readonly countryDatabase: CountryDatabase;
+	private readonly worldObjectDatabase: WorldObjectDatabase;
+	private readonly settlementDatabase: SettlementDatabase;
+	private readonly routeDatabase: RouteDatabase;
+	private readonly commandDatabase: CommandDatabase;
 
-	constructor(cameraDatabase: CameraDatabase, tileDatabase: TileDatabase, gameSessionDatabase: GameSessionDatabase) {
+	constructor(
+		cameraDatabase: CameraDatabase,
+		tileDatabase: TileDatabase,
+		gameSessionDatabase: GameSessionDatabase,
+		countryDatabase: CountryDatabase,
+		worldObjectDatabase: WorldObjectDatabase,
+		settlementDatabase: SettlementDatabase,
+		routeDatabase: RouteDatabase,
+		commandDatabase: CommandDatabase,
+	) {
 		this.cameraDatabase = cameraDatabase;
 		this.tileDatabase = tileDatabase;
 		this.gameSessionDatabase = gameSessionDatabase;
+		this.countryDatabase = countryDatabase;
+		this.worldObjectDatabase = worldObjectDatabase;
+		this.settlementDatabase = settlementDatabase;
+		this.routeDatabase = routeDatabase;
+		this.commandDatabase = commandDatabase;
 	}
 
-	//========== USER =========================================================
+//========== USER =========================================================
 
 	getAuthTokenOrNull(): string | null {
-		return null // todo
+		return UserState.getState().token;
 	}
 
 	//========== GAME ==========================================================
@@ -101,7 +128,7 @@ export class LocalStateAccessImpl implements LocalStateAccess {
 	//========== TILES ========================================================
 
 	getTilesRevId(): string {
-		return this.tileDatabase.getRevId()
+		return this.tileDatabase.getRevId();
 	}
 
 	getSelectedTile(): TileSummary | null {
@@ -144,78 +171,123 @@ export class LocalStateAccessImpl implements LocalStateAccess {
 	//========== COUNTRY =======================================================
 
 	getPlayerCountry(): Country {
-		return (null as unknown) as Country // todo
+		return this.countryDatabase.querySingleOrThrow(CountryDatabase.QUERY_IS_USER_COUNTRY, null);
 	}
 
 	//========== WORLD OBJECTS =================================================
 
 	getWorldObject(id: WorldObjectId): WorldObject | null {
-		return (null as unknown) as WorldObject // todo
+		return this.worldObjectDatabase.querySingle(WorldObjectDatabase.QUERY_BY_ID, id);
 	}
 
 	getWorldObjectsAt(q: number, r: number): WorldObject[] {
-		return (null as unknown) as WorldObject[] // todo
+		return this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [q, r]);
 	}
 
 	getWorldObjects(): WorldObject[] {
-		return [] // todo
+		return this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_ALL, null);
 	}
 
 	getWorldObjectsRevId(): string {
-		return (null as unknown) as string // todo
+		return this.worldObjectDatabase.getRevId();
 	}
 
 	getCurrentMovementState(): MovementState | null {
-		return (null as unknown) as MovementState // todo
+		if (MovementModeState.useState.getState().worldObjectId) {
+			const state = MovementModeState.useState.getState();
+			return {
+				worldObjectId: state.worldObjectId!,
+				path: state.path,
+				availableTargets: state.availableTargets,
+			};
+		} else {
+			return null;
+		}
 	}
 
-	getMovePaths(): ({tiles: TileSummary[], pending: boolean})[] {
-		return (null as unknown) as any // todo
+	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[] {
+		const results: ({ tiles: TileSummary[], pending: boolean })[] = [];
+		if (MovementModeState.useState.getState().worldObjectId) {
+			results.push({
+				tiles: MovementModeState.useState.getState().path.map(it => it.tile),
+				pending: true,
+			});
+		}
+		this.getCommandsOfType<MoveCommand>(CommandType.MOVE).forEach(cmd => {
+			results.push({
+				tiles: cmd.path,
+				pending: false,
+			});
+		});
+		return results;
 	}
 
 	getMoveTargets(): TileSummary[] {
-		return [] // todo
+		if (MovementModeState.useState.getState().worldObjectId) {
+			return MovementModeState.useState.getState().availableTargets.map(tgt => tgt.tile);
+		} else {
+			return [];
+		}
 	}
 
 	//========== SETTLEMENTS ===================================================
 
 	getSettlementsRevId(): string {
-		return (null as unknown) as any // todo
+		return this.settlementDatabase.getRevId();
 	}
 
 	getSettlements(): Settlement[] {
-		return (null as unknown) as any // todo
+		const settlements = this.settlementDatabase.queryMany(SettlementDatabase.QUERY_ALL, null);
+		const routes = this.routeDatabase.queryMany(RouteDatabase.QUERY_ALL, null);
+		const commands = this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
+		return settlements.map(it => SettlementBuilder.buildSettlement(it, routes, settlements, commands));
 	}
 
 	getSettlementAt(q: number, r: number): Settlement | null {
-		return (null as unknown) as any // todo
+		const settlement = this.settlementDatabase.querySingle(SettlementDatabase.QUERY_BY_POSITION, [q, r]);
+		if (settlement) {
+			const settlements = this.settlementDatabase.queryMany(SettlementDatabase.QUERY_ALL, null);
+			const routes = this.routeDatabase.queryMany(RouteDatabase.QUERY_ALL, null);
+			const commands = this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
+			return SettlementBuilder.buildSettlement(settlement, routes, settlements, commands);
+		} else {
+			return null;
+		}
 	}
 
 	getSettlementProductionQueue(id: SettlementId): SettlementProductionQueueEntry[] | null {
-		return (null as unknown) as any // todo
+		const settlement = this.settlementDatabase.querySingle(SettlementDatabase.QUERY_BY_ID, id);
+		if (settlement) {
+			const commands = this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
+			return SettlementBuilder.buildProductionQueue(settlement, commands);
+		} else {
+			return null;
+		}
 	}
 
 	//========== ROUTES ========================================================
 
 	getRoutesRevId(): string {
-		return (null as unknown) as any // todo
+		return this.routeDatabase.getRevId();
 	}
 
 	getRoutes(): Route[] {
-		return (null as unknown) as any // todo
+		return this.routeDatabase.queryMany(RouteDatabase.QUERY_ALL, null);
 	}
 
 	//========== COMMANDS ======================================================
 
 	getCommandRevId(): string {
-		return (null as unknown) as any // todo
+		return this.commandDatabase.getRevId();
 	}
 
 	getCommands(): Command[] {
-		return (null as unknown) as any // todo
+		return this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
 	}
 
 	getCommandsOfType<T extends Command>(type: CommandType): T[] {
-		return (null as unknown) as any // todo
+		return this.commandDatabase
+			.queryMany(CommandDatabase.QUERY_ALL, null)
+			.filter(cmd => cmd.type === type) as T[];
 	}
 }

@@ -28,6 +28,8 @@ import {GameSessionClient} from "./logic/session/gameSessionClient";
 import {WebsocketClient} from "./common/websocketClient";
 import {TurnStartService, TurnStartServiceImpl} from "./logic/game/turnStartService";
 import {LocalStateHooks} from "./state/localStateHooks";
+import {UserService} from "./logic/user/userService";
+import {UserClient} from "./logic/user/userClient";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -45,8 +47,26 @@ export namespace App {
 	const worldObjectDatabase: WorldObjectDatabase = new WorldObjectDatabase();
 
 	// state read / write
-	const gameStateWriter: GameStateWriter = new GameStateWriterImpl();
-	const localStateAccess: LocalStateAccess = new LocalStateAccessImpl(cameraDatabase, tileDatabase, gameSessionDatabase);
+	const gameStateWriter: GameStateWriter = new GameStateWriterImpl(
+		commandDatabase,
+		tileDatabase,
+		countryDatabase,
+		settlementDatabase,
+		worldObjectDatabase,
+		routeDatabase,
+		cameraDatabase,
+		gameSessionDatabase
+	);
+	const localStateAccess: LocalStateAccess = new LocalStateAccessImpl(
+		cameraDatabase,
+		tileDatabase,
+		gameSessionDatabase,
+		countryDatabase,
+		worldObjectDatabase,
+		settlementDatabase,
+		routeDatabase,
+		commandDatabase
+	);
 
 	// providers
 	const authProvider: AuthProvider = new AuthProvider(localStateAccess);
@@ -55,6 +75,7 @@ export namespace App {
 	// api clients
 	const httpClient: HttpClient = new HttpClient(API_BASE_URL);
 
+	const userClient: UserClient = new UserClient(authProvider, httpClient);
 	const gameClient: GameClient = new GameClient(authProvider, gameIdProvider, httpClient);
 	const gameSessionClient: GameSessionClient = new GameSessionClient(authProvider, httpClient, new WebsocketClient(API_WS_BASE_URL));
 
@@ -67,6 +88,7 @@ export namespace App {
 	const settlementService: SettlementService = new SettlementServiceImpl(commandService, gameClient, localStateAccess);
 	const tileService: TileService = new TileServiceImpl(localStateAccess, gameStateWriter);
 	const cameraService: CameraService = new CameraServiceImpl(localStateAccess, gameStateWriter);
+	const userService: UserService = new UserService(userClient, localStateAccess, gameStateWriter);
 
 	// rendering
 	const changeProvider: ChangeProvider = new GameChangeProvider(localStateAccess);
@@ -83,6 +105,8 @@ export namespace App {
 		movementService,
 		turnEndService,
 		settlementService,
+		gameSessionService,
+		userService,
 		gameStateWriter,
 		audioService,
 	);

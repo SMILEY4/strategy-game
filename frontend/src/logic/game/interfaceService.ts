@@ -16,6 +16,8 @@ import {SettlementService} from "./settlementService";
 import {SettlementSummary} from "../../models/settlement/settlementSummary";
 import {SettlementProductionOption} from "../../models/settlement/settlement";
 import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
+import {GameSessionService} from "../session/gameSessionService";
+import {UserService} from "../user/userService";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
@@ -68,6 +70,8 @@ export class InterfaceServiceImpl implements InterfaceService {
 	private readonly movementService: MovementService;
 	private readonly turnEndService: TurnEndService;
 	private readonly settlementService: SettlementService;
+	private readonly gameSessionService: GameSessionService;
+	private readonly userService: UserService;
 	private readonly gameStateWriter: GameStateWriter;
 	private readonly audioService: AudioService;
 	private readonly canvasHandle: CanvasHandle;
@@ -79,6 +83,8 @@ export class InterfaceServiceImpl implements InterfaceService {
 		movementService: MovementService,
 		turnEndService: TurnEndService,
 		settlementService: SettlementService,
+		gameSessionService: GameSessionService,
+		userService: UserService,
 		gameStateWriter: GameStateWriter,
 		audioService: AudioService,
 	) {
@@ -88,6 +94,8 @@ export class InterfaceServiceImpl implements InterfaceService {
 		this.movementService = movementService;
 		this.turnEndService = turnEndService;
 		this.settlementService = settlementService;
+		this.gameSessionService = gameSessionService;
+		this.userService = userService;
 		this.gameStateWriter = gameStateWriter;
 		this.audioService = audioService;
 		this.canvasHandle = new CanvasHandle();
@@ -95,44 +103,36 @@ export class InterfaceServiceImpl implements InterfaceService {
 
 	//========== USER ===========================================================
 	login(email: string, password: string): Promise<void> {
-		// todo: implement login functionality
-		return Promise.resolve();
+		return this.userService.login(email, password);
 	}
 
 	signup(email: string, password: string, username: string): Promise<void> {
-		// todo: implement signup functionality
-		return Promise.resolve();
+		return this.userService.signup(email, password, username);
 	}
 
 	//========== SESSION ========================================================
 	listSessions(): Promise<GameSessionMeta[]> {
-		// todo: implement listSessions functionality
-		return Promise.resolve([]);
+		return this.gameSessionService.listSessions();
 	}
 
 	createSession(name: string, seed: string | null): Promise<string> {
-		// todo: implement createSession functionality
-		return Promise.resolve("");
+		return this.gameSessionService.createSession(name, seed);
 	}
 
 	joinSession(gameId: string): Promise<void> {
-		// todo: implement joinSession functionality
-		return Promise.resolve();
+		return this.gameSessionService.joinSession(gameId);
 	}
 
 	deleteSession(gameId: string): Promise<void> {
-		// todo: implement deleteSession functionality
-		return Promise.resolve();
+		return this.gameSessionService.deleteSession(gameId);
 	}
 
 	connectSession(gameId: string): Promise<void> {
-		// todo: implement connectSession functionality
-		return Promise.resolve();
+		return this.gameSessionService.connectSession(gameId);
 	}
 
 	disconnectSession(): Promise<void> {
-		// todo: implement disconnectSession functionality
-		return Promise.resolve();
+		return this.gameSessionService.disconnectSession();
 	}
 
 	//========== MAIN GAME LOOP ===============================================
@@ -202,7 +202,7 @@ export class InterfaceServiceImpl implements InterfaceService {
 	}
 
 	selectMapMode(mapMode: MapMode): void {
-		this.gameStateWriter.setSelectedMapMode(mapMode)
+		this.gameStateWriter.setSelectedMapMode(mapMode);
 	}
 
 	//========== COMMANDS =====================================================
@@ -218,32 +218,32 @@ export class InterfaceServiceImpl implements InterfaceService {
 	}
 
 	validateFoundSettlement(tile: TileId, name: string): string[] {
-		return this.settlementService.validateFounding(tile, name)
+		return this.settlementService.validateFounding(tile, name);
 	}
 
 	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void {
-		this.settlementService.foundSettlement(tile, worldObjectId, name)
+		this.settlementService.foundSettlement(tile, worldObjectId, name);
 	}
 
 	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void {
-		this.settlementService.addProduction(settlement, entry)
+		this.settlementService.addProduction(settlement, entry);
 	}
 
 	cancelProduction(settlement: SettlementSummary, entryId: string): void {
-		this.settlementService.cancelProduction(settlement, entryId)
+		this.settlementService.cancelProduction(settlement, entryId);
 	}
 
 	//========== UNITS / WORLD OBJECTS ========================================
 
 	beginMovement(worldObjectId: WorldObjectId): void {
-		this.movementService.beginMovement(worldObjectId).then()
+		this.movementService.beginMovement(worldObjectId).then();
 	}
 
 	endMovement(commit: boolean): void {
-		if(commit) {
-			this.movementService.completeMovement()
+		if (commit) {
+			this.movementService.completeMovement();
 		} else {
-			this.movementService.cancelMovement()
+			this.movementService.cancelMovement();
 		}
 	}
 
