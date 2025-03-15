@@ -14,10 +14,14 @@ import {SettlementId} from "../models/settlement/settlementId";
 import {MapMode} from "../models/misc/mapMode";
 import {Country} from "../models/country/country";
 import {Route} from "../models/route/route";
+import {GameSessionState} from "../models/misc/gameSessionState";
 
 export interface LocalStateAccess { // todo: check which consumers require "full" models and which can use reduced models
+	//user
+	getAuthTokenOrNull(): string | null
 	// game
 	getCurrentTurn(): number
+	getGameSessionState(): GameSessionState
 	// map
 	getMapMode(): MapMode
 	// camera
@@ -64,13 +68,41 @@ export class LocalStateAccessImpl implements LocalStateAccess {
 		this.gameSessionDatabase = gameSessionDatabase;
 	}
 
-	//========== CAMERA =======================================================
+	//========== USER =========================================================
+
+	getAuthTokenOrNull(): string | null {
+		return null // todo
+	}
+
+	//========== GAME ==========================================================
+
+	getCurrentTurn(): number {
+		return this.gameSessionDatabase.get().turn;
+	}
+
+	getGameSessionState(): GameSessionState {
+		return this.gameSessionDatabase.get().sessionState;
+	}
+
+
+	//========== MAP ===========================================================
+
+	getMapMode(): MapMode {
+		return this.gameSessionDatabase.get().mapMode;
+	}
+
+	//========== CAMERA ========================================================
 
 	getCamera(): CameraEntity {
 		return this.cameraDatabase.get();
 	}
 
+
 	//========== TILES ========================================================
+
+	getTilesRevId(): string {
+		return this.tileDatabase.getRevId()
+	}
 
 	getSelectedTile(): TileSummary | null {
 		return this.gameSessionDatabase.get().selectedTile;
@@ -109,101 +141,81 @@ export class LocalStateAccessImpl implements LocalStateAccess {
 			}));
 	}
 
-	// todo: check
-
-	//========== GAME ==========================================================
-
-	getCurrentTurn(): number {
-		return this.gameSessionDatabase.get().currentTurn;
-	}
-
-	//========== MAP ===========================================================
-
-	getMapMode(): MapMode {
-		return this.gameSessionDatabase.get().mapMode;
-	}
-
-	//========== TILES =========================================================
-
-	getTilesRevId(): string {
-		return this.tileDatabase.getRevisionId();
-	}
-
 	//========== COUNTRY =======================================================
 
 	getPlayerCountry(): Country {
-		return this.gameSessionDatabase.get().playerCountry;
+		return (null as unknown) as Country // todo
 	}
 
 	//========== WORLD OBJECTS =================================================
 
 	getWorldObject(id: WorldObjectId): WorldObject | null {
-		return this.gameSessionDatabase.getWorldObject(id);
+		return (null as unknown) as WorldObject // todo
 	}
 
 	getWorldObjectsAt(q: number, r: number): WorldObject[] {
-		return this.gameSessionDatabase.getWorldObjectsAt(q, r);
+		return (null as unknown) as WorldObject[] // todo
 	}
 
 	getWorldObjects(): WorldObject[] {
-		return this.gameSessionDatabase.getWorldObjects();
+		return [] // todo
 	}
 
 	getWorldObjectsRevId(): string {
-		return this.gameSessionDatabase.getWorldObjectsRevId();
+		return (null as unknown) as string // todo
 	}
 
 	getCurrentMovementState(): MovementState | null {
-		return this.gameSessionDatabase.getCurrentMovementState();
+		return (null as unknown) as MovementState // todo
 	}
 
 	getMovePaths(): ({tiles: TileSummary[], pending: boolean})[] {
-		return this.gameSessionDatabase.getMovePaths();
+		return (null as unknown) as any // todo
 	}
 
 	getMoveTargets(): TileSummary[] {
-		return this.gameSessionDatabase.getMoveTargets();
+		return [] // todo
 	}
 
 	//========== SETTLEMENTS ===================================================
 
 	getSettlementsRevId(): string {
-		return this.gameSessionDatabase.getSettlementsRevId();
+		return (null as unknown) as any // todo
 	}
 
 	getSettlements(): Settlement[] {
-		return this.gameSessionDatabase.getSettlements();
+		return (null as unknown) as any // todo
 	}
 
 	getSettlementAt(q: number, r: number): Settlement | null {
-		return this.gameSessionDatabase.getSettlementAt(q, r);
+		return (null as unknown) as any // todo
 	}
 
 	getSettlementProductionQueue(id: SettlementId): SettlementProductionQueueEntry[] | null {
-		return this.gameSessionDatabase.getSettlementProductionQueue(id);
+		return (null as unknown) as any // todo
 	}
 
 	//========== ROUTES ========================================================
 
 	getRoutesRevId(): string {
-		return this.gameSessionDatabase.getRoutesRevId();
+		return (null as unknown) as any // todo
 	}
 
 	getRoutes(): Route[] {
-		return this.gameSessionDatabase.getRoutes();
+		return (null as unknown) as any // todo
 	}
 
 	//========== COMMANDS ======================================================
 
 	getCommandRevId(): string {
-		return this.gameSessionDatabase.getCommandRevId();
+		return (null as unknown) as any // todo
 	}
 
 	getCommands(): Command[] {
-		return this.gameSessionDatabase.getCommands();
+		return (null as unknown) as any // todo
 	}
 
 	getCommandsOfType<T extends Command>(type: CommandType): T[] {
-		return this.gameSessionDatabase.getCommandsOfType(type);
+		return (null as unknown) as any // todo
 	}
 }

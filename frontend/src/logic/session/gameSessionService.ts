@@ -3,7 +3,6 @@ import {handleResponseError} from "../../common/httpClient";
 import {UnauthorizedError} from "../../common/UnauthorizedError";
 import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
 import {RenderGraphPreloader} from "../../renderer/game/renderGraphPreloader";
-import {SessionRepository} from "../../state/repository/sessionRepository";
 import {TurnStartService} from "../game/turnStartService";
 import {GameStateMessage} from "./models/gameStateMessage";
 import {WebsocketMessageHandler} from "../../common/websocketMessageHandler";
@@ -21,6 +20,8 @@ import {
 	ProductionQueueCancelCommand,
 } from "../../models/command/command";
 import {CommandType} from "../../models/command/commandType";
+import {LocalStateAccess} from "../../state/localStateAccess";
+import {GameStateWriter} from "../../state/gameStateWriter";
 
 export interface GameSessionService {
 	listSessions(): Promise<GameSessionMeta[]>;
@@ -35,13 +36,20 @@ export interface GameSessionService {
 export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSessionService {
 
 	private readonly client: GameSessionClient;
-	private readonly repository: SessionRepository;
 	private readonly turnStartService: TurnStartService;
+	private readonly localStateAccess: LocalStateAccess;
+	private readonly gameStateWriter: GameStateWriter;
 
-	constructor(client: GameSessionClient, gameSessionRepository: SessionRepository, turnStartService: TurnStartService) {
+	constructor(
+		client: GameSessionClient,
+		turnStartService: TurnStartService,
+		localStateAccess: LocalStateAccess,
+		gameStateWriter: GameStateWriter,
+	) {
 		this.client = client;
-		this.repository = gameSessionRepository;
 		this.turnStartService = turnStartService;
+		this.localStateAccess = localStateAccess;
+		this.gameStateWriter = gameStateWriter;
 	}
 
 
@@ -90,12 +98,12 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 	 */
 	connectSession(gameId: string): Promise<void> {
 		return Promise.resolve()
-			.then(() => this.repository.setSessionState("loading"))
+			.then(() => this.gameStateWriter.setGameSessionState("loading"))
 			.then(() => RenderGraphPreloader.tempLoad())
 			.then(() => this.client.connect(gameId, this))
 			.catch(e => {
 				console.error(e);
-				this.repository.setSessionState("error");
+				this.gameStateWriter.setGameSessionState("error");
 			});
 	}
 
@@ -104,7 +112,7 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 	 */
 	disconnectSession(): Promise<void> {
 		return Promise.resolve()
-			.then(() => this.repository.setSessionState("none"))
+			.then(() => this.gameStateWriter.setGameSessionState("none"))
 			.then(() => this.client.disconnect())
 			.catch(e => console.error(e));
 	}
@@ -114,11 +122,11 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 		if (type === "game-state") {
 			const gameState = payload as GameStateMessage;
 			this.turnStartService.setGameState(gameState);
-			this.repository.setTurn(gameState.meta.turn);
-			if (this.repository.getSessionState() === "loading") {
-				this.repository.setSessionState("playing");
+			this.gameStateWriter.setCurrentTurn(gameState.meta.turn);
+			if (this.localStateAccess.getGameSessionState() === "loading") {
+				this.gameStateWriter.setGameSessionState("playing");
 			}
-			this.repository.setTurnState("playing");
+			this.gameStateWriter.setTurnState("playing");
 			return;
 		}
 		console.log("Unknown and unhandled message: ", type);

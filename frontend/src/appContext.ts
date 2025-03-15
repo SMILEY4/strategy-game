@@ -49,7 +49,7 @@ export namespace App {
 	const localStateAccess: LocalStateAccess = new LocalStateAccessImpl(cameraDatabase, tileDatabase, gameSessionDatabase);
 
 	// providers
-	const authProvider: AuthProvider = new AuthProvider();
+	const authProvider: AuthProvider = new AuthProvider(localStateAccess);
 	const gameIdProvider: GameIdProvider = new GameIdProvider();
 
 	// api clients
@@ -62,7 +62,7 @@ export namespace App {
 	const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
 	const movementService: MovementService = new MovementServiceImpl(localStateAccess, gameStateWriter, gameClient, commandService);
 	const turnStartService: TurnStartService = new TurnStartServiceImpl(gameStateWriter);
-	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, null, turnStartService);
+	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, turnStartService, localStateAccess, gameStateWriter);
 	const turnEndService: TurnEndService = new TurnEndServiceImpl(gameSessionService, movementService, gameStateWriter, localStateAccess);
 	const settlementService: SettlementService = new SettlementServiceImpl(commandService, gameClient, localStateAccess);
 	const tileService: TileService = new TileServiceImpl(localStateAccess, gameStateWriter);

@@ -6,8 +6,13 @@ import {GameTurnState} from "../models/misc/gameTurnState";
 import {Command} from "../models/command/command";
 import {CommandId} from "../models/command/commandId";
 import {GameState} from "../models/misc/gameState";
+import {GameSessionState} from "../models/misc/gameSessionState";
 
 export interface GameStateWriter {
+	setAuthToken(token: string | null): void
+	setGameSessionState(state: GameSessionState): void;
+	setTurnState(state: GameTurnState): void;
+	setCurrentTurn(turn: number): void
 	setSelectedTile(tile: TileSummary | null): void;
 	setHoveredTile(tile: TileSummary | null): void;
 	setCameraData(cameraData: CameraEntity): void;
@@ -21,7 +26,8 @@ export interface GameStateWriter {
 }
 
 
-export class GameStateWriterImpl implements GameStateWriter {
+export class GameStateWriterImpl implements GameStateWriter { // todo
+
 	addCommand(command: Command): void {
 	}
 
@@ -34,7 +40,16 @@ export class GameStateWriterImpl implements GameStateWriter {
 	replaceGameState(state: GameState): void {
 	}
 
+	setAuthToken(token: string | null): void {
+	}
+
 	setCameraData(cameraData: CameraEntity): void {
+	}
+
+	setCurrentTurn(turn: number): void {
+	}
+
+	setGameSessionState(state: GameSessionState): void {
 	}
 
 	setHoveredTile(tile: TileSummary | null): void {
@@ -49,7 +64,7 @@ export class GameStateWriterImpl implements GameStateWriter {
 	setSelectedTile(tile: TileSummary | null): void {
 	}
 
-	setTurnState(turnState: GameTurnState): void {
+	setTurnState(state: GameTurnState): void {
 	}
 
 

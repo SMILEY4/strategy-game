@@ -39,6 +39,7 @@ export class WebGlProvidedNodeInputs implements ProvidedNodeInputs {
 				textureCoordinates: [],
 				offset: 0,
 				mode: "billboard",
+				scale: 1
 			};
 		}
 	}

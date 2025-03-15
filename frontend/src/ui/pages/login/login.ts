@@ -1,7 +1,6 @@
 import {useState} from "react";
-import {useDI} from "../../../appContext";
-import {UserService} from "../../../logic/user/userService";
 import {GotoHooks} from "../../hooks/goto";
+import {App} from "../../../appContext";
 
 export namespace LoginHooks {
 
@@ -11,7 +10,6 @@ export namespace LoginHooks {
 		const [password, setPassword] = useState("");
 		const [error, setError] = useState<string | null>(null);
 		const gotoLoginRedirect = GotoHooks.useLoginRedirect("/sessions");
-		const userService = useDI<UserService>(UserService.name);
 
 		function login() {
 			if (!email) {
@@ -22,7 +20,7 @@ export namespace LoginHooks {
 				setError("Password is missing!");
 				return;
 			}
-			return userService.login(email, password)
+			return App.interfaceService.login(email, password)
 				.then(() => gotoLoginRedirect())
 				.catch(e => setError("Internal Error: " + e));
 		}

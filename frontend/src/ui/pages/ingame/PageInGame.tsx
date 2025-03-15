@@ -10,6 +10,7 @@ import {WindowStack} from "../../components/window/WindowStack";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {Txt} from "../../components/text/Txt";
 import {LocalStateHooks} from "../../../state/localStateHooks";
+import {App} from "../../../appContext";
 
 const USE_DUMMY_CANVAS = false;
 
@@ -72,7 +73,7 @@ function GamePlaying(): ReactElement {
 	}, []);
 
 	function endGamePlaying() {
-		sessionService.disconnectSession().then(undefined);
+		App.interfaceService.disconnectSession().then(undefined);
 	}
 
 	return (

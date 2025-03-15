@@ -63,6 +63,10 @@ export namespace LocalStateHooks {
 		cameraDatabase = dependencies.cameraDatabase;
 	}
 
+	export function useIsAuthenticated(): boolean {
+		return false // todo
+	}
+
 	/**
 	 * Get the current camera data
 	 */

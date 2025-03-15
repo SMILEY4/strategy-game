@@ -15,11 +15,22 @@ import {TileSummary} from "../../models/tile/tileSummary";
 import {SettlementService} from "./settlementService";
 import {SettlementSummary} from "../../models/settlement/settlementSummary";
 import {SettlementProductionOption} from "../../models/settlement/settlement";
+import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
 
 /**
- * Service providing functionality for user interface and direct user interactions. Acs as a proxy to other services
+ * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
  */
 export interface InterfaceService {
+	// user
+	login(email: string, password: string): Promise<void>,
+	signup(email: string, password: string, username: string): Promise<void>,
+	// session
+	listSessions(): Promise<GameSessionMeta[]>;
+	createSession(name: string, seed: string | null): Promise<string>;
+	joinSession(gameId: string): Promise<void>;
+	deleteSession(gameId: string): Promise<void>;
+	connectSession(gameId: string): Promise<void>;
+	disconnectSession(): Promise<void>;
 	// main game loop
 	initialize(canvas: HTMLCanvasElement): void;
 	update(): void;
@@ -80,6 +91,48 @@ export class InterfaceServiceImpl implements InterfaceService {
 		this.gameStateWriter = gameStateWriter;
 		this.audioService = audioService;
 		this.canvasHandle = new CanvasHandle();
+	}
+
+	//========== USER ===========================================================
+	login(email: string, password: string): Promise<void> {
+		// todo: implement login functionality
+		return Promise.resolve();
+	}
+
+	signup(email: string, password: string, username: string): Promise<void> {
+		// todo: implement signup functionality
+		return Promise.resolve();
+	}
+
+	//========== SESSION ========================================================
+	listSessions(): Promise<GameSessionMeta[]> {
+		// todo: implement listSessions functionality
+		return Promise.resolve([]);
+	}
+
+	createSession(name: string, seed: string | null): Promise<string> {
+		// todo: implement createSession functionality
+		return Promise.resolve("");
+	}
+
+	joinSession(gameId: string): Promise<void> {
+		// todo: implement joinSession functionality
+		return Promise.resolve();
+	}
+
+	deleteSession(gameId: string): Promise<void> {
+		// todo: implement deleteSession functionality
+		return Promise.resolve();
+	}
+
+	connectSession(gameId: string): Promise<void> {
+		// todo: implement connectSession functionality
+		return Promise.resolve();
+	}
+
+	disconnectSession(): Promise<void> {
+		// todo: implement disconnectSession functionality
+		return Promise.resolve();
 	}
 
 	//========== MAIN GAME LOOP ===============================================

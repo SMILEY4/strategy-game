@@ -1,16 +1,14 @@
 import {useNavigate} from "react-router-dom";
 import {UnauthorizedError} from "../../../common/UnauthorizedError";
-import {useDI} from "../../../appContext";
-import {GameSessionService} from "../../../logic/session/gameSessionService";
 import {AuthHooks} from "../../hooks/authentication";
+import {App} from "../../../appContext";
 
 export namespace SessionHooks {
 
 	export function useLoadGameSessions() {
-		const gameSessionService = useDI<GameSessionService>(GameSessionService.name);
 		const handleUnauthorized = AuthHooks.useHandleUnauthorized();
 		return () => {
-			return gameSessionService.listSessions()
+			return App.interfaceService.listSessions()
 				.catch(error => UnauthorizedError.handle(error, () => {
 					handleUnauthorized();
 					return [];
@@ -19,10 +17,9 @@ export namespace SessionHooks {
 	}
 
 	export function useCreateGameSession() {
-		const gameSessionService = useDI<GameSessionService>(GameSessionService.name);
 		const handleUnauthorized = AuthHooks.useHandleUnauthorized();
 		return (name: string, seed: string | null) => {
-			return gameSessionService.createSession(name, seed)
+			return App.interfaceService.createSession(name, seed)
 				.catch(error => UnauthorizedError.handle(error, () => {
 					handleUnauthorized();
 				}));
@@ -30,10 +27,9 @@ export namespace SessionHooks {
 	}
 
 	export function useJoinGameSession() {
-		const gameSessionService = useDI<GameSessionService>(GameSessionService.name);
 		const handleUnauthorized = AuthHooks.useHandleUnauthorized();
 		return (gameId: string) => {
-			return gameSessionService.joinSession(gameId)
+			return App.interfaceService.joinSession(gameId)
 				.catch(error => UnauthorizedError.handle(error, () => {
 					handleUnauthorized();
 				}));
@@ -42,10 +38,9 @@ export namespace SessionHooks {
 	}
 
 	export function useDeleteGameSession() {
-		const gameSessionService = useDI<GameSessionService>(GameSessionService.name);
 		const handleUnauthorized = AuthHooks.useHandleUnauthorized();
 		return (gameId: string) => {
-			return gameSessionService.deleteSession(gameId)
+			return App.interfaceService.deleteSession(gameId)
 				.catch(error => UnauthorizedError.handle(error, () => {
 					handleUnauthorized();
 				}));
@@ -59,10 +54,9 @@ export namespace SessionHooks {
 
 
 	export function useConnectGameSession() {
-		const gameSessionService = useDI<GameSessionService>(GameSessionService.name);
 		const handleUnauthorized = AuthHooks.useHandleUnauthorized();
 		return (gameId: string) => {
-			gameSessionService.connectSession(gameId)
+			App.interfaceService.connectSession(gameId)
 				.catch(error => UnauthorizedError.handle(error, () => {
 					handleUnauthorized();
 				}));
