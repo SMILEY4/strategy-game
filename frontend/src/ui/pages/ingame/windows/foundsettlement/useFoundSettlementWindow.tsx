@@ -3,13 +3,13 @@ import {useEffect, useState} from "react";
 import {openWindow, useCloseWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
-import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
-import {TileId} from "../../../../../models/tile/tileId";
 import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
+import {TileSummary} from "../../../../../models/tile/tileSummary";
+import {App} from "../../../../../appContext";
 
 export namespace UseFoundSettlementWindow {
 
-	export function open(tile: TileId, worldObjectId: WorldObjectId) {
+	export function open(tile: TileSummary, worldObjectId: WorldObjectId) {
 		const windowId = UID.generate();
 		openWindow({
 			id: windowId,
@@ -38,7 +38,7 @@ export namespace UseFoundSettlementWindow {
 	/**
 	 * Provides the data and functions required by the "found settlement" window
 	 */
-	export function useData(windowId: string, tileId: TileId, worldObjectId: WorldObjectId): UseFoundSettlementWindow.Data {
+	export function useData(windowId: string, tile: TileSummary, worldObjectId: WorldObjectId): UseFoundSettlementWindow.Data {
 
 		const closeWindow = useCloseWindow();
 
@@ -46,11 +46,11 @@ export namespace UseFoundSettlementWindow {
 		const [invalidReasons, setInvalidReasons] = useState<string[]>([]);
 
 		useEffect(() => {
-			INTERFACE_SERVICE.getRandomSettlementName().then(setName);
+			App.interfaceService.getRandomSettlementName().then(setName);
 		}, []);
 
 		useEffect(() => {
-			setInvalidReasons(INTERFACE_SERVICE.validateFoundSettlement(tileId, name));
+			setInvalidReasons(App.interfaceService.validateFoundSettlement(tile.id, name));
 		}, [name]);
 
 		return {
@@ -62,10 +62,10 @@ export namespace UseFoundSettlementWindow {
 					set: setName,
 				},
 			},
-			randomizeName: () => INTERFACE_SERVICE.getRandomSettlementName().then(setName),
+			randomizeName: () => App.interfaceService.getRandomSettlementName().then(setName),
 			cancel: () => closeWindow(windowId),
 			create: () => {
-				INTERFACE_SERVICE.foundSettlement(tileId, worldObjectId, name);
+				App.interfaceService.foundSettlement(tile, worldObjectId, name);
 				closeWindow(windowId);
 			},
 		};

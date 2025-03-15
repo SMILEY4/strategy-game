@@ -2,29 +2,34 @@ import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
 import {UseWorldObjectWindow} from "../../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
 import {UseSettlementWindow} from "../../ui/pages/ingame/windows/settlement/useSettlementWindow";
 import {GameStateWriter} from "../../state/gameStateWriter";
-import {LocalTileDataAccess} from "../../state/access/localTileDataAccess";
 import {TileSummary} from "../../models/tile/tileSummary";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {Settlement} from "../../models/settlement/settlement";
+import {LocalStateAccess} from "../../state/localStateAccess";
+import {CanvasHandle} from "../../common/webgl/canvasHandle";
+import {Tile} from "../../models/tile/tile";
+import {Projections} from "../../common/webgl/projections";
+import {Camera} from "../../common/webgl/camera";
 
 export interface TileService {
 	clickTile(tile: TileSummary): void;
 	mouseOver(tile: TileSummary | null): void;
+	pickTileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null;
 }
 
 export class TileServiceImpl implements TileService {
 
+	private readonly localStateAccess: LocalStateAccess;
 	private readonly gameStateWriter: GameStateWriter;
-	private readonly localTileDataAccess: LocalTileDataAccess;
 
-	constructor(gameStateWriter: GameStateWriter, localTileDataAccess: LocalTileDataAccess) {
+	constructor(localStateAccess: LocalStateAccess, gameStateWriter: GameStateWriter) {
+		this.localStateAccess = localStateAccess;
 		this.gameStateWriter = gameStateWriter;
-		this.localTileDataAccess = localTileDataAccess;
 	}
 
 	clickTile(tile: TileSummary): void {
-		const worldObjects: WorldObject[] = []; // todo
-		const settlement: Settlement | null = null as Settlement | null; // todo
+		const worldObjects: WorldObject[] = this.localStateAccess.getWorldObjectsAt(tile.position.q, tile.position.r)
+		const settlement: Settlement | null = this.localStateAccess.getSettlementAt(tile.position.q, tile.position.r)
 
 		let optionCount = 0;
 		optionCount += settlement ? 1 : 0;
@@ -47,9 +52,23 @@ export class TileServiceImpl implements TileService {
 	}
 
 	mouseOver(tile: TileSummary | null): void {
-		if (this.localTileDataAccess.getHovered() !== tile) {
+		if (this.localStateAccess.getHoveredTile() !== tile) {
 			this.gameStateWriter.setHoveredTile(tile);
 		}
+	}
+
+	pickTileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null {
+		const hexPos = Projections.screenToHex(this.camera(canvasHandle), screenX, screenY);
+		return this.localStateAccess.getTileAt(hexPos.x, hexPos.y);
+	}
+
+	private camera(canvasHandle: CanvasHandle): Camera {
+		const cameraData = this.localStateAccess.getCamera();
+		return Camera.create(
+			cameraData,
+			canvasHandle.getCanvasWidth(), canvasHandle.getCanvasHeight(),
+			canvasHandle.getClientWidth(), canvasHandle.getClientHeight(),
+		);
 	}
 
 }

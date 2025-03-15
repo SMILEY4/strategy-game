@@ -1,131 +1,102 @@
-import {TileIdentifier} from "../../models/base/tile";
-import {CommandService} from "./commandService";
-import {WorldObject} from "../../models/base/worldObject";
-import {GameClient} from "./gameClient";
+import {WorldObjectId} from "../../models/worldobject/worldObjectId";
+import {LocalStateAccess} from "../../state/localStateAccess";
+import {GameStateWriter} from "../../state/gameStateWriter";
 import {MovementTarget} from "../../models/misc/movementTarget";
-import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
-import {CommandRepository} from "../../state/repository/commandRepository";
-import {CommandType, MoveCommand} from "../../models/base/command";
+import {TileId} from "../../models/tile/tileId";
+import {GameClient} from "./gameClient";
+import {CommandService} from "./commandService";
+import {MoveCommand} from "../../models/command/command";
+import {CommandType} from "../../models/command/commandType";
+import {UID} from "../../common/uid";
 
-/**
- * Logic for handling movement of world objects
- */
-export class MovementService {
+export interface MovementService {
+	isMovementActive(): boolean;
+	beginMovement(worldObjectId: WorldObjectId): Promise<void>;
+	completeMovement(): void;
+	cancelMovement(): void;
+	addStep(tileId: TileId): Promise<boolean>;
+}
 
-	private readonly commandService: CommandService;
+export class MovementServiceImpl implements MovementService {
+
+	private readonly localStateAccess: LocalStateAccess;
+	private readonly gameStateWriter: GameStateWriter;
 	private readonly gameClient: GameClient;
-	private readonly worldObjectRepository: WorldObjectRepository;
-	private readonly commandRepository: CommandRepository;
+	private readonly commandService: CommandService;
 
-	constructor(
-		commandService: CommandService,
-		gameClient: GameClient,
-		worldObjectRepository: WorldObjectRepository,
-		commandRepository: CommandRepository,
-	) {
-		this.commandService = commandService;
+	constructor(localStateAccess: LocalStateAccess, gameStateWriter: GameStateWriter, gameClient: GameClient, commandService: CommandService) {
+		this.localStateAccess = localStateAccess;
+		this.gameStateWriter = gameStateWriter;
 		this.gameClient = gameClient;
-		this.worldObjectRepository = worldObjectRepository;
-		this.commandRepository = commandRepository;
+		this.commandService = commandService;
 	}
 
-	/**
-	 * Check whether the local game is currently in movement mode
-	 */
-	public isMovementMode(): boolean {
-		return this.worldObjectRepository.getCurrentMovementModeState().worldObjectId !== null;
+	isMovementActive(): boolean {
+		return this.localStateAccess.getCurrentMovementState() !== null;
 	}
 
-	/**
-	 * Start movement mode for the given world object currently at the given tile
-	 */
-	public async startMovement(worldObjectId: string, tile: TileIdentifier) {
-		const worldObject = this.worldObjectRepository.get(worldObjectId);
-		if (worldObject == null) {
-			return;
+	beginMovement(worldObjectId: WorldObjectId): Promise<void> {
+		const worldObject = this.localStateAccess.getWorldObject(worldObjectId);
+		if (!worldObject) {
+			return Promise.resolve();
 		}
-		const initTarget: MovementTarget = {
-			tile: tile,
-			cost: 0,
-		};
-		this.worldObjectRepository.setCurrentMovementModeState(worldObjectId, [initTarget], await this.getAvailableTargets(tile, worldObject, 0));
+		return this.getAvailableTargets(worldObject.tile.id, worldObjectId, 0)
+			.then((availableTargets) => {
+				this.gameStateWriter.setMovementState({
+					worldObjectId: worldObjectId,
+					path: [{
+						tile: worldObject.tile,
+						cost: 0,
+					}],
+					availableTargets: availableTargets,
+				});
+			});
 	}
 
-	/**
-	 * End the current movement mode without creating a command
-	 */
-	public cancelMovement() {
-		this.worldObjectRepository.setCurrentMovementModeState(null, [], []);
-	}
-
-	/**
-	 * Create a new movement command and end the current movement mode
-	 */
-	public completeMovement() {
-		const current = this.worldObjectRepository.getCurrentMovementModeState();
-		if (current.worldObjectId !== null && current.path.length > 0) {
-			this.commandService.addMovementCommand(current.worldObjectId, current.path.map(it => it.tile));
+	completeMovement(): void {
+		const currentMovementState = this.localStateAccess.getCurrentMovementState();
+		if (currentMovementState && currentMovementState.path.length > 0) {
+			this.commandService.addCommand<MoveCommand>({
+				id: UID.generate(),
+				type: CommandType.MOVE,
+				worldObjectId: currentMovementState.worldObjectId,
+				path: currentMovementState.path.map(it => it.tile)
+			})
 		}
-		this.worldObjectRepository.setCurrentMovementModeState(null, [], []);
+		this.gameStateWriter.setMovementState(null);
 	}
 
-	/**
-	 * Add the given tile to the current path
-	 */
-	public async addToPath(tileId: TileIdentifier): Promise<boolean> {
-		const current = this.worldObjectRepository.getCurrentMovementModeState();
-		if (current.worldObjectId == null) {
-			return false;
+	cancelMovement(): void {
+		this.gameStateWriter.setMovementState(null);
+	}
+
+	addStep(tileId: TileId): Promise<boolean> {
+		const currentMovementState = this.localStateAccess.getCurrentMovementState();
+		if (currentMovementState) {
+			const target = currentMovementState.availableTargets.find(tgt => tgt.tile.id === tileId);
+			if (target) {
+				const newPath = [...currentMovementState.path, target];
+				const newTotalCost = newPath.sum(0, it => it.cost);
+				return this.getAvailableTargets(target.tile.id, currentMovementState.worldObjectId, newTotalCost)
+					.then((availableTargets) => {
+						this.gameStateWriter.setMovementState({
+							worldObjectId: currentMovementState.worldObjectId,
+							path: newPath,
+							availableTargets: availableTargets,
+						});
+					})
+					.then(_ => true)
+					.catch(_ => false)
+			}
 		}
-		const worldObject = this.worldObjectRepository.get(current.worldObjectId);
-		if (worldObject == null) {
-			return false;
-		}
-
-		const target = current.availableTargets.find(it => it.tile.q == tileId.q && it.tile.r == tileId.r);
-		if (target) {
-			const newPath = [...current.path, target];
-			const newTotalCost = newPath.sum(0, it => it.cost);
-			this.worldObjectRepository.setCurrentMovementModeState(current.worldObjectId, newPath, await this.getAvailableTargets(newPath[newPath.length - 1].tile, worldObject, newTotalCost));
-			return true;
-		}
-		return false;
+		return Promise.resolve(false);
 	}
 
-	/**
-	 * Get the cost of the current path
-	 */
-	public getPathCost(): number {
-		return this.worldObjectRepository.getCurrentMovementModeState().path.sum(0, it => it.cost);
-	}
-
-	/**
-	 * Get the maximum possible cost of the given world object
-	 */
-	public getMaxPathCost(worldObject: WorldObject): number {
-		return worldObject.movementPoints;
-	}
-
-	private async getAvailableTargets(tile: TileIdentifier, worldObject: WorldObject, points: number): Promise<MovementTarget[]> {
+	private getAvailableTargets(tileId: TileId, worldObjectId: WorldObjectId, points: number): Promise<MovementTarget[]> {
 		try {
-			return await this.gameClient.getAvailableMovementPositions(worldObject.identifier.id, tile, points);
+			return this.gameClient.getAvailableMovementPositions(worldObjectId, tileId, points);
 		} catch (e) {
-			return [];
-		}
-	}
-
-	/**
-	 * Cancel an already commanded movement of the given world object
-	 */
-	public cancelMovementCommand(worldObject: WorldObject) {
-		this.worldObjectRepository.setCurrentMovementModeState(null, [], []);
-
-		const command = this.commandRepository
-			.getAllByType<MoveCommand>(CommandType.MOVE)
-			.find(it => it.worldObjectId === worldObject.identifier.id);
-
-		if (command) {
-			this.commandService.cancelCommand(command.id);
+			return Promise.resolve([]);
 		}
 	}
 

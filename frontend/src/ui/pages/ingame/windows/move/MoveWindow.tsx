@@ -10,7 +10,7 @@ import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 
 export interface MoveWindowProps {
 	windowId: string;
-	identifier: WorldObjectId | null;
+	identifier: WorldObjectId;
 }
 
 export function MoveWindow(props: MoveWindowProps): ReactElement {

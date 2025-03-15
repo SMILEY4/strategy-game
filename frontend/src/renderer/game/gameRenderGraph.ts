@@ -1,5 +1,4 @@
 import {RenderGraph} from "../common/graph/renderGraph";
-import {GameChangeProvider} from "./gameChangeProvider";
 import {WebGLRenderGraphSorter} from "../common/webgl/webGLRenderGraphSorter";
 import {WebGLResourceManager} from "../common/webgl/webGLResourceManager";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
@@ -21,11 +20,6 @@ import {HtmlRenderGraphCompiler} from "../common/html/htmlRenderGraphCompiler";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 import {LabelsHtmlNode} from "./rendernodes/labelsHtmlNode";
-import {TileRepository} from "../../state/repository/tileRepository";
-import {SessionRepository} from "../../state/repository/sessionRepository";
-import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
-import {SettlementRepository} from "../../state/repository/settlementRepository";
-import {RouteRepository} from "../../state/repository/routeRepository";
 import {ChangeProvider} from "../common/graph/changeProvider";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
@@ -33,8 +27,7 @@ import {GameHtmlRenderContext, GameWebGLRenderContext, RenderContextFactory} fro
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
 import {MapDetailsDrawNode} from "./rendernodes/mapDetailsDrawNode";
 import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
-import {CommandRepository} from "../../state/repository/commandRepository";
-import {CountryRepository} from "../../state/repository/countryRepository";
+import {LocalStateAccess} from "../../state/localStateAccess";
 
 export class GameRenderGraph {
 
@@ -47,32 +40,12 @@ export class GameRenderGraph {
 
 	private camera: Camera = new Camera();
 
-	constructor(
-		changeProvider: GameChangeProvider,
-		gl: WebGL2RenderingContext,
-		tileRepository: TileRepository,
-		sessionRepository: SessionRepository,
-		worldObjectRepository: WorldObjectRepository,
-		settlementRepository: SettlementRepository,
-		routeRepository: RouteRepository,
-		commandRepository: CommandRepository,
-		countryRepository: CountryRepository,
-	) {
+	constructor(changeProvider: ChangeProvider, gl: WebGL2RenderingContext, localStateAccess: LocalStateAccess) {
 
 		this.changeProvider = changeProvider;
 		this.renderer = new BaseRenderer(gl);
 
-		this.renderContextFactory = new RenderContextFactory(
-			gl,
-			this.renderer,
-			tileRepository,
-			sessionRepository,
-			worldObjectRepository,
-			settlementRepository,
-			routeRepository,
-			commandRepository,
-			countryRepository,
-		);
+		this.renderContextFactory = new RenderContextFactory(gl, this.renderer, localStateAccess);
 
 		this.renderGraphWebGl = new RenderGraph<GameWebGLRenderContext>({
 			name: "webgl",

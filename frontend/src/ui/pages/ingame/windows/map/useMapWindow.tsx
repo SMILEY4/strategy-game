@@ -5,8 +5,8 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
-import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {LocalStateHooks} from "../../../../../state/localStateHooks";
+import {App} from "../../../../../appContext";
 
 export namespace UseMapWindow {
 
@@ -34,7 +34,7 @@ export namespace UseMapWindow {
 	export function useData(): UseMapWindow.Data {
 		return {
 			selectedMapMode: LocalStateHooks.useMapMode(),
-			setMapMode: INTERFACE_SERVICE.selectMapMode,
+			setMapMode: App.interfaceService.selectMapMode,
 		};
 	}
 

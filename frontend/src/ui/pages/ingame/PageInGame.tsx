@@ -6,12 +6,10 @@ import {BackgroundPanel} from "../../components/panels/background/BackgroundPane
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import "./pageInGame.scoped.less";
 import {SessionHooks} from "../sessions/sessions";
-import {useDI} from "../../../appContext";
-import {GameSessionService} from "../../../logic/session/gameSessionService";
 import {WindowStack} from "../../components/window/WindowStack";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {Txt} from "../../components/text/Txt";
-import {LocalStateHooks} from "../../../state/access/localStateHooks";
+import {LocalStateHooks} from "../../../state/localStateHooks";
 
 const USE_DUMMY_CANVAS = false;
 
@@ -63,9 +61,6 @@ function GameError(): ReactElement {
 
 
 function GamePlaying(): ReactElement {
-
-	const sessionService = useDI<GameSessionService>(GameSessionService.name);
-
 	useEffect(() => {
 		window.onbeforeunload = endGamePlaying;
 		window.onunload = endGamePlaying;

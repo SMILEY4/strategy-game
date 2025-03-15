@@ -1,6 +1,6 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
 import "./canvas.less";
-import {INTERFACE_SERVICE} from "../../../../logic/game/interfaceService";
+import {App} from "../../../../appContext";
 
 
 export function Canvas() {
@@ -72,7 +72,7 @@ export function Canvas() {
 	}
 
 	function mouseMove(e: MouseEvent) {
-		INTERFACE_SERVICE.mouseMoved(
+		App.interfaceService.mouseMoved(
 			e.movementX,
 			e.movementY,
 			e.clientX,
@@ -97,27 +97,27 @@ export function Canvas() {
 	}
 
 	function scroll(e: WheelEvent) {
-		INTERFACE_SERVICE.mouseScrolled(e.deltaY, e.clientX, e.clientY);
+		App.interfaceService.mouseScrolled(e.deltaY, e.clientX, e.clientY);
 	}
 
 	function click(duration: number, e: MouseEvent) {
 		if (duration < 150) {
-			INTERFACE_SERVICE.mouseClicked(e.clientX, e.clientY);
+			App.interfaceService.mouseClicked(e.clientX, e.clientY);
 		}
 	}
 
 	function onInitialize(canvas: HTMLCanvasElement) {
-		INTERFACE_SERVICE.initialize(canvas);
+		App.interfaceService.initialize(canvas);
 	}
 
 	function onRender() {
-		INTERFACE_SERVICE.update();
+		App.interfaceService.update();
 	}
 
 	function onDispose() {
 		console.log("Disposing canvas");
 		animationId.current && cancelAnimationFrame(animationId.current);
-		INTERFACE_SERVICE.dispose();
+		App.interfaceService.dispose();
 	}
 
 	return (

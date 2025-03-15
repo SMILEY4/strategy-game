@@ -3,10 +3,10 @@ import {ProductionWindow} from "./ProductionWindow";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {openWindow} from "../../../../components/window/windowHooks";
-import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
-import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
 import {SettlementProductionOption} from "../../../../../models/settlement/settlement";
+import {App} from "../../../../../appContext";
 
 export namespace UseProductionWindow {
 
@@ -32,7 +32,7 @@ export namespace UseProductionWindow {
 		return {
 			settlement: settlement,
 			entries: options,
-			produce: (entry: SettlementProductionOption) => INTERFACE_SERVICE.addProduction(settlement.id, entry),
+			produce: (entry: SettlementProductionOption) => App.interfaceService.addProduction(settlement, entry),
 		};
 	}
 

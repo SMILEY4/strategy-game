@@ -1,8 +1,8 @@
 import {AuthProvider} from "../user/authProvider";
 import {HttpClient} from "../../common/httpClient";
-import {TileIdentifier} from "../../models/base/tile";
 import {GameIdProvider} from "../session/gameIdProvider";
 import {MovementTarget} from "../../models/misc/movementTarget";
+import {TileId} from "../../models/tile/tileId";
 
 /**
  * API-Client for ingame-operations
@@ -22,9 +22,9 @@ export class GameClient {
     /**
 	 * Get all available positions to move to for the given world object id from the given location
 	 */
-	public getAvailableMovementPositions(worldObjectId: string, pos: TileIdentifier, points: number): Promise<MovementTarget[]> {
+	public getAvailableMovementPositions(worldObjectId: string, tileId: TileId, points: number): Promise<MovementTarget[]> {
 		return this.httpClient.get<MovementTarget[]>({
-			url: "/api/game/movement/availablepositions?gameId=" + this.gameIdProvider.getGameIdOrThrow() + "&worldObjectId=" + worldObjectId + "&pos=" + pos.id + "&points=" + points,
+			url: "/api/game/movement/availablepositions?gameId=" + this.gameIdProvider.getGameIdOrThrow() + "&worldObjectId=" + worldObjectId + "&pos=" + tileId + "&points=" + points,
 			requireAuth: true,
 			token: this.authProvider.getToken(),
 		});

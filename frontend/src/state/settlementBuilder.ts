@@ -1,15 +1,15 @@
-import {HiddenType} from "../../common/hiddenType";
-import {ProductionQueueEntryEntity, SettlementEntity} from "../../models/settlement/settlementEntity";
+import {HiddenType} from "../common/hiddenType";
+import {ProductionQueueEntryEntity, SettlementEntity} from "../models/settlement/settlementEntity";
 import {
 	Settlement,
 	SettlementProductionOption,
 	SettlementProductionQueueEntry,
-} from "../../models/settlement/settlement";
+} from "../models/settlement/settlement";
 import visible = HiddenType.visible;
 import hidden = HiddenType.hidden;
-import {RouteEntity} from "../../models/route/routeEntity";
-import {Command, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../../models/command/command";
-import {CommandType} from "../../models/command/commandType";
+import {RouteEntity} from "../models/route/routeEntity";
+import {Command, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../models/command/command";
+import {CommandType} from "../models/command/commandType";
 
 export namespace SettlementBuilder {
 

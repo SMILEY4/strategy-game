@@ -5,6 +5,7 @@ import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {TilePosition} from "../../../models/tile/tilePosition";
 import {GameHtmlRenderContext} from "../gameRenderContext";
+import {TileSummary} from "../../../models/tile/tileSummary";
 
 export class PathsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
@@ -31,10 +32,10 @@ export class PathsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
 		const elements: PathsElement[] = [];
 
-		const paths = context.movementPaths;
+		const paths = context.movePaths;
 		for (let i = 0, n = paths.length; i < n; i++) {
 			elements.push({
-				path: paths[i].positions,
+				path: paths[i].tiles,
 				pending: paths[i].pending,
 			});
 		}
@@ -49,7 +50,7 @@ export class PathsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 }
 
 interface PathsElement {
-	path: TilePosition[];
+	path: TileSummary[];
 	pending: boolean,
 }
 
@@ -58,7 +59,7 @@ function render(camera: Camera, element: PathsElement, html: HTMLElement): void 
 
 		var path: string = "";
 		for (let i = 0; i < element.path.length; i++) {
-			const pos = Projections.hexToScreen(camera, element.path[i].q, element.path[i].r);
+			const pos = Projections.hexToScreen(camera, element.path[i].position.q, element.path[i].position.r);
 			if (i == 0) {
 				path += "M " + pos.x + " " + (camera.getClientHeight() - pos.y);
 			} else {

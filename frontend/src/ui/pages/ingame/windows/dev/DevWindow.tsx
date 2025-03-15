@@ -27,8 +27,6 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 
 				<BaseInformation {...data}/>
 
-				<Button onClick={data.open.devStats}>More Statistics</Button>
-
 				<VBox gap_s>
 					<Button onClick={data.fullscreen.enter}>Enter Fullscreen</Button>
 					<Button onClick={data.fullscreen.exit}>Exit Fullscreen</Button>

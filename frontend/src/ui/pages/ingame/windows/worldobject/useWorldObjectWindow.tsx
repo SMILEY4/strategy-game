@@ -5,15 +5,15 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
-import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
+import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {UseMoveWindow} from "../move/useMoveWindow";
 import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
 import {UseTileWindow} from "../tile/useTileWindow";
-import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
 import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {CommandType} from "../../../../../models/command/commandType";
 import {Command, CreateSettlementCommand, MoveCommand} from "../../../../../models/command/command";
+import {App} from "../../../../../appContext";
 
 export namespace UseWorldObjectWindow {
 
@@ -64,17 +64,17 @@ export namespace UseWorldObjectWindow {
 					enabled: !hasCommand,
 					canCancel: !!moveCommand,
 					start: () => worldObjectId && UseMoveWindow.open(worldObject.id),
-					cancel: () => moveCommand && INTERFACE_SERVICE.commandCancel(moveCommand),
+					cancel: () => moveCommand && App.interfaceService.commandCancel(moveCommand),
 				},
 				settlement: {
 					possible: worldObject.country.isUserControlled && worldObject.type === WorldObjectType.SETTLER,
 					enabled: !hasCommand && (tile?.isValidSettlementLocation ?? false),
-					start: () => UseFoundSettlementWindow.open(worldObject.tile.id, worldObject.id),
+					start: () => UseFoundSettlementWindow.open(worldObject.tile, worldObject.id),
 				},
 				open: {
 					tile: () => UseTileWindow.open(worldObject.tile.id ?? null),
 				},
-				centerCamera: () => INTERFACE_SERVICE.focusCamera(worldObject.tile.position),
+				centerCamera: () => App.interfaceService.focusCamera(worldObject.tile.position),
 			};
 		} else {
 			return null;

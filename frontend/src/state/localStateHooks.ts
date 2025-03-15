@@ -1,40 +1,74 @@
-import {MapMode} from "../../models/misc/mapMode";
-import {GameSessionState} from "../../models/misc/gameSessionState";
-import {GameSessionDatabase} from "../database/gameSessionDatabase";
-import {usePartialSingletonEntity, useQueryMultiple, useQuerySingle} from "../../common/db/adapters/databaseHooks";
-import {TileDatabase} from "../database/tileDatabase";
-import {CommandDatabase} from "../database/commandDatabase";
-import {SettlementDatabase} from "../database/settlementDatabase";
-import {WorldObjectDatabase} from "../database/worldObjectDatabase";
-import {MovementModeState} from "../database/movementModeState";
-import {CountryDatabase} from "../database/countryDatabase";
-import {RouteDatabase} from "../database/routeDatabase";
+import {MapMode} from "../models/misc/mapMode";
+import {GameSessionState} from "../models/misc/gameSessionState";
+import {GameSessionDatabase} from "./database/gameSessionDatabase";
 import {
-	Settlement,
-	SettlementProductionOption,
-	SettlementProductionQueueEntry,
-} from "../../models/settlement/settlement";
-import {SettlementOutline} from "../../models/settlement/settlementOutline";
-import {Command} from "../../models/command/command";
-import {CountryOutline} from "../../models/country/countryOutline";
-import {WorldObjectOutline} from "../../models/worldobject/worldObjectOutline";
-import {TileSummary} from "../../models/tile/tileSummary";
-import {Tile} from "../../models/tile/tile";
-import {WorldObjectId} from "../../models/worldobject/worldObjectId";
-import {TileId} from "../../models/tile/tileId";
-import {WorldObject} from "../../models/worldobject/worldObject";
+	usePartialSingletonEntity,
+	useQueryMultiple,
+	useQuerySingle,
+	useSingletonEntity,
+} from "../common/db/adapters/databaseHooks";
+import {TileDatabase} from "./database/tileDatabase";
+import {CommandDatabase} from "./database/commandDatabase";
+import {SettlementDatabase} from "./database/settlementDatabase";
+import {WorldObjectDatabase} from "./database/worldObjectDatabase";
+import {MovementModeState} from "./database/movementModeState";
+import {CountryDatabase} from "./database/countryDatabase";
+import {RouteDatabase} from "./database/routeDatabase";
+import {Settlement, SettlementProductionOption, SettlementProductionQueueEntry} from "../models/settlement/settlement";
+import {SettlementOutline} from "../models/settlement/settlementOutline";
+import {Command} from "../models/command/command";
+import {CountryOutline} from "../models/country/countryOutline";
+import {WorldObjectOutline} from "../models/worldobject/worldObjectOutline";
+import {TileSummary} from "../models/tile/tileSummary";
+import {Tile} from "../models/tile/tile";
+import {WorldObjectId} from "../models/worldobject/worldObjectId";
+import {TileId} from "../models/tile/tileId";
+import {WorldObject} from "../models/worldobject/worldObject";
 import {SettlementBuilder} from "./settlementBuilder";
+import {CameraEntity} from "../models/misc/cameraEntity";
+import {CameraDatabase} from "./database/cameraDatabase";
 
 export namespace LocalStateHooks {
 
-	// todo
-	const gameSessionDatabase: GameSessionDatabase = null;
-	const tileDatabase: TileDatabase = null;
-	const commandDatabase: CommandDatabase = null;
-	const settlementDatabase: SettlementDatabase = null;
-	const worldObjectDatabase: WorldObjectDatabase = null;
-	const countryDatabase: CountryDatabase = null;
-	const routeDatabase: RouteDatabase = null;
+	function UNINITIALIZED<T>(): T {
+		return null as T;
+	}
+
+	let gameSessionDatabase: GameSessionDatabase = UNINITIALIZED();
+	let tileDatabase: TileDatabase = UNINITIALIZED();
+	let commandDatabase: CommandDatabase = UNINITIALIZED();
+	let settlementDatabase: SettlementDatabase = UNINITIALIZED();
+	let worldObjectDatabase: WorldObjectDatabase = UNINITIALIZED();
+	let countryDatabase: CountryDatabase = UNINITIALIZED();
+	let routeDatabase: RouteDatabase = UNINITIALIZED();
+	let cameraDatabase: CameraDatabase = UNINITIALIZED();
+
+	export function initialize(dependencies: {
+		gameSessionDatabase: GameSessionDatabase
+		tileDatabase: TileDatabase
+		commandDatabase: CommandDatabase
+		settlementDatabase: SettlementDatabase
+		worldObjectDatabase: WorldObjectDatabase
+		countryDatabase: CountryDatabase
+		routeDatabase: RouteDatabase
+		cameraDatabase: CameraDatabase
+	}) {
+		gameSessionDatabase = dependencies.gameSessionDatabase;
+		tileDatabase = dependencies.tileDatabase;
+		commandDatabase = dependencies.commandDatabase;
+		settlementDatabase = dependencies.settlementDatabase;
+		worldObjectDatabase = dependencies.worldObjectDatabase;
+		countryDatabase = dependencies.countryDatabase;
+		routeDatabase = dependencies.routeDatabase;
+		cameraDatabase = dependencies.cameraDatabase;
+	}
+
+	/**
+	 * Get the current camera data
+	 */
+	export function useCamera(): CameraEntity {
+		return useSingletonEntity(cameraDatabase);
+	}
 
 	/**
 	 * Get the current turn counter

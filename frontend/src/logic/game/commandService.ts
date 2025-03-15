@@ -1,99 +1,26 @@
-import {
-	Command,
-	CommandType,
-	CreateSettlement,
-	MoveCommand,
-	ProductionQueueAddCommand,
-	ProductionQueueCancelCommand,
-} from "../../models/base/command";
-import {UID} from "../../common/uid";
-import {AudioService, AudioType} from "../../common/audioService";
-import {TileIdentifier} from "../../models/base/tile";
-import {ProductionQueueEntry, SettlementIdentifier} from "../../models/base/Settlement";
-import {CommandRepository} from "../../state/repository/commandRepository";
+import {CommandId} from "../../models/command/commandId";
+import {Command} from "../../models/command/command";
+import {GameStateWriter} from "../../state/gameStateWriter";
 
-export class CommandService {
+export interface CommandService {
+	cancelCommand(id: CommandId): void;
+	addCommand<T extends Command>(command: T): void;
+}
 
-	private readonly commandRepository: CommandRepository;
-	private readonly audioService: AudioService;
+export class CommandServiceImpl implements CommandService {
 
-	constructor(audioService: AudioService, commandRepository: CommandRepository) {
-		this.audioService = audioService;
-		this.commandRepository = commandRepository;
+	private gameStateWriter: GameStateWriter;
+
+	constructor(gameStateWriter: GameStateWriter) {
+		this.gameStateWriter = gameStateWriter;
 	}
 
-	/**
-	 * Add a new command to move the given world object along the given path
-	 */
-	public addMovementCommand(worldObjectId: string, path: TileIdentifier[]) {
-		const command: MoveCommand = {
-			id: UID.generate(),
-			type: CommandType.MOVE,
-			worldObjectId: worldObjectId,
-			path: path,
-		};
-		this.addCommand(command);
+	addCommand<T extends Command>(command: T): void {
+		this.gameStateWriter.addCommand(command);
 	}
 
-	/**
-	 * Add a new command to create a new settlement using the given settler
-	 */
-	public addCreateSettlementWithSettlerCommand(worldObjectId: string, tile: TileIdentifier, name: string) {
-		const command: CreateSettlement = {
-			id: UID.generate(),
-			type: CommandType.CREATE_SETTLEMENT,
-			worldObjectId: worldObjectId,
-			tile: tile,
-			name: name,
-		};
-		this.addCommand(command);
-	}
-
-	/**
-	 * Add a new command to queue a new production queue entry
-	 */
-	public addProductionQueueEntry(settlementId: SettlementIdentifier, type: string) {
-		const cmdId = UID.generate();
-		const command: ProductionQueueAddCommand = {
-			id: cmdId,
-			type: CommandType.PRODUCTION_QUEUE_ADD,
-			worldObjectId: null,
-			settlement: settlementId,
-			entry: {
-				type: type,
-				entryId: cmdId,
-				progress: 0,
-				isCommand: true,
-			},
-		};
-		this.addCommand(command);
-	}
-
-	/**
-	 * Add a new command to cancel the given entry in the production queue
-	 */
-	public cancelProductionQueueEntry(settlementId: SettlementIdentifier, entry: ProductionQueueEntry) {
-		const command: ProductionQueueCancelCommand = {
-			id: UID.generate(),
-			type: CommandType.PRODUCTION_QUEUE_CANCEL,
-			worldObjectId: null,
-			settlement: settlementId,
-			entry: entry,
-		};
-		this.addCommand(command);
-	}
-
-	/**
-	 * Cancel the given command
-	 */
-	public cancelCommand(commandId: string) {
-		this.commandRepository.remove(commandId);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
-	private addCommand(command: Command) {
-		this.commandRepository.add(command);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
+	cancelCommand(id: CommandId): void {
+		this.gameStateWriter.removeCommand(id);
 	}
 
 }

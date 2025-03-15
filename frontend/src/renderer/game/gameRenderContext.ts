@@ -1,34 +1,28 @@
 import {WebGLRenderCommand} from "../common/webgl/webGLRenderCommand";
 import {MapMode} from "../../models/misc/mapMode";
-import {Tile, TileIdentifier} from "../../models/base/tile";
-import {Settlement} from "../../models/base/Settlement";
 import {MovementTarget} from "../../models/misc/movementTarget";
-import {Route} from "../../models/base/route";
 import {GameRenderConfig} from "./gameRenderConfig";
-import {TileRepository} from "../../state/repository/tileRepository";
 import {HtmlRenderCommand} from "../common/html/htmlRenderCommand";
 import {Camera} from "../../common/webgl/camera";
-import {TilePosition} from "../../models/tile/tilePosition";
-import {WorldObject} from "../../models/base/worldObject";
-import {SessionRepository} from "../../state/repository/sessionRepository";
-import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
-import {SettlementRepository} from "../../state/repository/settlementRepository";
-import {RouteRepository} from "../../state/repository/routeRepository";
 import {BaseRenderer} from "../../common/webgl/baseRenderer";
-import {Command} from "../../models/base/command";
-import {CommandRepository} from "../../state/repository/commandRepository";
-import {Country} from "../../models/base/country";
-import {CountryRepository} from "../../state/repository/countryRepository";
+import {TileSummary} from "../../models/tile/tileSummary";
+import {Tile} from "../../models/tile/tile";
+import {Settlement} from "../../models/settlement/settlement";
+import {WorldObject} from "../../models/worldobject/worldObject";
+import {Route} from "../../models/route/route";
+import {Country} from "../../models/country/country";
+import {Command} from "../../models/command/command";
+import {LocalStateAccess} from "../../state/localStateAccess";
 
 export interface GameWebGLRenderContext extends WebGLRenderCommand.Context {
 	timestamp: number,
 	renderConfig: GameRenderConfig,
 	mapMode: MapMode,
-	selectedTile: TileIdentifier | null,
+	selectedTile: TileSummary | null,
 	tiles: Tile[],
 	settlements: Settlement[],
 	worldObjects: WorldObject[]
-	movementTargets: MovementTarget[],
+	moveTargets: TileSummary[],
 	routes: Route[],
 	tileByPosProvider: (q: number, r: number) => Tile | null
 }
@@ -41,7 +35,7 @@ export interface GameHtmlRenderContext extends HtmlRenderCommand.Context {
 	settlements: Settlement[],
 	commands: Command[],
 	worldObjects: WorldObject[]
-	movementPaths: { positions: TilePosition[], pending: boolean }[],
+	movePaths: ({tiles: TileSummary[], pending: boolean})[],
 }
 
 
@@ -49,13 +43,7 @@ export class RenderContextFactory {
 
 	private readonly gl: WebGL2RenderingContext;
 	private readonly renderer: BaseRenderer;
-	private readonly tileRepository: TileRepository;
-	private readonly sessionRepository: SessionRepository;
-	private readonly commandRepository: CommandRepository;
-	private readonly worldObjectRepository: WorldObjectRepository;
-	private readonly settlementRepository: SettlementRepository;
-	private readonly routeRepository: RouteRepository;
-	private readonly countryRepository: CountryRepository;
+	private readonly localStateAccess: LocalStateAccess;
 
 	private tileCache: { items: Tile[], revId: string } = {items: [], revId: ""};
 	private settlementCache: { items: Settlement[], revId: string } = {items: [], revId: ""};
@@ -65,22 +53,11 @@ export class RenderContextFactory {
 	constructor(
 		gl: WebGL2RenderingContext,
 		renderer: BaseRenderer,
-		tileRepository: TileRepository,
-		sessionRepository: SessionRepository,
-		worldObjectRepository: WorldObjectRepository,
-		settlementRepository: SettlementRepository,
-		routeRepository: RouteRepository,
-		commandRepository: CommandRepository,
-		countryRepository: CountryRepository) {
+		localStateAccess: LocalStateAccess,
+	) {
 		this.gl = gl;
 		this.renderer = renderer;
-		this.tileRepository = tileRepository;
-		this.sessionRepository = sessionRepository;
-		this.commandRepository = commandRepository;
-		this.worldObjectRepository = worldObjectRepository;
-		this.settlementRepository = settlementRepository;
-		this.routeRepository = routeRepository;
-		this.countryRepository = countryRepository;
+		this.localStateAccess = localStateAccess;
 	}
 
 	public createWebGLContext(camera: Camera, renderConfig: GameRenderConfig): GameWebGLRenderContext {
@@ -89,59 +66,59 @@ export class RenderContextFactory {
 			renderer: this.renderer,
 			camera: camera,
 			renderConfig: renderConfig,
-			mapMode: this.sessionRepository.getMapMode(),
+			mapMode: this.localStateAccess.getMapMode(),
 			timestamp: (Date.now() / 1000) % 10000,
-			selectedTile: this.tileRepository.getSelected(),
+			selectedTile: this.localStateAccess.getSelectedTile(),
 			tiles: this.getTilesAll(),
 			settlements: this.getSettlementsAll(),
 			worldObjects: this.getWorldObjectsAll(),
-			movementTargets: this.worldObjectRepository.getMovementTargets(),
+			moveTargets: this.localStateAccess.getMoveTargets(),
 			routes: this.getRoutesAll(),
-			tileByPosProvider: (q, r) => this.tileRepository.getAt(q, r)
+			tileByPosProvider: (q, r) => this.localStateAccess.getTileAt(q, r)
 		};
 	}
 
 	public createHtmlContext(camera: Camera): GameHtmlRenderContext {
 		return {
-			playerCountry: this.countryRepository.getPlayerCountry(),
+			playerCountry: this.localStateAccess.getPlayerCountry(),
 			camera: camera,
-			mapMode: this.sessionRepository.getMapMode(),
-			commands: this.commandRepository.getAll(),
+			mapMode: this.localStateAccess.getMapMode(),
+			commands: this.localStateAccess.getCommands(),
 			tiles: this.getTilesAll(),
 			settlements: this.getSettlementsAll(),
 			worldObjects: this.getWorldObjectsAll(),
-			movementPaths: this.worldObjectRepository.getMovementPaths(),
+			movePaths: this.localStateAccess.getMovePaths(),
 		};
 	}
 
 	private getTilesAll(): Tile[] {
-		if (this.tileCache.revId !== this.tileRepository.getTilesRevId()) {
-			this.tileCache.items= this.tileRepository.getAll();
-			this.tileCache.revId = this.tileRepository.getTilesRevId();
+		if (this.tileCache.revId !== this.localStateAccess.getTilesRevId()) {
+			this.tileCache.items= this.localStateAccess.getTiles();
+			this.tileCache.revId = this.localStateAccess.getTilesRevId();
 		}
 		return this.tileCache.items;
 	}
 
 	private getSettlementsAll(): Settlement[] {
-		if (this.settlementCache.revId !== this.settlementRepository.getSettlementsRevId()) {
-			this.settlementCache.items = this.settlementRepository.getAll();
-			this.settlementCache.revId = this.settlementRepository.getSettlementsRevId();
+		if (this.settlementCache.revId !== this.localStateAccess.getSettlementsRevId()) {
+			this.settlementCache.items = this.localStateAccess.getSettlements();
+			this.settlementCache.revId = this.localStateAccess.getSettlementsRevId();
 		}
 		return this.settlementCache.items;
 	}
 
 	private getWorldObjectsAll(): WorldObject[] {
-		if (this.worldObjectCache.revId !== this.worldObjectRepository.getWorldObjectsRevId()) {
-			this.worldObjectCache.items = this.worldObjectRepository.getAll();
-			this.worldObjectCache.revId = this.worldObjectRepository.getWorldObjectsRevId();
+		if (this.worldObjectCache.revId !== this.localStateAccess.getWorldObjectsRevId()) {
+			this.worldObjectCache.items = this.localStateAccess.getWorldObjects();
+			this.worldObjectCache.revId = this.localStateAccess.getWorldObjectsRevId();
 		}
 		return this.worldObjectCache.items;
 	}
 
 	private getRoutesAll(): Route[] {
-		if (this.routeCache.revId !== this.routeRepository.getRoutesRevId()) {
-			this.routeCache.items = this.routeRepository.getAll();
-			this.routeCache.revId = this.routeRepository.getRoutesRevId();
+		if (this.routeCache.revId !== this.localStateAccess.getRoutesRevId()) {
+			this.routeCache.items = this.localStateAccess.getRoutes();
+			this.routeCache.revId = this.localStateAccess.getRoutesRevId();
 		}
 		return this.routeCache.items;
 	}

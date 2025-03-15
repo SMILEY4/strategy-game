@@ -1,10 +1,10 @@
 import {HiddenType} from "../../common/hiddenType";
 import {Color} from "../../common/color";
-import {TerrainType} from "../tile/TerrainType";
 import {TileResourceType} from "../tile/TileResourceType";
 import {CountrySummary} from "../country/countrySummary";
 import {SettlementId} from "./settlementId";
 import {TileSummary} from "../tile/tileSummary";
+import {TerrainType} from "../tile/terrainType";
 
 export interface SettlementEntity {
 	id: SettlementId,

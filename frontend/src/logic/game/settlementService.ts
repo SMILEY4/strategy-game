@@ -1,37 +1,52 @@
-import {Tile} from "../../models/base/tile";
 import {CommandService} from "./commandService";
 import {GameClient} from "./gameClient";
-import {ProductionQueueEntry, SettlementIdentifier} from "../../models/base/Settlement";
-import {CommandType, ProductionQueueAddCommand} from "../../models/base/command";
-import {CommandRepository} from "../../state/repository/commandRepository";
+import {TileId} from "../../models/tile/tileId";
+import {WorldObjectId} from "../../models/worldobject/worldObjectId";
+import {ProductionOptionEntity} from "../../models/settlement/settlementEntity";
+import {
+	CreateSettlementCommand,
+	ProductionQueueAddCommand,
+	ProductionQueueCancelCommand,
+} from "../../models/command/command";
+import {CommandType} from "../../models/command/commandType";
+import {UID} from "../../common/uid";
+import {TileSummary} from "../../models/tile/tileSummary";
+import {SettlementSummary} from "../../models/settlement/settlementSummary";
+import {LocalStateAccess} from "../../state/localStateAccess";
+import {SettlementProductionOption} from "../../models/settlement/settlement";
 
-export class SettlementService {
+
+export interface SettlementService {
+	getRandomName(): Promise<string>;
+	validateFounding(tile: TileId, name: string | null): string[];
+	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void;
+	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void;
+	cancelProduction(settlement: SettlementSummary, entryId: string): void;
+}
+
+export class SettlementServiceImpl implements SettlementService {
 
 	private readonly commandService: CommandService;
-	private readonly commandRepository: CommandRepository;
 	private readonly client: GameClient;
+	private readonly localStateAccess: LocalStateAccess;
 
 	constructor(
 		commandService: CommandService,
 		client: GameClient,
-		commandRepository: CommandRepository,
+		localStateAccess: LocalStateAccess,
 	) {
 		this.commandService = commandService;
 		this.client = client;
-		this.commandRepository = commandRepository;
+		this.localStateAccess = localStateAccess;
 	}
 
-	/**
-	 * Get a random name for a settlement
-	 */
-	public getRandomName(): Promise<string> {
+
+	getRandomName(): Promise<string> {
 		return this.client.getRandomSettlementName().then(it => it.name);
 	}
 
-	/**
-	 * Check whether the given settlement can be created
-	 */
-	public validateFounding(tile: Tile, name: string | null): string[] {
+
+	validateFounding(tile: TileId, name: string): string[] {
 		const failureReasons: string[] = [];
 		if (!name) {
 			failureReasons.push("Invalid name");
@@ -39,31 +54,51 @@ export class SettlementService {
 		return failureReasons;
 	}
 
-	/**
-	 * Create a new settlement using the given settler
-	 */
-	public createSettlementWith(worldObjectId: string, tile: Tile, name: string) {
-		this.commandService.addCreateSettlementWithSettlerCommand(worldObjectId, tile.identifier, name);
+	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void {
+		this.commandService.addCommand<CreateSettlementCommand>({
+			id: UID.generate(),
+			type: CommandType.CREATE_SETTLEMENT,
+			worldObjectId: worldObjectId,
+			tile: tile,
+			name: name,
+		});
 	}
 
-	/**
-	 * Add a new entry into the given settlement production queue
-	 */
-	public addProductionQueue(settlement: SettlementIdentifier, type: string) {
-		this.commandService.addProductionQueueEntry(settlement, type);
+	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void {
+		this.commandService.addCommand<ProductionQueueAddCommand>({
+			id: UID.generate(),
+			type: CommandType.PRODUCTION_QUEUE_ADD,
+			settlement: settlement,
+			entry: {
+				type: entry.type,
+				entryId: UID.generate(),
+				progress: 0,
+			},
+		});
 	}
 
-	/**
-	 * Cancel the given production queue entry
-	 */
-	public cancelProductionQueue(settlement: SettlementIdentifier, entry: ProductionQueueEntry) {
-		const commands = this.commandRepository
-			.getAllByType<ProductionQueueAddCommand>(CommandType.PRODUCTION_QUEUE_ADD)
-			.filter(it => it.entry.entryId === entry.entryId);
-		if (commands.length > 0) {
-			this.commandService.cancelCommand(commands[0].id);
+	cancelProduction(settlement: SettlementSummary, entryId: string): void {
+		const command = this.localStateAccess
+			.getCommandsOfType<ProductionQueueAddCommand>(CommandType.PRODUCTION_QUEUE_ADD)
+			.find(it => it.entry.entryId === entryId);
+		if (command) {
+			this.commandService.cancelCommand(command.id);
 		} else {
-			this.commandService.cancelProductionQueueEntry(settlement, entry);
+			const productionQueueEntry = this.localStateAccess
+				.getSettlementProductionQueue(settlement.id)
+				?.find(it => it.id === entryId);
+			if (productionQueueEntry) {
+				this.commandService.addCommand<ProductionQueueCancelCommand>({
+					id: UID.generate(),
+					type: CommandType.PRODUCTION_QUEUE_CANCEL,
+					settlement: settlement,
+					entry: {
+						type: productionQueueEntry.type,
+						entryId: productionQueueEntry.id,
+						progress: productionQueueEntry.progress,
+					},
+				});
+			}
 		}
 	}
 

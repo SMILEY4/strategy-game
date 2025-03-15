@@ -6,11 +6,11 @@ import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
-import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {TileId} from "../../../../../models/tile/tileId";
 import {Tile} from "../../../../../models/tile/tile";
 import {TileObject} from "../../../../../models/tile/tileObject";
+import {App} from "../../../../../appContext";
 
 export namespace UseTileWindow {
 
@@ -56,7 +56,7 @@ export namespace UseTileWindow {
 						}
 					},
 				},
-				centerCamera: () => INTERFACE_SERVICE.focusCamera(tile.position),
+				centerCamera: () => App.interfaceService.focusCamera(tile.position),
 			};
 		} else {
 			return null;

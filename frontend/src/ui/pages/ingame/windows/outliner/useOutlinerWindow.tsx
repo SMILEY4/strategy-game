@@ -6,11 +6,11 @@ import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
-import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
-import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {SettlementOutline} from "../../../../../models/settlement/settlementOutline";
 import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectOutline";
 import {CountryOutline} from "../../../../../models/country/countryOutline";
+import {App} from "../../../../../appContext";
 
 export namespace UseOutlinerWindow {
 
@@ -50,12 +50,12 @@ export namespace UseOutlinerWindow {
 			settlements: {
 				entries: settlements,
 				open: (outline: SettlementOutline) => UseSettlementWindow.open(outline.id),
-				focusCamera: (outline: SettlementOutline) => INTERFACE_SERVICE.focusCamera(outline.tile),
+				focusCamera: (outline: SettlementOutline) => App.interfaceService.focusCamera(outline.tile.position),
 			},
 			worldObjects: {
 				entries: units,
 				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.id),
-				focusCamera: (outline: WorldObjectOutline) => INTERFACE_SERVICE.focusCamera(outline.tile),
+				focusCamera: (outline: WorldObjectOutline) => App.interfaceService.focusCamera(outline.tile.position),
 			},
 			countries: {
 				entries: countries,

@@ -2,14 +2,12 @@ import React from "react";
 import {DevWindow} from "./DevWindow";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
 import {CameraEntity} from "../../../../../models/misc/cameraEntity";
-import {UseDevStatsWindow} from "../devstats/useDevStatsWindow";
-import {useDI} from "../../../../../appContext";
-import {CameraRepository} from "../../../../../state/repository/cameraRepository";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {InterfaceService} from "../../../../../logic/game/interfaceService";
+import {LocalStateHooks} from "../../../../../state/localStateHooks";
+import {App} from "../../../../../appContext";
 
 export namespace UseDevWindow {
 
@@ -24,9 +22,6 @@ export namespace UseDevWindow {
 	}
 
 	export interface Data {
-		open: {
-			devStats: () => void
-		}
 		fullscreen: {
 			enter: () => void,
 			exit: () => void
@@ -39,14 +34,10 @@ export namespace UseDevWindow {
 	}
 
 	export function useData(): UseDevWindow.Data {
-		const openDevStats = UseDevStatsWindow.useOpen();
-		const camera = CameraRepository.useCamera();
+		const camera = LocalStateHooks.useCamera();
 		const [enterFullscreen, exitFullscreen] = useFullscreen("root");
 		const [looseWGLContext, restoreWGLContext] = useWebGlContext();
 		return {
-			open: {
-				devStats: openDevStats,
-			},
 			fullscreen: {
 				enter: enterFullscreen,
 				exit: exitFullscreen,
@@ -61,10 +52,9 @@ export namespace UseDevWindow {
 
 
 	function useWebGlContext() {
-		const service = useDI<InterfaceService>("InterfaceService");
 		return [
-			() => service.webglContextLoose(),
-			() => service.webglContextRestore(),
+			() => App.interfaceService.webglContextLoose(),
+			() => App.interfaceService.webglContextRestore(),
 		];
 	}
 

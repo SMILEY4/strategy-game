@@ -8,20 +8,31 @@ import {TurnStartService} from "../game/turnStartService";
 import {GameStateMessage} from "./models/gameStateMessage";
 import {WebsocketMessageHandler} from "../../common/websocketMessageHandler";
 import {
-	Command,
-	CommandType,
-	CreateSettlement,
-	MoveCommand, ProductionQueueAddCommand, ProductionQueueCancelCommand,
-} from "../../models/base/command";
-import {
 	CreateSettlementCommandMessage,
-	MoveCommandMessage, ProductionQueueAddCommandMessage, ProductionQueueCancelCommandMessage,
+	MoveCommandMessage,
+	ProductionQueueAddCommandMessage,
+	ProductionQueueCancelCommandMessage,
 } from "./models/commandMessage";
+import {
+	Command,
+	CreateSettlementCommand,
+	MoveCommand,
+	ProductionQueueAddCommand,
+	ProductionQueueCancelCommand,
+} from "../../models/command/command";
+import {CommandType} from "../../models/command/commandType";
 
-/**
- * Game session service logic
- */
-export class GameSessionService implements WebsocketMessageHandler {
+export interface GameSessionService {
+	listSessions(): Promise<GameSessionMeta[]>;
+	createSession(name: string, seed: string | null): Promise<string>;
+	joinSession(gameId: string): Promise<void>;
+	deleteSession(gameId: string): Promise<void>;
+	connectSession(gameId: string): Promise<void>;
+	disconnectSession(): Promise<void>;
+	submitTurn(commands: Command[]): void;
+}
+
+export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSessionService {
 
 	private readonly client: GameSessionClient;
 	private readonly repository: SessionRepository;
@@ -37,7 +48,7 @@ export class GameSessionService implements WebsocketMessageHandler {
 	/**
 	 * Get all games of the currently logged-in user
 	 */
-	public listSessions(): Promise<GameSessionMeta[]> {
+	listSessions(): Promise<GameSessionMeta[]> {
 		return this.client.list()
 			.catch(error => handleResponseError(error, 401, () => {
 				throw new UnauthorizedError();
@@ -47,7 +58,7 @@ export class GameSessionService implements WebsocketMessageHandler {
 	/**
 	 * Create a new game with the given name and settings
 	 */
-	public createSession(name: string, seed: string | null): Promise<string> {
+	createSession(name: string, seed: string | null): Promise<string> {
 		return this.client.create(name, seed)
 			.catch(error => handleResponseError(error, 401, () => {
 				throw new UnauthorizedError();
@@ -57,7 +68,7 @@ export class GameSessionService implements WebsocketMessageHandler {
 	/**
 	 * Join a game with the given id as a new player
 	 */
-	public joinSession(gameId: string): Promise<void> {
+	joinSession(gameId: string): Promise<void> {
 		return this.client.join(gameId)
 			.catch(error => handleResponseError(error, 401, () => {
 				throw new UnauthorizedError();
@@ -67,7 +78,7 @@ export class GameSessionService implements WebsocketMessageHandler {
 	/**
 	 * Delete a game with the given id
 	 */
-	public deleteSession(gameId: string): Promise<void> {
+	deleteSession(gameId: string): Promise<void> {
 		return this.client.delete(gameId)
 			.catch(error => handleResponseError(error, 401, () => {
 				throw new UnauthorizedError();
@@ -77,28 +88,28 @@ export class GameSessionService implements WebsocketMessageHandler {
 	/**
 	 * Connect to the game with the given id and "start" playing
 	 */
-	public connectSession(gameId: string): Promise<void> {
+	connectSession(gameId: string): Promise<void> {
 		return Promise.resolve()
 			.then(() => this.repository.setSessionState("loading"))
 			.then(() => RenderGraphPreloader.tempLoad())
 			.then(() => this.client.connect(gameId, this))
 			.catch(e => {
-				console.error(e)
-				this.repository.setSessionState("error")
+				console.error(e);
+				this.repository.setSessionState("error");
 			});
 	}
 
 	/**
 	 * Disconnect from the current session
 	 */
-	public disconnectSession(): Promise<void> {
+	disconnectSession(): Promise<void> {
 		return Promise.resolve()
 			.then(() => this.repository.setSessionState("none"))
 			.then(() => this.client.disconnect())
-			.catch(e => console.error(e))
+			.catch(e => console.error(e));
 	}
 
-	public onMessage(type: string, payload: any): void {
+	onMessage(type: string, payload: any): void {
 		console.log("received message", type, payload);
 		if (type === "game-state") {
 			const gameState = payload as GameStateMessage;
@@ -117,7 +128,7 @@ export class GameSessionService implements WebsocketMessageHandler {
 	/**
 	 * Submit the commands for the current turn and end turn
 	 */
-	public submitTurn(commands: Command[]) {
+	submitTurn(commands: Command[]) {
 		this.client.sendMessage(
 			"submit-turn",
 			{
@@ -134,11 +145,11 @@ export class GameSessionService implements WebsocketMessageHandler {
 					}
 
 					if (it.type === CommandType.CREATE_SETTLEMENT) {
-						const cmd = it as CreateSettlement;
+						const cmd = it as CreateSettlementCommand;
 						const cmdMsg: CreateSettlementCommandMessage = {
 							type: cmd.type.id,
 							name: cmd.name,
-							worldObjectId: cmd.worldObjectId!
+							worldObjectId: cmd.worldObjectId!,
 						};
 						return cmdMsg;
 					}
@@ -158,12 +169,12 @@ export class GameSessionService implements WebsocketMessageHandler {
 						const cmdMsg: ProductionQueueCancelCommandMessage = {
 							type: cmd.type.id,
 							entryId: cmd.entry.entryId,
-							settlementId: cmd.settlement.id
+							settlementId: cmd.settlement.id,
 						};
 						return cmdMsg;
 					}
 
-					throw new Error("Unexpected command type: " + it.type.id)
+					throw new Error("Unexpected command type: " + it.type.id);
 				}),
 			},
 		);

@@ -5,14 +5,12 @@ import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 import {LabelsHtmlNode} from "./rendernodes/labelsHtmlNode";
-import {SessionRepository} from "../../state/repository/sessionRepository";
-import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
 import {ChangeProvider} from "../common/graph/changeProvider";
 import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
-import {CommandRepository} from "../../state/repository/commandRepository";
+import {LocalStateAccess} from "../../state/localStateAccess";
 
 interface Changes {
 	initFrame: boolean,
@@ -28,9 +26,7 @@ interface Changes {
  */
 export class GameChangeProvider implements ChangeProvider {
 
-	private readonly sessionRepository: SessionRepository;
-	private readonly worldObjectRepository: WorldObjectRepository;
-	private readonly commandRepository: CommandRepository;
+	private readonly localStateAccess: LocalStateAccess;
 
 	private readonly detectorCamera = new ChangeDetector();
 	private readonly detectorCurrentTurn = new ChangeDetector();
@@ -48,14 +44,8 @@ export class GameChangeProvider implements ChangeProvider {
 		commands: true,
 	};
 
-	constructor(
-		sessionRepository: SessionRepository,
-		worldObjectRepository: WorldObjectRepository,
-		commandRepository: CommandRepository
-	) {
-		this.sessionRepository = sessionRepository;
-		this.worldObjectRepository = worldObjectRepository;
-		this.commandRepository = commandRepository;
+	constructor(localStateAccess: LocalStateAccess) {
+		this.localStateAccess = localStateAccess;
 	}
 
 	/**
@@ -83,11 +73,11 @@ export class GameChangeProvider implements ChangeProvider {
 			this.changes.initFrame = true;
 			this.frame++;
 		}
-		this.changes.turn = this.detectorCurrentTurn.check(this.sessionRepository.getTurn());
-		this.changes.mapMode = this.detectorMapMode.check(this.sessionRepository.getMapMode());
+		this.changes.turn = this.detectorCurrentTurn.check(this.localStateAccess.getCurrentTurn());
+		this.changes.mapMode = this.detectorMapMode.check(this.localStateAccess.getMapMode());
 		this.changes.camera = this.detectorCamera.check(camera.getHash());
 		this.changes.movementPaths = this.detectorMovementPaths.check(this.getMovementPathsCheckId());
-		this.changes.commands = this.detectorCommands.check(this.commandRepository.getRevId());
+		this.changes.commands = this.detectorCommands.check(this.localStateAccess.getCommandRevId());
 	}
 
 	/**
@@ -129,9 +119,9 @@ export class GameChangeProvider implements ChangeProvider {
 
 	private getMovementPathsCheckId(): string {
 		let str = "";
-		this.worldObjectRepository.getMovementPaths().forEach(path => {
-			path.positions.forEach(pos => {
-				str += pos.q + "," + pos.r + "/";
+		this.localStateAccess.getMovePaths().forEach(path => {
+			path.tiles.forEach(tile => {
+				str += tile.position.q + "," + tile.position.r + "/";
 			});
 			str += path.pending + "/";
 		});

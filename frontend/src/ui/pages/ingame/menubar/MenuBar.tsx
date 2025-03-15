@@ -9,8 +9,8 @@ import {UseCommandLogWindow} from "../windows/commandlog/useCommandLogWindow";
 import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
 import {UseOutlinerWindow} from "../windows/outliner/useOutlinerWindow";
 import {Txt} from "../../../components/text/Txt";
-import {INTERFACE_SERVICE} from "../../../../logic/game/interfaceService";
-import {LocalStateHooks} from "../../../../state/access/localStateHooks";
+import {LocalStateHooks} from "../../../../state/localStateHooks";
+import {App} from "../../../../appContext";
 
 export function MenuBar(): ReactElement {
 
@@ -30,7 +30,7 @@ export function MenuBar(): ReactElement {
 
 					<HSpacer fullWidth/>
 
-					<Button success disabled={isBlocked || isWaiting} onClick={INTERFACE_SERVICE.endTurn}>
+					<Button success disabled={isBlocked || isWaiting} onClick={App.interfaceService.endTurn}>
 						{"End Turn " + currentTurn}
 					</Button>
 

@@ -9,12 +9,12 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
 import { Tooltip } from "../../../../components/tooltip/Tooltip";
-import {TileId} from "../../../../../models/tile/tileId";
 import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
+import {TileSummary} from "../../../../../models/tile/tileSummary";
 
 export interface FoundSettlementWindowProps {
     windowId: string;
-    tile: TileId,
+    tile: TileSummary,
     worldObjectId: WorldObjectId,
 }
 

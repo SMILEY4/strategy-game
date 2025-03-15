@@ -2,9 +2,9 @@ import React, {useEffect} from "react";
 import {MoveWindow} from "./MoveWindow";
 import {openWindow, useCloseWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
-import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
+import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
+import {App} from "../../../../../appContext";
 
 export namespace UseMoveWindow {
 
@@ -34,25 +34,26 @@ export namespace UseMoveWindow {
 	/**
 	 * Provides the data and functions required by the window
 	 */
-	export function useData(windowId: string, worldObjectId: WorldObjectId | null): UseMoveWindow.Data | null {
+	export function useData(windowId: string, worldObjectId: WorldObjectId): UseMoveWindow.Data | null {
 
+		const worldObject = LocalStateHooks.useWorldObject(worldObjectId)
         const remainingMovement = LocalStateHooks.useRemainingMovementPoints()
         const closeWindow = useCloseWindow();
 
         useEffect(() => {
-			if (worldObjectId) INTERFACE_SERVICE.beginMovement(worldObjectId)
+			if (worldObjectId) App.interfaceService.beginMovement(worldObjectId)
 		}, []);
 
-		if (worldObjectId) {
+		if (worldObject) {
 			return {
 				remainingPoints: remainingMovement,
-				totalPoints: INTERFACE_SERVICE.getTotalMovement(),
+				totalPoints: worldObject.maxMovementPoints,
 				cancel: () => {
-					INTERFACE_SERVICE.endMovement(false);
+					App.interfaceService.endMovement(false);
 					closeWindow(windowId);
 				},
 				accept: () => {
-                    INTERFACE_SERVICE.endMovement(true);
+					App.interfaceService.endMovement(true);
 					closeWindow(windowId);
 				},
 			};

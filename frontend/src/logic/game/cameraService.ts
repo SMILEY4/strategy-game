@@ -1,7 +1,7 @@
-import {LocalGameDataAccess} from "../../state/access/localGameDataAccess";
 import {GameStateWriter} from "../../state/gameStateWriter";
 import {Projections} from "../../common/webgl/projections";
 import {TilePosition} from "../../models/tile/tilePosition";
+import {LocalStateAccess} from "../../state/localStateAccess";
 
 export interface CameraService {
 	center(tile: TilePosition): void;
@@ -11,17 +11,17 @@ export interface CameraService {
 
 export class CameraServiceImpl implements CameraService {
 
-	private readonly localGameDataAccess: LocalGameDataAccess;
+	private readonly localStateAccess: LocalStateAccess;
 	private readonly gameStateWriter: GameStateWriter;
 
-	constructor(localGameDataAccess: LocalGameDataAccess, gameStateWriter: GameStateWriter) {
-		this.localGameDataAccess = localGameDataAccess;
+	constructor(localStateAccess: LocalStateAccess, gameStateWriter: GameStateWriter) {
+		this.localStateAccess = localStateAccess;
 		this.gameStateWriter = gameStateWriter;
 	}
 
 	center(tile: TilePosition): void {
 		const pos = Projections.hexToWorld(tile.q, tile.r);
-		const camera = this.localGameDataAccess.getCamera();
+		const camera = this.localStateAccess.getCamera();
 		this.gameStateWriter.setCameraData({
 			x: -pos.x,
 			y: -pos.y,
@@ -30,7 +30,7 @@ export class CameraServiceImpl implements CameraService {
 	}
 
 	move(dx: number, dy: number): void {
-		const camera = this.localGameDataAccess.getCamera();
+		const camera = this.localStateAccess.getCamera();
 		this.gameStateWriter.setCameraData({
 			x: camera.x + (dx / camera.zoom),
 			y: camera.y - (dy / camera.zoom),
@@ -39,7 +39,7 @@ export class CameraServiceImpl implements CameraService {
 	}
 
 	zoom(d: number): void {
-		const camera = this.localGameDataAccess.getCamera();
+		const camera = this.localStateAccess.getCamera();
 		const zoom = Math.max(0.01, camera.zoom - d);
 		this.gameStateWriter.setCameraData({
 			x: camera.x,

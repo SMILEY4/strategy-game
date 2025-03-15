@@ -2,7 +2,6 @@ import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../
 import {GLAttributeType} from "../../../common/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../common/tilemapUtils";
-import {Tile} from "../../../models/base/tile";
 import {BorderBuilder} from "./utils/borderBuilder";
 import {packBorder} from "./utils/packBorder";
 import {MapMode} from "../../../models/misc/mapMode";
@@ -13,6 +12,7 @@ import {OverlayBaseVertexNode} from "./overlayBaseVertexNode";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {GameWebGLRenderContext} from "../gameRenderContext";
+import {Tile} from "../../../models/tile/tile";
 
 export class OverlayVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -122,7 +122,7 @@ export class OverlayVertexNode extends VertexRenderNode<GameWebGLRenderContext> 
 		const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(tileCounts, OverlayVertexNode.INSTANCE_PATTERN);
 
 		const mapModeContext = context.mapMode.renderData.context(tiles);
-		const highlightMovementTiles = new Set<string>(context.movementTargets.map(it => it.tile.q + "/" + it.tile.r));
+		const highlightMovementTiles = new Set<string>(context.moveTargets.map(it => it.position.q + "/" + it.position.r));
 
 		for (let i = 0, n = tiles.length; i < n; i++) {
 			const tile = tiles[i];
@@ -147,8 +147,8 @@ export class OverlayVertexNode extends VertexRenderNode<GameWebGLRenderContext> 
 	}
 
 	private appendOverlayInstance(tile: Tile, mapMode: MapMode, mapModeContext: any, highlightMovementTiles: Set<string>, cursor: MixedArrayBufferCursor, context: GameWebGLRenderContext) {
-		const q = tile.identifier.q;
-		const r = tile.identifier.r;
+		const q = tile.position.q;
+		const r = tile.position.r;
 
 		// world position
 		const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
@@ -170,7 +170,7 @@ export class OverlayVertexNode extends VertexRenderNode<GameWebGLRenderContext> 
 
 
 		// highlight border mask & border color & fill color
-		if (highlightMovementTiles.has(tile.identifier.q + "/" + tile.identifier.r)) {
+		if (highlightMovementTiles.has(tile.position.q + "/" + tile.position.r)) {
 			cursor.append(0);
 			cursor.append([0, 0, 0, 0]);
 			cursor.append([0.941, 0.921, 0.686, 0.5]);

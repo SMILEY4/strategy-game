@@ -1,7 +1,7 @@
 import {GameSessionService} from "../session/gameSessionService";
 import {MovementService} from "./movementService";
-import {CommandRepository} from "../../state/repository/commandRepository";
-import {SessionRepository} from "../../state/repository/sessionRepository";
+import {LocalStateAccess} from "../../state/localStateAccess";
+import {GameStateWriter} from "../../state/gameStateWriter";
 
 /**
  * Service to handle the end of the current turn (for this player)
@@ -14,27 +14,26 @@ export class TurnEndServiceImpl implements TurnEndService {
 
 	private readonly gameSessionService: GameSessionService;
 	private readonly movementService: MovementService;
-	private readonly commandRepository: CommandRepository;
-	private readonly sessionRepository: SessionRepository;
-
+	private readonly gameStateWriter: GameStateWriter;
+	private readonly localStateAccess: LocalStateAccess;
 
 	constructor(
 		gameSessionService: GameSessionService,
 		movementService: MovementService,
-		commandRepository: CommandRepository,
-		sessionRepository: SessionRepository,
+		gameStateWriter: GameStateWriter,
+		localStateAccess: LocalStateAccess,
 	) {
 		this.gameSessionService = gameSessionService;
 		this.movementService = movementService;
-		this.commandRepository = commandRepository;
-		this.sessionRepository = sessionRepository;
+		this.gameStateWriter = gameStateWriter;
+		this.localStateAccess = localStateAccess;
 	}
 
 	endTurn(): void {
 		this.movementService.cancelMovement();
-		this.gameSessionService.submitTurn(this.commandRepository.getAll());
-		this.commandRepository.clear();
-		this.sessionRepository.setTurnState("waiting");
+		this.gameSessionService.submitTurn(this.localStateAccess.getCommands());
+		this.gameStateWriter.clearCommands();
+		this.gameStateWriter.setTurnState("waiting")
 	}
 
 }

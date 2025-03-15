@@ -59,7 +59,7 @@ export class OverlayDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
 					binding: "u_tileSelection.position",
 					type: GLUniformType.INT_VEC2,
 					valueConstant: null,
-					valueProvider: context => context.selectedTile ? [context.selectedTile.q, context.selectedTile.r] : [99999, 99999],
+					valueProvider: context => context.selectedTile ? [context.selectedTile.position.q, context.selectedTile.position.r] : [99999, 99999],
 				}),
 				new NodeInput.Property({
 					binding: "u_tileSelection.thickness",

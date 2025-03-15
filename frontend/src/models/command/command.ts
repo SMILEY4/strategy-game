@@ -1,11 +1,12 @@
 import {WorldObjectId} from "../worldobject/worldObjectId";
 import {TileSummary} from "../tile/tileSummary";
 import {SettlementSummary} from "../settlement/settlementSummary";
-import {ProductionQueueEntryEntity} from "../settlement/settlementEntity";
+import {ProductionOptionEntity, ProductionQueueEntryEntity} from "../settlement/settlementEntity";
 import {CommandType} from "./commandType";
+import {CommandId} from "./commandId";
 
 export interface Command {
-	id: string
+	id: CommandId
 	type: CommandType
 }
 

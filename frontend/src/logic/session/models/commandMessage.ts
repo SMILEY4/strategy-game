@@ -1,4 +1,4 @@
-import {TileIdentifier} from "../../../models/base/tile";
+import {TileSummary} from "../../../models/tile/tileSummary";
 
 export interface CommandMessage {
 	type: string,
@@ -6,7 +6,7 @@ export interface CommandMessage {
 
 export interface MoveCommandMessage extends CommandMessage {
 	worldObjectId: string,
-	path: TileIdentifier[]
+	path: TileSummary[]
 }
 
 export interface CreateSettlementCommandMessage extends CommandMessage {

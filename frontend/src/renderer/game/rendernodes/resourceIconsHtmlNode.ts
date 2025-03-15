@@ -3,10 +3,11 @@ import {NodeOutput} from "../../common/graph/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
 import {buildMap} from "../../../common/utils";
 import {MapMode} from "../../../models/misc/mapMode";
-import {Tile, TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {TileResourceType} from "../../../models/tile/TileResourceType";
 import {GameHtmlRenderContext} from "../gameRenderContext";
+import {Tile} from "../../../models/tile/tile";
+import {TileSummary} from "../../../models/tile/tileSummary";
 
 export class ResourceIconsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
@@ -43,7 +44,7 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext>
 					}
 					if (tile.base.value.resourceType !== TileResourceType.NONE && this.isVisible(tile, 0, context.camera)) {
 						elements.push({
-							tile: tile.identifier,
+							tile: TileSummary.from(tile),
 							type: tile.base.value.resourceType,
 						});
 					}
@@ -61,7 +62,7 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext>
 	private isVisible(tile: Tile, padding: number, camera: Camera): boolean {
 		const cameraMin = Projections.screenToWorld(camera, 0, camera.getClientHeight());
 		const cameraMax = Projections.screenToWorld(camera, camera.getClientWidth(), 0);
-		const tilePos = Projections.hexToWorld(tile.identifier.q, tile.identifier.r);
+		const tilePos = Projections.hexToWorld(tile.position.q, tile.position.r);
 		return (cameraMin.x - padding) < tilePos.x && tilePos.x < (cameraMax.x + padding)
 			&& (cameraMin.y - padding) < tilePos.y && tilePos.y < (cameraMax.y + padding);
 	}
@@ -69,12 +70,12 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext>
 }
 
 interface ResourceIconElement {
-	tile: TileIdentifier,
+	tile: TileSummary,
 	type: TileResourceType,
 }
 
 function render(camera: Camera, element: ResourceIconElement, html: HTMLElement): void {
-	const pos = Projections.hexToScreen(camera, element.tile.q, element.tile.r);
+	const pos = Projections.hexToScreen(camera, element.tile.position.q, element.tile.position.r);
 	pos.y = camera.getClientHeight() - pos.y;
 	html.className = "world-ui__icon";
 	html.style.left = pos.x + "px";

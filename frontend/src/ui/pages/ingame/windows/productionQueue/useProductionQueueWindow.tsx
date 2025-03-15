@@ -3,10 +3,10 @@ import {ProductionQueueWindow} from "./ProductionQueueWindow";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {openWindow} from "../../../../components/window/windowHooks";
-import {LocalStateHooks} from "../../../../../state/access/localStateHooks";
-import {INTERFACE_SERVICE} from "../../../../../logic/game/interfaceService";
+import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
 import {SettlementProductionQueueEntry} from "../../../../../models/settlement/settlement";
+import {App} from "../../../../../appContext";
 
 export namespace UseProductionQueueWindow {
 
@@ -29,7 +29,7 @@ export namespace UseProductionQueueWindow {
 		return {
 			settlement: settlement,
 			entries: LocalStateHooks.useProductionQueue(settlement.id),
-			cancel: (entry: SettlementProductionQueueEntry) => INTERFACE_SERVICE.cancelProduction(settlement.id, entry.id),
+			cancel: (entry: SettlementProductionQueueEntry) => App.interfaceService.cancelProduction(settlement, entry.id),
 		};
 	}
 
