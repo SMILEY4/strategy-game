@@ -28,6 +28,9 @@ export class TileServiceImpl implements TileService {
 	}
 
 	clickTile(tile: TileSummary): void {
+
+		this.gameStateWriter.setSelectedTile(tile)
+
 		const worldObjects: WorldObject[] = this.localStateAccess.getWorldObjectsAt(tile.position.q, tile.position.r)
 		const settlement: Settlement | null = this.localStateAccess.getSettlementAt(tile.position.q, tile.position.r)
 

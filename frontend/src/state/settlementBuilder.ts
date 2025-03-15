@@ -120,7 +120,7 @@ export namespace SettlementBuilder {
 
 	function buildProductionQueueActive(settlement: SettlementEntity, productionQueue: ProductionQueueEntryEntity[], commands: Command[]): SettlementProductionQueueEntry | null {
 		const queueWithoutCancelled = productionQueue.filter(entry => !isProductionQueueEntryCancelled(entry, commands));
-		if (queueWithoutCancelled) {
+		if (queueWithoutCancelled && queueWithoutCancelled.length > 0) {
 			return {
 				type: queueWithoutCancelled[0].type,
 				id: queueWithoutCancelled[0].entryId,

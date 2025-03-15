@@ -30,7 +30,7 @@ export function MenuBar(): ReactElement {
 
 					<HSpacer fullWidth/>
 
-					<Button success disabled={isBlocked || isWaiting} onClick={App.interfaceService.endTurn}>
+					<Button success disabled={isBlocked || isWaiting} onClick={() => App.interfaceService.endTurn()}>
 						{"End Turn " + currentTurn}
 					</Button>
 

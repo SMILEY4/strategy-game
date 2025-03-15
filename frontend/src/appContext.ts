@@ -105,6 +105,7 @@ export namespace App {
 		movementService,
 		turnEndService,
 		settlementService,
+		commandService,
 		gameSessionService,
 		userService,
 		gameStateWriter,

@@ -147,7 +147,11 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 						const cmdMsg: MoveCommandMessage = {
 							type: cmd.type.id,
 							worldObjectId: cmd.worldObjectId!,
-							path: cmd.path,
+							path: cmd.path.map(it => ({
+								id: it.id,
+								q: it.position.q,
+								r: it.position.r
+							})),
 						};
 						return cmdMsg;
 					}

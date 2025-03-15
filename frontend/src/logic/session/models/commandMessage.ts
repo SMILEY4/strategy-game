@@ -1,12 +1,14 @@
-import {TileSummary} from "../../../models/tile/tileSummary";
-
 export interface CommandMessage {
 	type: string,
 }
 
 export interface MoveCommandMessage extends CommandMessage {
 	worldObjectId: string,
-	path: TileSummary[]
+	path: ({
+		id: string,
+		q: number,
+		r: number
+	})[]
 }
 
 export interface CreateSettlementCommandMessage extends CommandMessage {

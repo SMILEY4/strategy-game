@@ -34,7 +34,7 @@ export namespace UseCommandLogWindow {
 	export function useData(): UseCommandLogWindow.Data {
 		return {
 			commands: LocalStateHooks.useCommands(),
-			cancel: App.interfaceService.commandCancel,
+			cancel: command => App.interfaceService.commandCancel(command),
 		};
 	}
 

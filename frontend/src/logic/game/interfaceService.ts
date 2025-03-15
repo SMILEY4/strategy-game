@@ -18,6 +18,7 @@ import {SettlementProductionOption} from "../../models/settlement/settlement";
 import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
 import {GameSessionService} from "../session/gameSessionService";
 import {UserService} from "../user/userService";
+import {CommandService} from "./commandService";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
@@ -70,6 +71,7 @@ export class InterfaceServiceImpl implements InterfaceService {
 	private readonly movementService: MovementService;
 	private readonly turnEndService: TurnEndService;
 	private readonly settlementService: SettlementService;
+	private readonly commandService: CommandService;
 	private readonly gameSessionService: GameSessionService;
 	private readonly userService: UserService;
 	private readonly gameStateWriter: GameStateWriter;
@@ -83,6 +85,7 @@ export class InterfaceServiceImpl implements InterfaceService {
 		movementService: MovementService,
 		turnEndService: TurnEndService,
 		settlementService: SettlementService,
+		commandService: CommandService,
 		gameSessionService: GameSessionService,
 		userService: UserService,
 		gameStateWriter: GameStateWriter,
@@ -94,6 +97,7 @@ export class InterfaceServiceImpl implements InterfaceService {
 		this.movementService = movementService;
 		this.turnEndService = turnEndService;
 		this.settlementService = settlementService;
+		this.commandService = commandService;
 		this.gameSessionService = gameSessionService;
 		this.userService = userService;
 		this.gameStateWriter = gameStateWriter;
@@ -208,7 +212,7 @@ export class InterfaceServiceImpl implements InterfaceService {
 	//========== COMMANDS =====================================================
 
 	commandCancel(command: Command): void {
-		// todo
+		this.commandService.cancelCommand(command.id)
 	}
 
 	//========== SETTLEMENTS ==================================================

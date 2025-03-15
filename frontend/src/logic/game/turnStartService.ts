@@ -41,9 +41,12 @@ export class TurnStartServiceImpl implements TurnStartService {
 	}
 
 	private buildTiles(game: GameStateMessage): TileEntity[] {
-		// @ts-ignore
 		return game.tiles.map(tileMsg => ({
-			identifier: tileMsg.identifier,
+			id: tileMsg.identifier.id,
+			position: {
+				q: tileMsg.identifier.q,
+				r: tileMsg.identifier.r,
+			},
 			visibility: Visibility.fromString(tileMsg.visibility),
 			base: mapHidden(tileMsg.base, baseMsg => ({
 				terrainType: TerrainType.fromString(baseMsg.terrainType),
@@ -56,11 +59,14 @@ export class TurnStartServiceImpl implements TurnStartService {
 						id: country.id,
 						name: country.name,
 						color: country.color,
+						isUserControlled: country.ownedByUser,
+						playerName: country.player.name
 					})),
 					settlement: mapValue(this.findSettlementById(game, politicalMsg.controlledBy.settlement), settlement => ({
 						id: settlement.id,
 						name: settlement.name,
 						color: settlement.color,
+						isUserControlled: this.findCountryById(game, settlement.country).ownedByUser
 					})),
 				} : null,
 			})),
@@ -70,32 +76,53 @@ export class TurnStartServiceImpl implements TurnStartService {
 					.filter(it => it.tile.id === tileMsg.identifier.id)
 					.map(it => [it, this.findCountryById(game, it.country)])
 					.map(it => ({
-						country: {
-							id: it[1].id,
-							name: it[1].name,
-							color: it[1].color,
-						},
 						settlement: {
-							id: it[0].id,
-							name: it[0].name,
-							color: it[0].color,
+							id: (it[0] as SettlementMessage).id,
+							name: (it[0] as SettlementMessage).name,
+							color: (it[0] as SettlementMessage).color,
+							isUserControlled: (it[1] as CountryMessage).ownedByUser
 						},
 						worldObject: null,
+						country: {
+							id: (it[1] as CountryMessage).id,
+							name: (it[1] as CountryMessage).name,
+							color: (it[1] as CountryMessage).color,
+							isUserControlled: (it[1] as CountryMessage).ownedByUser,
+							playerName: (it[1] as CountryMessage).player.name
+						},
 					})),
 				...game.worldObjects
 					.filter(it => it.tile.id === tileMsg.identifier.id)
 					.map(it => [it, this.findCountryById(game, it.country)])
 					.map(it => ({
+						settlement: null,
+						worldObject: {
+							id: (it[0] as WorldObjectMessage).id,
+							type: WorldObjectType.fromString((it[0] as WorldObjectMessage).type),
+							isUserControlled: (it[1] as CountryMessage).ownedByUser,
+							tile: {
+								id: (it[0] as WorldObjectMessage).tile.id,
+								position: {
+									q: (it[0] as WorldObjectMessage).tile.q,
+									r: (it[0] as WorldObjectMessage).tile.r
+								}
+							},
+							country: {
+								id: (it[1] as CountryMessage).id,
+								name: (it[1] as CountryMessage).name,
+								color: (it[1] as CountryMessage).color,
+								isUserControlled: (it[1] as CountryMessage).ownedByUser,
+								playerName: (it[1] as CountryMessage).player.name
+							},
+							maxMovementPoints: (it[0] as WorldObjectMessage).maxMovement
+						},
 						country: {
 							id: (it[1] as CountryMessage).id,
 							name: (it[1] as CountryMessage).name,
 							color: (it[1] as CountryMessage).color,
+							isUserControlled: (it[1] as CountryMessage).ownedByUser,
+							playerName: (it[1] as CountryMessage).player.name
 						},
-						worldObject: {
-							id: (it[0] as WorldObjectMessage).id,
-							type: WorldObjectType.fromString((it[0] as WorldObjectMessage).type),
-						},
-						settlement: null,
 					})),
 			],
 		}));

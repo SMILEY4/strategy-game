@@ -32,9 +32,10 @@ export namespace UseMapWindow {
 	 * Provides the data and functions required by the window
 	 */
 	export function useData(): UseMapWindow.Data {
+		const mapMode = LocalStateHooks.useMapMode();
 		return {
-			selectedMapMode: LocalStateHooks.useMapMode(),
-			setMapMode: App.interfaceService.selectMapMode,
+			selectedMapMode: mapMode,
+			setMapMode: mapMode => App.interfaceService.selectMapMode(mapMode),
 		};
 	}
 

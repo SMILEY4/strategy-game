@@ -1,5 +1,4 @@
-import {useEffect, useReducer, useState} from "react";
-import {UID} from "../../uid";
+import {EffectCallback, useEffect, useReducer, useRef, useState} from "react";
 import {PrimaryDatabaseStorage} from "../storage/primary/primaryDatabaseStorage";
 import {Database} from "../database/database";
 import {DatabaseOperation} from "../database/databaseOperation";
@@ -12,20 +11,45 @@ import {SingletonDatabase} from "../database/singletonDatabase";
  * @return array of ["current value", "setter"]
  */
 function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
-    const [data, setData] = useState<T>(initial);
-    const [_, forceUpdate] = useReducer((x) => x+1, 0)
+	const [data, setData] = useState<T>(initial);
+	const [_, forceUpdate] = useReducer((x) => x + 1, 0);
 
-    useEffect(() => setData(initial), [initial]);
+    useDeepCompareEffect(() => setData(initial), [initial]);
 
-    return [
-        data,
-        (item: T) => {
-            setData(item);
-            forceUpdate();
-        }
-    ]
-
+	return [
+		data,
+		(item: T) => {
+			setData(item);
+			forceUpdate();
+		},
+	];
 }
+
+function deepCompareEquals<T>(a: T, b: T): boolean {
+    // avoid infinite loops in use effect
+    if(Array.isArray(a) && Array.isArray(b)) {
+        if(a.length !== b.length) return false
+        for(let i=0; i<a.length; i++) {
+            if(a[i] !== b[i]) return false;
+        }
+        return true
+    } else {
+        return a === b
+    }
+}
+
+function useDeepCompareMemoize<T>(value: T): T {
+    const ref = useRef<T>();
+    if(!deepCompareEquals(value, ref.current)) {
+        ref.current = value;
+    }
+    return ref.current!
+}
+
+function useDeepCompareEffect(callback: EffectCallback, dependencies: any[]) {
+    useEffect(callback, dependencies.map(useDeepCompareMemoize));
+}
+
 
 /**
  * Access (and watch) the entity in a given singleton-database
@@ -33,12 +57,12 @@ function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
  * @return the current singleton entity
  */
 export function useSingletonEntity<ENTITY>(db: SingletonDatabase<ENTITY>): ENTITY {
-    const [entity, setEntity] = useForceRepaintState<ENTITY>(db.get());
-    useEffect(() => {
-        const subscriberId = db.subscribe(entity => setEntity(entity));
-        return () => db.unsubscribe(subscriberId);
-    }, []);
-    return entity;
+	const [entity, setEntity] = useForceRepaintState<ENTITY>(db.get());
+	useEffect(() => {
+		const subscriberId = db.subscribe(entity => setEntity(entity));
+		return () => db.unsubscribe(subscriberId);
+	}, []);
+	return entity;
 }
 
 /**
@@ -48,12 +72,12 @@ export function useSingletonEntity<ENTITY>(db: SingletonDatabase<ENTITY>): ENTIT
  * @return the current partial value of the singleton entity
  */
 export function usePartialSingletonEntity<ENTITY, T>(db: SingletonDatabase<ENTITY>, selector: (entity: ENTITY) => T): T {
-    const [value, setValue] = useForceRepaintState<T>(selector(db.get()));
-    useEffect(() => {
-        const subscriberId = db.subscribePartial(selector, setValue);
-        return () => db.unsubscribe(subscriberId);
-    }, []);
-    return value;
+	const [value, setValue] = useForceRepaintState<T>(selector(db.get()));
+	useEffect(() => {
+		const subscriberId = db.subscribePartial(selector, setValue);
+		return () => db.unsubscribe(subscriberId);
+	}, []);
+	return value;
 }
 
 /**
@@ -63,21 +87,21 @@ export function usePartialSingletonEntity<ENTITY, T>(db: SingletonDatabase<ENTIT
  * @return the current entity or null
  */
 export function useEntity<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID>(
-    db: Database<STORAGE, ENTITY, ID>,
-    id: ID,
+	db: Database<STORAGE, ENTITY, ID>,
+	id: ID,
 ): ENTITY | null {
-    const [entity, setEntity] = useForceRepaintState<ENTITY | null>(db.queryById(id));
-    useEffect(() => {
-        const [subscriberId, _] = db.subscribeOnEntity(id, (entity, op) => {
-            if (op === DatabaseOperation.DELETE) {
-                setEntity(null);
-            } else {
-                setEntity(entity);
-            }
-        });
-        return () => db.unsubscribe(subscriberId);
-    }, []);
-    return entity;
+	const [entity, setEntity] = useForceRepaintState<ENTITY | null>(db.queryById(id));
+	useEffect(() => {
+		const [subscriberId, _] = db.subscribeOnEntity(id, (entity, op) => {
+			if (op === DatabaseOperation.DELETE) {
+				setEntity(null);
+			} else {
+				setEntity(entity);
+			}
+		});
+		return () => db.unsubscribe(subscriberId);
+	}, []);
+	return entity;
 }
 
 /**
@@ -88,17 +112,17 @@ export function useEntity<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, EN
  * @return the current resulting entity or null
  */
 export function useQuerySingle<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
-    db: Database<STORAGE, ENTITY, ID>,
-    query: Query<STORAGE, ENTITY, ID, ARGS>,
-    args: ARGS,
+	db: Database<STORAGE, ENTITY, ID>,
+	query: Query<STORAGE, ENTITY, ID, ARGS>,
+	args: ARGS,
 ): ENTITY | null {
-    const initial = db.querySingle(query, args);
-    const [entity, setEntity] = useForceRepaintState<ENTITY | null>(initial);
-    useEffect(() => {
-        const [subscriberId, _] = db.subscribeOnQuerySingle(query, args, result => setEntity(result));
-        return () => db.unsubscribe(subscriberId);
-    }, []);
-    return entity;
+	const initial = db.querySingle(query, args);
+	const [entity, setEntity] = useForceRepaintState<ENTITY | null>(initial);
+	useEffect(() => {
+		const [subscriberId, _] = db.subscribeOnQuerySingle(query, args, result => setEntity(result));
+		return () => db.unsubscribe(subscriberId);
+	}, []);
+	return entity;
 }
 
 /**
@@ -109,16 +133,16 @@ export function useQuerySingle<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID
  * @return the current resulting entity
  */
 export function useQuerySingleOrThrow<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
-    db: Database<STORAGE, ENTITY, ID>,
-    query: Query<STORAGE, ENTITY, ID, ARGS>,
-    args: ARGS,
+	db: Database<STORAGE, ENTITY, ID>,
+	query: Query<STORAGE, ENTITY, ID, ARGS>,
+	args: ARGS,
 ): ENTITY {
-    const entity = useQuerySingle(db, query, args);
-    if (entity !== null) {
-        return entity;
-    } else {
-        throw new Error("No entity found by query with args " + args);
-    }
+	const entity = useQuerySingle(db, query, args);
+	if (entity !== null) {
+		return entity;
+	} else {
+		throw new Error("No entity found by query with args " + args);
+	}
 }
 
 
@@ -130,14 +154,14 @@ export function useQuerySingleOrThrow<STORAGE extends PrimaryDatabaseStorage<ENT
  * @return the current resulting entities
  */
 export function useQueryMultiple<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
-    db: Database<STORAGE, ENTITY, ID>,
-    query: Query<STORAGE, ENTITY, ID, ARGS>,
-    args: ARGS,
+	db: Database<STORAGE, ENTITY, ID>,
+	query: Query<STORAGE, ENTITY, ID, ARGS>,
+	args: ARGS,
 ): ENTITY[] {
-    const [entities, setEntities] = useForceRepaintState<ENTITY[]>(db.queryMany(query, args));
-    useEffect(() => {
+	const [entities, setEntities] = useForceRepaintState<ENTITY[]>(db.queryMany(query, args));
+	useEffect(() => {
         const [subscriberId, _] = db.subscribeOnQuery(query, args, result => setEntities(result));
-        return () => db.unsubscribe(subscriberId);
-    }, []);
-    return entities;
+		return () => db.unsubscribe(subscriberId);
+	}, []);
+	return entities;
 }

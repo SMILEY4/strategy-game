@@ -28,7 +28,7 @@ export interface SettlementWindowProps {
 
 export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 
-	const data: UseSettlementWindow.Data | null = UseSettlementWindow.useData(props.settlementId);
+	const data = UseSettlementWindow.useData(props.settlementId);
 
 	if (data === null) {
 		return (
