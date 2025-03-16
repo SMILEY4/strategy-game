@@ -11,6 +11,7 @@ import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectO
 import {CountryOutline} from "../../../../../models/country/countryOutline";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
+import {UseCountryWindow} from "../country/useCountryWindow";
 
 export namespace UseOutlinerWindow {
 
@@ -37,6 +38,7 @@ export namespace UseOutlinerWindow {
 		},
 		countries: {
 			entries: CountryOutline[],
+			open: (outline: CountryOutline) => void,
 		}
 	}
 
@@ -59,6 +61,7 @@ export namespace UseOutlinerWindow {
 			},
 			countries: {
 				entries: countries,
+				open: (outline: CountryOutline) => UseCountryWindow.open(outline.id),
 			},
 		};
 	}

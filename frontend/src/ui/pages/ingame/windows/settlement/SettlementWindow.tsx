@@ -144,7 +144,11 @@ function SectionBaseInfo(props: UseSettlementWindow.Data): ReactElement {
 			<Txt.Body><Txt.String>{props.settlement.name}</Txt.String></Txt.Body>
 
 			<Txt.Body><Txt.String>Country:</Txt.String></Txt.Body>
-			<Txt.Body><Txt.String>{props.settlement.country.name}</Txt.String></Txt.Body>
+			<Txt.Body>
+				<Txt.Link onClick={props.open.country}>
+					<Txt.String>{props.settlement.country.name}</Txt.String>
+				</Txt.Link>
+			</Txt.Body>
 
 			<Txt.Body><Txt.String>Population:</Txt.String></Txt.Body>
 			{props.settlement.population.size.visible && (
@@ -359,7 +363,8 @@ function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
 			{props.settlement.population.growth.visible && (
 				<>
 					<HBox gap_s stretch centerVertical>
-						<ProgressCircle totalProgress={props.settlement.population.growth.value.totalProgress} currentChange={props.settlement.population.growth.value.lastProgress}/>
+						<ProgressCircle totalProgress={props.settlement.population.growth.value.totalProgress}
+										currentChange={props.settlement.population.growth.value.lastProgress}/>
 						<InsetPanel grow shrink>
 							<VBox padding_s gap_xs left centerVertical fullSize>
 								<Txt.Body>

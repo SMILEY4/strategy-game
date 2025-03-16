@@ -3,7 +3,7 @@ import {Settlement} from "./settlement";
 
 export interface SettlementSummary {
 	id: string,
-	name: string
+	name: string,
 	color: Color,
 	isUserControlled: boolean,
 }

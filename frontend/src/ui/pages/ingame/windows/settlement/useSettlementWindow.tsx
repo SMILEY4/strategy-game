@@ -12,6 +12,7 @@ import {SettlementSummary} from "../../../../../models/settlement/settlementSumm
 import {SettlementId} from "../../../../../models/settlement/settlementId";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
+import {UseCountryWindow} from "../country/useCountryWindow";
 
 export namespace UseSettlementWindow {
 
@@ -34,6 +35,7 @@ export namespace UseSettlementWindow {
         };
         open: {
             settlement: (settlementId: string) => void,
+            country: () => void,
             tile: () => void
         };
         centerCamera: () => void,
@@ -59,6 +61,7 @@ export namespace UseSettlementWindow {
                 open: {
                     settlement: (settlementId) => UseSettlementWindow.open(settlementId),
                     tile: () => UseTileWindow.open(settlement.tile.id),
+                    country: () => UseCountryWindow.open(settlement.country.id),
                 },
                 centerCamera: () => App.gameProxy.focusCamera(settlement.tile.position),
             };

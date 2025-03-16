@@ -9,9 +9,9 @@ import {Tile} from "../../models/tile/tile";
 import {Settlement} from "../../models/settlement/settlement";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {Route} from "../../models/route/route";
-import {Country} from "../../models/country/country";
 import {Command} from "../../models/command/command";
 import {GameStateAccess} from "../../state/gameStateAccess";
+import {CountrySummary} from "../../models/country/countrySummary";
 
 export interface GameWebGLRenderContext extends WebGLRenderCommand.Context {
 	timestamp: number,
@@ -27,7 +27,7 @@ export interface GameWebGLRenderContext extends WebGLRenderCommand.Context {
 }
 
 export interface GameHtmlRenderContext extends HtmlRenderCommand.Context {
-	playerCountry: Country,
+	playerCountry: CountrySummary,
 	camera: Camera,
 	mapMode: MapMode,
 	tiles: Tile[],
@@ -74,7 +74,7 @@ export class RenderContextFactory {
 
 	public createHtmlContext(camera: Camera): GameHtmlRenderContext {
 		return {
-			playerCountry: this.localStateAccess.getPlayerCountry(),
+			playerCountry: this.localStateAccess.getPlayerCountrySummary(),
 			camera: camera,
 			mapMode: this.localStateAccess.getMapMode(),
 			commands: this.localStateAccess.getCommands(),

@@ -27,6 +27,8 @@ import {WorldObject} from "../models/worldobject/worldObject";
 import {SettlementBuilder} from "./utils/settlementBuilder";
 import {CameraEntity} from "../models/misc/cameraEntity";
 import {CameraDatabase} from "./database/cameraDatabase";
+import {CountryId} from "../models/country/countryId";
+import {Country} from "../models/country/country";
 
 export namespace GameStateHooks {
 
@@ -216,6 +218,39 @@ export namespace GameStateHooks {
 	 */
 	export function useWorldObject(id: WorldObjectId | null): WorldObject | null {
 		return useQuerySingle(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_ID, id);
+	}
+
+	/**
+	 * Get the country with the given id
+	 */
+	export function useCountry(id: CountryId | null): Country | null {
+		const country = useQuerySingle(countryDatabase, CountryDatabase.QUERY_BY_ID, id);
+		const settlements = useQueryMultiple(settlementDatabase, SettlementDatabase.QUERY_BY_COUNTRY_ID, id);
+		const worldObjects = useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_COUNTRY_ID, id);
+
+		if (country) {
+			return {
+				id: country.id,
+				name: country.name,
+				color: country.color,
+				isUserControlled: country.isUserControlled,
+				player: country.player,
+				settlements: settlements.map(it => ({
+					id: it.id,
+					name: it.name,
+					color: it.color,
+					isUserControlled: it.country.isUserControlled,
+				})),
+				worldObjects: worldObjects.map(it => ({
+					id: it.id,
+					type: it.type,
+					tile: it.tile,
+				})),
+			};
+		} else {
+			return null;
+		}
+
 	}
 
 }
