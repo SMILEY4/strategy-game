@@ -1,6 +1,5 @@
 import {WebGLRenderCommand} from "../common/webgl/webGLRenderCommand";
 import {MapMode} from "../../models/misc/mapMode";
-import {MovementTarget} from "../../models/misc/movementTarget";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {HtmlRenderCommand} from "../common/html/htmlRenderCommand";
 import {Camera} from "../../common/webgl/camera";
@@ -12,7 +11,7 @@ import {WorldObject} from "../../models/worldobject/worldObject";
 import {Route} from "../../models/route/route";
 import {Country} from "../../models/country/country";
 import {Command} from "../../models/command/command";
-import {LocalStateAccess} from "../../state/localStateAccess";
+import {GameStateAccess} from "../../state/gameStateAccess";
 
 export interface GameWebGLRenderContext extends WebGLRenderCommand.Context {
 	timestamp: number,
@@ -43,7 +42,7 @@ export class RenderContextFactory {
 
 	private readonly gl: WebGL2RenderingContext;
 	private readonly renderer: BaseRenderer;
-	private readonly localStateAccess: LocalStateAccess;
+	private readonly localStateAccess: GameStateAccess;
 
 	private tileCache: { items: Tile[], revId: string } = {items: [], revId: ""};
 	private settlementCache: { items: Settlement[], revId: string } = {items: [], revId: ""};
@@ -53,7 +52,7 @@ export class RenderContextFactory {
 	constructor(
 		gl: WebGL2RenderingContext,
 		renderer: BaseRenderer,
-		localStateAccess: LocalStateAccess,
+		localStateAccess: GameStateAccess,
 	) {
 		this.gl = gl;
 		this.renderer = renderer;

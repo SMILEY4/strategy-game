@@ -10,7 +10,7 @@ import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
-import {LocalStateAccess} from "../../state/localStateAccess";
+import {GameStateAccess} from "../../state/gameStateAccess";
 
 interface Changes {
 	initFrame: boolean,
@@ -26,7 +26,7 @@ interface Changes {
  */
 export class GameChangeProvider implements ChangeProvider {
 
-	private readonly localStateAccess: LocalStateAccess;
+	private readonly localStateAccess: GameStateAccess;
 
 	private readonly detectorCamera = new ChangeDetector();
 	private readonly detectorCurrentTurn = new ChangeDetector();
@@ -44,7 +44,7 @@ export class GameChangeProvider implements ChangeProvider {
 		commands: true,
 	};
 
-	constructor(localStateAccess: LocalStateAccess) {
+	constructor(localStateAccess: GameStateAccess) {
 		this.localStateAccess = localStateAccess;
 	}
 

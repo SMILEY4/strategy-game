@@ -1,7 +1,7 @@
-import {GameStateWriter} from "../../state/gameStateWriter";
-import {Projections} from "../../common/webgl/projections";
-import {TilePosition} from "../../models/tile/tilePosition";
-import {LocalStateAccess} from "../../state/localStateAccess";
+import {GameStateWriter} from "../../../state/gameStateWriter";
+import {Projections} from "../../../common/webgl/projections";
+import {TilePosition} from "../../../models/tile/tilePosition";
+import {GameStateAccess} from "../../../state/gameStateAccess";
 
 export interface CameraService {
 	center(tile: TilePosition): void;
@@ -11,10 +11,10 @@ export interface CameraService {
 
 export class CameraServiceImpl implements CameraService {
 
-	private readonly localStateAccess: LocalStateAccess;
+	private readonly localStateAccess: GameStateAccess;
 	private readonly gameStateWriter: GameStateWriter;
 
-	constructor(localStateAccess: LocalStateAccess, gameStateWriter: GameStateWriter) {
+	constructor(localStateAccess: GameStateAccess, gameStateWriter: GameStateWriter) {
 		this.localStateAccess = localStateAccess;
 		this.gameStateWriter = gameStateWriter;
 	}

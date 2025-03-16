@@ -1,10 +1,10 @@
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {GameRenderer} from "../../renderer/game/gameRenderer";
-import {TileService} from "./tileService";
-import {CameraService} from "./cameraService";
-import {MovementService} from "./movementService";
+import {TileService} from "./service/tileService";
+import {CameraService} from "./service/cameraService";
+import {MovementService} from "./service/movementService";
 import {AudioService, AudioType} from "../../common/audioService";
-import {TurnEndService} from "./turnEndService";
+import {TurnEndService} from "./service/turnEndService";
 import {MapMode} from "../../models/misc/mapMode";
 import {TilePosition} from "../../models/tile/tilePosition";
 import {Command} from "../../models/command/command";
@@ -12,21 +12,17 @@ import {TileId} from "../../models/tile/tileId";
 import {WorldObjectId} from "../../models/worldobject/worldObjectId";
 import {GameStateWriter} from "../../state/gameStateWriter";
 import {TileSummary} from "../../models/tile/tileSummary";
-import {SettlementService} from "./settlementService";
+import {SettlementService} from "./service/settlementService";
 import {SettlementSummary} from "../../models/settlement/settlementSummary";
 import {SettlementProductionOption} from "../../models/settlement/settlement";
 import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
-import {GameSessionService} from "../session/gameSessionService";
-import {UserService} from "../user/userService";
-import {CommandService} from "./commandService";
+import {GameSessionService} from "./service/gameSessionService";
+import {CommandService} from "./service/commandService";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
  */
-export interface InterfaceService {
-	// user
-	login(email: string, password: string): Promise<void>,
-	signup(email: string, password: string, username: string): Promise<void>,
+export interface GameProxy {
 	// session
 	listSessions(): Promise<GameSessionMeta[]>;
 	createSession(name: string, seed: string | null): Promise<string>;
@@ -63,7 +59,7 @@ export interface InterfaceService {
 	webglContextRestore(): void;
 }
 
-export class InterfaceServiceImpl implements InterfaceService {
+export class GameProxyImpl implements GameProxy {
 
 	private readonly gameRenderer: GameRenderer;
 	private readonly tileService: TileService;
@@ -73,7 +69,6 @@ export class InterfaceServiceImpl implements InterfaceService {
 	private readonly settlementService: SettlementService;
 	private readonly commandService: CommandService;
 	private readonly gameSessionService: GameSessionService;
-	private readonly userService: UserService;
 	private readonly gameStateWriter: GameStateWriter;
 	private readonly audioService: AudioService;
 	private readonly canvasHandle: CanvasHandle;
@@ -87,7 +82,6 @@ export class InterfaceServiceImpl implements InterfaceService {
 		settlementService: SettlementService,
 		commandService: CommandService,
 		gameSessionService: GameSessionService,
-		userService: UserService,
 		gameStateWriter: GameStateWriter,
 		audioService: AudioService,
 	) {
@@ -99,22 +93,13 @@ export class InterfaceServiceImpl implements InterfaceService {
 		this.settlementService = settlementService;
 		this.commandService = commandService;
 		this.gameSessionService = gameSessionService;
-		this.userService = userService;
 		this.gameStateWriter = gameStateWriter;
 		this.audioService = audioService;
 		this.canvasHandle = new CanvasHandle();
 	}
 
-	//========== USER ===========================================================
-	login(email: string, password: string): Promise<void> {
-		return this.userService.login(email, password);
-	}
-
-	signup(email: string, password: string, username: string): Promise<void> {
-		return this.userService.signup(email, password, username);
-	}
-
 	//========== SESSION ========================================================
+
 	listSessions(): Promise<GameSessionMeta[]> {
 		return this.gameSessionService.listSessions();
 	}
@@ -212,7 +197,7 @@ export class InterfaceServiceImpl implements InterfaceService {
 	//========== COMMANDS =====================================================
 
 	commandCancel(command: Command): void {
-		this.commandService.cancelCommand(command.id)
+		this.commandService.cancelCommand(command.id);
 	}
 
 	//========== SETTLEMENTS ==================================================

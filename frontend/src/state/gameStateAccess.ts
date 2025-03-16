@@ -15,18 +15,15 @@ import {MapMode} from "../models/misc/mapMode";
 import {Country} from "../models/country/country";
 import {Route} from "../models/route/route";
 import {GameSessionState} from "../models/misc/gameSessionState";
-import {UserState} from "./database/userState";
 import {CountryDatabase} from "./database/countryDatabase";
 import {WorldObjectDatabase} from "./database/worldObjectDatabase";
 import {MovementModeState} from "./database/movementModeState";
 import {SettlementDatabase} from "./database/settlementDatabase";
 import {RouteDatabase} from "./database/routeDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
-import {SettlementBuilder} from "./settlementBuilder";
+import {SettlementBuilder} from "./utils/settlementBuilder";
 
-export interface LocalStateAccess { // todo: check which consumers require "full" models and which can use reduced models
-	//user
-	getAuthTokenOrNull(): string | null
+export interface GameStateAccess { // todo: check which consumers require "full" models and which can use reduced models
 	// game
 	getCurrentTurn(): number
 	getGameSessionState(): GameSessionState
@@ -64,7 +61,7 @@ export interface LocalStateAccess { // todo: check which consumers require "full
 	getCommandsOfType<T extends Command>(type: CommandType): T[]
 }
 
-export class LocalStateAccessImpl implements LocalStateAccess {
+export class GameStateAccessImpl implements GameStateAccess {
 
 	private readonly cameraDatabase: CameraDatabase;
 	private readonly tileDatabase: TileDatabase;
@@ -93,12 +90,6 @@ export class LocalStateAccessImpl implements LocalStateAccess {
 		this.settlementDatabase = settlementDatabase;
 		this.routeDatabase = routeDatabase;
 		this.commandDatabase = commandDatabase;
-	}
-
-//========== USER =========================================================
-
-	getAuthTokenOrNull(): string | null {
-		return UserState.getState().token;
 	}
 
 	//========== GAME ==========================================================

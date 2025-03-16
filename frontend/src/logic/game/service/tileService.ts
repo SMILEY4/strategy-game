@@ -1,15 +1,15 @@
-import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
-import {UseWorldObjectWindow} from "../../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
-import {UseSettlementWindow} from "../../ui/pages/ingame/windows/settlement/useSettlementWindow";
-import {GameStateWriter} from "../../state/gameStateWriter";
-import {TileSummary} from "../../models/tile/tileSummary";
-import {WorldObject} from "../../models/worldobject/worldObject";
-import {Settlement} from "../../models/settlement/settlement";
-import {LocalStateAccess} from "../../state/localStateAccess";
-import {CanvasHandle} from "../../common/webgl/canvasHandle";
-import {Tile} from "../../models/tile/tile";
-import {Projections} from "../../common/webgl/projections";
-import {Camera} from "../../common/webgl/camera";
+import {UseTileWindow} from "../../../ui/pages/ingame/windows/tile/useTileWindow";
+import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
+import {UseSettlementWindow} from "../../../ui/pages/ingame/windows/settlement/useSettlementWindow";
+import {GameStateWriter} from "../../../state/gameStateWriter";
+import {TileSummary} from "../../../models/tile/tileSummary";
+import {WorldObject} from "../../../models/worldobject/worldObject";
+import {Settlement} from "../../../models/settlement/settlement";
+import {GameStateAccess} from "../../../state/gameStateAccess";
+import {CanvasHandle} from "../../../common/webgl/canvasHandle";
+import {Tile} from "../../../models/tile/tile";
+import {Projections} from "../../../common/webgl/projections";
+import {Camera} from "../../../common/webgl/camera";
 
 export interface TileService {
 	clickTile(tile: TileSummary): void;
@@ -19,10 +19,10 @@ export interface TileService {
 
 export class TileServiceImpl implements TileService {
 
-	private readonly localStateAccess: LocalStateAccess;
+	private readonly localStateAccess: GameStateAccess;
 	private readonly gameStateWriter: GameStateWriter;
 
-	constructor(localStateAccess: LocalStateAccess, gameStateWriter: GameStateWriter) {
+	constructor(localStateAccess: GameStateAccess, gameStateWriter: GameStateWriter) {
 		this.localStateAccess = localStateAccess;
 		this.gameStateWriter = gameStateWriter;
 	}

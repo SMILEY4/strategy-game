@@ -1,17 +1,17 @@
-import {AuthProvider} from "./authProvider";
-import {HttpClient} from "../../common/httpClient";
+import {HttpClient} from "../../../common/httpClient";
+import {UserStateAccess} from "../../../state/userStateAccess";
 
 /**
  * API-Client for user operations
  */
 export class UserClient {
 
-    private readonly authProvider: AuthProvider;
+    private readonly userStateAccess: UserStateAccess;
     private readonly httpClient: HttpClient;
 
-    constructor(authProvider: AuthProvider, httpClient: HttpClient) {
-        this.authProvider = authProvider;
+    constructor(httpClient: HttpClient, userStateAccess: UserStateAccess) {
         this.httpClient = httpClient;
+        this.userStateAccess = userStateAccess;
     }
 
     /**
@@ -52,7 +52,7 @@ export class UserClient {
                 password: password,
             },
             requireAuth: true,
-            token: this.authProvider.getToken(),
+            token: this.userStateAccess.getAuthTokenOrNull(),
         });
     }
 

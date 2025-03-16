@@ -1,4 +1,4 @@
-import {HiddenType} from "../../../common/hiddenType";
+import {HiddenType} from "../../common/hiddenType";
 
 export interface GameStateMessage {
 	meta: {

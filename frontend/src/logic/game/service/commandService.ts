@@ -1,6 +1,6 @@
-import {CommandId} from "../../models/command/commandId";
-import {Command} from "../../models/command/command";
-import {GameStateWriter} from "../../state/gameStateWriter";
+import {CommandId} from "../../../models/command/commandId";
+import {Command} from "../../../models/command/command";
+import {GameStateWriter} from "../../../state/gameStateWriter";
 
 export interface CommandService {
 	cancelCommand(id: CommandId): void;

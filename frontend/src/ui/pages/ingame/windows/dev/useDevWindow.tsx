@@ -6,8 +6,8 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {App} from "../../../../../appContext";
+import {GameStateHooks} from "../../../../../state/gameStateHooks";
 
 export namespace UseDevWindow {
 
@@ -34,7 +34,7 @@ export namespace UseDevWindow {
 	}
 
 	export function useData(): UseDevWindow.Data {
-		const camera = LocalStateHooks.useCamera();
+		const camera = GameStateHooks.useCamera();
 		const [enterFullscreen, exitFullscreen] = useFullscreen("root");
 		const [looseWGLContext, restoreWGLContext] = useWebGlContext();
 		return {
@@ -53,8 +53,8 @@ export namespace UseDevWindow {
 
 	function useWebGlContext() {
 		return [
-			() => App.interfaceService.webglContextLoose(),
-			() => App.interfaceService.webglContextRestore(),
+			() => App.gameProxy.webglContextLoose(),
+			() => App.gameProxy.webglContextRestore(),
 		];
 	}
 

@@ -4,9 +4,9 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {Command} from "../../../../../models/command/command";
 import {App} from "../../../../../appContext";
+import {GameStateHooks} from "../../../../../state/gameStateHooks";
 
 export namespace UseCommandLogWindow {
 
@@ -33,8 +33,8 @@ export namespace UseCommandLogWindow {
 	 */
 	export function useData(): UseCommandLogWindow.Data {
 		return {
-			commands: LocalStateHooks.useCommands(),
-			cancel: command => App.interfaceService.commandCancel(command),
+			commands: GameStateHooks.useCommands(),
+			cancel: command => App.gameProxy.commandCancel(command),
 		};
 	}
 

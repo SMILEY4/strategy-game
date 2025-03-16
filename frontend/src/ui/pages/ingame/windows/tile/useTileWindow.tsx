@@ -6,11 +6,11 @@ import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {TileId} from "../../../../../models/tile/tileId";
 import {Tile} from "../../../../../models/tile/tile";
 import {TileObject} from "../../../../../models/tile/tileObject";
 import {App} from "../../../../../appContext";
+import {GameStateHooks} from "../../../../../state/gameStateHooks";
 
 export namespace UseTileWindow {
 
@@ -35,8 +35,8 @@ export namespace UseTileWindow {
 
 	export function useData(overwriteTile: TileId | null): UseTileWindow.Data | null {
 
-		const selectedTile = LocalStateHooks.useSelectedTile();
-		const tile = LocalStateHooks.useTile((overwriteTile ?? selectedTile?.id) ?? null);
+		const selectedTile = GameStateHooks.useSelectedTile();
+		const tile = GameStateHooks.useTile((overwriteTile ?? selectedTile?.id) ?? null);
 
 		if (tile) {
 			return {
@@ -56,7 +56,7 @@ export namespace UseTileWindow {
 						}
 					},
 				},
-				centerCamera: () => App.interfaceService.focusCamera(tile.position),
+				centerCamera: () => App.gameProxy.focusCamera(tile.position),
 			};
 		} else {
 			return null;

@@ -2,7 +2,7 @@ import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {Camera} from "../../common/webgl/camera";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {GameRenderGraph} from "./gameRenderGraph";
-import {LocalStateAccess} from "../../state/localStateAccess";
+import {GameStateAccess} from "../../state/gameStateAccess";
 import {ChangeProvider} from "../common/graph/changeProvider";
 
 /**
@@ -11,14 +11,14 @@ import {ChangeProvider} from "../common/graph/changeProvider";
 export class GameRenderer {
 
 	private readonly changeProvider: ChangeProvider;
-	private readonly localStateAccess: LocalStateAccess;
+	private readonly localStateAccess: GameStateAccess;
 
 	private renderConfig: GameRenderConfig | null = null;
 	private renderGraph: GameRenderGraph | null = null;
 
 	constructor(
 		changeProvider: ChangeProvider,
-		localStateAccess: LocalStateAccess,
+		localStateAccess: GameStateAccess,
 	) {
 		this.changeProvider = changeProvider;
 		this.localStateAccess = localStateAccess;

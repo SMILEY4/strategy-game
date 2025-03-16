@@ -72,7 +72,7 @@ export function Canvas() {
 	}
 
 	function mouseMove(e: MouseEvent) {
-		App.interfaceService.mouseMoved(
+		App.gameProxy.mouseMoved(
 			e.movementX,
 			e.movementY,
 			e.clientX,
@@ -97,27 +97,27 @@ export function Canvas() {
 	}
 
 	function scroll(e: WheelEvent) {
-		App.interfaceService.mouseScrolled(e.deltaY, e.clientX, e.clientY);
+		App.gameProxy.mouseScrolled(e.deltaY, e.clientX, e.clientY);
 	}
 
 	function click(duration: number, e: MouseEvent) {
 		if (duration < 150) {
-			App.interfaceService.mouseClicked(e.clientX, e.clientY);
+			App.gameProxy.mouseClicked(e.clientX, e.clientY);
 		}
 	}
 
 	function onInitialize(canvas: HTMLCanvasElement) {
-		App.interfaceService.initialize(canvas);
+		App.gameProxy.initialize(canvas);
 	}
 
 	function onRender() {
-		App.interfaceService.update();
+		App.gameProxy.update();
 	}
 
 	function onDispose() {
 		console.log("Disposing canvas");
 		animationId.current && cancelAnimationFrame(animationId.current);
-		App.interfaceService.dispose();
+		App.gameProxy.dispose();
 	}
 
 	return (

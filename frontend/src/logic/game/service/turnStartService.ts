@@ -3,19 +3,19 @@ import {
 	GameStateMessage,
 	SettlementMessage,
 	WorldObjectMessage,
-} from "../session/models/gameStateMessage";
-import {TileResourceType} from "../../models/tile/TileResourceType";
-import {WorldObjectType} from "../../models/worldobject/worldObjectType";
-import {Visibility} from "../../models/misc/visibility";
-import {mapHidden} from "../../common/hiddenType";
-import {mapValue} from "../../common/utils";
-import {GameStateWriter} from "../../state/gameStateWriter";
-import {TileEntity} from "../../models/tile/tileEntity";
-import {TerrainType} from "../../models/tile/terrainType";
-import {CountryEntity} from "../../models/country/countryEntity";
-import {SettlementEntity} from "../../models/settlement/settlementEntity";
-import {WorldObjectEntity} from "../../models/worldobject/worldObjectEntity";
-import {RouteEntity} from "../../models/route/routeEntity";
+} from "../../../models/messages/gameStateMessage";
+import {TileResourceType} from "../../../models/tile/TileResourceType";
+import {WorldObjectType} from "../../../models/worldobject/worldObjectType";
+import {Visibility} from "../../../models/misc/visibility";
+import {mapHidden} from "../../../common/hiddenType";
+import {mapValue} from "../../../common/utils";
+import {GameStateWriter} from "../../../state/gameStateWriter";
+import {TileEntity} from "../../../models/tile/tileEntity";
+import {TerrainType} from "../../../models/tile/terrainType";
+import {CountryEntity} from "../../../models/country/countryEntity";
+import {SettlementEntity} from "../../../models/settlement/settlementEntity";
+import {WorldObjectEntity} from "../../../models/worldobject/worldObjectEntity";
+import {RouteEntity} from "../../../models/route/routeEntity";
 
 export interface TurnStartService {
 	setGameState(gameState: GameStateMessage): void;

@@ -24,12 +24,11 @@ import {Tile} from "../models/tile/tile";
 import {WorldObjectId} from "../models/worldobject/worldObjectId";
 import {TileId} from "../models/tile/tileId";
 import {WorldObject} from "../models/worldobject/worldObject";
-import {SettlementBuilder} from "./settlementBuilder";
+import {SettlementBuilder} from "./utils/settlementBuilder";
 import {CameraEntity} from "../models/misc/cameraEntity";
 import {CameraDatabase} from "./database/cameraDatabase";
-import {UserState} from "./database/userState";
 
-export namespace LocalStateHooks {
+export namespace GameStateHooks {
 
 	function UNINITIALIZED<T>(): T {
 		return null as T;
@@ -62,13 +61,6 @@ export namespace LocalStateHooks {
 		countryDatabase = dependencies.countryDatabase;
 		routeDatabase = dependencies.routeDatabase;
 		cameraDatabase = dependencies.cameraDatabase;
-	}
-
-	/**
-	 * Whether an authentication token is present
-	 */
-	export function useIsAuthenticated(): boolean {
-		return UserState.getState().token !== null;
 	}
 
 	/**

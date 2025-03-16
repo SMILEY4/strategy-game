@@ -3,10 +3,10 @@ import {ProductionWindow} from "./ProductionWindow";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {openWindow} from "../../../../components/window/windowHooks";
-import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
 import {SettlementProductionOption} from "../../../../../models/settlement/settlement";
 import {App} from "../../../../../appContext";
+import {GameStateHooks} from "../../../../../state/gameStateHooks";
 
 export namespace UseProductionWindow {
 
@@ -28,11 +28,11 @@ export namespace UseProductionWindow {
 
 
 	export function useData(settlement: SettlementSummary): UseProductionWindow.Data {
-		const options = LocalStateHooks.useProductionOptions(settlement.id);
+		const options = GameStateHooks.useProductionOptions(settlement.id);
 		return {
 			settlement: settlement,
 			entries: options,
-			produce: (entry: SettlementProductionOption) => App.interfaceService.addProduction(settlement, entry),
+			produce: (entry: SettlementProductionOption) => App.gameProxy.addProduction(settlement, entry),
 		};
 	}
 

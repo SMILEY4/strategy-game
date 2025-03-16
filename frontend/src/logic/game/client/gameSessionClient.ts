@@ -1,20 +1,20 @@
-import {AuthProvider} from "../user/authProvider";
-import {HttpClient} from "../../common/httpClient";
-import {WebsocketClient} from "../../common/websocketClient";
-import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
-import {WebsocketMessageHandler} from "../../common/websocketMessageHandler";
+import {HttpClient} from "../../../common/httpClient";
+import {WebsocketClient} from "../../../common/websocketClient";
+import {GameSessionMeta} from "../../../models/misc/gameSessionMeta";
+import {WebsocketMessageHandler} from "../../../common/websocketMessageHandler";
+import {UserStateAccess} from "../../../state/userStateAccess";
 
 /**
  * API-Client for game session operations
  */
 export class GameSessionClient {
 
-    private readonly authProvider: AuthProvider;
+    private readonly userStateAccess: UserStateAccess;
     private readonly httpClient: HttpClient;
     private readonly wsClient: WebsocketClient;
 
-    constructor(authProvider: AuthProvider, httpClient: HttpClient, wsClient: WebsocketClient) {
-        this.authProvider = authProvider;
+    constructor(httpClient: HttpClient, wsClient: WebsocketClient, userStateAccess: UserStateAccess) {
+        this.userStateAccess = userStateAccess;
         this.httpClient = httpClient;
         this.wsClient = wsClient;
     }
@@ -26,7 +26,7 @@ export class GameSessionClient {
         return this.httpClient.get<GameSessionMeta[]>({
             url: "/api/session/list",
             requireAuth: true,
-            token: this.authProvider.getToken(),
+            token: this.userStateAccess.getAuthTokenOrNull(),
         });
     }
 
@@ -37,7 +37,7 @@ export class GameSessionClient {
         return this.httpClient.post<string>({
             url: "/api/session/create?name=" + name + (seed ? ("&seed=" + seed) : ""),
             requireAuth: true,
-            token: this.authProvider.getToken(),
+            token: this.userStateAccess.getAuthTokenOrNull(),
             responseType: "text",
         });
     }
@@ -49,7 +49,7 @@ export class GameSessionClient {
         return this.httpClient.delete<void>({
             url: "/api/session/delete/" + gameId,
             requireAuth: true,
-            token: this.authProvider.getToken(),
+            token: this.userStateAccess.getAuthTokenOrNull(),
         });
     }
 
@@ -60,7 +60,7 @@ export class GameSessionClient {
         return this.httpClient.post<void>({
             url: `/api/session/join/${gameId}`,
             requireAuth: true,
-            token: this.authProvider.getToken(),
+            token: this.userStateAccess.getAuthTokenOrNull(),
         });
     }
 
@@ -95,7 +95,7 @@ export class GameSessionClient {
         return this.httpClient.get<string>({
             url: "/api/session/wsticket",
             requireAuth: true,
-            token: this.authProvider.getToken(),
+            token: this.userStateAccess.getAuthTokenOrNull(),
             responseType: "text",
         });
     }

@@ -1,19 +1,18 @@
 import {CommandService} from "./commandService";
-import {GameClient} from "./gameClient";
-import {TileId} from "../../models/tile/tileId";
-import {WorldObjectId} from "../../models/worldobject/worldObjectId";
-import {ProductionOptionEntity} from "../../models/settlement/settlementEntity";
+import {GameClient} from "../client/gameClient";
+import {TileId} from "../../../models/tile/tileId";
+import {WorldObjectId} from "../../../models/worldobject/worldObjectId";
 import {
 	CreateSettlementCommand,
 	ProductionQueueAddCommand,
 	ProductionQueueCancelCommand,
-} from "../../models/command/command";
-import {CommandType} from "../../models/command/commandType";
-import {UID} from "../../common/uid";
-import {TileSummary} from "../../models/tile/tileSummary";
-import {SettlementSummary} from "../../models/settlement/settlementSummary";
-import {LocalStateAccess} from "../../state/localStateAccess";
-import {SettlementProductionOption} from "../../models/settlement/settlement";
+} from "../../../models/command/command";
+import {CommandType} from "../../../models/command/commandType";
+import {UID} from "../../../common/uid";
+import {TileSummary} from "../../../models/tile/tileSummary";
+import {SettlementSummary} from "../../../models/settlement/settlementSummary";
+import {GameStateAccess} from "../../../state/gameStateAccess";
+import {SettlementProductionOption} from "../../../models/settlement/settlement";
 
 
 export interface SettlementService {
@@ -28,12 +27,12 @@ export class SettlementServiceImpl implements SettlementService {
 
 	private readonly commandService: CommandService;
 	private readonly client: GameClient;
-	private readonly localStateAccess: LocalStateAccess;
+	private readonly localStateAccess: GameStateAccess;
 
 	constructor(
 		commandService: CommandService,
 		client: GameClient,
-		localStateAccess: LocalStateAccess,
+		localStateAccess: GameStateAccess,
 	) {
 		this.commandService = commandService;
 		this.client = client;
@@ -42,7 +41,7 @@ export class SettlementServiceImpl implements SettlementService {
 
 
 	getRandomName(): Promise<string> {
-		return this.client.getRandomSettlementName().then(it => it.name);
+		return this.client.getRandomSettlementName();
 	}
 
 

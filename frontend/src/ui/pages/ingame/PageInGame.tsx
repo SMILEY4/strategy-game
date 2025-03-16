@@ -9,14 +9,14 @@ import {SessionHooks} from "../sessions/sessions";
 import {WindowStack} from "../../components/window/WindowStack";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {Txt} from "../../components/text/Txt";
-import {LocalStateHooks} from "../../../state/localStateHooks";
 import {App} from "../../../appContext";
+import {GameStateHooks} from "../../../state/gameStateHooks";
 
 const USE_DUMMY_CANVAS = false;
 
 export function PageInGame(): ReactElement {
 
-	const currentState = LocalStateHooks.useGameSessionState();
+	const currentState = GameStateHooks.useGameSessionState();
 	const loadGame = useLoadGame();
 
 	useEffect(() => {
@@ -73,7 +73,7 @@ function GamePlaying(): ReactElement {
 	}, []);
 
 	function endGamePlaying() {
-		App.interfaceService.disconnectSession().then(undefined);
+		App.gameProxy.disconnectSession().then(undefined);
 	}
 
 	return (

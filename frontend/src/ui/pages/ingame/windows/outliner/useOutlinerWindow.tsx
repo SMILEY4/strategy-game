@@ -6,11 +6,11 @@ import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
-import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {SettlementOutline} from "../../../../../models/settlement/settlementOutline";
 import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectOutline";
 import {CountryOutline} from "../../../../../models/country/countryOutline";
 import {App} from "../../../../../appContext";
+import {GameStateHooks} from "../../../../../state/gameStateHooks";
 
 export namespace UseOutlinerWindow {
 
@@ -42,20 +42,20 @@ export namespace UseOutlinerWindow {
 
 	export function useData(): UseOutlinerWindow.Data {
 
-		const countries = LocalStateHooks.useOutlineCountries();
-		const settlements = LocalStateHooks.useOutlineSettlements();
-		const units = LocalStateHooks.useOutlineWorldObjects();
+		const countries = GameStateHooks.useOutlineCountries();
+		const settlements = GameStateHooks.useOutlineSettlements();
+		const units = GameStateHooks.useOutlineWorldObjects();
 
 		return {
 			settlements: {
 				entries: settlements,
 				open: (outline: SettlementOutline) => UseSettlementWindow.open(outline.id),
-				focusCamera: (outline: SettlementOutline) => App.interfaceService.focusCamera(outline.tile.position),
+				focusCamera: (outline: SettlementOutline) => App.gameProxy.focusCamera(outline.tile.position),
 			},
 			worldObjects: {
 				entries: units,
 				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.id),
-				focusCamera: (outline: WorldObjectOutline) => App.interfaceService.focusCamera(outline.tile.position),
+				focusCamera: (outline: WorldObjectOutline) => App.gameProxy.focusCamera(outline.tile.position),
 			},
 			countries: {
 				entries: countries,

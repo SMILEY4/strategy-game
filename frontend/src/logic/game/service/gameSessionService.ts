@@ -1,27 +1,27 @@
-import {GameSessionClient} from "./gameSessionClient";
-import {handleResponseError} from "../../common/httpClient";
-import {UnauthorizedError} from "../../common/UnauthorizedError";
-import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
-import {RenderGraphPreloader} from "../../renderer/game/renderGraphPreloader";
-import {TurnStartService} from "../game/turnStartService";
-import {GameStateMessage} from "./models/gameStateMessage";
-import {WebsocketMessageHandler} from "../../common/websocketMessageHandler";
+import {GameSessionClient} from "../client/gameSessionClient";
+import {handleResponseError} from "../../../common/httpClient";
+import {UnauthorizedError} from "../../../common/UnauthorizedError";
+import {GameSessionMeta} from "../../../models/misc/gameSessionMeta";
+import {RenderGraphPreloader} from "../../../renderer/game/renderGraphPreloader";
+import {TurnStartService} from "./turnStartService";
+import {GameStateMessage} from "../../../models/messages/gameStateMessage";
+import {WebsocketMessageHandler} from "../../../common/websocketMessageHandler";
 import {
 	CreateSettlementCommandMessage,
 	MoveCommandMessage,
 	ProductionQueueAddCommandMessage,
 	ProductionQueueCancelCommandMessage,
-} from "./models/commandMessage";
+} from "../../../models/messages/commandMessage";
 import {
 	Command,
 	CreateSettlementCommand,
 	MoveCommand,
 	ProductionQueueAddCommand,
 	ProductionQueueCancelCommand,
-} from "../../models/command/command";
-import {CommandType} from "../../models/command/commandType";
-import {LocalStateAccess} from "../../state/localStateAccess";
-import {GameStateWriter} from "../../state/gameStateWriter";
+} from "../../../models/command/command";
+import {CommandType} from "../../../models/command/commandType";
+import {GameStateAccess} from "../../../state/gameStateAccess";
+import {GameStateWriter} from "../../../state/gameStateWriter";
 
 export interface GameSessionService {
 	listSessions(): Promise<GameSessionMeta[]>;
@@ -37,13 +37,13 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 
 	private readonly client: GameSessionClient;
 	private readonly turnStartService: TurnStartService;
-	private readonly localStateAccess: LocalStateAccess;
+	private readonly localStateAccess: GameStateAccess;
 	private readonly gameStateWriter: GameStateWriter;
 
 	constructor(
 		client: GameSessionClient,
 		turnStartService: TurnStartService,
-		localStateAccess: LocalStateAccess,
+		localStateAccess: GameStateAccess,
 		gameStateWriter: GameStateWriter,
 	) {
 		this.client = client;

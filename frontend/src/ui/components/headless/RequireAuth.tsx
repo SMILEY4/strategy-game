@@ -1,12 +1,10 @@
 import {useEffect} from "react";
-import {AuthHooks} from "../../hooks/authentication";
-import {GotoHooks} from "../../hooks/goto";
-import {App} from "../../../appContext";
-import {LocalStateHooks} from "../../../state/localStateHooks";
+import {GotoHooks} from "../../pages/goto";
+import {UserStateHooks} from "../../../state/userStateHooks";
 
 export function RequireAuth(props: { loginUrl: string, children: any }) {
 
-    const authenticated= LocalStateHooks.useIsAuthenticated()
+    const authenticated= UserStateHooks.useIsAuthenticated()
     const gotoLoginRedirect = GotoHooks.useLoginRedirect(props.loginUrl)
 
     useEffect(() => {

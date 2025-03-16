@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {GotoHooks} from "../../hooks/goto";
+import {GotoHooks} from "../goto";
 import {App} from "../../../appContext";
 
 export namespace LoginHooks {
@@ -20,7 +20,7 @@ export namespace LoginHooks {
 				setError("Password is missing!");
 				return;
 			}
-			return App.interfaceService.login(email, password)
+			return App.userProxy.login(email, password)
 				.then(() => gotoLoginRedirect())
 				.catch(e => setError("Internal Error: " + e));
 		}

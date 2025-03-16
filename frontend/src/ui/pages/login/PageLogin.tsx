@@ -5,7 +5,7 @@ import {TextField} from "../../components/textfield/TextField";
 import {Button} from "../../components/button/Button";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {VSpacer} from "../../components/spacer/Spacer";
-import {GotoHooks} from "../../hooks/goto";
+import {GotoHooks} from "../goto";
 import {LoginHooks} from "./login";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {Txt} from "../../components/text/Txt";

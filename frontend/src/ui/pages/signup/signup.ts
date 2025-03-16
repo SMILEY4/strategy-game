@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {GotoHooks} from "../../hooks/goto";
+import {GotoHooks} from "../goto";
 import {App} from "../../../appContext";
 
 export namespace SignupHooks {
@@ -25,7 +25,7 @@ export namespace SignupHooks {
 				setError("Username is missing!");
 				return;
 			}
-			return App.interfaceService.signup(email, password, username)
+			return App.userProxy.signup(email, password, username)
 				.then(() => gotoSignupConfirm())
 				.catch(e => setError("Internal Error: " + e));
 		}

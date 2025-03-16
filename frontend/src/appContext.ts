@@ -1,13 +1,12 @@
-import {InterfaceService, InterfaceServiceImpl} from "./logic/game/interfaceService";
 import {GameRenderer} from "./renderer/game/gameRenderer";
-import {TileService, TileServiceImpl} from "./logic/game/tileService";
-import {CameraService, CameraServiceImpl} from "./logic/game/cameraService";
-import {MovementService, MovementServiceImpl} from "./logic/game/movementService";
-import {TurnEndService, TurnEndServiceImpl} from "./logic/game/turnEndService";
-import {SettlementService, SettlementServiceImpl} from "./logic/game/settlementService";
+import {TileService, TileServiceImpl} from "./logic/game/service/tileService";
+import {CameraService, CameraServiceImpl} from "./logic/game/service/cameraService";
+import {MovementService, MovementServiceImpl} from "./logic/game/service/movementService";
+import {TurnEndService, TurnEndServiceImpl} from "./logic/game/service/turnEndService";
+import {SettlementService, SettlementServiceImpl} from "./logic/game/service/settlementService";
 import {GameStateWriter, GameStateWriterImpl} from "./state/gameStateWriter";
 import {AudioService} from "./common/audioService";
-import {LocalStateAccess, LocalStateAccessImpl} from "./state/localStateAccess";
+import {GameStateAccess, GameStateAccessImpl} from "./state/gameStateAccess";
 import {CameraDatabase} from "./state/database/cameraDatabase";
 import {CommandDatabase} from "./state/database/commandDatabase";
 import {CountryDatabase} from "./state/database/countryDatabase";
@@ -16,20 +15,23 @@ import {RouteDatabase} from "./state/database/routeDatabase";
 import {SettlementDatabase} from "./state/database/settlementDatabase";
 import {TileDatabase} from "./state/database/tileDatabase";
 import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
-import {GameClient} from "./logic/game/gameClient";
-import {AuthProvider} from "./logic/user/authProvider";
-import {GameIdProvider} from "./logic/session/gameIdProvider";
+import {GameClient} from "./logic/game/client/gameClient";
+import {GameIdProvider} from "./logic/game/client/gameIdProvider";
 import {HttpClient} from "./common/httpClient";
-import {CommandService, CommandServiceImpl} from "./logic/game/commandService";
+import {CommandService, CommandServiceImpl} from "./logic/game/service/commandService";
 import {ChangeProvider} from "./renderer/common/graph/changeProvider";
 import {GameChangeProvider} from "./renderer/game/gameChangeProvider";
-import {GameSessionService, GameSessionServiceImpl} from "./logic/session/gameSessionService";
-import {GameSessionClient} from "./logic/session/gameSessionClient";
+import {GameSessionService, GameSessionServiceImpl} from "./logic/game/service/gameSessionService";
+import {GameSessionClient} from "./logic/game/client/gameSessionClient";
 import {WebsocketClient} from "./common/websocketClient";
-import {TurnStartService, TurnStartServiceImpl} from "./logic/game/turnStartService";
-import {LocalStateHooks} from "./state/localStateHooks";
-import {UserService} from "./logic/user/userService";
-import {UserClient} from "./logic/user/userClient";
+import {TurnStartService, TurnStartServiceImpl} from "./logic/game/service/turnStartService";
+import {UserService, UserServiceImpl} from "./logic/user/service/userService";
+import {UserClient} from "./logic/user/client/userClient";
+import {GameStateHooks} from "./state/gameStateHooks";
+import {UserStateWriter, UserStateWriterImpl} from "./state/userStateWriter";
+import {UserStateAccess, UserStateAccessImpl} from "./state/userStateAccess";
+import {GameProxy, GameProxyImpl} from "./logic/game/gameProxy";
+import {UserProxy, UserProxyImpl} from "./logic/user/userProxy";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -47,6 +49,18 @@ export namespace App {
 	const worldObjectDatabase: WorldObjectDatabase = new WorldObjectDatabase();
 
 	// state read / write
+	const userStateAccess: UserStateAccess = new UserStateAccessImpl();
+	const userStateWriter: UserStateWriter = new UserStateWriterImpl();
+	const gameStateAccess: GameStateAccess = new GameStateAccessImpl(
+		cameraDatabase,
+		tileDatabase,
+		gameSessionDatabase,
+		countryDatabase,
+		worldObjectDatabase,
+		settlementDatabase,
+		routeDatabase,
+		commandDatabase
+	);
 	const gameStateWriter: GameStateWriter = new GameStateWriterImpl(
 		commandDatabase,
 		tileDatabase,
@@ -57,48 +71,40 @@ export namespace App {
 		cameraDatabase,
 		gameSessionDatabase
 	);
-	const localStateAccess: LocalStateAccess = new LocalStateAccessImpl(
-		cameraDatabase,
-		tileDatabase,
-		gameSessionDatabase,
-		countryDatabase,
-		worldObjectDatabase,
-		settlementDatabase,
-		routeDatabase,
-		commandDatabase
-	);
 
 	// providers
-	const authProvider: AuthProvider = new AuthProvider(localStateAccess);
 	const gameIdProvider: GameIdProvider = new GameIdProvider();
 
 	// api clients
 	const httpClient: HttpClient = new HttpClient(API_BASE_URL);
 
-	const userClient: UserClient = new UserClient(authProvider, httpClient);
-	const gameClient: GameClient = new GameClient(authProvider, gameIdProvider, httpClient);
-	const gameSessionClient: GameSessionClient = new GameSessionClient(authProvider, httpClient, new WebsocketClient(API_WS_BASE_URL));
+	const userClient: UserClient = new UserClient(httpClient, userStateAccess);
+	const gameClient: GameClient = new GameClient(httpClient, userStateAccess, gameIdProvider);
+	const gameSessionClient: GameSessionClient = new GameSessionClient(httpClient, new WebsocketClient(API_WS_BASE_URL), userStateAccess);
 
 	// core services
 	const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
-	const movementService: MovementService = new MovementServiceImpl(localStateAccess, gameStateWriter, gameClient, commandService);
+	const movementService: MovementService = new MovementServiceImpl(gameStateAccess, gameStateWriter, gameClient, commandService);
 	const turnStartService: TurnStartService = new TurnStartServiceImpl(gameStateWriter);
-	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, turnStartService, localStateAccess, gameStateWriter);
-	const turnEndService: TurnEndService = new TurnEndServiceImpl(gameSessionService, movementService, gameStateWriter, localStateAccess);
-	const settlementService: SettlementService = new SettlementServiceImpl(commandService, gameClient, localStateAccess);
-	const tileService: TileService = new TileServiceImpl(localStateAccess, gameStateWriter);
-	const cameraService: CameraService = new CameraServiceImpl(localStateAccess, gameStateWriter);
-	const userService: UserService = new UserService(userClient, localStateAccess, gameStateWriter);
+	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, turnStartService, gameStateAccess, gameStateWriter);
+	const turnEndService: TurnEndService = new TurnEndServiceImpl(gameSessionService, movementService, gameStateWriter, gameStateAccess);
+	const settlementService: SettlementService = new SettlementServiceImpl(commandService, gameClient, gameStateAccess);
+	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
+	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
+	const userService: UserService = new UserServiceImpl(userClient, userStateAccess, userStateWriter);
 
 	// rendering
-	const changeProvider: ChangeProvider = new GameChangeProvider(localStateAccess);
-	const gameRenderer: GameRenderer = new GameRenderer(changeProvider, localStateAccess);
+	const changeProvider: ChangeProvider = new GameChangeProvider(gameStateAccess);
+	const gameRenderer: GameRenderer = new GameRenderer(changeProvider, gameStateAccess);
 
 	// utility services
 	const audioService: AudioService = new AudioService();
 
-	// interface services
-	export const interfaceService: InterfaceService = new InterfaceServiceImpl(
+	// proxy services
+	export const userProxy: UserProxy = new UserProxyImpl(
+		userService,
+	);
+	export const gameProxy: GameProxy = new GameProxyImpl(
 		gameRenderer,
 		tileService,
 		cameraService,
@@ -107,11 +113,10 @@ export namespace App {
 		settlementService,
 		commandService,
 		gameSessionService,
-		userService,
 		gameStateWriter,
 		audioService,
 	);
-	LocalStateHooks.initialize({
+	GameStateHooks.initialize({
 		gameSessionDatabase: gameSessionDatabase,
 		tileDatabase: tileDatabase,
 		commandDatabase: commandDatabase,

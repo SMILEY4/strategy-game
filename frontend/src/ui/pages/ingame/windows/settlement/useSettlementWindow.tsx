@@ -7,11 +7,11 @@ import {WindowStore} from "../../../../components/window/windowStore";
 import {UseTileWindow} from "../tile/useTileWindow";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {LocalStateHooks} from "../../../../../state/localStateHooks";
 import {Settlement} from "../../../../../models/settlement/settlement";
 import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
 import {SettlementId} from "../../../../../models/settlement/settlementId";
 import {App} from "../../../../../appContext";
+import {GameStateHooks} from "../../../../../state/gameStateHooks";
 
 export namespace UseSettlementWindow {
 
@@ -41,7 +41,7 @@ export namespace UseSettlementWindow {
 
     export function useData(settlementId: SettlementId): UseSettlementWindow.Data | null {
 
-        const settlement = LocalStateHooks.useSettlement(settlementId)
+        const settlement = GameStateHooks.useSettlement(settlementId)
 
         if (settlement) {
             const settlementSummary = SettlementSummary.from(settlement);
@@ -52,7 +52,7 @@ export namespace UseSettlementWindow {
                     openList: () => UseProductionQueueWindow.open(settlementSummary),
                     cancelActive: () => {
                         if(settlement.productionQueueActive.value) {
-                            App.interfaceService.cancelProduction(settlementSummary, settlement.productionQueueActive.value.id)
+                            App.gameProxy.cancelProduction(settlementSummary, settlement.productionQueueActive.value.id)
                         }
                     },
                 },
@@ -60,7 +60,7 @@ export namespace UseSettlementWindow {
                     settlement: (settlementId) => UseSettlementWindow.open(settlementId),
                     tile: () => UseTileWindow.open(settlement.tile.id),
                 },
-                centerCamera: () => App.interfaceService.focusCamera(settlement.tile.position),
+                centerCamera: () => App.gameProxy.focusCamera(settlement.tile.position),
             };
         } else {
             return null;

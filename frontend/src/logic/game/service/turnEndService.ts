@@ -1,7 +1,7 @@
-import {GameSessionService} from "../session/gameSessionService";
+import {GameSessionService} from "./gameSessionService";
 import {MovementService} from "./movementService";
-import {LocalStateAccess} from "../../state/localStateAccess";
-import {GameStateWriter} from "../../state/gameStateWriter";
+import {GameStateAccess} from "../../../state/gameStateAccess";
+import {GameStateWriter} from "../../../state/gameStateWriter";
 
 /**
  * Service to handle the end of the current turn (for this player)
@@ -15,13 +15,13 @@ export class TurnEndServiceImpl implements TurnEndService {
 	private readonly gameSessionService: GameSessionService;
 	private readonly movementService: MovementService;
 	private readonly gameStateWriter: GameStateWriter;
-	private readonly localStateAccess: LocalStateAccess;
+	private readonly localStateAccess: GameStateAccess;
 
 	constructor(
 		gameSessionService: GameSessionService,
 		movementService: MovementService,
 		gameStateWriter: GameStateWriter,
-		localStateAccess: LocalStateAccess,
+		localStateAccess: GameStateAccess,
 	) {
 		this.gameSessionService = gameSessionService;
 		this.movementService = movementService;

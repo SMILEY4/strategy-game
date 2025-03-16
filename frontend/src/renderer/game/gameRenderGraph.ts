@@ -27,7 +27,7 @@ import {GameHtmlRenderContext, GameWebGLRenderContext, RenderContextFactory} fro
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
 import {MapDetailsDrawNode} from "./rendernodes/mapDetailsDrawNode";
 import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
-import {LocalStateAccess} from "../../state/localStateAccess";
+import {GameStateAccess} from "../../state/gameStateAccess";
 
 export class GameRenderGraph {
 
@@ -40,7 +40,7 @@ export class GameRenderGraph {
 
 	private camera: Camera = new Camera();
 
-	constructor(changeProvider: ChangeProvider, gl: WebGL2RenderingContext, localStateAccess: LocalStateAccess) {
+	constructor(changeProvider: ChangeProvider, gl: WebGL2RenderingContext, localStateAccess: GameStateAccess) {
 
 		this.changeProvider = changeProvider;
 		this.renderer = new BaseRenderer(gl);

@@ -9,13 +9,13 @@ import {UseCommandLogWindow} from "../windows/commandlog/useCommandLogWindow";
 import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
 import {UseOutlinerWindow} from "../windows/outliner/useOutlinerWindow";
 import {Txt} from "../../../components/text/Txt";
-import {LocalStateHooks} from "../../../../state/localStateHooks";
 import {App} from "../../../../appContext";
+import {GameStateHooks} from "../../../../state/gameStateHooks";
 
 export function MenuBar(): ReactElement {
 
-	const currentTurn = LocalStateHooks.useCurrentTurn();
-	const isWaiting = LocalStateHooks.useIsGameWaiting();
+	const currentTurn = GameStateHooks.useCurrentTurn();
+	const isWaiting = GameStateHooks.useIsGameWaiting();
 	const isBlocked = useIsBlockingWindowOpen();
 
 	return (
@@ -30,7 +30,7 @@ export function MenuBar(): ReactElement {
 
 					<HSpacer fullWidth/>
 
-					<Button success disabled={isBlocked || isWaiting} onClick={() => App.interfaceService.endTurn()}>
+					<Button success disabled={isBlocked || isWaiting} onClick={() => App.gameProxy.endTurn()}>
 						{"End Turn " + currentTurn}
 					</Button>
 

@@ -46,11 +46,11 @@ export namespace UseFoundSettlementWindow {
 		const [invalidReasons, setInvalidReasons] = useState<string[]>([]);
 
 		useEffect(() => {
-			App.interfaceService.getRandomSettlementName().then(setName);
+			App.gameProxy.getRandomSettlementName().then(setName);
 		}, []);
 
 		useEffect(() => {
-			setInvalidReasons(App.interfaceService.validateFoundSettlement(tile.id, name));
+			setInvalidReasons(App.gameProxy.validateFoundSettlement(tile.id, name));
 		}, [name]);
 
 		return {
@@ -62,10 +62,10 @@ export namespace UseFoundSettlementWindow {
 					set: setName,
 				},
 			},
-			randomizeName: () => App.interfaceService.getRandomSettlementName().then(setName),
+			randomizeName: () => App.gameProxy.getRandomSettlementName().then(setName),
 			cancel: () => closeWindow(windowId),
 			create: () => {
-				App.interfaceService.foundSettlement(tile, worldObjectId, name);
+				App.gameProxy.foundSettlement(tile, worldObjectId, name);
 				closeWindow(windowId);
 			},
 		};

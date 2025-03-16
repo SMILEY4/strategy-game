@@ -10,7 +10,6 @@ import {GameSessionState} from "../models/misc/gameSessionState";
 import {CameraDatabase} from "./database/cameraDatabase";
 import {GameSessionDatabase} from "./database/gameSessionDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
-import {UserState} from "./database/userState";
 import {MovementModeState} from "./database/movementModeState";
 import {Transaction} from "../common/db/database/transaction";
 import {TileDatabase} from "./database/tileDatabase";
@@ -20,7 +19,6 @@ import {CountryDatabase} from "./database/countryDatabase";
 import {RouteDatabase} from "./database/routeDatabase";
 
 export interface GameStateWriter {
-	setAuthToken(token: string | null): void;
 	setGameSessionState(state: GameSessionState): void;
 	setTurnState(state: GameTurnState): void;
 	setCurrentTurn(turn: number): void;
@@ -96,13 +94,6 @@ export class GameStateWriterImpl implements GameStateWriter {
 			this.routeDatabase.deleteAll();
 			this.routeDatabase.insertMany(state.routes);
 		});
-	}
-
-	setAuthToken(token: string | null): void {
-		UserState.updateState(state => ({
-			...state,
-			token: token,
-		}));
 	}
 
 	setCameraData(camera: CameraEntity): void {

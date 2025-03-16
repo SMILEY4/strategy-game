@@ -1,13 +1,13 @@
-import {WorldObjectId} from "../../models/worldobject/worldObjectId";
-import {LocalStateAccess} from "../../state/localStateAccess";
-import {GameStateWriter} from "../../state/gameStateWriter";
-import {MovementTarget} from "../../models/misc/movementTarget";
-import {TileId} from "../../models/tile/tileId";
-import {GameClient} from "./gameClient";
+import {WorldObjectId} from "../../../models/worldobject/worldObjectId";
+import {GameStateAccess} from "../../../state/gameStateAccess";
+import {GameStateWriter} from "../../../state/gameStateWriter";
+import {MovementTarget} from "../../../models/misc/movementTarget";
+import {TileId} from "../../../models/tile/tileId";
+import {GameClient} from "../client/gameClient";
 import {CommandService} from "./commandService";
-import {MoveCommand} from "../../models/command/command";
-import {CommandType} from "../../models/command/commandType";
-import {UID} from "../../common/uid";
+import {MoveCommand} from "../../../models/command/command";
+import {CommandType} from "../../../models/command/commandType";
+import {UID} from "../../../common/uid";
 
 export interface MovementService {
 	isMovementActive(): boolean;
@@ -19,12 +19,12 @@ export interface MovementService {
 
 export class MovementServiceImpl implements MovementService {
 
-	private readonly localStateAccess: LocalStateAccess;
+	private readonly localStateAccess: GameStateAccess;
 	private readonly gameStateWriter: GameStateWriter;
 	private readonly gameClient: GameClient;
 	private readonly commandService: CommandService;
 
-	constructor(localStateAccess: LocalStateAccess, gameStateWriter: GameStateWriter, gameClient: GameClient, commandService: CommandService) {
+	constructor(localStateAccess: GameStateAccess, gameStateWriter: GameStateWriter, gameClient: GameClient, commandService: CommandService) {
 		this.localStateAccess = localStateAccess;
 		this.gameStateWriter = gameStateWriter;
 		this.gameClient = gameClient;
