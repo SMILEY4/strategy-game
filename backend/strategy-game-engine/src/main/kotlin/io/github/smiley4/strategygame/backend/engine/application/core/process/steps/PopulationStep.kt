@@ -1,7 +1,9 @@
 package io.github.smiley4.strategygame.backend.engine.application.core.process.steps
 
+import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Settlement
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.ecosim.lib.ConsumptionReportEntry
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyEntity
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReport
@@ -56,6 +58,16 @@ class PopulationStep : ProcessStep<EconomyUpdatedEvent> {
     private fun abandon(game: GameExtended, settlement: Settlement) {
         game.settlements.remove(settlement)
         game.routes.removeIf { it.settlementA == settlement.id || it.settlementB == settlement.id }
+        if (game.settlements.none { it.country == settlement.country }) {
+            val settler = WorldObject.Settler(
+                id = WorldObject.Id.gen(),
+                tile = settlement.tile,
+                country = settlement.country,
+                maxMovement = 3,
+                viewDistance = 1
+            )
+            game.worldObjects.add(settler)
+        }
     }
 
     private fun hasConsumedBase(report: EconomyReport, settlement: Settlement): Boolean {
