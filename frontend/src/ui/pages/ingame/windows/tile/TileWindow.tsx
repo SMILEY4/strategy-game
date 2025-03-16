@@ -71,6 +71,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 						</TabOption>
 
 					</TabBar>
+
 				</VBox>
 			</DecoratedWindow>
 		);
@@ -244,9 +245,11 @@ function SectionControlledBy(props: UseTileWindow.Data): ReactElement {
 							/>
 						}
 					>
-						<VBox padding_m gap_xs>
+						<VBox padding_m gap_s>
 							<Txt.Header3>
-								<Txt.String>{props.tile.political.value.controlledBy?.country.name}</Txt.String>
+								<Txt.Link onClick={props.open.controllingCountry}>
+									<Txt.String>{props.tile.political.value.controlledBy?.country.name}</Txt.String>
+								</Txt.Link>
 							</Txt.Header3>
 							<Txt.Body>
 								<Txt.Link onClick={props.open.controllingSettlement}>

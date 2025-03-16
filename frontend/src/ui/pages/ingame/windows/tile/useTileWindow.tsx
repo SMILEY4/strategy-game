@@ -11,6 +11,7 @@ import {Tile} from "../../../../../models/tile/tile";
 import {TileObject} from "../../../../../models/tile/tileObject";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
+import {UseCountryWindow} from "../country/useCountryWindow";
 
 export namespace UseTileWindow {
 
@@ -28,6 +29,7 @@ export namespace UseTileWindow {
 		tile: Tile;
 		open: {
 			controllingSettlement: () => void,
+			controllingCountry: () => void
 			tileObject: (tileObject: TileObject) => void,
 		};
 		centerCamera: () => void,
@@ -45,6 +47,11 @@ export namespace UseTileWindow {
 					controllingSettlement: () => {
 						if (tile.political.value?.controlledBy?.settlement) {
 							UseSettlementWindow.open(tile.political.value?.controlledBy?.settlement!.id);
+						}
+					},
+					controllingCountry: () => {
+						if (tile.political.value?.controlledBy?.country) {
+							UseCountryWindow.open(tile.political.value?.controlledBy?.country!.id);
 						}
 					},
 					tileObject: (tileObject) => {

@@ -12,7 +12,6 @@ import {Command, MoveCommand} from "../models/command/command";
 import {CommandType} from "../models/command/commandType";
 import {SettlementId} from "../models/settlement/settlementId";
 import {MapMode} from "../models/misc/mapMode";
-import {Country} from "../models/country/country";
 import {Route} from "../models/route/route";
 import {GameSessionState} from "../models/misc/gameSessionState";
 import {CountryDatabase} from "./database/countryDatabase";
@@ -25,6 +24,7 @@ import {SettlementBuilder} from "./utils/settlementBuilder";
 import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
 import {SettlementSummary} from "../models/settlement/settlementSummary";
 import {DbCache} from "../common/db/dbCache";
+import {CountrySummary} from "../models/country/countrySummary";
 
 export interface GameStateAccess {
 	// game
@@ -42,7 +42,7 @@ export interface GameStateAccess {
 	getTileSummaryAt(q: number, r: number): TileSummary | null;
 	getTiles(): Tile[];
 	// country
-	getPlayerCountry(): Country;
+	getPlayerCountrySummary(): CountrySummary;
 	// world objects
 	getWorldObjectSummary(id: WorldObjectId): WorldObjectSummary | null;
 	getWorldObjectSummariesAt(q: number, r: number): WorldObjectSummary[];
@@ -206,8 +206,15 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== COUNTRY =======================================================
 
-	getPlayerCountry(): Country {
-		return this.countryDatabase.querySingleOrThrow(CountryDatabase.QUERY_IS_USER_COUNTRY, null);
+	getPlayerCountrySummary(): CountrySummary {
+		const entity = this.countryDatabase.querySingleOrThrow(CountryDatabase.QUERY_IS_USER_COUNTRY, null);
+		return {
+			id: entity.id,
+			name: entity.name,
+			color: entity.color,
+			isUserControlled: entity.isUserControlled,
+			playerName: entity.player.name,
+		}
 	}
 
 	//========== WORLD OBJECTS =================================================

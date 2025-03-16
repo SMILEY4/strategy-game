@@ -89,7 +89,9 @@ function SectionCountries(props: UseOutlinerWindow.Data): ReactElement {
 				>
 					<HBox fullSize gap_s padding_s>
 						<Txt.Body>
-							<Txt.String>{country.name}</Txt.String>
+							<Txt.Link onClick={() => props.countries.open(country)}>
+								<Txt.String>{country.name}</Txt.String>
+							</Txt.Link>
 						</Txt.Body>
 						<HSpacer grow/>
 					</HBox>
