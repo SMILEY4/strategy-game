@@ -75,6 +75,12 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 											</Button>
 										</When>
 
+										<When condition={data.disband.possible}>
+											<Button onClick={data.disband.start} disabled={!data.disband.enabled}>
+												Disband
+											</Button>
+										</When>
+
 									</VBox>
 								</InsetPanel>
 							</>

@@ -51,6 +51,9 @@ internal class CommandEntity<T : CommandEntityData>(
                     settlementId = serviceModel.settlement.value,
                     building = serviceModel.building.name
                 )
+                is CommandData.DisbandWorldObject -> DisbandWorldObjectCommandEntityData(
+                    worldObjectId = serviceModel.worldObject.value,
+                )
             }
         }
 
@@ -84,6 +87,9 @@ internal class CommandEntity<T : CommandEntityData>(
             is ProductionQueueAddBuildingCommandEntityData -> CommandData.ProductionQueueAddEntry.Building(
                 settlement = Settlement.Id(entity.settlementId),
                 building = BuildingType.valueOf(entity.building)
+            )
+            is DisbandWorldObjectCommandEntityData -> CommandData.DisbandWorldObject(
+                worldObject = WorldObject.Id(entity.worldObjectId),
             )
         }
     }
@@ -122,4 +128,8 @@ internal class ProductionQueueAddSettlerCommandEntityData(
 internal class ProductionQueueAddBuildingCommandEntityData(
     val settlementId: String,
     val building: String
+) : CommandEntityData()
+
+internal class DisbandWorldObjectCommandEntityData(
+    val worldObjectId: String,
 ) : CommandEntityData()

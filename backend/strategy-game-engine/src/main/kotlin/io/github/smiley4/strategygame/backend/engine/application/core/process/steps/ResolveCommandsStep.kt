@@ -7,12 +7,15 @@ import io.github.smiley4.strategygame.backend.engine.application.core.process.ev
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandCreateSettlement
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandMove
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandProductionQueue
+import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveDisbandWorldObject
 import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessStep
 
 internal class ResolveCommandsStep(
     private val resolveMove: ResolveCommandMove,
     private val resolveCreateSettlement: ResolveCommandCreateSettlement,
-    private val resolveProductionQueue: ResolveCommandProductionQueue
+    private val resolveProductionQueue: ResolveCommandProductionQueue,
+    private val resolveDisbandWorldObject: ResolveDisbandWorldObject
+
 ) : ProcessStep<OnResolveCommandsEvent>, Logging {
 
     override suspend fun run(event: OnResolveCommandsEvent) {
@@ -25,6 +28,7 @@ internal class ResolveCommandsStep(
                     is CommandData.CreateSettlement -> resolveCreateSettlement.resolve(event.game, it as Command<CommandData.CreateSettlement>)
                     is CommandData.ProductionQueueAddEntry -> resolveProductionQueue.resolve(event.game, it as Command<CommandData.ProductionQueueAddEntry>)
                     is CommandData.ProductionQueueRemoveEntry -> resolveProductionQueue.resolve(event.game, it as Command<CommandData.ProductionQueueRemoveEntry>)
+                    is CommandData.DisbandWorldObject -> resolveDisbandWorldObject.resolve(event.game, it as Command<CommandData.DisbandWorldObject>)
                 }
             } catch (e: Exception) {
                 log().warn("Failed to resolve command ${it.data} with id '${it.id}' - skipping command.", e)

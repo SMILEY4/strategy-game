@@ -21,6 +21,7 @@ import io.github.smiley4.strategygame.backend.engine.application.core.process.st
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandCreateSettlement
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandMove
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandProductionQueue
+import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveDisbandWorldObject
 import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
 import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessSystem
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.GameValidationsImpl
@@ -50,9 +51,10 @@ fun Module.dependenciesEngine() {
     single<ResolveCommandMove> { ResolveCommandMove(get()) }
     single<ResolveCommandCreateSettlement> { ResolveCommandCreateSettlement(get(), get()) }
     single<ResolveCommandProductionQueue> { ResolveCommandProductionQueue() }
+    single<ResolveDisbandWorldObject> { ResolveDisbandWorldObject() }
 
     single<EconomyStep> { EconomyStep(get(), get()) }
-    single<ResolveCommandsStep> { ResolveCommandsStep(get(), get(), get()) }
+    single<ResolveCommandsStep> { ResolveCommandsStep(get(), get(), get(), get()) }
     single<RootStep> { RootStep(get()) }
     single<UpdateBuildingsStep.OnCreation> { UpdateBuildingsStep.OnCreation(get()) }
     single<UpdateBuildingsStep.OnUpdate> { UpdateBuildingsStep.OnUpdate(get()) }

@@ -13,7 +13,7 @@ import {Else, If, Then} from "react-if";
 import {Txt} from "../../../../components/text/Txt";
 import {
 	Command,
-	CreateSettlementCommand,
+	CreateSettlementCommand, DisbandWorldObjectCommand,
 	MoveCommand,
 	ProductionQueueAddCommand,
 	ProductionQueueCancelCommand,
@@ -159,6 +159,22 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 							<Txt.String>{"cancel " + cmd.entry.type}</Txt.String>
 							<br/>
 							<Txt.String>{"in settlement " + cmd.settlement.name}</Txt.String>
+						</Txt.Body>
+					</IndentBox>
+				</>
+			);
+		}
+		if (command.type == CommandType.DISBAND_WORLD_OBJECT) {
+			const cmd = command as DisbandWorldObjectCommand;
+			return (
+				<>
+					<Txt.Header4>
+						<Txt.String>Disband World Object</Txt.String>
+					</Txt.Header4>
+					<Divider line/>
+					<IndentBox>
+						<Txt.Body>
+							<Txt.String>{"world object " + cmd.worldObjectId}</Txt.String>
 						</Txt.Body>
 					</IndentBox>
 				</>
