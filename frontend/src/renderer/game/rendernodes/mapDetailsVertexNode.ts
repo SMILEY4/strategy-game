@@ -75,27 +75,28 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 	public execute(context: GameWebGLRenderContext, inputs: ProvidedNodeInputs): VertexDataResource {
 
+		// further performance optimization options
+		// - optimize rng (use number instead of strings for seeds)
+		// - generate random number for each tile at world creation (in backend) -> use that for different purposes
+
 		this.spriteBuffer.clear();
 
 		// settlements
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
-			const settlement = settlements[i];
-			this.addSettlement(this.spriteBuffer, settlement, inputs);
+			this.addSettlement(this.spriteBuffer, settlements[i], inputs);
 		}
 
 		// world objects
 		const worldObjects = context.worldObjects;
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
-			const worldObject = worldObjects[i];
-			this.addUnit(this.spriteBuffer, worldObject, inputs);
+			this.addUnit(this.spriteBuffer, worldObjects[i], inputs);
 		}
 
 		// routes
 		const routes = context.routes;
 		for (let i = 0, n = routes.length; i < n; i++) {
-			const route = routes[i];
-			this.addRoute(this.spriteBuffer, route, inputs);
+			this.addRoute(this.spriteBuffer, routes[i], inputs);
 		}
 
 		const tiles = context.tiles;
