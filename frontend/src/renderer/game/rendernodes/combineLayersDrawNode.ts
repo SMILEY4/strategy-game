@@ -216,7 +216,7 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 							condition: ctx => !ctx.mapMode.renderData.grayscale,
 						},
 						{
-							path: "/lut/lut_64_sepia.png",
+							path: "/lut/lut_64_grayscale.png",
 							condition: ctx => ctx.mapMode.renderData.grayscale,
 						}
 					],
