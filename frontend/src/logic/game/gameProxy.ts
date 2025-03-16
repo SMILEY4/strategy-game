@@ -231,6 +231,7 @@ export class GameProxyImpl implements GameProxy {
 				});
 			} else {
 				this.tileService.clickTile(clickedTile);
+				AudioType.CLICK_PRIMARY.play(this.audioService);
 			}
 		}
 	}
@@ -274,6 +275,7 @@ export class GameProxyImpl implements GameProxy {
 
 	commandCancel(command: Command): void {
 		this.commandService.cancelCommand(command.id);
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
 	//========== SETTLEMENTS ==================================================
@@ -288,27 +290,33 @@ export class GameProxyImpl implements GameProxy {
 
 	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void {
 		this.settlementService.foundSettlement(tile, worldObjectId, name);
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
 	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void {
 		this.settlementService.addProduction(settlement, entry);
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
 	cancelProduction(settlement: SettlementSummary, entryId: string): void {
 		this.settlementService.cancelProduction(settlement, entryId);
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
 	//========== UNITS / WORLD OBJECTS ========================================
 
 	beginMovement(worldObjectId: WorldObjectId): void {
 		this.movementService.beginMovement(worldObjectId).then();
+		AudioType.CLICK_PRIMARY.play(this.audioService);
 	}
 
 	endMovement(commit: boolean): void {
 		if (commit) {
 			this.movementService.completeMovement();
+			AudioType.WRITING_ON_PAPER.play(this.audioService);
 		} else {
 			this.movementService.cancelMovement();
+			AudioType.CLICK_CLOSE.play(this.audioService);
 		}
 	}
 

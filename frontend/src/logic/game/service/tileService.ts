@@ -62,7 +62,6 @@ export class TileServiceImpl implements TileService {
 			return;
 		}
 		UseTileWindow.open(tile.id);
-		return;
 	}
 
 	mouseOver(tile: TileSummary | null): void {
