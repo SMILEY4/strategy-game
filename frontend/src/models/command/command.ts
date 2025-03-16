@@ -1,7 +1,7 @@
 import {WorldObjectId} from "../worldobject/worldObjectId";
 import {TileSummary} from "../tile/tileSummary";
 import {SettlementSummary} from "../settlement/settlementSummary";
-import {ProductionOptionEntity, ProductionQueueEntryEntity} from "../settlement/settlementEntity";
+import {ProductionQueueEntryEntity} from "../settlement/settlementEntity";
 import {CommandType} from "./commandType";
 import {CommandId} from "./commandId";
 
@@ -29,4 +29,8 @@ export interface ProductionQueueAddCommand extends Command {
 export interface ProductionQueueCancelCommand extends Command {
 	settlement: SettlementSummary,
 	entry: ProductionQueueEntryEntity,
+}
+
+export interface DisbandWorldObjectCommand extends Command {
+	worldObjectId: WorldObjectId
 }

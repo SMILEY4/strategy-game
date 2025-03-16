@@ -7,7 +7,7 @@ import {AudioService, AudioType} from "../../common/audioService";
 import {TurnEndService} from "./service/turnEndService";
 import {MapMode} from "../../models/misc/mapMode";
 import {TilePosition} from "../../models/tile/tilePosition";
-import {Command} from "../../models/command/command";
+import {Command, DisbandWorldObjectCommand} from "../../models/command/command";
 import {TileId} from "../../models/tile/tileId";
 import {WorldObjectId} from "../../models/worldobject/worldObjectId";
 import {GameStateWriter} from "../../state/gameStateWriter";
@@ -18,6 +18,8 @@ import {SettlementProductionOption} from "../../models/settlement/settlement";
 import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
 import {GameSessionService} from "./service/gameSessionService";
 import {CommandService} from "./service/commandService";
+import {CommandType} from "../../models/command/commandType";
+import {UID} from "../../common/uid";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
@@ -124,6 +126,10 @@ export interface GameProxy {
 	 * End the movement. Submit or discard the move command.
 	 */
 	endMovement(commit: boolean): void;
+	/**
+	 * Disband (i.e. delete) the given world object.
+	 */
+	disbandWorldObject(worldObjectId: WorldObjectId): void;
 	// dev functions
 	/**
 	 * Loose the current webgl context for debug purposes.
@@ -318,6 +324,14 @@ export class GameProxyImpl implements GameProxy {
 			this.movementService.cancelMovement();
 			AudioType.CLICK_CLOSE.play(this.audioService);
 		}
+	}
+
+	disbandWorldObject(worldObjectId: WorldObjectId): void {
+		this.commandService.addCommand<DisbandWorldObjectCommand>({
+			id: UID.generate(),
+			type: CommandType.DISBAND_WORLD_OBJECT,
+			worldObjectId: worldObjectId,
+		});
 	}
 
 	//========== DEV FUNCTIONALITY ============================================

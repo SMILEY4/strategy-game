@@ -25,3 +25,7 @@ export interface ProductionQueueCancelCommandMessage extends CommandMessage {
 	settlementId: string,
 	entryId: string,
 }
+
+export interface DisbandWorldObjectCommandMessage extends CommandMessage {
+	worldObjectId: string,
+}

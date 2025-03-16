@@ -11,7 +11,12 @@ import {UseTileWindow} from "../tile/useTileWindow";
 import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {CommandType} from "../../../../../models/command/commandType";
-import {Command, CreateSettlementCommand, MoveCommand} from "../../../../../models/command/command";
+import {
+	Command,
+	CreateSettlementCommand,
+	DisbandWorldObjectCommand,
+	MoveCommand,
+} from "../../../../../models/command/command";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 
@@ -41,6 +46,11 @@ export namespace UseWorldObjectWindow {
 			enabled: boolean,
 			start: () => void,
 		};
+		disband: {
+			possible: boolean,
+			enabled: boolean,
+			start: () => void,
+		}
 		open: {
 			tile: () => void
 		}
@@ -71,6 +81,11 @@ export namespace UseWorldObjectWindow {
 					enabled: !hasCommand && (tile?.isValidSettlementLocation ?? false),
 					start: () => UseFoundSettlementWindow.open(worldObject.tile, worldObject.id),
 				},
+				disband: {
+					possible: worldObject.country.isUserControlled,
+					enabled: !hasCommand,
+					start: () => App.gameProxy.disbandWorldObject(worldObject.id),
+				},
 				open: {
 					tile: () => UseTileWindow.open(worldObject.tile.id ?? null),
 				},
@@ -87,6 +102,9 @@ export namespace UseWorldObjectWindow {
 		}
 		if (command.type === CommandType.CREATE_SETTLEMENT) {
 			return worldObjectId === (command as CreateSettlementCommand).worldObjectId;
+		}
+		if (command.type === CommandType.DISBAND_WORLD_OBJECT) {
+			return worldObjectId === (command as DisbandWorldObjectCommand).worldObjectId;
 		}
 		return false;
 	}

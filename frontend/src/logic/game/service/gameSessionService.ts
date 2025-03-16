@@ -7,14 +7,14 @@ import {TurnStartService} from "./turnStartService";
 import {GameStateMessage} from "../../../models/messages/gameStateMessage";
 import {WebsocketMessageHandler} from "../../../common/websocketMessageHandler";
 import {
-	CreateSettlementCommandMessage,
+	CreateSettlementCommandMessage, DisbandWorldObjectCommandMessage,
 	MoveCommandMessage,
 	ProductionQueueAddCommandMessage,
 	ProductionQueueCancelCommandMessage,
 } from "../../../models/messages/commandMessage";
 import {
 	Command,
-	CreateSettlementCommand,
+	CreateSettlementCommand, DisbandWorldObjectCommand,
 	MoveCommand,
 	ProductionQueueAddCommand,
 	ProductionQueueCancelCommand,
@@ -182,6 +182,15 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 							type: cmd.type.id,
 							entryId: cmd.entry.entryId,
 							settlementId: cmd.settlement.id,
+						};
+						return cmdMsg;
+					}
+
+					if (it.type === CommandType.DISBAND_WORLD_OBJECT) {
+						const cmd = it as DisbandWorldObjectCommand;
+						const cmdMsg: DisbandWorldObjectCommandMessage = {
+							type: cmd.type.id,
+							worldObjectId: cmd.worldObjectId,
 						};
 						return cmdMsg;
 					}

@@ -72,3 +72,12 @@ internal class ProductionQueueAddCommandMsg(
         }
     }
 }
+
+@JsonTypeName("disband-world-object")
+internal class DisbandWorldObjectCommandMsg(
+    val worldObjectId: String,
+) : PlayerCommandMsg() {
+    override fun asCommandData() = CommandData.DisbandWorldObject(
+        worldObject = WorldObject.Id(this.worldObjectId)
+    )
+}

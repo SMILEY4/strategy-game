@@ -40,4 +40,8 @@ sealed class CommandData {
 
     }
 
+    class DisbandWorldObject(
+        val worldObject: WorldObject.Id
+    ) : CommandData()
+
 }
