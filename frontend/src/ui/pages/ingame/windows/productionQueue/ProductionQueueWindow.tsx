@@ -7,18 +7,19 @@ import {Button} from "../../../../components/button/Button";
 import {UseProductionQueueWindow} from "./useProductionQueueWindow";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {AudioType} from "../../../../../common/audioService";
-import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
+import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
+import {SettlementProductionQueueEntry} from "../../../../../models/settlement/settlement";
 
 export interface ProductionQueueWindowProps {
     windowId: string;
-    settlementId: string;
+    settlement: SettlementSummary;
 }
 
 export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactElement {
-    const data: UseProductionQueueWindow.Data = UseProductionQueueWindow.useData(props.settlementId);
+    const data: UseProductionQueueWindow.Data = UseProductionQueueWindow.useData(props.settlement);
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
@@ -29,7 +30,7 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
                         <Txt.String>Production Queue</Txt.String>
                     </Txt.Header1>
                     <Txt.Body>
-                        <Txt.String>{data.settlement.identifier.name}</Txt.String>
+                        <Txt.String>{data.settlement.name}</Txt.String>
                     </Txt.Body>
                 </VBox>
 
@@ -47,7 +48,7 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
 
                             {data.entries.map((entry, index) => (
                                 <QueueEntry
-                                    key={entry.entryId}
+                                    key={entry.id}
                                     data={data}
                                     entry={entry}
                                     position={index + 1}
@@ -66,7 +67,7 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
 
 function QueueEntry(props: {
     data: UseProductionQueueWindow.Data,
-    entry: ProductionQueueEntry,
+    entry: SettlementProductionQueueEntry,
     position: number
 }): ReactElement {
     return (
@@ -99,7 +100,7 @@ function QueueEntry(props: {
                     />
                 )}
 
-                {props.data.settlement.country.isUserCountry && (
+                {props.data.settlement.isUserControlled && (
                     <Button
                         square circle small
                         onClick={() => props.data.cancel(props.entry)}

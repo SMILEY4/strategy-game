@@ -4,7 +4,7 @@ import {VBox} from "../../components/layout/vbox/VBox";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {Button} from "../../components/button/Button";
 import {VSpacer} from "../../components/spacer/Spacer";
-import {GotoHooks} from "../../hooks/goto";
+import {GotoHooks} from "../goto";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {Divider} from "../../components/divider/Divider";
 import {Txt} from "../../components/text/Txt";

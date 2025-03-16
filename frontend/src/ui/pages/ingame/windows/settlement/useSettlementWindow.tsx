@@ -1,52 +1,36 @@
 import React from "react";
 import {SettlementWindow} from "./SettlementWindow";
-import {useDI} from "../../../../../appContext";
 import {UseProductionWindow} from "../production/useProductionWindow";
-import {SettlementAggregate} from "../../../../../models/aggregates/SettlementAggregate";
-import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
 import {UseProductionQueueWindow} from "../productionQueue/useProductionQueueWindow";
-import {SettlementService} from "../../../../../logic/game/settlementService";
-import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
-import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UseTileWindow} from "../tile/useTileWindow";
-import {CameraService} from "../../../../../logic/game/cameraService";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
+import {Settlement} from "../../../../../models/settlement/settlement";
+import {SettlementSummary} from "../../../../../models/settlement/settlementSummary";
+import {SettlementId} from "../../../../../models/settlement/settlementId";
+import {App} from "../../../../../appContext";
+import {GameStateHooks} from "../../../../../state/gameStateHooks";
 
 export namespace UseSettlementWindow {
 
-
-    export function useOpen() {
-        const open = useOpenWindow();
-        return (identifier: string | null) => {
-            const windowId = UID.generate();
-            open({
-                id: windowId,
-                groupId: WindowGroup.LEFT_SIDEBAR,
-                anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <SettlementWindow windowId={windowId} identifier={identifier}/>,
-            });
-        };
-    }
-
-    export function open(identifier: string | null) {
+    export function open(settlementId: SettlementId) {
         const windowId = UID.generate();
         openWindow({
             id: windowId,
             groupId: WindowGroup.LEFT_SIDEBAR,
             anchor: WindowStore.ANCHOR_LEFT_SIDE,
-            content: <SettlementWindow windowId={windowId} identifier={identifier}/>,
+            content: <SettlementWindow windowId={windowId} settlementId={settlementId}/>,
         });
     }
 
     export interface Data {
-        settlement: SettlementAggregate;
+        settlement: Settlement;
         productionQueue: {
-            activeEntry: ProductionQueueEntry | null
-            add: () => void
-            open: () => void,
-            cancel: () => void,
+            addNew: () => void
+            openList: () => void,
+            cancelActive: () => void,
         };
         open: {
             settlement: (settlementId: string) => void,
@@ -55,39 +39,28 @@ export namespace UseSettlementWindow {
         centerCamera: () => void,
     }
 
-    export function useData(identifier: string | null): UseSettlementWindow.Data | null {
+    export function useData(settlementId: SettlementId): UseSettlementWindow.Data | null {
 
-        const openSettlement = UseSettlementWindow.useOpen();
-        const openTile = UseTileWindow.useOpen();
-
-        const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
-
-        const settlementService = useDI<SettlementService>(SettlementService.name);
-        const cameraService = useDI<CameraService>(CameraService.name);
-
-        const openProductionWindow = UseProductionWindow.useOpen();
-        const openProductionQueueWindow = UseProductionQueueWindow.useOpen();
+        const settlement = GameStateHooks.useSettlement(settlementId)
 
         if (settlement) {
+            const settlementSummary = SettlementSummary.from(settlement);
             return {
                 settlement: settlement,
                 productionQueue: {
-                    activeEntry: settlement.production.queue.visible
-                        ? settlement.production.queue.value.length === 0 ? null : settlement.production.queue.value[0]
-                        : null,
-                    add: () => openProductionWindow(identifier!),
-                    open: () => openProductionQueueWindow(identifier!),
-                    cancel: () => {
-                        if (settlement.country.isUserCountry && settlement.production.queue.visible) {
-                            settlement.production.queue.value.length > 0 && settlementService.cancelProductionQueue(settlement.identifier, settlement.production.queue.value[0]);
+                    addNew: () => UseProductionWindow.open(settlementSummary),
+                    openList: () => UseProductionQueueWindow.open(settlementSummary),
+                    cancelActive: () => {
+                        if(settlement.productionQueueActive.value) {
+                            App.gameProxy.cancelProduction(settlementSummary, settlement.productionQueueActive.value.id)
                         }
                     },
                 },
                 open: {
-                    settlement: (settlementId) => openSettlement(settlementId),
-                    tile: () => openTile(settlement.tile),
+                    settlement: (settlementId) => UseSettlementWindow.open(settlementId),
+                    tile: () => UseTileWindow.open(settlement.tile.id),
                 },
-                centerCamera: () => cameraService.centerCameraOnTile(settlement.tile),
+                centerCamera: () => App.gameProxy.focusCamera(settlement.tile.position),
             };
         } else {
             return null;

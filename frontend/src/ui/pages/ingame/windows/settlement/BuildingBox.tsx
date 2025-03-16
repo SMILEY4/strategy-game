@@ -1,14 +1,14 @@
 import "./buildingBox.less";
 import React, {ReactElement} from "react";
-import {Building} from "../../../../../models/base/building";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {If, Then} from "react-if";
 import {Divider} from "../../../../components/divider/Divider";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Tooltip} from "../../../../components/tooltip/Tooltip";
 import {Txt} from "../../../../components/text/Txt";
+import {SettlementBuilding} from "../../../../../models/settlement/settlement";
 
-export function BuildingBox(props: { building: Building }): ReactElement {
+export function BuildingBox(props: { building: SettlementBuilding }): ReactElement {
 	return (
 		<Tooltip.Context>
 			<Tooltip.Trigger>
@@ -22,7 +22,7 @@ export function BuildingBox(props: { building: Building }): ReactElement {
 }
 
 
-function Box(props: { building: Building }): ReactElement {
+function Box(props: { building: SettlementBuilding }): ReactElement {
 	const active = (props.building.validity.workTile && props.building.validity.inputResources);
 	return (
 		<DecoratedPanel
@@ -39,7 +39,7 @@ function Box(props: { building: Building }): ReactElement {
 	);
 }
 
-function Details(props: { building: Building }): ReactElement {
+function Details(props: { building: SettlementBuilding }): ReactElement {
 	return (
 		<VBox padding_s gap_s>
 

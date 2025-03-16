@@ -1,4 +1,4 @@
-import {TilePosition} from "../models/base/tilePosition";
+import {TilePosition} from "../models/tile/tilePosition";
 
 export namespace HexUtils {
 

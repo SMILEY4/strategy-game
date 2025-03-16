@@ -1,7 +1,6 @@
 import {useState} from "react";
-import {useDI} from "../../../appContext";
-import {UserService} from "../../../logic/user/userService";
-import {GotoHooks} from "../../hooks/goto";
+import {GotoHooks} from "../goto";
+import {App} from "../../../appContext";
 
 export namespace SignupHooks {
 
@@ -12,7 +11,6 @@ export namespace SignupHooks {
 		const [password, setPassword] = useState("");
 		const [error, setError] = useState<string | null>(null);
 		const gotoSignupConfirm = GotoHooks.useSignupConfirm();
-		const userService = useDI<UserService>(UserService.name);
 
 		function signup() {
 			if (!email) {
@@ -27,7 +25,7 @@ export namespace SignupHooks {
 				setError("Username is missing!");
 				return;
 			}
-			return userService.signup(email, password, username)
+			return App.userProxy.signup(email, password, username)
 				.then(() => gotoSignupConfirm())
 				.catch(e => setError("Internal Error: " + e));
 		}

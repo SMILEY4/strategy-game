@@ -6,10 +6,11 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
+import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 
 export interface MoveWindowProps {
 	windowId: string;
-	identifier: string | null;
+	identifier: WorldObjectId;
 }
 
 export function MoveWindow(props: MoveWindowProps): ReactElement {

@@ -5,7 +5,6 @@ import {Query} from "../query/query";
 import {UID} from "../../uid";
 import {Database} from "./database";
 import {IdProvider} from "../idProvider";
-import toIds = IdProvider.toIds;
 
 /**
  * Base implementation of a database

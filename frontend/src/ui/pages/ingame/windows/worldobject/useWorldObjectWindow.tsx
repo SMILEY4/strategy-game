@@ -1,109 +1,94 @@
 import React from "react";
 import {WorldObjectWindow} from "./WorldObjectWindow";
-import {useDI} from "../../../../../appContext";
-import {WorldObject} from "../../../../../models/base/worldObject";
-import {UseMoveWindow} from "../move/useMoveWindow";
-import {CommandType, MoveCommand} from "../../../../../models/base/command";
-import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
-import {WorldObjectType} from "../../../../../models/base/worldObjectType";
-import {WorldObjectRepository} from "../../../../../state/repository/worldObjectRepository";
-import {TileRepository} from "../../../../../state/repository/tileRepository";
-import {CommandRepository} from "../../../../../state/repository/commandRepository";
-import {MovementService} from "../../../../../logic/game/movementService";
-import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import {WorldObjectType} from "../../../../../models/worldobject/worldObjectType";
+import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {UseTileWindow} from "../tile/useTileWindow";
-import {CameraService} from "../../../../../logic/game/cameraService";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
+import {UseMoveWindow} from "../move/useMoveWindow";
+import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
+import {UseTileWindow} from "../tile/useTileWindow";
+import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
+import {WorldObject} from "../../../../../models/worldobject/worldObject";
+import {CommandType} from "../../../../../models/command/commandType";
+import {Command, CreateSettlementCommand, MoveCommand} from "../../../../../models/command/command";
+import {App} from "../../../../../appContext";
+import {GameStateHooks} from "../../../../../state/gameStateHooks";
 
 export namespace UseWorldObjectWindow {
 
-    export function useOpen() {
-        const open = useOpenWindow();
-        return (identifier: string | null) => {
-            const windowId = UID.generate();
-            open({
-                id: windowId,
-                groupId: WindowGroup.LEFT_SIDEBAR,
-                anchor: WindowStore.ANCHOR_LEFT_SIDE,
-                content: <WorldObjectWindow windowId={windowId} identifier={identifier}/>,
-            });
-        };
-    }
+	export function open(worldObjectId: WorldObjectId | null) {
+		const windowId = UID.generate();
+		openWindow({
+			id: windowId,
+			groupId: WindowGroup.LEFT_SIDEBAR,
+			anchor: WindowStore.ANCHOR_LEFT_SIDE,
+			content: <WorldObjectWindow windowId={windowId} identifier={worldObjectId}/>,
+		});
+	}
 
-    export function open(identifier: string | null) {
-        const windowId = UID.generate();
-        openWindow({
-            id: windowId,
-            groupId: WindowGroup.LEFT_SIDEBAR,
-            anchor: WindowStore.ANCHOR_LEFT_SIDE,
-            content: <WorldObjectWindow windowId={windowId} identifier={identifier}/>,
-        });
-    }
+	export interface Data {
+		worldObject: WorldObject;
+		movement: {
+			possible: boolean,
+			enabled: boolean,
+			canCancel: boolean,
+			start: () => void,
+			cancel: () => void
+		};
+		settlement: {
+			possible: boolean
+			enabled: boolean,
+			start: () => void,
+		};
+		open: {
+			tile: () => void
+		}
+		centerCamera: () => void,
+	}
 
-    export interface Data {
-        worldObject: WorldObject;
-        movement: {
-            possible: boolean,
-            enabled: boolean,
-            canCancel: boolean,
-            start: () => void,
-            cancel: () => void
-        };
-        settlement: {
-            possible: boolean
-            enabled: boolean,
-            start: () => void,
-        };
-        open: {
-            tile: () => void
-        }
-        centerCamera: () => void,
-    }
+	export function useData(worldObjectId: WorldObjectId | null): UseWorldObjectWindow.Data | null {
 
-    export function useData(identifier: string | null): UseWorldObjectWindow.Data | null {
+		const worldObject = GameStateHooks.useWorldObject(worldObjectId);
+		const tile = GameStateHooks.useTile(worldObject?.tile?.id ?? null);
 
-        const cameraService = useDI<CameraService>(CameraService.name);
+		const commands = GameStateHooks.useCommands().filter(cmd => isRelevantCommand(worldObjectId, cmd));
+		const hasCommand = commands.length > 0;
+		const moveCommand = commands.find(cmd => cmd.type === CommandType.MOVE);
 
-        const worldObject = WorldObjectRepository.useById(identifier);
-        const tile = TileRepository.useById(worldObject?.tile);
+		if (worldObject) {
+			return {
+				worldObject: worldObject,
+				movement: {
+					possible: worldObject.country.isUserControlled,
+					enabled: !hasCommand,
+					canCancel: !!moveCommand,
+					start: () => worldObjectId && UseMoveWindow.open(worldObject.id),
+					cancel: () => moveCommand && App.gameProxy.commandCancel(moveCommand),
+				},
+				settlement: {
+					possible: worldObject.country.isUserControlled && worldObject.type === WorldObjectType.SETTLER,
+					enabled: !hasCommand && (tile?.isValidSettlementLocation ?? false),
+					start: () => UseFoundSettlementWindow.open(worldObject.tile, worldObject.id),
+				},
+				open: {
+					tile: () => UseTileWindow.open(worldObject.tile.id ?? null),
+				},
+				centerCamera: () => App.gameProxy.focusCamera(worldObject.tile.position),
+			};
+		} else {
+			return null;
+		}
+	}
 
-        const hasCommand = CommandRepository.useAll().some(it => it.worldObjectId === identifier);
-        const hasMoveCommand = CommandRepository.useAllByType<MoveCommand>(CommandType.MOVE).some(it => it.worldObjectId === identifier);
-
-        const openTileWindow = UseTileWindow.useOpen();
-        const openMoveWindow = UseMoveWindow.useOpen();
-        const openFoundSettlementWindow = UseFoundSettlementWindow.useOpen();
-
-        if (worldObject) {
-            return {
-                worldObject: worldObject,
-                movement: {
-                    possible: worldObject.country.isUserCountry,
-                    enabled: !hasCommand,
-                    canCancel: hasMoveCommand,
-                    start: () => identifier && openMoveWindow(worldObject.identifier.id),
-                    cancel: () => cancelMovementCommand(worldObject),
-                },
-                settlement: {
-                    possible: worldObject.country.isUserCountry && worldObject.identifier.type === WorldObjectType.SETTLER,
-                    enabled: !hasCommand && (tile?.isValidSettlementLocation ?? false),
-                    start: () => openFoundSettlementWindow(worldObject.tile, worldObject.identifier.id),
-                },
-                open: {
-                    tile: () => openTileWindow(tile?.identifier ?? null),
-                },
-                centerCamera: () => cameraService.centerCameraOnTile(worldObject.tile),
-            };
-        } else {
-            return null;
-        }
-    }
-
-    function cancelMovementCommand(worldObject: WorldObject) {
-        const movementService = useDI<MovementService>(MovementService.name);
-        movementService.cancelMovementCommand(worldObject);
-    }
+	function isRelevantCommand(worldObjectId: WorldObjectId | null, command: Command): boolean {
+		if (command.type === CommandType.MOVE) {
+			return worldObjectId === (command as MoveCommand).worldObjectId;
+		}
+		if (command.type === CommandType.CREATE_SETTLEMENT) {
+			return worldObjectId === (command as CreateSettlementCommand).worldObjectId;
+		}
+		return false;
+	}
 
 }

@@ -1,5 +1,5 @@
 import create from "zustand";
-import {MovementTarget} from "../../models/base/movementTarget";
+import {MovementTarget} from "../../models/misc/movementTarget";
 
 export namespace MovementModeState {
 

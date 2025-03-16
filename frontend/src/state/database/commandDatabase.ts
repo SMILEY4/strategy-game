@@ -3,7 +3,7 @@ import {AbstractDatabase} from "../../common/db/database/abstractDatabase";
 import {Query} from "../../common/db/query/query";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../common/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySupportingStorage";
-import {Command} from "../../models/base/command";
+import {Command} from "../../models/command/command";
 
 function provideId(e: Command): string {
     return e.id;

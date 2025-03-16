@@ -2,13 +2,10 @@ import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../
 import {GLAttributeType} from "../../../common/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../common/tilemapUtils";
-import {Tile} from "../../../models/base/tile";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {buildMap, shuffleArray} from "../../../common/utils";
-import {TerrainType} from "../../../models/base/TerrainType";
-import {BorderBuilder} from "./utils/borderBuilder";
 import {packBorder} from "./utils/packBorder";
-import {Visibility} from "../../../models/base/visibility";
+import {Visibility} from "../../../models/misc/visibility";
 import {mapHiddenOrNull} from "../../../common/hiddenType";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {TilesBaseVertexNode} from "./tilesBaseVertexNode";
@@ -16,6 +13,9 @@ import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {GameWebGLRenderContext} from "../gameRenderContext";
 import {Random} from "../../../common/random";
+import {Tile} from "../../../models/tile/tile";
+import {TerrainType} from "../../../models/tile/terrainType";
+import {BorderBuilder} from "./utils/borderBuilder";
 
 export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -231,8 +231,8 @@ export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 	}
 
 	private appendFogInstance(tile: Tile, cursor: MixedArrayBufferCursor) {
-		const q = tile.identifier.q;
-		const r = tile.identifier.r;
+		const q = tile.position.q;
+		const r = tile.position.r;
 
 		// world position
 		const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
@@ -251,8 +251,8 @@ export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 	}
 
 	private appendWaterInstance(tile: Tile, cursor: MixedArrayBufferCursor, context: GameWebGLRenderContext) {
-		const q = tile.identifier.q;
-		const r = tile.identifier.r;
+		const q = tile.position.q;
+		const r = tile.position.r;
 
 		// world position
 		const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
@@ -260,7 +260,7 @@ export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 		cursor.append(center[1]);
 
 		// color
-		const heightJitter = Random.normalized(tile.identifier.id) * 0.1 - 0.5;
+		const heightJitter = Random.normalized(tile.id) * 0.1 - 0.5;
 		cursor.append(1 - this.clamp(0, (tile.base.value.height + 1) * 2 + heightJitter, 1));
 
 		// water border mask
@@ -280,8 +280,8 @@ export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 	}
 
 	private appendLandInstance(tile: Tile, cursor: MixedArrayBufferCursor, context: GameWebGLRenderContext) {
-		const q = tile.identifier.q;
-		const r = tile.identifier.r;
+		const q = tile.position.q;
+		const r = tile.position.r;
 
 		// world position
 		const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
@@ -289,7 +289,7 @@ export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 		cursor.append(center[1]);
 
 		// color
-		const heightJitter = Random.normalized(tile.identifier.id) * 0.1 - 0.5;
+		const heightJitter = Random.normalized(tile.id) * 0.1 - 0.5;
 		const color = this.mix(context.renderConfig.land.colorLight, context.renderConfig.land.colorDark, tile.base.value.height * 2 + heightJitter);
 		cursor.append(color);
 	}

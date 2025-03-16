@@ -1,13 +1,5 @@
 import React, {ReactElement} from "react";
 import {UseCommandLogWindow} from "./useCommandLogWindow";
-import {
-    Command,
-    CommandType,
-    CreateSettlement,
-    MoveCommand,
-    ProductionQueueAddCommand,
-    ProductionQueueCancelCommand,
-} from "../../../../../models/base/command";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {VBox} from "../../../../components/layout/vbox/VBox";
@@ -19,6 +11,14 @@ import {DecoratedWindow} from "../../../../components/window/decorated/Decorated
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Else, If, Then} from "react-if";
 import {Txt} from "../../../../components/text/Txt";
+import {
+	Command,
+	CreateSettlementCommand,
+	MoveCommand,
+	ProductionQueueAddCommand,
+	ProductionQueueCancelCommand,
+} from "../../../../../models/command/command";
+import {CommandType} from "../../../../../models/command/commandType";
 
 export interface CommandLogWindowProps {
 	windowId: string;
@@ -100,16 +100,16 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 						<Txt.Body>
 							<Txt.String>{"world object " + cmd.worldObjectId}</Txt.String>
 							<br/>
-							<Txt.String>{"from " + cmd.path[0].q + "," + cmd.path[0].r}</Txt.String>
+							<Txt.String>{"from " + cmd.path[0].position.q + "," + cmd.path[0].position.r}</Txt.String>
 							<br/>
-							<Txt.String>{"to " + cmd.path[cmd.path.length - 1].q + "," + cmd.path[cmd.path.length - 1].r}</Txt.String>
+							<Txt.String>{"to " + cmd.path[cmd.path.length - 1].position.q + "," + cmd.path[cmd.path.length - 1].position.r}</Txt.String>
 						</Txt.Body>
 					</IndentBox>
 				</>
 			);
 		}
 		if (command.type == CommandType.CREATE_SETTLEMENT) {
-			const cmd = command as CreateSettlement;
+			const cmd = command as CreateSettlementCommand;
 			return (
 				<>
 					<Txt.Header4>
@@ -120,7 +120,7 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 						<Txt.Body>
 							<Txt.String>{"with name " + cmd.name}</Txt.String>
 							<br/>
-							<Txt.String>{"at " + cmd.tile.q + "," + cmd.tile.r}</Txt.String>
+							<Txt.String>{"at " + cmd.tile.position.q + "," + cmd.tile.position.r}</Txt.String>
 							<br/>
 							<Txt.String>{"by settler " + cmd.worldObjectId}</Txt.String>
 						</Txt.Body>

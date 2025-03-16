@@ -1,4 +1,3 @@
-import {TileIdentifier} from "../../../../../models/base/tile";
 import React from "react";
 import {TextField} from "../../../../components/textfield/TextField";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
@@ -10,11 +9,13 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
 import { Tooltip } from "../../../../components/tooltip/Tooltip";
+import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
+import {TileSummary} from "../../../../../models/tile/tileSummary";
 
 export interface FoundSettlementWindowProps {
     windowId: string;
-    tile: TileIdentifier,
-    worldObjectId: string
+    tile: TileSummary,
+    worldObjectId: WorldObjectId,
 }
 
 

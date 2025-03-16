@@ -1,4 +1,3 @@
-import {Route} from "../../../../models/base/route";
 import {LineMesh} from "../../../../common/webgl/lines/lineMesh";
 import {LineMeshCreator} from "../../../../common/webgl/lines/lineMeshCreator";
 import {LineCapsButt} from "../../../../common/webgl/lines/lineCapsButt";
@@ -6,6 +5,7 @@ import {LineJoinMiter} from "../../../../common/webgl/lines/lineJoinMitter";
 import {TextureAtlasEntry} from "../../../../common/webgl/textureAtlas";
 import {TilemapUtils} from "../../../../common/tilemapUtils";
 import {CurveInterpolator} from "curve-interpolator";
+import {Route} from "../../../../models/route/route";
 
 export namespace RouteSpriteBuilder {
 
@@ -24,7 +24,7 @@ export namespace RouteSpriteBuilder {
 		const pointStep1: ([number, number])[] = [];
 		for (let i = 0; i < route.path.length; i++) {
 			const tile = route.path[i];
-			pointStep1.push(TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.q, tile.r));
+			pointStep1.push(TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.position.q, tile.position.r));
 		}
 
 		const pointStep2 = new CurveInterpolator(pointStep1, {

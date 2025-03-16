@@ -1,7 +1,6 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
-import {useDI} from "../../../../appContext";
 import "./canvas.less";
-import {GameLoopService} from "../../../../logic/game/gameLoopService";
+import {App} from "../../../../appContext";
 
 
 export function Canvas() {
@@ -11,8 +10,6 @@ export function Canvas() {
 	const hasContext = useRef<boolean>(true);
 	const mouseDownInCanvas = useRef<boolean>(false);
 	const timestampMouseDown = useRef<number>(0);
-
-	const gameLoopService = useDI<GameLoopService>(GameLoopService.name);
 
 	useEffect(() => {
 		if (canvasRef.current) {
@@ -60,7 +57,7 @@ export function Canvas() {
 	}
 
 	function initialize(canvas: HTMLCanvasElement) {
-		console.log("Initializing canvas")
+		console.log("Initializing canvas");
 		onInitialize(canvas);
 		renderLoop();
 
@@ -75,7 +72,7 @@ export function Canvas() {
 	}
 
 	function mouseMove(e: MouseEvent) {
-		gameLoopService.mouseMove(
+		App.gameProxy.mouseMoved(
 			e.movementX,
 			e.movementY,
 			e.clientX,
@@ -84,7 +81,7 @@ export function Canvas() {
 		);
 	}
 
-	function mouseDown(e: MouseEvent) {
+	function mouseDown(_: MouseEvent) {
 		mouseDownInCanvas.current = true;
 		timestampMouseDown.current = Date.now();
 	}
@@ -95,32 +92,32 @@ export function Canvas() {
 		timestampMouseDown.current = 0;
 	}
 
-	function mouseLeave(e: MouseEvent) {
+	function mouseLeave(_: MouseEvent) {
 		mouseDownInCanvas.current = false;
 	}
 
 	function scroll(e: WheelEvent) {
-		gameLoopService.mouseScroll(e.deltaY, e.clientX, e.clientY);
+		App.gameProxy.mouseScrolled(e.deltaY, e.clientX, e.clientY);
 	}
 
 	function click(duration: number, e: MouseEvent) {
 		if (duration < 150) {
-			gameLoopService.mouseClick(e.clientX, e.clientY).then(_ => undefined);
+			App.gameProxy.mouseClicked(e.clientX, e.clientY);
 		}
 	}
 
 	function onInitialize(canvas: HTMLCanvasElement) {
-		gameLoopService.initializeCanvas(canvas);
+		App.gameProxy.initialize(canvas);
 	}
 
 	function onRender() {
-		gameLoopService.update();
+		App.gameProxy.update();
 	}
 
 	function onDispose() {
-		console.log("Disposing canvas")
+		console.log("Disposing canvas");
 		animationId.current && cancelAnimationFrame(animationId.current);
-		gameLoopService.disposeCanvas();
+		App.gameProxy.dispose();
 	}
 
 	return (

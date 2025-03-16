@@ -2,11 +2,12 @@ import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNod
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
 import {buildMap} from "../../../common/utils";
-import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {GameHtmlRenderContext} from "../gameRenderContext";
 import {TilemapUtils} from "../../../common/tilemapUtils";
-import {CommandType, CreateSettlement} from "../../../models/base/command";
+import {CommandType} from "../../../models/command/commandType";
+import {CreateSettlementCommand} from "../../../models/command/command";
+import {TileSummary} from "../../../models/tile/tileSummary";
 
 export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
@@ -43,7 +44,7 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
         const createSettlementCommands = context.commands
             .filter(it => it.type === CommandType.CREATE_SETTLEMENT)
-            .map(it => it as CreateSettlement);
+            .map(it => it as CreateSettlementCommand);
 
         const settlements = context.settlements;
         for (let i = 0, n = settlements.length; i < n; i++) {
@@ -52,7 +53,7 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
                 addElement({
                     type: "location",
                     tile: settlement.tile,
-                    name: settlement.identifier.name,
+                    name: settlement.name,
                     color: `rgb(${settlement.country.color.red},${settlement.country.color.green},${settlement.country.color.blue})`,
                     index: 0,
                 });
@@ -65,7 +66,7 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
                     type: "location-pending",
                     tile: command.tile,
                     name: command.name,
-                    color: `rgb(${context.playerCountry.identifier.color.red},${context.playerCountry.identifier.color.green},${context.playerCountry.identifier.color.blue})`,
+                    color: `rgb(${context.playerCountry.color.red},${context.playerCountry.color.green},${context.playerCountry.color.blue})`,
                     index: 0,
                 });
             }
@@ -74,14 +75,14 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
         const worldObjects = context.worldObjects;
         for (let i = 0, n = worldObjects.length; i < n; i++) {
             const worldObject = worldObjects[i];
-            if (createSettlementCommands.some(cmd => cmd.worldObjectId === worldObject.identifier.id)) {
+            if (createSettlementCommands.some(cmd => cmd.worldObjectId === worldObject.id)) {
                 continue;
             }
             if (this.isVisible(worldObject.tile, 10, context.camera)) {
                 addElement({
                     type: "unit",
                     tile: worldObject.tile,
-                    name: worldObject.identifier.type.id,
+                    name: worldObject.type.id,
                     color: `rgb(${worldObject.country.color.red},${worldObject.country.color.green},${worldObject.country.color.blue})`,
                     index: 0,
                 });
@@ -103,10 +104,10 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
         });
     }
 
-    private isVisible(tile: TileIdentifier, padding: number, camera: Camera): boolean {
+    private isVisible(tile: TileSummary, padding: number, camera: Camera): boolean {
         const cameraMin = Projections.screenToWorld(camera, 0, camera.getClientHeight());
         const cameraMax = Projections.screenToWorld(camera, camera.getClientWidth(), 0);
-        const tilePos = Projections.hexToWorld(tile.q, tile.r);
+        const tilePos = Projections.hexToWorld(tile.position.q, tile.position.r);
         return (cameraMin.x - padding) < tilePos.x && tilePos.x < (cameraMax.x + padding)
             && (cameraMin.y - padding) < tilePos.y && tilePos.y < (cameraMax.y + padding);
     }
@@ -117,7 +118,7 @@ interface LabelElement {
     type: "location" | "location-pending" | "unit"
     name: string,
     color: string,
-    tile: TileIdentifier,
+    tile: TileSummary,
     index: number,
 }
 
@@ -125,7 +126,7 @@ function render(camera: Camera, element: LabelElement, html: HTMLElement): void 
 
     const pos = Projections.hexToScreen(
         camera,
-        element.tile.q, element.tile.r,
+        element.tile.position.q, element.tile.position.r,
         [0, TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * 0.5]);
     pos.y = camera.getClientHeight() - pos.y;
     pos.y = pos.y + (element.index * 20);
