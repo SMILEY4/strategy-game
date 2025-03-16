@@ -10,10 +10,25 @@ import {CommandType} from "../../../models/command/commandType";
 import {UID} from "../../../common/uid";
 
 export interface MovementService {
+	/**
+	 * Whether the game is currently in "move" mode
+	 */
 	isMovementActive(): boolean;
+	/**
+	 * Start "move" mode for the given world object
+	 */
 	beginMovement(worldObjectId: WorldObjectId): Promise<void>;
+	/**
+	 * End the movement and submit a command
+	 */
 	completeMovement(): void;
+	/**
+	 * End the movement without submitting a command
+	 */
 	cancelMovement(): void;
+	/**
+	 * Add the given tile to the current movement path
+	 */
 	addStep(tileId: TileId): Promise<boolean>;
 }
 

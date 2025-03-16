@@ -14,8 +14,17 @@ import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary
 import {SettlementSummary} from "../../../models/settlement/settlementSummary";
 
 export interface TileService {
+	/**
+	 * Handle a click-event on the given tile
+	 */
 	clickTile(tile: TileSummary): void;
+	/**
+	 * Handle a mouse-over event on the given tile
+	 */
 	mouseOver(tile: TileSummary | null): void;
+	/**
+	 * Return the tile at the given screen position
+	 */
 	pickTileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): TileSummary | null;
 }
 

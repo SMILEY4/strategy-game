@@ -16,7 +16,6 @@ import {SettlementDatabase} from "./state/database/settlementDatabase";
 import {TileDatabase} from "./state/database/tileDatabase";
 import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
 import {GameClient} from "./logic/game/client/gameClient";
-import {GameIdProvider} from "./logic/game/client/gameIdProvider";
 import {HttpClient} from "./common/httpClient";
 import {CommandService, CommandServiceImpl} from "./logic/game/service/commandService";
 import {ChangeProvider} from "./renderer/common/graph/changeProvider";
@@ -72,14 +71,11 @@ export namespace App {
 		gameSessionDatabase
 	);
 
-	// providers
-	const gameIdProvider: GameIdProvider = new GameIdProvider();
-
 	// api clients
 	const httpClient: HttpClient = new HttpClient(API_BASE_URL);
 
 	const userClient: UserClient = new UserClient(httpClient, userStateAccess);
-	const gameClient: GameClient = new GameClient(httpClient, userStateAccess, gameIdProvider);
+	const gameClient: GameClient = new GameClient(httpClient, userStateAccess, gameStateAccess);
 	const gameSessionClient: GameSessionClient = new GameSessionClient(httpClient, new WebsocketClient(API_WS_BASE_URL), userStateAccess);
 
 	// core services

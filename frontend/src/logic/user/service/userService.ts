@@ -5,8 +5,18 @@ import {UserStateWriter} from "../../../state/userStateWriter";
 
 
 export interface UserService {
+	/**
+	 * Login as the given user
+	 */
 	login(email: string, password: string): Promise<void>;
+	/**
+	 * Sign up as a new user
+	 */
 	signup(email: string, password: string, username: string): Promise<void>;
+	/**
+	 * Whether the user is currently authenticated, i.e. a valid auth token is present
+	 */
+	isAuthenticated(): boolean;
 }
 
 export class UserServiceImpl implements UserService {
@@ -21,22 +31,16 @@ export class UserServiceImpl implements UserService {
 		this.userStateWriter = userStateWriter;
 	}
 
-	/**
-	 * Login as the given user
-	 */
 	login(email: string, password: string): Promise<void> {
 		return this.client.login(email, password)
 			.then(data => this.userStateWriter.setAuthToken(data.idToken));
 	}
 
-	/**
-	 * Sign up as a new user
-	 */
 	signup(email: string, password: string, username: string): Promise<void> {
 		return this.client.signUp(email, password, username);
 	}
 
-	private isAuthenticated(): boolean {
+	isAuthenticated(): boolean {
 		const token = this.userStateAccess.getAuthTokenOrNull();
 		if (token) {
 			return this.getTokenExpiration(token) > Date.now();

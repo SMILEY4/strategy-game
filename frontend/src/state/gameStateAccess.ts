@@ -28,6 +28,7 @@ import {DbCache} from "../common/db/dbCache";
 
 export interface GameStateAccess {
 	// game
+	getGameIdOrThrow(): string
 	getCurrentTurn(): number;
 	getGameSessionState(): GameSessionState;
 	// map
@@ -116,6 +117,16 @@ export class GameStateAccessImpl implements GameStateAccess {
 	}
 
 	//========== GAME ==========================================================
+
+	getGameIdOrThrow(): string {
+		const urlParams = new URLSearchParams(window.location.search);
+		const gameId = urlParams.get('id');
+		if(gameId) {
+			return gameId
+		} else {
+			throw new Error("Could not get game-id from url")
+		}
+	}
 
 	getCurrentTurn(): number {
 		return this.gameSessionDatabase.get().turn;

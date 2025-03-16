@@ -3,10 +3,10 @@ import {MovementService} from "./movementService";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 
-/**
- * Service to handle the end of the current turn (for this player)
- */
 export interface TurnEndService {
+	/**
+	 * End the current turn and send commands to backend
+	 */
 	endTurn(): void;
 }
 

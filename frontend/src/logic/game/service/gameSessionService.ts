@@ -24,12 +24,33 @@ import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 
 export interface GameSessionService {
+	/**
+	 * Get all games of the currently logged-in user
+	 */
 	listSessions(): Promise<GameSessionMeta[]>;
+	/**
+	 * Create a new game with the given name and settings
+	 */
 	createSession(name: string, seed: string | null): Promise<string>;
+	/**
+	 * Join a game with the given id as a new player
+	 */
 	joinSession(gameId: string): Promise<void>;
+	/**
+	 * Delete a game with the given id
+	 */
 	deleteSession(gameId: string): Promise<void>;
+	/**
+	 * Connect to the game with the given id and "start" playing
+	 */
 	connectSession(gameId: string): Promise<void>;
+	/**
+	 * Disconnect from the current session
+	 */
 	disconnectSession(): Promise<void>;
+	/**
+	 * Submit the commands for the current turn and end turn
+	 */
 	submitTurn(commands: Command[]): void;
 }
 
@@ -53,9 +74,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 	}
 
 
-	/**
-	 * Get all games of the currently logged-in user
-	 */
 	listSessions(): Promise<GameSessionMeta[]> {
 		return this.client.list()
 			.catch(error => handleResponseError(error, 401, () => {
@@ -63,9 +81,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 			}));
 	}
 
-	/**
-	 * Create a new game with the given name and settings
-	 */
 	createSession(name: string, seed: string | null): Promise<string> {
 		return this.client.create(name, seed)
 			.catch(error => handleResponseError(error, 401, () => {
@@ -73,9 +88,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 			}));
 	}
 
-	/**
-	 * Join a game with the given id as a new player
-	 */
 	joinSession(gameId: string): Promise<void> {
 		return this.client.join(gameId)
 			.catch(error => handleResponseError(error, 401, () => {
@@ -83,9 +95,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 			}));
 	}
 
-	/**
-	 * Delete a game with the given id
-	 */
 	deleteSession(gameId: string): Promise<void> {
 		return this.client.delete(gameId)
 			.catch(error => handleResponseError(error, 401, () => {
@@ -93,9 +102,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 			}));
 	}
 
-	/**
-	 * Connect to the game with the given id and "start" playing
-	 */
 	connectSession(gameId: string): Promise<void> {
 		return Promise.resolve()
 			.then(() => this.gameStateWriter.setGameSessionState("loading"))
@@ -107,9 +113,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 			});
 	}
 
-	/**
-	 * Disconnect from the current session
-	 */
 	disconnectSession(): Promise<void> {
 		return Promise.resolve()
 			.then(() => this.gameStateWriter.setGameSessionState("none"))
@@ -133,9 +136,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 	}
 
 
-	/**
-	 * Submit the commands for the current turn and end turn
-	 */
 	submitTurn(commands: Command[]) {
 		this.client.sendMessage(
 			"submit-turn",
@@ -150,7 +150,7 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 							path: cmd.path.map(it => ({
 								id: it.id,
 								q: it.position.q,
-								r: it.position.r
+								r: it.position.r,
 							})),
 						};
 						return cmdMsg;

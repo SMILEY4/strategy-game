@@ -16,10 +16,26 @@ import {SettlementProductionOption} from "../../../models/settlement/settlement"
 
 
 export interface SettlementService {
+	/**
+	 * Get a random name for a settlement
+	 */
 	getRandomName(): Promise<string>;
+	/**
+	 * Validate whether the settlement can be created.
+	 * Returns a list of reasons if invalid.
+	 */
 	validateFounding(tile: TileId, name: string | null): string[];
+	/**
+	 * Create a new settlement
+	 */
 	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void;
+	/**
+	 * Add a new entry to the given settlements production queue
+	 */
 	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void;
+	/**
+	 * Cancel the given entry in the given settlements production queue
+	 */
 	cancelProduction(settlement: SettlementSummary, entryId: string): void;
 }
 

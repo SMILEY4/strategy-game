@@ -18,6 +18,9 @@ import {WorldObjectEntity} from "../../../models/worldobject/worldObjectEntity";
 import {RouteEntity} from "../../../models/route/routeEntity";
 
 export interface TurnStartService {
+	/**
+	 * Start a new turn and set the new game state
+	 */
 	setGameState(gameState: GameStateMessage): void;
 }
 

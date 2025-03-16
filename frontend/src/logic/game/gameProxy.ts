@@ -24,38 +24,114 @@ import {CommandService} from "./service/commandService";
  */
 export interface GameProxy {
 	// session
+	/**
+	 * Get all games of the currently logged-in user.
+	 */
 	listSessions(): Promise<GameSessionMeta[]>;
+	/**
+	 * Create a new game with the given name and settings.
+	 */
 	createSession(name: string, seed: string | null): Promise<string>;
+	/**
+	 * Join a game with the given id as a new player.
+	 */
 	joinSession(gameId: string): Promise<void>;
+	/**
+	 * Delete a game with the given id.
+	 */
 	deleteSession(gameId: string): Promise<void>;
+	/**
+	 * Connect to the game with the given id and "start" playing.
+	 */
 	connectSession(gameId: string): Promise<void>;
+	/**
+	 * Disconnect from the current session.
+	 */
 	disconnectSession(): Promise<void>;
 	// main game loop
+	/**
+	 * Initialize the main game/rendering loop.
+	 */
 	initialize(canvas: HTMLCanvasElement): void;
+	/**
+	 * Update step in the main game/rendering loop.
+	 */
 	update(): void;
+	/**
+	 * Dispose the main game/rendering loop.
+	 */
 	dispose(): void;
 	// generic user interactions
+	/**
+	 * Handle a mouse click at the given screen location.
+	 */
 	mouseClicked(clientX: number, clientY: number): void;
+	/**
+	 * Handle a mouse movement event.
+	 */
 	mouseMoved(dx: number, dy: number, clientX: number, clientY: number, leftBtnDown: boolean): void;
+	/**
+	 * Handle a mouse scroll event.
+	 */
 	mouseScrolled(d: number, clientX: number, clientY: number): void;
 	// camera
+	/**
+	 * Move the camera to focus on the given tile.
+	 */
 	focusCamera(tilePosition: TilePosition): void
 	// basic game functionality
+	/**
+	 * End the current turn and send commands to server.
+	 */
 	endTurn(): void;
+	/**
+	 * Select the given map mode as the new active map mode.
+	 */
 	selectMapMode(mapMode: MapMode): void
 	// commands
+	/**
+	 * Cancel the given command.
+	 */
 	commandCancel(command: Command): void;
 	// settlements
+	/**
+	 * Get a random name for a settlement.
+	 */
 	getRandomSettlementName(): Promise<string>;
+	/**
+	 * Validate whether the settlement can be created.
+	 * Returns a list of reasons if invalid.
+	 */
 	validateFoundSettlement(tile: TileId, name: string): string[];
+	/**
+	 * Create a new settlement.
+	 */
 	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void;
+	/**
+	 * Add a new entry to the given settlements production queue.
+	 */
 	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void,
+	/**
+	 * Cancel the given entry in the given settlements production queue.
+	 */
 	cancelProduction(settlement: SettlementSummary, entryId: string): void,
 	// units / world objects
+	/**
+	 * Start "move" mode for the given world object.
+	 */
 	beginMovement(worldObjectId: WorldObjectId): void;
+	/**
+	 * End the movement. Submit or discard the move command.
+	 */
 	endMovement(commit: boolean): void;
 	// dev functions
+	/**
+	 * Loose the current webgl context for debug purposes.
+	 */
 	webglContextLoose(): void;
+	/**
+	 * Restore the webgl context for debug purposes.
+	 */
 	webglContextRestore(): void;
 }
 
@@ -154,7 +230,7 @@ export class GameProxyImpl implements GameProxy {
 					}
 				});
 			} else {
-				this.tileService.clickTile(TileSummary.from(clickedTile));
+				this.tileService.clickTile(clickedTile);
 			}
 		}
 	}
@@ -174,7 +250,7 @@ export class GameProxyImpl implements GameProxy {
 
 	private updateMouseOver(clientX: number, clientY: number) {
 		const mouseOverTile = this.tileService.pickTileAt(clientX, clientY, this.canvasHandle);
-		this.tileService.mouseOver(TileSummary.fromOrNull(mouseOverTile));
+		this.tileService.mouseOver(mouseOverTile);
 	}
 
 	//========== CAMERA =======================================================

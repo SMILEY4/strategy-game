@@ -3,8 +3,14 @@ import {Command} from "../../../models/command/command";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 
 export interface CommandService {
-	cancelCommand(id: CommandId): void;
+	/**
+	 * Add the given command
+	 */
 	addCommand<T extends Command>(command: T): void;
+	/**
+	 * Cancel the command with the given id
+	 */
+	cancelCommand(id: CommandId): void;
 }
 
 export class CommandServiceImpl implements CommandService {

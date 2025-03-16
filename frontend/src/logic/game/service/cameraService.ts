@@ -4,8 +4,17 @@ import {TilePosition} from "../../../models/tile/tilePosition";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 
 export interface CameraService {
+	/**
+	 * Set the camera position to center on the given tile
+	 */
 	center(tile: TilePosition): void;
+	/**
+	 * Move the camera by the given x and y distance
+	 */
 	move(dx: number, dy: number): void;
+	/**
+	 * Zoom the camera by the given direction (only positive or negative is relevant)
+	 */
 	zoom(d: number): void;
 }
 

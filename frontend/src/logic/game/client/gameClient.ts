@@ -1,22 +1,22 @@
 import {HttpClient} from "../../../common/httpClient";
-import {GameIdProvider} from "./gameIdProvider";
 import {MovementTarget} from "../../../models/misc/movementTarget";
 import {TileId} from "../../../models/tile/tileId";
 import {UserStateAccess} from "../../../state/userStateAccess";
+import {GameStateAccess} from "../../../state/gameStateAccess";
 
 /**
- * API-Client for ingame-operations
+ * API-Client for in-game operations
  */
 export class GameClient {
 
-	private readonly gameIdProvider: GameIdProvider;
+	private readonly gameStateAccess: GameStateAccess;
 	private readonly userStateAccess: UserStateAccess;
 	private readonly httpClient: HttpClient;
 
-	constructor(httpClient: HttpClient, userStateAccess: UserStateAccess, gameIdProvider: GameIdProvider) {
+	constructor(httpClient: HttpClient, userStateAccess: UserStateAccess, gameStateAccess: GameStateAccess) {
 		this.httpClient = httpClient;
 		this.userStateAccess = userStateAccess;
-		this.gameIdProvider = gameIdProvider;
+		this.gameStateAccess = gameStateAccess;
 	}
 
 	/**
@@ -24,7 +24,7 @@ export class GameClient {
 	 */
 	public getAvailableMovementPositions(worldObjectId: string, tileId: TileId, points: number): Promise<MovementTarget[]> {
 		return this.httpClient.get<MovementTargetResponse[]>({
-			url: "/api/game/movement/availablepositions?gameId=" + this.gameIdProvider.getGameIdOrThrow() + "&worldObjectId=" + worldObjectId + "&pos=" + tileId + "&points=" + points,
+			url: "/api/game/movement/availablepositions?gameId=" + this.gameStateAccess.getGameIdOrThrow() + "&worldObjectId=" + worldObjectId + "&pos=" + tileId + "&points=" + points,
 			requireAuth: true,
 			token: this.userStateAccess.getAuthTokenOrNull(),
 		}).then(targets => targets.map(tgt => ({
