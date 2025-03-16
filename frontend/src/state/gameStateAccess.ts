@@ -22,43 +22,45 @@ import {SettlementDatabase} from "./database/settlementDatabase";
 import {RouteDatabase} from "./database/routeDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
 import {SettlementBuilder} from "./utils/settlementBuilder";
+import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
+import {SettlementSummary} from "../models/settlement/settlementSummary";
+import {DbCache} from "../common/db/dbCache";
 
-export interface GameStateAccess { // todo: check which consumers require "full" models and which can use reduced models
+export interface GameStateAccess {
 	// game
-	getCurrentTurn(): number
-	getGameSessionState(): GameSessionState
+	getCurrentTurn(): number;
+	getGameSessionState(): GameSessionState;
 	// map
-	getMapMode(): MapMode
+	getMapMode(): MapMode;
 	// camera
 	getCamera(): CameraEntity;
 	// tiles
-	getTilesRevId(): string, // todo: move caching to this access (not in render context)
 	getSelectedTile(): TileSummary | null;
 	getHoveredTile(): TileSummary | null;
 	getTileAt(q: number, r: number): Tile | null;
+	getTileSummaryAt(q: number, r: number): TileSummary | null;
 	getTiles(): Tile[];
 	// country
-	getPlayerCountry(): Country
+	getPlayerCountry(): Country;
 	// world objects
-	getWorldObject(id: WorldObjectId): WorldObject | null
-	getWorldObjectsAt(q: number, r: number): WorldObject[]
-	getWorldObjects(): WorldObject[]
-	getWorldObjectsRevId(): string
-	getCurrentMovementState(): MovementState | null
-	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[]
-	getMoveTargets(): TileSummary[]
+	getWorldObjectSummary(id: WorldObjectId): WorldObjectSummary | null;
+	getWorldObjectSummariesAt(q: number, r: number): WorldObjectSummary[];
+	getWorldObjects(): WorldObject[];
+	getCurrentMovementState(): MovementState | null;
+	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[];
+	getMoveTargets(): TileSummary[];
 	// settlements
-	getSettlementsRevId(): string
-	getSettlements(): Settlement[]
-	getSettlementAt(q: number, r: number): Settlement | null
-	getSettlementProductionQueue(id: SettlementId): SettlementProductionQueueEntry[] | null
+	// todo: maybe own reduced settlement model for rendering
+	getSettlements(): Settlement[];
+	getSettlementAt(q: number, r: number): Settlement | null;
+	getSettlementSummaryAt(q: number, r: number): SettlementSummary | null;
+	getSettlementProductionQueue(id: SettlementId): SettlementProductionQueueEntry[] | null;
 	// routes
-	getRoutesRevId(): string
-	getRoutes(): Route[]
+	getRoutes(): Route[];
 	// commands
-	getCommandRevId(): string
-	getCommands(): Command[]
-	getCommandsOfType<T extends Command>(type: CommandType): T[]
+	getCommandRevId(): string;
+	getCommands(): Command[];
+	getCommandsOfType<T extends Command>(type: CommandType): T[];
 }
 
 export class GameStateAccessImpl implements GameStateAccess {
@@ -71,6 +73,11 @@ export class GameStateAccessImpl implements GameStateAccess {
 	private readonly settlementDatabase: SettlementDatabase;
 	private readonly routeDatabase: RouteDatabase;
 	private readonly commandDatabase: CommandDatabase;
+
+	private readonly tilesCache: DbCache<Tile[]>;
+	private readonly settlementsCache: DbCache<Settlement[]>;
+	private readonly worldObjectsCache: DbCache<WorldObject[]>;
+	private readonly routesCache: DbCache<Route[]>;
 
 	constructor(
 		cameraDatabase: CameraDatabase,
@@ -90,6 +97,22 @@ export class GameStateAccessImpl implements GameStateAccess {
 		this.settlementDatabase = settlementDatabase;
 		this.routeDatabase = routeDatabase;
 		this.commandDatabase = commandDatabase;
+		this.tilesCache = new DbCache({
+			dataProvider: () => this.getTilesUncached(),
+			dependencies: [this.tileDatabase],
+		});
+		this.settlementsCache = new DbCache({
+			dataProvider: () => this.getSettlementsUncached(),
+			dependencies: [this.settlementDatabase, this.routeDatabase, this.commandDatabase],
+		});
+		this.worldObjectsCache = new DbCache({
+			dataProvider: () => this.getWorldObjectsUncached(),
+			dependencies: [this.worldObjectDatabase],
+		});
+		this.routesCache = new DbCache({
+			dataProvider: () => this.getRoutesUncached(),
+			dependencies: [this.routeDatabase],
+		});
 	}
 
 	//========== GAME ==========================================================
@@ -118,10 +141,6 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== TILES ========================================================
 
-	getTilesRevId(): string {
-		return this.tileDatabase.getRevId();
-	}
-
 	getSelectedTile(): TileSummary | null {
 		return this.gameSessionDatabase.get().selectedTile;
 	}
@@ -146,7 +165,22 @@ export class GameStateAccessImpl implements GameStateAccess {
 		};
 	}
 
+	getTileSummaryAt(q: number, r: number): TileSummary | null {
+		const entity = this.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
+		if (!entity) {
+			return null;
+		}
+		return {
+			id: entity.id,
+			position: entity.position,
+		};
+	}
+
 	getTiles(): Tile[] {
+		return this.tilesCache.get();
+	}
+
+	private getTilesUncached(): Tile[] {
 		return this.tileDatabase.queryMany(TileDatabase.QUERY_ALL, null)
 			.map(entity => ({
 				id: entity.id,
@@ -167,20 +201,20 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== WORLD OBJECTS =================================================
 
-	getWorldObject(id: WorldObjectId): WorldObject | null {
+	getWorldObjectSummary(id: WorldObjectId): WorldObjectSummary | null {
 		return this.worldObjectDatabase.querySingle(WorldObjectDatabase.QUERY_BY_ID, id);
 	}
 
-	getWorldObjectsAt(q: number, r: number): WorldObject[] {
+	getWorldObjectSummariesAt(q: number, r: number): WorldObject[] {
 		return this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [q, r]);
 	}
 
 	getWorldObjects(): WorldObject[] {
-		return this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_ALL, null);
+		return this.worldObjectsCache.get()
 	}
 
-	getWorldObjectsRevId(): string {
-		return this.worldObjectDatabase.getRevId();
+	getWorldObjectsUncached(): WorldObject[] {
+		return this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_ALL, null);
 	}
 
 	getCurrentMovementState(): MovementState | null {
@@ -223,11 +257,11 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== SETTLEMENTS ===================================================
 
-	getSettlementsRevId(): string {
-		return this.settlementDatabase.getRevId();
+	getSettlements(): Settlement[] {
+		return this.settlementsCache.get();
 	}
 
-	getSettlements(): Settlement[] {
+	private getSettlementsUncached(): Settlement[] {
 		const settlements = this.settlementDatabase.queryMany(SettlementDatabase.QUERY_ALL, null);
 		const routes = this.routeDatabase.queryMany(RouteDatabase.QUERY_ALL, null);
 		const commands = this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
@@ -246,6 +280,20 @@ export class GameStateAccessImpl implements GameStateAccess {
 		}
 	}
 
+	getSettlementSummaryAt(q: number, r: number): SettlementSummary | null {
+		const settlement = this.settlementDatabase.querySingle(SettlementDatabase.QUERY_BY_POSITION, [q, r]);
+		if (settlement) {
+			return {
+				id: settlement.id,
+				name: settlement.name,
+				color: settlement.color,
+				isUserControlled: settlement.country.isUserControlled,
+			};
+		} else {
+			return null;
+		}
+	}
+
 	getSettlementProductionQueue(id: SettlementId): SettlementProductionQueueEntry[] | null {
 		const settlement = this.settlementDatabase.querySingle(SettlementDatabase.QUERY_BY_ID, id);
 		if (settlement) {
@@ -258,11 +306,11 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== ROUTES ========================================================
 
-	getRoutesRevId(): string {
-		return this.routeDatabase.getRevId();
+	getRoutes(): Route[] {
+		return this.routesCache.get()
 	}
 
-	getRoutes(): Route[] {
+	getRoutesUncached(): Route[] {
 		return this.routeDatabase.queryMany(RouteDatabase.QUERY_ALL, null);
 	}
 

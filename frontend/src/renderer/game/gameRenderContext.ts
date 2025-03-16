@@ -34,7 +34,7 @@ export interface GameHtmlRenderContext extends HtmlRenderCommand.Context {
 	settlements: Settlement[],
 	commands: Command[],
 	worldObjects: WorldObject[]
-	movePaths: ({tiles: TileSummary[], pending: boolean})[],
+	movePaths: ({ tiles: TileSummary[], pending: boolean })[],
 }
 
 
@@ -43,11 +43,6 @@ export class RenderContextFactory {
 	private readonly gl: WebGL2RenderingContext;
 	private readonly renderer: BaseRenderer;
 	private readonly localStateAccess: GameStateAccess;
-
-	private tileCache: { items: Tile[], revId: string } = {items: [], revId: ""};
-	private settlementCache: { items: Settlement[], revId: string } = {items: [], revId: ""};
-	private worldObjectCache: { items: WorldObject[], revId: string } = {items: [], revId: ""};
-	private routeCache: { items: Route[], revId: string } = {items: [], revId: ""};
 
 	constructor(
 		gl: WebGL2RenderingContext,
@@ -68,12 +63,12 @@ export class RenderContextFactory {
 			mapMode: this.localStateAccess.getMapMode(),
 			timestamp: (Date.now() / 1000) % 10000,
 			selectedTile: this.localStateAccess.getSelectedTile(),
-			tiles: this.getTilesAll(),
-			settlements: this.getSettlementsAll(),
-			worldObjects: this.getWorldObjectsAll(),
+			tiles: this.localStateAccess.getTiles(),
+			settlements: this.localStateAccess.getSettlements(),
+			worldObjects: this.localStateAccess.getWorldObjects(),
 			moveTargets: this.localStateAccess.getMoveTargets(),
-			routes: this.getRoutesAll(),
-			tileByPosProvider: (q, r) => this.localStateAccess.getTileAt(q, r)
+			routes: this.localStateAccess.getRoutes(),
+			tileByPosProvider: (q, r) => this.localStateAccess.getTileAt(q, r),
 		};
 	}
 
@@ -83,43 +78,11 @@ export class RenderContextFactory {
 			camera: camera,
 			mapMode: this.localStateAccess.getMapMode(),
 			commands: this.localStateAccess.getCommands(),
-			tiles: this.getTilesAll(),
-			settlements: this.getSettlementsAll(),
-			worldObjects: this.getWorldObjectsAll(),
+			tiles: this.localStateAccess.getTiles(),
+			settlements: this.localStateAccess.getSettlements(),
+			worldObjects: this.localStateAccess.getWorldObjects(),
 			movePaths: this.localStateAccess.getMovePaths(),
 		};
-	}
-
-	private getTilesAll(): Tile[] {
-		if (this.tileCache.revId !== this.localStateAccess.getTilesRevId()) {
-			this.tileCache.items= this.localStateAccess.getTiles();
-			this.tileCache.revId = this.localStateAccess.getTilesRevId();
-		}
-		return this.tileCache.items;
-	}
-
-	private getSettlementsAll(): Settlement[] {
-		if (this.settlementCache.revId !== this.localStateAccess.getSettlementsRevId()) {
-			this.settlementCache.items = this.localStateAccess.getSettlements();
-			this.settlementCache.revId = this.localStateAccess.getSettlementsRevId();
-		}
-		return this.settlementCache.items;
-	}
-
-	private getWorldObjectsAll(): WorldObject[] {
-		if (this.worldObjectCache.revId !== this.localStateAccess.getWorldObjectsRevId()) {
-			this.worldObjectCache.items = this.localStateAccess.getWorldObjects();
-			this.worldObjectCache.revId = this.localStateAccess.getWorldObjectsRevId();
-		}
-		return this.worldObjectCache.items;
-	}
-
-	private getRoutesAll(): Route[] {
-		if (this.routeCache.revId !== this.localStateAccess.getRoutesRevId()) {
-			this.routeCache.items = this.localStateAccess.getRoutes();
-			this.routeCache.revId = this.localStateAccess.getRoutesRevId();
-		}
-		return this.routeCache.items;
 	}
 
 }

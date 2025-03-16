@@ -10,11 +10,13 @@ import {CanvasHandle} from "../../../common/webgl/canvasHandle";
 import {Tile} from "../../../models/tile/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {Camera} from "../../../common/webgl/camera";
+import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
+import {SettlementSummary} from "../../../models/settlement/settlementSummary";
 
 export interface TileService {
 	clickTile(tile: TileSummary): void;
 	mouseOver(tile: TileSummary | null): void;
-	pickTileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null;
+	pickTileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): TileSummary | null;
 }
 
 export class TileServiceImpl implements TileService {
@@ -31,8 +33,8 @@ export class TileServiceImpl implements TileService {
 
 		this.gameStateWriter.setSelectedTile(tile)
 
-		const worldObjects: WorldObject[] = this.localStateAccess.getWorldObjectsAt(tile.position.q, tile.position.r)
-		const settlement: Settlement | null = this.localStateAccess.getSettlementAt(tile.position.q, tile.position.r)
+		const worldObjects: WorldObjectSummary[] = this.localStateAccess.getWorldObjectSummariesAt(tile.position.q, tile.position.r)
+		const settlement: SettlementSummary | null = this.localStateAccess.getSettlementSummaryAt(tile.position.q, tile.position.r)
 
 		let optionCount = 0;
 		optionCount += settlement ? 1 : 0;
@@ -60,9 +62,9 @@ export class TileServiceImpl implements TileService {
 		}
 	}
 
-	pickTileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null {
+	pickTileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): TileSummary | null {
 		const hexPos = Projections.screenToHex(this.camera(canvasHandle), screenX, screenY);
-		return this.localStateAccess.getTileAt(hexPos.x, hexPos.y);
+		return this.localStateAccess.getTileSummaryAt(hexPos.x, hexPos.y);
 	}
 
 	private camera(canvasHandle: CanvasHandle): Camera {

@@ -36,7 +36,7 @@ export class MovementServiceImpl implements MovementService {
 	}
 
 	beginMovement(worldObjectId: WorldObjectId): Promise<void> {
-		const worldObject = this.localStateAccess.getWorldObject(worldObjectId);
+		const worldObject = this.localStateAccess.getWorldObjectSummary(worldObjectId);
 		if (!worldObject) {
 			return Promise.resolve();
 		}
