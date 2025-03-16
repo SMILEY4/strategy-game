@@ -1,4 +1,4 @@
-import seedrandom from "seedrandom";
+import {hash} from "./hash";
 
 export namespace Random {
 
@@ -7,7 +7,7 @@ export namespace Random {
 	 */
 	export function normalized(seed?: string): number {
 		if (seed != undefined) {
-			return seedrandom(seed).quick();
+			return FastRandom.randomFloat(FastRandom.genSeed(seed));
 		} else {
 			return Math.random();
 		}
@@ -33,6 +33,29 @@ export namespace Random {
 		}
 		const index = Math.floor(normalized(seed) * array.length);
 		return array[index];
+	}
+
+}
+
+/**
+ * Source: https://github.com/borilla/fast-random/blob/master/index.js
+ */
+export namespace FastRandom {
+
+	export function randomInt(seed: number): number {
+		return seed * 48271 % 2147483647;
+	}
+
+	export function randomFloat(seed: number): number {
+		return (randomInt(seed) - 1) / 2147483646;
+	}
+
+	export function genSeed(s: any): number {
+		let seed = hash(""+s)
+		if(seed <= 0) {
+			seed += 2147483646;
+		}
+		return seed;
 	}
 
 }
