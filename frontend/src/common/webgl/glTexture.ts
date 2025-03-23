@@ -14,7 +14,7 @@ export class GLTexture implements GLDisposable {
         this.dimensions = dimensions;
     }
 
-    public bind(textureUnit: number) { // todo: 3d
+    public bind(textureUnit: number) {
         this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
         GLError.check(this.gl, "activeTexture", "set active texture unit");
         this.gl.bindTexture(this.getGlDimension(), this.handle);

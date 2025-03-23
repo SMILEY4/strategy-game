@@ -83,8 +83,6 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
 	private compileDraw(node: DrawRenderNode<any>, textureBindingHandler: TextureBindingHandler, outCommands: WebGLRenderCommand.Base[]) {
 
-		// todo optimize commands
-
 		// bind framebuffer
 		let renderToTexture = false;
 		let renderScale = 1;
@@ -119,7 +117,9 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 			if (input instanceof NodeInput.Texture) {
 				const textureId = input.path;
 				const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
-				outCommands.push(new WebGLRenderCommand.BindTexture(textureId, textureUnit));
+				if(!this.isTextureAlreadyBound(outCommands, textureUnit, textureId)) {
+					outCommands.push(new WebGLRenderCommand.BindTexture(textureId, textureUnit));
+				}
 			}
 			if (input instanceof NodeInput.ConditionalTexture) {
 				const textureId = input.id;
@@ -235,6 +235,18 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 		} else {
 			return null;
 		}
+	}
+
+	private isTextureAlreadyBound(commands: WebGLRenderCommand.Base[], textureUnit: number, path: string): boolean {
+		for (let i = commands.length-1; i >= 0; i--) {
+			if(commands[i] instanceof WebGLRenderCommand.BindTexture) {
+				const command = commands[i] as WebGLRenderCommand.BindTexture
+				if(command.textureUnit === textureUnit) {
+					return command.path === path;
+				}
+			}
+		}
+		return false;
 	}
 
 }

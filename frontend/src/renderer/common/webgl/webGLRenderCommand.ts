@@ -120,8 +120,8 @@ export namespace WebGLRenderCommand {
 	 */
 	export class BindTexture implements Base {
 
-		private readonly path: string;
-		private readonly textureUnit: number;
+		readonly path: string;
+		readonly textureUnit: number;
 
 		constructor(path: string, slot: number) {
 			this.path = path;
