@@ -12,6 +12,7 @@ import {Route} from "../../models/route/route";
 import {Command} from "../../models/command/command";
 import {GameStateAccess} from "../../state/gameStateAccess";
 import {CountrySummary} from "../../models/country/countrySummary";
+import {RenderGraphMonitor} from "../common/graph/renderGraphMonitor";
 
 export interface GameWebGLRenderContext extends WebGLRenderCommand.Context {
 	timestamp: number,
@@ -42,15 +43,18 @@ export class RenderContextFactory {
 
 	private readonly gl: WebGL2RenderingContext;
 	private readonly renderer: BaseRenderer;
+	private readonly monitor: RenderGraphMonitor;
 	private readonly localStateAccess: GameStateAccess;
 
 	constructor(
 		gl: WebGL2RenderingContext,
 		renderer: BaseRenderer,
+		monitor: RenderGraphMonitor,
 		localStateAccess: GameStateAccess,
 	) {
 		this.gl = gl;
 		this.renderer = renderer;
+		this.monitor = monitor;
 		this.localStateAccess = localStateAccess;
 	}
 
@@ -58,6 +62,7 @@ export class RenderContextFactory {
 		return {
 			gl: this.gl,
 			renderer: this.renderer,
+			monitor: this.monitor,
 			camera: camera,
 			renderConfig: renderConfig,
 			mapMode: this.localStateAccess.getMapMode(),
@@ -74,6 +79,7 @@ export class RenderContextFactory {
 
 	public createHtmlContext(camera: Camera): GameHtmlRenderContext {
 		return {
+			monitor: this.monitor,
 			playerCountry: this.localStateAccess.getPlayerCountrySummary(),
 			camera: camera,
 			mapMode: this.localStateAccess.getMapMode(),

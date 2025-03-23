@@ -20,6 +20,7 @@ import {GameSessionService} from "./service/gameSessionService";
 import {CommandService} from "./service/commandService";
 import {CommandType} from "../../models/command/commandType";
 import {UID} from "../../common/uid";
+import {MonitoringService} from "./service/monitoringService";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
@@ -139,6 +140,10 @@ export interface GameProxy {
 	 * Restore the webgl context for debug purposes.
 	 */
 	webglContextRestore(): void;
+	/**
+	 * Export the current monitoring data
+	 */
+	exportMonitoringData(): void
 }
 
 export class GameProxyImpl implements GameProxy {
@@ -150,6 +155,7 @@ export class GameProxyImpl implements GameProxy {
 	private readonly turnEndService: TurnEndService;
 	private readonly settlementService: SettlementService;
 	private readonly commandService: CommandService;
+	private readonly monitoringService: MonitoringService;
 	private readonly gameSessionService: GameSessionService;
 	private readonly gameStateWriter: GameStateWriter;
 	private readonly audioService: AudioService;
@@ -163,6 +169,7 @@ export class GameProxyImpl implements GameProxy {
 		turnEndService: TurnEndService,
 		settlementService: SettlementService,
 		commandService: CommandService,
+		monitoringService: MonitoringService,
 		gameSessionService: GameSessionService,
 		gameStateWriter: GameStateWriter,
 		audioService: AudioService,
@@ -174,6 +181,7 @@ export class GameProxyImpl implements GameProxy {
 		this.turnEndService = turnEndService;
 		this.settlementService = settlementService;
 		this.commandService = commandService;
+		this.monitoringService = monitoringService;
 		this.gameSessionService = gameSessionService;
 		this.gameStateWriter = gameStateWriter;
 		this.audioService = audioService;
@@ -344,4 +352,7 @@ export class GameProxyImpl implements GameProxy {
 		this.canvasHandle.debugRestoreWebglContext();
 	}
 
+	exportMonitoringData(): void {
+		this.monitoringService.exportData();
+	}
 }

@@ -31,6 +31,9 @@ import {UserStateWriter, UserStateWriterImpl} from "./state/userStateWriter";
 import {UserStateAccess, UserStateAccessImpl} from "./state/userStateAccess";
 import {GameProxy, GameProxyImpl} from "./logic/game/gameProxy";
 import {UserProxy, UserProxyImpl} from "./logic/user/userProxy";
+import {WebGLMonitor} from "./common/webgl/monitor/webGLMonitor";
+import {MonitoringService, MonitoringServiceImpl} from "./logic/game/service/monitoringService";
+import {RenderGraphMonitor} from "./renderer/common/graph/renderGraphMonitor";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -73,10 +76,13 @@ export namespace App {
 
 	// api clients
 	const httpClient: HttpClient = new HttpClient(API_BASE_URL);
-
 	const userClient: UserClient = new UserClient(httpClient, userStateAccess);
 	const gameClient: GameClient = new GameClient(httpClient, userStateAccess, gameStateAccess);
 	const gameSessionClient: GameSessionClient = new GameSessionClient(httpClient, new WebsocketClient(API_WS_BASE_URL), userStateAccess);
+
+	// misc services
+	const webglMonitor: WebGLMonitor = new WebGLMonitor();
+	const renderGraphMonitor: RenderGraphMonitor = new RenderGraphMonitor();
 
 	// core services
 	const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
@@ -88,10 +94,11 @@ export namespace App {
 	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
 	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
 	const userService: UserService = new UserServiceImpl(userClient, userStateAccess, userStateWriter);
+	const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor, renderGraphMonitor)
 
 	// rendering
 	const changeProvider: ChangeProvider = new GameChangeProvider(gameStateAccess);
-	const gameRenderer: GameRenderer = new GameRenderer(changeProvider, gameStateAccess);
+	const gameRenderer: GameRenderer = new GameRenderer(changeProvider, gameStateAccess, webglMonitor, renderGraphMonitor);
 
 	// utility services
 	const audioService: AudioService = new AudioService();
@@ -108,6 +115,7 @@ export namespace App {
 		turnEndService,
 		settlementService,
 		commandService,
+		monitoringService,
 		gameSessionService,
 		gameStateWriter,
 		audioService,
