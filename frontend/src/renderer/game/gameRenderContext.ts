@@ -46,6 +46,9 @@ export class RenderContextFactory {
 	private readonly monitor: RenderGraphMonitor;
 	private readonly localStateAccess: GameStateAccess;
 
+	private readonly pooledWebGLContext: GameWebGLRenderContext;
+	private readonly pooledHtmlContext: GameHtmlRenderContext;
+
 	constructor(
 		gl: WebGL2RenderingContext,
 		renderer: BaseRenderer,
@@ -56,39 +59,62 @@ export class RenderContextFactory {
 		this.renderer = renderer;
 		this.monitor = monitor;
 		this.localStateAccess = localStateAccess;
-	}
 
-	public createWebGLContext(camera: Camera, renderConfig: GameRenderConfig): GameWebGLRenderContext {
-		return {
+		this.pooledWebGLContext = {
 			gl: this.gl,
 			renderer: this.renderer,
 			monitor: this.monitor,
-			camera: camera,
-			renderConfig: renderConfig,
-			mapMode: this.localStateAccess.getMapMode(),
-			timestamp: (Date.now() / 1000) % 10000,
-			selectedTile: this.localStateAccess.getSelectedTile(),
-			tiles: this.localStateAccess.getTiles(),
-			settlements: this.localStateAccess.getSettlements(),
-			worldObjects: this.localStateAccess.getWorldObjects(),
-			moveTargets: this.localStateAccess.getMoveTargets(),
-			routes: this.localStateAccess.getRoutes(),
 			tileByPosProvider: (q, r) => this.localStateAccess.getTileAt(q, r),
+			camera: null as any,
+			renderConfig: null as any,
+			mapMode: null as any,
+			timestamp: null as any,
+			selectedTile: null as any,
+			tiles: null as any,
+			settlements: null as any,
+			worldObjects: null as any,
+			moveTargets: null as any,
+			routes: null as any,
+		}
+
+		this.pooledHtmlContext = {
+			monitor: this.monitor,
+			camera: null as any,
+			playerCountry: null as any,
+			mapMode: null as any,
+			commands: null as any,
+			tiles: null as any,
+			settlements: null as any,
+			worldObjects: null as any,
+			movePaths: null as any,
 		};
+
+	}
+
+	public createWebGLContext(camera: Camera, renderConfig: GameRenderConfig): GameWebGLRenderContext {
+		this.pooledWebGLContext.camera = camera
+		this.pooledWebGLContext.renderConfig = renderConfig
+		this.pooledWebGLContext.mapMode = this.localStateAccess.getMapMode()
+		this.pooledWebGLContext.timestamp = (Date.now() / 1000) % 10000
+		this.pooledWebGLContext.selectedTile = this.localStateAccess.getSelectedTile()
+		this.pooledWebGLContext.tiles = this.localStateAccess.getTiles()
+		this.pooledWebGLContext.settlements = this.localStateAccess.getSettlements()
+		this.pooledWebGLContext.worldObjects = this.localStateAccess.getWorldObjects()
+		this.pooledWebGLContext.moveTargets = this.localStateAccess.getMoveTargets()
+		this.pooledWebGLContext.routes = this.localStateAccess.getRoutes()
+		return this.pooledWebGLContext;
 	}
 
 	public createHtmlContext(camera: Camera): GameHtmlRenderContext {
-		return {
-			monitor: this.monitor,
-			playerCountry: this.localStateAccess.getPlayerCountrySummary(),
-			camera: camera,
-			mapMode: this.localStateAccess.getMapMode(),
-			commands: this.localStateAccess.getCommands(),
-			tiles: this.localStateAccess.getTiles(),
-			settlements: this.localStateAccess.getSettlements(),
-			worldObjects: this.localStateAccess.getWorldObjects(),
-			movePaths: this.localStateAccess.getMovePaths(),
-		};
+		this.pooledHtmlContext.camera = camera;
+		this.pooledHtmlContext.playerCountry = this.localStateAccess.getPlayerCountrySummary()
+		this.pooledHtmlContext.mapMode = this.localStateAccess.getMapMode()
+		this.pooledHtmlContext.commands = this.localStateAccess.getCommands()
+		this.pooledHtmlContext.tiles = this.localStateAccess.getTiles()
+		this.pooledHtmlContext.settlements = this.localStateAccess.getSettlements()
+		this.pooledHtmlContext.worldObjects = this.localStateAccess.getWorldObjects()
+		this.pooledHtmlContext.movePaths = this.localStateAccess.getMovePaths()
+		return this.pooledHtmlContext
 	}
 
 }
