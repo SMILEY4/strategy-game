@@ -180,35 +180,6 @@ export namespace WebGLRenderCommand {
     }
 
 	/**
-	 * Bind a texture atlas to the given texture textureUnit
-	 */
-	export class BindTextureAtlas implements Base {
-
-		private readonly name: string;
-		private readonly textureUnit: number;
-
-		constructor(name: string, slot: number) {
-			this.name = name;
-			this.textureUnit = slot;
-		}
-
-		public execute(resourceManager: WebGLResourceManager, context: Context): void {
-			context.monitor.startCommand("BindTextureAtlas-" + this.name + "-" + this.textureUnit);
-			resourceManager.getTextureAtlas(this.name).textureAtlas.bind(this.textureUnit);
-			context.monitor.endCommand()
-		}
-
-
-		public getDebugData(): any {
-			return {
-				command: "BindTextureAtlas",
-				atlas: this.name,
-				textureUnit: this.textureUnit,
-			};
-		}
-	}
-
-	/**
 	 * Bind the texture of a render-target to the given texture textureUnit
 	 */
 	export class BindFramebufferTexture implements Base {

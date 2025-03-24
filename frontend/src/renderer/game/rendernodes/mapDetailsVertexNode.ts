@@ -25,7 +25,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 	public static readonly ID = "vertexnode.mapdetails";
 
-	private static readonly TEXTURE_ATLAS_PATH = "/tileset_color.png";
+	private static readonly TEXTURE_ATLAS_NAME = "tileset_details";
 
 	private readonly spriteBuffer = new SpriteBuffer();
 
@@ -35,7 +35,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			changeKey: MapDetailsVertexNode.ID,
 			input: [
 				new TextureAtlasData({
-					path: MapDetailsVertexNode.TEXTURE_ATLAS_PATH,
+					name: MapDetailsVertexNode.TEXTURE_ATLAS_NAME,
 				}),
 			],
 			output: [
@@ -128,7 +128,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			: 1;
 
 		// houses
-		const atlasEntriesHouses = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "settlement_houses_all");
+		const atlasEntriesHouses = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_NAME, "settlement_houses_all");
 		for (let i = 0; i <= size + 1; i++) {
 			const atlasEntry = Random.chooseRandom(atlasEntriesHouses, settlement.id + "_" + i);
 			const rngOffsetX = Random.normalized(settlement.id + i + "x");
@@ -148,7 +148,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		}
 
 		// decorations
-		const atlasEntriesDecorations = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "settlement_decoration");
+		const atlasEntriesDecorations = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_NAME, "settlement_decoration");
 		for (let i = 0; i < size - 1; i++) {
 			const atlasEntry = Random.chooseRandom(atlasEntriesDecorations, settlement.id + "_" + i);
 			const rngOffsetX = Random.normalized(settlement.id + i + "x");
@@ -169,7 +169,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 	}
 
 	private addUnit(spriteBuffer: SpriteBuffer, worldObject: WorldObject, inputs: ProvidedNodeInputs) {
-		const atlasEntriesUnit = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "unit");
+		const atlasEntriesUnit = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_NAME, "unit");
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, worldObject.tile.position.q, worldObject.tile.position.r);
 		const x = tileCenter[0];
 		const y = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2;
@@ -187,7 +187,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 	}
 
 	private addRoute(spriteBuffer: SpriteBuffer, route: Route, inputs: ProvidedNodeInputs) {
-		const atlasEntriesRoad = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "road");
+		const atlasEntriesRoad = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_NAME, "road");
 		const vertexData = RouteSpriteBuilder.build(route, atlasEntriesRoad[0]);
 		spriteBuffer.addRaw(vertexData);
 	}
@@ -201,7 +201,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const color = this.mix(context.renderConfig.land.colorLight, context.renderConfig.land.colorDark, tile.base.value.height * 2 + heightJitter);
 
 		if (terrainName === "none") {
-			const atlasEntriesDecorations = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_decoration");
+			const atlasEntriesDecorations = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_NAME, "terrain_decoration");
 			for (let i = 0; i < (Random.normalized(tile.id) * 5) + 1; i++) {
 				const rngOffsetX = Random.normalized(tile.id + i + "x");
 				const rngOffsetY = Random.normalized(tile.id + i + "y");
@@ -228,7 +228,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			const zMax = tileCenter[1] + TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] + randZ;
 
 			if (terrainName === "mountain") {
-				const atlasEntriesMountain = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_mountain");
+				const atlasEntriesMountain = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_NAME, "terrain_mountain");
 				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesMountain, tile.position.q + "" + tile.position.r);
 				spriteBuffer.pooledEntry.x = x;
 				spriteBuffer.pooledEntry.y = y;
@@ -241,7 +241,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			}
 
 			if (terrainName === "hill") {
-				const atlasEntriesHill = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_hill");
+				const atlasEntriesHill = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_NAME, "terrain_hill");
 				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesHill, tile.position.q + "" + tile.position.r);
 				spriteBuffer.pooledEntry.x = x;
 				spriteBuffer.pooledEntry.y = y;
@@ -254,7 +254,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			}
 
 			if (terrainName === "forest") {
-				const atlasEntriesForest = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_forest");
+				const atlasEntriesForest = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_NAME, "terrain_forest");
 				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesForest, tile.position.q + "" + tile.position.r)
 				spriteBuffer.pooledEntry.x = x;
 				spriteBuffer.pooledEntry.y = y;

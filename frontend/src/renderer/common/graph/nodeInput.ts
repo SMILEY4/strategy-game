@@ -95,10 +95,10 @@ export namespace NodeInput {
 	 * Texture Atlas data (data only, no textures)
 	 */
 	export class TextureAtlasData {
-		readonly path: string;
+		readonly name: string;
 
-		constructor(props: { path: string }) {
-			this.path = props.path;
+		constructor(props: { name: string }) {
+			this.name = props.name;
 		}
 	}
 

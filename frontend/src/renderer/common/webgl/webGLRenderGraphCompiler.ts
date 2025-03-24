@@ -126,11 +126,6 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 				const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
 				outCommands.push(new WebGLRenderCommand.BindConditionalTexture(textureId, textureUnit, input.paths));
 			}
-			if (input instanceof NodeInput.TextureAtlas) {
-				const textureId = input.path;
-				const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
-				outCommands.push(new WebGLRenderCommand.BindTextureAtlas(textureId, textureUnit));
-			}
 			if (input instanceof NodeInput.RenderTarget) {
 				const textureId = input.renderTargetId;
 				const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);

@@ -5,20 +5,20 @@ export class WebGLTextureAtlasDataManager {
 	private readonly textureAtlases = new Map<string, [TextureAtlasEntry[], TextureAtlasGroupDefinition[]]>();
 
 	public register(
-		atlasPath: string,
+		name: string,
 		data: string | TextureAtlasEntry[],
 		overwrites: TextureAtlasEntryOverwrite[],
 		groupDefinitions: TextureAtlasGroupDefinition[],
 	) {
 		if (typeof data === "string") {
-			this.setData(atlasPath, JSON.parse(data), overwrites, groupDefinitions);
+			this.setData(name, JSON.parse(data), overwrites, groupDefinitions);
 		} else {
-			this.setData(atlasPath, data, overwrites, groupDefinitions);
+			this.setData(name, data, overwrites, groupDefinitions);
 		}
 	}
 
 	private setData(
-		atlasPath: string,
+		name: string,
 		entries: TextureAtlasEntry[],
 		overwrites: TextureAtlasEntryOverwrite[],
 		groupDefinitions: TextureAtlasGroupDefinition[],
@@ -32,7 +32,7 @@ export class WebGLTextureAtlasDataManager {
 				scale: this.buildScale(entry, overwrite),
 			};
 		});
-		this.textureAtlases.set(atlasPath, [atlasEntries, groupDefinitions]);
+		this.textureAtlases.set(name, [atlasEntries, groupDefinitions]);
 	}
 
 	private buildTextureCoordinates(entry: TextureAtlasEntry, overwrite: TextureAtlasEntryOverwrite | undefined): ([number, number])[] {

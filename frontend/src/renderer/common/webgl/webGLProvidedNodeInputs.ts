@@ -10,8 +10,8 @@ export class WebGlProvidedNodeInputs implements ProvidedNodeInputs {
 	constructor(inputs: (NodeInput.VertexBuffer | NodeInput.TextureAtlasData)[], resourceManager: WebGLResourceManager) {
 		inputs.forEach(input => {
 			if (input instanceof NodeInput.TextureAtlasData) {
-				const textureAtlas = resourceManager.getTextureAtlas(input.path).textureAtlas;
-				this.textureAtlasEntries.set(input.path, textureAtlas);
+				const textureAtlas = resourceManager.getTextureAtlas(input.name).textureAtlas;
+				this.textureAtlasEntries.set(input.name, textureAtlas);
 			}
 		});
 	}
