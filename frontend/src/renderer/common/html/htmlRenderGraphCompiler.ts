@@ -1,8 +1,8 @@
 import {RenderGraphCompiler} from "../graph/renderGraphCompiler";
 import {HtmlRenderCommand} from "./htmlRenderCommand";
-import {AbstractRenderNode} from "../graph/abstractRenderNode";
-import {HtmlRenderNode} from "../graph/htmlRenderNode";
-import {NodeOutput} from "../graph/nodeOutput";
+import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
+import {HtmlNode} from "../graph/nodes/htmlNode";
+import {NodeOutput} from "../graph/nodes/nodeOutput";
 import {ChangeProvider} from "../graph/changeProvider";
 
 export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCommand.Base> {
@@ -18,7 +18,7 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
             return [false, "graph is empty"];
         }
         for (let node of nodes) {
-            if (node instanceof HtmlRenderNode) {
+            if (node instanceof HtmlNode) {
                 const containerCount = node.config.output.count(it => it instanceof NodeOutput.HtmlContainer);
                 if (containerCount !== 1) {
                     return [false, "html-render-node " + node.id + " has amount of target containers =/= 1 "];
@@ -34,7 +34,7 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
 
         // data update
         for (let node of nodes) {
-            if (node instanceof HtmlRenderNode) {
+            if (node instanceof HtmlNode) {
                 commands.push(new HtmlRenderCommand.UpdateData(node, this.changeProvider));
             }
         }
@@ -42,7 +42,7 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
         // render
         const containerIds = new Set<string>();
         for (let node of nodes) {
-            if (node instanceof HtmlRenderNode) {
+            if (node instanceof HtmlNode) {
                 containerIds.add(this.getContainerId(node));
             }
         }
@@ -54,7 +54,7 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
     }
 
 
-    private getContainerId(node: HtmlRenderNode<any>): string {
+    private getContainerId(node: HtmlNode<any>): string {
         for (const config of node.config.output) {
             if (config instanceof NodeOutput.HtmlContainer) {
                 return config.id;
@@ -63,10 +63,10 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
         throw new Error("no container configured");
     }
 
-    private getNodes(nodes: AbstractRenderNode[], containerId: string): HtmlRenderNode<any>[] {
-        const filtered: HtmlRenderNode<any>[] = [];
+    private getNodes(nodes: AbstractRenderNode[], containerId: string): HtmlNode<any>[] {
+        const filtered: HtmlNode<any>[] = [];
         for (let node of nodes) {
-            if (node instanceof HtmlRenderNode && this.getContainerId(node) === containerId) {
+            if (node instanceof HtmlNode && this.getContainerId(node) === containerId) {
                 filtered.push(node);
             }
         }

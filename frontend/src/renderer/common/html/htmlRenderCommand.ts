@@ -1,7 +1,7 @@
 import {RenderCommand} from "../graph/renderCommand";
 import {HtmlResourceManager} from "./htmlResourceManager";
-import {NodeOutput} from "../graph/nodeOutput";
-import {HtmlRenderNode} from "../graph/htmlRenderNode";
+import {NodeOutput} from "../graph/nodes/nodeOutput";
+import {HtmlNode} from "../graph/nodes/htmlNode";
 import HtmlData = NodeOutput.HtmlData;
 import {ChangeProvider} from "../graph/changeProvider";
 import {RenderGraphMonitor} from "../graph/renderGraphMonitor";
@@ -18,10 +18,10 @@ export namespace HtmlRenderCommand {
 
 	export class UpdateData implements Base {
 
-		private readonly node: HtmlRenderNode<any>;
+		private readonly node: HtmlNode<any>;
 		private readonly changeProvider: ChangeProvider;
 
-		constructor(node: HtmlRenderNode<any>, changeProvider: ChangeProvider) {
+		constructor(node: HtmlNode<any>, changeProvider: ChangeProvider) {
 			this.node = node;
 			this.changeProvider = changeProvider;
 		}
@@ -45,9 +45,9 @@ export namespace HtmlRenderCommand {
 	export class Draw implements Base {
 
 		private readonly containerId: string;
-		private readonly nodes: HtmlRenderNode<any>[];
+		private readonly nodes: HtmlNode<any>[];
 
-		constructor(containerId: string, nodes: HtmlRenderNode<any>[]) {
+		constructor(containerId: string, nodes: HtmlNode<any>[]) {
 			this.containerId = containerId;
 			this.nodes = nodes;
 		}

@@ -4,12 +4,12 @@ import {NodeOutput} from "./nodeOutput";
 /**
  * Node in render graph that renders/creates html elements
  */
-export abstract class HtmlRenderNode<TContext> extends AbstractRenderNode {
+export abstract class HtmlNode<TContext> extends AbstractRenderNode {
 
-    public readonly config: HtmlRenderNodeConfig<TContext>;
+    public readonly config: HtmlNodeConfig<TContext>;
 
 
-    protected constructor(config: HtmlRenderNodeConfig<TContext>) {
+    protected constructor(config: HtmlNodeConfig<TContext>) {
         super(config.id);
         this.config = config;
     }
@@ -21,7 +21,7 @@ export abstract class HtmlRenderNode<TContext> extends AbstractRenderNode {
 /**
  * The configuration of the html node
  */
-export interface HtmlRenderNodeConfig<TContext> {
+export interface HtmlNodeConfig<TContext> {
     id: string,
     changeKey: string | null,
     input: never[],

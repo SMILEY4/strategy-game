@@ -1,5 +1,5 @@
-import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
-import {NodeOutput} from "../../common/graph/nodeOutput";
+import {HtmlDataResource, HtmlNode} from "../../common/graph/nodes/htmlNode";
+import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
@@ -9,7 +9,7 @@ import {CommandType} from "../../../models/command/commandType";
 import {CreateSettlementCommand} from "../../../models/command/command";
 import {TileSummary} from "../../../models/tile/tileSummary";
 
-export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
+export class LabelsHtmlNode extends HtmlNode<GameHtmlRenderContext> {
 
     public static readonly ID = "htmlnode.labels";
 
@@ -136,8 +136,26 @@ function render(camera: Camera, element: LabelElement, html: HTMLElement): void 
     html.className = "world-ui__label world-ui__label__" + element.type;
     html.textContent = "";
     if (element.name === "location-pending") {
-        html.insertAdjacentHTML("afterbegin", "<div class='world-ui__label__outer' style='border-color: " + element.color + "'><div class='world-ui__label__inner' style='background-color: " + element.color + "'>" + element.name + "</div></div>");
+        html.insertAdjacentHTML("afterbegin", `
+            <div
+                class='world-ui__label__outer'
+                style='border-color: ${element.color}'
+            >
+                <div
+                    class='world-ui__label__inner'
+                    style='background-color: ${element.color}'
+                >
+                    ${element.name}
+                </div>
+            </div>
+        `);
     } else {
-        html.insertAdjacentHTML("afterbegin", "<div class='world-ui__label__outer'><div class='world-ui__label__inner' style='background-color: " + element.color + "'>" + element.name + "</div></div>");
+        html.insertAdjacentHTML("afterbegin", `
+            <div class='world-ui__label__outer'>
+                <div class='world-ui__label__inner' style='background-color: ${element.color}'>
+                    ${element.name}
+                </div>
+            </div>
+        `);
     }
 }

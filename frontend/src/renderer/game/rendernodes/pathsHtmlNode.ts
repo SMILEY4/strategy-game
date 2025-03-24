@@ -1,5 +1,5 @@
-import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
-import {NodeOutput} from "../../common/graph/nodeOutput";
+import {HtmlDataResource, HtmlNode} from "../../common/graph/nodes/htmlNode";
+import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
@@ -7,7 +7,7 @@ import {TilePosition} from "../../../models/tile/tilePosition";
 import {GameHtmlRenderContext} from "../gameRenderContext";
 import {TileSummary} from "../../../models/tile/tileSummary";
 
-export class PathsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
+export class PathsHtmlNode extends HtmlNode<GameHtmlRenderContext> {
 
 	public static readonly ID = "htmlnode.paths";
 

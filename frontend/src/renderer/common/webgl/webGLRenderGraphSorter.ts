@@ -1,9 +1,9 @@
 import {RenderGraphSorter} from "../graph/renderGraphSorter";
-import {AbstractRenderNode} from "../graph/abstractRenderNode";
-import {DrawRenderNode} from "../graph/drawRenderNode";
-import {VertexRenderNode} from "../graph/vertexRenderNode";
-import {NodeInput} from "../graph/nodeInput";
-import {NodeOutput} from "../graph/nodeOutput";
+import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
+import {DrawRenderNode} from "../graph/nodes/drawRenderNode";
+import {VertexRenderNode} from "../graph/nodes/vertexRenderNode";
+import {NodeInput} from "../graph/nodes/nodeInput";
+import {NodeOutput} from "../graph/nodes/nodeOutput";
 
 interface WebglSortableNodeNode {
     id: string,
