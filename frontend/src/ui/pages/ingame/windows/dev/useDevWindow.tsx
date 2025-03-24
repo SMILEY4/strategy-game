@@ -30,32 +30,30 @@ export namespace UseDevWindow {
 			loose: () => void,
 			restore: () => void
 		},
+		monitoring: {
+			export: () => void,
+		}
 		camera: CameraEntity,
 	}
 
 	export function useData(): UseDevWindow.Data {
 		const camera = GameStateHooks.useCamera();
 		const [enterFullscreen, exitFullscreen] = useFullscreen("root");
-		const [looseWGLContext, restoreWGLContext] = useWebGlContext();
 		return {
 			fullscreen: {
 				enter: enterFullscreen,
 				exit: exitFullscreen,
 			},
 			webgl: {
-				loose: looseWGLContext,
-				restore: restoreWGLContext,
+				loose: () => App.gameProxy.webglContextLoose(),
+				restore: () => App.gameProxy.webglContextRestore(),
+			},
+			monitoring: {
+				export: () => App.gameProxy.exportMonitoringData(),
 			},
 			camera: camera,
 		};
 	}
 
-
-	function useWebGlContext() {
-		return [
-			() => App.gameProxy.webglContextLoose(),
-			() => App.gameProxy.webglContextRestore(),
-		];
-	}
 
 }

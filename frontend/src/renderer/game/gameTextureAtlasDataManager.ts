@@ -8,7 +8,7 @@ export class GameTextureAtlasDataManager extends WebGLTextureAtlasDataManager {
 	constructor() {
 		super();
 		this.register(
-			"/tileset_color.png",
+			"tileset_details",
 			ATLAS_DATA_TILESET,
 			[
 				{

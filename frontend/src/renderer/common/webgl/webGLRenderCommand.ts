@@ -7,13 +7,15 @@ import {BaseRenderer} from "../../../common/webgl/baseRenderer";
 import {Camera} from "../../../common/webgl/camera";
 import {ChangeProvider} from "../graph/changeProvider";
 import {WebGlProvidedNodeInputs} from "./webGLProvidedNodeInputs";
+import {RenderGraphMonitor} from "../graph/renderGraphMonitor";
 
 export namespace WebGLRenderCommand {
 
 	export interface Context {
 		gl: WebGL2RenderingContext,
 		renderer: BaseRenderer,
-		camera: Camera
+		monitor: RenderGraphMonitor,
+		camera: Camera,
 	}
 
 	/**
@@ -37,6 +39,7 @@ export namespace WebGLRenderCommand {
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("UpdateVertexBufferData-" + this.node.id)
 			if (this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
 				const providedInputs = new WebGlProvidedNodeInputs(this.node.config.input, resourceManager);
 				const modified = this.node.execute(context, providedInputs);
@@ -54,6 +57,7 @@ export namespace WebGLRenderCommand {
 					}
 				}
 			}
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {
@@ -77,10 +81,12 @@ export namespace WebGLRenderCommand {
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("BindFramebuffer-" + this.name);
 			const data = resourceManager.getFramebuffer(this.name);
 			const framebuffer = data.framebuffer;
 			framebuffer.bind();
 			framebuffer.resize(context.camera.getWidth() * data.scale, context.camera.getHeight() * data.scale);
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {
@@ -97,7 +103,9 @@ export namespace WebGLRenderCommand {
 	export class UnbindFramebuffer implements Base {
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("UnbindFramebuffer")
 			GLFramebuffer.unbind(context.gl);
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {
@@ -112,8 +120,8 @@ export namespace WebGLRenderCommand {
 	 */
 	export class BindTexture implements Base {
 
-		private readonly path: string;
-		private readonly textureUnit: number;
+		readonly path: string;
+		readonly textureUnit: number;
 
 		constructor(path: string, slot: number) {
 			this.path = path;
@@ -121,7 +129,9 @@ export namespace WebGLRenderCommand {
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("BindTexture-" + this.path + "-" + this.textureUnit)
 			resourceManager.getTexture(this.path).texture.bind(this.textureUnit);
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {
@@ -149,13 +159,15 @@ export namespace WebGLRenderCommand {
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            for (let i = 0; i < this.paths.length; i++) {
+			context.monitor.startCommand("BindConditionalTexture-" + this.id + "-" + this.textureUnit)
+			for (let i = 0; i < this.paths.length; i++) {
                 const entry = this.paths[i];
                 if(entry.condition(context)) {
                     resourceManager.getTexture(entry.path).texture.bind(this.textureUnit);
                     break;
                 }
             }
+			context.monitor.endCommand()
         }
 
         public getDebugData(): any {
@@ -166,32 +178,6 @@ export namespace WebGLRenderCommand {
             };
         }
     }
-
-	/**
-	 * Bind a texture atlas to the given texture textureUnit
-	 */
-	export class BindTextureAtlas implements Base {
-
-		private readonly name: string;
-		private readonly textureUnit: number;
-
-		constructor(name: string, slot: number) {
-			this.name = name;
-			this.textureUnit = slot;
-		}
-
-		public execute(resourceManager: WebGLResourceManager, context: Context): void {
-			resourceManager.getTextureAtlas(this.name).textureAtlas.bind(this.textureUnit);
-		}
-
-		public getDebugData(): any {
-			return {
-				command: "BindTextureAtlas",
-				atlas: this.name,
-				textureUnit: this.textureUnit,
-			};
-		}
-	}
 
 	/**
 	 * Bind the texture of a render-target to the given texture textureUnit
@@ -207,7 +193,9 @@ export namespace WebGLRenderCommand {
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("BindFramebufferTexture-" + this.name + "-" + this.textureUnit);
 			resourceManager.getFramebuffer(this.name).framebuffer.bindTexture(this.textureUnit);
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {
@@ -235,8 +223,10 @@ export namespace WebGLRenderCommand {
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("BindVertexArray-" + this.name);
 			const programId = resourceManager.getProgramId(this.vertex, this.fragment);
 			resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.bind();
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {
@@ -264,8 +254,10 @@ export namespace WebGLRenderCommand {
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("UnbindVertexArray-" + this.name);
 			const programId = resourceManager.getProgramId(this.vertex, this.fragment);
 			resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.unbind();
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {
@@ -291,7 +283,9 @@ export namespace WebGLRenderCommand {
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("UseShader-" + this.vertex + "-" + this.fragment);
 			resourceManager.getProgram(this.vertex, this.fragment).program.use();
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {
@@ -320,6 +314,7 @@ export namespace WebGLRenderCommand {
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("SetUniforms-" + this.vertex + "-" + this.fragment)
 			const program = resourceManager.getProgram(this.vertex, this.fragment).program;
 			for (let i = 0; i < this.uniforms.length; i++) {
 				const uniform = this.uniforms[i];
@@ -330,6 +325,7 @@ export namespace WebGLRenderCommand {
 					program.setUniform(uniform.binding, uniform.type, uniform.valueProvider(context));
 				}
 			}
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {
@@ -364,8 +360,8 @@ export namespace WebGLRenderCommand {
 		}
 
 		public execute(resourceManager: WebGLResourceManager, context: Context): void {
+			context.monitor.startCommand("Draw-" + this.vertexDataId)
 			context.renderer.prepareFrame(context.camera, this.clearColor, this.blendFunction, this.renderToTexture, this.renderScale, this.depth);
-
 			const data = resourceManager.getVertexData(this.vertexDataId);
 			switch (data.type) {
 				case "standart": {
@@ -377,6 +373,7 @@ export namespace WebGLRenderCommand {
 					break;
 				}
 			}
+			context.monitor.endCommand()
 		}
 
 		public getDebugData(): any {

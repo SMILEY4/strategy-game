@@ -1,27 +1,14 @@
-import {GLDisposable} from "./glDisposable";
-import {GLTexture, GLTextureMagFilter, GLTextureMinFilter, GLTextureWrap} from "./glTexture";
+export class TextureAtlas {
 
-export class TextureAtlas implements GLDisposable {
-
-	private readonly texture: GLTexture;
 	private readonly entries: Map<string, TextureAtlasEntry>;
 	private readonly groups: Map<string, TextureAtlasEntry[]>;
 	private readonly groupsDefinitions: TextureAtlasGroupDefinition[];
 
-	constructor(texture: GLTexture, data: Map<string, TextureAtlasEntry>, groupsDefinitions: TextureAtlasGroupDefinition[]) {
-		this.texture = texture;
+	constructor(data: Map<string, TextureAtlasEntry>, groupsDefinitions: TextureAtlasGroupDefinition[]) {
 		this.groupsDefinitions = groupsDefinitions;
 		this.entries = new Map<string, TextureAtlasEntry>();
 		this.groups = new Map<string, TextureAtlasEntry[]>();
 		this.setData(data);
-	}
-
-	public bind(textureUnit: number) {
-		this.texture.bind(textureUnit);
-	}
-
-	public dispose() {
-		this.texture.dispose();
 	}
 
 	public getEntry(name: string): TextureAtlasEntry {
@@ -99,23 +86,13 @@ export interface TextureAtlasGroupDefinition {
 export namespace TextureAtlas {
 
 	/**
-	 * @param gl the webgl context
-	 * @param texturePath the absolute path to the image file
 	 * @param entries the atlas data
 	 * @param groupDefinitions definitions for texture atlas groups
 	 */
-	export function createFromData(gl: WebGL2RenderingContext, texturePath: string, entries: TextureAtlasEntry[], groupDefinitions: TextureAtlasGroupDefinition[]) {
-
-		const texture = GLTexture.createFromPath(gl, texturePath, {
-			wrap: GLTextureWrap.CLAMP_TO_EDGE,
-			filterMin: GLTextureMinFilter.NEAREST_MIPMAP_LINEAR,
-			filterMag: GLTextureMagFilter.LINEAR,
-		});
-
+	export function createFromData(entries: TextureAtlasEntry[], groupDefinitions: TextureAtlasGroupDefinition[]) {
 		const data = new Map<string, TextureAtlasEntry>();
 		entries.forEach(entry => data.set(entry.name, entry));
-
-		return new TextureAtlas(texture, data, groupDefinitions);
+		return new TextureAtlas(data, groupDefinitions);
 	}
 
 }

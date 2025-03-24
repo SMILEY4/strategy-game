@@ -52,7 +52,7 @@ export class WebGLResourceManager implements ResourceManager {
 						this.initializeVertexBuffer(input.name, node);
 					}
 					if (input instanceof NodeInput.TextureAtlasData) {
-						this.initializeTextureAtlas(input.path);
+						this.initializeTextureAtlas(input.name);
 					}
 				}
 				for (let output of node.config.output) {
@@ -222,18 +222,16 @@ export class WebGLResourceManager implements ResourceManager {
 		return managedProgram;
 	}
 
-	private initializeTextureAtlas(path: string): ManagedTextureAtlas {
-		console.debug("Loading texture atlas", path);
-		if (this.textureAtlases.has(path)) {
-			return this.textureAtlases.get(path)!;
+	private initializeTextureAtlas(name: string): ManagedTextureAtlas {
+		console.debug("Loading texture atlas", name);
+		if (this.textureAtlases.has(name)) {
+			return this.textureAtlases.get(name)!;
 		}
 		const managedTextureAtlas: ManagedTextureAtlas = {
-			id: path,
+			id: name,
 			textureAtlas: TextureAtlas.createFromData(
-				this.gl,
-				path,
-				this.textureAtlasDataManager.getEntries(path),
-				this.textureAtlasDataManager.getGroupDefinitions(path),
+				this.textureAtlasDataManager.getEntries(name),
+				this.textureAtlasDataManager.getGroupDefinitions(name),
 			),
 		};
 		this.textureAtlases.set(managedTextureAtlas.id, managedTextureAtlas);
@@ -289,9 +287,6 @@ export class WebGLResourceManager implements ResourceManager {
 		});
 		this.textures.clear();
 
-		this.textureAtlases.forEach((atlas, _) => {
-			atlas.textureAtlas.dispose();
-		});
 		this.textureAtlases.clear();
 
 		this.framebuffers.forEach((framebuffer, _) => {

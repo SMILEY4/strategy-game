@@ -4,10 +4,12 @@ import {NodeOutput} from "../graph/nodeOutput";
 import {HtmlRenderNode} from "../graph/htmlRenderNode";
 import HtmlData = NodeOutput.HtmlData;
 import {ChangeProvider} from "../graph/changeProvider";
+import {RenderGraphMonitor} from "../graph/renderGraphMonitor";
 
 export namespace HtmlRenderCommand {
 
 	export interface Context {
+		monitor: RenderGraphMonitor,
 	}
 
 	export interface Base extends RenderCommand<HtmlResourceManager, Context> {
@@ -25,6 +27,7 @@ export namespace HtmlRenderCommand {
 		}
 
 		public execute(resourceManager: HtmlResourceManager, context: Context): void {
+			context.monitor.startCommand("UpdateData-" + this.node.id)
 			if (this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
 				const modified = this.node.execute(context);
 				if (modified.elements.size > 0) {
@@ -33,6 +36,7 @@ export namespace HtmlRenderCommand {
 					}
 				}
 			}
+			context.monitor.endCommand()
 		}
 
 	}
@@ -49,6 +53,7 @@ export namespace HtmlRenderCommand {
 		}
 
 		public execute(resourceManager: HtmlResourceManager, context: Context): void {
+			context.monitor.startCommand("Draw-" + this.containerId)
 
 			// prepare html-element pool
 			let totalCount = 0;
@@ -82,6 +87,8 @@ export namespace HtmlRenderCommand {
 					}
 				}
 			}
+
+			context.monitor.endCommand()
 		}
 
 		private prepareElements(required: number, container: HTMLElement): HTMLElement[] {

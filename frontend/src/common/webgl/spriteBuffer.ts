@@ -7,11 +7,36 @@ export class SpriteBuffer {
 	private vertexCount: number = 0;
 	private vertexData: number[] = [];
 
+	readonly pooledEntry: SpriteBuffer.Entry = {
+		atlasEntry: {
+			name: "",
+			vertices: [],
+			textureCoordinates: [],
+			offset: 0,
+			scale: 1,
+			mode: "billboard"
+		},
+		x: 0,
+		y: 0,
+		z: 0,
+		scaleX: 1,
+		scaleY: 1,
+		colorBaseTile: [0,0,0],
+		colorCountry: [0,0,0]
+	}
+
 	public clear() {
 		this.vertexCount = 0;
 		this.vertexData = [];
 	}
 
+	public addPooledBillboardSprite() {
+		this.addBillboardSprite(this.pooledEntry)
+	}
+
+	public addPooledGroundSprite() {
+		this.addGroundSprite(this.pooledEntry)
+	}
 
 	/**
 	 * Add a new sprite to the buffer at the given x,y,z position. All vertices have the same z, meaning the sprite is a flat plane facing the camera.
@@ -24,32 +49,31 @@ export class SpriteBuffer {
 		const scaleX = entry.scaleX * atlasEntry.scale
 		const scaleY = entry.scaleY * atlasEntry.scale
 
-		const vertexData: number[] = [];
 		for (let i = 0, n = atlasEntry.vertices.length; i < n; i++) {
 
 			const vertexCoords = atlasEntry.vertices[i];
 			const x = entry.x + vertexCoords[0] * scaleX - scaleX / 2
 			const y = entry.y + vertexCoords[1] * scaleY
 			const z = entry.z as number
+			const textureCoords = atlasEntry.textureCoordinates[i];
 
 			// vertex position (x,y,z)
-			vertexData.push(x);
-			vertexData.push(y);
-			vertexData.push(z);
+			this.vertexData.push(x);
+			this.vertexData.push(y);
+			this.vertexData.push(z);
 
 			// texture coords (u,v)
-			const textureCoords = atlasEntry.textureCoordinates[i];
-			vertexData.push(textureCoords[0]);
-			vertexData.push(textureCoords[1]);
+			this.vertexData.push(textureCoords[0]);
+			this.vertexData.push(textureCoords[1]);
 
 			// tile base color (r,g,b)
-			vertexData.push(...entry.colorBaseTile);
+			this.vertexData.push(...entry.colorBaseTile);
 
 			// country color (r,g,b)
-			vertexData.push(...entry.colorCountry);
+			this.vertexData.push(...entry.colorCountry);
 		}
 
-		this.addRaw(vertexData);
+		this.vertexCount += atlasEntry.vertices.length;
 	}
 
 	/**
@@ -65,32 +89,31 @@ export class SpriteBuffer {
 		const scaleX = entry.scaleX * atlasEntry.scale
 		const scaleY = entry.scaleY * atlasEntry.scale
 
-		const vertexData: number[] = [];
 		for (let i = 0, n = atlasEntry.vertices.length; i < n; i++) {
 
 			const vertexCoords = atlasEntry.vertices[i];
 			const x = entry.x + vertexCoords[0] * scaleX - scaleX / 2
 			const y = entry.y + vertexCoords[1] * scaleY
 			const z = minZ + (maxZ-minZ) * vertexCoords[1]
+			const textureCoords = atlasEntry.textureCoordinates[i];
 
 			// vertex position (x,y,z)
-			vertexData.push(x);
-			vertexData.push(y);
-			vertexData.push(z);
+			this.vertexData.push(x);
+			this.vertexData.push(y);
+			this.vertexData.push(z);
 
 			// texture coords (u,v)
-			const textureCoords = atlasEntry.textureCoordinates[i];
-			vertexData.push(textureCoords[0]);
-			vertexData.push(textureCoords[1]);
+			this.vertexData.push(textureCoords[0]);
+			this.vertexData.push(textureCoords[1]);
 
 			// tile base color (r,g,b)
-			vertexData.push(...entry.colorBaseTile);
+			this.vertexData.push(...entry.colorBaseTile);
 
 			// country color (r,g,b)
-			vertexData.push(...entry.colorCountry);
+			this.vertexData.push(...entry.colorCountry);
 		}
 
-		this.addRaw(vertexData);
+		this.vertexCount += atlasEntry.vertices.length;
 	}
 
 	public addRaw(vertexData: number[]) {
@@ -107,7 +130,7 @@ export class SpriteBuffer {
 
 	public buildRawBuffer(): ArrayBuffer {
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(this.vertexCount, SpriteBuffer.BUFFER_LAYOUT_PATTERN);
-		cursor.append(this.vertexData); // todo: optimize bulk "copy"/set ?
+		cursor.appendValues(this.vertexData);
 		return arrayBuffer.getRawBuffer();
 	}
 

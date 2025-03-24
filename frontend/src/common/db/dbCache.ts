@@ -24,6 +24,7 @@ export class DbCache<T> {
 		const currentRevIds = this.createRevIds();
 		if (!this.cacheValid || !this.revIdsEquals(this.revIds, currentRevIds)) {
 			this.revIds = currentRevIds;
+			this.cacheValid = true
 			this.cache = this.dataProvider();
 		}
 		return this.cache;
