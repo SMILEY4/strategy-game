@@ -1,76 +1,80 @@
 import {RenderGraphCompiler} from "../graph/renderGraphCompiler";
 import {HtmlRenderCommand} from "./htmlRenderCommand";
 import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
-import {HtmlNode} from "../graph/nodes/htmlNode";
-import {NodeOutput} from "../graph/nodes/nodeOutput";
 import {ChangeProvider} from "../graph/changeProvider";
+import {HtmlDrawNode} from "../graph/nodes/htmlDrawNode";
+import {NodeOutput} from "../graph/nodes/nodeOutput";
+import {NodeInput} from "../graph/nodes/nodeInput";
+import {HtmlDataNode} from "../graph/nodes/htmlDataNode";
 
 export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCommand.Base> {
 
-    private readonly changeProvider: ChangeProvider;
+	private readonly changeProvider: ChangeProvider;
 
-    constructor(changeProvider: ChangeProvider) {
-        this.changeProvider = changeProvider;
-    }
+	constructor(changeProvider: ChangeProvider) {
+		this.changeProvider = changeProvider;
+	}
 
-    public validate(nodes: AbstractRenderNode[]): [boolean, string] {
-        if (nodes.length === 0) {
-            return [false, "graph is empty"];
-        }
-        for (let node of nodes) {
-            if (node instanceof HtmlNode) {
-                const containerCount = node.config.output.count(it => it instanceof NodeOutput.HtmlContainer);
-                if (containerCount !== 1) {
-                    return [false, "html-render-node " + node.id + " has amount of target containers =/= 1 "];
-                }
-            }
-        }
-        return [true, ""];
+	public validate(nodes: AbstractRenderNode[]): [boolean, string] {
+		if (nodes.length === 0) {
+			return [false, "graph is empty"];
+		}
+		for (let node of nodes) {
+			if (node instanceof HtmlDrawNode) {
+				const inputDataCount = node.config.input.count(it => it instanceof NodeInput.HtmlData);
+				if (inputDataCount !== 1) {
+					return [false, "html-draw-node " + node.id + " has amount of input data =/= 1"];
+				}
+				const outputContainerCount = node.config.output.count(it => it instanceof NodeOutput.HtmlContainer);
+				if (outputContainerCount !== 1) {
+					return [false, "html-draw-node " + node.id + " has amount of target containers =/= 1"];
+				}
+			}
+			if (node instanceof HtmlDataNode) {
+				const outputDataCount = node.config.output.count(it => it instanceof NodeOutput.HtmlData);
+				if (outputDataCount === 0) {
+					return [false, "html-data-node " + node.id + " has no output data"];
+				}
+			}
+		}
+		return [true, ""];
 
-    }
+	}
 
-    public compile(nodes: AbstractRenderNode[]): HtmlRenderCommand.Base[] {
-        const commands: HtmlRenderCommand.Base[] = [];
+	public compile(nodes: AbstractRenderNode[]): HtmlRenderCommand.Base[] {
+		const commands: HtmlRenderCommand.Base[] = [];
 
-        // data update
-        for (let node of nodes) {
-            if (node instanceof HtmlNode) {
-                commands.push(new HtmlRenderCommand.UpdateData(node, this.changeProvider));
-            }
-        }
+		for (let node of nodes) {
+			if (node instanceof HtmlDataNode) {
+				commands.push(new HtmlRenderCommand.Update(node, this.changeProvider));
+			}
+		}
 
-        // render
-        const containerIds = new Set<string>();
-        for (let node of nodes) {
-            if (node instanceof HtmlNode) {
-                containerIds.add(this.getContainerId(node));
-            }
-        }
-        for (let containerId of containerIds) {
-            commands.push(new HtmlRenderCommand.Draw(containerId, this.getNodes(nodes, containerId)));
-        }
+		const uniqueContainerIds = new Set<string>()
+		for (const node of nodes) {
+			if (node instanceof HtmlDrawNode) {
+				uniqueContainerIds.add(this.getContainerId(node));
+			}
+		}
 
-        return commands;
-    }
+		for (let containerId of uniqueContainerIds) {
+			const containerNodes = nodes
+                .filter(it => it instanceof HtmlDrawNode)
+                .filter(it => this.getContainerId(it) === containerId) as HtmlDrawNode<any, any>[]
+            commands.push(new HtmlRenderCommand.Draw(containerId, containerNodes, this.changeProvider));
+		}
 
+		console.debug("html render graph compilation result:", commands.map(it => it.getDebugData()));
 
-    private getContainerId(node: HtmlNode<any>): string {
-        for (const config of node.config.output) {
-            if (config instanceof NodeOutput.HtmlContainer) {
-                return config.id;
-            }
-        }
-        throw new Error("no container configured");
-    }
+		return commands;
+	}
 
-    private getNodes(nodes: AbstractRenderNode[], containerId: string): HtmlNode<any>[] {
-        const filtered: HtmlNode<any>[] = [];
-        for (let node of nodes) {
-            if (node instanceof HtmlNode && this.getContainerId(node) === containerId) {
-                filtered.push(node);
-            }
-        }
-        return filtered;
-    }
+	private getContainerId(node: AbstractRenderNode): string {
+		if (node instanceof HtmlDrawNode) {
+			return node.config.output.find(it => it instanceof NodeOutput.HtmlContainer)!.id;
+		} else {
+			throw new Error("Can not get container id from non html draw node.");
+		}
+	}
 
 }

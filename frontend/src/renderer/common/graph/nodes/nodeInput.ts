@@ -160,4 +160,12 @@ export namespace NodeInput {
 		}
 	}
 
+	export class HtmlData {
+		readonly name: string;
+
+		constructor(props: { name: string }) {
+			this.name = props.name;
+		}
+	}
+
 }

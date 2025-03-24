@@ -2,15 +2,16 @@ import {ChangeDetector} from "../../common/changeDetector";
 import {Camera} from "../../common/webgl/camera";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
-import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
-import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
-import {LabelsHtmlNode} from "./rendernodes/labelsHtmlNode";
 import {ChangeProvider} from "../common/graph/changeProvider";
 import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
 import {GameStateAccess} from "../../state/gameStateAccess";
+import {LabelDataNode} from "./rendernodes/labelsDataNode";
+import {LabelsDrawNode} from "./rendernodes/labelsDrawNode";
+import {ResourceIconsDataNode} from "./rendernodes/resourceIconsDataNode";
+import {ResourceIconsDrawNode} from "./rendernodes/resourceIconsDrawNode";
 
 interface Changes {
 	initFrame: boolean,
@@ -105,14 +106,17 @@ export class GameChangeProvider implements ChangeProvider {
 		if (key === TilesVertexNode.ID) {
 			return this.changes.turn;
 		}
-		if (key === ResourceIconsHtmlNode.ID) {
-			return this.changes.turn || this.changes.mapMode || this.changes.camera;
+		if(key === LabelDataNode.ID) {
+			return this.changes.turn || this.changes.camera;
 		}
-		if (key === PathsHtmlNode.ID) {
-			return this.changes.turn || this.changes.camera || this.changes.movementPaths;
+		if(key === LabelsDrawNode.ID) {
+			return this.changes.turn || this.changes.camera;
 		}
-		if (key === LabelsHtmlNode.ID) {
-			return this.changes.turn || this.changes.camera || this.changes.commands;
+		if(key === ResourceIconsDataNode.ID) {
+			return this.changes.turn || this.changes.mapMode;
+		}
+		if(key === ResourceIconsDrawNode.ID) {
+			return this.changes.turn || this.changes.camera || this.changes.mapMode;
 		}
 		return true;
 	}

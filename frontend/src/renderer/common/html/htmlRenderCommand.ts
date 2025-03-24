@@ -1,126 +1,145 @@
 import {RenderCommand} from "../graph/renderCommand";
 import {HtmlResourceManager} from "./htmlResourceManager";
-import {NodeOutput} from "../graph/nodes/nodeOutput";
-import {HtmlNode} from "../graph/nodes/htmlNode";
-import HtmlData = NodeOutput.HtmlData;
-import {ChangeProvider} from "../graph/changeProvider";
 import {RenderGraphMonitor} from "../graph/renderGraphMonitor";
+import {ChangeProvider} from "../graph/changeProvider";
+import {HtmlDataEntry, HtmlDataNode} from "../graph/nodes/htmlDataNode";
+import {HtmlDrawNode} from "../graph/nodes/htmlDrawNode";
+import {Camera} from "../../../common/webgl/camera";
+import {NodeInput} from "../graph/nodes/nodeInput";
+import {Projections} from "../../../common/webgl/projections";
 
 export namespace HtmlRenderCommand {
 
+	import Point = Projections.Point;
+
 	export interface Context {
 		monitor: RenderGraphMonitor,
+		camera: Camera,
 	}
 
 	export interface Base extends RenderCommand<HtmlResourceManager, Context> {
+		getDebugData(): any;
 	}
 
-
-	export class UpdateData implements Base {
-
-		private readonly node: HtmlNode<any>;
+	export class Update implements Base {
+		private readonly node: HtmlDataNode<any>;
 		private readonly changeProvider: ChangeProvider;
 
-		constructor(node: HtmlNode<any>, changeProvider: ChangeProvider) {
+		constructor(node: HtmlDataNode<any>, changeProvider: ChangeProvider) {
 			this.node = node;
 			this.changeProvider = changeProvider;
 		}
 
-		public execute(resourceManager: HtmlResourceManager, context: Context): void {
-			context.monitor.startCommand("UpdateData-" + this.node.id)
+		execute(resourceManager: HtmlResourceManager, context: HtmlRenderCommand.Context): void {
+			context.monitor.startCommand("Update-" + this.node.id);
 			if (this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
 				const modified = this.node.execute(context);
-				if (modified.elements.size > 0) {
-					for (let [modifiedId, modifiedData] of modified.elements) {
-						resourceManager.setElements(modifiedId, modifiedData);
+				if (modified.outputs.size > 0) {
+					for (let [outputId, outputData] of modified.outputs) {
+						resourceManager.setData(outputId, outputData);
 					}
 				}
 			}
-			context.monitor.endCommand()
+			context.monitor.endCommand();
+		}
+
+		getDebugData(): any {
+			return {
+				command: "Update",
+				node: this.node.id,
+			};
 		}
 
 	}
 
-
 	export class Draw implements Base {
-
 		private readonly containerId: string;
-		private readonly nodes: HtmlNode<any>[];
+		private readonly nodes: ({ node: HtmlDrawNode<any, any>, inputDataId: string })[];
+		private readonly changeProvider: ChangeProvider;
 
-		constructor(containerId: string, nodes: HtmlNode<any>[]) {
+		constructor(containerId: string, nodes: HtmlDrawNode<any, any>[], changeProvider: ChangeProvider) {
 			this.containerId = containerId;
-			this.nodes = nodes;
+			this.nodes = nodes.map(node => ({
+				node: node,
+				inputDataId: (node.config.input.find(it => it instanceof NodeInput.HtmlData)! as NodeInput.HtmlData).name,
+			}));
+			this.changeProvider = changeProvider;
 		}
 
-		public execute(resourceManager: HtmlResourceManager, context: Context): void {
-			context.monitor.startCommand("Draw-" + this.containerId)
+		execute(resourceManager: HtmlResourceManager, context: HtmlRenderCommand.Context): void {
+			context.monitor.startCommand("Draw-" + this.containerId);
 
-			// prepare html-element pool
-			let totalCount = 0;
-			for (let node of this.nodes) {
-				for (let out of node.config.output) {
-					if (out instanceof HtmlData) {
-						totalCount += resourceManager.getElements(out.name).length;
-					}
-				}
-			}
-			const container = resourceManager.getContainer(this.containerId);
-			const availableHtmlElements = this.prepareElements(totalCount, container);
+			if (this.hasChange()) {
 
-			// reset elements
-			for (let i = 0, n = availableHtmlElements.length; i < n; i++) {
-				const element = availableHtmlElements[i];
-				element.replaceChildren();
-				element.getAttributeNames().forEach(it => element.removeAttribute(it));
-			}
+				const clippingRadius = 2 * this.getWorldScalingFactor(context.camera) // base value in tiles
 
-			// update elements
-			let index = 0;
-			for (let node of this.nodes) {
-				for (let out of node.config.output) {
-					if (out instanceof HtmlData) {
-						const elements = resourceManager.getElements(out.name);
-						for (let i = 0; i < elements.length; i++) {
-							const htmlElement = availableHtmlElements[index++];
-							out.renderFunction(context, elements[i], htmlElement);
+				const htmlElements: Node[] = [];
+
+				for (let i = 0; i < this.nodes.length; i++) {
+					const nodeEntry = this.nodes[i];
+					const node = nodeEntry.node;
+					const data = resourceManager.getData(nodeEntry.inputDataId);
+					for (let j = 0, m = data.length; j < m; j++) {
+						const dataEntry = data[j];
+						if (this.isVisible(dataEntry, context.camera, clippingRadius)) {
+							htmlElements.push(node.execute(context, dataEntry));
 						}
 					}
 				}
+
+				const container = resourceManager.getContainer(this.containerId);
+				container.replaceChildren(...htmlElements);
 			}
 
-			context.monitor.endCommand()
+			context.monitor.endCommand();
 		}
 
-		private prepareElements(required: number, container: HTMLElement): HTMLElement[] {
-			const sizeDiff = required - container.childElementCount;
-
-			if (Math.abs(sizeDiff) < 100) {
-
-				if (sizeDiff < 0) {
-					for (let i = -sizeDiff; i >= 0; i--) {
-						container.children.item(required + i)?.remove();
-					}
+		private hasChange(): boolean {
+			for (let i = 0, n = this.nodes.length; i < n; i++) {
+				const changeKey = this.nodes[i].node.config.changeKey;
+				if (changeKey == null || this.changeProvider.hasChange(changeKey)) {
+					return true;
 				}
-				if (sizeDiff > 0) {
-					for (let i = 0; i < sizeDiff; i++) {
-						container.appendChild(document.createElement("div"));
-					}
-				}
-				const pool = [...container.children];
-				return pool as HTMLElement[];
-
-			} else {
-
-				const elements: HTMLElement[] = [];
-				for (let i = 0; i < required; i++) {
-					elements.push(document.createElement("div"));
-				}
-				container.replaceChildren(...elements);
-				return elements;
 			}
-
+			return false;
 		}
 
+		private getWorldScalingFactor(camera: Camera): number {
+			const p0 = Projections.hexToScreen(camera, 0, 0);
+			const p1 = Projections.hexToScreen(camera, 0, 1);
+			const p2 = Projections.hexToScreen(camera, 1, 0);
+			return Math.max(this.distance(p0, p1), this.distance(p0, p2))
+		}
+
+		private distance(a: Point, b: Point): number {
+			const dx = a.x - b.x;
+			const dy = b.y - b.y;
+			return Math.sqrt(dx * dx + dy * dy);
+		}
+
+		private isVisible(dataEntry: HtmlDataEntry, camera: Camera, clippingRadius: number): boolean {
+
+			const pos = Projections.hexToScreen(camera, dataEntry.tile.position.q, dataEntry.tile.position.r);
+
+			// find the closest point visible on screen
+			const closestX = Math.max(0, Math.min(pos.x, camera.getClientWidth()));
+			const closestY = Math.max(0, Math.min(pos.y, camera.getClientHeight()));
+
+			// find distance to the closest point
+			const distanceX = pos.x - closestX;
+			const distanceY = pos.y - closestY;
+			const distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+			// check if intersects screen
+			return distanceSquared <= clippingRadius * clippingRadius;
+		}
+
+		getDebugData(): any {
+			return {
+				command: "Draw",
+				container: this.containerId,
+			};
+		}
 	}
 
 }

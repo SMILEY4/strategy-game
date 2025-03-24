@@ -40,11 +40,9 @@ export namespace NodeOutput {
 
     export class HtmlData<TContext> {
         readonly name: string;
-        readonly renderFunction: (context: TContext, element: any, html: HTMLElement) => void;
 
-        constructor(props: { name: string, renderFunction: (context: TContext, element: any, html: HTMLElement) => void }) {
+        constructor(props: { name: string }) {
             this.name = props.name;
-            this.renderFunction = props.renderFunction;
         }
     }
 

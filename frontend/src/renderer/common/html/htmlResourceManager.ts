@@ -1,59 +1,81 @@
 import {ResourceManager} from "../graph/resourceManager";
 import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
-import {HtmlNode} from "../graph/nodes/htmlNode";
+import {HtmlDataEntry, HtmlDataNode} from "../graph/nodes/htmlDataNode";
+import {HtmlDrawNode} from "../graph/nodes/htmlDrawNode";
 import {NodeOutput} from "../graph/nodes/nodeOutput";
+import {NodeInput} from "../graph/nodes/nodeInput";
 
 export class HtmlResourceManager implements ResourceManager {
 
-    private elementCache = new Map<string, any[]>();
-    private containerCache = new Map<string, HTMLElement>();
+	private dataBuffers = new Map<string, HtmlDataEntry[]>();
+	private containers = new Map<string, HTMLElement>();
 
-    public initialize(nodes: AbstractRenderNode[]): void {
-        for (let node of nodes) {
-            if (node instanceof HtmlNode) {
-                for (let output of node.config.output) {
-                    if (output instanceof NodeOutput.HtmlData) {
-                        this.elementCache.set(output.name, []);
-                    }
-                    if (output instanceof NodeOutput.HtmlContainer) {
-                        const container = document.getElementById(output.id);
-                        if (container) {
-                            this.containerCache.set(output.id, container);
-                        }
-                    }
-                }
-            }
-        }
-    }
+	public initialize(nodes: AbstractRenderNode[]): void {
+		for (let node of nodes) {
 
-    public dispose(): void {
-        this.elementCache.clear();
-        this.containerCache.clear();
-    }
+			if (node instanceof HtmlDataNode) {
+				for (let output of node.config.output) {
+					if (output instanceof NodeOutput.HtmlData) {
+						this.dataBuffers.set(output.name, []);
+					}
+				}
+			}
 
-    public getElements(id: string): any[] {
-        const elements = this.elementCache.get(id);
-        if (elements === undefined || elements === null) {
-            throw new Error("No elements with id " + id);
-        } else {
-            return elements;
-        }
-    }
+			if (node instanceof HtmlDrawNode) {
+				for (let input of node.config.input) {
+					if (input instanceof NodeInput.HtmlData) {
+						this.dataBuffers.set(input.name, []);
+					}
+				}
+				for (let output of node.config.output) {
+					const container = document.getElementById(output.id);
+					if (container) {
+						this.containers.set(output.id, container);
+					}
+				}
+			}
 
-    public setElements(id: string, elements: any[]) {
-        this.elementCache.set(id, elements);
-    }
+		}
+	}
 
-    public getContainer(containerName: string): HTMLElement {
-        let container = this.containerCache.get(containerName);
-        if (!container) {
-            container = document.getElementById(containerName)!;
-            this.containerCache.set(containerName, container);
-        }
-        if (!container) {
-            throw new Error("No container with name " + containerName);
-        }
-        return container;
-    }
+	public dispose(): void {
+		this.dataBuffers.clear();
+	}
+
+	public setData(id: string, data: HtmlDataEntry[]) {
+		this.dataBuffers.set(id, data);
+	}
+
+	public getData(id: string): HtmlDataEntry[] {
+		const data = this.dataBuffers.get(id);
+		if (data) {
+			return data;
+		} else {
+			return [];
+		}
+	}
+
+	public getContainer(containerName: string): HTMLElement {
+		let container = this.containers.get(containerName);
+		if (!container) {
+			container = document.getElementById(containerName)!;
+			this.containers.set(containerName, container);
+		}
+		if (!container) {
+			throw new Error("No container with name " + containerName);
+		}
+		return container;
+	}
+
+	// public getElements(id: string): any[] {
+	//     const elements = this.elementCache.get(id);
+	//     if (elements === undefined || elements === null) {
+	//         throw new Error("No elements with id " + id);
+	//     } else {
+	//         return elements;
+	//     }
+	// }
+
+	//
 
 }
