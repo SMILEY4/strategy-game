@@ -6,6 +6,7 @@ import {GameStateAccess} from "../../state/gameStateAccess";
 import {ChangeProvider} from "../common/graph/changeProvider";
 import {WebGLMonitor} from "../../common/webgl/monitor/webGLMonitor";
 import {RenderGraphMonitor} from "../common/graph/renderGraphMonitor";
+import {GLError} from "../../common/webgl/glError";
 
 /**
  * Renderer
@@ -62,24 +63,9 @@ export class GameRenderer {
 		this.renderConfig = GameRenderConfig.load();
 		const camera = this.getRenderCamera(canvasHandle);
 		this.renderGraph?.execute(camera, this.renderConfig!);
-		this.checkWebGLErrors(canvasHandle.getGL());
+		GLError.checkRemaining(canvasHandle.getGL())
 
 		this.webglMonitor.endFrame();
-	}
-
-	private checkWebGLErrors(gl: WebGL2RenderingContext) {
-		let error = gl.getError();
-		while (error !== gl.NO_ERROR) {
-			let strError = "" + error;
-			if (error === gl.INVALID_ENUM) strError = "INVALID_ENUM";
-			if (error === gl.INVALID_VALUE) strError = "INVALID_VALUE";
-			if (error === gl.INVALID_OPERATION) strError = "INVALID_OPERATION";
-			if (error === gl.INVALID_FRAMEBUFFER_OPERATION) strError = "INVALID_FRAMEBUFFER_OPERATION";
-			if (error === gl.OUT_OF_MEMORY) strError = "OUT_OF_MEMORY";
-			if (error === gl.CONTEXT_LOST_WEBGL) strError = "CONTEXT_LOST_WEBGL";
-			console.error("Unhandled WebGL error", strError);
-			error = gl.getError();
-		}
 	}
 
 	/**

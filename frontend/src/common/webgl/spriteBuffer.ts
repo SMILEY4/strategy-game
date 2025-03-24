@@ -7,11 +7,36 @@ export class SpriteBuffer {
 	private vertexCount: number = 0;
 	private vertexData: number[] = [];
 
+	readonly pooledEntry: SpriteBuffer.Entry = {
+		atlasEntry: {
+			name: "",
+			vertices: [],
+			textureCoordinates: [],
+			offset: 0,
+			scale: 1,
+			mode: "billboard"
+		},
+		x: 0,
+		y: 0,
+		z: 0,
+		scaleX: 1,
+		scaleY: 1,
+		colorBaseTile: [0,0,0],
+		colorCountry: [0,0,0]
+	}
+
 	public clear() {
 		this.vertexCount = 0;
 		this.vertexData = [];
 	}
 
+	public addPooledBillboardSprite() {
+		this.addBillboardSprite(this.pooledEntry)
+	}
+
+	public addPooledGroundSprite() {
+		this.addGroundSprite(this.pooledEntry)
+	}
 
 	/**
 	 * Add a new sprite to the buffer at the given x,y,z position. All vertices have the same z, meaning the sprite is a flat plane facing the camera.

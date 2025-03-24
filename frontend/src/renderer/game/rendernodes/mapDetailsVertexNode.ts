@@ -136,16 +136,15 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			const x = tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
 			const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
 			const z = y - 1;
-			spriteBuffer.addBillboardSprite({
-				atlasEntry: atlasEntry,
-				x: x,
-				y: y,
-				z: z,
-				scaleX: 4,
-				scaleY: 4,
-				colorCountry: [0, 0, 0],
-				colorBaseTile: [0, 0, 0],
-			});
+			spriteBuffer.pooledEntry.atlasEntry = atlasEntry;
+			spriteBuffer.pooledEntry.x = x;
+			spriteBuffer.pooledEntry.y = y;
+			spriteBuffer.pooledEntry.z = z;
+			spriteBuffer.pooledEntry.scaleX = 4;
+			spriteBuffer.pooledEntry.scaleY = 4;
+			spriteBuffer.pooledEntry.colorCountry = [0, 0, 0];
+			spriteBuffer.pooledEntry.colorBaseTile = [0, 0, 0];
+			spriteBuffer.addPooledBillboardSprite();
 		}
 
 		// decorations
@@ -157,16 +156,15 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			const x = tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
 			const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
 			const z = y - 1;
-			spriteBuffer.addBillboardSprite({
-				atlasEntry: atlasEntry,
-				x: x,
-				y: y,
-				z: z,
-				scaleX: 4,
-				scaleY: 4,
-				colorCountry: [0, 0, 0],
-				colorBaseTile: [0, 0, 0],
-			});
+			spriteBuffer.pooledEntry.atlasEntry = atlasEntry;
+			spriteBuffer.pooledEntry.x = x;
+			spriteBuffer.pooledEntry.y = y;
+			spriteBuffer.pooledEntry.z = z;
+			spriteBuffer.pooledEntry.scaleX = 4;
+			spriteBuffer.pooledEntry.scaleY = 4;
+			spriteBuffer.pooledEntry.colorCountry = [0, 0, 0];
+			spriteBuffer.pooledEntry.colorBaseTile = [0, 0, 0];
+			spriteBuffer.addPooledBillboardSprite();
 		}
 	}
 
@@ -177,16 +175,15 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const y = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2;
 		const z = y - 1;
 
-		spriteBuffer.addBillboardSprite({
-			atlasEntry: atlasEntriesUnit[0],
-			x: x,
-			y: y,
-			z: z,
-			scaleX: 6,
-			scaleY: 6,
-			colorCountry: Color.colorToRgbArray(worldObject.country.color),
-			colorBaseTile: [0, 0, 0],
-		});
+		spriteBuffer.pooledEntry.atlasEntry = atlasEntriesUnit[0];
+		spriteBuffer.pooledEntry.x = x;
+		spriteBuffer.pooledEntry.y = y;
+		spriteBuffer.pooledEntry.z = z;
+		spriteBuffer.pooledEntry.scaleX = 6;
+		spriteBuffer.pooledEntry.scaleY = 6;
+		spriteBuffer.pooledEntry.colorCountry = Color.colorToRgbArray(worldObject.country.color);
+		spriteBuffer.pooledEntry.colorBaseTile = [0, 0, 0];
+		spriteBuffer.addPooledBillboardSprite();
 	}
 
 	private addRoute(spriteBuffer: SpriteBuffer, route: Route, inputs: ProvidedNodeInputs) {
@@ -211,16 +208,16 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 				const x = tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
 				const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
 				const z = y - 1;
-				spriteBuffer.addBillboardSprite({
-					atlasEntry: Random.chooseRandom(atlasEntriesDecorations, tile.id + i),
-					x: x,
-					y: y,
-					z: z,
-					scaleX: 4,
-					scaleY: 4,
-					colorCountry: Color.colorToRgbArray(Color.BLACK),
-					colorBaseTile: color,
-				});
+
+				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesDecorations, tile.id + i);
+				spriteBuffer.pooledEntry.x = x;
+				spriteBuffer.pooledEntry.y = y;
+				spriteBuffer.pooledEntry.z = z;
+				spriteBuffer.pooledEntry.scaleX = 4;
+				spriteBuffer.pooledEntry.scaleY = 4;
+				spriteBuffer.pooledEntry.colorCountry = Color.colorToRgbArray(Color.BLACK);
+				spriteBuffer.pooledEntry.colorBaseTile = [0, 0, 0];
+				spriteBuffer.addPooledBillboardSprite();
 			}
 
 		} else {
@@ -232,44 +229,41 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 			if (terrainName === "mountain") {
 				const atlasEntriesMountain = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_mountain");
-				spriteBuffer.addGroundSprite({
-					atlasEntry: Random.chooseRandom(atlasEntriesMountain, tile.position.q + "" + tile.position.r),
-					x: x,
-					y: y,
-					z: [zMin, zMax],
-					scaleX: 22,
-					scaleY: 16,
-					colorCountry: [0, 0, 0],
-					colorBaseTile: color,
-				});
+				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesMountain, tile.position.q + "" + tile.position.r);
+				spriteBuffer.pooledEntry.x = x;
+				spriteBuffer.pooledEntry.y = y;
+				spriteBuffer.pooledEntry.z = [zMin, zMax];
+				spriteBuffer.pooledEntry.scaleX = 22;
+				spriteBuffer.pooledEntry.scaleY = 16;
+				spriteBuffer.pooledEntry.colorCountry = [0, 0, 0];
+				spriteBuffer.pooledEntry.colorBaseTile = color;
+				spriteBuffer.addPooledGroundSprite();
 			}
 
 			if (terrainName === "hill") {
 				const atlasEntriesHill = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_hill");
-				spriteBuffer.addGroundSprite({
-					atlasEntry: Random.chooseRandom(atlasEntriesHill, tile.position.q + "" + tile.position.r),
-					x: x,
-					y: y,
-					z: [zMin, zMax],
-					scaleX: 22,
-					scaleY: 16,
-					colorCountry: [0, 0, 0],
-					colorBaseTile: color,
-				});
+				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesHill, tile.position.q + "" + tile.position.r);
+				spriteBuffer.pooledEntry.x = x;
+				spriteBuffer.pooledEntry.y = y;
+				spriteBuffer.pooledEntry.z = [zMin, zMax];
+				spriteBuffer.pooledEntry.scaleX = 22;
+				spriteBuffer.pooledEntry.scaleY = 16;
+				spriteBuffer.pooledEntry.colorCountry = [0, 0, 0];
+				spriteBuffer.pooledEntry.colorBaseTile = color;
+				spriteBuffer.addPooledGroundSprite();
 			}
 
 			if (terrainName === "forest") {
 				const atlasEntriesForest = inputs.getTextureAtlasGroup(MapDetailsVertexNode.TEXTURE_ATLAS_PATH, "terrain_forest");
-				spriteBuffer.addGroundSprite({
-					atlasEntry: Random.chooseRandom(atlasEntriesForest, tile.position.q + "" + tile.position.r),
-					x: x,
-					y: y,
-					z: [zMin, zMax],
-					scaleX: 22,
-					scaleY: 16,
-					colorCountry: [0, 0, 0],
-					colorBaseTile: color,
-				});
+				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesForest, tile.position.q + "" + tile.position.r)
+				spriteBuffer.pooledEntry.x = x;
+				spriteBuffer.pooledEntry.y = y;
+				spriteBuffer.pooledEntry.z = [zMin, zMax];
+				spriteBuffer.pooledEntry.scaleX = 22;
+				spriteBuffer.pooledEntry.scaleY = 16;
+				spriteBuffer.pooledEntry.colorCountry = [0, 0, 0];
+				spriteBuffer.pooledEntry.colorBaseTile = color;
+				spriteBuffer.addPooledGroundSprite();
 			}
 		}
 	}

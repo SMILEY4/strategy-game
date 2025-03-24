@@ -34,11 +34,20 @@ import {UserProxy, UserProxyImpl} from "./logic/user/userProxy";
 import {WebGLMonitor} from "./common/webgl/monitor/webGLMonitor";
 import {MonitoringService, MonitoringServiceImpl} from "./logic/game/service/monitoringService";
 import {RenderGraphMonitor} from "./renderer/common/graph/renderGraphMonitor";
+import {GLError} from "./common/webgl/glError";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
+const ENABLE_WEBGL_ERROR_CHECKING: boolean = import.meta.env.PUB_ENABLE_WEBGL_ERROR_CHECKING === "true";
+const ENABLE_RENDERER_MONITORING: boolean = import.meta.env.PUB_ENABLE_RENDERER_MONITORING === "true";
 
 export namespace App {
+
+	console.log("initializing app dependencies.", API_BASE_URL, API_WS_BASE_URL, ENABLE_WEBGL_ERROR_CHECKING, ENABLE_RENDERER_MONITORING)
+
+	GLError.enabled = ENABLE_WEBGL_ERROR_CHECKING;
+	WebGLMonitor.enabled = ENABLE_RENDERER_MONITORING;
+	RenderGraphMonitor.enabled = ENABLE_RENDERER_MONITORING;
 
 	// database
 	const cameraDatabase: CameraDatabase = new CameraDatabase();
@@ -61,7 +70,7 @@ export namespace App {
 		worldObjectDatabase,
 		settlementDatabase,
 		routeDatabase,
-		commandDatabase
+		commandDatabase,
 	);
 	const gameStateWriter: GameStateWriter = new GameStateWriterImpl(
 		commandDatabase,
@@ -71,7 +80,7 @@ export namespace App {
 		worldObjectDatabase,
 		routeDatabase,
 		cameraDatabase,
-		gameSessionDatabase
+		gameSessionDatabase,
 	);
 
 	// api clients
@@ -94,7 +103,7 @@ export namespace App {
 	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
 	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
 	const userService: UserService = new UserServiceImpl(userClient, userStateAccess, userStateWriter);
-	const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor, renderGraphMonitor)
+	const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor, renderGraphMonitor);
 
 	// rendering
 	const changeProvider: ChangeProvider = new GameChangeProvider(gameStateAccess);

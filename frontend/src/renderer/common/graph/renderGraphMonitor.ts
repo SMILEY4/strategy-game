@@ -1,33 +1,48 @@
 export class RenderGraphMonitor {
 
-	private entries: RenderGraphMonitorEntry[] = [];
+	private entries: RenderGraphMonitor.Entry[] = [];
 
 	beginFrame(): void {
-		this.entries = []
+		if (!RenderGraphMonitor.enabled) {
+			return;
+		}
+		this.entries = [];
 	}
 
 	startCommand(name: string) {
+		if (!RenderGraphMonitor.enabled) {
+			return;
+		}
 		this.entries.push({
 			name: name,
 			start: Date.now(),
-			end: -1
-		})
+			end: -1,
+		});
 	}
 
 	endCommand() {
-		if(this.entries.length > 0) {
-			this.entries[this.entries.length - 1].end = Date.now()
+		if (!RenderGraphMonitor.enabled) {
+			return;
+		}
+		if (this.entries.length > 0) {
+			this.entries[this.entries.length - 1].end = Date.now();
 		}
 	}
 
-	getEntries(): RenderGraphMonitorEntry[] {
+	getEntries(): RenderGraphMonitor.Entry[] {
 		return this.entries;
 	}
 
 }
 
-export interface RenderGraphMonitorEntry {
-	name: string,
-	start: number,
-	end: number
+export namespace RenderGraphMonitor {
+
+	export let enabled: boolean = false;
+
+	export interface Entry {
+		name: string,
+		start: number,
+		end: number
+	}
+
 }

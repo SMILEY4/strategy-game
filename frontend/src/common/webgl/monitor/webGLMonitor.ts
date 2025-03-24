@@ -34,6 +34,9 @@ export class WebGLMonitor {
 
 
     public attach(gl: WebGL2RenderingContext) {
+        if(!WebGLMonitor.enabled) {
+            return
+        }
         this.gl = gl;
         this.wrapperDrawArraysInstanced = new GLDrawArraysInstancedWrapper(this.gl);
         this.wrapperDrawArrays = new GLDrawArraysWrapper(this.gl);
@@ -47,6 +50,9 @@ export class WebGLMonitor {
     }
 
     public reset() {
+        if(!WebGLMonitor.enabled) {
+            return
+        }
         if (this.gl) {
             this.wrapperDrawArraysInstanced?.reset();
             this.wrapperDrawArrays?.reset();
@@ -57,6 +63,9 @@ export class WebGLMonitor {
 
 
     public beginFrame() {
+        if(!WebGLMonitor.enabled) {
+            return
+        }
         if (this.gl) {
             this.reset();
             this.timeBeginFrame = Date.now();
@@ -65,6 +74,9 @@ export class WebGLMonitor {
 
 
     public endFrame() {
+        if(!WebGLMonitor.enabled) {
+            return
+        }
         if (this.gl) {
             const time = Date.now();
             this.gl.getError(); // sync cpu and gpu
@@ -87,6 +99,8 @@ export class WebGLMonitor {
 }
 
 export namespace WebGLMonitor {
+
+    export let enabled: boolean = false;
 
     export interface Data {
         fps: ValueHistory,
