@@ -27,7 +27,12 @@ export class LabelsDrawNode extends HtmlDrawNode<GameHtmlRenderContext, LabelHtm
 		});
 	}
 
-	execute(context: GameHtmlRenderContext, data: LabelHtmlData): Node {
+	buildBaseElement(): HTMLElement {
+		return undefined as any;
+	}
+
+
+	execute(context: GameHtmlRenderContext, data: LabelHtmlData, baseElement: HTMLElement) {
 
 		const pos = Projections.hexToScreen(
 			context.camera,
@@ -37,10 +42,9 @@ export class LabelsDrawNode extends HtmlDrawNode<GameHtmlRenderContext, LabelHtm
 		pos.y = context.camera.getClientHeight() - pos.y;
 		pos.y = pos.y + (data.index * 20);
 
-		const element = document.createElement("div");
-
+		baseElement.replaceChildren();
 		if (data.name === "location-pending") {
-			element.insertAdjacentHTML("afterbegin", `
+			baseElement.insertAdjacentHTML("afterbegin", `
 				<div
 					class='world-ui__label world-ui__label__location-pending'
 					style='left:${pos.x.toString()}px;top:${pos.y.toString()}px;'
@@ -59,7 +63,7 @@ export class LabelsDrawNode extends HtmlDrawNode<GameHtmlRenderContext, LabelHtm
 				</div>
 			`);
 		} else {
-			element.insertAdjacentHTML("afterbegin", `
+			baseElement.insertAdjacentHTML("afterbegin", `
 				<div
 					class='world-ui__label world-ui__label__location'
 					style='left:${pos.x.toString()}px;top:${pos.y.toString()}px;'
@@ -72,8 +76,6 @@ export class LabelsDrawNode extends HtmlDrawNode<GameHtmlRenderContext, LabelHtm
 				</div>
 			`);
 		}
-
-		return element.children[0];
 	}
 
 }

@@ -71,7 +71,7 @@ export namespace HtmlRenderCommand {
 
 			if (this.hasChange()) {
 
-				const clippingRadius = 2 * this.getWorldScalingFactor(context.camera) // base value in tiles
+				const clippingRadius = 2 * this.getWorldScalingFactor(context.camera); // base value in tiles
 
 				const htmlElements: Node[] = [];
 
@@ -79,12 +79,22 @@ export namespace HtmlRenderCommand {
 					const nodeEntry = this.nodes[i];
 					const node = nodeEntry.node;
 					const data = resourceManager.getData(nodeEntry.inputDataId);
-					for (let j = 0, m = data.length; j < m; j++) {
+
+					const prevPooledHtmlElements = resourceManager.getPooledHtmlElements(nodeEntry.inputDataId);
+					const nextPooledHtmlElements: HTMLElement[] = []
+
+					for (let j = 0, k = 0, m = data.length; j < m; j++, k++) {
 						const dataEntry = data[j];
 						if (this.isVisible(dataEntry, context.camera, clippingRadius)) {
-							htmlElements.push(node.execute(context, dataEntry));
+							const baseHtmlElement = prevPooledHtmlElements.length > k ? prevPooledHtmlElements[k] : node.buildBaseElement()
+							node.execute(context, dataEntry, baseHtmlElement);
+							htmlElements.push(baseHtmlElement);
+							nextPooledHtmlElements.push(baseHtmlElement)
 						}
 					}
+
+					resourceManager.setPooledHtmlElements(nodeEntry.inputDataId, nextPooledHtmlElements)
+
 				}
 
 				const container = resourceManager.getContainer(this.containerId);
@@ -108,7 +118,7 @@ export namespace HtmlRenderCommand {
 			const p0 = Projections.hexToScreen(camera, 0, 0);
 			const p1 = Projections.hexToScreen(camera, 0, 1);
 			const p2 = Projections.hexToScreen(camera, 1, 0);
-			return Math.max(this.distance(p0, p1), this.distance(p0, p2))
+			return Math.max(this.distance(p0, p1), this.distance(p0, p2));
 		}
 
 		private distance(a: Point, b: Point): number {

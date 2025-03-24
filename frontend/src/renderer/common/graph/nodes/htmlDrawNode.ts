@@ -12,7 +12,9 @@ export abstract class HtmlDrawNode<TContext, TData extends HtmlDataEntry> extend
 		this.config = config;
 	}
 
-	public abstract execute(context: TContext, data: TData): Node
+	public abstract execute(context: TContext, data: TData, wrapperElement: HTMLElement): void
+
+	public abstract buildBaseElement(): HTMLElement
 
 }
 

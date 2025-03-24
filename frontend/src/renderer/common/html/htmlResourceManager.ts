@@ -8,6 +8,7 @@ import {NodeInput} from "../graph/nodes/nodeInput";
 export class HtmlResourceManager implements ResourceManager {
 
 	private dataBuffers = new Map<string, HtmlDataEntry[]>();
+	private htmlPool = new Map<string, HTMLElement[]>();
 	private containers = new Map<string, HTMLElement>();
 
 	public initialize(nodes: AbstractRenderNode[]): void {
@@ -48,6 +49,19 @@ export class HtmlResourceManager implements ResourceManager {
 
 	public getData(id: string): HtmlDataEntry[] {
 		const data = this.dataBuffers.get(id);
+		if (data) {
+			return data;
+		} else {
+			return [];
+		}
+	}
+
+	public setPooledHtmlElements(id: string, data: HTMLElement[]) {
+		this.htmlPool.set(id, data);
+	}
+
+	public getPooledHtmlElements(id: string): HTMLElement[] {
+		const data = this.htmlPool.get(id);
 		if (data) {
 			return data;
 		} else {

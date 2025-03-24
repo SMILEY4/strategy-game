@@ -26,22 +26,28 @@ export class ResourceIconsDrawNode extends HtmlDrawNode<GameHtmlRenderContext, R
 		});
 	}
 
-	execute(context: GameHtmlRenderContext, data: ResourceIconsHtmlData): Node {
+	buildBaseElement(): HTMLElement {
+		const html = `
+			<div
+				class='world-ui__icon'
+				style='left:0;top:0;background-image:url("unknown")'
+			>
+			</div>
+		`
+		const element = document.createElement('div')
+		element.innerHTML = html
+		return element.children[0] as HTMLElement;
+	}
+
+
+	execute(context: GameHtmlRenderContext, data: ResourceIconsHtmlData, baseElement: HTMLElement) {
 
 		const pos = Projections.hexToScreen(context.camera, data.tile.position.q, data.tile.position.r);
 		pos.y = context.camera.getClientHeight() - pos.y;
 
-		const element = document.createElement("div");
-
-		element.insertAdjacentHTML("afterbegin", `
-			<div
-				class='world-ui__icon'
-				style='left:${pos.x.toString()}px;top:${pos.y.toString()}px;background-image:url("${data.type.getIconPath()}")'
-			>
-			</div>
-		`);
-
-		return element.children[0];
+		baseElement.style.left = pos.x.toString() + "px"
+		baseElement.style.top = pos.y.toString() + "px"
+		baseElement.style.backgroundImage = "url('" + data.type.getIconPath() + "')"
 	}
 
 }

@@ -81,8 +81,8 @@ export class GameRenderGraph {
 			resourceManager: new HtmlResourceManager(),
 			compiler: new HtmlRenderGraphCompiler(changeProvider),
 			nodes: [
-				new LabelDataNode(),
-				new LabelsDrawNode(),
+				// new LabelDataNode(),
+				// new LabelsDrawNode(),
 				new ResourceIconsDataNode(),
 				new ResourceIconsDrawNode(),
 			],
