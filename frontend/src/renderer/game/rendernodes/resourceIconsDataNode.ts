@@ -31,6 +31,7 @@ export class ResourceIconsDataNode extends HtmlDataNode<GameHtmlRenderContext> {
 			const tiles = context.tiles;
 			for (let i = 0, n = tiles.length; i < n; i++) {
 				const tile = tiles[i];
+				// todo: for performance testing
 				// if (!tile.base.visible) {
 				// 	continue;
 				// }

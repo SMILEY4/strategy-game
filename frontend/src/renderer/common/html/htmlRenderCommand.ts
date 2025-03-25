@@ -81,24 +81,49 @@ export namespace HtmlRenderCommand {
 					const data = resourceManager.getData(nodeEntry.inputDataId);
 
 					const prevPooledHtmlElements = resourceManager.getPooledHtmlElements(nodeEntry.inputDataId);
-					const nextPooledHtmlElements: HTMLElement[] = []
+					const nextPooledHtmlElements: HTMLElement[] = [];
+
+					let amountVisible = 0;
+					let amountVisibleThreshold = 500;
 
 					for (let j = 0, k = 0, m = data.length; j < m; j++, k++) {
 						const dataEntry = data[j];
 						if (this.isVisible(dataEntry, context.camera, clippingRadius)) {
-							const baseHtmlElement = prevPooledHtmlElements.length > k ? prevPooledHtmlElements[k] : node.buildBaseElement()
-							node.execute(context, dataEntry, baseHtmlElement);
-							htmlElements.push(baseHtmlElement);
-							nextPooledHtmlElements.push(baseHtmlElement)
+							amountVisible++;
 						}
 					}
 
-					resourceManager.setPooledHtmlElements(nodeEntry.inputDataId, nextPooledHtmlElements)
+					for (let j = 0, k = 0, m = data.length; j < m; j++, k++) {
+						const dataEntry = data[j];
+						if (this.isVisible(dataEntry, context.camera, clippingRadius)) {
+							let baseHtmlElement: HTMLElement = null as any;
+							if (k >= prevPooledHtmlElements.length) {
+								const templateElement = resourceManager.getTemplateElement(nodeEntry.inputDataId)
+								if(templateElement) {
+									baseHtmlElement = templateElement.cloneNode(true) as HTMLElement;
+								} else {
+									const newTemplateElement = node.buildBaseElement();
+									resourceManager.setTemplateElement(nodeEntry.inputDataId, newTemplateElement)
+									baseHtmlElement = newTemplateElement.cloneNode(true) as HTMLElement;
+								}
+							} else {
+								baseHtmlElement = prevPooledHtmlElements[k];
+							}
+							node.execute(context, dataEntry, baseHtmlElement);
+							if (amountVisible > amountVisibleThreshold) {
+								baseHtmlElement.className += " low-quality";
+							}
+							htmlElements.push(baseHtmlElement);
+							nextPooledHtmlElements.push(baseHtmlElement);
+						}
+					}
 
+					resourceManager.setPooledHtmlElements(nodeEntry.inputDataId, nextPooledHtmlElements);
 				}
 
 				const container = resourceManager.getContainer(this.containerId);
 				container.replaceChildren(...htmlElements);
+
 			}
 
 			context.monitor.endCommand();

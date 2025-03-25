@@ -8,6 +8,7 @@ import {NodeInput} from "../graph/nodes/nodeInput";
 export class HtmlResourceManager implements ResourceManager {
 
 	private dataBuffers = new Map<string, HtmlDataEntry[]>();
+	private templates = new Map<string, HTMLElement>();
 	private htmlPool = new Map<string, HTMLElement[]>();
 	private containers = new Map<string, HTMLElement>();
 
@@ -53,6 +54,19 @@ export class HtmlResourceManager implements ResourceManager {
 			return data;
 		} else {
 			return [];
+		}
+	}
+
+	public setTemplateElement(id: string, template: HTMLElement) {
+		this.templates.set(id, template);
+	}
+
+	public getTemplateElement(id: string): HTMLElement | null {
+		const template = this.templates.get(id);
+		if(template) {
+			return template
+		} else {
+			return null;
 		}
 	}
 

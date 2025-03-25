@@ -29,8 +29,8 @@ export class ResourceIconsDrawNode extends HtmlDrawNode<GameHtmlRenderContext, R
 	buildBaseElement(): HTMLElement {
 		const html = `
 			<div
-				class='world-ui__icon'
-				style='left:0;top:0;background-image:url("unknown")'
+				class='resource-icon'
+				style='left:0;top:0;background-image:url("tbd")'
 			>
 			</div>
 		`
@@ -41,10 +41,8 @@ export class ResourceIconsDrawNode extends HtmlDrawNode<GameHtmlRenderContext, R
 
 
 	execute(context: GameHtmlRenderContext, data: ResourceIconsHtmlData, baseElement: HTMLElement) {
-
 		const pos = Projections.hexToScreen(context.camera, data.tile.position.q, data.tile.position.r);
 		pos.y = context.camera.getClientHeight() - pos.y;
-
 		baseElement.style.left = pos.x.toString() + "px"
 		baseElement.style.top = pos.y.toString() + "px"
 		baseElement.style.backgroundImage = "url('" + data.type.getIconPath() + "')"
