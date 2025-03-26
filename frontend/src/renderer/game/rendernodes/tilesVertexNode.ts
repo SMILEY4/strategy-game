@@ -1,13 +1,13 @@
-import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/vertexRenderNode";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/nodes/vertexRenderNode";
 import {GLAttributeType} from "../../../common/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../common/tilemapUtils";
-import {NodeOutput} from "../../common/graph/nodeOutput";
+import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
 import {buildMap, shuffleArray} from "../../../common/utils";
 import {packBorder} from "./utils/packBorder";
 import {Visibility} from "../../../models/misc/visibility";
 import {mapHiddenOrNull} from "../../../common/hiddenType";
-import {NodeInput} from "../../common/graph/nodeInput";
+import {NodeInput} from "../../common/graph/nodes/nodeInput";
 import {TilesBaseVertexNode} from "./tilesBaseVertexNode";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;

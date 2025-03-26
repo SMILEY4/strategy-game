@@ -1,143 +1,145 @@
-import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
-import {NodeOutput} from "../../common/graph/nodeOutput";
-import {Camera} from "../../../common/webgl/camera";
-import {buildMap} from "../../../common/utils";
-import {Projections} from "../../../common/webgl/projections";
 import {GameHtmlRenderContext} from "../gameRenderContext";
-import {TilemapUtils} from "../../../common/tilemapUtils";
+import {HtmlDataEntry, HtmlDataResource, HtmlNode} from "../../common/graph/nodes/htmlNode";
+import {TileSummary} from "../../../models/tile/tileSummary";
+import {buildMap} from "../../../common/utils";
+import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
 import {CommandType} from "../../../models/command/commandType";
 import {CreateSettlementCommand} from "../../../models/command/command";
-import {TileSummary} from "../../../models/tile/tileSummary";
+import {Projections} from "../../../common/webgl/projections";
+import {TilemapUtils} from "../../../common/tilemapUtils";
 
-export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
+export class LabelsHtmlNode extends HtmlNode<GameHtmlRenderContext> {
 
-    public static readonly ID = "htmlnode.labels";
+	public static readonly ID = "html.labels";
 
-    constructor() {
-        super({
-            id: LabelsHtmlNode.ID,
-            changeKey: LabelsHtmlNode.ID,
-            input: [],
-            output: [
-                new NodeOutput.HtmlContainer({
-                    id: "game-canvas-overlay",
-                }),
-                new NodeOutput.HtmlData({
-                    name: "htmldata.labels",
-                    renderFunction: (context: GameHtmlRenderContext, element: any, html: HTMLElement) => render(context.camera, element, html),
-                }),
-            ],
-        });
-    }
+	constructor() {
+		super({
+			id: LabelsHtmlNode.ID,
+			changeKey: LabelsHtmlNode.ID,
+			input: [],
+			output: [
+				new NodeOutput.HtmlData({
+					name: "htmldata.labels",
+					boundsRadiusTiles: 2,
+					lowQualityThreshold: null,
+					htmlFactory: LabelsHtmlNode.createHtmlElement,
+					renderFunc: LabelsHtmlNode.render,
+				}),
+			],
+		});
+	}
 
-    public execute(context: GameHtmlRenderContext): HtmlDataResource {
+	execute(context: GameHtmlRenderContext): HtmlDataResource {
 
-        const elementsByTile = new Map<string, LabelElement[]>();
+		const elementsByTile = new Map<string, LabelsHtmlData[]>();
 
-        function addElement(element: LabelElement) {
-            if (elementsByTile.has(element.tile.id)) {
-                elementsByTile.get(element.tile.id)?.push(element);
-            } else {
-                elementsByTile.set(element.tile.id, [element]);
-            }
-        }
+		function addElement(element: LabelsHtmlData) {
+			if (elementsByTile.has(element.tile.id)) {
+				elementsByTile.get(element.tile.id)?.push(element);
+			} else {
+				elementsByTile.set(element.tile.id, [element]);
+			}
+		}
 
-        const createSettlementCommands = context.commands
-            .filter(it => it.type === CommandType.CREATE_SETTLEMENT)
-            .map(it => it as CreateSettlementCommand);
+		const createSettlementCommands = context.commands
+			.filter(it => it.type === CommandType.CREATE_SETTLEMENT)
+			.map(it => it as CreateSettlementCommand);
 
-        const settlements = context.settlements;
-        for (let i = 0, n = settlements.length; i < n; i++) {
-            const settlement = settlements[i];
-            if (this.isVisible(settlement.tile, 10, context.camera)) {
-                addElement({
-                    type: "location",
-                    tile: settlement.tile,
-                    name: settlement.name,
-                    color: `rgb(${settlement.country.color.red},${settlement.country.color.green},${settlement.country.color.blue})`,
-                    index: 0,
-                });
-            }
-        }
-        for (let i = 0, n = createSettlementCommands.length; i < n; i++) {
-            const command = createSettlementCommands[i];
-            if (this.isVisible(command.tile, 10, context.camera)) {
-                addElement({
-                    type: "location-pending",
-                    tile: command.tile,
-                    name: command.name,
-                    color: `rgb(${context.playerCountry.color.red},${context.playerCountry.color.green},${context.playerCountry.color.blue})`,
-                    index: 0,
-                });
-            }
-        }
+		const settlements = context.settlements;
+		for (let i = 0, n = settlements.length; i < n; i++) {
+			const settlement = settlements[i];
+			addElement({
+				type: "location",
+				tile: settlement.tile,
+				name: settlement.name,
+				color: `rgb(${settlement.country.color.red},${settlement.country.color.green},${settlement.country.color.blue})`,
+				index: 0,
+			});
+		}
+		for (let i = 0, n = createSettlementCommands.length; i < n; i++) {
+			const command = createSettlementCommands[i];
+			addElement({
+				type: "location-pending",
+				tile: command.tile,
+				name: command.name,
+				color: `rgb(${context.playerCountry.color.red},${context.playerCountry.color.green},${context.playerCountry.color.blue})`,
+				index: 0,
+			});
+		}
 
-        const worldObjects = context.worldObjects;
-        for (let i = 0, n = worldObjects.length; i < n; i++) {
-            const worldObject = worldObjects[i];
-            if (createSettlementCommands.some(cmd => cmd.worldObjectId === worldObject.id)) {
-                continue;
-            }
-            if (this.isVisible(worldObject.tile, 10, context.camera)) {
-                addElement({
-                    type: "unit",
-                    tile: worldObject.tile,
-                    name: worldObject.type.id,
-                    color: `rgb(${worldObject.country.color.red},${worldObject.country.color.green},${worldObject.country.color.blue})`,
-                    index: 0,
-                });
-            }
-        }
+		const worldObjects = context.worldObjects;
+		for (let i = 0, n = worldObjects.length; i < n; i++) {
+			const worldObject = worldObjects[i];
+			if (createSettlementCommands.some(cmd => cmd.worldObjectId === worldObject.id)) {
+				continue;
+			}
+			addElement({
+				type: "unit",
+				tile: worldObject.tile,
+				name: worldObject.type.id,
+				color: `rgb(${worldObject.country.color.red},${worldObject.country.color.green},${worldObject.country.color.blue})`,
+				index: 0,
+			});
+		}
 
-        const allElements: LabelElement[] = [];
-        elementsByTile.forEach((elements, _) => {
-            elements.forEach((element, index) => {
-                element.index = index;
-                allElements.push(element);
-            });
-        });
+		const allElements: LabelsHtmlData[] = [];
+		elementsByTile.forEach((elements, _) => {
+			elements.forEach((element, index) => {
+				element.index = index;
+				allElements.push(element);
+			});
+		});
 
-        return new HtmlDataResource({
-            outputs: buildMap({
-                "htmldata.labels": allElements,
-            }),
-        });
-    }
+		return new HtmlDataResource({
+			outputs: buildMap({
+				"htmldata.labels": allElements,
+			}),
+		});
+	}
 
-    private isVisible(tile: TileSummary, padding: number, camera: Camera): boolean {
-        const cameraMin = Projections.screenToWorld(camera, 0, camera.getClientHeight());
-        const cameraMax = Projections.screenToWorld(camera, camera.getClientWidth(), 0);
-        const tilePos = Projections.hexToWorld(tile.position.q, tile.position.r);
-        return (cameraMin.x - padding) < tilePos.x && tilePos.x < (cameraMax.x + padding)
-            && (cameraMin.y - padding) < tilePos.y && tilePos.y < (cameraMax.y + padding);
-    }
+	static createHtmlElement(): HTMLElement {
+		return document.createElement("div")
+	}
+
+
+	static render(context: GameHtmlRenderContext, data: LabelsHtmlData, baseElement: HTMLElement, _: boolean) {
+
+		const pos = Projections.hexToScreen(
+			context.camera,
+			data.tile.position.q, data.tile.position.r,
+			[0, TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * 0.5]);
+		pos.y = context.camera.getClientHeight() - pos.y;
+		pos.y = pos.y + (data.index * 20);
+
+		baseElement.style.left = pos.x + "px";
+		baseElement.style.top = pos.y + "px";
+		baseElement.className = "world-ui__label world-ui__label__" + data.type;
+
+		if (data.name === "location-pending") {
+			baseElement.innerHTML = `
+				<div class='world-ui__label__outer' style='border-color: ${data.color}'>
+					<div class='world-ui__label__inner' style='background-color: ${data.color}'>
+						${data.name}
+					</div>
+				</div>
+			`
+		} else {
+			baseElement.innerHTML = `
+				<div class='world-ui__label__outer'>
+					<div class='world-ui__label__inner' style='background-color: ${data.color}'>
+						${data.name}
+					</div>
+				</div>
+			`
+		}
+	}
 
 }
 
-interface LabelElement {
-    type: "location" | "location-pending" | "unit"
-    name: string,
-    color: string,
-    tile: TileSummary,
-    index: number,
-}
+export interface LabelsHtmlData extends HtmlDataEntry {
+	type: "location" | "location-pending" | "unit"
+	name: string,
+	color: string,
+	index: number,
 
-function render(camera: Camera, element: LabelElement, html: HTMLElement): void {
-
-    const pos = Projections.hexToScreen(
-        camera,
-        element.tile.position.q, element.tile.position.r,
-        [0, TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * 0.5]);
-    pos.y = camera.getClientHeight() - pos.y;
-    pos.y = pos.y + (element.index * 20);
-
-    html.style.left = pos.x + "px";
-    html.style.top = pos.y + "px";
-    html.className = "world-ui__label world-ui__label__" + element.type;
-    html.textContent = "";
-    if (element.name === "location-pending") {
-        html.insertAdjacentHTML("afterbegin", "<div class='world-ui__label__outer' style='border-color: " + element.color + "'><div class='world-ui__label__inner' style='background-color: " + element.color + "'>" + element.name + "</div></div>");
-    } else {
-        html.insertAdjacentHTML("afterbegin", "<div class='world-ui__label__outer'><div class='world-ui__label__inner' style='background-color: " + element.color + "'>" + element.name + "</div></div>");
-    }
 }

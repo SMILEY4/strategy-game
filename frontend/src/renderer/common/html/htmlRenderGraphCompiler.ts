@@ -1,76 +1,91 @@
 import {RenderGraphCompiler} from "../graph/renderGraphCompiler";
 import {HtmlRenderCommand} from "./htmlRenderCommand";
-import {AbstractRenderNode} from "../graph/abstractRenderNode";
-import {HtmlRenderNode} from "../graph/htmlRenderNode";
-import {NodeOutput} from "../graph/nodeOutput";
+import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
 import {ChangeProvider} from "../graph/changeProvider";
+import {HtmlOutputNode} from "../graph/nodes/htmlOutputNode";
+import {NodeOutput} from "../graph/nodes/nodeOutput";
+import {NodeInput} from "../graph/nodes/nodeInput";
+import {HtmlNode} from "../graph/nodes/htmlNode";
 
 export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCommand.Base> {
 
-    private readonly changeProvider: ChangeProvider;
+	private readonly changeProvider: ChangeProvider;
 
-    constructor(changeProvider: ChangeProvider) {
-        this.changeProvider = changeProvider;
-    }
+	constructor(changeProvider: ChangeProvider) {
+		this.changeProvider = changeProvider;
+	}
 
-    public validate(nodes: AbstractRenderNode[]): [boolean, string] {
-        if (nodes.length === 0) {
-            return [false, "graph is empty"];
-        }
-        for (let node of nodes) {
-            if (node instanceof HtmlRenderNode) {
-                const containerCount = node.config.output.count(it => it instanceof NodeOutput.HtmlContainer);
-                if (containerCount !== 1) {
-                    return [false, "html-render-node " + node.id + " has amount of target containers =/= 1 "];
-                }
-            }
-        }
-        return [true, ""];
+	public validate(nodes: AbstractRenderNode[]): [boolean, string] {
+		if (nodes.length === 0) {
+			return [false, "graph is empty"];
+		}
+		for (let node of nodes) {
+			if (node instanceof HtmlOutputNode) {
+				const inputDataCount = node.config.input.count(it => it instanceof NodeInput.HtmlData);
+				if (inputDataCount == 0) {
+					return [false, "html-output-node " + node.id + " has no input data"];
+				}
+				const outputContainerCount = node.config.output.count(it => it instanceof NodeOutput.HtmlContainer);
+				if (outputContainerCount !== 1) {
+					return [false, "html-output-node " + node.id + " has amount of target containers =/= 1"];
+				}
+			}
+			if (node instanceof HtmlNode) {
+				const outputDataCount = node.config.output.count(it => it instanceof NodeOutput.HtmlData);
+				if (outputDataCount === 0) {
+					return [false, "html-data-node " + node.id + " has no output data"];
+				}
+			}
+		}
+		return [true, ""];
 
-    }
+	}
 
-    public compile(nodes: AbstractRenderNode[]): HtmlRenderCommand.Base[] {
-        const commands: HtmlRenderCommand.Base[] = [];
+	public compile(nodes: AbstractRenderNode[]): HtmlRenderCommand.Base[] {
+		const commands: HtmlRenderCommand.Base[] = [];
 
-        // data update
-        for (let node of nodes) {
-            if (node instanceof HtmlRenderNode) {
-                commands.push(new HtmlRenderCommand.UpdateData(node, this.changeProvider));
-            }
-        }
+		for (let node of nodes) {
+			if (node instanceof HtmlNode) {
+				commands.push(new HtmlRenderCommand.Update(node, this.changeProvider));
+			}
+		}
 
-        // render
-        const containerIds = new Set<string>();
-        for (let node of nodes) {
-            if (node instanceof HtmlRenderNode) {
-                containerIds.add(this.getContainerId(node));
-            }
-        }
-        for (let containerId of containerIds) {
-            commands.push(new HtmlRenderCommand.Draw(containerId, this.getNodes(nodes, containerId)));
-        }
+		for(let node of nodes) {
+			if(node instanceof HtmlOutputNode) {
 
-        return commands;
-    }
+				const dataNames = node.config.input
+					.filter(it => it instanceof NodeInput.HtmlData)
+					.map(it => it.name)
 
+				const inputNodes = nodes
+					.filter(it => it instanceof HtmlNode)
+					.map(it => it as HtmlNode<any>)
+					.filter(it => it.config.output.some(out => dataNames.indexOf(out.name) != -1 ))
 
-    private getContainerId(node: HtmlRenderNode<any>): string {
-        for (const config of node.config.output) {
-            if (config instanceof NodeOutput.HtmlContainer) {
-                return config.id;
-            }
-        }
-        throw new Error("no container configured");
-    }
+				const additionalChangeKeys = inputNodes
+					.map(it => it.config.changeKey)
+					.filter(it => it != null) as string[]
 
-    private getNodes(nodes: AbstractRenderNode[], containerId: string): HtmlRenderNode<any>[] {
-        const filtered: HtmlRenderNode<any>[] = [];
-        for (let node of nodes) {
-            if (node instanceof HtmlRenderNode && this.getContainerId(node) === containerId) {
-                filtered.push(node);
-            }
-        }
-        return filtered;
-    }
+				const inputDataConfigs = inputNodes
+					.flatMap(it => it.config.output)
+					.filter(it => it instanceof NodeOutput.HtmlData)
+					.map(it => it as NodeOutput.HtmlData<any>)
+					.filter(it => dataNames.indexOf(it.name) != -1)
+
+				commands.push(
+					new HtmlRenderCommand.Output(
+						node.config,
+						inputDataConfigs,
+						additionalChangeKeys,
+						this.changeProvider
+					)
+				)
+			}
+		}
+
+		console.debug("html render graph compilation result:", commands.map(it => it.getDebugData()));
+
+		return commands;
+	}
 
 }

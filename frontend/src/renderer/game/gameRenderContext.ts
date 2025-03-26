@@ -29,7 +29,6 @@ export interface GameWebGLRenderContext extends WebGLRenderCommand.Context {
 
 export interface GameHtmlRenderContext extends HtmlRenderCommand.Context {
 	playerCountry: CountrySummary,
-	camera: Camera,
 	mapMode: MapMode,
 	tiles: Tile[],
 	settlements: Settlement[],

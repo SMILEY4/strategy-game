@@ -58,7 +58,7 @@ export const EMPTY_VERTEX_DATA_RESOURCE = new VertexDataResource({
 });
 
 /**
- * raw vertex buffer
+ * Raw vertex buffer
  */
 export class VertexBufferResource {
 	public readonly data: ArrayBuffer;

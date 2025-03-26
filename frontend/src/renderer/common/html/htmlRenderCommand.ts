@@ -1,126 +1,213 @@
 import {RenderCommand} from "../graph/renderCommand";
 import {HtmlResourceManager} from "./htmlResourceManager";
-import {NodeOutput} from "../graph/nodeOutput";
-import {HtmlRenderNode} from "../graph/htmlRenderNode";
-import HtmlData = NodeOutput.HtmlData;
-import {ChangeProvider} from "../graph/changeProvider";
 import {RenderGraphMonitor} from "../graph/renderGraphMonitor";
+import {ChangeProvider} from "../graph/changeProvider";
+import {HtmlDataEntry, HtmlNode} from "../graph/nodes/htmlNode";
+import {HtmlOutputConfig} from "../graph/nodes/htmlOutputNode";
+import {Camera} from "../../../common/webgl/camera";
+import {Projections} from "../../../common/webgl/projections";
+import {NodeOutput} from "../graph/nodes/nodeOutput";
 
 export namespace HtmlRenderCommand {
 
+
+	import Point = Projections.Point;
+
 	export interface Context {
 		monitor: RenderGraphMonitor,
+		camera: Camera,
 	}
 
 	export interface Base extends RenderCommand<HtmlResourceManager, Context> {
+		getDebugData(): any;
 	}
 
-
-	export class UpdateData implements Base {
-
-		private readonly node: HtmlRenderNode<any>;
+	export class Update implements Base {
+		private readonly node: HtmlNode<any>;
 		private readonly changeProvider: ChangeProvider;
 
-		constructor(node: HtmlRenderNode<any>, changeProvider: ChangeProvider) {
+		constructor(node: HtmlNode<any>, changeProvider: ChangeProvider) {
 			this.node = node;
 			this.changeProvider = changeProvider;
 		}
 
-		public execute(resourceManager: HtmlResourceManager, context: Context): void {
-			context.monitor.startCommand("UpdateData-" + this.node.id)
+		execute(resourceManager: HtmlResourceManager, context: HtmlRenderCommand.Context): void {
+			context.monitor.startCommand("Update-" + this.node.id);
 			if (this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
 				const modified = this.node.execute(context);
-				if (modified.elements.size > 0) {
-					for (let [modifiedId, modifiedData] of modified.elements) {
-						resourceManager.setElements(modifiedId, modifiedData);
+				if (modified.outputs.size > 0) {
+					for (let [outputId, outputData] of modified.outputs) {
+						resourceManager.setData(outputId, outputData);
 					}
 				}
 			}
-			context.monitor.endCommand()
+			context.monitor.endCommand();
+		}
+
+		getDebugData(): any {
+			return {
+				command: "Update",
+				node: this.node.id,
+			};
 		}
 
 	}
 
+	// noinspection SuspiciousTypeOfGuard
+	export class Output implements Base {
 
-	export class Draw implements Base {
-
+		private readonly changeKeys: string[];
+		private readonly changeProvider: ChangeProvider;
 		private readonly containerId: string;
-		private readonly nodes: HtmlRenderNode<any>[];
+		private readonly inputDataConfigs: NodeOutput.HtmlData<any>[];
 
-		constructor(containerId: string, nodes: HtmlRenderNode<any>[]) {
-			this.containerId = containerId;
-			this.nodes = nodes;
+		constructor(nodeConfig: HtmlOutputConfig, inputDataConfigs: NodeOutput.HtmlData<any>[], additionalChangeKeys: string[], changeProvider: ChangeProvider) {
+			this.changeKeys = [nodeConfig.changeKey, ...additionalChangeKeys].filter(it => it != null) as string[];
+			this.changeProvider = changeProvider;
+			this.containerId = nodeConfig.output.find(it => it instanceof NodeOutput.HtmlContainer)!.id;
+			this.inputDataConfigs = inputDataConfigs;
 		}
 
-		public execute(resourceManager: HtmlResourceManager, context: Context): void {
-			context.monitor.startCommand("Draw-" + this.containerId)
+		execute(resourceManager: HtmlResourceManager, context: HtmlRenderCommand.Context): void {
+			context.monitor.startCommand("Output-" + this.containerId);
 
-			// prepare html-element pool
-			let totalCount = 0;
-			for (let node of this.nodes) {
-				for (let out of node.config.output) {
-					if (out instanceof HtmlData) {
-						totalCount += resourceManager.getElements(out.name).length;
+			// check whether we need to do something
+			if (!this.hasChange()) {
+				context.monitor.endCommand();
+				return;
+			}
+
+			const camera = context.camera;
+			const renderedHtmlElements: HTMLElement[] = [];
+
+			// for each input data group
+			for (let i = 0; i < this.inputDataConfigs.length; i++) {
+				const dataConfig = this.inputDataConfigs[i];
+				const data = resourceManager.getData(dataConfig.name);
+				if (data.length == 0) {
+					continue;
+				}
+
+				// determine size of object on screen for culling
+				const screenObjectRadius = dataConfig.boundsRadiusTiles != null
+					? dataConfig.boundsRadiusTiles * this.getApproximateScreenTileSize(camera)
+					: 0;
+
+				// get pooled elements from last update, prepare for next update
+				const prevPooledHtmlElements = resourceManager.getPooledHtmlElements(dataConfig.name);
+				const nextPooledHtmlElements: HTMLElement[] = [];
+
+				// determine whether this group uses low quality mode
+				let useLowQuality = false;
+				if (dataConfig.lowQualityThreshold != null) {
+					if (dataConfig.boundsRadiusTiles == null) {
+						useLowQuality = data.length > dataConfig.lowQualityThreshold;
+					} else {
+						useLowQuality = this.countVisible(data, camera, screenObjectRadius) > dataConfig.lowQualityThreshold;
 					}
 				}
+
+				const templateElement = this.buildTemplateElement(dataConfig, resourceManager);
+				const renderFunc = dataConfig.renderFunc;
+
+				// for each (visible) element
+				for (let j = 0, m = data.length; j < m; j++) {
+					const dataEntry = data[j];
+					if (dataConfig.boundsRadiusTiles != null && !this.isVisible(dataEntry, camera, screenObjectRadius)) {
+						continue;
+					}
+
+					// get html element (from last time or create new from template)
+					const htmlElement = j < prevPooledHtmlElements.length
+						? prevPooledHtmlElements[j]
+						: templateElement.cloneNode(true) as HTMLElement;
+
+					// render / update html element
+					renderFunc(context, dataEntry, htmlElement, useLowQuality);
+					renderedHtmlElements.push(htmlElement);
+
+					// add to elements pool for next time
+					nextPooledHtmlElements.push(htmlElement);
+				}
+
+				// save pooled elements of group for next time
+				resourceManager.setPooledHtmlElements(dataConfig.name, nextPooledHtmlElements);
 			}
+
+			// update elements in container
 			const container = resourceManager.getContainer(this.containerId);
-			const availableHtmlElements = this.prepareElements(totalCount, container);
+			container.replaceChildren(...renderedHtmlElements);
 
-			// reset elements
-			for (let i = 0, n = availableHtmlElements.length; i < n; i++) {
-				const element = availableHtmlElements[i];
-				element.replaceChildren();
-				element.getAttributeNames().forEach(it => element.removeAttribute(it));
-			}
-
-			// update elements
-			let index = 0;
-			for (let node of this.nodes) {
-				for (let out of node.config.output) {
-					if (out instanceof HtmlData) {
-						const elements = resourceManager.getElements(out.name);
-						for (let i = 0; i < elements.length; i++) {
-							const htmlElement = availableHtmlElements[index++];
-							out.renderFunction(context, elements[i], htmlElement);
-						}
-					}
-				}
-			}
-
-			context.monitor.endCommand()
+			context.monitor.endCommand();
 		}
 
-		private prepareElements(required: number, container: HTMLElement): HTMLElement[] {
-			const sizeDiff = required - container.childElementCount;
-
-			if (Math.abs(sizeDiff) < 100) {
-
-				if (sizeDiff < 0) {
-					for (let i = -sizeDiff; i >= 0; i--) {
-						container.children.item(required + i)?.remove();
-					}
+		private countVisible(data: HtmlDataEntry[], camera: Camera, screenObjectRadius: number): number {
+			let count = 0;
+			for (let i = 0, n = data.length; i < n; i++) {
+				if (this.isVisible(data[i], camera, screenObjectRadius)) {
+					count++;
 				}
-				if (sizeDiff > 0) {
-					for (let i = 0; i < sizeDiff; i++) {
-						container.appendChild(document.createElement("div"));
-					}
-				}
-				const pool = [...container.children];
-				return pool as HTMLElement[];
+			}
+			return count;
+		}
 
+		private buildTemplateElement(dataConfig: NodeOutput.HtmlData<any>, resourceManager: HtmlResourceManager): HTMLElement {
+			const cachedTemplateElement = resourceManager.getTemplateElement(dataConfig.name);
+			if (cachedTemplateElement) {
+				return cachedTemplateElement;
 			} else {
-
-				const elements: HTMLElement[] = [];
-				for (let i = 0; i < required; i++) {
-					elements.push(document.createElement("div"));
-				}
-				container.replaceChildren(...elements);
-				return elements;
+				const builtElement = dataConfig.templateFunc();
+				resourceManager.setTemplateElement(dataConfig.name, builtElement);
+				return builtElement;
 			}
-
 		}
 
+		private hasChange(): boolean {
+			for (let i = 0, n = this.changeKeys.length; i < n; i++) {
+				const changeKey = this.changeKeys[i];
+				if (changeKey == null || this.changeProvider.hasChange(changeKey)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private getApproximateScreenTileSize(camera: Camera): number {
+			const p0 = Projections.hexToScreen(camera, 0, 0);
+			const p1 = Projections.hexToScreen(camera, 0, 1);
+			const p2 = Projections.hexToScreen(camera, 1, 0);
+			return Math.max(this.distance(p0, p1), this.distance(p0, p2));
+		}
+
+		private distance(a: Point, b: Point): number {
+			const dx = a.x - b.x;
+			const dy = b.y - b.y;
+			return Math.sqrt(dx * dx + dy * dy);
+		}
+
+		private isVisible(dataEntry: HtmlDataEntry, camera: Camera, clippingRadius: number): boolean {
+
+			const pos = Projections.hexToScreen(camera, dataEntry.tile.position.q, dataEntry.tile.position.r);
+
+			// find the closest point visible on screen
+			const closestX = Math.max(0, Math.min(pos.x, camera.getClientWidth()));
+			const closestY = Math.max(0, Math.min(pos.y, camera.getClientHeight()));
+
+			// find distance to the closest point
+			const distanceX = pos.x - closestX;
+			const distanceY = pos.y - closestY;
+			const distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+			// check if intersects screen
+			return distanceSquared <= clippingRadius * clippingRadius;
+		}
+
+		getDebugData(): any {
+			return {
+				command: "Output",
+				container: this.containerId,
+			};
+		}
 	}
 
 }

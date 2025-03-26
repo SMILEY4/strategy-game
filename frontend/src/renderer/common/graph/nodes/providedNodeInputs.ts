@@ -1,4 +1,4 @@
-import {TextureAtlasEntry} from "../../../common/webgl/textureAtlas";
+import {TextureAtlasEntry} from "../../../../common/webgl/textureAtlas";
 
 export interface ProvidedNodeInputs {
 	getTextureAtlasEntryNames(atlasPath: string): string[]

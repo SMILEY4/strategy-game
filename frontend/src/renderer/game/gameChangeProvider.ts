@@ -2,15 +2,16 @@ import {ChangeDetector} from "../../common/changeDetector";
 import {Camera} from "../../common/webgl/camera";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
-import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
-import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
-import {LabelsHtmlNode} from "./rendernodes/labelsHtmlNode";
 import {ChangeProvider} from "../common/graph/changeProvider";
 import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
 import {GameStateAccess} from "../../state/gameStateAccess";
+import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
+import {GameHtmlOutputNode} from "./rendernodes/gameHtmlOutputNode";
+import {LabelsHtmlNode} from "./rendernodes/labelsHtmlNode";
+import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 
 interface Changes {
 	initFrame: boolean,
@@ -105,14 +106,20 @@ export class GameChangeProvider implements ChangeProvider {
 		if (key === TilesVertexNode.ID) {
 			return this.changes.turn;
 		}
-		if (key === ResourceIconsHtmlNode.ID) {
-			return this.changes.turn || this.changes.mapMode || this.changes.camera;
+		if(key === ResourceIconsHtmlNode.ID) {
+			return this.changes.turn || this.changes.mapMode;
 		}
-		if (key === PathsHtmlNode.ID) {
-			return this.changes.turn || this.changes.camera || this.changes.movementPaths;
+		if(key === LabelsHtmlNode.ID) {
+			return this.changes.turn || this.changes.commands;
 		}
-		if (key === LabelsHtmlNode.ID) {
-			return this.changes.turn || this.changes.camera || this.changes.commands;
+		if(key === PathsHtmlNode.ID) {
+			return this.changes.turn || this.changes.movementPaths;
+		}
+		if(key === ResourceIconsHtmlNode.ID) {
+			return this.changes.turn || this.changes.mapMode;
+		}
+		if(key === GameHtmlOutputNode.ID) {
+			return this.changes.camera
 		}
 		return true;
 	}

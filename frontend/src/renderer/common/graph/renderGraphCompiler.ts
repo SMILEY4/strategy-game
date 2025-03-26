@@ -1,5 +1,5 @@
 import {RenderCommand} from "./renderCommand";
-import {AbstractRenderNode} from "./abstractRenderNode";
+import {AbstractRenderNode} from "./nodes/abstractRenderNode";
 
 /**
  * Converts the given render-nodes into a sequence of commands

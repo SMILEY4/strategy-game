@@ -1,10 +1,10 @@
-import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/vertexRenderNode";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/nodes/vertexRenderNode";
 import {GLAttributeType} from "../../../common/webgl/glTypes";
 import {buildMap} from "../../../common/utils";
-import {NodeOutput} from "../../common/graph/nodeOutput";
+import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
 import {GameWebGLRenderContext} from "../gameRenderContext";
-import {NodeInput} from "../../common/graph/nodeInput";
-import {ProvidedNodeInputs} from "../../common/graph/providedNodeInputs";
+import {NodeInput} from "../../common/graph/nodes/nodeInput";
+import {ProvidedNodeInputs} from "../../common/graph/nodes/providedNodeInputs";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {SpriteBuffer} from "../../../common/webgl/spriteBuffer";
 import {Visibility} from "../../../models/misc/visibility";

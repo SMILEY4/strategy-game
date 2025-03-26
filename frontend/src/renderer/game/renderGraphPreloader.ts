@@ -1,4 +1,4 @@
-import {AbstractRenderNode} from "../common/graph/abstractRenderNode";
+import {AbstractRenderNode} from "../common/graph/nodes/abstractRenderNode";
 import {Preloader} from "../../common/preloader";
 import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
@@ -8,8 +8,8 @@ import {TilesLandDrawNode} from "./rendernodes/tilesLandDrawNode";
 import {TilesFogDrawNode} from "./rendernodes/tilesFogDrawNode";
 import {OverlayDrawNode} from "./rendernodes/overlayDrawNode";
 import {CombineLayersDrawNode} from "./rendernodes/combineLayersDrawNode";
-import {DrawRenderNode} from "../common/graph/drawRenderNode";
-import {NodeInput} from "../common/graph/nodeInput";
+import {DrawRenderNode} from "../common/graph/nodes/drawRenderNode";
+import {NodeInput} from "../common/graph/nodes/nodeInput";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
 

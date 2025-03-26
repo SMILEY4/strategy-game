@@ -1,17 +1,15 @@
-import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
-import {NodeOutput} from "../../common/graph/nodeOutput";
-import {Camera} from "../../../common/webgl/camera";
+import {GameHtmlRenderContext} from "../gameRenderContext";
+import {HtmlDataEntry, HtmlNode, HtmlDataResource} from "../../common/graph/nodes/htmlNode";
+import {TileSummary} from "../../../models/tile/tileSummary";
 import {buildMap} from "../../../common/utils";
+import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
+import {TileResourceType} from "../../../models/tile/TileResourceType";
 import {MapMode} from "../../../models/misc/mapMode";
 import {Projections} from "../../../common/webgl/projections";
-import {TileResourceType} from "../../../models/tile/TileResourceType";
-import {GameHtmlRenderContext} from "../gameRenderContext";
-import {Tile} from "../../../models/tile/tile";
-import {TileSummary} from "../../../models/tile/tileSummary";
 
-export class ResourceIconsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
+export class ResourceIconsHtmlNode extends HtmlNode<GameHtmlRenderContext> {
 
-	public static readonly ID = "htmlnode.resourceicons";
+	public static readonly ID = "html.resourceIcons";
 
 	constructor() {
 		super({
@@ -19,67 +17,66 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext>
 			changeKey: ResourceIconsHtmlNode.ID,
 			input: [],
 			output: [
-				new NodeOutput.HtmlContainer({
-					id: "game-canvas-overlay",
-				}),
 				new NodeOutput.HtmlData({
 					name: "htmldata.resourceicons",
-					renderFunction: (context: GameHtmlRenderContext, element: any, html: HTMLElement) => render(context.camera, element, html),
+					boundsRadiusTiles: 1,
+					lowQualityThreshold: 500,
+					htmlFactory: ResourceIconsHtmlNode.createHtmlElement,
+					renderFunc: ResourceIconsHtmlNode.render,
 				}),
 			],
 		});
 	}
 
-	public execute(context: GameHtmlRenderContext): HtmlDataResource {
-
-		const elements: ResourceIconElement[] = [];
-
-		if (context.camera.getZoom() > 3) {
-			if (context.mapMode == MapMode.RESOURCES) {
-				const tiles = context.tiles;
-				for (let i = 0, n = tiles.length; i < n; i++) {
-					const tile = tiles[i];
-					if (!tile.base.visible) {
-						continue;
-					}
-					if (tile.base.value.resourceType !== TileResourceType.NONE && this.isVisible(tile, 0, context.camera)) {
-						elements.push({
-							tile: TileSummary.from(tile),
-							type: tile.base.value.resourceType,
-						});
-					}
+	execute(context: GameHtmlRenderContext): HtmlDataResource {
+		const data: ResourceIconsHtmlData[] = [];
+		if (context.mapMode == MapMode.RESOURCES) {
+			const tiles = context.tiles;
+			for (let i = 0, n = tiles.length; i < n; i++) {
+				const tile = tiles[i];
+				if (!tile.base.visible) {
+					continue;
+				}
+				if (tile.base.value.resourceType !== TileResourceType.NONE) {
+					data.push({
+						tile: TileSummary.from(tile),
+						type: tile.base.value.resourceType,
+					});
 				}
 			}
 		}
-
 		return new HtmlDataResource({
 			outputs: buildMap({
-				"htmldata.resourceicons": elements,
+				"htmldata.resourceicons": data,
 			}),
 		});
 	}
 
-	private isVisible(tile: Tile, padding: number, camera: Camera): boolean {
-		const cameraMin = Projections.screenToWorld(camera, 0, camera.getClientHeight());
-		const cameraMax = Projections.screenToWorld(camera, camera.getClientWidth(), 0);
-		const tilePos = Projections.hexToWorld(tile.position.q, tile.position.r);
-		return (cameraMin.x - padding) < tilePos.x && tilePos.x < (cameraMax.x + padding)
-			&& (cameraMin.y - padding) < tilePos.y && tilePos.y < (cameraMax.y + padding);
+	static createHtmlElement(): HTMLElement {
+		const html = `	
+			<div
+				class='resource-icon'
+				style='left:0;top:0;background-image:#ff00ff'
+			>
+			</div>
+		`;
+		const element = document.createElement("div");
+		element.innerHTML = html;
+		return element.children[0] as HTMLElement;
+	}
+
+
+	static render(context: GameHtmlRenderContext, data: ResourceIconsHtmlData, baseElement: HTMLElement, lowQuality: boolean) {
+		const pos = Projections.hexToScreen(context.camera, data.tile.position.q, data.tile.position.r);
+		pos.y = context.camera.getClientHeight() - pos.y;
+		baseElement.style.left = pos.x.toString() + "px";
+		baseElement.style.top = pos.y.toString() + "px";
+		baseElement.style.backgroundImage = "url('" + data.type.getIconPath() + "')";
+		baseElement.className = lowQuality ? "resource-icon low-quality" : "resource-icon";
 	}
 
 }
 
-interface ResourceIconElement {
-	tile: TileSummary,
+export interface ResourceIconsHtmlData extends HtmlDataEntry {
 	type: TileResourceType,
-}
-
-function render(camera: Camera, element: ResourceIconElement, html: HTMLElement): void {
-	const pos = Projections.hexToScreen(camera, element.tile.position.q, element.tile.position.r);
-	pos.y = camera.getClientHeight() - pos.y;
-	html.className = "world-ui__icon";
-	html.style.left = pos.x + "px";
-	html.style.top = pos.y + "px";
-	html.style.backgroundImage = "url('" + element.type.getIconPath() + "')";
-	html.textContent = "";
 }

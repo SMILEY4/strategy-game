@@ -1,270 +1,90 @@
-import {RenderGraphSorter} from "../graph/renderGraphSorter";
-import {AbstractRenderNode} from "../graph/abstractRenderNode";
-import {DrawRenderNode} from "../graph/drawRenderNode";
-import {VertexRenderNode} from "../graph/vertexRenderNode";
-import {NodeInput} from "../graph/nodeInput";
-import {NodeOutput} from "../graph/nodeOutput";
+import {BaseRenderGraphSorter} from "../graph/baseRenderGraphSorter";
+import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
+import {DrawRenderNode} from "../graph/nodes/drawRenderNode";
+import {NodeInput} from "../graph/nodes/nodeInput";
+import {VertexRenderNode} from "../graph/nodes/vertexRenderNode";
+import {NodeOutput} from "../graph/nodes/nodeOutput";
 
-interface WebglSortableNodeNode {
-    id: string,
-    dependsOn: string[],
-    sharedResources: string[],
-}
 
-export class WebGLRenderGraphSorter implements RenderGraphSorter {
+export class WebGLRenderGraphSorter extends BaseRenderGraphSorter {
 
-    /**
-     * Bring the nodes in an order so that
-     * - dependencies defined by render-targets are resolved (guaranteed)
-     * - nodes using the same resources are clustered together
-     */
-    public sort(nodes: AbstractRenderNode[]): AbstractRenderNode[] {
-        const sortableNodes = this.buildNodes(nodes);
-        const sorted = this.sortNodes(sortableNodes);
-        return sorted.map(node => nodes.find(e => e.id === node.id)!);
-    }
+    getDependableInputResources(node: AbstractRenderNode): string[] {
+        const resources: string[] = [];
 
-    /**
-     * Build a simplified representation of the render nodes
-     */
-    private buildNodes(renderNodes: AbstractRenderNode[]): WebglSortableNodeNode[] {
-        let nodes: WebglSortableNodeNode[] = [];
-        renderNodes.forEach(renderNode => {
-            nodes.push({
-                id: renderNode.id,
-                dependsOn: this.findOutgoing(renderNode, renderNodes),
-                sharedResources: this.findSharedResources(renderNode),
-            });
-        });
-        return nodes;
-    }
-
-    /**
-     * Return the ids of nodes on which the given node depends on (e.g. via render-target)
-     */
-    private findOutgoing(renderNode: AbstractRenderNode, renderNodes: AbstractRenderNode[]): string[] { // todo: better / clearer / more correct name for method
-        const outgoing: string[] = [];
-
-        // render-target dependencies
-        const outputRenderTargets = this.getOutputRenderTargetIds(renderNode);
-        renderNodes.forEach(other => {
-            const inputRenderTargets = this.getInputRenderTargetIds(other);
-            if (outputRenderTargets.some(e => inputRenderTargets.indexOf(e) !== -1)) {
-                outgoing.push(other.id);
-            }
-        });
-
-        // vertex-data dependencies
-        const outputVertexData = this.getOutputVertexDescriptors(renderNode);
-        renderNodes.forEach(other => {
-            const inputVertexData = this.getInputVertexDescriptors(other);
-            if (outputVertexData.some(e => inputVertexData.indexOf(e) !== -1)) {
-                outgoing.push(other.id);
-            }
-        });
-
-        // vertex-buffer dependencies
-        const outputVertexBuffer = this.getOutputVertexBuffers(renderNode);
-        renderNodes.forEach(other => {
-            const inputVertexBuffer = this.getInputVertexBuffers(other);
-            if (outputVertexBuffer.some(e => inputVertexBuffer.indexOf(e) !== -1)) {
-                outgoing.push(other.id);
-            }
-        });
-
-        return outgoing;
-    }
-
-    /**
-     * Return ids of resources this node requires and can be shared with other nodes (e.g. textures)
-     */
-    private findSharedResources(renderNode: AbstractRenderNode): string[] {
-        const sharedResources: string[] = [];
-        sharedResources.push(...this.getInputTextures(renderNode));
-        return sharedResources;
-    }
-
-    /**
-     * Return the ids of render-targets the given node requires (has as input)
-     */
-    private getInputRenderTargetIds(renderNode: AbstractRenderNode): string[] {
-        if (renderNode instanceof DrawRenderNode) {
-            return renderNode.config.input
-                .filter(e => e instanceof NodeInput.RenderTarget)
-                .map(e => (e as NodeInput.RenderTarget).renderTargetId);
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * Return the ids of render-targets the given nodes produces (has as output)
-     */
-    private getOutputRenderTargetIds(renderNode: AbstractRenderNode): string[] {
-        if (renderNode instanceof DrawRenderNode) {
-            return renderNode.config.output
-                .filter(e => e instanceof NodeOutput.RenderTarget)
-                .map(e => (e as NodeOutput.RenderTarget).renderTargetId);
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * Returns the ids of all input vertex data of the given node
-     */
-    private getInputVertexDescriptors(renderNode: AbstractRenderNode): string[] {
-        if (renderNode instanceof DrawRenderNode) {
-            return renderNode.config.input
-                .filter(e => e instanceof NodeInput.VertexDescriptor)
-                .map(e => (e as NodeInput.VertexDescriptor).vertexDataId);
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * Returns the ids of all output vertex data of the given node
-     */
-    private getOutputVertexDescriptors(renderNode: AbstractRenderNode): string[] {
-        if (renderNode instanceof VertexRenderNode) {
-            return renderNode.config.output
-                .filter(e => e instanceof NodeOutput.VertexDescriptor)
-                .map(e => (e as NodeOutput.VertexDescriptor).name);
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * Returns the ids of all input vertex buffers of the given node
-     */
-    private getInputVertexBuffers(renderNode: AbstractRenderNode): string[] {
-        if (renderNode instanceof VertexRenderNode) {
-            return renderNode.config.input
-                .filter(e => e instanceof NodeInput.VertexBuffer)
-                .map(e => (e as NodeInput.VertexBuffer).name);
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * Returns the ids of all output vertex buffers of the given node
-     */
-    private getOutputVertexBuffers(renderNode: AbstractRenderNode): string[] {
-        if (renderNode instanceof VertexRenderNode) {
-            return renderNode.config.output
-                .filter(e => e instanceof NodeOutput.VertexBuffer)
-                .map(e => (e as NodeOutput.VertexBuffer).name);
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * Returns the ids of all input textures and render-targets of the given node
-     */
-    private getInputTextures(renderNode: AbstractRenderNode): string[] {
-        if (renderNode instanceof DrawRenderNode) {
-            return [
-                ...renderNode.config.input
+        if (node instanceof DrawRenderNode) {
+            resources.push(
+                ...node.config.input
                     .filter(e => e instanceof NodeInput.RenderTarget)
                     .map(e => "rendertarget:" + (e as NodeInput.RenderTarget).renderTargetId),
-                ...renderNode.config.input
-                    .filter(e => e instanceof NodeInput.Texture)
-                    .map(e => "texture:" + (e as NodeInput.Texture).path),
-                ...renderNode.config.input
-                    .filter(e => e instanceof NodeInput.ConditionalTexture)
-                    .flatMap(e => (e as NodeInput.ConditionalTexture<any>).paths.map(it => "texture:" + it.path)),
-            ];
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * Bring the nodes into the required order
-     */
-    private sortNodes(nodes: WebglSortableNodeNode[]): WebglSortableNodeNode[] {
-        const topologicallySorted = this.topologicalSort(nodes);
-        const sortedNodes: WebglSortableNodeNode[] = [];
-        topologicallySorted.forEach(group => {
-            sortedNodes.push(...this.resourceSort(group));
-        });
-        return sortedNodes;
-    }
-
-    /**
-     * Perform a simple topological order on the given nodes.
-     * Returns the ordered nodes. Nodes for which the order does not matter are grouped together in arrays.
-     */
-    private topologicalSort(nodes: WebglSortableNodeNode[]): (WebglSortableNodeNode[])[] {
-        const sorted: (WebglSortableNodeNode[])[] = [];
-        let openNodes = [...nodes];
-
-        // Return whether any node in the open set depends on the given node
-        function anyOpenHasDependencyOn(node: WebglSortableNodeNode): boolean {
-            return openNodes.some(open => open.dependsOn.some(out => out === node.id));
+            );
+            resources.push(
+                ...node.config.input
+                    .filter(e => e instanceof NodeInput.VertexDescriptor)
+                    .map(e => "vertexdescriptor:" + (e as NodeInput.VertexDescriptor).vertexDataId),
+            );
         }
 
-        // removes the given nodes from the open nodes
-        function closeNodes(nodes: WebglSortableNodeNode[]) {
-            const closedIds = nodes.map(e => e.id);
-            openNodes = openNodes.filter(open => closedIds.indexOf(open.id) === -1);
+        if (node instanceof VertexRenderNode) {
+            resources.push(
+                ...node.config.input
+                    .filter(e => e instanceof NodeInput.VertexBuffer)
+                    .map(e => "vertexbuffer:" + (e as NodeInput.VertexBuffer).name),
+            );
         }
 
-        while (openNodes.length > 0) {
-            const candidates = openNodes.filter(open => !anyOpenHasDependencyOn(open));
-            closeNodes(candidates);
-            sorted.push(candidates);
+        return resources
+    }
+
+    getDependableOutputResources(node: AbstractRenderNode): string[] {
+        const resources: string[] = [];
+
+        if (node instanceof DrawRenderNode) {
+            resources.push(
+                ...node.config.output
+                    .filter(e => e instanceof NodeOutput.RenderTarget)
+                    .map(e => "rendertarget:" + (e as NodeOutput.RenderTarget).renderTargetId),
+            );
         }
 
-        return sorted;
+        if (node instanceof VertexRenderNode) {
+            resources.push(
+                ...node.config.output
+                    .filter(e => e instanceof NodeOutput.VertexDescriptor)
+                    .map(e => "vertexdescriptor:" + (e as NodeOutput.VertexDescriptor).name),
+            );
+            resources.push(
+                ...node.config.output
+                    .filter(e => e instanceof NodeOutput.VertexBuffer)
+                    .map(e => "vertexbuffer:" + (e as NodeOutput.VertexBuffer).name),
+            );
+        }
+
+        return resources
     }
 
-    /**
-     * Sort the given nodes by resources. Tries to cluster nodes using the same resources together
-     */
-    private resourceSort(nodes: WebglSortableNodeNode[]): WebglSortableNodeNode[] {
-        const uniqueResourcesMap = new Map<string, number>();
-        nodes.forEach(node => {
-            node.sharedResources.forEach(res => {
-                if (!uniqueResourcesMap.has(res)) {
-                    uniqueResourcesMap.set(res, 0);
-                }
-                uniqueResourcesMap.set(res, uniqueResourcesMap.get(res)! + 1);
-            });
-        });
 
-        const uniqueResources: ([string, number])[] = Array.from(uniqueResourcesMap.entries());
-        uniqueResources.sort((a, b) => a[1] - b[1]);
+	getSharedInputResources(node: AbstractRenderNode): string[] {
+		const resources: string[] = [];
 
-        let nodesA: WebglSortableNodeNode[] = [...nodes];
-        let nodesB: WebglSortableNodeNode[] = [];
+		if (node instanceof DrawRenderNode) {
+			resources.push(
+				...node.config.input
+					.filter(e => e instanceof NodeInput.RenderTarget)
+					.map(e => "rendertarget:" + (e as NodeInput.RenderTarget).renderTargetId),
+			);
+			resources.push(
+				...node.config.input
+					.filter(e => e instanceof NodeInput.Texture)
+					.map(e => "texture:" + (e as NodeInput.Texture).path),
+			);
+			resources.push(
+				...node.config.input
+					.filter(e => e instanceof NodeInput.ConditionalTexture)
+					.flatMap(e => (e as NodeInput.ConditionalTexture<any>).paths.map(it => "texture:" + it.path)),
+			);
+		}
 
-        uniqueResources.forEach(uniqueResource => {
-            const resourceId = uniqueResource[0];
-
-            for (let i = 0; i < nodesA.length; i++) {
-                const node = nodesA[i];
-                if (node.sharedResources.indexOf(resourceId) !== -1) {
-                    nodesB.push(node);
-                }
-            }
-            for (let i = 0; i < nodesA.length; i++) {
-                const node = nodesA[i];
-                if (node.sharedResources.indexOf(resourceId) === -1) {
-                    nodesB.push(node);
-                }
-            }
-
-            nodesA = [...nodesB];
-            nodesB = [];
-
-        });
-
-        return nodesA;
-    }
+		return resources;
+	}
 
 }

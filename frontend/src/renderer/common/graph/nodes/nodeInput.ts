@@ -1,5 +1,5 @@
-import {GLUniformType, GLUniformValueType} from "../../../common/webgl/glTypes";
-import {GLTexture} from "../../../common/webgl/glTexture";
+import {GLUniformType, GLUniformValueType} from "../../../../common/webgl/glTypes";
+import {GLTexture} from "../../../../common/webgl/glTexture";
 
 /**
  * Inputs of render nodes
@@ -157,6 +157,14 @@ export namespace NodeInput {
 			this.valueProvider = props.valueProvider !== undefined ? props.valueProvider : null;
 			this.type = props.type;
 			this.binding = props.binding;
+		}
+	}
+
+	export class HtmlData {
+		readonly name: string;
+
+		constructor(props: { name: string }) {
+			this.name = props.name;
 		}
 	}
 

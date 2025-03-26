@@ -1,7 +1,9 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
-import "./canvas.less";
 import {App} from "../../../../appContext";
-
+import "./canvas.less";
+import "./resourceIcons.less"
+import "./labels.less"
+import "./paths.less";
 
 export function Canvas() {
 
