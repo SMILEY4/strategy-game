@@ -13,6 +13,12 @@ export class GameHtmlOutputNode extends HtmlOutputNode {
 			changeKey: GameHtmlOutputNode.ID,
 			input: [
 				new NodeInput.HtmlData({
+					name: "htmldata.labels",
+				}),
+				new NodeInput.HtmlData({
+					name: "htmldata.paths",
+				}),
+				new NodeInput.HtmlData({
 					name: "htmldata.resourceicons",
 				}),
 			],

@@ -89,7 +89,9 @@ export namespace HtmlRenderCommand {
 				}
 
 				// determine size of object on screen for culling
-				const screenObjectRadius = dataConfig.boundsRadiusTiles * this.getApproximateScreenTileSize(camera);
+				const screenObjectRadius = dataConfig.boundsRadiusTiles != null
+					? dataConfig.boundsRadiusTiles * this.getApproximateScreenTileSize(camera)
+					: 0;
 
 				// get pooled elements from last update, prepare for next update
 				const prevPooledHtmlElements = resourceManager.getPooledHtmlElements(dataConfig.name);
@@ -98,7 +100,11 @@ export namespace HtmlRenderCommand {
 				// determine whether this group uses low quality mode
 				let useLowQuality = false;
 				if (dataConfig.lowQualityThreshold != null) {
-					useLowQuality = this.countVisible(data, camera, screenObjectRadius) > dataConfig.lowQualityThreshold;
+					if (dataConfig.boundsRadiusTiles == null) {
+						useLowQuality = data.length > dataConfig.lowQualityThreshold;
+					} else {
+						useLowQuality = this.countVisible(data, camera, screenObjectRadius) > dataConfig.lowQualityThreshold;
+					}
 				}
 
 				const templateElement = this.buildTemplateElement(dataConfig, resourceManager);
@@ -107,7 +113,7 @@ export namespace HtmlRenderCommand {
 				// for each (visible) element
 				for (let j = 0, m = data.length; j < m; j++) {
 					const dataEntry = data[j];
-					if (!this.isVisible(dataEntry, camera, screenObjectRadius)) {
+					if (dataConfig.boundsRadiusTiles != null && !this.isVisible(dataEntry, camera, screenObjectRadius)) {
 						continue;
 					}
 

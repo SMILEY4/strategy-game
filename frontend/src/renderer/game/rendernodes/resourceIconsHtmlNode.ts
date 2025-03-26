@@ -7,22 +7,22 @@ import {TileResourceType} from "../../../models/tile/TileResourceType";
 import {MapMode} from "../../../models/misc/mapMode";
 import {Projections} from "../../../common/webgl/projections";
 
-export class ResourceIconsDataNode extends HtmlNode<GameHtmlRenderContext> {
+export class ResourceIconsHtmlNode extends HtmlNode<GameHtmlRenderContext> {
 
 	public static readonly ID = "html.resourceIcons";
 
 	constructor() {
 		super({
-			id: ResourceIconsDataNode.ID,
-			changeKey: ResourceIconsDataNode.ID,
+			id: ResourceIconsHtmlNode.ID,
+			changeKey: ResourceIconsHtmlNode.ID,
 			input: [],
 			output: [
 				new NodeOutput.HtmlData({
 					name: "htmldata.resourceicons",
 					boundsRadiusTiles: 1,
 					lowQualityThreshold: 500,
-					htmlFactory: ResourceIconsDataNode.createHtmlElement,
-					renderFunc: ResourceIconsDataNode.render,
+					htmlFactory: ResourceIconsHtmlNode.createHtmlElement,
+					renderFunc: ResourceIconsHtmlNode.render,
 				}),
 			],
 		});
@@ -34,20 +34,15 @@ export class ResourceIconsDataNode extends HtmlNode<GameHtmlRenderContext> {
 			const tiles = context.tiles;
 			for (let i = 0, n = tiles.length; i < n; i++) {
 				const tile = tiles[i];
-				// todo: for performance testing
-				// if (!tile.base.visible) {
-				// 	continue;
-				// }
-				// if (tile.base.value.resourceType !== TileResourceType.NONE) {
-				// 	data.push({
-				// 		tile: TileSummary.from(tile),
-				// 		type: tile.base.value.resourceType,
-				// 	});
-				// }
-				data.push({
-					tile: TileSummary.from(tile),
-					type: TileResourceType.METAL,
-				});
+				if (!tile.base.visible) {
+					continue;
+				}
+				if (tile.base.value.resourceType !== TileResourceType.NONE) {
+					data.push({
+						tile: TileSummary.from(tile),
+						type: tile.base.value.resourceType,
+					});
+				}
 			}
 		}
 		return new HtmlDataResource({
@@ -83,6 +78,5 @@ export class ResourceIconsDataNode extends HtmlNode<GameHtmlRenderContext> {
 }
 
 export interface ResourceIconsHtmlData extends HtmlDataEntry {
-	tile: TileSummary,
 	type: TileResourceType,
 }

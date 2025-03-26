@@ -26,8 +26,10 @@ import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
 import {GameStateAccess} from "../../state/gameStateAccess";
 import {RenderGraphMonitor} from "../common/graph/renderGraphMonitor";
 import {HtmlRenderGraphSorter} from "../common/html/htmlRenderGraphSorter";
-import {ResourceIconsDataNode} from "./rendernodes/resourceIconsDataNode";
+import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {GameHtmlOutputNode} from "./rendernodes/gameHtmlOutputNode";
+import {LabelsHtmlNode} from "./rendernodes/labelsHtmlNode";
+import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 
 export class GameRenderGraph {
 
@@ -79,7 +81,9 @@ export class GameRenderGraph {
 			resourceManager: new HtmlResourceManager(),
 			compiler: new HtmlRenderGraphCompiler(changeProvider),
 			nodes: [
-				new ResourceIconsDataNode(),
+				new LabelsHtmlNode(),
+				new PathsHtmlNode(),
+				new ResourceIconsHtmlNode(),
 				new GameHtmlOutputNode(),
 			],
 		});

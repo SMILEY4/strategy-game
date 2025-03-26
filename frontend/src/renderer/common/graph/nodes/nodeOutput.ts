@@ -40,14 +40,14 @@ export namespace NodeOutput {
 
 	export class HtmlData<TContext> {
 		readonly name: string;
-		readonly boundsRadiusTiles: number;
+		readonly boundsRadiusTiles: number | null;
 		readonly lowQualityThreshold: number | null;
 		readonly templateFunc: () => HTMLElement;
 		readonly renderFunc: (ctx: TContext, obj: any, target: HTMLElement, lowQuality: boolean) => void;
 
 		constructor(props: {
 			name: string,
-			boundsRadiusTiles: number,
+			boundsRadiusTiles: number | null,
 			lowQualityThreshold: number | null,
 			htmlFactory: () => HTMLElement,
 			renderFunc: (ctx: TContext, obj: any, target: HTMLElement, lowQuality: boolean) => void,
