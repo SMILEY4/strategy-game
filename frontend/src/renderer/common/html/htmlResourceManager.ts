@@ -1,7 +1,7 @@
 import {ResourceManager} from "../graph/resourceManager";
 import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
-import {HtmlDataEntry, HtmlDataNode} from "../graph/nodes/htmlDataNode";
-import {HtmlDrawNode} from "../graph/nodes/htmlDrawNode";
+import {HtmlDataEntry, HtmlNode} from "../graph/nodes/htmlNode";
+import {HtmlOutputNode} from "../graph/nodes/htmlOutputNode";
 import {NodeOutput} from "../graph/nodes/nodeOutput";
 import {NodeInput} from "../graph/nodes/nodeInput";
 
@@ -15,7 +15,7 @@ export class HtmlResourceManager implements ResourceManager {
 	public initialize(nodes: AbstractRenderNode[]): void {
 		for (let node of nodes) {
 
-			if (node instanceof HtmlDataNode) {
+			if (node instanceof HtmlNode) {
 				for (let output of node.config.output) {
 					if (output instanceof NodeOutput.HtmlData) {
 						this.dataBuffers.set(output.name, []);
@@ -23,7 +23,7 @@ export class HtmlResourceManager implements ResourceManager {
 				}
 			}
 
-			if (node instanceof HtmlDrawNode) {
+			if (node instanceof HtmlOutputNode) {
 				for (let input of node.config.input) {
 					if (input instanceof NodeInput.HtmlData) {
 						this.dataBuffers.set(input.name, []);

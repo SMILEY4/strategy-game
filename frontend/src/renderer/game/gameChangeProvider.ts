@@ -8,10 +8,8 @@ import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
 import {GameStateAccess} from "../../state/gameStateAccess";
-import {LabelDataNode} from "./rendernodes/labelsDataNode";
-import {LabelsDrawNode} from "./rendernodes/labelsDrawNode";
 import {ResourceIconsDataNode} from "./rendernodes/resourceIconsDataNode";
-import {ResourceIconsDrawNode} from "./rendernodes/resourceIconsDrawNode";
+import {GameHtmlOutputNode} from "./rendernodes/gameHtmlOutputNode";
 
 interface Changes {
 	initFrame: boolean,
@@ -106,17 +104,11 @@ export class GameChangeProvider implements ChangeProvider {
 		if (key === TilesVertexNode.ID) {
 			return this.changes.turn;
 		}
-		if(key === LabelDataNode.ID) {
-			return this.changes.turn || this.changes.camera;
-		}
-		if(key === LabelsDrawNode.ID) {
-			return this.changes.turn || this.changes.camera;
-		}
 		if(key === ResourceIconsDataNode.ID) {
 			return this.changes.turn || this.changes.mapMode;
 		}
-		if(key === ResourceIconsDrawNode.ID) {
-			return this.changes.turn || this.changes.camera || this.changes.mapMode;
+		if(key === GameHtmlOutputNode.ID) {
+			return this.changes.camera
 		}
 		return true;
 	}

@@ -2,13 +2,14 @@ import {RenderCommand} from "../graph/renderCommand";
 import {HtmlResourceManager} from "./htmlResourceManager";
 import {RenderGraphMonitor} from "../graph/renderGraphMonitor";
 import {ChangeProvider} from "../graph/changeProvider";
-import {HtmlDataEntry, HtmlDataNode} from "../graph/nodes/htmlDataNode";
-import {HtmlDrawNode} from "../graph/nodes/htmlDrawNode";
+import {HtmlDataEntry, HtmlNode} from "../graph/nodes/htmlNode";
+import {HtmlOutputConfig} from "../graph/nodes/htmlOutputNode";
 import {Camera} from "../../../common/webgl/camera";
-import {NodeInput} from "../graph/nodes/nodeInput";
 import {Projections} from "../../../common/webgl/projections";
+import {NodeOutput} from "../graph/nodes/nodeOutput";
 
 export namespace HtmlRenderCommand {
+
 
 	import Point = Projections.Point;
 
@@ -22,10 +23,10 @@ export namespace HtmlRenderCommand {
 	}
 
 	export class Update implements Base {
-		private readonly node: HtmlDataNode<any>;
+		private readonly node: HtmlNode<any>;
 		private readonly changeProvider: ChangeProvider;
 
-		constructor(node: HtmlDataNode<any>, changeProvider: ChangeProvider) {
+		constructor(node: HtmlNode<any>, changeProvider: ChangeProvider) {
 			this.node = node;
 			this.changeProvider = changeProvider;
 		}
@@ -52,86 +53,112 @@ export namespace HtmlRenderCommand {
 
 	}
 
-	export class Draw implements Base {
-		private readonly containerId: string;
-		private readonly nodes: ({ node: HtmlDrawNode<any, any>, inputDataId: string })[];
-		private readonly changeProvider: ChangeProvider;
+	// noinspection SuspiciousTypeOfGuard
+	export class Output implements Base {
 
-		constructor(containerId: string, nodes: HtmlDrawNode<any, any>[], changeProvider: ChangeProvider) {
-			this.containerId = containerId;
-			this.nodes = nodes.map(node => ({
-				node: node,
-				inputDataId: (node.config.input.find(it => it instanceof NodeInput.HtmlData)! as NodeInput.HtmlData).name,
-			}));
+		private readonly changeKeys: string[];
+		private readonly changeProvider: ChangeProvider;
+		private readonly containerId: string;
+		private readonly inputDataConfigs: NodeOutput.HtmlData<any>[];
+
+		constructor(nodeConfig: HtmlOutputConfig, inputDataConfigs: NodeOutput.HtmlData<any>[], additionalChangeKeys: string[], changeProvider: ChangeProvider) {
+			this.changeKeys = [nodeConfig.changeKey, ...additionalChangeKeys].filter(it => it != null) as string[];
 			this.changeProvider = changeProvider;
+			this.containerId = nodeConfig.output.find(it => it instanceof NodeOutput.HtmlContainer)!.id;
+			this.inputDataConfigs = inputDataConfigs;
 		}
 
 		execute(resourceManager: HtmlResourceManager, context: HtmlRenderCommand.Context): void {
-			context.monitor.startCommand("Draw-" + this.containerId);
+			context.monitor.startCommand("Output-" + this.containerId);
 
-			if (this.hasChange()) {
+			// check whether we need to do something
+			if (!this.hasChange()) {
+				context.monitor.endCommand();
+				return;
+			}
 
-				const clippingRadius = 2 * this.getWorldScalingFactor(context.camera); // base value in tiles
+			const camera = context.camera;
+			const renderedHtmlElements: HTMLElement[] = [];
 
-				const htmlElements: Node[] = [];
-
-				for (let i = 0; i < this.nodes.length; i++) {
-					const nodeEntry = this.nodes[i];
-					const node = nodeEntry.node;
-					const data = resourceManager.getData(nodeEntry.inputDataId);
-
-					const prevPooledHtmlElements = resourceManager.getPooledHtmlElements(nodeEntry.inputDataId);
-					const nextPooledHtmlElements: HTMLElement[] = [];
-
-					let amountVisible = 0;
-					let amountVisibleThreshold = 500;
-
-					for (let j = 0, k = 0, m = data.length; j < m; j++, k++) {
-						const dataEntry = data[j];
-						if (this.isVisible(dataEntry, context.camera, clippingRadius)) {
-							amountVisible++;
-						}
-					}
-
-					for (let j = 0, k = 0, m = data.length; j < m; j++, k++) {
-						const dataEntry = data[j];
-						if (this.isVisible(dataEntry, context.camera, clippingRadius)) {
-							let baseHtmlElement: HTMLElement = null as any;
-							if (k >= prevPooledHtmlElements.length) {
-								const templateElement = resourceManager.getTemplateElement(nodeEntry.inputDataId)
-								if(templateElement) {
-									baseHtmlElement = templateElement.cloneNode(true) as HTMLElement;
-								} else {
-									const newTemplateElement = node.buildBaseElement();
-									resourceManager.setTemplateElement(nodeEntry.inputDataId, newTemplateElement)
-									baseHtmlElement = newTemplateElement.cloneNode(true) as HTMLElement;
-								}
-							} else {
-								baseHtmlElement = prevPooledHtmlElements[k];
-							}
-							node.execute(context, dataEntry, baseHtmlElement);
-							if (amountVisible > amountVisibleThreshold) {
-								baseHtmlElement.className += " low-quality";
-							}
-							htmlElements.push(baseHtmlElement);
-							nextPooledHtmlElements.push(baseHtmlElement);
-						}
-					}
-
-					resourceManager.setPooledHtmlElements(nodeEntry.inputDataId, nextPooledHtmlElements);
+			// for each input data group
+			for (let i = 0; i < this.inputDataConfigs.length; i++) {
+				const dataConfig = this.inputDataConfigs[i];
+				const data = resourceManager.getData(dataConfig.name);
+				if (data.length == 0) {
+					continue;
 				}
 
-				const container = resourceManager.getContainer(this.containerId);
-				container.replaceChildren(...htmlElements);
+				// determine size of object on screen for culling
+				const screenObjectRadius = dataConfig.boundsRadiusTiles * this.getApproximateScreenTileSize(camera);
 
+				// get pooled elements from last update, prepare for next update
+				const prevPooledHtmlElements = resourceManager.getPooledHtmlElements(dataConfig.name);
+				const nextPooledHtmlElements: HTMLElement[] = [];
+
+				// determine whether this group uses low quality mode
+				let useLowQuality = false;
+				if (dataConfig.lowQualityThreshold != null) {
+					useLowQuality = this.countVisible(data, camera, screenObjectRadius) > dataConfig.lowQualityThreshold;
+				}
+
+				const templateElement = this.buildTemplateElement(dataConfig, resourceManager);
+				const renderFunc = dataConfig.renderFunc;
+
+				// for each (visible) element
+				for (let j = 0, m = data.length; j < m; j++) {
+					const dataEntry = data[j];
+					if (!this.isVisible(dataEntry, camera, screenObjectRadius)) {
+						continue;
+					}
+
+					// get html element (from last time or create new from template)
+					const htmlElement = j < prevPooledHtmlElements.length
+						? prevPooledHtmlElements[j]
+						: templateElement.cloneNode(true) as HTMLElement;
+
+					// render / update html element
+					renderFunc(context, dataEntry, htmlElement, useLowQuality);
+					renderedHtmlElements.push(htmlElement);
+
+					// add to elements pool for next time
+					nextPooledHtmlElements.push(htmlElement);
+				}
+
+				// save pooled elements of group for next time
+				resourceManager.setPooledHtmlElements(dataConfig.name, nextPooledHtmlElements);
 			}
+
+			// update elements in container
+			const container = resourceManager.getContainer(this.containerId);
+			container.replaceChildren(...renderedHtmlElements);
 
 			context.monitor.endCommand();
 		}
 
+		private countVisible(data: HtmlDataEntry[], camera: Camera, screenObjectRadius: number): number {
+			let count = 0;
+			for (let i = 0, n = data.length; i < n; i++) {
+				if (this.isVisible(data[i], camera, screenObjectRadius)) {
+					count++;
+				}
+			}
+			return count;
+		}
+
+		private buildTemplateElement(dataConfig: NodeOutput.HtmlData<any>, resourceManager: HtmlResourceManager): HTMLElement {
+			const cachedTemplateElement = resourceManager.getTemplateElement(dataConfig.name);
+			if (cachedTemplateElement) {
+				return cachedTemplateElement;
+			} else {
+				const builtElement = dataConfig.templateFunc();
+				resourceManager.setTemplateElement(dataConfig.name, builtElement);
+				return builtElement;
+			}
+		}
+
 		private hasChange(): boolean {
-			for (let i = 0, n = this.nodes.length; i < n; i++) {
-				const changeKey = this.nodes[i].node.config.changeKey;
+			for (let i = 0, n = this.changeKeys.length; i < n; i++) {
+				const changeKey = this.changeKeys[i];
 				if (changeKey == null || this.changeProvider.hasChange(changeKey)) {
 					return true;
 				}
@@ -139,7 +166,7 @@ export namespace HtmlRenderCommand {
 			return false;
 		}
 
-		private getWorldScalingFactor(camera: Camera): number {
+		private getApproximateScreenTileSize(camera: Camera): number {
 			const p0 = Projections.hexToScreen(camera, 0, 0);
 			const p1 = Projections.hexToScreen(camera, 0, 1);
 			const p2 = Projections.hexToScreen(camera, 1, 0);
@@ -171,7 +198,7 @@ export namespace HtmlRenderCommand {
 
 		getDebugData(): any {
 			return {
-				command: "Draw",
+				command: "Output",
 				container: this.containerId,
 			};
 		}
