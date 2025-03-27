@@ -13,7 +13,7 @@ data class WorldGenSettings(
         fun default() = default(null)
 
         fun default(seed: Int?) = WorldGenSettings(
-            size = 20,
+            size = 200,
             seed = seed ?: Random().nextInt(),
             singleTileType = null
         )
