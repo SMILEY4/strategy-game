@@ -15,7 +15,7 @@ data class WorldGenSettings(
         fun default(seed: Int?) = WorldGenSettings(
             size = 200,
             seed = seed ?: Random().nextInt(),
-            singleTileType = null
+            singleTileType = TerrainType.LAND
         )
 
         fun landOnly() = WorldGenSettings(
