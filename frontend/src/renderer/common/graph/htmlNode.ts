@@ -1,6 +1,6 @@
 import {AbstractRenderNode} from "./abstractRenderNode";
 import {NodeOutput} from "./nodeOutput";
-import {TileSummary} from "../../../../models/tile/tileSummary";
+import {TileSummary} from "../../../models/tile/tileSummary";
 
 export abstract class HtmlNode<TContext> extends AbstractRenderNode {
 

@@ -1,8 +1,8 @@
 import {GameHtmlRenderContext} from "../gameRenderContext";
-import {HtmlDataEntry, HtmlNode, HtmlDataResource} from "../../common/graph/nodes/htmlNode";
+import {HtmlDataEntry, HtmlNode, HtmlDataResource} from "../../common/graph/htmlNode";
 import {TileSummary} from "../../../models/tile/tileSummary";
 import {buildMap} from "../../../common/utils";
-import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
+import {NodeOutput} from "../../common/graph/nodeOutput";
 import {TileResourceType} from "../../../models/tile/TileResourceType";
 import {MapMode} from "../../../models/misc/mapMode";
 import {Projections} from "../../../common/webgl/projections";

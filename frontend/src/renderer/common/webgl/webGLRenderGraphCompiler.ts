@@ -1,13 +1,13 @@
 import {RenderGraphCompiler} from "../graph/renderGraphCompiler";
 import {WebGLRenderCommand} from "./webGLRenderCommand";
-import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
-import {DrawRenderNode} from "../graph/nodes/drawRenderNode";
-import {VertexRenderNode} from "../graph/nodes/vertexRenderNode";
+import {AbstractRenderNode} from "../graph/abstractRenderNode";
+import {DrawRenderNode} from "../graph/drawRenderNode";
+import {VertexRenderNode} from "../graph/vertexRenderNode";
 import {TextureBindingHandler} from "./textureBindingHandler";
 import {ProgramUniformEntry} from "./programUniformEntry";
 import {GLUniformType} from "../../../common/webgl/glTypes";
-import {NodeInput} from "../graph/nodes/nodeInput";
-import {NodeOutput} from "../graph/nodes/nodeOutput";
+import {NodeInput} from "../graph/nodeInput";
+import {NodeOutput} from "../graph/nodeOutput";
 import {ChangeProvider} from "../graph/changeProvider";
 
 export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRenderCommand.Base> {

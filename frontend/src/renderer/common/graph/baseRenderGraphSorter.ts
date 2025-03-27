@@ -1,5 +1,5 @@
 import {RenderGraphSorter} from "./renderGraphSorter";
-import {AbstractRenderNode} from "./nodes/abstractRenderNode";
+import {AbstractRenderNode} from "./abstractRenderNode";
 
 interface SortableRenderNode {
 	/**

@@ -1,4 +1,4 @@
-import {GLAttributeComponentAmount, GLAttributeType} from "../../../../common/webgl/glTypes";
+import {GLAttributeComponentAmount, GLAttributeType} from "../../../common/webgl/glTypes";
 
 /**
  * Outputs of render nodes

@@ -1,7 +1,7 @@
-import {DrawRenderNode} from "../../common/graph/nodes/drawRenderNode";
+import {DrawRenderNode} from "../../common/graph/drawRenderNode";
 import {GLUniformType} from "../../../common/webgl/glTypes";
-import {NodeInput} from "../../common/graph/nodes/nodeInput";
-import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
+import {NodeInput} from "../../common/graph/nodeInput";
+import {NodeOutput} from "../../common/graph/nodeOutput";
 import {GameWebGLRenderContext} from "../gameRenderContext";
 
 export class OverlayDrawNode extends DrawRenderNode<GameWebGLRenderContext> {

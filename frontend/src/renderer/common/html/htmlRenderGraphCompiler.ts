@@ -1,11 +1,11 @@
 import {RenderGraphCompiler} from "../graph/renderGraphCompiler";
 import {HtmlRenderCommand} from "./htmlRenderCommand";
-import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
+import {AbstractRenderNode} from "../graph/abstractRenderNode";
 import {ChangeProvider} from "../graph/changeProvider";
-import {HtmlOutputNode} from "../graph/nodes/htmlOutputNode";
-import {NodeOutput} from "../graph/nodes/nodeOutput";
-import {NodeInput} from "../graph/nodes/nodeInput";
-import {HtmlNode} from "../graph/nodes/htmlNode";
+import {HtmlOutputNode} from "../graph/htmlOutputNode";
+import {NodeOutput} from "../graph/nodeOutput";
+import {NodeInput} from "../graph/nodeInput";
+import {HtmlNode} from "../graph/htmlNode";
 
 export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCommand.Base> {
 

@@ -1,6 +1,6 @@
-import {HtmlOutputNode} from "../../common/graph/nodes/htmlOutputNode";
-import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
-import {NodeInput} from "../../common/graph/nodes/nodeInput";
+import {HtmlOutputNode} from "../../common/graph/htmlOutputNode";
+import {NodeOutput} from "../../common/graph/nodeOutput";
+import {NodeInput} from "../../common/graph/nodeInput";
 
 export class GameHtmlOutputNode extends HtmlOutputNode {
 

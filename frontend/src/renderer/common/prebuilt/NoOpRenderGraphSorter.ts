@@ -1,5 +1,5 @@
 import {RenderGraphSorter} from "../graph/renderGraphSorter";
-import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
+import {AbstractRenderNode} from "../graph/abstractRenderNode";
 
 export class NoOpRenderGraphSorter implements RenderGraphSorter {
 

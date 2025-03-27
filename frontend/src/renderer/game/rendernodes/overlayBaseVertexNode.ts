@@ -1,8 +1,8 @@
-import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/nodes/vertexRenderNode";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../common/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../common/tilemapUtils";
-import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
+import {NodeOutput} from "../../common/graph/nodeOutput";
 import {buildMap, emptyMap} from "../../../common/utils";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import {GameWebGLRenderContext} from "../gameRenderContext";

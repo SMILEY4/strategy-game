@@ -1,9 +1,9 @@
 import {BaseRenderGraphSorter} from "../graph/baseRenderGraphSorter";
-import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
-import {DrawRenderNode} from "../graph/nodes/drawRenderNode";
-import {NodeInput} from "../graph/nodes/nodeInput";
-import {VertexRenderNode} from "../graph/nodes/vertexRenderNode";
-import {NodeOutput} from "../graph/nodes/nodeOutput";
+import {AbstractRenderNode} from "../graph/abstractRenderNode";
+import {DrawRenderNode} from "../graph/drawRenderNode";
+import {NodeInput} from "../graph/nodeInput";
+import {VertexRenderNode} from "../graph/vertexRenderNode";
+import {NodeOutput} from "../graph/nodeOutput";
 
 
 export class WebGLRenderGraphSorter extends BaseRenderGraphSorter {

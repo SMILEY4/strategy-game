@@ -1,7 +1,7 @@
 import {TextureAtlas, TextureAtlasEntry} from "../../../common/webgl/textureAtlas";
-import {NodeInput} from "../graph/nodes/nodeInput";
+import {NodeInput} from "../graph/nodeInput";
 import {WebGLResourceManager} from "./webGLResourceManager";
-import {ProvidedNodeInputs} from "../graph/nodes/providedNodeInputs";
+import {ProvidedNodeInputs} from "../graph/providedNodeInputs";
 
 export class WebGlProvidedNodeInputs implements ProvidedNodeInputs {
 

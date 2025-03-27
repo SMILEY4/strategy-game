@@ -1,4 +1,4 @@
-import {AbstractRenderNode} from "./nodes/abstractRenderNode";
+import {AbstractRenderNode} from "./abstractRenderNode";
 
 /**
  * Manages resources required by the render nodes

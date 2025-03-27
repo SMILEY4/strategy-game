@@ -1,5 +1,5 @@
-import {GLUniformType, GLUniformValueType} from "../../../../common/webgl/glTypes";
-import {GLTexture} from "../../../../common/webgl/glTexture";
+import {GLUniformType, GLUniformValueType} from "../../../common/webgl/glTypes";
+import {GLTexture} from "../../../common/webgl/glTexture";
 
 /**
  * Inputs of render nodes

@@ -2,11 +2,11 @@ import {RenderCommand} from "../graph/renderCommand";
 import {HtmlResourceManager} from "./htmlResourceManager";
 import {RenderGraphMonitor} from "../graph/renderGraphMonitor";
 import {ChangeProvider} from "../graph/changeProvider";
-import {HtmlDataEntry, HtmlNode} from "../graph/nodes/htmlNode";
-import {HtmlOutputConfig} from "../graph/nodes/htmlOutputNode";
+import {HtmlDataEntry, HtmlNode} from "../graph/htmlNode";
+import {HtmlOutputConfig} from "../graph/htmlOutputNode";
 import {Camera} from "../../../common/webgl/camera";
 import {Projections} from "../../../common/webgl/projections";
-import {NodeOutput} from "../graph/nodes/nodeOutput";
+import {NodeOutput} from "../graph/nodeOutput";
 
 export namespace HtmlRenderCommand {
 

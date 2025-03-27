@@ -1,4 +1,4 @@
-import {AbstractRenderNode} from "./nodes/abstractRenderNode";
+import {AbstractRenderNode} from "./abstractRenderNode";
 import {RenderGraphSorter} from "./renderGraphSorter";
 import {RenderGraphCompiler} from "./renderGraphCompiler";
 import {ResourceManager} from "./resourceManager";

@@ -1,4 +1,4 @@
-import {AbstractRenderNode} from "./nodes/abstractRenderNode";
+import {AbstractRenderNode} from "./abstractRenderNode";
 
 /**
  * Converts the graph of render-nodes into a valid, flat sequence of nodes

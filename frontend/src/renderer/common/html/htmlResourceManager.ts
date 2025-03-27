@@ -1,9 +1,9 @@
 import {ResourceManager} from "../graph/resourceManager";
-import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
-import {HtmlDataEntry, HtmlNode} from "../graph/nodes/htmlNode";
-import {HtmlOutputNode} from "../graph/nodes/htmlOutputNode";
-import {NodeOutput} from "../graph/nodes/nodeOutput";
-import {NodeInput} from "../graph/nodes/nodeInput";
+import {AbstractRenderNode} from "../graph/abstractRenderNode";
+import {HtmlDataEntry, HtmlNode} from "../graph/htmlNode";
+import {HtmlOutputNode} from "../graph/htmlOutputNode";
+import {NodeOutput} from "../graph/nodeOutput";
+import {NodeInput} from "../graph/nodeInput";
 
 export class HtmlResourceManager implements ResourceManager {
 

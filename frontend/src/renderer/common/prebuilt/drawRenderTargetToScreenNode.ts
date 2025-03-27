@@ -1,7 +1,7 @@
-import {DrawRenderNode, } from "../graph/nodes/drawRenderNode";
+import {DrawRenderNode, } from "../graph/drawRenderNode";
 import {VertexFullQuadNode} from "./vertexFullquadNode";
-import {NodeInput} from "../graph/nodes/nodeInput";
-import {NodeOutput} from "../graph/nodes/nodeOutput";
+import {NodeInput} from "../graph/nodeInput";
+import {NodeOutput} from "../graph/nodeOutput";
 import {WebGLRenderCommand} from "../webgl/webGLRenderCommand";
 
 export class DrawRenderTargetToScreenNode extends DrawRenderNode<WebGLRenderCommand.Context> {

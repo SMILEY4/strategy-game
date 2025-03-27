@@ -1,9 +1,9 @@
 import {BaseRenderGraphSorter} from "../graph/baseRenderGraphSorter";
-import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
-import {HtmlNode} from "../graph/nodes/htmlNode";
-import {HtmlOutputNode} from "../graph/nodes/htmlOutputNode";
-import {NodeInput} from "../graph/nodes/nodeInput";
-import {NodeOutput} from "../graph/nodes/nodeOutput";
+import {AbstractRenderNode} from "../graph/abstractRenderNode";
+import {HtmlNode} from "../graph/htmlNode";
+import {HtmlOutputNode} from "../graph/htmlOutputNode";
+import {NodeInput} from "../graph/nodeInput";
+import {NodeOutput} from "../graph/nodeOutput";
 
 export class HtmlRenderGraphSorter extends BaseRenderGraphSorter {
 

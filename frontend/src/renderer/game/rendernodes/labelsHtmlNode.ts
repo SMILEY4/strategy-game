@@ -1,8 +1,8 @@
 import {GameHtmlRenderContext} from "../gameRenderContext";
-import {HtmlDataEntry, HtmlDataResource, HtmlNode} from "../../common/graph/nodes/htmlNode";
+import {HtmlDataEntry, HtmlDataResource, HtmlNode} from "../../common/graph/htmlNode";
 import {TileSummary} from "../../../models/tile/tileSummary";
 import {buildMap} from "../../../common/utils";
-import {NodeOutput} from "../../common/graph/nodes/nodeOutput";
+import {NodeOutput} from "../../common/graph/nodeOutput";
 import {CommandType} from "../../../models/command/commandType";
 import {CreateSettlementCommand} from "../../../models/command/command";
 import {Projections} from "../../../common/webgl/projections";

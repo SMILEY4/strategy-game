@@ -2,7 +2,7 @@ import {RenderCommand} from "../graph/renderCommand";
 import {WebGLResourceManager} from "./webGLResourceManager";
 import {GLFramebuffer} from "../../../common/webgl/glFramebuffer";
 import {ProgramUniformEntry} from "./programUniformEntry";
-import {VertexRenderNode} from "../graph/nodes/vertexRenderNode";
+import {VertexRenderNode} from "../graph/vertexRenderNode";
 import {BaseRenderer} from "../../../common/webgl/baseRenderer";
 import {Camera} from "../../../common/webgl/camera";
 import {ChangeProvider} from "../graph/changeProvider";
