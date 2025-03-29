@@ -27,7 +27,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 	 * - must have exactly one shader input
 	 * - must have exactly one render target output
 	 */
-	public validate(nodes: AbstractRenderNode[]): [boolean, string] {
+	public validate(nodes: RenderNode[]): [boolean, string] {
 		console.log("Validating render graph (webgl).");
 
 		if (nodes.length === 0) {
@@ -56,7 +56,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 		return [true, ""];
 	}
 
-	public compile(nodes: AbstractRenderNode[]): WebGLRenderCommand.Base[] {
+	public compile(nodes: RenderNode[]): WebGLRenderCommand.Base[] {
 		console.log("Compiling render graph (webgl).");
 
 		const commands: WebGLRenderCommand.Base[] = [];

@@ -42,7 +42,7 @@ export class WebGLResourceManager implements ResourceManager {
 	}
 
 
-	public initialize(nodes: AbstractRenderNode[]): void {
+	public initialize(nodes: RenderNode[]): void {
 		console.log("Initializing webgl resources for render graph.");
 		nodes.forEach(node => {
 			console.debug("Initializing webgl resources for node", node.id, node);
@@ -110,7 +110,7 @@ export class WebGLResourceManager implements ResourceManager {
 		return managedBuffer;
 	}
 
-	private initializeVertexDescriptor(id: string, type: "standart" | "instanced", bufferIds: string[], node: VertexRenderNode<any>, nodes: AbstractRenderNode[]): ManagedVertexData {
+	private initializeVertexDescriptor(id: string, type: "standart" | "instanced", bufferIds: string[], node: VertexRenderNode<any>, nodes: RenderNode[]): ManagedVertexData {
 		console.debug("initializing vertex descriptor", id, type, bufferIds);
 
 		// already initialized

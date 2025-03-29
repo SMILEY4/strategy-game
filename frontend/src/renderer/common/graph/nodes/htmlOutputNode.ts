@@ -1,8 +1,8 @@
-import {AbstractRenderNode} from "./abstractRenderNode";
+import {RenderNode} from "../RenderNode";
 import {NodeOutput} from "./nodeOutput";
 import {NodeInput} from "./nodeInput";
 
-export class HtmlOutputNode extends AbstractRenderNode {
+export class HtmlOutputNode extends RenderNode {
 
 	public readonly config: HtmlOutputConfig;
 

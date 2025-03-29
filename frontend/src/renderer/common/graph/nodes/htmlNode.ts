@@ -1,8 +1,8 @@
-import {AbstractRenderNode} from "./abstractRenderNode";
+import {RenderNode} from "../RenderNode";
 import {NodeOutput} from "./nodeOutput";
 import {TileSummary} from "../../../../models/tile/tileSummary";
 
-export abstract class HtmlNode<TContext> extends AbstractRenderNode {
+export abstract class HtmlNode<TContext> extends RenderNode {
 
 	public readonly config: HtmlDataNodeConfig<TContext>;
 

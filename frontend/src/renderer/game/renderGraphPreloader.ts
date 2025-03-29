@@ -30,12 +30,12 @@ export namespace RenderGraphPreloader {
 		]);
 	}
 
-	export function preload(nodes: AbstractRenderNode[]): Promise<void> {
+	export function preload(nodes: RenderNode[]): Promise<void> {
 		const textures = collectTextures(nodes);
 		return Preloader.loadImages(textures);
 	}
 
-	function collectTextures(nodes: AbstractRenderNode[]): string[] {
+	function collectTextures(nodes: RenderNode[]): string[] {
 		const textures: string[] = [];
 		nodes.forEach(node => {
 			if (node instanceof DrawRenderNode) {

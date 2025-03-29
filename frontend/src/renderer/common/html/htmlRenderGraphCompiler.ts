@@ -15,7 +15,7 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
 		this.changeProvider = changeProvider;
 	}
 
-	public validate(nodes: AbstractRenderNode[]): [boolean, string] {
+	public validate(nodes: RenderNode[]): [boolean, string] {
 		if (nodes.length === 0) {
 			return [false, "graph is empty"];
 		}
@@ -41,7 +41,7 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
 
 	}
 
-	public compile(nodes: AbstractRenderNode[]): HtmlRenderCommand.Base[] {
+	public compile(nodes: RenderNode[]): HtmlRenderCommand.Base[] {
 		const commands: HtmlRenderCommand.Base[] = [];
 
 		for (let node of nodes) {

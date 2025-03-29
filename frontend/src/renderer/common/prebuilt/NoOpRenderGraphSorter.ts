@@ -1,9 +1,9 @@
 import {RenderGraphSorter} from "../graph/renderGraphSorter";
-import {AbstractRenderNode} from "../graph/nodes/abstractRenderNode";
+import {RenderNode} from "../RenderNode";
 
 export class NoOpRenderGraphSorter implements RenderGraphSorter {
 
-    public sort(nodes: AbstractRenderNode[]): AbstractRenderNode[] {
+    public sort(nodes: RenderNode[]): RenderNode[] {
         return nodes;
     }
 

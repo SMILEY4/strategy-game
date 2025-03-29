@@ -1,7 +1,6 @@
-import {RenderGraphSorter} from "./renderGraphSorter";
-import {RenderGraphNode} from "../../../common/renderer/nodes/renderGraphNode";
+import {RenderGraphNode} from "../nodes/renderGraphNode";
 
-interface SortableRenderNode {
+interface SortableRenderGraphNode {
 	/**
 	 * id of this node
 	 */
@@ -16,30 +15,17 @@ interface SortableRenderNode {
 	sharedResources: string[],
 }
 
-export abstract class BaseRenderGraphSorter implements RenderGraphSorter {
+/**
+ * Resolves dependencies and preferences of the given nodes and brings them into a valid sequence.
+ */
+export class RenderGraphNodeSorter {
 
 	/**
-	 * Find all input resources of this node that can be outputs of other nodes.
-	 * Return identifiers for the resources that are unique only in this sorting scope
+	 * Sort the given input nodes by resolving dependencies and preferences
 	 */
-	abstract getDependableInputResources(node: RenderGraphNode): string[]
-
-	/**
-	 * Find all output resources of this node that can be inputs of other nodes.
-	 * Return identifiers for the resources that are unique only in this sorting scope
-	 */
-	abstract getDependableOutputResources(node: RenderGraphNode): string[]
-
-	/**
-	 * Find all resources this node requires and that can be shared with other nodes.
-	 * return identifiers for the resources that are unique only in this sorting scope
-	 */
-	abstract getSharedInputResources(node: RenderGraphNode): string[]
-
-
 	sort(nodes: RenderGraphNode[]): RenderGraphNode[] {
 
-		const sortableNodes: SortableRenderNode[] = [];
+		const sortableNodes: SortableRenderGraphNode[] = [];
 		nodes.forEach(node => {
 			sortableNodes.push({
 				id: node.id,
@@ -51,6 +37,30 @@ export abstract class BaseRenderGraphSorter implements RenderGraphSorter {
 		const sorted = this.sortNodes(sortableNodes);
 
 		return sorted.map(node => nodes.find(e => e.id === node.id)!);
+	}
+
+	/**
+	 * Find all input resources of this node that can be outputs of other nodes.
+	 * Return identifiers for the resources that are unique only in this sorting scope
+	 */
+	private getDependableInputResources(node: RenderGraphNode): string[] {
+		return node.inputs.map(it => it.getDependencyId());
+	}
+
+	/**
+	 * Find all output resources of this node that can be inputs of other nodes.
+	 * Return identifiers for the resources that are unique only in this sorting scope
+	 */
+	private getDependableOutputResources(node: RenderGraphNode): string[] {
+		return node.outputs.map(it => it.getDependencyId());
+	}
+
+	/**
+	 * Find all resources this node requires and that can be shared with other nodes.
+	 * return identifiers for the resources that are unique only in this sorting scope
+	 */
+	private getSharedInputResources(node: RenderGraphNode): string[] {
+		return node.inputs.flatMap(it => it.getSharedResourceIds())
 	}
 
 	/**
@@ -75,6 +85,9 @@ export abstract class BaseRenderGraphSorter implements RenderGraphSorter {
 		return ids;
 	}
 
+	/**
+	 * whether the two given arrays contain any common values.
+	 */
 	private hasOverlap(valuesA: string[], valuesB: string[]): boolean {
 		return valuesA.some(a => valuesB.indexOf(a) !== -1);
 	}
@@ -82,9 +95,9 @@ export abstract class BaseRenderGraphSorter implements RenderGraphSorter {
 	/**
 	 * Bring the nodes into the required order
 	 */
-	private sortNodes(nodes: SortableRenderNode[]): SortableRenderNode[] {
+	private sortNodes(nodes: SortableRenderGraphNode[]): SortableRenderGraphNode[] {
 		const topologicallySorted = this.topologicalSort(nodes);
-		const sortedNodes: SortableRenderNode[] = [];
+		const sortedNodes: SortableRenderGraphNode[] = [];
 		topologicallySorted.forEach(group => {
 			sortedNodes.push(...this.resourceSort(group));
 		});
@@ -95,17 +108,17 @@ export abstract class BaseRenderGraphSorter implements RenderGraphSorter {
 	 * Perform a simple topological order on the given nodes.
 	 * Returns the ordered nodes. Nodes for which the order does not matter are grouped together in arrays.
 	 */
-	private topologicalSort(nodes: SortableRenderNode[]): (SortableRenderNode[])[] {
-		const sorted: (SortableRenderNode[])[] = [];
+	private topologicalSort(nodes: SortableRenderGraphNode[]): (SortableRenderGraphNode[])[] {
+		const sorted: (SortableRenderGraphNode[])[] = [];
 		let openNodes = [...nodes];
 
 		// Return whether any node in the open set depends on the given node
-		function anyOpenHasDependencyOn(node: SortableRenderNode): boolean {
+		function anyOpenHasDependencyOn(node: SortableRenderGraphNode): boolean {
 			return openNodes.some(open => open.dependencies.some(out => out === node.id));
 		}
 
 		// removes the given nodes from the open nodes
-		function closeNodes(nodes: SortableRenderNode[]) {
+		function closeNodes(nodes: SortableRenderGraphNode[]) {
 			const closedIds = nodes.map(e => e.id);
 			openNodes = openNodes.filter(open => closedIds.indexOf(open.id) === -1);
 		}
@@ -122,7 +135,7 @@ export abstract class BaseRenderGraphSorter implements RenderGraphSorter {
 	/**
 	 * Sort the given nodes by resources. Tries to cluster nodes using the same resources together
 	 */
-	private resourceSort(nodes: SortableRenderNode[]): SortableRenderNode[] {
+	private resourceSort(nodes: SortableRenderGraphNode[]): SortableRenderGraphNode[] {
 		const uniqueResourcesMap = new Map<string, number>();
 		nodes.forEach(node => {
 			node.sharedResources.forEach(res => {
@@ -136,8 +149,8 @@ export abstract class BaseRenderGraphSorter implements RenderGraphSorter {
 		const uniqueResources: ([string, number])[] = Array.from(uniqueResourcesMap.entries());
 		uniqueResources.sort((a, b) => a[1] - b[1]);
 
-		let nodesA: SortableRenderNode[] = [...nodes];
-		let nodesB: SortableRenderNode[] = [];
+		let nodesA: SortableRenderGraphNode[] = [...nodes];
+		let nodesB: SortableRenderGraphNode[] = [];
 
 		uniqueResources.forEach(uniqueResource => {
 			const resourceId = uniqueResource[0];

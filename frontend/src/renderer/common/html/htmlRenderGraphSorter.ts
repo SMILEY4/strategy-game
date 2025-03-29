@@ -7,7 +7,7 @@ import {NodeOutput} from "../graph/nodes/nodeOutput";
 
 export class HtmlRenderGraphSorter extends BaseRenderGraphSorter {
 
-	getDependableInputResources(node: AbstractRenderNode): string[] {
+	getDependableInputResources(node: RenderNode): string[] {
 		const resources: string[] = [];
 
 		if (node instanceof HtmlOutputNode) {
@@ -21,7 +21,7 @@ export class HtmlRenderGraphSorter extends BaseRenderGraphSorter {
 		return resources;
 	}
 
-	getDependableOutputResources(node: AbstractRenderNode): string[] {
+	getDependableOutputResources(node: RenderNode): string[] {
 		const resources: string[] = [];
 
 		if (node instanceof HtmlNode) {
@@ -35,7 +35,7 @@ export class HtmlRenderGraphSorter extends BaseRenderGraphSorter {
 		return resources;
 	}
 
-	getSharedInputResources(node: AbstractRenderNode): string[] {
+	getSharedInputResources(node: RenderNode): string[] {
 		return [];
 	}
 

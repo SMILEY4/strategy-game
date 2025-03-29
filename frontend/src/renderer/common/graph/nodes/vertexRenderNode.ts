@@ -1,4 +1,4 @@
-import {AbstractRenderNode} from "./abstractRenderNode";
+import {RenderNode} from "../RenderNode";
 import {NodeOutput} from "./nodeOutput";
 import {NodeInput} from "./nodeInput";
 import {ProvidedNodeInputs} from "./providedNodeInputs";
@@ -8,7 +8,7 @@ import {ProvidedNodeInputs} from "./providedNodeInputs";
  * Requires as output
  * - n vertex-descriptors and all their associated buffers
  */
-export abstract class VertexRenderNode<TContext> extends AbstractRenderNode {
+export abstract class VertexRenderNode<TContext> extends RenderNode {
 
 	public readonly config: VertexRenderNodeConfig;
 

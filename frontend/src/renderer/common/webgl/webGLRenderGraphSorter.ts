@@ -8,7 +8,7 @@ import {NodeOutput} from "../graph/nodes/nodeOutput";
 
 export class WebGLRenderGraphSorter extends BaseRenderGraphSorter {
 
-    getDependableInputResources(node: AbstractRenderNode): string[] {
+    getDependableInputResources(node: RenderNode): string[] {
         const resources: string[] = [];
 
         if (node instanceof DrawRenderNode) {
@@ -35,7 +35,7 @@ export class WebGLRenderGraphSorter extends BaseRenderGraphSorter {
         return resources
     }
 
-    getDependableOutputResources(node: AbstractRenderNode): string[] {
+    getDependableOutputResources(node: RenderNode): string[] {
         const resources: string[] = [];
 
         if (node instanceof DrawRenderNode) {
@@ -63,7 +63,7 @@ export class WebGLRenderGraphSorter extends BaseRenderGraphSorter {
     }
 
 
-	getSharedInputResources(node: AbstractRenderNode): string[] {
+	getSharedInputResources(node: RenderNode): string[] {
 		const resources: string[] = [];
 
 		if (node instanceof DrawRenderNode) {

@@ -12,7 +12,7 @@ export class HtmlResourceManager implements ResourceManager {
 	private htmlPool = new Map<string, HTMLElement[]>();
 	private containers = new Map<string, HTMLElement>();
 
-	public initialize(nodes: AbstractRenderNode[]): void {
+	public initialize(nodes: RenderNode[]): void {
 		for (let node of nodes) {
 
 			if (node instanceof HtmlNode) {

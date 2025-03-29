@@ -13,7 +13,7 @@ export class RenderGraph<TContext> {
     private readonly sorter: RenderGraphSorter;
     private readonly resourceManager: ResourceManager;
     private readonly compiler: RenderGraphCompiler<any>;
-    private readonly nodes: AbstractRenderNode[];
+    private readonly nodes: RenderNode[];
     private commands: RenderCommand<any, any>[] = [];
     public context: TContext | null = null;
 
@@ -22,7 +22,7 @@ export class RenderGraph<TContext> {
         sorter: RenderGraphSorter,
         resourceManager: ResourceManager,
         compiler: RenderGraphCompiler<any>,
-        nodes: AbstractRenderNode[]
+        nodes: RenderNode[]
     }) {
         this.name = props.name;
         this.sorter = props.sorter;

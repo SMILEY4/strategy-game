@@ -1,4 +1,4 @@
-import {AbstractRenderNode} from "./abstractRenderNode";
+import {RenderNode} from "../RenderNode";
 import {NodeInput} from "./nodeInput";
 import {NodeOutput} from "./nodeOutput";
 
@@ -10,7 +10,7 @@ import {NodeOutput} from "./nodeOutput";
  * Requires as output
  * - 1x render-target (or screen)
  */
-export class DrawRenderNode<TContext> extends AbstractRenderNode {
+export class DrawRenderNode<TContext> extends RenderNode {
 
     public readonly config: DrawRenderNodeConfig<TContext>;
 
