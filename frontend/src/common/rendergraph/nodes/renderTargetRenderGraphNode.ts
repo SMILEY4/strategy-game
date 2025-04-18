@@ -1,5 +1,4 @@
 import {RenderGraphNode} from "../renderGraphNode";
-import {IntermediateRenderGraphCommand} from "../intermediateRenderGraphCommand";
 import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
 
 /**
@@ -20,24 +19,5 @@ export class RenderTargetRenderGraphNode extends RenderGraphNode<RenderTargetRen
 	getInputs(): RenderGraphNode<any>[] {
 		return this.inputs;
 	}
-
-	validate(): string[] {
-		return [];
-	}
-
-	preCompile(): IntermediateRenderGraphCommand[] {
-		const commands: IntermediateRenderGraphCommand[] = [];
-
-		commands.push(new IntermediateRenderGraphCommand.BindFramebuffer(this))
-
-		for (const input of this.inputs) {
-			commands.push(...input.preCompile());
-		}
-
-		commands.push(new IntermediateRenderGraphCommand.UnbindFramebuffer(this))
-
-		return commands;
-	}
-
 
 }

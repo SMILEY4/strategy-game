@@ -1,5 +1,4 @@
 import {RenderGraphNode} from "../renderGraphNode";
-import {IntermediateRenderGraphCommand} from "../intermediateRenderGraphCommand";
 import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
 
 /**
@@ -19,18 +18,6 @@ export class CanvasRenderGraphNode extends RenderGraphNode<CanvasRenderGraphNode
 
 	getInputs(): RenderGraphNode<any>[] {
 		return this.inputs;
-	}
-
-	validate(): string[] {
-		return [];
-	}
-
-	preCompile(): IntermediateRenderGraphCommand[] {
-		const commands: IntermediateRenderGraphCommand[] = [];
-		for (const input of this.inputs) {
-			commands.push(...input.preCompile());
-		}
-		return commands;
 	}
 
 }

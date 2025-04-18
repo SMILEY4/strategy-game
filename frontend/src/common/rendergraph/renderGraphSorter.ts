@@ -36,7 +36,7 @@ export class RenderGraphSorter {
 			// find all nodes that do not depend on any node (that is still in the open set)
 			const freeNodes = findFreeNodes(openNodes);
 			// remove free nodes from open set
-			openNodes = openNodes.filter(open => freeNodes.indexOf(open) !== -1);
+			openNodes = openNodes.filter(open => !freeNodes.includes(open));
 			// append free nodes to sorted list
 			sorted.push(freeNodes);
 		}

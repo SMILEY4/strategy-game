@@ -9,14 +9,15 @@ describe("render graph", () => {
 	test("playground", () => {
 
 		const graph = new RenderGraph();
+		buildGraph(graph);
 
-		const canvasNode = buildGraph(graph);
+		graph.initialize();
 
-		const intermediateCommands = canvasNode.preCompile();
+		console.log("CMDS", graph.getCommands().map(it => it.toDebugString()))
 
-		console.log(intermediateCommands.map(it => it.toDebugString()))
+		console.log("NODES", graph.getNodes().map(it => it.getTags().join(",")))
 
-		console.log(graph.printGraph())
+		console.log("GRAPH", graph.printGraph())
 
 	});
 
@@ -70,7 +71,7 @@ function buildTileInstances(graph: RenderGraph): {
 
 	const vertexBufferLandInstances = graph
 		.createVertexBuffer()
-		.withTag("creator-landInstances")
+		.withTag("buffer-landInstances")
 		.withInput(vertexCreator.createOutput("land"));
 
 	return {

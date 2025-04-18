@@ -7,6 +7,10 @@ import {VertexBufferRenderGraphNode} from "./nodes/vertexBufferRenderGraphNode";
 import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode";
 import {RenderGraphSorter} from "./renderGraphSorter";
 import {RenderTargetRenderGraphNode} from "./nodes/renderTargetRenderGraphNode";
+import {RenderGraphCommand} from "./renderGraphCommand";
+import {RenderGraphCompiler} from "./renderGraphCompiler";
+import {VertexCreatorNodeCompiler} from "./compilers/vertexCreatorNodeCompiler";
+import {WebglShaderNodeCompiler} from "./compilers/webglShaderNodeCompiler";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
@@ -15,18 +19,35 @@ export class RenderGraph {
 
 	private readonly unprocessedNodes: RenderGraphNode<any>[] = [];
 	private readonly sortedNodes: RenderGraphNode<any>[] = [];
+	private readonly commands: RenderGraphCommand[] = [];
 
 	protected addNode(node: RenderGraphNode<any>) {
 		this.unprocessedNodes.push(node);
 	}
 
+	public getNodes(): RenderGraphNode<any>[] {
+		return this.sortedNodes;
+	}
+
 	public initialize() {
-		this.sortedNodes.push(...new RenderGraphSorter().sort(this.unprocessedNodes));
+		const sorter = new RenderGraphSorter();
+		const compiler = new RenderGraphCompiler([
+			new VertexCreatorNodeCompiler(),
+			new WebglShaderNodeCompiler()
+		]);
+
+		this.sortedNodes.push(...sorter.sort(this.unprocessedNodes));
+		this.commands.push(...compiler.compile(this.sortedNodes))
 	}
 
 	public dispose() {
 		this.unprocessedNodes.length = 0;
 		this.sortedNodes.length = 0;
+		this.commands.length = 0;
+	}
+
+	public getCommands(): RenderGraphCommand[] {
+		return this.commands;
 	}
 
 	public printGraph(): string {
@@ -34,7 +55,7 @@ export class RenderGraph {
 
 		graphvizString += "digraph G {\n";
 
-		graphvizString += "   node [style=filled];"
+		graphvizString += "   node [style=filled];";
 
 		this.unprocessedNodes.forEach(node => {
 			graphvizString += "    \"" + node.getTags().join(",") + "\";\n";
@@ -72,7 +93,6 @@ export class RenderGraph {
 		this.addNode(node);
 		return node;
 	}
-
 
 	public createVertexBuffer(): VertexBufferRenderGraphNode {
 		const node = new VertexBufferRenderGraphNode();

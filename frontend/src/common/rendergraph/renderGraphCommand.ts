@@ -4,13 +4,13 @@ import {TextureRenderGraphNode} from "./nodes/textureRenderGraphNode";
 import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./nodes/vertexDescriptorRenderGraphNode";
 
-export abstract class IntermediateRenderGraphCommand {
+export abstract class RenderGraphCommand {
 	public abstract toDebugString(): string;
 }
 
-export namespace IntermediateRenderGraphCommand {
+export namespace RenderGraphCommand {
 
-	export class UpdateVertexData extends IntermediateRenderGraphCommand{
+	export class UpdateVertexData extends RenderGraphCommand{
 		private readonly node: VertexCreatorRenderGraphNode;
 		constructor(node: VertexCreatorRenderGraphNode) {
 			super();
@@ -21,7 +21,7 @@ export namespace IntermediateRenderGraphCommand {
 		}
 	}
 
-	export class BindTexture  extends IntermediateRenderGraphCommand{
+	export class BindTexture  extends RenderGraphCommand{
 		private readonly node: TextureRenderGraphNode;
 		constructor(node: TextureRenderGraphNode) {
 			super();
@@ -32,7 +32,18 @@ export namespace IntermediateRenderGraphCommand {
 		}
 	}
 
-	export class BindVertexArray extends IntermediateRenderGraphCommand {
+	export class BindFramebufferTexture  extends RenderGraphCommand{
+		private readonly node: RenderTargetRenderGraphNode;
+		constructor(node: RenderTargetRenderGraphNode) {
+			super();
+			this.node = node;
+		}
+		toDebugString(): string {
+			return "BindFramebufferTexture: " + this.node.getTags().join(", ");
+		}
+	}
+
+	export class BindVertexArray extends RenderGraphCommand {
 		private readonly node: VertexDescriptorRenderGraphNode;
 		constructor(node: VertexDescriptorRenderGraphNode) {
 			super();
@@ -43,7 +54,7 @@ export namespace IntermediateRenderGraphCommand {
 		}
 	}
 
-	export class BindFramebuffer extends IntermediateRenderGraphCommand {
+	export class BindFramebuffer extends RenderGraphCommand {
 		private readonly node: RenderTargetRenderGraphNode;
 		constructor(node: RenderTargetRenderGraphNode) {
 			super();
@@ -54,7 +65,7 @@ export namespace IntermediateRenderGraphCommand {
 		}
 	}
 
-	export class UnbindFramebuffer  extends IntermediateRenderGraphCommand{
+	export class UnbindFramebuffer  extends RenderGraphCommand{
 		private readonly node: RenderTargetRenderGraphNode;
 		constructor(node: RenderTargetRenderGraphNode) {
 			super();
@@ -65,7 +76,7 @@ export namespace IntermediateRenderGraphCommand {
 		}
 	}
 
-	export class SetUniforms  extends IntermediateRenderGraphCommand{
+	export class SetUniforms  extends RenderGraphCommand{
 		private readonly node: ShaderRenderGraphNode;
 		constructor(node: ShaderRenderGraphNode) {
 			super();
@@ -76,7 +87,7 @@ export namespace IntermediateRenderGraphCommand {
 		}
 	}
 
-	export class UseShader  extends IntermediateRenderGraphCommand{
+	export class UseShader  extends RenderGraphCommand{
 		private readonly node: ShaderRenderGraphNode;
 		constructor(node: ShaderRenderGraphNode) {
 			super();
@@ -87,7 +98,7 @@ export namespace IntermediateRenderGraphCommand {
 		}
 	}
 
-	export class DrawCall  extends IntermediateRenderGraphCommand{
+	export class DrawCall  extends RenderGraphCommand{
 		private readonly node: ShaderRenderGraphNode;
 		constructor(node: ShaderRenderGraphNode) {
 			super();

@@ -1,5 +1,4 @@
 import {RenderGraphNode} from "../renderGraphNode";
-import {IntermediateRenderGraphCommand} from "../intermediateRenderGraphCommand";
 
 export class VertexCreatorRenderGraphNode extends RenderGraphNode<VertexCreatorRenderGraphNode> {
 
@@ -14,17 +13,6 @@ export class VertexCreatorRenderGraphNode extends RenderGraphNode<VertexCreatorR
 
 	getInputs(): RenderGraphNode<any>[] {
 		return [];
-	}
-
-	validate(): string[] {
-		const errors: string[] = [];  // todo
-		return errors;
-	}
-
-	preCompile(): IntermediateRenderGraphCommand[] {
-		return [
-			new IntermediateRenderGraphCommand.UpdateVertexData(this)
-		]
 	}
 
 }

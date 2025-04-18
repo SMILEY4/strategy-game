@@ -1,9 +1,6 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./vertexDescriptorRenderGraphNode";
 import {TextureRenderGraphNode} from "./textureRenderGraphNode";
-import {Simulate} from "react-dom/test-utils";
-import input = Simulate.input;
-import {IntermediateRenderGraphCommand} from "../intermediateRenderGraphCommand";
 import {RenderTargetRenderGraphNode} from "./renderTargetRenderGraphNode";
 
 /**
@@ -22,7 +19,10 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 	private vertexSource: string | null = null;
 	private fragmentSource: string | null = null;
 
-	private readonly inputs: ({ node: TextureRenderGraphNode | RenderTargetRenderGraphNode | VertexDescriptorRenderGraphNode, binding: string | undefined })[] = [];
+	private readonly inputs: ({
+		node: TextureRenderGraphNode | RenderTargetRenderGraphNode | VertexDescriptorRenderGraphNode,
+		binding: string | undefined
+	})[] = [];
 
 
 	public withVertexShader(source: string): ShaderRenderGraphNode {
@@ -41,37 +41,7 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 	}
 
 	getInputs(): RenderGraphNode<any>[] {
-		return this.inputs.map(it => it.node)
+		return this.inputs.map(it => it.node);
 	}
-
-	validate(): string[] {
-		const errors: string[] = [];
-		if (!this.vertexSource) {
-			errors.push("missing vertex shader source");
-		}
-		if (!this.fragmentSource) {
-			errors.push("missing fragment shader source");
-		}
-		return errors;
-	}
-
-	preCompile(): IntermediateRenderGraphCommand[] {
-		const commands: IntermediateRenderGraphCommand[] = [];
-
-		for (const input of this.inputs) {
-			commands.push(...input.node.preCompile());
-		}
-
-		commands.push(new IntermediateRenderGraphCommand.UseShader(this))
-
-		commands.push(new IntermediateRenderGraphCommand.SetUniforms(this))
-
-		commands.push(new IntermediateRenderGraphCommand.DrawCall(this))
-
-		return commands;
-	}
-
-
-
 
 }

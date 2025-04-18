@@ -1,5 +1,3 @@
-import {IntermediateRenderGraphCommand} from "./intermediateRenderGraphCommand";
-
 /**
  * Single generic node in the graph.
  */
@@ -15,6 +13,4 @@ export abstract class RenderGraphNode<T> {
 	}
 
 	public abstract getInputs(): RenderGraphNode<any>[]
-	public abstract validate(): string[]
-	public abstract preCompile(): IntermediateRenderGraphCommand[]
 }

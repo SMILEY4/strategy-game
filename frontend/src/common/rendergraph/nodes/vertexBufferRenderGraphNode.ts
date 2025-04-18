@@ -1,6 +1,5 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {VertexCreatorRenderGraphNode} from "./vertexCreatorRenderGraphNode";
-import {IntermediateRenderGraphCommand} from "../intermediateRenderGraphCommand";
 
 /**
  * Node to define data for a single vertex buffer
@@ -24,21 +23,6 @@ export class VertexBufferRenderGraphNode extends RenderGraphNode<VertexBufferRen
 
 	getInputs(): RenderGraphNode<any>[] {
 		return this.sources.map(it => it.creator)
-	}
-
-	validate(): string[] {
-		const errors: string[] = [];  // todo
-		return errors;
-	}
-
-	preCompile(): IntermediateRenderGraphCommand[] {
-		const commands: IntermediateRenderGraphCommand[] = [];
-
-		for (let source of this.sources) {
-			commands.push(...source.creator.preCompile())
-		}
-
-		return commands;
 	}
 
 }
