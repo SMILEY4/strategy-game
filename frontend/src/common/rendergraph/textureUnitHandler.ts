@@ -1,4 +1,6 @@
-// noinspection PointlessBooleanExpressionJS
+/**
+ * Calculates free/available texture slots for texture ids.
+ */
 export class TextureUnitHandler {
 
 	private readonly textureUnitSlots: TextureUnitSlot[] = [];
@@ -14,6 +16,7 @@ export class TextureUnitHandler {
 
 	public findTextureUnit(textureId: string, lockedTextureIds: string[]): number {
 		let slot: TextureUnitSlot | null = null;
+		// noinspection PointlessBooleanExpressionJS
 		if (slot == null) {
 			slot = this.findUsedById(textureId);
 		}

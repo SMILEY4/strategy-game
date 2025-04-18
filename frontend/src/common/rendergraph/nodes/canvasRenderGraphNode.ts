@@ -2,7 +2,13 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {IntermediateRenderGraphCommand} from "../intermediateRenderGraphCommand";
 import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
 
-export class CanvasRenderGraphNode extends RenderGraphNode {
+/**
+ * Node to define a html canvas as a render target
+ *
+ * Inputs:
+ * - ShaderRenderGraphNode: shader(s) that draw to this target
+ */
+export class CanvasRenderGraphNode extends RenderGraphNode<CanvasRenderGraphNode> {
 
 	private readonly inputs: ShaderRenderGraphNode[] = [];
 
@@ -11,7 +17,7 @@ export class CanvasRenderGraphNode extends RenderGraphNode {
 		return this;
 	}
 
-	getInputs(): RenderGraphNode[] {
+	getInputs(): RenderGraphNode<any>[] {
 		return this.inputs;
 	}
 
@@ -26,6 +32,5 @@ export class CanvasRenderGraphNode extends RenderGraphNode {
 		}
 		return commands;
 	}
-
 
 }

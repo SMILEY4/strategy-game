@@ -4,13 +4,25 @@ import {TextureRenderGraphNode} from "./textureRenderGraphNode";
 import {Simulate} from "react-dom/test-utils";
 import input = Simulate.input;
 import {IntermediateRenderGraphCommand} from "../intermediateRenderGraphCommand";
+import {RenderTargetRenderGraphNode} from "./renderTargetRenderGraphNode";
 
-export class ShaderRenderGraphNode extends RenderGraphNode {
+/**
+ * Node to define a draw call using this shader
+ *
+ * Properties:
+ * - vertex shader source
+ * - fragment shader source
+ *
+ * Inputs:
+ * - TextureRenderGraphNode: textures to bind
+ * - VertexDescriptorRenderGraphNode: vertex data to use for drawing
+ */
+export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode> {
 
 	private vertexSource: string | null = null;
 	private fragmentSource: string | null = null;
 
-	private readonly inputs: ({ node: TextureRenderGraphNode | VertexDescriptorRenderGraphNode, binding: string | undefined })[] = [];
+	private readonly inputs: ({ node: TextureRenderGraphNode | RenderTargetRenderGraphNode | VertexDescriptorRenderGraphNode, binding: string | undefined })[] = [];
 
 
 	public withVertexShader(source: string): ShaderRenderGraphNode {
@@ -23,13 +35,13 @@ export class ShaderRenderGraphNode extends RenderGraphNode {
 		return this;
 	}
 
-	public withInput(input: TextureRenderGraphNode | VertexDescriptorRenderGraphNode, bindingName?: string): ShaderRenderGraphNode {
+	public withInput(input: TextureRenderGraphNode | RenderTargetRenderGraphNode | VertexDescriptorRenderGraphNode, bindingName?: string): ShaderRenderGraphNode {
 		this.inputs.push({node: input, binding: bindingName});
 		return this;
 	}
 
-	getInputs(): RenderGraphNode[] {
-		return []; // todo
+	getInputs(): RenderGraphNode<any>[] {
+		return this.inputs.map(it => it.node)
 	}
 
 	validate(): string[] {
@@ -50,11 +62,11 @@ export class ShaderRenderGraphNode extends RenderGraphNode {
 			commands.push(...input.node.preCompile());
 		}
 
-		commands.push(new IntermediateRenderGraphCommand.UseShader())
+		commands.push(new IntermediateRenderGraphCommand.UseShader(this))
 
-		commands.push(new IntermediateRenderGraphCommand.SetUniforms())
+		commands.push(new IntermediateRenderGraphCommand.SetUniforms(this))
 
-		commands.push(new IntermediateRenderGraphCommand.DrawCall())
+		commands.push(new IntermediateRenderGraphCommand.DrawCall(this))
 
 		return commands;
 	}

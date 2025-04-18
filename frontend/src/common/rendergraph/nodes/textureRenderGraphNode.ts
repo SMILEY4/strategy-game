@@ -1,7 +1,13 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {IntermediateRenderGraphCommand} from "../intermediateRenderGraphCommand";
 
-export class TextureRenderGraphNode extends RenderGraphNode {
+/**
+ * Node to define a texture
+ *
+ * Properties:
+ * - url: the url to the image file
+ */
+export class TextureRenderGraphNode extends RenderGraphNode<TextureRenderGraphNode> {
 
 	private imageUrl: string | null = null;
 
@@ -10,7 +16,7 @@ export class TextureRenderGraphNode extends RenderGraphNode {
 		return this;
 	}
 
-	getInputs(): RenderGraphNode[] {
+	getInputs(): RenderGraphNode<any>[] {
 		return [];
 	}
 
@@ -23,12 +29,9 @@ export class TextureRenderGraphNode extends RenderGraphNode {
 	}
 
 	preCompile(): IntermediateRenderGraphCommand[] {
-		const commands: IntermediateRenderGraphCommand[] = []
-		// todo: add command to bind texture
-		return commands;
+		return [
+			new IntermediateRenderGraphCommand.BindTexture(this)
+		];
 	}
-
-
-
 
 }
