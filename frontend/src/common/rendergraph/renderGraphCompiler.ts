@@ -11,22 +11,26 @@ export class RenderGraphCompiler {
 		this.compilers = compilers;
 	}
 
-	public compile(nodes: RenderGraphNode<any>[]): RenderGraphCommand[] {
+	public compile(nodes: RenderGraphNode<any>[], isInlineStep: boolean): RenderGraphCommand[] {
 		const commands: RenderGraphCommand[] = [];
 
 		for (let node of nodes) {
 
-			const compiler = this.compilers.find(it => it.appliesTo(node));
+			const compiler = this.findCompiler(node, isInlineStep);
 			if (compiler) {
-				const context = new RenderGraphCompileContext(nodes, commands)
+				const context = new RenderGraphCompileContext(this, nodes, commands)
 				commands.push(...compiler.compile(node, context));
-			} else {
-				console.error("No compiler found for node '" + node.getTags().join(",") + "'")
 			}
 
 		}
 
 		return commands;
+	}
+
+	private findCompiler(node: RenderGraphNode<any>, isInlineStep: boolean): RenderGraphNodeCompiler<any> | undefined {
+		return this.compilers
+			.filter(it => isInlineStep ? it.isInlineCompile() : true)
+			.find(it => it.appliesTo(node))
 	}
 
 

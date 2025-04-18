@@ -11,6 +11,8 @@ import {RenderGraphCommand} from "./renderGraphCommand";
 import {RenderGraphCompiler} from "./renderGraphCompiler";
 import {VertexCreatorNodeCompiler} from "./compilers/vertexCreatorNodeCompiler";
 import {WebglShaderNodeCompiler} from "./compilers/webglShaderNodeCompiler";
+import {DrawRenderGraphNode} from "./nodes/drawRenderGraphNode";
+import {WebglDrawNodeCompiler} from "./compilers/webglDrawNodeCompiler";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
@@ -33,11 +35,12 @@ export class RenderGraph {
 		const sorter = new RenderGraphSorter();
 		const compiler = new RenderGraphCompiler([
 			new VertexCreatorNodeCompiler(),
-			new WebglShaderNodeCompiler()
+			new WebglShaderNodeCompiler(),
+			new WebglDrawNodeCompiler()
 		]);
 
 		this.sortedNodes.push(...sorter.sort(this.unprocessedNodes));
-		this.commands.push(...compiler.compile(this.sortedNodes))
+		this.commands.push(...compiler.compile(this.sortedNodes, true))
 	}
 
 	public dispose() {
@@ -114,6 +117,12 @@ export class RenderGraph {
 
 	public createVertexCreator(): VertexCreatorRenderGraphNode {
 		const node = new VertexCreatorRenderGraphNode();
+		this.addNode(node);
+		return node;
+	}
+
+	public createDraw(): DrawRenderGraphNode {
+		const node = new DrawRenderGraphNode();
 		this.addNode(node);
 		return node;
 	}

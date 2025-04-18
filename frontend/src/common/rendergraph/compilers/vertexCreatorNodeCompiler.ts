@@ -5,6 +5,11 @@ import {RenderGraphCommand} from "../renderGraphCommand";
 import {VertexCreatorRenderGraphNode} from "../nodes/vertexCreatorRenderGraphNode";
 
 export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<VertexCreatorRenderGraphNode> {
+
+	isInlineCompile(): boolean {
+		return true;
+	}
+
 	appliesTo(node: RenderGraphNode<any>): boolean {
 		return node instanceof VertexCreatorRenderGraphNode;
 	}

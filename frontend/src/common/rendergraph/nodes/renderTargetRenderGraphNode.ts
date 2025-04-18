@@ -1,5 +1,5 @@
 import {RenderGraphNode} from "../renderGraphNode";
-import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
+import {DrawRenderGraphNode} from "./drawRenderGraphNode";
 
 /**
  * Node to define a texture as a render target
@@ -9,9 +9,9 @@ import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
  */
 export class RenderTargetRenderGraphNode extends RenderGraphNode<RenderTargetRenderGraphNode> {
 
-	private readonly inputs: ShaderRenderGraphNode[] = [];
+	private readonly inputs: DrawRenderGraphNode[] = [];
 
-	public withInput(input: ShaderRenderGraphNode): RenderTargetRenderGraphNode {
+	public withInput(input: DrawRenderGraphNode): RenderTargetRenderGraphNode {
 		this.inputs.push(input);
 		return this;
 	}

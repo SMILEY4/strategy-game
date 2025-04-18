@@ -3,6 +3,7 @@ import {ShaderRenderGraphNode} from "./nodes/shaderRenderGraphNode";
 import {TextureRenderGraphNode} from "./nodes/textureRenderGraphNode";
 import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./nodes/vertexDescriptorRenderGraphNode";
+import {DrawRenderGraphNode} from "./nodes/drawRenderGraphNode";
 
 export abstract class RenderGraphCommand {
 	public abstract toDebugString(): string;
@@ -99,8 +100,8 @@ export namespace RenderGraphCommand {
 	}
 
 	export class DrawCall  extends RenderGraphCommand{
-		private readonly node: ShaderRenderGraphNode;
-		constructor(node: ShaderRenderGraphNode) {
+		private readonly node: DrawRenderGraphNode;
+		constructor(node: DrawRenderGraphNode) {
 			super();
 			this.node = node;
 		}

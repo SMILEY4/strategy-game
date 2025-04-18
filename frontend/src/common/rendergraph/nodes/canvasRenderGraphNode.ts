@@ -1,5 +1,5 @@
 import {RenderGraphNode} from "../renderGraphNode";
-import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
+import {DrawRenderGraphNode} from "./drawRenderGraphNode";
 
 /**
  * Node to define a html canvas as a render target
@@ -9,9 +9,9 @@ import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
  */
 export class CanvasRenderGraphNode extends RenderGraphNode<CanvasRenderGraphNode> {
 
-	private readonly inputs: ShaderRenderGraphNode[] = [];
+	private readonly inputs: DrawRenderGraphNode[] = [];
 
-	public withInput(input: ShaderRenderGraphNode): CanvasRenderGraphNode {
+	public withInput(input: DrawRenderGraphNode): CanvasRenderGraphNode {
 		this.inputs.push(input);
 		return this;
 	}

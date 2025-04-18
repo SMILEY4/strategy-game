@@ -97,10 +97,15 @@ function buildWater(graph: RenderGraph, texture: TextureRenderGraphNode, vertexB
 		.withInput(texture, "u_texture")
 		.withInput(vertexDescriptor);
 
+	const drawCall = graph
+		.createDraw()
+		.withTag("draw-water")
+		.withInput(shader)
+
 	return graph
 		.createRenderTarget()
 		.withTag("renderTarget-water")
-		.withInput(shader);
+		.withInput(drawCall);
 }
 
 function buildLand(graph: RenderGraph, texture: TextureRenderGraphNode, vertexBufferBaseMesh: VertexBufferRenderGraphNode, vertexBufferInstances: VertexBufferRenderGraphNode): RenderTargetRenderGraphNode {
@@ -119,10 +124,15 @@ function buildLand(graph: RenderGraph, texture: TextureRenderGraphNode, vertexBu
 		.withInput(texture, "u_texture")
 		.withInput(vertexDescriptor);
 
+	const drawCall = graph
+		.createDraw()
+		.withTag("draw-land")
+		.withInput(shader)
+
 	return graph
 		.createRenderTarget()
 		.withTag("renderTarget-land")
-		.withInput(shader);
+		.withInput(drawCall);
 }
 
 function buildCombine(graph: RenderGraph, renderTargetWater: RenderTargetRenderGraphNode, renderTargetLand: RenderTargetRenderGraphNode): CanvasRenderGraphNode {
@@ -150,8 +160,13 @@ function buildCombine(graph: RenderGraph, renderTargetWater: RenderTargetRenderG
 		.withInput(renderTargetLand, "u_layerLand")
 		.withInput(vertexDescriptor);
 
+	const drawCall = graph
+		.createDraw()
+		.withTag("draw-combine")
+		.withInput(shader)
+
 	return graph
 		.createCanvas()
 		.withTag("canvas")
-		.withInput(shader)
+		.withInput(drawCall)
 }
