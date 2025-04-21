@@ -1,11 +1,20 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {VertexAttribute} from "./vertexDescriptorRenderGraphNode";
+import {PropertyRenderGraphNode} from "./propertyRenderGraphNode";
 import CreationFunc = VertexCreatorRenderGraphNode.CreationFunc;
 
 export class VertexCreatorRenderGraphNode extends RenderGraphNode<VertexCreatorRenderGraphNode> {
 
-	private readonly outputs = new Map<string, VertexCreatorRenderGraphNode.Output>();
+	private readonly properties: PropertyRenderGraphNode<any>[] = [];
 	private func: CreationFunc = null as any;
+	private readonly outputs = new Map<string, VertexCreatorRenderGraphNode.Output>();
+
+
+	public withProperty(property: PropertyRenderGraphNode<any>): VertexCreatorRenderGraphNode {
+		// todo: own name for properties valid in creator scope (similar to shader properties)
+		this.properties.push(property);
+		return this;
+	}
 
 	public withFunction(func: CreationFunc): VertexCreatorRenderGraphNode {
 		this.func = func;
@@ -25,12 +34,16 @@ export class VertexCreatorRenderGraphNode extends RenderGraphNode<VertexCreatorR
 		return this.func;
 	}
 
+	public getProperties(): PropertyRenderGraphNode<any>[] {
+		return this.properties;
+	}
+
 	public getOutputs(): VertexCreatorRenderGraphNode.Output[] {
 		return Array.from(this.outputs.values());
 	}
 
 	getInputs(): RenderGraphNode<any>[] {
-		return [];
+		return [...this.properties];
 	}
 
 }
@@ -39,7 +52,22 @@ export class VertexCreatorRenderGraphNode extends RenderGraphNode<VertexCreatorR
 export namespace VertexCreatorRenderGraphNode {
 
 	export type CreationFunc =
-		() => Map<string, { data: ArrayBuffer, entryCount: number }>;
+		(context: Context) => Map<string, { data: ArrayBuffer, entryCount: number }>;
+
+	export class Context {
+
+		private readonly entries: Map<string, () => any>;
+
+		constructor(entries: Map<string, () => any>) {
+			this.entries = entries;
+		}
+
+		public get<T>(key: string): T {
+			const value = this.entries.get(key)!();
+			return null as any; // todo
+		}
+
+	}
 
 	export class Output {
 

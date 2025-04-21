@@ -1,16 +1,18 @@
 import {RenderGraphNodeCompiler} from "../renderGraphNodeCompiler";
-import {ShaderRenderGraphNode} from "../nodes/shaderRenderGraphNode";
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphCompileContext} from "../renderGraphCompileContext";
 import {RenderTargetRenderGraphNode} from "../nodes/renderTargetRenderGraphNode";
 import {DrawRenderGraphNode} from "../nodes/drawRenderGraphNode";
-import {VertexDescriptorRenderGraphNode} from "../nodes/vertexDescriptorRenderGraphNode";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {BindVertexArrayRenderGraphCommand} from "../commands/bindVertexArrayRenderGraphCommand";
 import {BindFramebufferRenderGraphCommand} from "../commands/bindFramebufferRenderGraphCommand";
 import {DrawCallRenderGraphCommand} from "../commands/drawCallRenderGraphCommand";
 import {UnbindFramebufferRenderGraphCommand} from "../commands/unbindFramebufferRenderGraphCommand";
+import {SetupViewportRenderGraphCommand} from "../commands/setupViewportRenderGraphCommand";
+import {SetupClearColorRenderGraphCommand} from "../commands/setupClearColorRenderGraphCommand";
+import {SetupDepthTestRenderGraphCommand} from "../commands/setupDepthTestRenderGraphCommand";
+import {SetupColorBlendRenderGraphCommand} from "../commands/setupColorBlendRenderGraphCommand";
 
 export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRenderGraphNode> {
 
@@ -38,16 +40,32 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 		const outputsToRenderTarget = this.hasRenderTargetOutput(node, context.getNodes());
 		if (outputsToRenderTarget) {
 			const renderTarget = this.getRenderTargetOutput(node, context.getNodes());
-			commands.push(new BindFramebufferRenderGraphCommand(renderTarget.getName()));
+			commands.push(new BindFramebufferRenderGraphCommand(renderTarget.getName(), node.getScaling()));
 		}
 
-		// draw
-		commands.push(new DrawCallRenderGraphCommand(
-			node.getScaling(),
+		// setup viewport
+		commands.push(new SetupViewportRenderGraphCommand(
+			node.getScaling()
+		));
+
+		// setup clear color
+		commands.push(new SetupClearColorRenderGraphCommand(
 			node.getClearColor(),
+		));
+
+		// setup depth test
+		commands.push(new SetupDepthTestRenderGraphCommand(
 			this.getRenderTargetOutput(node, context.getNodes()).getEnableDepth(),
+		));
+
+		// setup color blending
+		commands.push(new SetupColorBlendRenderGraphCommand(
 			node.getBlendFunction(),
 			outputsToRenderTarget,
+		));
+
+		// draw call
+		commands.push(new DrawCallRenderGraphCommand(
 			vertexDescriptorNode.getVertexCreatorOutputs().map(it => RenderGraphKeys.vertexInfo(it)),
 		));
 

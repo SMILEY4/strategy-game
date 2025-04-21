@@ -7,7 +7,7 @@ export class RenderGraphCompileContext {
 	private readonly compiler: RenderGraphCompiler;
 	private readonly nodes: RenderGraphNode<any>[];
 	private readonly commands: RenderGraphCommand[];
-	private readonly additional = new Map<string, any>();
+	private readonly compileResources = new Map<string, any>();
 
 	constructor(
 		compiler: RenderGraphCompiler,
@@ -18,11 +18,11 @@ export class RenderGraphCompileContext {
 		this.compiler = compiler;
 		this.nodes = nodes;
 		this.commands = commands;
-		this.additional = additional;
+		this.compileResources = additional;
 	}
 
 	public compile(node: RenderGraphNode<any>): RenderGraphCommand[] {
-		return this.compiler.compile([node], false);
+		return this.compiler.compile([node], this.compileResources, false);
 	}
 
 	public getNodes(): RenderGraphNode<any>[] {
@@ -33,7 +33,7 @@ export class RenderGraphCompileContext {
 		return this.commands;
 	}
 
-	public getAdditional<T>(key: string): T {
-		return this.additional.get(key)! as T;
+	public getCompileResource<T>(key: string): T {
+		return this.compileResources.get(key)! as T;
 	}
 }

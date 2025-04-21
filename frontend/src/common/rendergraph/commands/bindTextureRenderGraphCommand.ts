@@ -2,6 +2,9 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {GLTexture} from "../../webgl/glTexture";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
+/**
+ * Binds the texture with the given name to the given texture slot.
+ */
 export class BindTextureRenderGraphCommand extends RenderGraphCommand {
 
 	private readonly textureName: string;

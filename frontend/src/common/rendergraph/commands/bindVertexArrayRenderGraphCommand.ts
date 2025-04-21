@@ -2,6 +2,9 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {GLVertexArray} from "../../webgl/glVertexArray";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
+/**
+ * Binds the vertex array with the given name.
+ */
 export class BindVertexArrayRenderGraphCommand extends RenderGraphCommand {
 	private readonly vertexArrayName: string;
 

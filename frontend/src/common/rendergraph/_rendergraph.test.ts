@@ -1,9 +1,12 @@
 import {RenderGraph} from "./renderGraph";
 import {TextureRenderGraphNode} from "./nodes/textureRenderGraphNode";
-import {VertexBufferRenderGraphNode} from "./nodes/vertexBufferRenderGraphNode";
 import {RenderTargetRenderGraphNode} from "./nodes/renderTargetRenderGraphNode";
 import {CanvasRenderGraphNode} from "./nodes/canvasRenderGraphNode";
 import {buildMap} from "../utils";
+import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode";
+import {Tile} from "../../models/tile/tile";
+import {GameStateAccess} from "../../state/gameStateAccess";
+import {Settlement} from "../../models/settlement/settlement";
 
 describe("render graph", () => {
 
@@ -37,45 +40,72 @@ function buildGraph(graph: RenderGraph): CanvasRenderGraphNode {
 }
 
 
-function buildTileBaseMesh(graph: RenderGraph): VertexBufferRenderGraphNode {
+function buildTileBaseMesh(graph: RenderGraph): VertexCreatorRenderGraphNode.Output {
 
 	const vertexCreator = graph
 		.createVertexCreator()
-		.withName("creator-baseTileVertices");
+		.withName("creator-baseTileVertices")
+		.withFunction(context => buildMap({
+			"mesh": {
+				data: new ArrayBuffer(0),
+				entryCount: 0,
+			},
+		}))
+		.withOutput("mesh", "vertices", []);
 
-	return graph
-		.createVertexBuffer()
-		.withName("buffer-baseTileVertices")
-		.withInput(vertexCreator.useOutput("mesh"));
+	return vertexCreator.useOutput("mesh");
 }
 
 function buildTileInstances(graph: RenderGraph): {
-	vertexBufferWaterInstances: VertexBufferRenderGraphNode,
-	vertexBufferLandInstances: VertexBufferRenderGraphNode
+	vertexBufferWaterInstances: VertexCreatorRenderGraphNode.Output,
+	vertexBufferLandInstances: VertexCreatorRenderGraphNode.Output
 } {
+	const gameStateAccess: GameStateAccess = null as any;
+
+	const propertyTiles = graph
+		.createProperty<Tile[]>()
+		.withTrackedChange("currentTurn")
+		.withProvider(() => gameStateAccess.getTiles())
+		.withName("tiles")
+
+	const propertySettlements = graph
+		.createProperty<Settlement[]>()
+		.withTrackedChange("currentTurn")
+		.withTrackedChange("commandRevId")
+		.withProvider(() => gameStateAccess.getSettlements())
+		.withName("tiles")
 
 	const vertexCreator = graph
 		.createVertexCreator()
-		.withName("creator-tileInstances");
-
-	const vertexBufferWaterInstances = graph
-		.createVertexBuffer()
-		.withName("buffer-waterInstances")
-		.withInput(vertexCreator.useOutput("water"));
-
-	const vertexBufferLandInstances = graph
-		.createVertexBuffer()
-		.withName("buffer-landInstances")
-		.withInput(vertexCreator.useOutput("land"));
+		.withName("creator-tileInstances")
+		.withProperty(propertyTiles)
+		.withProperty(propertySettlements)
+		.withFunction(context => {
+			const tiles = context.get<Tile[]>("tiles")
+			const settlements = context.get<Settlement[]>("settlements")
+			//  build instances ...
+			return buildMap({
+				"water": {
+					data: new ArrayBuffer(0),
+					entryCount: 0,
+				},
+				"land": {
+					data: new ArrayBuffer(0),
+					entryCount: 0,
+				},
+			});
+		})
+		.withOutput("water", "instances", [/*...*/])
+		.withOutput("land", "instances", [/*...*/]);
 
 	return {
-		vertexBufferWaterInstances: vertexBufferWaterInstances,
-		vertexBufferLandInstances: vertexBufferLandInstances,
+		vertexBufferWaterInstances: vertexCreator.useOutput("water"),
+		vertexBufferLandInstances: vertexCreator.useOutput("land"),
 	};
 }
 
 
-function buildWater(graph: RenderGraph, texture: TextureRenderGraphNode, vertexBufferBaseMesh: VertexBufferRenderGraphNode, vertexBufferInstances: VertexBufferRenderGraphNode): RenderTargetRenderGraphNode {
+function buildWater(graph: RenderGraph, texture: TextureRenderGraphNode, vertexBufferBaseMesh: VertexCreatorRenderGraphNode.Output, vertexBufferInstances: VertexCreatorRenderGraphNode.Output): RenderTargetRenderGraphNode {
 
 	const vertexDescriptor = graph
 		.createVertexDescriptor()
@@ -88,13 +118,13 @@ function buildWater(graph: RenderGraph, texture: TextureRenderGraphNode, vertexB
 		.withName("shader-water")
 		.withVertexShaderSource("...")
 		.withFragmentShaderSource("...")
-		.withInput(texture, "u_texture")
+		.withProperty(texture, "u_texture");
 
 	const drawCall = graph
 		.createDraw()
 		.withName("draw-water")
-		.withInput(vertexDescriptor)
-		.withInput(shader)
+		.withShaderProgram(shader)
+		.withVertexDescriptor(vertexDescriptor)
 
 	return graph
 		.createRenderTarget()
@@ -115,13 +145,13 @@ function buildLand(graph: RenderGraph, texture: TextureRenderGraphNode, vertexBu
 		.withName("shader-land")
 		.withVertexShaderSource("...")
 		.withFragmentShaderSource("...")
-		.withInput(texture, "u_texture")
+		.withProperty(texture, "u_texture");
 
 	const drawCall = graph
 		.createDraw()
 		.withName("draw-land")
 		.withInput(vertexDescriptor)
-		.withInput(shader)
+		.withInput(shader);
 
 	return graph
 		.createRenderTarget()
@@ -139,8 +169,8 @@ function buildCombine(graph: RenderGraph, renderTargetWater: RenderTargetRenderG
 				"fullscreenQuad": {
 					data: new ArrayBuffer(0),
 					entryCount: 4,
-				}
-			})
+				},
+			});
 		})
 		.withName("creator-fullscreenQuad");
 
@@ -152,24 +182,24 @@ function buildCombine(graph: RenderGraph, renderTargetWater: RenderTargetRenderG
 	const vertexDescriptor = graph
 		.createVertexDescriptor()
 		.withName("descriptor-fullscreenQuad")
-		.withInput(vertexBuffer)
+		.withInput(vertexBuffer);
 
 	const shader = graph
 		.createShader()
 		.withName("shader-combine")
 		.withVertexShaderSource("...")
 		.withFragmentShaderSource("...")
-		.withInput(renderTargetWater, "u_layerWater")
-		.withInput(renderTargetLand, "u_layerLand")
+		.withProperty(renderTargetWater, "u_layerWater")
+		.withProperty(renderTargetLand, "u_layerLand");
 
 	const drawCall = graph
 		.createDraw()
 		.withName("draw-combine")
 		.withInput(vertexDescriptor)
-		.withInput(shader)
+		.withInput(shader);
 
 	return graph
 		.createCanvas()
 		.withName("canvas")
-		.withInput(drawCall)
+		.withInput(drawCall);
 }

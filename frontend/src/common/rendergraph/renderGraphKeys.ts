@@ -6,16 +6,21 @@ import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode
 
 export namespace RenderGraphKeys {
 
+
+	export function textureUnitHandler() {
+		return "textureUnitHandler";
+	}
+
+	export function changeTracker() {
+		return "changeTracker";
+	}
+
 	export function gl() {
 		return "gl";
 	}
 
 	export function camera() {
 		return "camera";
-	}
-
-	export function textureUnitHandler() {
-		return "textureUnitHandler";
 	}
 
 	export function framebuffer(node: RenderTargetRenderGraphNode): string {

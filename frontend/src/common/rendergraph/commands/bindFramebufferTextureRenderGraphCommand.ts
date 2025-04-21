@@ -2,6 +2,9 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {GLFramebuffer} from "../../webgl/glFramebuffer";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
+/**
+ * Binds the framebuffer with the given name to the given texture slot (as a texture).
+ */
 export class BindFramebufferTextureRenderGraphCommand extends RenderGraphCommand {
 
 	private readonly framebufferName: string;

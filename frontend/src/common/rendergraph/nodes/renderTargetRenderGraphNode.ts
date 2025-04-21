@@ -11,17 +11,10 @@ export class RenderTargetRenderGraphNode extends RenderGraphNode<RenderTargetRen
 
 	private readonly inputs: DrawRenderGraphNode[] = [];
 	private enableDepth: boolean = false;
-	private width: number = 1;
-	private height: number = 1;
 
 
 	public withDepth(enableDepth: boolean = true) {
 		this.enableDepth = enableDepth;
-	}
-
-	public withSize(width: number, height: number) {
-		this.width = width;
-		this.height = height;
 	}
 
 	public withInput(input: DrawRenderGraphNode): RenderTargetRenderGraphNode {
@@ -32,14 +25,6 @@ export class RenderTargetRenderGraphNode extends RenderGraphNode<RenderTargetRen
 
 	public getEnableDepth(): boolean {
 		return this.enableDepth;
-	}
-
-	public getWidth(): number {
-		return this.width;
-	}
-
-	public getHeight(): number {
-		return this.height;
 	}
 
 	getInputs(): RenderGraphNode<any>[] {

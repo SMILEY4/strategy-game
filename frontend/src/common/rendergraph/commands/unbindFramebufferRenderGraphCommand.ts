@@ -2,6 +2,9 @@ import {GLFramebuffer} from "../../webgl/glFramebuffer";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
+/**
+ * Unbinds the framebuffer with the given name, i.e. no longer a render target.
+ */
 export class UnbindFramebufferRenderGraphCommand extends RenderGraphCommand {
 
 	private readonly framebufferName: string;

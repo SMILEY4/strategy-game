@@ -1,6 +1,7 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {TextureRenderGraphNode} from "./textureRenderGraphNode";
 import {RenderTargetRenderGraphNode} from "./renderTargetRenderGraphNode";
+import {PropertyRenderGraphNode} from "./propertyRenderGraphNode";
 
 /**
  * Node to define a draw call using this shader
@@ -18,9 +19,9 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 	private vertexSource: string | null = null;
 	private fragmentSource: string | null = null;
 
-	private readonly inputs: ({
-		node: TextureRenderGraphNode | RenderTargetRenderGraphNode,
-		binding: string | undefined
+	private readonly properties: ({
+		node: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any>,
+		binding: string
 	})[] = [];
 
 
@@ -34,8 +35,8 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 		return this;
 	}
 
-	public withInput(input: TextureRenderGraphNode | RenderTargetRenderGraphNode, bindingName?: string): ShaderRenderGraphNode {
-		this.inputs.push({node: input, binding: bindingName});
+	public withProperty(input: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any>, bindingName: string): ShaderRenderGraphNode {
+		this.properties.push({node: input, binding: bindingName});
 		return this;
 	}
 
@@ -47,8 +48,19 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 		return this.fragmentSource!;
 	}
 
+	public getProperties(): (TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any>)[] {
+		return this.properties.map(it => it.node);
+	}
+
+	public getPropertiesNamed(): {
+		node: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any>;
+		binding: string
+	}[] {
+		return this.properties;
+	}
+
 	getInputs(): RenderGraphNode<any>[] {
-		return this.inputs.map(it => it.node);
+		return this.properties.map(it => it.node);
 	}
 
 

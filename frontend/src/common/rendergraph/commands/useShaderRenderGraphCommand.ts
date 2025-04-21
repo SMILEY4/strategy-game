@@ -2,6 +2,9 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {GLProgram} from "../../webgl/glProgram";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
+/**
+ * Starts using the shader program with the given name.
+ */
 export class UseShaderRenderGraphCommand extends RenderGraphCommand {
 	private readonly shaderProgramName: string;
 

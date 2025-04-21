@@ -16,12 +16,16 @@ import {RenderGraphResourceManager} from "./renderGraphResourceManager";
 import {FramebufferResourceCreator} from "./resources/framebufferResourceCreator";
 import {TextureResourceCreator} from "./resources/textureResourceCreator";
 import {ShaderProgramResourceCreator} from "./resources/shaderProgramResourceCreator";
-import {TextureUnitHandlerResourceCreator} from "./resources/textureUnitHandlerResourceCreator";
 import {VertexArrayResourceCreator} from "./resources/vertexArrayResourceCreator";
 import {VertexBufferResourceCreator} from "./resources/vertexBufferResourceCreator";
 import {VertexInfoResourceCreator} from "./resources/vertexInfoResourceCreator";
 import {WebGlContextResourceCreator} from "./resources/webGlContextResourceCreator";
 import {RenderGraphCommand} from "./renderGraphCommand";
+import {RenderGraphKeys} from "./renderGraphKeys";
+import {TextureUnitHandler} from "./compilers/textureUnitHandler";
+import {buildMap} from "../utils";
+import {RenderGraphChangeTracker} from "./renderGraphChangeTracker";
+import {PropertyRenderGraphNode} from "./nodes/propertyRenderGraphNode";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
@@ -50,24 +54,33 @@ export class RenderGraph {
 		]);
 		const resourceManager = new RenderGraphResourceManager([
 			new WebGlContextResourceCreator(gl),
-			new TextureUnitHandlerResourceCreator(gl),
 			new FramebufferResourceCreator(gl),
 			new TextureResourceCreator(gl),
 			new ShaderProgramResourceCreator(gl),
 			new VertexArrayResourceCreator(gl),
 			new VertexBufferResourceCreator(gl),
 			new VertexInfoResourceCreator(),
-			// todo: camera(s)
+			// todo: camera(s), properties, ...
+		]);
+		const compileResources = buildMap<any>([
+			[
+				RenderGraphKeys.textureUnitHandler(),
+				new TextureUnitHandler(gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS)),
+			],
+			[
+				RenderGraphKeys.changeTracker(),
+				new RenderGraphChangeTracker(),
+			],
 		]);
 
 		this.sortedNodes.push(
 			new InitRenderGraphNode(),
-			...sorter.sort(this.unprocessedNodes)
+			...sorter.sort(this.unprocessedNodes),
 		);
 
 		this.resourceManager.initialize(this.sortedNodes);
 
-		this.commands.push(...compiler.compile(this.sortedNodes, true));
+		this.commands.push(...compiler.compile(this.sortedNodes, compileResources, true));
 
 		this.resourceManager = resourceManager;
 	}
@@ -76,6 +89,7 @@ export class RenderGraph {
 		this.unprocessedNodes.length = 0;
 		this.sortedNodes.length = 0;
 		this.commands.length = 0;
+		// todo: resource manager
 	}
 
 	public createCanvas(): CanvasRenderGraphNode {
@@ -116,6 +130,12 @@ export class RenderGraph {
 
 	public createDraw(): DrawRenderGraphNode {
 		const node = new DrawRenderGraphNode();
+		this.addNode(node);
+		return node;
+	}
+
+	public createProperty<T>(): PropertyRenderGraphNode<T> {
+		const node = new PropertyRenderGraphNode<T>();
 		this.addNode(node);
 		return node;
 	}
