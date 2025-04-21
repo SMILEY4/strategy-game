@@ -3,6 +3,7 @@ import {TextureRenderGraphNode} from "./nodes/textureRenderGraphNode";
 import {VertexBufferRenderGraphNode} from "./nodes/vertexBufferRenderGraphNode";
 import {RenderTargetRenderGraphNode} from "./nodes/renderTargetRenderGraphNode";
 import {CanvasRenderGraphNode} from "./nodes/canvasRenderGraphNode";
+import {buildMap} from "../utils";
 
 describe("render graph", () => {
 
@@ -12,13 +13,6 @@ describe("render graph", () => {
 		buildGraph(graph);
 
 		graph.initialize();
-
-		console.log("CMDS", graph.getCommands().map(it => it.toDebugString()))
-
-		console.log("NODES", graph.getNodes().map(it => it.getTags().join(",")))
-
-		console.log("GRAPH", graph.printGraph())
-
 	});
 
 });
@@ -28,7 +22,7 @@ function buildGraph(graph: RenderGraph): CanvasRenderGraphNode {
 
 	const textureTile = graph
 		.createTexture()
-		.withTag("tile-texture")
+		.withName("tile-texture")
 		.withUrl("/test.png");
 
 	const vertexBufferBaseMesh = buildTileBaseMesh(graph);
@@ -47,12 +41,12 @@ function buildTileBaseMesh(graph: RenderGraph): VertexBufferRenderGraphNode {
 
 	const vertexCreator = graph
 		.createVertexCreator()
-		.withTag("creator-baseTileVertices");
+		.withName("creator-baseTileVertices");
 
 	return graph
 		.createVertexBuffer()
-		.withTag("buffer-baseTileVertices")
-		.withInput(vertexCreator.createOutput("mesh"));
+		.withName("buffer-baseTileVertices")
+		.withInput(vertexCreator.useOutput("mesh"));
 }
 
 function buildTileInstances(graph: RenderGraph): {
@@ -62,17 +56,17 @@ function buildTileInstances(graph: RenderGraph): {
 
 	const vertexCreator = graph
 		.createVertexCreator()
-		.withTag("creator-tileInstances");
+		.withName("creator-tileInstances");
 
 	const vertexBufferWaterInstances = graph
 		.createVertexBuffer()
-		.withTag("buffer-waterInstances")
-		.withInput(vertexCreator.createOutput("water"));
+		.withName("buffer-waterInstances")
+		.withInput(vertexCreator.useOutput("water"));
 
 	const vertexBufferLandInstances = graph
 		.createVertexBuffer()
-		.withTag("buffer-landInstances")
-		.withInput(vertexCreator.createOutput("land"));
+		.withName("buffer-landInstances")
+		.withInput(vertexCreator.useOutput("land"));
 
 	return {
 		vertexBufferWaterInstances: vertexBufferWaterInstances,
@@ -85,26 +79,26 @@ function buildWater(graph: RenderGraph, texture: TextureRenderGraphNode, vertexB
 
 	const vertexDescriptor = graph
 		.createVertexDescriptor()
-		.withTag("descriptor-waterMesh")
+		.withName("descriptor-waterMesh")
 		.withInput(vertexBufferBaseMesh)
 		.withInput(vertexBufferInstances);
 
 	const shader = graph
 		.createShader()
-		.withTag("shader-water")
-		.withVertexShader("...")
-		.withFragmentShader("...")
+		.withName("shader-water")
+		.withVertexShaderSource("...")
+		.withFragmentShaderSource("...")
 		.withInput(texture, "u_texture")
-		.withInput(vertexDescriptor);
 
 	const drawCall = graph
 		.createDraw()
-		.withTag("draw-water")
+		.withName("draw-water")
+		.withInput(vertexDescriptor)
 		.withInput(shader)
 
 	return graph
 		.createRenderTarget()
-		.withTag("renderTarget-water")
+		.withName("renderTarget-water")
 		.withInput(drawCall);
 }
 
@@ -112,26 +106,26 @@ function buildLand(graph: RenderGraph, texture: TextureRenderGraphNode, vertexBu
 
 	const vertexDescriptor = graph
 		.createVertexDescriptor()
-		.withTag("descriptor-landMesh")
+		.withName("descriptor-landMesh")
 		.withInput(vertexBufferBaseMesh)
 		.withInput(vertexBufferInstances);
 
 	const shader = graph
 		.createShader()
-		.withTag("shader-land")
-		.withVertexShader("...")
-		.withFragmentShader("...")
+		.withName("shader-land")
+		.withVertexShaderSource("...")
+		.withFragmentShaderSource("...")
 		.withInput(texture, "u_texture")
-		.withInput(vertexDescriptor);
 
 	const drawCall = graph
 		.createDraw()
-		.withTag("draw-land")
+		.withName("draw-land")
+		.withInput(vertexDescriptor)
 		.withInput(shader)
 
 	return graph
 		.createRenderTarget()
-		.withTag("renderTarget-land")
+		.withName("renderTarget-land")
 		.withInput(drawCall);
 }
 
@@ -139,34 +133,43 @@ function buildCombine(graph: RenderGraph, renderTargetWater: RenderTargetRenderG
 
 	const vertexCreator = graph
 		.createVertexCreator()
-		.withTag("creator-fullscreenQuad");
+		.withOutput("fullscreenQuad", [])
+		.withFunction(() => {
+			return buildMap({
+				"fullscreenQuad": {
+					data: new ArrayBuffer(0),
+					entryCount: 4,
+				}
+			})
+		})
+		.withName("creator-fullscreenQuad");
 
 	const vertexBuffer = graph
 		.createVertexBuffer()
-		.withTag("buffer-fullscreenQuad")
-		.withInput(vertexCreator.createOutput("fullscreenQuad"));
+		.withName("buffer-fullscreenQuad")
+		.withInput(vertexCreator.useOutput("fullscreenQuad"));
 
 	const vertexDescriptor = graph
 		.createVertexDescriptor()
-		.withTag("descriptor-fullscreenQuad")
+		.withName("descriptor-fullscreenQuad")
 		.withInput(vertexBuffer)
 
 	const shader = graph
 		.createShader()
-		.withTag("shader-combine")
-		.withVertexShader("...")
-		.withFragmentShader("...")
+		.withName("shader-combine")
+		.withVertexShaderSource("...")
+		.withFragmentShaderSource("...")
 		.withInput(renderTargetWater, "u_layerWater")
 		.withInput(renderTargetLand, "u_layerLand")
-		.withInput(vertexDescriptor);
 
 	const drawCall = graph
 		.createDraw()
-		.withTag("draw-combine")
+		.withName("draw-combine")
+		.withInput(vertexDescriptor)
 		.withInput(shader)
 
 	return graph
 		.createCanvas()
-		.withTag("canvas")
+		.withName("canvas")
 		.withInput(drawCall)
 }

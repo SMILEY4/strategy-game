@@ -115,7 +115,7 @@ export class WebGLResourceManager implements ResourceManager {
 
 		// already initialized
 		if (this.vertexData.has(id)) {
-			return this.vertexData.get(id)!!;
+			return this.vertexData.get(id)!;
 		}
 
 		// create & initialize vertex-buffers
@@ -173,7 +173,7 @@ export class WebGLResourceManager implements ResourceManager {
 				this.gl,
 				vertexAttributes
 					.map(attribute => ({
-						buffer: buffers.get(attribute.bufferId)!!.buffer,
+						buffer: buffers.get(attribute.bufferId)!.buffer,
 						location: findProgramAttributeLocation(program, attribute.attribute),
 						type: attribute.attribute.type,
 						amountComponents: attribute.attribute.amountComponents,

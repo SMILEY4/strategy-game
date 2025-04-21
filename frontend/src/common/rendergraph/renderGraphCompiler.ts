@@ -1,5 +1,5 @@
 import {RenderGraphNodeCompiler} from "./renderGraphNodeCompiler";
-import {RenderGraphCommand} from "./renderGraphCommand";
+import {RenderGraphCommand} from "./commands/renderGraphCommand";
 import {RenderGraphNode} from "./renderGraphNode";
 import {RenderGraphCompileContext} from "./renderGraphCompileContext";
 

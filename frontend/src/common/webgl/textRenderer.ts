@@ -99,7 +99,7 @@ export class TextRenderer {
     }
 
     private prepareCanvas(entries: TextEntry[]) {
-        const canvasWidth = entries.length === 0 ? 1 : Math.max(...entries.map(e => e.width!!));
+        const canvasWidth = entries.length === 0 ? 1 : Math.max(...entries.map(e => e.width!));
         const canvasHeight = entries.length === 0 ? 1 : entries.map(e => e.height).reduce((a, b) => a + b, 0) + TextRenderer.ENTRY_PADDING * (entries.length-1);
         this.textContext.canvas.width = canvasWidth;
         this.textContext.canvas.height = canvasHeight;
@@ -118,7 +118,7 @@ export class TextRenderer {
 
     private paintEntry(entry: TextEntry, yOffset: number) {
         this.setCanvasProperties(entry);
-        this.textContext.fillText(entry.text, entry.width!! / 2, yOffset + entry.height / 2, entry.width!!);
+        this.textContext.fillText(entry.text, entry.width! / 2, yOffset + entry.height / 2, entry.width!);
     }
 
     private setCanvasProperties(entry: TextEntry) {
@@ -138,7 +138,7 @@ export class TextRenderer {
             height: entry.height,
             u0: (0) / totalWidth,
             v0: 1 - ((yOffset + entry.height) / totalHeight),
-            u1: (entry.width!!) / totalWidth,
+            u1: (entry.width!) / totalWidth,
             v1: 1 - ((yOffset) / totalHeight),
         };
     }

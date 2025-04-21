@@ -12,16 +12,16 @@ export class GameRenderer {
 		const creatorTilesInstanceData = this.renderGraph.createVertexCreator();
 
 		const vertexBufferTilesVertexData = this.renderGraph.createVertexBuffer()
-			.withInput(creatorTilesVertexData.createOutput("tiles.vertexdata"));
+			.withInput(creatorTilesVertexData.useOutput("tiles.vertexdata"));
 
 		const vertexBufferTilesWater = this.renderGraph.createVertexBuffer()
-			.withInput(creatorTilesInstanceData.createOutput("tiles.instances.water"));
+			.withInput(creatorTilesInstanceData.useOutput("tiles.instances.water"));
 
 		const vertexBufferTilesLand = this.renderGraph.createVertexBuffer()
-			.withInput(creatorTilesInstanceData.createOutput("tiles.instances.land"));
+			.withInput(creatorTilesInstanceData.useOutput("tiles.instances.land"));
 
 		const vertexBufferTilesFog = this.renderGraph.createVertexBuffer()
-			.withInput(creatorTilesInstanceData.createOutput("tiles.instances.fog"));
+			.withInput(creatorTilesInstanceData.useOutput("tiles.instances.fog"));
 
 		const vertexDescriptorTilesWater = this.renderGraph.createVertexDescriptor()
 			.withInput(vertexBufferTilesVertexData)
@@ -36,18 +36,18 @@ export class GameRenderer {
 			.withInput(vertexBufferTilesFog);
 
 		const shaderTilesWater = this.renderGraph.createShader()
-			.withVertexShader("...")
-			.withFragmentShader("...")
+			.withVertexShaderSource("...")
+			.withFragmentShaderSource("...")
 			.withInput(vertexDescriptorTilesWater);
 
 		const shaderTilesLand = this.renderGraph.createShader()
-			.withVertexShader("...")
-			.withFragmentShader("...")
+			.withVertexShaderSource("...")
+			.withFragmentShaderSource("...")
 			.withInput(vertexDescriptorTilesLand);
 
 		const shaderTilesFog = this.renderGraph.createShader()
-			.withVertexShader("...")
-			.withFragmentShader("...")
+			.withVertexShaderSource("...")
+			.withFragmentShaderSource("...")
 			.withInput(vertexDescriptorTilesFog);
 
 		this.renderGraph.createCanvas()

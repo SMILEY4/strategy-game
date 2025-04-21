@@ -21,8 +21,8 @@ export function AtlasEntry(props: { data: AtlasEntryData, isSelected: boolean, o
 
 	React.useEffect(() => {
 		if (props.isSelected) {
-			trRef.current!!.nodes([shapeRef.current!!]);
-			trRef.current!!.getLayer()!!.batchDraw();
+			trRef.current!.nodes([shapeRef.current!]);
+			trRef.current!.getLayer()!.batchDraw();
 		}
 	}, [props.isSelected]);
 
@@ -66,7 +66,7 @@ export function AtlasEntry(props: { data: AtlasEntryData, isSelected: boolean, o
 					});
 				}}
 				onTransformEnd={(e) => {
-					const node = shapeRef.current!!;
+					const node = shapeRef.current!;
 					const scaleX = node.scaleX();
 					const scaleY = node.scaleY();
 					node.scaleX(1);

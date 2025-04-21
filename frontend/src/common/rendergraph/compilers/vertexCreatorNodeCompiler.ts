@@ -1,8 +1,9 @@
 import {RenderGraphNodeCompiler} from "../renderGraphNodeCompiler";
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphCompileContext} from "../renderGraphCompileContext";
-import {RenderGraphCommand} from "../renderGraphCommand";
 import {VertexCreatorRenderGraphNode} from "../nodes/vertexCreatorRenderGraphNode";
+import {RenderGraphCommand} from "../renderGraphCommand";
+import {UpdateVertexDataRenderGraphCommand} from "../commands/updateVertexDataRenderGraphCommand";
 
 export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<VertexCreatorRenderGraphNode> {
 
@@ -16,7 +17,7 @@ export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<Vertex
 
 	compile(node: VertexCreatorRenderGraphNode, context: RenderGraphCompileContext): RenderGraphCommand[] {
 		return [
-			new RenderGraphCommand.UpdateVertexData(node)
+			new UpdateVertexDataRenderGraphCommand(node.getName(), node.getFunc())
 		];
 	}
 

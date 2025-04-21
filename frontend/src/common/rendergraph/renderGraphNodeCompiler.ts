@@ -1,6 +1,6 @@
 import {RenderGraphNode} from "./renderGraphNode";
-import {RenderGraphCommand} from "./renderGraphCommand";
 import {RenderGraphCompileContext} from "./renderGraphCompileContext";
+import {RenderGraphCommand} from "./renderGraphCommand";
 
 export interface RenderGraphNodeCompiler<T extends RenderGraphNode<any>> {
 	isInlineCompile(): boolean;

@@ -2,10 +2,14 @@ import {RenderGraphNodeCompiler} from "../renderGraphNodeCompiler";
 import {ShaderRenderGraphNode} from "../nodes/shaderRenderGraphNode";
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphCompileContext} from "../renderGraphCompileContext";
-import {RenderGraphCommand} from "../renderGraphCommand";
 import {RenderTargetRenderGraphNode} from "../nodes/renderTargetRenderGraphNode";
-import {VertexDescriptorRenderGraphNode} from "../nodes/vertexDescriptorRenderGraphNode";
 import {TextureRenderGraphNode} from "../nodes/textureRenderGraphNode";
+import {TextureUnitHandler} from "../resources/textureUnitHandler";
+import {RenderGraphKeys} from "../renderGraphKeys";
+import {RenderGraphCommand} from "../renderGraphCommand";
+import {BindTextureRenderGraphCommand} from "../commands/bindTextureRenderGraphCommand";
+import {BindFramebufferTextureRenderGraphCommand} from "../commands/bindFramebufferTextureRenderGraphCommand";
+import {UseShaderRenderGraphCommand} from "../commands/useShaderRenderGraphCommand";
 
 export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRenderGraphNode> {
 
@@ -20,21 +24,34 @@ export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRe
 	compile(node: ShaderRenderGraphNode, context: RenderGraphCompileContext): RenderGraphCommand[] {
 		const commands: RenderGraphCommand[] = [];
 
+		const textureUnitHandler = context.getAdditional<TextureUnitHandler>(RenderGraphKeys.textureUnitHandler());
+
+		const usedTextures = node
+			.getInputs()
+			.filter(it => it instanceof TextureRenderGraphNode || it instanceof RenderTargetRenderGraphNode)
+			.map(it => {
+				if (it instanceof TextureRenderGraphNode) return RenderGraphKeys.texture(it);
+				if (it instanceof RenderTargetRenderGraphNode) return RenderGraphKeys.framebuffer(it);
+				throw new Error("unhandled type");
+			});
+
 		for (const input of node.getInputs()) {
-			if (input instanceof VertexDescriptorRenderGraphNode) {
-				commands.push(new RenderGraphCommand.BindVertexArray(input));
-			}
+
 			if (input instanceof TextureRenderGraphNode) {
-				commands.push(new RenderGraphCommand.BindTexture(input));
+				const imageUrl = (input as TextureRenderGraphNode).getImageUrl();
+				const textureUnit = textureUnitHandler.findTextureUnit(imageUrl, usedTextures);
+				commands.push(new BindTextureRenderGraphCommand(imageUrl, textureUnit));
 			}
+
 			if (input instanceof RenderTargetRenderGraphNode) {
-				commands.push(new RenderGraphCommand.BindFramebufferTexture(input));
+				const framebufferName = RenderGraphKeys.framebuffer((input as RenderTargetRenderGraphNode));
+				const textureUnit = textureUnitHandler.findTextureUnit(framebufferName, usedTextures);
+				commands.push(new BindFramebufferTextureRenderGraphCommand(framebufferName, textureUnit));
 			}
+
 		}
 
-		commands.push(new RenderGraphCommand.UseShader(node));
-
-		commands.push(new RenderGraphCommand.SetUniforms(node));
+		commands.push(new UseShaderRenderGraphCommand(RenderGraphKeys.shaderProgram(node)));
 
 		return commands;
 	}

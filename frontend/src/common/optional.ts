@@ -33,7 +33,7 @@ export class Optional<T> {
         if (this.isEmpty()) {
             return null;
         } else {
-            return this.value!!;
+            return this.value!;
         }
     }
 
@@ -41,7 +41,7 @@ export class Optional<T> {
         if (this.isEmpty()) {
             return alt;
         } else {
-            return this.value!!;
+            return this.value!;
         }
     }
 
@@ -49,7 +49,7 @@ export class Optional<T> {
         if (this.isEmpty()) {
             throw new Error(errorMessage ? errorMessage : "Cannot get value from this optional");
         } else {
-            return this.value!!;
+            return this.value!;
         }
     }
 
