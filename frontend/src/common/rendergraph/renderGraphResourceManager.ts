@@ -4,6 +4,8 @@ import {RenderGraphResourceCreator} from "./renderGraphResourceCreator";
 export class RenderGraphResourceManager {
 
 	private readonly resourceCreator: RenderGraphResourceCreator<any>[];
+	private readonly resourceDisposers = new  Map<string,(resource: any) => void>();
+	private readonly resources = new  Map<string, any>();
 
 	constructor(resourceCreator: RenderGraphResourceCreator<any>[]) {
 		this.resourceCreator = resourceCreator;
@@ -17,20 +19,27 @@ export class RenderGraphResourceManager {
 		}
 	}
 
-	public setResource<T>(name: string, resource: T) {
-		// todo
+	public createResource<T>(name: string, resource: T, dispose: (resource: T) => void) {
+		this.resourceDisposers.set(name, dispose);
+		this.resources.set(name, resource)
 	}
 
 	public hasResource(name: string): boolean {
-		return false // todo
+		return this.resources.has(name);
 	}
 
 	public getResource<T>(name: string): T {
-		return null as T; // todo
+		const resource = this.resources.get(name);
+		if(!resource) {
+			throw new Error("No resource with name " + name)
+		}
+		return resource;
 	}
 
-	private getResources(): Map<string, any> {
-		return null as any; // todo
+	public dispose() {
+		for (let [name, disposer] of this.resourceDisposers) {
+			disposer(this.getResource(name))
+		}
 	}
 
 }

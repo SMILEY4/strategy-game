@@ -25,7 +25,7 @@ export class ShaderProgramResourceCreator implements RenderGraphResourceCreator<
 		}
 
 		const program = GLProgram.create(this.gl, node.getVertexShaderSource(), node.getFragmentShaderSource());
-		resourceManager.setResource<GLProgram>(programName, program);
+		resourceManager.createResource<GLProgram>(programName, program, it => it.dispose());
 	}
 
 }

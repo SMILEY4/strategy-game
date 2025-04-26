@@ -27,7 +27,7 @@ export class VertexBufferResourceCreator implements RenderGraphResourceCreator<V
 			}
 
 			const buffer = GLVertexBuffer.createEmpty(this.gl);
-			resourceManager.setResource<GLVertexBuffer>(bufferName, buffer);
+			resourceManager.createResource<GLVertexBuffer>(bufferName, buffer, it => it.dispose());
 
 		}
 	}

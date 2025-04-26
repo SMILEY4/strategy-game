@@ -16,7 +16,7 @@ export class SetupViewportRenderGraphCommand extends RenderGraphCommand {
 		this.scaling = scaling;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const gl = resourceManager.getResource<WebGL2RenderingContext>(RenderGraphKeys.gl());
 		const camera = resourceManager.getResource<Camera>(RenderGraphKeys.camera());
 

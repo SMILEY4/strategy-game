@@ -17,7 +17,7 @@ export class WebGlContextResourceCreator implements RenderGraphResourceCreator<I
 	}
 
 	create(node: InitRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-		resourceManager.setResource<WebGL2RenderingContext>(RenderGraphKeys.gl(), this.gl);
+		resourceManager.createResource<WebGL2RenderingContext>(RenderGraphKeys.gl(), this.gl, _ => undefined);
 	}
 
 }

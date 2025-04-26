@@ -25,7 +25,7 @@ export class FramebufferResourceCreator implements RenderGraphResourceCreator<Re
 		}
 
 		const framebuffer = GLFramebuffer.create(this.gl, 1, 1, node.getEnableDepth());
-		resourceManager.setResource<GLFramebuffer>(framebufferName, framebuffer);
+		resourceManager.createResource<GLFramebuffer>(framebufferName, framebuffer, it => it.dispose());
 	}
 
 }

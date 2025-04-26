@@ -34,7 +34,7 @@ export class VertexArrayResourceCreator implements RenderGraphResourceCreator<Dr
 
 		const attributes = this.buildVertexAttributes(shaderNode, vertexDescriptorNode, resourceManager);
 		const vertexArray = GLVertexArray.create(this.gl, attributes);
-		resourceManager.setResource<GLVertexArray>(vertexArrayName, vertexArray);
+		resourceManager.createResource<GLVertexArray>(vertexArrayName, vertexArray, it => it.dispose());
 	}
 
 
@@ -48,7 +48,8 @@ export class VertexArrayResourceCreator implements RenderGraphResourceCreator<Dr
 			if (info) {
 				return info.location;
 			} else {
-				throw new Error("Could not get location for attribute '" + attribute + "' from shader '" + shaderNode.getName() + "'.");
+				console.warn("Could not get location for attribute '" + attribute + "' from shader '" + shaderNode.getName() + "'.");
+				return -1;
 			}
 		}
 

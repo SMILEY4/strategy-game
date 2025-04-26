@@ -16,17 +16,22 @@ export class SetUniformsRenderGraphCommand extends RenderGraphCommand {
 		this.shaderProgramName = shaderProgramName;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const shaderProgram = resourceManager.getResource<GLProgram>(this.shaderProgramName);
 		for (let uniform of this.uniforms) {
-			shaderProgram.setUniform(uniform.binding, uniform.type, uniform.valueProvider(resourceManager));
+			if (uniform.valueProvider != null) {
+				shaderProgram.setUniform(uniform.binding, uniform.type, uniform.valueProvider!(resourceManager));
+			}
+			if (uniform.constValue != null) {
+				shaderProgram.setUniform(uniform.binding, uniform.type, uniform.constValue!);
+			}
 		}
 	}
 
 	getDebugData(): object {
 		return {
 			command: "SetUniforms",
-			uniformNames: this.uniforms.map(it => it.binding),
+			uniformNames: this.uniforms.map(it => [it.binding, ""+it.constValue, ""+it.valueProvider]),
 			shaderProgramName: this.shaderProgramName,
 		};
 	}
@@ -34,17 +39,20 @@ export class SetUniformsRenderGraphCommand extends RenderGraphCommand {
 
 
 export class ProgramUniformEntry {
-	readonly valueProvider: (resourceManager: RenderGraphResourceManager) => GLUniformValueType;
+	readonly constValue: GLUniformValueType | null;
+	readonly valueProvider: ((resourceManager: RenderGraphResourceManager) => GLUniformValueType) | null;
 	readonly binding: string;
 	readonly type: GLUniformType;
 
 
 	constructor(props: {
-		valueProvider: (resourceManager: RenderGraphResourceManager) => GLUniformValueType,
+		valueConst?: GLUniformValueType;
+		valueProvider?: (resourceManager: RenderGraphResourceManager) => GLUniformValueType,
 		binding: string,
 		type: GLUniformType,
 	}) {
-		this.valueProvider = props.valueProvider;
+		this.valueProvider = props.valueProvider === undefined ? null : props.valueProvider;
+		this.constValue = props.valueConst === undefined ? null : props.valueConst;
 		this.binding = props.binding;
 		this.type = props.type;
 	}

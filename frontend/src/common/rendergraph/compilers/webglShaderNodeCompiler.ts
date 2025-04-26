@@ -13,8 +13,9 @@ import {UseShaderRenderGraphCommand} from "../commands/useShaderRenderGraphComma
 import {ProgramUniformEntry, SetUniformsRenderGraphCommand} from "../commands/setUniformsRenderGraphCommand";
 import {PropertyRenderGraphNode} from "../nodes/propertyRenderGraphNode";
 import {GLUniformType, GLUniformValueType} from "../../webgl/glTypes";
-import {GLTexture} from "../../webgl/glTexture";
-import {GLFramebuffer} from "../../webgl/glFramebuffer";
+import {PropertyConstRenderGraphNode} from "../nodes/propertyConstRenderGraphNode";
+import {ConditionalRenderGraphNode} from "../nodes/conditionalRenderGraphNode";
+import {BindTextureConditionalRenderGraphCommand} from "../commands/bindTextureConditionalRenderGraphCommand";
 
 export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRenderGraphNode> {
 
@@ -32,30 +33,59 @@ export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRe
 		// bind textures
 		const textureUnitHandler = context.getCompileResource<TextureUnitHandler>(RenderGraphKeys.textureUnitHandler());
 
-		const usedTextures = node
-			.getInputs()
-			.filter(it => it instanceof TextureRenderGraphNode || it instanceof RenderTargetRenderGraphNode)
-			.map(it => {
-				if (it instanceof TextureRenderGraphNode) return RenderGraphKeys.texture(it);
-				if (it instanceof RenderTargetRenderGraphNode) return RenderGraphKeys.framebuffer(it);
-				throw new Error("unhandled type");
-			});
+		const usedTextures = [
+			...node
+				.getInputs()
+				.filter(it => it instanceof TextureRenderGraphNode)
+				.map(it => RenderGraphKeys.texture(it as TextureRenderGraphNode)),
+			...node
+				.getInputs()
+				.filter(it => it instanceof RenderTargetRenderGraphNode)
+				.map(it => RenderGraphKeys.framebuffer(it as RenderTargetRenderGraphNode)),
+			...node
+				.getInputs()
+				.filter(it => (it instanceof ConditionalRenderGraphNode) && (it as ConditionalRenderGraphNode<any>).getOptions().every(it => it.value instanceof TextureRenderGraphNode))
+				.map(it => RenderGraphKeys.conditionalTexture((it as ConditionalRenderGraphNode<any>).getOptions().map(it => it.value as TextureRenderGraphNode)))
+		]
+
+		const boundTextures = new Map<RenderGraphNode<any>, number>();
 
 		for (const property of node.getProperties()) {
 
 			if (property instanceof TextureRenderGraphNode) {
-				const imageUrl = (property as TextureRenderGraphNode).getImageUrl();
-				const textureUnit = textureUnitHandler.findTextureUnit(imageUrl, usedTextures);
-				commands.push(new BindTextureRenderGraphCommand(imageUrl, textureUnit));
+				const textureName = RenderGraphKeys.texture(property);
+				const textureUnit = textureUnitHandler.findTextureUnit(textureName, usedTextures);
+				commands.push(new BindTextureRenderGraphCommand(textureName, textureUnit));
+				boundTextures.set(property, textureUnit);
 			}
 
 			if (property instanceof RenderTargetRenderGraphNode) {
 				const framebufferName = RenderGraphKeys.framebuffer((property as RenderTargetRenderGraphNode));
 				const textureUnit = textureUnitHandler.findTextureUnit(framebufferName, usedTextures);
 				commands.push(new BindFramebufferTextureRenderGraphCommand(framebufferName, textureUnit));
+				boundTextures.set(property, textureUnit);
+			}
+
+			if(property instanceof ConditionalRenderGraphNode) {
+				const options = property.getOptions();
+				if(options.every(it => it.value instanceof TextureRenderGraphNode)) {
+					const textureOptions = options.map(it => it.value as TextureRenderGraphNode);
+					const textureUnit = textureUnitHandler.findTextureUnit(RenderGraphKeys.conditionalTexture(textureOptions), usedTextures);
+					commands.push(new BindTextureConditionalRenderGraphCommand(
+						options.map(it => ({
+							value : RenderGraphKeys.texture((it.value as TextureRenderGraphNode)),
+							condition : it.condition
+						})),
+						textureUnit
+					));
+					boundTextures.set(property, textureUnit);
+				}
 			}
 
 		}
+
+		// use shader program
+		commands.push(new UseShaderRenderGraphCommand(RenderGraphKeys.shaderProgram(node)));
 
 		// set uniforms
 		const uniforms: ProgramUniformEntry[] = [];
@@ -63,16 +93,18 @@ export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRe
 			const property = namedProperty.node;
 
 			if (property instanceof TextureRenderGraphNode) {
+				const textureUnit = boundTextures.get(property)!;
 				uniforms.push(new ProgramUniformEntry({
-					valueProvider: resourceManager => resourceManager.getResource<GLTexture>(RenderGraphKeys.texture(property)),
+					valueConst: textureUnit,
 					binding: namedProperty.binding,
 					type: GLUniformType.SAMPLER_2D
 				}));
 			}
 
 			if (property instanceof RenderTargetRenderGraphNode) {
+				const textureUnit = boundTextures.get(property)!;
 				uniforms.push(new ProgramUniformEntry({
-					valueProvider: resourceManager => resourceManager.getResource<GLFramebuffer>(RenderGraphKeys.framebuffer(property)),
+					valueConst: textureUnit,
 					binding: namedProperty.binding,
 					type: GLUniformType.SAMPLER_2D
 				}));
@@ -80,18 +112,34 @@ export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRe
 
 			if (property instanceof PropertyRenderGraphNode) {
 				uniforms.push(new ProgramUniformEntry({
-					valueProvider: () => (property.getProvider() as any as GLUniformValueType),
+					valueProvider: () => (property.getProvider()() as any as GLUniformValueType),
 					binding: namedProperty.binding,
 					type: property.getType()!
 				}));
 			}
 
+			if (property instanceof PropertyConstRenderGraphNode) {
+				uniforms.push(new ProgramUniformEntry({
+					valueConst: property.getValue() as any as GLUniformValueType,
+					binding: namedProperty.binding,
+					type: property.getType()!
+				}));
+			}
+
+			if(property instanceof ConditionalRenderGraphNode) {
+				const options = property.getOptions();
+				if(options.every(it => it.value instanceof TextureRenderGraphNode)) {
+					const textureUnit = boundTextures.get(property)!;
+					uniforms.push(new ProgramUniformEntry({
+						valueConst: textureUnit,
+						binding: namedProperty.binding,
+						type: GLUniformType.SAMPLER_2D
+					}));
+				}
+			}
+
 		}
-
 		commands.push(new SetUniformsRenderGraphCommand(uniforms, RenderGraphKeys.shaderProgram(node)));
-
-		// use shader program
-		commands.push(new UseShaderRenderGraphCommand(RenderGraphKeys.shaderProgram(node)));
 
 		return commands;
 	}

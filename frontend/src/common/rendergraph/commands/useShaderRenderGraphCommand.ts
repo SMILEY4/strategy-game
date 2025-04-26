@@ -13,7 +13,7 @@ export class UseShaderRenderGraphCommand extends RenderGraphCommand {
 		this.shaderProgramName = shaderProgramName;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const shaderProgram = resourceManager.getResource<GLProgram>(this.shaderProgramName);
 		shaderProgram.use();
 	}

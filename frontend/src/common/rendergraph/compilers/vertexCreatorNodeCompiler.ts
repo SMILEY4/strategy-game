@@ -4,8 +4,8 @@ import {RenderGraphCompileContext} from "../renderGraphCompileContext";
 import {VertexCreatorRenderGraphNode} from "../nodes/vertexCreatorRenderGraphNode";
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {UpdateVertexDataRenderGraphCommand} from "../commands/updateVertexDataRenderGraphCommand";
-import {RenderGraphChangeTracker} from "../renderGraphChangeTracker";
-import {RenderGraphKeys} from "../renderGraphKeys";
+import {PropertyRenderGraphNode} from "../nodes/propertyRenderGraphNode";
+import {PropertyConstRenderGraphNode} from "../nodes/propertyConstRenderGraphNode";
 
 export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<VertexCreatorRenderGraphNode> {
 
@@ -19,17 +19,12 @@ export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<Vertex
 
 	compile(node: VertexCreatorRenderGraphNode, context: RenderGraphCompileContext): RenderGraphCommand[] {
 
-		const changeTracker = context.getCompileResource<RenderGraphChangeTracker>(RenderGraphKeys.changeTracker());
 		const changeTests = [
 			...node
-				.getProperties()
+				.getInputs()
+				.filter(it => it instanceof PropertyRenderGraphNode)
+				.map(it => it as PropertyRenderGraphNode<any>)
 				.flatMap(it => it.getChangeTests()),
-			...node
-				.getProperties()
-				.flatMap(it => it.getTrackedChangeKeys())
-				.map(trackedChangeKey => {
-					return () => changeTracker.hasChange(trackedChangeKey);
-				}),
 		];
 		const execCondition: () => boolean = () => {
 			for (let changeTest of changeTests) {
@@ -41,8 +36,15 @@ export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<Vertex
 		};
 
 		const execContextEntries = new Map<string, () => any>();
-		for (let property of node.getProperties()) {
-			execContextEntries.set(property.getName(), property.getProvider());
+		for (let input of node.getInputs()) {
+			if(input instanceof PropertyRenderGraphNode) {
+				const prop = input as PropertyRenderGraphNode<any>;
+				execContextEntries.set(prop.getName(), prop.getProvider());
+			}
+			if(input instanceof PropertyConstRenderGraphNode) {
+				const constProp = input as PropertyConstRenderGraphNode<any>;
+				execContextEntries.set(constProp.getName(), () => constProp.getValue());
+			}
 		}
 		const execContext = new VertexCreatorRenderGraphNode.Context(execContextEntries);
 

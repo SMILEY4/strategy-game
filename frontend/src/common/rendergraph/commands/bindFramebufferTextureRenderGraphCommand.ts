@@ -16,7 +16,7 @@ export class BindFramebufferTextureRenderGraphCommand extends RenderGraphCommand
 		this.textureUnit = textureUnit;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const framebuffer = resourceManager.getResource<GLFramebuffer>(this.framebufferName);
 		framebuffer.bindTexture(this.textureUnit);
 	}

@@ -24,8 +24,8 @@ export class UpdateVertexDataRenderGraphCommand extends RenderGraphCommand {
 		this.context = context;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
-		if(!this.execCondition()) {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
+		if(!this.execCondition() && !forceExecute) {
 			return;
 		}
 

@@ -1,12 +1,6 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {DrawRenderGraphNode} from "./drawRenderGraphNode";
 
-/**
- * Node to define a html canvas as a render target
- *
- * Inputs:
- * - ShaderRenderGraphNode: shader(s) that draw to this target
- */
 export class CanvasRenderGraphNode extends RenderGraphNode<CanvasRenderGraphNode> {
 
 	private readonly inputs: DrawRenderGraphNode[] = [];

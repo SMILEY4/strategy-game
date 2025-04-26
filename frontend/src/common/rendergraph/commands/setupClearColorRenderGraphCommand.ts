@@ -15,7 +15,7 @@ export class SetupClearColorRenderGraphCommand extends RenderGraphCommand {
 		this.clearColor = clearColor;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const gl = resourceManager.getResource<WebGL2RenderingContext>(RenderGraphKeys.gl());
 
 		gl.clearColor(this.clearColor[0], this.clearColor[1], this.clearColor[2], this.clearColor[3]);

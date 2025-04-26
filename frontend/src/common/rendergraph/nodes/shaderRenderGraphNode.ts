@@ -2,25 +2,16 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {TextureRenderGraphNode} from "./textureRenderGraphNode";
 import {RenderTargetRenderGraphNode} from "./renderTargetRenderGraphNode";
 import {PropertyRenderGraphNode} from "./propertyRenderGraphNode";
+import {PropertyConstRenderGraphNode} from "./propertyConstRenderGraphNode";
+import {ConditionalRenderGraphNode} from "./conditionalRenderGraphNode";
 
-/**
- * Node to define a draw call using this shader
- *
- * Properties:
- * - vertex shader source
- * - fragment shader source
- *
- * Inputs:
- * - TextureRenderGraphNode: textures to bind
- * - VertexDescriptorRenderGraphNode: vertex data to use for drawing
- */
 export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode> {
 
 	private vertexSource: string | null = null;
 	private fragmentSource: string | null = null;
 
 	private readonly properties: ({
-		node: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any>,
+		node: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any>,
 		binding: string
 	})[] = [];
 
@@ -35,7 +26,7 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 		return this;
 	}
 
-	public withProperty(input: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any>, bindingName: string): ShaderRenderGraphNode {
+	public withProperty(input: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any>, bindingName: string): ShaderRenderGraphNode {
 		this.properties.push({node: input, binding: bindingName});
 		return this;
 	}
@@ -48,12 +39,12 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 		return this.fragmentSource!;
 	}
 
-	public getProperties(): (TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any>)[] {
+	public getProperties(): (TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any>)[] {
 		return this.properties.map(it => it.node);
 	}
 
 	public getPropertiesNamed(): {
-		node: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any>;
+		node: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any>;
 		binding: string
 	}[] {
 		return this.properties;

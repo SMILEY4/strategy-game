@@ -16,7 +16,7 @@ export class BindTextureRenderGraphCommand extends RenderGraphCommand {
 		this.textureUnit = textureUnit;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const texture = resourceManager.getResource<GLTexture>(this.textureName);
 		texture.bind(this.textureUnit);
 	}

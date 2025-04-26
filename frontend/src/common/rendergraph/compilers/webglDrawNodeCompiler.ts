@@ -40,12 +40,12 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 		const outputsToRenderTarget = this.hasRenderTargetOutput(node, context.getNodes());
 		if (outputsToRenderTarget) {
 			const renderTarget = this.getRenderTargetOutput(node, context.getNodes());
-			commands.push(new BindFramebufferRenderGraphCommand(renderTarget.getName(), node.getScaling()));
+			commands.push(new BindFramebufferRenderGraphCommand(RenderGraphKeys.framebuffer(renderTarget), node.getScaling()));
 		}
 
 		// setup viewport
 		commands.push(new SetupViewportRenderGraphCommand(
-			node.getScaling()
+			node.getScaling(),
 		));
 
 		// setup clear color
@@ -55,7 +55,9 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 
 		// setup depth test
 		commands.push(new SetupDepthTestRenderGraphCommand(
-			this.getRenderTargetOutput(node, context.getNodes()).getEnableDepth(),
+			this.hasRenderTargetOutput(node, context.getNodes())
+				? this.getRenderTargetOutput(node, context.getNodes())?.getEnableDepth()
+				: false,
 		));
 
 		// setup color blending

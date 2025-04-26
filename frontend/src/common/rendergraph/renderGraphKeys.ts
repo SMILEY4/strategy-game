@@ -55,4 +55,8 @@ export namespace RenderGraphKeys {
 		return "vertexbuffer:" + creatorName + ":" + outputName;
 	}
 
+	export function conditionalTexture(options: TextureRenderGraphNode[]): string {
+		return "condtextures:" + options.map(it => texture(it)).join(",");
+	}
+
 }

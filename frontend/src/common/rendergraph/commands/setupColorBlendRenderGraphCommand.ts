@@ -20,7 +20,7 @@ export class SetupColorBlendRenderGraphCommand extends RenderGraphCommand {
 		this.renderToTexture = renderToTexture;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const gl = resourceManager.getResource<WebGL2RenderingContext>(RenderGraphKeys.gl());
 
 		gl.enable(gl.BLEND);

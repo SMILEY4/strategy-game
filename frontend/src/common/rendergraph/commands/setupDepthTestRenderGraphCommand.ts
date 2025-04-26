@@ -15,7 +15,7 @@ export class SetupDepthTestRenderGraphCommand extends RenderGraphCommand {
 		this.enableDepth = enableDepth;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const gl = resourceManager.getResource<WebGL2RenderingContext>(RenderGraphKeys.gl());
 
 		if (this.enableDepth) {

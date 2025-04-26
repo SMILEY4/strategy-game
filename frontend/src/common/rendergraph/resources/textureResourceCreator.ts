@@ -25,7 +25,7 @@ export class TextureResourceCreator implements RenderGraphResourceCreator<Textur
 		}
 
 		const texture = GLTexture.createFromPath(this.gl, node.getImageUrl(), node.getConfig() ?? undefined);
-		resourceManager.setResource<GLTexture>(textureName, texture);
+		resourceManager.createResource<GLTexture>(textureName, texture, it => it.dispose());
 	}
 
 }

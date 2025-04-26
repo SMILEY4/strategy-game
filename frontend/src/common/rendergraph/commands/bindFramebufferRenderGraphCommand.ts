@@ -18,9 +18,9 @@ export class BindFramebufferRenderGraphCommand extends RenderGraphCommand {
 		this.renderScale = renderScale;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const camera = resourceManager.getResource<Camera>(RenderGraphKeys.camera());
-		const framebuffer = resourceManager.getResource<GLFramebuffer>("framebuffer:" + this.framebufferName);
+		const framebuffer = resourceManager.getResource<GLFramebuffer>(this.framebufferName);
 
 		framebuffer.resize(camera.getWidth() * this.renderScale, camera.getHeight() * this.renderScale);
 		framebuffer.bind();

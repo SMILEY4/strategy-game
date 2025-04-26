@@ -44,38 +44,41 @@ export class GLAttributeType {
 export type GLUniformValueType = boolean | number | number[] | Float32Array | GLTexture | GLFramebuffer;
 
 export class GLUniformType {
-    public static FLOAT = new GLUniformType();
-    public static FLOAT_ARRAY = new GLUniformType();
-    public static VEC2 = new GLUniformType();
-    public static VEC2_ARRAY = new GLUniformType();
-    public static VEC3 = new GLUniformType();
-    public static VEC3_ARRAY = new GLUniformType();
-    public static VEC4 = new GLUniformType();
-    public static VEC4_ARRAY = new GLUniformType();
-    public static INT = new GLUniformType();
-    public static INT_ARRAY = new GLUniformType();
-    public static INT_VEC2 = new GLUniformType();
-    public static INT_VEC2_ARRAY = new GLUniformType();
-    public static INT_VEC3 = new GLUniformType();
-    public static INT_VEC3_ARRAY = new GLUniformType();
-    public static INT_VEC4 = new GLUniformType();
-    public static INT_VEC4_ARRAY = new GLUniformType();
-    public static SAMPLER_2D = new GLUniformType();
-    public static SAMPLER_2D_ARRAY = new GLUniformType();
-    public static SAMPLER_CUBE = new GLUniformType();
-    public static SAMPLER_CUBE_ARRAY = new GLUniformType();
-    public static MAT2 = new GLUniformType();
-    public static MAT2_ARRAY = new GLUniformType();
-    public static MAT3 = new GLUniformType();
-    public static MAT3_ARRAY = new GLUniformType();
-    public static MAT4 = new GLUniformType();
-    public static MAT4_ARRAY = new GLUniformType();
-    public static BOOL = new GLUniformType();
-    public static BOOL_VEC2 = new GLUniformType();
-    public static BOOL_VEC3 = new GLUniformType();
-    public static BOOL_VEC4 = new GLUniformType();
+    public static FLOAT = new GLUniformType("FLOAT");
+    public static FLOAT_ARRAY = new GLUniformType("FLOAT_ARRAY");
+    public static VEC2 = new GLUniformType("VEC2");
+    public static VEC2_ARRAY = new GLUniformType("VEC2_ARRAY");
+    public static VEC3 = new GLUniformType("VEC3");
+    public static VEC3_ARRAY = new GLUniformType("VEC3_ARRAY");
+    public static VEC4 = new GLUniformType("VEC4");
+    public static VEC4_ARRAY = new GLUniformType("VEC4_ARRAY");
+    public static INT = new GLUniformType("INT");
+    public static INT_ARRAY = new GLUniformType("INT_ARRAY");
+    public static INT_VEC2 = new GLUniformType("INT_VEC2");
+    public static INT_VEC2_ARRAY = new GLUniformType("INT_VEC2_ARRAY");
+    public static INT_VEC3 = new GLUniformType("INT_VEC3");
+    public static INT_VEC3_ARRAY = new GLUniformType("INT_VEC3_ARRAY");
+    public static INT_VEC4 = new GLUniformType("INT_VEC4");
+    public static INT_VEC4_ARRAY = new GLUniformType("INT_VEC4_ARRAY");
+    public static SAMPLER_2D = new GLUniformType("SAMPLER_2D");
+    public static SAMPLER_2D_ARRAY = new GLUniformType("SAMPLER_2D_ARRAY");
+    public static SAMPLER_CUBE = new GLUniformType("SAMPLER_CUBE");
+    public static SAMPLER_CUBE_ARRAY = new GLUniformType("SAMPLER_CUBE_ARRAY");
+    public static MAT2 = new GLUniformType("MAT2");
+    public static MAT2_ARRAY = new GLUniformType("MAT2_ARRAY");
+    public static MAT3 = new GLUniformType("MAT3");
+    public static MAT3_ARRAY = new GLUniformType("MAT3_ARRAY");
+    public static MAT4 = new GLUniformType("MAT4");
+    public static MAT4_ARRAY = new GLUniformType("MAT4_ARRAY");
+    public static BOOL = new GLUniformType("BOOL");
+    public static BOOL_VEC2 = new GLUniformType("BOOL_VEC2");
+    public static BOOL_VEC3 = new GLUniformType("BOOL_VEC3");
+    public static BOOL_VEC4 = new GLUniformType("BOOL_VEC4");
 
-    constructor() {
+    private readonly name: string;
+
+    constructor(name: string) {
+        this.name = name;
     }
 
 }

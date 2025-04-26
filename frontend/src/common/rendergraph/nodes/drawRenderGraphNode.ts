@@ -2,12 +2,6 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./vertexDescriptorRenderGraphNode";
 
-/**
- * Node to define a draw call
- *
- * Inputs:
- * - ShaderRenderGraphNode: shader(s) that draw to this target
- */
 export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 
 	private shaderNode: ShaderRenderGraphNode = null as any;
@@ -27,16 +21,19 @@ export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 		return this;
 	}
 
-	public withClearColor(color: [number, number, number, number]): void {
+	public withClearColor(color: [number, number, number, number]): DrawRenderGraphNode {
 		this.clearColor = color;
+		return this;
 	}
 
-	public withScaling(scaling: number): void {
+	public withScaling(scaling: number): DrawRenderGraphNode {
 		this.scaling = scaling;
+		return this;
 	}
 
-	public withBlendFunction(blendFunction: ((gl: WebGL2RenderingContext) => void) | null): void {
+	public withBlendFunction(blendFunction: ((gl: WebGL2RenderingContext) => void) | null): DrawRenderGraphNode {
 		this.blendFunction = blendFunction;
+		return this;
 	}
 
 

@@ -1,12 +1,6 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {GLTexture} from "../../webgl/glTexture";
 
-/**
- * Node to define a texture
- *
- * Properties:
- * - url: the url to the image file
- */
 export class TextureRenderGraphNode extends RenderGraphNode<TextureRenderGraphNode> {
 
 	private imageUrl: string | null = null;

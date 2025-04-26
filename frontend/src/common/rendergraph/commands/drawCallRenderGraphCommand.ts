@@ -16,7 +16,7 @@ export class DrawCallRenderGraphCommand extends RenderGraphCommand {
 		this.vertexInfoNames = vertexInfoNames;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const gl = resourceManager.getResource<WebGL2RenderingContext>(RenderGraphKeys.gl());
 		const entryCounts = this.getEntryCount(resourceManager);
 

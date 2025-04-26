@@ -1,5 +1,4 @@
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
-import {GameRenderer} from "../../renderer/game/gameRenderer";
 import {TileService} from "./service/tileService";
 import {CameraService} from "./service/cameraService";
 import {MovementService} from "./service/movementService";
@@ -21,6 +20,7 @@ import {CommandService} from "./service/commandService";
 import {CommandType} from "../../models/command/commandType";
 import {UID} from "../../common/uid";
 import {MonitoringService} from "./service/monitoringService";
+import {GameRenderer} from "../../renderer/new/gameRenderer";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services

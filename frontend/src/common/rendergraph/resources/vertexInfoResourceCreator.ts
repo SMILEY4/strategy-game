@@ -20,10 +20,13 @@ export class VertexInfoResourceCreator implements RenderGraphResourceCreator<Ver
 				continue;
 			}
 
-			resourceManager.setResource<VertexMetaInfo>(name, {
-				type: output.type,
-				entryCount: 0,
-			});
+			resourceManager.createResource<VertexMetaInfo>(
+				name,
+				{
+					type: output.type,
+					entryCount: 0,
+				},
+				_ => undefined);
 
 		}
 

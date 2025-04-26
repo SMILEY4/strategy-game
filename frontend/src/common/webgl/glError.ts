@@ -1,6 +1,6 @@
 export namespace GLError {
 
-    export let enabled: boolean = false;
+    export let enabled: boolean = true;
 
     export function check(gl: WebGL2RenderingContext, operation: string, message?: string): boolean {
         if (!GLError.enabled) {
@@ -62,4 +62,8 @@ export namespace GLError {
         }
     }
 
+}
+
+if(GLError.enabled) {
+    console.warn("webgl error checking is enabled. This may cost performance!")
 }

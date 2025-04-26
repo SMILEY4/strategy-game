@@ -14,7 +14,7 @@ export class UnbindFramebufferRenderGraphCommand extends RenderGraphCommand {
 		this.framebufferName = framebufferName;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const framebuffer = resourceManager.getResource<GLFramebuffer>("framebuffer:" + this.framebufferName);
 		framebuffer.unbind();
 	}

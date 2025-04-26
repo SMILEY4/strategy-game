@@ -13,7 +13,7 @@ export class BindVertexArrayRenderGraphCommand extends RenderGraphCommand {
 		this.vertexArrayName = vertexArrayName;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager): void {
+	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
 		const vertexArray = resourceManager.getResource<GLVertexArray>(this.vertexArrayName);
 		vertexArray.bind();
 	}

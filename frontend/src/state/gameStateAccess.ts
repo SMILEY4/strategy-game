@@ -25,6 +25,8 @@ import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
 import {SettlementSummary} from "../models/settlement/settlementSummary";
 import {DbCache} from "../common/db/dbCache";
 import {CountrySummary} from "../models/country/countrySummary";
+import {types} from "sass";
+import Error = types.Error;
 
 export interface GameStateAccess {
 	// game
@@ -41,6 +43,7 @@ export interface GameStateAccess {
 	getTileAt(q: number, r: number): Tile | null;
 	getTileSummaryAt(q: number, r: number): TileSummary | null;
 	getTiles(): Tile[];
+	getTilesRevId(): string;
 	// country
 	getPlayerCountrySummary(): CountrySummary;
 	// world objects
@@ -50,18 +53,21 @@ export interface GameStateAccess {
 	getCurrentMovementState(): MovementState | null;
 	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[];
 	getMoveTargets(): TileSummary[];
+	getWorldObjectsRevId(): string;
 	// settlements
 	// todo: maybe own reduced settlement model for rendering
 	getSettlements(): Settlement[];
 	getSettlementAt(q: number, r: number): Settlement | null;
 	getSettlementSummaryAt(q: number, r: number): SettlementSummary | null;
 	getSettlementProductionQueue(id: SettlementId): SettlementProductionQueueEntry[] | null;
+	getSettlementsRevId(): string;
 	// routes
 	getRoutes(): Route[];
+	getRoutesRevId(): string;
 	// commands
-	getCommandRevId(): string;
 	getCommands(): Command[];
 	getCommandsOfType<T extends Command>(type: CommandType): T[];
+	getCommandRevId(): string;
 }
 
 export class GameStateAccessImpl implements GameStateAccess {
@@ -152,6 +158,10 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== TILES ========================================================
 
+	getTilesRevId(): string {
+		return this.tileDatabase.getRevId();
+	}
+
 	getSelectedTile(): TileSummary | null {
 		return this.gameSessionDatabase.get().selectedTile;
 	}
@@ -219,6 +229,10 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== WORLD OBJECTS =================================================
 
+	getWorldObjectsRevId(): string {
+		return this.worldObjectDatabase.getRevId();
+	}
+
 	getWorldObjectSummary(id: WorldObjectId): WorldObjectSummary | null {
 		return this.worldObjectDatabase.querySingle(WorldObjectDatabase.QUERY_BY_ID, id);
 	}
@@ -275,6 +289,10 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== SETTLEMENTS ===================================================
 
+	getSettlementsRevId(): string {
+		return this.settlementDatabase.getRevId()
+	}
+
 	getSettlements(): Settlement[] {
 		return this.settlementsCache.get();
 	}
@@ -324,6 +342,10 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== ROUTES ========================================================
 
+	getRoutesRevId(): string {
+		return this.routeDatabase.getRevId()
+	}
+
 	getRoutes(): Route[] {
 		return this.routesCache.get()
 	}
@@ -347,4 +369,5 @@ export class GameStateAccessImpl implements GameStateAccess {
 			.queryMany(CommandDatabase.QUERY_ALL, null)
 			.filter(cmd => cmd.type === type) as T[];
 	}
+
 }
