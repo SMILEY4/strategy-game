@@ -36,6 +36,7 @@ import {VertexArrayResourceCreator} from "../../common/rendergraph/resources/ver
 import {VertexBufferResourceCreator} from "../../common/rendergraph/resources/vertexBufferResourceCreator";
 import {VertexInfoResourceCreator} from "../../common/rendergraph/resources/vertexInfoResourceCreator";
 import {TileSummary} from "../../models/tile/tileSummary";
+import {mat3} from "../../common/webgl/mat3";
 
 export class GameRenderGraphFactory {
 
@@ -135,7 +136,7 @@ export class GameRenderGraphFactory {
 		const propLandOutlineSizeDark = graph
 			.createPropertyConstant<number>("landOutlineSizeDark")
 			.withType(GLUniformType.FLOAT)
-			.withValue(0.2);
+			.withValue(0.002);
 
 
 		const propFogColorUnknown = graph
@@ -249,13 +250,13 @@ export class GameRenderGraphFactory {
 
 		const propMoveTargets = graph
 			.createProperty<TileSummary[]>("moveTargets")
-			.withChangeTest(() => changeTracker.getTrackedChanges().commands)
+			.withChangeTest(() => true) // todo: wrong change test
 			.withProvider(() => gameAccess.getMoveTargets());
 
 
 		const propSelectedTile = graph
 			.createProperty<[number, number]>("selectedTile")
-			.withProvider(() => [0, 0])
+			.withProvider(() => gameAccess.getSelectedTile() ? [gameAccess.getSelectedTile()?.position.q, gameAccess.getSelectedTile()?.position.r] as [number, number] : [99999, 99999])
 			.withChangeTest(() => changeTracker.getTrackedChanges().selectedTile)
 			.withType(GLUniformType.INT_VEC2);
 
@@ -272,6 +273,21 @@ export class GameRenderGraphFactory {
 					canvasHandle.getClientHeight(),
 				);
 				return camera.getViewProjectionMatrixOrThrow(true);
+			});
+
+		const propCameraInvVPM = graph
+			.createProperty<Float32Array>("camera-inv-vpm")
+			.withType(GLUniformType.MAT3)
+			.withChangeTest(() => changeTracker.getTrackedChanges().camera)
+			.withProvider(() => {
+				const camera = Camera.create(
+					gameAccess.getCamera(),
+					canvasHandle.getCanvasWidth(),
+					canvasHandle.getCanvasHeight(),
+					canvasHandle.getClientWidth(),
+					canvasHandle.getClientHeight(),
+				);
+				return mat3.inverse(camera.getViewProjectionMatrixOrThrow(true));
 			});
 
 		const propTime = graph
@@ -604,40 +620,33 @@ export class GameRenderGraphFactory {
 			.withInput(vertexCreatorOverlayInstances.useOutput(OverlayInstancesVertexCreator.OUTPUT_ID));
 
 		const propOverlayBorderThickness = graph
-			.createProperty<number>("overlay.borderThickness")
-			.withProvider(() => 0.15)
-			.withChangeTest(() => false)
+			.createPropertyConstant<number>("overlay.borderThickness")
+			.withValue(0.15)
 			.withType(GLUniformType.FLOAT);
 
 		const propOverlayBorderOpacity = graph
-			.createProperty<number>("overlay.borderOpacity")
-			.withProvider(() => 1.0)
-			.withChangeTest(() => false)
+			.createPropertyConstant<number>("overlay.borderOpacity")
+			.withValue(1.0)
 			.withType(GLUniformType.FLOAT);
 
 		const propOverlayFillOpacity = graph
-			.createProperty<number>("overlay.fillOpacity")
-			.withProvider(() => 0.5)
-			.withChangeTest(() => false)
+			.createPropertyConstant<number>("overlay.fillOpacity")
+			.withValue(0.5)
 			.withType(GLUniformType.FLOAT);
 
-
 		const propOverlayTileSelectionThickness = graph
-			.createProperty<number>("overlay.tileSelection.thickness")
-			.withProvider(() => 0.1)
-			.withChangeTest(() => false)
+			.createPropertyConstant<number>("overlay.tileSelection.thickness")
+			.withValue(0.1)
 			.withType(GLUniformType.FLOAT);
 
 		const propOverlayTileSelectionColor0 = graph
-			.createProperty<[number, number, number, number]>("overlay.tileSelection.color0")
-			.withProvider(() => [255 / 255, 215 / 255, 0 / 255, 1.0])
-			.withChangeTest(() => false)
+			.createPropertyConstant<[number, number, number, number]>("overlay.tileSelection.color0")
+			.withValue([255 / 255, 215 / 255, 0 / 255, 1.0])
 			.withType(GLUniformType.VEC4);
 
 		const propOverlayTileSelectionColor1 = graph
-			.createProperty<[number, number, number, number]>("overlay.tileSelection.color1")
-			.withProvider(() => [1.0, 1.0, 1.0, 1.0])
-			.withChangeTest(() => false)
+			.createPropertyConstant<[number, number, number, number]>("overlay.tileSelection.color1")
+			.withValue([1.0, 1.0, 1.0, 1.0])
 			.withType(GLUniformType.VEC4);
 
 		const shaderOverlay = graph
@@ -755,6 +764,7 @@ export class GameRenderGraphFactory {
 
 			.withProperty(propTime, "u_common.timestamp")
 			.withProperty(textureNoiseWatercolor, "u_common.noise")
+			.withProperty(propCameraInvVPM, "u_common.invViewProjection")
 
 			.withProperty(renderTargetWater, "u_water.layer")
 			.withProperty(propColorWaterLight, "u_water.colorLight")
@@ -792,7 +802,7 @@ export class GameRenderGraphFactory {
 			.withProperty(propPaperSmallStrength, "u_paper.small.strength")
 			.withProperty(propPaperSmallContrast, "u_paper.small.contrast")
 
-			.withProperty(textureClouds, "u_paper.small.texture")
+			.withProperty(textureClouds, "u_paper.clouds.texture")
 			.withProperty(propPaperCloudsScale, "u_paper.clouds.scale")
 			.withProperty(propPaperCloudsStrength, "u_paper.clouds.strength")
 			.withProperty(propPaperCloudsContrast, "u_paper.clouds.contrast")

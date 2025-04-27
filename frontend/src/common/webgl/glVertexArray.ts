@@ -77,8 +77,10 @@ export namespace GLVertexArray {
 
 			if (attribute.location < 0) {
 				console.warn("Ignoring vertex attribute with invalid location", attribute.debugName, attribute);
-				return;
+				incrementOffset(offset, attribute.buffer, attribute.type.bytes * attribute.amountComponents);
+				return
 			}
+
 
 			// enable
 			gl.enableVertexAttribArray(attribute.location);

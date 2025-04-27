@@ -9,7 +9,7 @@ export namespace FullscreenQuadVertexCreator {
 	const VERTEX_COUNT = 6;
 
 	const PATTERN = [
-		// position (x,y) in range [0,1]
+		// position (x,y) in range [-1,+1]
 		...MixedArrayBufferType.VEC2,
 	];
 

@@ -1,4 +1,3 @@
-import {WebGLShaderSourceManager} from "../common/webgl/webGLShaderSourceManager";
 import {DrawRenderTargetToScreenNode} from "../common/prebuilt/drawRenderTargetToScreenNode";
 
 import SHADER_COMMON_COLOR from "./shaders/common/color.glsl?raw";
@@ -74,15 +73,15 @@ export class GameShaderSourceManager {
 
 	public process(): void {
 		this.sources.forEach((src, id) => {
-			this.sources.set(id, this.processShader(src))
-		})
+			this.sources.set(id, this.processShader(src));
+		});
 	}
 
 	private processShader(source: string): string {
 		let procSource = source;
 		this.sources.forEach((src, id) => {
-			procSource = procSource.replaceAll("#include " + id, src)
-		})
+			procSource = procSource.replaceAll("#include " + id, src);
+		});
 		return procSource;
 	}
 }

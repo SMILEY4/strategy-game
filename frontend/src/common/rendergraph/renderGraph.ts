@@ -61,7 +61,8 @@ export class RenderGraph {
 
 	public execute() {
 		for (let i = 0, n = this.commands.length; i < n; i++) {
-			this.commands[i].execute(this.resourceManager, this.executeCounter < 10);
+			// this.commands[i].execute(this.resourceManager, this.executeCounter < 10);
+			this.commands[i].execute(this.resourceManager, true); // todo: temp (forced)
 		}
 		this.executeCounter++;
 	}
