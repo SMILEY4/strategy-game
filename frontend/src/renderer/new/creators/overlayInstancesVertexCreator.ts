@@ -33,7 +33,7 @@ export namespace OverlayInstancesVertexCreator {
 		...MixedArrayBufferType.VEC4,
 	];
 
-	export function func(context: VertexCreatorRenderGraphNode.Context): VertexCreatorRenderGraphNode.CreationFuncResult {
+	export function func(context: VertexCreatorRenderGraphNode.Context): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
 
 		const tiles = context.get<Tile[]>("tiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");

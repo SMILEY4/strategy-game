@@ -3,6 +3,8 @@ import {TextureRenderGraphNode} from "./nodes/textureRenderGraphNode";
 import {ShaderRenderGraphNode} from "./nodes/shaderRenderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./nodes/vertexDescriptorRenderGraphNode";
 import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode";
+import {ElementCreatorRenderGraphNode} from "./nodes/elementCreatorRenderGraphNode";
+import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
 
 export namespace RenderGraphKeys {
 
@@ -57,6 +59,22 @@ export namespace RenderGraphKeys {
 
 	export function conditionalTexture(options: TextureRenderGraphNode[]): string {
 		return "condtextures:" + options.map(it => texture(it)).join(",");
+	}
+
+	export function elementsData(output: ElementCreatorRenderGraphNode.Output): string {
+		return elementsDataFromName(output.creator.getName(), output.name);
+	}
+
+	export function elementsDataFromName(creatorName: string, outputName: string): string {
+		return "elementsdata:" + creatorName + ":" + outputName;
+	}
+
+	export function pooledHtmlElements(output: ElementCreatorRenderGraphNode.Output): string {
+		return "htmlelementpool:" + output.creator.getName() + ":" + output.name;
+	}
+
+	export function cachedHtmlElement(node: ContainerRenderGraphNode): string {
+		return "htmlelementcache:" + node.getElementId();
 	}
 
 }

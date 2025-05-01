@@ -4,6 +4,7 @@ import {GLVertexBuffer} from "../../webgl/glVertexBuffer";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {VertexMetaInfo} from "../nodes/vertexDescriptorRenderGraphNode";
 import {RenderGraphCommand} from "../renderGraphCommand";
+import {ProgrammableNodeContext} from "../nodes/programmableRenderGraphNode";
 
 /**
  * Update the vertex data returned by the given function.
@@ -12,11 +13,16 @@ import {RenderGraphCommand} from "../renderGraphCommand";
 export class UpdateVertexDataRenderGraphCommand extends RenderGraphCommand {
 
 	private readonly creatorName: string;
-	private readonly creationFunc: VertexCreatorRenderGraphNode.CreationFunc;
+	private readonly creationFunc: (context: ProgrammableNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult;
 	private readonly execCondition: () => boolean;
-	private readonly context: VertexCreatorRenderGraphNode.Context;
+	private readonly context: ProgrammableNodeContext;
 
-	constructor(creatorName: string, creationFunc: VertexCreatorRenderGraphNode.CreationFunc, execCondition: () => boolean, context: VertexCreatorRenderGraphNode.Context) {
+	constructor(
+		creatorName: string,
+		creationFunc: (context: ProgrammableNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult,
+		execCondition: () => boolean,
+		context: ProgrammableNodeContext,
+	) {
 		super();
 		this.creatorName = creatorName;
 		this.creationFunc = creationFunc;
@@ -25,7 +31,7 @@ export class UpdateVertexDataRenderGraphCommand extends RenderGraphCommand {
 	}
 
 	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
-		if(!this.execCondition() && !forceExecute) {
+		if (!this.execCondition() && !forceExecute) {
 			return;
 		}
 

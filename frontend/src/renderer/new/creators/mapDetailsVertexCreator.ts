@@ -23,7 +23,7 @@ export namespace MapDetailsVertexCreator {
 	const spriteBuffer = new SpriteBuffer();
 
 
-	export function func(context: VertexCreatorRenderGraphNode.Context): VertexCreatorRenderGraphNode.CreationFuncResult {
+	export function func(context: VertexCreatorRenderGraphNode.Context): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
 
 		const tiles = context.get<Tile[]>("tiles");
 		const settlements = context.get<Settlement[]>("settlements");

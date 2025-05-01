@@ -14,7 +14,7 @@ export namespace FullscreenQuadVertexCreator {
 	];
 
 
-	export function func(): VertexCreatorRenderGraphNode.CreationFuncResult {
+	export function func(): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(VERTEX_COUNT, PATTERN);
 
 		// corner a, triangle a

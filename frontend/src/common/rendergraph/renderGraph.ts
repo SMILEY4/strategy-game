@@ -15,6 +15,9 @@ import {PropertyRenderGraphNode} from "./nodes/propertyRenderGraphNode";
 import {PropertyConstRenderGraphNode} from "./nodes/propertyConstRenderGraphNode";
 import {ConditionalRenderGraphNode} from "./nodes/conditionalRenderGraphNode";
 import {Camera} from "../webgl/camera";
+import {ElementCreatorRenderGraphNode} from "./nodes/elementCreatorRenderGraphNode";
+import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
+import {HtmlDrawRenderGraphNode} from "./nodes/htmlDrawRenderGraphNode";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
@@ -38,7 +41,7 @@ export class RenderGraph {
 	}
 
 	public updateCamera(camera: Camera) { // todo: temp workaround
-		this.resourceManager.createResource("camera", camera, _ => undefined)
+		this.resourceManager.createResource("camera", camera, _ => undefined);
 	}
 
 	public initialize(compileResources: Map<string, any>) {
@@ -49,7 +52,7 @@ export class RenderGraph {
 		this.resourceManager.initialize(this.sortedNodes);
 		this.commands.push(...this.compiler.compile(this.sortedNodes, compileResources, true));
 		this.executeCounter = 0;
-		console.log(this.commands.map(it => it.getDebugData()))
+		console.log(this.commands.map(it => it.getDebugData()));
 	}
 
 	public dispose() {
@@ -61,8 +64,7 @@ export class RenderGraph {
 
 	public execute() {
 		for (let i = 0, n = this.commands.length; i < n; i++) {
-			// this.commands[i].execute(this.resourceManager, this.executeCounter < 10);
-			this.commands[i].execute(this.resourceManager, true); // todo: temp (forced)
+			this.commands[i].execute(this.resourceManager, this.executeCounter < 10);
 		}
 		this.executeCounter++;
 	}
@@ -113,6 +115,20 @@ export class RenderGraph {
 		return node;
 	}
 
+	public createElementCreator(name?: string): ElementCreatorRenderGraphNode {
+		const node = new ElementCreatorRenderGraphNode();
+		if (name) node.withName(name);
+		this.addNode(node);
+		return node;
+	}
+
+	public createHtmlRender(name?: string): HtmlDrawRenderGraphNode {
+		const node = new HtmlDrawRenderGraphNode();
+		if (name) node.withName(name);
+		this.addNode(node);
+		return node;
+	}
+
 	public createDraw(name?: string): DrawRenderGraphNode {
 		const node = new DrawRenderGraphNode();
 		if (name) node.withName(name);
@@ -136,6 +152,13 @@ export class RenderGraph {
 
 	public createConditional<T extends RenderGraphNode<any>>(name?: string): ConditionalRenderGraphNode<T> {
 		const node = new ConditionalRenderGraphNode<T>();
+		if (name) node.withName(name);
+		this.addNode(node);
+		return node;
+	}
+
+	public createContainer(name?: string): ContainerRenderGraphNode {
+		const node = new ContainerRenderGraphNode();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;

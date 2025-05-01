@@ -1,13 +1,13 @@
 import {RenderGraph} from "../../common/rendergraph/renderGraph";
 import {GLAttributeType, GLUniformType} from "../../common/webgl/glTypes";
-import {TileMeshVertexCreator} from "./vertexCreators/tileMeshVertexCreator";
-import {TileInstanceVertexCreator} from "./vertexCreators/tileInstancesVertexCreator";
+import {TileMeshVertexCreator} from "./creators/tileMeshVertexCreator";
+import {TileInstanceVertexCreator} from "./creators/tileInstancesVertexCreator";
 import {Tile} from "../../models/tile/tile";
 import {GameStateAccess} from "../../state/gameStateAccess";
-import {OverlayMeshVertexCreator} from "./vertexCreators/overlayMeshVertexCreator";
+import {OverlayMeshVertexCreator} from "./creators/overlayMeshVertexCreator";
 import {MapMode} from "../../models/misc/mapMode";
-import {OverlayInstancesVertexCreator} from "./vertexCreators/overlayInstancesVertexCreator";
-import {MapDetailsVertexCreator} from "./vertexCreators/mapDetailsVertexCreator";
+import {OverlayInstancesVertexCreator} from "./creators/overlayInstancesVertexCreator";
+import {MapDetailsVertexCreator} from "./creators/mapDetailsVertexCreator";
 import {Settlement} from "../../models/settlement/settlement";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {Route} from "../../models/route/route";
@@ -27,7 +27,7 @@ import {Camera} from "../../common/webgl/camera";
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
-import {FullscreenQuadVertexCreator} from "./vertexCreators/fullscreenQuadVertexCreator";
+import {FullscreenQuadVertexCreator} from "./creators/fullscreenQuadVertexCreator";
 import {WebGlContextResourceCreator} from "../../common/rendergraph/resources/webGlContextResourceCreator";
 import {FramebufferResourceCreator} from "../../common/rendergraph/resources/framebufferResourceCreator";
 import {TextureResourceCreator} from "../../common/rendergraph/resources/textureResourceCreator";
@@ -37,6 +37,12 @@ import {VertexBufferResourceCreator} from "../../common/rendergraph/resources/ve
 import {VertexInfoResourceCreator} from "../../common/rendergraph/resources/vertexInfoResourceCreator";
 import {TileSummary} from "../../models/tile/tileSummary";
 import {mat3} from "../../common/webgl/mat3";
+import {LabelsElementCreator} from "./creators/labelsElementCreator";
+import {ElementCreatorNodeCompiler} from "../../common/rendergraph/compilers/elementCreatorNodeCompiler";
+import {HtmlDrawNodeCompiler} from "../../common/rendergraph/compilers/htmlDrawNodeCompiler";
+import {ElementDataResourceCreator} from "../../common/rendergraph/resources/elementDataResourceCreator";
+import {HtmlElementPoolResourceCreator} from "../../common/rendergraph/resources/htmlElementPoolResourceCreator";
+import {CachedHtmlElementResourceCreator} from "../../common/rendergraph/resources/cachedHtmlElementResourceCreator";
 
 export class GameRenderGraphFactory {
 
@@ -65,6 +71,8 @@ export class GameRenderGraphFactory {
 				new VertexCreatorNodeCompiler(),
 				new WebglShaderNodeCompiler(),
 				new WebglDrawNodeCompiler(),
+				new ElementCreatorNodeCompiler(),
+				new HtmlDrawNodeCompiler(),
 			]),
 			new RenderGraphResourceManager([
 				new WebGlContextResourceCreator(gl),
@@ -74,6 +82,9 @@ export class GameRenderGraphFactory {
 				new VertexArrayResourceCreator(gl),
 				new VertexBufferResourceCreator(gl),
 				new VertexInfoResourceCreator(),
+				new ElementDataResourceCreator(),
+				new HtmlElementPoolResourceCreator(),
+				new CachedHtmlElementResourceCreator(),
 			]),
 		);
 
@@ -817,9 +828,28 @@ export class GameRenderGraphFactory {
 			.withClearColor([0, 0, 0, 1])
 			.withScaling(1);
 
+		const creatorLabels = graph
+			.createElementCreator("create-labels")
+			.withProperty(propSettlements)
+			.withProperty(propWorldObjects)
+			.withFunction(LabelsElementCreator.funcCreate)
+			.withOutput(LabelsElementCreator.OUTPUT_ID);
+
+		const htmlRendererLabels = graph
+			.createHtmlRender("html-labels")
+			.withCullingRadius(2)
+			.withTemplateFunc(LabelsElementCreator.funcTemplate)
+			.withRenderFunc(LabelsElementCreator.funcRender)
+			.withElements(creatorLabels.useOutput(LabelsElementCreator.OUTPUT_ID));
+
 		graph
 			.createCanvas("screen")
 			.withInput(drawCombine);
+
+		graph
+			.createContainer("html-elements")
+			.withElementId("todo") // todo
+			.withInput(htmlRendererLabels);
 
 		return graph;
 	}

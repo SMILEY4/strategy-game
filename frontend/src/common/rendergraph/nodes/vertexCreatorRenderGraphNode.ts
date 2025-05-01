@@ -1,26 +1,10 @@
-import {RenderGraphNode} from "../renderGraphNode";
 import {VertexAttribute} from "./vertexDescriptorRenderGraphNode";
-import {PropertyRenderGraphNode} from "./propertyRenderGraphNode";
-import CreationFunc = VertexCreatorRenderGraphNode.CreationFunc;
-import {PropertyConstRenderGraphNode} from "./propertyConstRenderGraphNode";
+import {ProgrammableRenderGraphNode} from "./programmableRenderGraphNode";
+import CreationFuncResult = VertexCreatorRenderGraphNode.VertexCreationFuncResult;
 
-export class VertexCreatorRenderGraphNode extends RenderGraphNode<VertexCreatorRenderGraphNode> {
+export class VertexCreatorRenderGraphNode extends ProgrammableRenderGraphNode<CreationFuncResult, VertexCreatorRenderGraphNode> {
 
-	private readonly properties: (PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any>)[] = [];
-	private func: CreationFunc = null as any;
 	private readonly outputs = new Map<string, VertexCreatorRenderGraphNode.Output>();
-
-
-	public withProperty(property: PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any>): VertexCreatorRenderGraphNode {
-		// todo: own name for properties valid in creator scope (similar to shader properties)
-		this.properties.push(property);
-		return this;
-	}
-
-	public withFunction(func: CreationFunc): VertexCreatorRenderGraphNode {
-		this.func = func;
-		return this;
-	}
 
 	public withOutput(name: string, type: "vertices" | "instances", attributes: VertexAttribute[]): VertexCreatorRenderGraphNode {
 		this.outputs.set(name, new VertexCreatorRenderGraphNode.Output(name, this, attributes, type));
@@ -31,43 +15,15 @@ export class VertexCreatorRenderGraphNode extends RenderGraphNode<VertexCreatorR
 		return this.outputs.get(name)!;
 	}
 
-	public getFunc(): CreationFunc {
-		return this.func;
-	}
-
 	public getOutputs(): VertexCreatorRenderGraphNode.Output[] {
 		return Array.from(this.outputs.values());
-	}
-
-	getInputs(): RenderGraphNode<any>[] {
-		return [...this.properties];
 	}
 }
 
 
 export namespace VertexCreatorRenderGraphNode {
 
-	export type CreationFuncResult = Map<string, { data: ArrayBuffer, entryCount: number }>
-
-	export type CreationFunc = (context: Context) => CreationFuncResult;
-
-	export class Context {
-
-		private readonly entries = new Map<string, () => any>();
-
-		constructor(entries: Map<string, () => any>) {
-			this.entries = entries;
-		}
-
-		public get<T>(key: string): T {
-			if(this.entries.has(key)) {
-			return this.entries.get(key)!();
-			} else {
-				throw new Error("Could not get vertex creator context entry with key '" + key + "'")
-			}
-		}
-
-	}
+	export type VertexCreationFuncResult = Map<string, { data: ArrayBuffer, entryCount: number }>
 
 	export class Output {
 

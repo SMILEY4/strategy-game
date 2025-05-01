@@ -1,24 +1,25 @@
 import {RenderGraphNodeCompiler} from "../renderGraphNodeCompiler";
+import {ElementCreatorRenderGraphNode} from "../nodes/elementCreatorRenderGraphNode";
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphCompileContext} from "../renderGraphCompileContext";
-import {VertexCreatorRenderGraphNode} from "../nodes/vertexCreatorRenderGraphNode";
 import {RenderGraphCommand} from "../renderGraphCommand";
-import {UpdateVertexDataRenderGraphCommand} from "../commands/updateVertexDataRenderGraphCommand";
 import {PropertyRenderGraphNode} from "../nodes/propertyRenderGraphNode";
 import {PropertyConstRenderGraphNode} from "../nodes/propertyConstRenderGraphNode";
 import {ProgrammableNodeContext} from "../nodes/programmableRenderGraphNode";
+import {UpdateElementDataRenderGraphCommand} from "../commands/updateElementDataRenderGraphCommand";
 
-export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<VertexCreatorRenderGraphNode> {
+export class ElementCreatorNodeCompiler implements RenderGraphNodeCompiler<ElementCreatorRenderGraphNode> {
 
 	isInlineCompile(): boolean {
 		return true;
 	}
 
 	appliesTo(node: RenderGraphNode<any>): boolean {
-		return node instanceof VertexCreatorRenderGraphNode;
+		return node instanceof ElementCreatorRenderGraphNode;
 	}
 
-	compile(node: VertexCreatorRenderGraphNode, context: RenderGraphCompileContext): RenderGraphCommand[] {
+
+	compile(node: ElementCreatorRenderGraphNode, context: RenderGraphCompileContext): RenderGraphCommand[] {
 
 		const changeTests = [
 			...node
@@ -38,11 +39,11 @@ export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<Vertex
 
 		const execContextEntries = new Map<string, () => any>();
 		for (let input of node.getInputs()) {
-			if(input instanceof PropertyRenderGraphNode) {
+			if (input instanceof PropertyRenderGraphNode) {
 				const prop = input as PropertyRenderGraphNode<any>;
 				execContextEntries.set(prop.getName(), prop.getProvider());
 			}
-			if(input instanceof PropertyConstRenderGraphNode) {
+			if (input instanceof PropertyConstRenderGraphNode) {
 				const constProp = input as PropertyConstRenderGraphNode<any>;
 				execContextEntries.set(constProp.getName(), () => constProp.getValue());
 			}
@@ -50,7 +51,7 @@ export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<Vertex
 		const execContext = new ProgrammableNodeContext(execContextEntries);
 
 		return [
-			new UpdateVertexDataRenderGraphCommand(
+			new UpdateElementDataRenderGraphCommand(
 				node.getName(),
 				node.getFunc(),
 				execCondition,
@@ -58,5 +59,6 @@ export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<Vertex
 			),
 		];
 	}
+
 
 }
