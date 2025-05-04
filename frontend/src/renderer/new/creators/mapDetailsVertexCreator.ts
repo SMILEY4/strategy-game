@@ -13,6 +13,7 @@ import {TextureAtlasEntry} from "../../../common/webgl/textureAtlas";
 import {Visibility} from "../../../models/misc/visibility";
 import {TerrainType} from "../../../models/tile/terrainType";
 import {buildMap} from "../../../common/utils";
+import {ProgrammableNodeContext} from "../../../common/rendergraph/nodes/programmableRenderGraphNode";
 
 export namespace MapDetailsVertexCreator {
 
@@ -23,7 +24,7 @@ export namespace MapDetailsVertexCreator {
 	const spriteBuffer = new SpriteBuffer();
 
 
-	export function func(context: VertexCreatorRenderGraphNode.Context): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
+	export function func(context: ProgrammableNodeContext): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
 
 		const tiles = context.get<Tile[]>("tiles");
 		const settlements = context.get<Settlement[]>("settlements");

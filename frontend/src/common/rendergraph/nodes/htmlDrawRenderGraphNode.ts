@@ -1,12 +1,13 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {ElementCreatorRenderGraphNode} from "./elementCreatorRenderGraphNode";
+import {Camera} from "../../webgl/camera";
 
 export class HtmlDrawRenderGraphNode extends RenderGraphNode<HtmlDrawRenderGraphNode> {
 
 	private source: ElementCreatorRenderGraphNode.Output = null as any;
 	private cullingRadius: number = 9999999;
 	private templateFunc: () => HTMLElement = () => undefined as any;
-	private renderFunc: (obj: any, target: HTMLElement) => void = () => undefined;
+	private renderFunc: (obj: any, target: HTMLElement, camera: Camera) => void = () => undefined;
 
 	public withElements(output: ElementCreatorRenderGraphNode.Output): HtmlDrawRenderGraphNode {
 		this.source = output;
@@ -23,7 +24,7 @@ export class HtmlDrawRenderGraphNode extends RenderGraphNode<HtmlDrawRenderGraph
 		return this;
 	}
 
-	public withRenderFunc(renderFunc: (obj: any, target: HTMLElement) => void): HtmlDrawRenderGraphNode {
+	public withRenderFunc(renderFunc: (obj: any, target: HTMLElement, camera: Camera) => void): HtmlDrawRenderGraphNode {
 		this.renderFunc = renderFunc;
 		return this;
 	}
@@ -36,7 +37,7 @@ export class HtmlDrawRenderGraphNode extends RenderGraphNode<HtmlDrawRenderGraph
 		return this.templateFunc;
 	}
 
-	public getRenderFunc(): (obj: any, target: HTMLElement) => void {
+	public getRenderFunc(): (obj: any, target: HTMLElement, camera: Camera) => void {
 		return this.renderFunc;
 	}
 

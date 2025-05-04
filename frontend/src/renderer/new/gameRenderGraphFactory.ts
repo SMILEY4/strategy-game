@@ -43,6 +43,8 @@ import {HtmlDrawNodeCompiler} from "../../common/rendergraph/compilers/htmlDrawN
 import {ElementDataResourceCreator} from "../../common/rendergraph/resources/elementDataResourceCreator";
 import {HtmlElementPoolResourceCreator} from "../../common/rendergraph/resources/htmlElementPoolResourceCreator";
 import {CachedHtmlElementResourceCreator} from "../../common/rendergraph/resources/cachedHtmlElementResourceCreator";
+import {ResourceIconsElementCreator} from "./creators/resourceIconsElementCreator";
+import {MovePathsElementCreator} from "./creators/movePathsElementCreator";
 
 export class GameRenderGraphFactory {
 
@@ -264,6 +266,10 @@ export class GameRenderGraphFactory {
 			.withChangeTest(() => true) // todo: wrong change test
 			.withProvider(() => gameAccess.getMoveTargets());
 
+		const propMovePath = graph
+			.createProperty<({ tiles: TileSummary[], pending: boolean })[]>("movePaths")
+			.withChangeTest(() => true) // todo: wrong change test
+			.withProvider(() => gameAccess.getMovePaths());
 
 		const propSelectedTile = graph
 			.createProperty<[number, number]>("selectedTile")
@@ -828,10 +834,13 @@ export class GameRenderGraphFactory {
 			.withClearColor([0, 0, 0, 1])
 			.withScaling(1);
 
+		// LABELS ==================================
+
 		const creatorLabels = graph
 			.createElementCreator("create-labels")
 			.withProperty(propSettlements)
 			.withProperty(propWorldObjects)
+			.withProperty(propCameraVPM)
 			.withFunction(LabelsElementCreator.funcCreate)
 			.withOutput(LabelsElementCreator.OUTPUT_ID);
 
@@ -842,14 +851,52 @@ export class GameRenderGraphFactory {
 			.withRenderFunc(LabelsElementCreator.funcRender)
 			.withElements(creatorLabels.useOutput(LabelsElementCreator.OUTPUT_ID));
 
+		// RESOURCE ICONS ==========================
+
+		const creatorResourceIcons = graph
+			.createElementCreator("create-resourceicons")
+			.withProperty(propTiles)
+			.withProperty(propMapMode)
+			.withProperty(propCameraVPM)
+			.withFunction(ResourceIconsElementCreator.funcCreate)
+			.withOutput(ResourceIconsElementCreator.OUTPUT_ID);
+
+		const htmlRendererResourceIcons = graph
+			.createHtmlRender("html-resourceicons")
+			.withCullingRadius(1)
+			.withTemplateFunc(ResourceIconsElementCreator.funcTemplate)
+			.withRenderFunc(ResourceIconsElementCreator.funcRender)
+			.withElements(creatorResourceIcons.useOutput(ResourceIconsElementCreator.OUTPUT_ID));
+
+		// MOVE PATHS ==============================
+
+		const creatorMovePaths = graph
+			.createElementCreator("create-movepaths")
+			.withProperty(propMovePath)
+			.withProperty(propCameraVPM)
+			.withFunction(MovePathsElementCreator.funcCreate)
+			.withOutput(MovePathsElementCreator.OUTPUT_ID);
+
+		const htmlRendererMovePaths = graph
+			.createHtmlRender("html-movepaths")
+			.withCullingRadius(9999999)
+			.withTemplateFunc(MovePathsElementCreator.funcTemplate)
+			.withRenderFunc(MovePathsElementCreator.funcRender)
+			.withElements(creatorMovePaths.useOutput(MovePathsElementCreator.OUTPUT_ID));
+
+
+		// FINAL OUTPUT ============================
+
 		graph
 			.createCanvas("screen")
 			.withInput(drawCombine);
 
 		graph
 			.createContainer("html-elements")
-			.withElementId("todo") // todo
-			.withInput(htmlRendererLabels);
+			.withElementId("game-canvas-overlay")
+			.withInput(htmlRendererMovePaths)
+			.withInput(htmlRendererResourceIcons)
+			.withInput(htmlRendererLabels)
 
 		return graph;
 	}

@@ -26,7 +26,8 @@ export class HtmlDrawNodeCompiler implements RenderGraphNodeCompiler<ContainerRe
 
 		const sources: RenderHtmlElementsRenderGraphCommand.Source[] = node.getRenderNodes().map(it => {
 			return {
-				elementDataKey: RenderGraphKeys.pooledHtmlElements(it.getSource()),
+				elementDataKey: RenderGraphKeys.elementsData(it.getSource()),
+				elementPoolKey: RenderGraphKeys.pooledHtmlElements(it.getSource()),
 				cullingRadius: it.getCullingRadius(),
 				templateFunc: it.getTemplateFunc(),
 				renderFunc: it.getRenderFunc(),

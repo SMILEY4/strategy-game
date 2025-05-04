@@ -46,7 +46,7 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 			const screenObjectRadius = source.cullingRadius * this.getApproximateScreenTileSize(camera);
 
 			// get pooled elements from last update, prepare for next update
-			const pooledHtmlElementData = resourceManager.getResource<PooledHtmlElementData>(source.elementDataKey);
+			const pooledHtmlElementData = resourceManager.getResource<PooledHtmlElementData>(source.elementPoolKey);
 			const nextPooledHtmlElements: HTMLElement[] = [];
 
 			const templateElement = this.buildTemplateElement(source.templateFunc, pooledHtmlElementData);
@@ -67,7 +67,7 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 					: templateElement.cloneNode(true) as HTMLElement;
 
 				// render / update html element
-				renderFunc(element, htmlElement);
+				renderFunc(element, htmlElement, camera);
 				renderedHtmlElements.push(htmlElement);
 				nextPooledHtmlElements.push(htmlElement);
 			}
@@ -123,12 +123,12 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 	}
 
 
-	private isVisible(dataEntry: HtmlDataEntry, camera: Camera, clippingRadius: number): boolean {
+	private isVisible(dataEntry: ElementCreatorRenderGraphNode.Element, camera: Camera, clippingRadius: number): boolean {
 		if (clippingRadius > 99999) {
 			return true;
 		}
 
-		const pos = Projections.hexToScreen(camera, dataEntry.tile.position.q, dataEntry.tile.position.r);
+		const pos = Projections.hexToScreen(camera, dataEntry.position.q, dataEntry.position.r);
 
 		// find the closest point visible on screen
 		const closestX = Math.max(0, Math.min(pos.x, camera.getClientWidth()));
@@ -155,9 +155,10 @@ export namespace RenderHtmlElementsRenderGraphCommand {
 
 	export interface Source {
 		elementDataKey: string,
+		elementPoolKey: string,
 		cullingRadius: number,
 		templateFunc: () => HTMLElement,
-		renderFunc: (obj: any, target: HTMLElement) => void,
+		renderFunc: (obj: any, target: HTMLElement, camera: Camera) => void,
 	}
 
 }

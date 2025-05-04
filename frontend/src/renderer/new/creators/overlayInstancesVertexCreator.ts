@@ -7,6 +7,7 @@ import {BorderBuilder} from "../../game/rendernodes/utils/borderBuilder";
 import {packBorder} from "../../game/rendernodes/utils/packBorder";
 import {TileSummary} from "../../../models/tile/tileSummary";
 import {buildMap} from "../../../common/utils";
+import {ProgrammableNodeContext} from "../../../common/rendergraph/nodes/programmableRenderGraphNode";
 
 export namespace OverlayInstancesVertexCreator {
 
@@ -33,7 +34,7 @@ export namespace OverlayInstancesVertexCreator {
 		...MixedArrayBufferType.VEC4,
 	];
 
-	export function func(context: VertexCreatorRenderGraphNode.Context): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
+	export function func(context: ProgrammableNodeContext): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
 
 		const tiles = context.get<Tile[]>("tiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");
