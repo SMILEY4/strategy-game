@@ -1,17 +1,21 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {DrawRenderGraphNode} from "./drawRenderGraphNode";
 
+/**
+ * Represents a render graph node specifically for rendering to canvas.
+ */
 export class CanvasRenderGraphNode extends RenderGraphNode<CanvasRenderGraphNode> {
 
-	private readonly inputs: DrawRenderGraphNode[] = [];
-
+	/**
+	 * Adds the given draw node as an input to this node
+	 */
 	public withInput(input: DrawRenderGraphNode): CanvasRenderGraphNode {
-		this.inputs.push(input);
+		this.registerInput(input);
 		return this;
 	}
 
-	getInputs(): RenderGraphNode<any>[] {
-		return this.inputs;
+	validate(): string[] {
+		return [];
 	}
 
 }

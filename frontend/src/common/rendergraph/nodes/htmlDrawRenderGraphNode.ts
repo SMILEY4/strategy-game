@@ -9,8 +9,9 @@ export class HtmlDrawRenderGraphNode extends RenderGraphNode<HtmlDrawRenderGraph
 	private templateFunc: () => HTMLElement = () => undefined as any;
 	private renderFunc: (obj: any, target: HTMLElement, camera: Camera) => void = () => undefined;
 
-	public withElements(output: ElementCreatorRenderGraphNode.Output): HtmlDrawRenderGraphNode {
-		this.source = output;
+	public withElements(source: ElementCreatorRenderGraphNode.Output): HtmlDrawRenderGraphNode {
+		this.source = source;
+		this.registerInput(source.creator)
 		return this;
 	}
 
@@ -47,6 +48,24 @@ export class HtmlDrawRenderGraphNode extends RenderGraphNode<HtmlDrawRenderGraph
 
 	getInputs(): RenderGraphNode<any>[] {
 		return [this.source.creator];
+	}
+
+	validate(): string[] {
+		const errors: string[] = [];
+
+		if(this.getInputs().count(ElementCreatorRenderGraphNode.isType) != 1) {
+			errors.push("Not exactly one element creator node")
+		}
+
+		return errors;
+	}
+
+}
+
+export namespace HtmlDrawRenderGraphNode {
+
+	export function isType(node: RenderGraphNode<any>): node is HtmlDrawRenderGraphNode {
+		return node instanceof HtmlDrawRenderGraphNode;
 	}
 
 }

@@ -4,7 +4,6 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
-
 export class VertexInfoResourceCreator implements RenderGraphResourceCreator<VertexDescriptorRenderGraphNode> {
 
 	appliesTo(node: RenderGraphNode<any>): boolean {

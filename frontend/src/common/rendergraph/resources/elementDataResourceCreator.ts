@@ -3,7 +3,7 @@ import {ElementCreatorRenderGraphNode} from "../nodes/elementCreatorRenderGraphN
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphKeys} from "../renderGraphKeys";
-import ElementData = ElementCreatorRenderGraphNode.ElementData;
+import {ElementData} from "./elementData";
 
 export class ElementDataResourceCreator implements RenderGraphResourceCreator<ElementCreatorRenderGraphNode> {
 

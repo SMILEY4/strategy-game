@@ -7,8 +7,9 @@ export class VertexDescriptorRenderGraphNode extends RenderGraphNode<VertexDescr
 	private vertexCreatorOutputs: VertexCreatorRenderGraphNode.Output[] = [];
 
 
-	public withInput(input: VertexCreatorRenderGraphNode.Output): VertexDescriptorRenderGraphNode {
-		this.vertexCreatorOutputs.push(input);
+	public withInput(source: VertexCreatorRenderGraphNode.Output): VertexDescriptorRenderGraphNode {
+		this.vertexCreatorOutputs.push(source);
+		this.registerInput(source.creator)
 		return this;
 	}
 
@@ -17,13 +18,17 @@ export class VertexDescriptorRenderGraphNode extends RenderGraphNode<VertexDescr
 		return this.vertexCreatorOutputs;
 	}
 
-
-	getInputs(): RenderGraphNode<any>[] {
-		return this.vertexCreatorOutputs
-			.map(it => it.creator)
-			.distinct();
+	validate(): string[] {
+		return [];
 	}
 
+}
+
+export namespace VertexDescriptorRenderGraphNode {
+
+	export function isType(node: RenderGraphNode<any>): node is VertexDescriptorRenderGraphNode {
+		return node instanceof VertexDescriptorRenderGraphNode;
+	}
 
 }
 

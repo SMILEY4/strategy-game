@@ -2,8 +2,8 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {ProgrammableNodeContext} from "../nodes/programmableRenderGraphNode";
 import {ElementCreatorRenderGraphNode} from "../nodes/elementCreatorRenderGraphNode";
-import ElementData = ElementCreatorRenderGraphNode.ElementData;
 import {RenderGraphCommand} from "../renderGraphCommand";
+import {ElementData} from "../resources/elementData";
 
 export class UpdateElementDataRenderGraphCommand extends RenderGraphCommand {
 

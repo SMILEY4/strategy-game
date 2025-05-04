@@ -4,12 +4,10 @@ import {Camera} from "../../webgl/camera";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {ElementCreatorRenderGraphNode} from "../nodes/elementCreatorRenderGraphNode";
 import {Projections} from "../../webgl/projections";
-import {ContainerRenderGraphNode} from "../nodes/containerRenderGraphNode";
-import {HtmlDataEntry} from "../../../renderer/common/graph/nodes/htmlNode";
-import ElementData = ElementCreatorRenderGraphNode.ElementData;
 import Point = Projections.Point;
-import PooledHtmlElementData = ContainerRenderGraphNode.PooledHtmlElementData;
-import CachedHtmlElement = ContainerRenderGraphNode.CachedHtmlElement;
+import {ElementData} from "../resources/elementData";
+import {PooledHtmlElementData} from "../resources/pooledHtmlElementData";
+import {CachedHtmlElement} from "../resources/cachedHtmlElement";
 
 
 export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {

@@ -4,11 +4,9 @@ import {HtmlDrawRenderGraphNode} from "./htmlDrawRenderGraphNode";
 export class ContainerRenderGraphNode extends RenderGraphNode<ContainerRenderGraphNode> {
 
 	private id: string = "";
-	private readonly renderNodes: HtmlDrawRenderGraphNode[] = [];
-
 
 	public withInput(node: HtmlDrawRenderGraphNode): ContainerRenderGraphNode {
-		this.renderNodes.push(node);
+		this.registerInput(node)
 		return this;
 	}
 
@@ -22,25 +20,17 @@ export class ContainerRenderGraphNode extends RenderGraphNode<ContainerRenderGra
 	}
 
 	public getRenderNodes(): HtmlDrawRenderGraphNode[] {
-		return this.renderNodes;
+		return this
+			.getInputs()
+			.filter(HtmlDrawRenderGraphNode.isType);
 	}
 
-	getInputs(): RenderGraphNode<any>[] {
-		return this.renderNodes;
+	validate(): string[] {
+		if(!this.id) {
+			return ["id must be valid (id='" + this.id + "')."];
+		}
+		return [];
 	}
 
-}
-
-export namespace ContainerRenderGraphNode {
-
-	export interface PooledHtmlElementData {
-		elements: HTMLElement[];
-		templateElement: HTMLElement | null;
-	}
-
-	export interface CachedHtmlElement {
-		id: string,
-		element: HTMLElement | null;
-	}
 
 }

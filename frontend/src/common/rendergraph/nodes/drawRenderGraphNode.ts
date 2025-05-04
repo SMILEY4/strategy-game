@@ -4,20 +4,18 @@ import {VertexDescriptorRenderGraphNode} from "./vertexDescriptorRenderGraphNode
 
 export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 
-	private shaderNode: ShaderRenderGraphNode = null as any;
-	private vertexDescriptorNode: VertexDescriptorRenderGraphNode = null as any;
 	private clearColor: [number, number, number, number] = [0, 0, 0, 0];
 	private scaling: number = 1;
 	private blendFunction: ((gl: WebGL2RenderingContext) => void) | null = null;
 
 
 	public withVertexDescriptor(vertexDescriptorNode: VertexDescriptorRenderGraphNode): DrawRenderGraphNode {
-		this.vertexDescriptorNode = vertexDescriptorNode;
+		this.registerInput(vertexDescriptorNode);
 		return this;
 	}
 
 	public withShaderProgram(shaderNode: ShaderRenderGraphNode): DrawRenderGraphNode {
-		this.shaderNode = shaderNode;
+		this.registerInput(shaderNode);
 		return this;
 	}
 
@@ -36,13 +34,16 @@ export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 		return this;
 	}
 
-
 	public getVertexDescriptorNode(): VertexDescriptorRenderGraphNode {
-		return this.vertexDescriptorNode;
+		return this
+			.getInputs()
+			.find(VertexDescriptorRenderGraphNode.isType)!!
 	}
 
 	public getShaderNode(): ShaderRenderGraphNode {
-		return this.shaderNode;
+		return this
+			.getInputs()
+			.find(ShaderRenderGraphNode.isType)!!
 	}
 
 	public getClearColor(): [number, number, number, number] {
@@ -57,9 +58,19 @@ export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 		return this.blendFunction;
 	}
 
+	validate(): string[] {
+		const errors: string[] = [];
 
-	getInputs(): RenderGraphNode<any>[] {
-		return [this.vertexDescriptorNode, this.shaderNode];
+		if(this.getInputs().count(ShaderRenderGraphNode.isType) != 1) {
+			errors.push("Not exactly one shader node")
+		}
+
+		if(this.getInputs().count(VertexDescriptorRenderGraphNode.isType) != 1) {
+			errors.push("Not exactly one vertex descriptor node")
+		}
+
+		return errors;
 	}
+
 
 }

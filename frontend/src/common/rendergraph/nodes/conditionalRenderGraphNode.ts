@@ -1,23 +1,33 @@
 import {RenderGraphNode} from "../renderGraphNode";
 
-export class ConditionalRenderGraphNode<T extends RenderGraphNode<any>> extends RenderGraphNode<ConditionalRenderGraphNode<any>> {
+/**
+ * Represents a conditional render graph node that manages a list of options to choose from at runtime based on given conditions.
+ */
+export class ConditionalRenderGraphNode<TNodeOption extends RenderGraphNode<any>> extends RenderGraphNode<ConditionalRenderGraphNode<any>> {
 
-	private readonly options: ({ value: T, condition: () => boolean })[] = [];
+	private readonly options: ({ value: TNodeOption, condition: () => boolean })[] = [];
 
-	public withOption(value: T, condition: () => boolean): ConditionalRenderGraphNode<T> {
+	/**
+	 * Add the given value with the given condition as a new option to this node.
+	 */
+	public withOption(value: TNodeOption, condition: () => boolean): ConditionalRenderGraphNode<TNodeOption> {
 		this.options.push({
 			value: value,
-			condition: condition
-		})
+			condition: condition,
+		});
+		this.registerInput(value);
 		return this;
 	}
 
-	public getOptions(): { value: T; condition: () => boolean }[] {
+	/**
+	 * @returns the list of available options
+	 */
+	public getOptions(): { value: TNodeOption; condition: () => boolean }[] {
 		return this.options;
 	}
 
-	getInputs(): RenderGraphNode<any>[] {
-		return this.options.map(it => it.value);
+	validate(): string[] {
+		return [];
 	}
 
 }

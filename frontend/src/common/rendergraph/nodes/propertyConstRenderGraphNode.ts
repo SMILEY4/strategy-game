@@ -15,8 +15,7 @@ export class PropertyConstRenderGraphNode<T> extends RenderGraphNode<PropertyCon
 		this.value = value;
 		return this;
 	}
-
-
+	
 	public getType(): GLUniformType | null {
 		return this.type;
 	}
@@ -25,7 +24,7 @@ export class PropertyConstRenderGraphNode<T> extends RenderGraphNode<PropertyCon
 		return this.value;
 	}
 
-	getInputs(): RenderGraphNode<any>[] {
+	validate(): string[] {
 		return [];
 	}
 

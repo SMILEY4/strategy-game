@@ -1,6 +1,7 @@
 import {ProgrammableRenderGraphNode} from "./programmableRenderGraphNode";
-import ElementCreationFuncResult = ElementCreatorRenderGraphNode.ElementCreationFuncResult;
 import {TilePosition} from "../../../models/tile/tilePosition";
+import ElementCreationFuncResult = ElementCreatorRenderGraphNode.ElementCreationFuncResult;
+import {RenderGraphNode} from "../renderGraphNode";
 
 export class ElementCreatorRenderGraphNode extends ProgrammableRenderGraphNode<ElementCreationFuncResult, ElementCreatorRenderGraphNode> {
 
@@ -19,10 +20,19 @@ export class ElementCreatorRenderGraphNode extends ProgrammableRenderGraphNode<E
 		return Array.from(this.outputs.values());
 	}
 
+	validate(): string[] {
+		return [];
+	}
+
+
 }
 
 
 export namespace ElementCreatorRenderGraphNode {
+
+	export function isType(node: RenderGraphNode<any>): node is ElementCreatorRenderGraphNode {
+		return node instanceof ElementCreatorRenderGraphNode;
+	}
 
 	export type ElementCreationFuncResult = Map<string, Element[]>
 
@@ -41,7 +51,4 @@ export namespace ElementCreatorRenderGraphNode {
 		}
 	}
 
-	export interface ElementData {
-		elements: any[]
-	}
 }

@@ -3,9 +3,7 @@ import {ElementCreatorRenderGraphNode} from "../nodes/elementCreatorRenderGraphN
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphKeys} from "../renderGraphKeys";
-import ElementData = ElementCreatorRenderGraphNode.ElementData;
-import {ContainerRenderGraphNode} from "../nodes/containerRenderGraphNode";
-import PooledHtmlElementData = ContainerRenderGraphNode.PooledHtmlElementData;
+import {PooledHtmlElementData} from "./pooledHtmlElementData";
 
 export class HtmlElementPoolResourceCreator implements RenderGraphResourceCreator<ElementCreatorRenderGraphNode> {
 

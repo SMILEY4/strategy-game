@@ -28,6 +28,7 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 
 	public withProperty(input: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any>, bindingName: string): ShaderRenderGraphNode {
 		this.properties.push({node: input, binding: bindingName});
+		this.registerInput(input)
 		return this;
 	}
 
@@ -50,9 +51,16 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 		return this.properties;
 	}
 
-	getInputs(): RenderGraphNode<any>[] {
-		return this.properties.map(it => it.node);
+	validate(): string[] {
+		return [];
 	}
 
+}
+
+export namespace ShaderRenderGraphNode {
+
+	export function isType(node: RenderGraphNode<any>): node is ShaderRenderGraphNode {
+		return node instanceof ShaderRenderGraphNode;
+	}
 
 }

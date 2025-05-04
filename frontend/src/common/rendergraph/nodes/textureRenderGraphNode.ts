@@ -6,7 +6,6 @@ export class TextureRenderGraphNode extends RenderGraphNode<TextureRenderGraphNo
 	private imageUrl: string | null = null;
 	private config: GLTexture.Config | undefined = undefined;
 
-
 	public withUrl(imageUrl: string): TextureRenderGraphNode {
 		this.imageUrl = imageUrl;
 		return this;
@@ -26,7 +25,7 @@ export class TextureRenderGraphNode extends RenderGraphNode<TextureRenderGraphNo
 		return this.config;
 	}
 
-	getInputs(): RenderGraphNode<any>[] {
+	validate(): string[] {
 		return [];
 	}
 

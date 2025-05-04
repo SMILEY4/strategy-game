@@ -18,6 +18,11 @@ export class VertexCreatorRenderGraphNode extends ProgrammableRenderGraphNode<Cr
 	public getOutputs(): VertexCreatorRenderGraphNode.Output[] {
 		return Array.from(this.outputs.values());
 	}
+
+	validate(): string[] {
+		return [];
+	}
+
 }
 
 

@@ -4,6 +4,15 @@ import {PropertyConstRenderGraphNode} from "./propertyConstRenderGraphNode";
 
 export abstract class ProgrammableRenderGraphNode<TOutput, TNode> extends RenderGraphNode<TNode>{
 
+	// todo: validate + remove getInputs !!!!!
+
+	// todo idea:
+	//   - create context with all properties at beginning of frame and pass to all nodes/funcs as context
+	//   - nodes can only read entries in global context which they have defined as inputs
+	//   - avoid executing prop provider func multiple times per frame
+	//   - maybe as command compiled from init node and stored as resource
+
+
 	private readonly properties: (PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any>)[] = [];
 	private func: (context: ProgrammableNodeContext) => TOutput = () => undefined as any;
 

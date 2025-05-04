@@ -34,8 +34,7 @@ export class PropertyRenderGraphNode<T> extends RenderGraphNode<PropertyRenderGr
 		return this.provider;
 	}
 
-
-	getInputs(): RenderGraphNode<any>[] {
+	validate(): string[] {
 		return [];
 	}
 
