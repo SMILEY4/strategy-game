@@ -4,8 +4,8 @@ import {RenderGraphResourceCreator} from "./renderGraphResourceCreator";
 export class RenderGraphResourceManager {
 
 	private readonly resourceCreator: RenderGraphResourceCreator<any>[];
-	private readonly resourceDisposers = new  Map<string,(resource: any) => void>();
-	private readonly resources = new  Map<string, any>();
+	private readonly resourceDisposers = new Map<string, (resource: any) => void>();
+	private readonly resources = new Map<string, any>();
 
 	constructor(resourceCreator: RenderGraphResourceCreator<any>[]) {
 		this.resourceCreator = resourceCreator;
@@ -21,7 +21,7 @@ export class RenderGraphResourceManager {
 
 	public createResource<T>(name: string, resource: T, dispose: (resource: T) => void) {
 		this.resourceDisposers.set(name, dispose);
-		this.resources.set(name, resource)
+		this.resources.set(name, resource);
 	}
 
 	public hasResource(name: string): boolean {
@@ -30,15 +30,30 @@ export class RenderGraphResourceManager {
 
 	public getResource<T>(name: string): T {
 		const resource = this.resources.get(name);
-		if(!resource) {
-			throw new Error("No resource with name " + name)
+		if (!resource) {
+			throw new Error("No resource with name " + name);
 		}
 		return resource;
 	}
 
+	public updateResource<T>(name: string, resource: T) {
+		const disposeFunc = this.resourceDisposers.get(name);
+		if (disposeFunc) {
+			const resource = this.resources.get(name);
+			if (resource) {
+				disposeFunc(resource);
+			}
+		}
+		if (this.resources.has(name)) {
+			this.resources.set(name, resource);
+		} else {
+			throw new Error("No resource with name " + name);
+		}
+	}
+
 	public dispose() {
 		for (let [name, disposer] of this.resourceDisposers) {
-			disposer(this.getResource(name))
+			disposer(this.getResource(name));
 		}
 	}
 

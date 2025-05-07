@@ -5,6 +5,9 @@ import {VertexDescriptorRenderGraphNode} from "./nodes/vertexDescriptorRenderGra
 import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode";
 import {ElementCreatorRenderGraphNode} from "./nodes/elementCreatorRenderGraphNode";
 import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
+import {PropertyRenderGraphNode} from "./nodes/propertyRenderGraphNode";
+import {PropertyConstRenderGraphNode} from "./nodes/propertyConstRenderGraphNode";
+import {ConditionalRenderGraphNode} from "./nodes/conditionalRenderGraphNode";
 
 export namespace RenderGraphKeys {
 
@@ -13,15 +16,11 @@ export namespace RenderGraphKeys {
 		return "textureUnitHandler";
 	}
 
-	export function changeTracker() {
-		return "changeTracker";
-	}
-
 	export function gl() {
 		return "gl";
 	}
 
-	export function camera() {
+	export function camera() { // todo: deprecated
 		return "camera";
 	}
 
@@ -75,6 +74,14 @@ export namespace RenderGraphKeys {
 
 	export function cachedHtmlElement(node: ContainerRenderGraphNode): string {
 		return "htmlelementcache:" + node.getElementId();
+	}
+
+	export function property(node: PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any> ): string {
+		return propertyFromName(node.getName())
+	}
+
+	export function propertyFromName(name: string): string {
+		return "property:" + name;
 	}
 
 }

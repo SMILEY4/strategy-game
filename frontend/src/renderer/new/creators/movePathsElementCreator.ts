@@ -2,14 +2,14 @@ import {ElementCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/e
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {Camera} from "../../../common/webgl/camera";
-import {ProgrammableNodeContext} from "../../../common/rendergraph/nodes/programmableRenderGraphNode";
 import {TileSummary} from "../../../models/tile/tileSummary";
+import {RenderGraphNodeContext} from "../../../common/rendergraph/renderGraphNodeContext";
 
 export namespace MovePathsElementCreator {
 
 	export const OUTPUT_ID = "movepaths.elements";
 
-	export function funcCreate(context: ProgrammableNodeContext): ElementCreatorRenderGraphNode.ElementCreationFuncResult {
+	export function funcCreate(context: RenderGraphNodeContext): ElementCreatorRenderGraphNode.ElementCreationFuncResult {
 
 		const paths = context.get<({ tiles: TileSummary[], pending: boolean })[]>("movePaths");
 

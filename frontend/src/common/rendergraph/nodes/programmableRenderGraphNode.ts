@@ -1,8 +1,9 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {PropertyRenderGraphNode} from "./propertyRenderGraphNode";
 import {PropertyConstRenderGraphNode} from "./propertyConstRenderGraphNode";
+import {RenderGraphNodeContext} from "../renderGraphNodeContext";
 
-export abstract class ProgrammableRenderGraphNode<TOutput, TNode> extends RenderGraphNode<TNode>{
+export abstract class ProgrammableRenderGraphNode<TOutput, TNode> extends RenderGraphNode<TNode> {
 
 	// todo: validate + remove getInputs !!!!!
 
@@ -13,45 +14,39 @@ export abstract class ProgrammableRenderGraphNode<TOutput, TNode> extends Render
 	//   - maybe as command compiled from init node and stored as resource
 
 
-	private readonly properties: (PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any>)[] = [];
-	private func: (context: ProgrammableNodeContext) => TOutput = () => undefined as any;
+	private readonly properties: ({
+		property: (PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any>),
+		name: string
+	})[] = [];
+	private func: (context: RenderGraphNodeContext) => TOutput = () => undefined as any;
 
-	public withProperty(property: PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any>): TNode {
+	public withProperty(property: PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any>, name: string): TNode {
 		// todo: own name for properties valid in creator scope (similar to shader properties)
-		this.properties.push(property);
+		this.properties.push({
+			property: property,
+			name: name,
+		});
 		return this as unknown as TNode;
 	}
 
-	public withFunction(func: (context: ProgrammableNodeContext) => TOutput): TNode {
+	public withFunction(func: (context: RenderGraphNodeContext) => TOutput): TNode {
 		this.func = func;
 		return this as unknown as TNode;
 	}
 
-	public getFunc(): (context: ProgrammableNodeContext) => TOutput {
+	public getFunc(): (context: RenderGraphNodeContext) => TOutput {
 		return this.func;
 	}
 
+	public getProperties(): ({
+		property: (PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any>),
+		name: string
+	})[] {
+		return this.properties;
+	}
+
 	getInputs(): RenderGraphNode<any>[] {
-		return [...this.properties];
-	}
-
-}
-
-
-export class ProgrammableNodeContext {
-
-	private readonly entries = new Map<string, () => any>();
-
-	constructor(entries: Map<string, () => any>) {
-		this.entries = entries;
-	}
-
-	public get<T>(key: string): T {
-		if(this.entries.has(key)) {
-			return this.entries.get(key)!();
-		} else {
-			throw new Error("Could not get vertex creator context entry with key '" + key + "'")
-		}
+		return [...this.properties.map(it => it.property)];
 	}
 
 }

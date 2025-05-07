@@ -45,6 +45,9 @@ import {HtmlElementPoolResourceCreator} from "../../common/rendergraph/resources
 import {CachedHtmlElementResourceCreator} from "../../common/rendergraph/resources/cachedHtmlElementResourceCreator";
 import {ResourceIconsElementCreator} from "./creators/resourceIconsElementCreator";
 import {MovePathsElementCreator} from "./creators/movePathsElementCreator";
+import {PropertyResourceCreator} from "../../common/rendergraph/resources/propertyResourceCreator";
+import {PropertyNodeCompiler} from "../../common/rendergraph/compilers/propertyNodeCompiler";
+import {TextureRenderGraphNode} from "../../common/rendergraph/nodes/textureRenderGraphNode";
 
 export class GameRenderGraphFactory {
 
@@ -70,6 +73,7 @@ export class GameRenderGraphFactory {
 		const graph = new RenderGraph(
 			new RenderGraphSorter(),
 			new RenderGraphCompiler([
+				new PropertyNodeCompiler(),
 				new VertexCreatorNodeCompiler(),
 				new WebglShaderNodeCompiler(),
 				new WebglDrawNodeCompiler(),
@@ -78,6 +82,7 @@ export class GameRenderGraphFactory {
 			]),
 			new RenderGraphResourceManager([
 				new WebGlContextResourceCreator(gl),
+				new PropertyResourceCreator(),
 				new FramebufferResourceCreator(gl),
 				new TextureResourceCreator(gl),
 				new ShaderProgramResourceCreator(gl),
@@ -379,9 +384,9 @@ export class GameRenderGraphFactory {
 			});
 
 		const textureLut = graph
-			.createConditional("lut")
+			.createConditional<TextureRenderGraphNode>("lut")
 			.withOption(textureLutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
-			.withOption(textureLutGrayscale, () => gameAccess.getMapMode().renderData.grayscale);
+			.withOption(textureLutGrayscale, () => gameAccess.getMapMode().renderData.grayscale)
 
 		const vertexCreatorTileMesh = graph
 			.createVertexCreator("tile-mesh")
@@ -411,10 +416,10 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorTileInstances = graph
 			.createVertexCreator("tile-instances")
-			.withProperty(propColorLandLight)
-			.withProperty(propColorLandDark)
-			.withProperty(propTiles)
-			.withProperty(propTileByPosProvider)
+			.withProperty(propColorLandLight, "colorLandLight")
+			.withProperty(propColorLandDark, "colorLandDark")
+			.withProperty(propTiles, "tiles")
+			.withProperty(propTileByPosProvider, "tileByPosProvider")
 			.withOutput(TileInstanceVertexCreator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -468,7 +473,7 @@ export class GameRenderGraphFactory {
 		// WATER =================================
 
 		const vertexDescriptorWater = graph
-			.createVertexDescriptor("water")
+			.createVertexDescriptor("vd-water")
 			.withInput(vertexCreatorTileMesh.useOutput(TileMeshVertexCreator.OUTPUT_ID))
 			.withInput(vertexCreatorTileInstances.useOutput(TileInstanceVertexCreator.OUTPUT_WATER_ID));
 
@@ -491,14 +496,14 @@ export class GameRenderGraphFactory {
 				gl.ONE_MINUS_SRC_ALPHA));
 
 		const renderTargetWater = graph
-			.createRenderTarget("water")
+			.createRenderTarget("rt-water")
 			.withDepth(false)
 			.withInput(drawWater);
 
 		// LAND =================================
 
 		const vertexDescriptorLand = graph
-			.createVertexDescriptor("land")
+			.createVertexDescriptor("vd-land")
 			.withInput(vertexCreatorTileMesh.useOutput(TileMeshVertexCreator.OUTPUT_ID))
 			.withInput(vertexCreatorTileInstances.useOutput(TileInstanceVertexCreator.OUTPUT_LAND_ID));
 
@@ -516,14 +521,14 @@ export class GameRenderGraphFactory {
 			.withClearColor([0, 0, 0, 0]);
 
 		const renderTargetLand = graph
-			.createRenderTarget("land")
+			.createRenderTarget("rt-land")
 			.withDepth(false)
 			.withInput(drawLand);
 
 		// FOG =================================
 
 		const vertexDescriptorFog = graph
-			.createVertexDescriptor("fog")
+			.createVertexDescriptor("vd-fog")
 			.withInput(vertexCreatorTileMesh.useOutput(TileMeshVertexCreator.OUTPUT_ID))
 			.withInput(vertexCreatorTileInstances.useOutput(TileInstanceVertexCreator.OUTPUT_FOG_ID));
 
@@ -541,7 +546,7 @@ export class GameRenderGraphFactory {
 			.withClearColor([0, 0, 0, 1]);
 
 		const renderTargetFog = graph
-			.createRenderTarget("fog")
+			.createRenderTarget("rt-fog")
 			.withDepth(false)
 			.withInput(drawFog);
 
@@ -575,10 +580,10 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorOverlayInstances = graph
 			.createVertexCreator("overlay-instances")
-			.withProperty(propTiles)
-			.withProperty(propTileByPosProvider)
-			.withProperty(propMapMode)
-			.withProperty(propMoveTargets)
+			.withProperty(propTiles, "tiles")
+			.withProperty(propTileByPosProvider, "tileByPosProvider")
+			.withProperty(propMapMode, "mapMode")
+			.withProperty(propMoveTargets, "moveTargets")
 			.withOutput(OverlayInstancesVertexCreator.OUTPUT_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -632,7 +637,7 @@ export class GameRenderGraphFactory {
 			.withFunction(OverlayInstancesVertexCreator.func);
 
 		const vertexDescriptorOverlay = graph
-			.createVertexDescriptor("overlay")
+			.createVertexDescriptor("vd-overlay")
 			.withInput(vertexCreatorOverlayMesh.useOutput(OverlayMeshVertexCreator.OUTPUT_ID))
 			.withInput(vertexCreatorOverlayInstances.useOutput(OverlayInstancesVertexCreator.OUTPUT_ID));
 
@@ -689,7 +694,7 @@ export class GameRenderGraphFactory {
 			.withClearColor([0, 0, 0, 0]);
 
 		const renderTargetOverlay = graph
-			.createRenderTarget("overlay")
+			.createRenderTarget("rt-overlay")
 			.withDepth(false)
 			.withInput(drawOverlay);
 
@@ -720,17 +725,17 @@ export class GameRenderGraphFactory {
 				},
 			])
 			.withFunction(MapDetailsVertexCreator.func)
-			.withProperty(propTiles)
-			.withProperty(propSettlements)
-			.withProperty(propWorldObjects)
-			.withProperty(propRoutes)
-			.withProperty(propColorLandLight)
-			.withProperty(propColorLandDark)
-			.withProperty(propTextureAtlasGroups);
+			.withProperty(propTiles, "tiles")
+			.withProperty(propSettlements, "settlements")
+			.withProperty(propWorldObjects, "worldObjects")
+			.withProperty(propRoutes, "routes")
+			.withProperty(propColorLandLight, "colorLandLight")
+			.withProperty(propColorLandDark, "colorLandDark")
+			.withProperty(propTextureAtlasGroups, "textureAtlasGroups");
 
 
 		const vertexDescriptorMapDetails = graph
-			.createVertexDescriptor("mapDetails")
+			.createVertexDescriptor("vd-mapDetails")
 			.withInput(vertexCreatorMapDetails.useOutput(MapDetailsVertexCreator.OUTPUT_ID));
 
 
@@ -752,7 +757,7 @@ export class GameRenderGraphFactory {
 			.withScaling(2);
 
 		const renderTargetMapDetails = graph
-			.createRenderTarget("mapDetails")
+			.createRenderTarget("rt-mapDetails")
 			.withDepth(true)
 			.withInput(drawMapDetails);
 
@@ -770,7 +775,7 @@ export class GameRenderGraphFactory {
 			.withFunction(FullscreenQuadVertexCreator.func);
 
 		const vertexDescriptorCombine = graph
-			.createVertexDescriptor("combine")
+			.createVertexDescriptor("vd-combine")
 			.withInput(vertexCreatorCombine.useOutput(FullscreenQuadVertexCreator.OUTPUT_ID));
 
 
@@ -838,9 +843,9 @@ export class GameRenderGraphFactory {
 
 		const creatorLabels = graph
 			.createElementCreator("create-labels")
-			.withProperty(propSettlements)
-			.withProperty(propWorldObjects)
-			.withProperty(propCameraVPM)
+			.withProperty(propSettlements, "settlements")
+			.withProperty(propWorldObjects, "worldObjects")
+			.withProperty(propCameraVPM, "_camera")
 			.withFunction(LabelsElementCreator.funcCreate)
 			.withOutput(LabelsElementCreator.OUTPUT_ID);
 
@@ -855,9 +860,9 @@ export class GameRenderGraphFactory {
 
 		const creatorResourceIcons = graph
 			.createElementCreator("create-resourceicons")
-			.withProperty(propTiles)
-			.withProperty(propMapMode)
-			.withProperty(propCameraVPM)
+			.withProperty(propTiles, "tiles")
+			.withProperty(propMapMode, "mapMode")
+			.withProperty(propCameraVPM, "_camera")
 			.withFunction(ResourceIconsElementCreator.funcCreate)
 			.withOutput(ResourceIconsElementCreator.OUTPUT_ID);
 
@@ -872,8 +877,8 @@ export class GameRenderGraphFactory {
 
 		const creatorMovePaths = graph
 			.createElementCreator("create-movepaths")
-			.withProperty(propMovePath)
-			.withProperty(propCameraVPM)
+			.withProperty(propMovePath, "movePaths")
+			.withProperty(propCameraVPM, "_camera")
 			.withFunction(MovePathsElementCreator.funcCreate)
 			.withOutput(MovePathsElementCreator.OUTPUT_ID);
 
@@ -888,7 +893,7 @@ export class GameRenderGraphFactory {
 		// FINAL OUTPUT ============================
 
 		graph
-			.createCanvas("screen")
+			.createCanvas("canvas-screen")
 			.withInput(drawCombine);
 
 		graph

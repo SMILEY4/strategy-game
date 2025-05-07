@@ -3,15 +3,15 @@ import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {Camera} from "../../../common/webgl/camera";
-import {ProgrammableNodeContext} from "../../../common/rendergraph/nodes/programmableRenderGraphNode";
 import {Settlement} from "../../../models/settlement/settlement";
 import {WorldObject} from "../../../models/worldobject/worldObject";
+import {RenderGraphNodeContext} from "../../../common/rendergraph/renderGraphNodeContext";
 
 export namespace LabelsElementCreator {
 
 	export const OUTPUT_ID = "labels.elements";
 
-	export function funcCreate(context: ProgrammableNodeContext): ElementCreatorRenderGraphNode.ElementCreationFuncResult {
+	export function funcCreate(context: RenderGraphNodeContext): ElementCreatorRenderGraphNode.ElementCreationFuncResult {
 
 		const settlements = context.get<Settlement[]>("settlements");
 		const worldObjects = context.get<WorldObject[]>("worldObjects");
@@ -37,6 +37,7 @@ export namespace LabelsElementCreator {
 				index: 0,
 			});
 		}
+		// todo
 		// const createSettlementCommands = context.commands
 		// 	.filter(it => it.type === CommandType.CREATE_SETTLEMENT)
 		// 	.map(it => it as CreateSettlementCommand);
@@ -53,6 +54,7 @@ export namespace LabelsElementCreator {
 
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
+			// todo
 			// if (createSettlementCommands.some(cmd => cmd.worldObjectId === worldObject.id)) {
 			// 	continue;
 			// }

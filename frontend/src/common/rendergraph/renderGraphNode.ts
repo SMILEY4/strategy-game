@@ -9,7 +9,7 @@ import {UID} from "../uid";
  */
 export abstract class RenderGraphNode<TNode> {
 
-	private name: string;
+	private name: string; // todo: separate unique name and debug name -> use unique for keys, etc -> still show mapping unique name to debug name
 	private readonly inputs: RenderGraphNode<any>[] = [];
 
 

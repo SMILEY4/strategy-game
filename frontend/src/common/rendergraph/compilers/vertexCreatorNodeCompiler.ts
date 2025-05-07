@@ -6,7 +6,7 @@ import {RenderGraphCommand} from "../renderGraphCommand";
 import {UpdateVertexDataRenderGraphCommand} from "../commands/updateVertexDataRenderGraphCommand";
 import {PropertyRenderGraphNode} from "../nodes/propertyRenderGraphNode";
 import {PropertyConstRenderGraphNode} from "../nodes/propertyConstRenderGraphNode";
-import {ProgrammableNodeContext} from "../nodes/programmableRenderGraphNode";
+import {RenderGraphKeys} from "../renderGraphKeys";
 
 export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<VertexCreatorRenderGraphNode> {
 
@@ -36,25 +36,28 @@ export class VertexCreatorNodeCompiler implements RenderGraphNodeCompiler<Vertex
 			return false;
 		};
 
+		const propertyMapping: Map<string, string> = new Map<string, string>();
+
 		const execContextEntries = new Map<string, () => any>();
-		for (let input of node.getInputs()) {
-			if(input instanceof PropertyRenderGraphNode) {
-				const prop = input as PropertyRenderGraphNode<any>;
+		for (let {property, name} of node.getProperties()) {
+			if(property instanceof PropertyRenderGraphNode) {
+				const prop = property as PropertyRenderGraphNode<any>;
 				execContextEntries.set(prop.getName(), prop.getProvider());
+				propertyMapping.set(name, RenderGraphKeys.property(prop))
 			}
-			if(input instanceof PropertyConstRenderGraphNode) {
-				const constProp = input as PropertyConstRenderGraphNode<any>;
+			if(property instanceof PropertyConstRenderGraphNode) {
+				const constProp = property as PropertyConstRenderGraphNode<any>;
 				execContextEntries.set(constProp.getName(), () => constProp.getValue());
+				propertyMapping.set(name, RenderGraphKeys.property(constProp))
 			}
 		}
-		const execContext = new ProgrammableNodeContext(execContextEntries);
 
 		return [
 			new UpdateVertexDataRenderGraphCommand(
 				node.getName(),
 				node.getFunc(),
 				execCondition,
-				execContext,
+				propertyMapping,
 			),
 		];
 	}

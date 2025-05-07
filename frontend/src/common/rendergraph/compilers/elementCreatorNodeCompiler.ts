@@ -5,8 +5,8 @@ import {RenderGraphCompileContext} from "../renderGraphCompileContext";
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {PropertyRenderGraphNode} from "../nodes/propertyRenderGraphNode";
 import {PropertyConstRenderGraphNode} from "../nodes/propertyConstRenderGraphNode";
-import {ProgrammableNodeContext} from "../nodes/programmableRenderGraphNode";
 import {UpdateElementDataRenderGraphCommand} from "../commands/updateElementDataRenderGraphCommand";
+import {RenderGraphKeys} from "../renderGraphKeys";
 
 export class ElementCreatorNodeCompiler implements RenderGraphNodeCompiler<ElementCreatorRenderGraphNode> {
 
@@ -37,25 +37,28 @@ export class ElementCreatorNodeCompiler implements RenderGraphNodeCompiler<Eleme
 			return false;
 		};
 
+		const propertyMapping: Map<string, string> = new Map<string, string>();
+
 		const execContextEntries = new Map<string, () => any>();
-		for (let input of node.getInputs()) {
-			if (input instanceof PropertyRenderGraphNode) {
-				const prop = input as PropertyRenderGraphNode<any>;
+		for (let {property, name} of node.getProperties()) {
+			if (property instanceof PropertyRenderGraphNode) {
+				const prop = property as PropertyRenderGraphNode<any>;
 				execContextEntries.set(prop.getName(), prop.getProvider());
+				propertyMapping.set(name, RenderGraphKeys.property(prop))
 			}
-			if (input instanceof PropertyConstRenderGraphNode) {
-				const constProp = input as PropertyConstRenderGraphNode<any>;
+			if (property instanceof PropertyConstRenderGraphNode) {
+				const constProp = property as PropertyConstRenderGraphNode<any>;
 				execContextEntries.set(constProp.getName(), () => constProp.getValue());
+				propertyMapping.set(name, RenderGraphKeys.property(constProp))
 			}
 		}
-		const execContext = new ProgrammableNodeContext(execContextEntries);
 
 		return [
 			new UpdateElementDataRenderGraphCommand(
 				node.getName(),
 				node.getFunc(),
 				execCondition,
-				execContext,
+				propertyMapping
 			),
 		];
 	}

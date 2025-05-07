@@ -4,7 +4,7 @@ import {GLVertexBuffer} from "../../webgl/glVertexBuffer";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {VertexMetaInfo} from "../nodes/vertexDescriptorRenderGraphNode";
 import {RenderGraphCommand} from "../renderGraphCommand";
-import {ProgrammableNodeContext} from "../nodes/programmableRenderGraphNode";
+import {RenderGraphNodeContext} from "../renderGraphNodeContext";
 
 /**
  * Update the vertex data returned by the given function.
@@ -13,21 +13,21 @@ import {ProgrammableNodeContext} from "../nodes/programmableRenderGraphNode";
 export class UpdateVertexDataRenderGraphCommand extends RenderGraphCommand {
 
 	private readonly creatorName: string;
-	private readonly creationFunc: (context: ProgrammableNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult;
+	private readonly creationFunc: (context: RenderGraphNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult;
 	private readonly execCondition: () => boolean;
-	private readonly context: ProgrammableNodeContext;
+	private readonly propertyMapping: Map<string, string>;
 
 	constructor(
 		creatorName: string,
-		creationFunc: (context: ProgrammableNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult,
+		creationFunc: (context: RenderGraphNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult,
 		execCondition: () => boolean,
-		context: ProgrammableNodeContext,
+		propertyMapping: Map<string, string>
 	) {
 		super();
 		this.creatorName = creatorName;
 		this.creationFunc = creationFunc;
 		this.execCondition = execCondition;
-		this.context = context;
+		this.propertyMapping = propertyMapping;
 	}
 
 	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
@@ -35,7 +35,8 @@ export class UpdateVertexDataRenderGraphCommand extends RenderGraphCommand {
 			return;
 		}
 
-		const result = this.creationFunc(this.context);
+		const context = new RenderGraphNodeContext(resourceManager, this.propertyMapping);
+		const result = this.creationFunc(context);
 		for (let [key, {data, entryCount}] of result) {
 
 			const buffer = resourceManager.getResource<GLVertexBuffer>(RenderGraphKeys.vertexBufferFromName(this.creatorName, key));

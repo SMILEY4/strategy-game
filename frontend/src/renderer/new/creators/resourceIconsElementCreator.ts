@@ -2,16 +2,16 @@ import {ElementCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/e
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {Camera} from "../../../common/webgl/camera";
-import {ProgrammableNodeContext} from "../../../common/rendergraph/nodes/programmableRenderGraphNode";
 import {Tile} from "../../../models/tile/tile";
 import {MapMode} from "../../../models/misc/mapMode";
 import {TileResourceType} from "../../../models/tile/TileResourceType";
+import {RenderGraphNodeContext} from "../../../common/rendergraph/renderGraphNodeContext";
 
 export namespace ResourceIconsElementCreator {
 
 	export const OUTPUT_ID = "resourceicons.elements";
 
-	export function funcCreate(context: ProgrammableNodeContext): ElementCreatorRenderGraphNode.ElementCreationFuncResult {
+	export function funcCreate(context: RenderGraphNodeContext): ElementCreatorRenderGraphNode.ElementCreationFuncResult {
 
 		const tiles = context.get<Tile[]>("tiles");
 		const mapMode = context.get<MapMode>("mapMode");

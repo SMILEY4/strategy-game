@@ -9,7 +9,7 @@ import {Random} from "../../../common/random";
 import {BorderBuilder} from "../../game/rendernodes/utils/borderBuilder";
 import {mapHiddenOrNull} from "../../../common/hiddenType";
 import {packBorder} from "../../game/rendernodes/utils/packBorder";
-import {ProgrammableNodeContext} from "../../../common/rendergraph/nodes/programmableRenderGraphNode";
+import {RenderGraphNodeContext} from "../../../common/rendergraph/renderGraphNodeContext";
 
 export namespace TileInstanceVertexCreator {
 
@@ -43,7 +43,7 @@ export namespace TileInstanceVertexCreator {
 	let tileIndices: number[] = [];
 
 
-	export function func(context: ProgrammableNodeContext): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
+	export function func(context: RenderGraphNodeContext): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
 		const tiles = context.get<Tile[]>("tiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");
 		const colorLandLight = context.get<[number, number, number]>("colorLandLight");

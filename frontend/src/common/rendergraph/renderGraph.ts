@@ -45,14 +45,24 @@ export class RenderGraph {
 	}
 
 	public initialize(compileResources: Map<string, any>) {
+
+		if (this.unprocessedNodes.map(it => it.getName()).distinct().length !== this.unprocessedNodes.length) {
+			throw new Error("Names of render graph nodes are not unique!");
+		}
+
+		// todo: validate nodes
+
+		this.unprocessedNodes.push(new InitRenderGraphNode().withInputs(this.unprocessedNodes));
+
 		this.sortedNodes.push(
-			new InitRenderGraphNode(),
 			...this.sorter.sort(this.unprocessedNodes),
 		);
+
 		this.resourceManager.initialize(this.sortedNodes);
+
 		this.commands.push(...this.compiler.compile(this.sortedNodes, compileResources, true));
+
 		this.executeCounter = 0;
-		console.log(this.commands.map(it => it.getDebugData()));
 	}
 
 	public dispose() {

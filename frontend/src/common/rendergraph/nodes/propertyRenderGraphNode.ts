@@ -5,6 +5,7 @@ export class PropertyRenderGraphNode<T> extends RenderGraphNode<PropertyRenderGr
 
 	private readonly changeTests: (() => boolean)[] = [];
 	private type: GLUniformType | null = null;
+	private defaultValue: T = null as any;
 	private provider: () => T = () => null as any;
 
 	public withChangeTest(changeTest: () => boolean): PropertyRenderGraphNode<T> {
@@ -14,6 +15,11 @@ export class PropertyRenderGraphNode<T> extends RenderGraphNode<PropertyRenderGr
 
 	public withType(type: GLUniformType): PropertyRenderGraphNode<T> {
 		this.type = type;
+		return this;
+	}
+
+	public withDefault(defaultValue: T): PropertyRenderGraphNode<T> {
+		this.defaultValue = defaultValue;
 		return this;
 	}
 
@@ -28,6 +34,10 @@ export class PropertyRenderGraphNode<T> extends RenderGraphNode<PropertyRenderGr
 
 	public getType(): GLUniformType | null {
 		return this.type;
+	}
+
+	public getDefault(): T {
+		return this.defaultValue;
 	}
 
 	public getProvider(): () => T {
