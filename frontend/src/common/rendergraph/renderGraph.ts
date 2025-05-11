@@ -14,10 +14,10 @@ import {RenderGraphCommand} from "./renderGraphCommand";
 import {PropertyRenderGraphNode} from "./nodes/propertyRenderGraphNode";
 import {PropertyConstRenderGraphNode} from "./nodes/propertyConstRenderGraphNode";
 import {ConditionalRenderGraphNode} from "./nodes/conditionalRenderGraphNode";
-import {Camera} from "../webgl/camera";
 import {ElementCreatorRenderGraphNode} from "./nodes/elementCreatorRenderGraphNode";
 import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
 import {HtmlDrawRenderGraphNode} from "./nodes/htmlDrawRenderGraphNode";
+import {PropertyDerivedRenderGraphNode} from "./nodes/propertyDerivedRenderGraphNode";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
@@ -38,10 +38,6 @@ export class RenderGraph {
 		this.sorter = sorter;
 		this.compiler = compiler;
 		this.resourceManager = resourceManager;
-	}
-
-	public updateCamera(camera: Camera) { // todo: temp workaround
-		this.resourceManager.createResource("camera", camera, _ => undefined);
 	}
 
 	public initialize(compileResources: Map<string, any>) {
@@ -155,6 +151,13 @@ export class RenderGraph {
 
 	public createPropertyConstant<T>(name?: string): PropertyConstRenderGraphNode<T> {
 		const node = new PropertyConstRenderGraphNode<T>();
+		if (name) node.withName(name);
+		this.addNode(node);
+		return node;
+	}
+
+	public createPropertyDerived<T>(name?: string): PropertyDerivedRenderGraphNode<T> {
+		const node = new PropertyDerivedRenderGraphNode<T>();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;

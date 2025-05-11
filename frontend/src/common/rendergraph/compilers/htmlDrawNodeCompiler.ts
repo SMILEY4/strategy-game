@@ -19,41 +19,26 @@ export class HtmlDrawNodeCompiler implements RenderGraphNodeCompiler<ContainerRe
 	}
 
 	compile(node: ContainerRenderGraphNode, context: RenderGraphCompileContext): RenderGraphCommand[] {
-
-		const execCondition = this.buildExecCondition(node);
-
-		const containerKey = RenderGraphKeys.cachedHtmlElement(node);
-
-		const sources: RenderHtmlElementsRenderGraphCommand.Source[] = node.getRenderNodes().map(it => {
-			return {
-				elementDataKey: RenderGraphKeys.elementsData(it.getSource()),
-				elementPoolKey: RenderGraphKeys.pooledHtmlElements(it.getSource()),
-				cullingRadius: it.getCullingRadius(),
-				templateFunc: it.getTemplateFunc(),
-				renderFunc: it.getRenderFunc(),
-			};
-		});
-
 		return [
 			new RenderHtmlElementsRenderGraphCommand(
-				execCondition,
-				containerKey,
-				sources,
+				this.buildExecCondition(node),
+				RenderGraphKeys.cachedHtmlElement(node),
+				this.collectSources(node),
+				RenderGraphKeys.property(node.getCameraProperty()),
 			),
 		];
 	}
 
 	private buildExecCondition(node: ContainerRenderGraphNode): () => boolean {
 
-		const creators = node
+		const creatorNodes = node
 			.getRenderNodes()
 			.flatMap(it => it.getInputs())
 			.filter(it => it instanceof ElementCreatorRenderGraphNode)
 			.distinct();
 
 		const changeTests: (() => boolean)[] = [];
-
-		creators.forEach(creator => {
+		creatorNodes.forEach(creator => {
 			changeTests.push(
 				...creator
 					.getInputs()
@@ -72,4 +57,17 @@ export class HtmlDrawNodeCompiler implements RenderGraphNodeCompiler<ContainerRe
 			return false;
 		};
 	}
+
+	private collectSources(node: ContainerRenderGraphNode): RenderHtmlElementsRenderGraphCommand.Source[] {
+		return node.getRenderNodes().map(it => {
+			return {
+				elementDataKey: RenderGraphKeys.elementsData(it.getSource()),
+				elementPoolKey: RenderGraphKeys.pooledHtmlElements(it.getSource()),
+				cullingRadius: it.getCullingRadius(),
+				templateFunc: it.getTemplateFunc(),
+				renderFunc: it.getRenderFunc(),
+			};
+		});
+	}
+
 }

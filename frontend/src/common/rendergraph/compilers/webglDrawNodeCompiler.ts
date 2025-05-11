@@ -27,6 +27,9 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 	compile(node: DrawRenderGraphNode, context: RenderGraphCompileContext): RenderGraphCommand[] {
 		const commands: RenderGraphCommand[] = [];
 
+		// camera property
+		const cameraPropertyName = RenderGraphKeys.property(node.getCameraProperty());
+
 		// compile shader and add commands
 		const shaderNode = node.getShaderNode();
 		commands.push(...context.compile(shaderNode));
@@ -40,12 +43,13 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 		const outputsToRenderTarget = this.hasRenderTargetOutput(node, context.getNodes());
 		if (outputsToRenderTarget) {
 			const renderTarget = this.getRenderTargetOutput(node, context.getNodes());
-			commands.push(new BindFramebufferRenderGraphCommand(RenderGraphKeys.framebuffer(renderTarget), node.getScaling()));
+			commands.push(new BindFramebufferRenderGraphCommand(RenderGraphKeys.framebuffer(renderTarget), node.getScaling(), cameraPropertyName));
 		}
 
 		// setup viewport
 		commands.push(new SetupViewportRenderGraphCommand(
 			node.getScaling(),
+			cameraPropertyName
 		));
 
 		// setup clear color
@@ -74,7 +78,7 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 		// unbind framebuffer
 		if (outputsToRenderTarget) {
 			const renderTarget = this.getRenderTargetOutput(node, context.getNodes());
-			commands.push(new UnbindFramebufferRenderGraphCommand(renderTarget.getName()));
+			commands.push(new UnbindFramebufferRenderGraphCommand(RenderGraphKeys.framebuffer(renderTarget)));
 		}
 
 		return commands;

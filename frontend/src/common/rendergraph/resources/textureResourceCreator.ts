@@ -7,25 +7,24 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 export class TextureResourceCreator implements RenderGraphResourceCreator<TextureRenderGraphNode> {
 
-	private readonly gl: WebGL2RenderingContext;
-
-	constructor(gl: WebGL2RenderingContext) {
-		this.gl = gl;
-	}
+	constructor(
+		private readonly gl: WebGL2RenderingContext
+	) {}
 
 	appliesTo(node: RenderGraphNode<any>): boolean {
 		return node instanceof TextureRenderGraphNode;
 	}
 
 	create(node: TextureRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-
 		const textureName = RenderGraphKeys.texture(node);
-		if (resourceManager.hasResource(textureName)) {
-			return;
+		if (!resourceManager.hasResource(textureName)) {
+			resourceManager.createResource<GLTexture>(
+				textureName,
+				GLTexture.createFromPath(this.gl, node.getImageUrl(), node.getConfig() ?? undefined),
+				it => it.dispose()
+			);
 		}
 
-		const texture = GLTexture.createFromPath(this.gl, node.getImageUrl(), node.getConfig() ?? undefined);
-		resourceManager.createResource<GLTexture>(textureName, texture, it => it.dispose());
 	}
 
 }

@@ -4,24 +4,19 @@ import {Camera} from "../../webgl/camera";
 import {GLError} from "../../webgl/glError";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
-/**
- * Sets the viewport using the current camera
- */
 export class SetupViewportRenderGraphCommand extends RenderGraphCommand {
 
-	private readonly scaling: number;
-
-	constructor(scaling: number,) {
+	constructor(
+		private readonly scaling: number,
+		private readonly cameraPropertyName: string
+	) {
 		super();
-		this.scaling = scaling;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
+	execute(resourceManager: RenderGraphResourceManager): void {
 		const gl = resourceManager.getResource<WebGL2RenderingContext>(RenderGraphKeys.gl());
-		const camera = resourceManager.getResource<Camera>(RenderGraphKeys.camera());
-
+		const camera = resourceManager.getResource<Camera>(this.cameraPropertyName);
 		gl.viewport(0, 0, camera.getWidth() * this.scaling, camera.getHeight() * this.scaling);
-
 		GLError.check(gl, "[gl-setupViewport]", "setup viewport");
 	}
 

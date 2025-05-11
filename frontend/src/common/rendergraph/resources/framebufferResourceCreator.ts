@@ -7,10 +7,9 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 export class FramebufferResourceCreator implements RenderGraphResourceCreator<RenderTargetRenderGraphNode> {
 
-	private readonly gl: WebGL2RenderingContext;
-
-	constructor(gl: WebGL2RenderingContext) {
-		this.gl = gl;
+	constructor(
+		private readonly gl: WebGL2RenderingContext,
+	) {
 	}
 
 	appliesTo(node: RenderGraphNode<any>): boolean {
@@ -18,14 +17,14 @@ export class FramebufferResourceCreator implements RenderGraphResourceCreator<Re
 	}
 
 	create(node: RenderTargetRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-
 		const framebufferName = RenderGraphKeys.framebuffer(node);
-		if (resourceManager.hasResource(framebufferName)) {
-			return;
+		if (!resourceManager.hasResource(framebufferName)) {
+			resourceManager.createResource<GLFramebuffer>(
+				framebufferName,
+				GLFramebuffer.create(this.gl, 1, 1, node.getEnableDepth()),
+				it => it.dispose()
+			);
 		}
-
-		const framebuffer = GLFramebuffer.create(this.gl, 1, 1, node.getEnableDepth());
-		resourceManager.createResource<GLFramebuffer>(framebufferName, framebuffer, it => it.dispose());
 	}
 
 }

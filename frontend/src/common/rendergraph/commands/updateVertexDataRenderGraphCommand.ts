@@ -2,32 +2,19 @@ import {VertexCreatorRenderGraphNode} from "../nodes/vertexCreatorRenderGraphNod
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {GLVertexBuffer} from "../../webgl/glVertexBuffer";
 import {RenderGraphKeys} from "../renderGraphKeys";
-import {VertexMetaInfo} from "../nodes/vertexDescriptorRenderGraphNode";
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {RenderGraphNodeContext} from "../renderGraphNodeContext";
+import {VertexMetaInfo} from "../resources/vertexMetaInfo";
 
-/**
- * Update the vertex data returned by the given function.
- * Skipped if the given condition evaluates to "false".
- */
 export class UpdateVertexDataRenderGraphCommand extends RenderGraphCommand {
 
-	private readonly creatorName: string;
-	private readonly creationFunc: (context: RenderGraphNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult;
-	private readonly execCondition: () => boolean;
-	private readonly propertyMapping: Map<string, string>;
-
 	constructor(
-		creatorName: string,
-		creationFunc: (context: RenderGraphNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult,
-		execCondition: () => boolean,
-		propertyMapping: Map<string, string>
+		private readonly creatorName: string,
+		private readonly creationFunc: (context: RenderGraphNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult,
+		private readonly execCondition: () => boolean,
+		private readonly propertyMapping: Map<string, string>,
 	) {
 		super();
-		this.creatorName = creatorName;
-		this.creationFunc = creationFunc;
-		this.execCondition = execCondition;
-		this.propertyMapping = propertyMapping;
 	}
 
 	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
@@ -44,7 +31,6 @@ export class UpdateVertexDataRenderGraphCommand extends RenderGraphCommand {
 
 			const vertexInfo = resourceManager.getResource<VertexMetaInfo>(RenderGraphKeys.vertexInfoFromName(this.creatorName, key));
 			vertexInfo.entryCount = entryCount;
-
 		}
 	}
 

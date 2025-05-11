@@ -1,21 +1,20 @@
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
-/**
- * Updates the resource value of a property
- */
 export class UpdatePropertyCommand extends RenderGraphCommand {
 
-	private readonly name: string;
-	private readonly provider: () => any;
-
-	constructor(name: string, provider: () => any) {
+	constructor(
+		private readonly name: string,
+		private readonly provider: () => any,
+		private readonly execCondition: () => boolean
+	) {
 		super();
-		this.name = name;
-		this.provider = provider;
 	}
 
 	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
+		if (!this.execCondition() && !forceExecute) {
+			return;
+		}
 		resourceManager.updateResource(this.name, this.provider());
 	}
 

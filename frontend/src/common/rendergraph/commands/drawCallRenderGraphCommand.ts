@@ -4,46 +4,32 @@ import {GLError} from "../../webgl/glError";
 import {VertexMetaInfo} from "../nodes/vertexDescriptorRenderGraphNode";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
-/**
- * Performs a draw call (and screen clear) using the vertex information with the given name(s).
- */
 export class DrawCallRenderGraphCommand extends RenderGraphCommand {
 
-	private readonly vertexInfoNames: string[];
-
-	constructor(vertexInfoNames: string[],) {
+	constructor(
+		private readonly vertexInfoNames: string[]
+	) {
 		super();
-		this.vertexInfoNames = vertexInfoNames;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
+	execute(resourceManager: RenderGraphResourceManager): void {
 		const gl = resourceManager.getResource<WebGL2RenderingContext>(RenderGraphKeys.gl());
-		const entryCounts = this.getEntryCount(resourceManager);
+		const { vertexCount, instanceCount } = this.getEntryCount(resourceManager);
 
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		if (entryCounts.instanceCount === null) {
-			if (entryCounts.vertexCount === 0) {
+		if (instanceCount === null) {
+			if (vertexCount === 0) {
 				console.warn("called draw with 0 vertexCount count");
 			}
-			gl.drawArrays(
-				gl.TRIANGLES,
-				0,
-				entryCounts.vertexCount,
-			);
+			gl.drawArrays(gl.TRIANGLES, 0, vertexCount,);
 			GLError.check(gl, "drawArrays", "drawing");
 
 		} else {
-
-			if (entryCounts.vertexCount === 0 || entryCounts.instanceCount === 0) {
+			if (vertexCount === 0 || instanceCount === 0) {
 				console.warn("called drawInstances with 0 vertex or instance count");
 			}
-			gl.drawArraysInstanced(
-				gl.TRIANGLES,
-				0,
-				entryCounts.vertexCount,
-				entryCounts.instanceCount,
-			);
+			gl.drawArraysInstanced(gl.TRIANGLES, 0, vertexCount, instanceCount,);
 			GLError.check(gl, "drawArraysInstanced", "drawing instanced");
 		}
 

@@ -7,25 +7,23 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 export class ShaderProgramResourceCreator implements RenderGraphResourceCreator<ShaderRenderGraphNode> {
 
-	private readonly gl: WebGL2RenderingContext;
-
-	constructor(gl: WebGL2RenderingContext) {
-		this.gl = gl;
-	}
+	constructor(
+		private readonly gl: WebGL2RenderingContext
+	) {}
 
 	appliesTo(node: RenderGraphNode<any>): boolean {
 		return node instanceof ShaderRenderGraphNode;
 	}
 
 	create(node: ShaderRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-
 		const programName = RenderGraphKeys.shaderProgram(node);
-		if (resourceManager.hasResource(programName)) {
-			return;
+		if (!resourceManager.hasResource(programName)) {
+			resourceManager.createResource<GLProgram>(
+				programName,
+				GLProgram.create(this.gl, node.getVertexShaderSource(), node.getFragmentShaderSource()),
+				it => it.dispose()
+			);
 		}
-
-		const program = GLProgram.create(this.gl, node.getVertexShaderSource(), node.getFragmentShaderSource());
-		resourceManager.createResource<GLProgram>(programName, program, it => it.dispose());
 	}
 
 }

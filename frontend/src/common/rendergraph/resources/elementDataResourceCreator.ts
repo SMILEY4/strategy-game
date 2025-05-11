@@ -12,19 +12,16 @@ export class ElementDataResourceCreator implements RenderGraphResourceCreator<El
 	}
 
 	create(node: ElementCreatorRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-
 		for (let output of node.getOutputs()) {
-
 			const elementsName = RenderGraphKeys.elementsData(output);
-
-			if (resourceManager.hasResource(elementsName)) {
-				continue;
+			if (!resourceManager.hasResource(elementsName)) {
+				resourceManager.createResource<ElementData>(
+					elementsName,
+					{elements: []},
+					it => it.elements.length = 0,
+				);
 			}
-
-			resourceManager.createResource<ElementData>(elementsName, {elements: []}, it => it.elements.length = 0);
 		}
-
 	}
-
 
 }

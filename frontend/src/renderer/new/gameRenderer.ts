@@ -51,7 +51,6 @@ export class GameRenderer {
 		if (!canvasHandle.isReady()) {
 			return;
 		}
-		this.gameRenderGraph?.updateCamera(this.getRenderCamera(canvasHandle))
 		this.changeTracker.prepareFrame(this.getRenderCamera(canvasHandle));
 		this.gameRenderGraph?.execute();
 	}

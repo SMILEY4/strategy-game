@@ -12,23 +12,14 @@ export class CachedHtmlElementResourceCreator implements RenderGraphResourceCrea
 	}
 
 	create(node: ContainerRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-
 		const elementsName = RenderGraphKeys.cachedHtmlElement(node);
-
-		if (resourceManager.hasResource(elementsName)) {
-			return;
+		if (!resourceManager.hasResource(elementsName)) {
+			resourceManager.createResource<CachedHtmlElement>(
+				elementsName,
+				{element: null, id: node.getElementId()},
+				() => undefined,
+			);
 		}
-
-		resourceManager.createResource<CachedHtmlElement>(
-			elementsName,
-			{
-				element: null,
-				id: node.getElementId(),
-			},
-			_ => undefined,
-		);
 	}
 
-
 }
-

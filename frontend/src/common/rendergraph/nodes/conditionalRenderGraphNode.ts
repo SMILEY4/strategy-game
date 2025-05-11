@@ -27,7 +27,11 @@ export class ConditionalRenderGraphNode<TNodeOption extends RenderGraphNode<any>
 	}
 
 	validate(): string[] {
-		return [];
+		const errors: string[] = [];
+		if(this.options.length == 0) {
+			errors.push("Conditional node requires at least one option.")
+		}
+		return errors;
 	}
 
 }

@@ -11,25 +11,15 @@ export class VertexInfoResourceCreator implements RenderGraphResourceCreator<Ver
 	}
 
 	create(node: VertexDescriptorRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-
 		for (let output of node.getVertexCreatorOutputs()) {
-
 			const name = RenderGraphKeys.vertexInfo(output);
-			if (resourceManager.hasResource(name)) {
-				continue;
+			if (!resourceManager.hasResource(name)) {
+				resourceManager.createResource<VertexMetaInfo>(
+					name,
+					{type: output.type, entryCount: 0},
+					() => undefined);
 			}
-
-			resourceManager.createResource<VertexMetaInfo>(
-				name,
-				{
-					type: output.type,
-					entryCount: 0,
-				},
-				_ => undefined);
-
 		}
-
 	}
-
 
 }

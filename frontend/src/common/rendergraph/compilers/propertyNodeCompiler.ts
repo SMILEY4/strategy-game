@@ -18,8 +18,23 @@ export class PropertyNodeCompiler implements RenderGraphNodeCompiler<PropertyRen
 
 	compile(node: PropertyRenderGraphNode<any>, context: RenderGraphCompileContext): RenderGraphCommand[] {
 		return [
-			new UpdatePropertyCommand(RenderGraphKeys.property(node), node.getProvider())
+			new UpdatePropertyCommand(
+				RenderGraphKeys.property(node),
+				node.getProvider(),
+				this.buildExecCondition(node)
+			)
 		];
+	}
+
+	private buildExecCondition(node: PropertyRenderGraphNode<any>): () => boolean {
+		return () => {
+			for (let changeTest of node.getChangeTests()) {
+				if (changeTest()) {
+					return true;
+				}
+			}
+			return false;
+		};
 	}
 
 }

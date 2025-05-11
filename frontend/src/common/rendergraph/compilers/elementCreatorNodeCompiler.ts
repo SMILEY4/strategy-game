@@ -20,15 +20,25 @@ export class ElementCreatorNodeCompiler implements RenderGraphNodeCompiler<Eleme
 
 
 	compile(node: ElementCreatorRenderGraphNode, context: RenderGraphCompileContext): RenderGraphCommand[] {
+		return [
+			new UpdateElementDataRenderGraphCommand(
+				node.getName(),
+				node.getFunc(),
+				this.buildExecCondition(node),
+				this.buildPropertyMapping(node)
+			),
+		];
+	}
 
+	private buildExecCondition(node: ElementCreatorRenderGraphNode): () => boolean {
 		const changeTests = [
 			...node
 				.getInputs()
-				.filter(it => it instanceof PropertyRenderGraphNode)
+				.filter(it => it instanceof PropertyRenderGraphNode) // todo: include derived prop nodes
 				.map(it => it as PropertyRenderGraphNode<any>)
 				.flatMap(it => it.getChangeTests()),
 		];
-		const execCondition: () => boolean = () => {
+		return () => {
 			for (let changeTest of changeTests) {
 				if (changeTest()) {
 					return true;
@@ -36,32 +46,23 @@ export class ElementCreatorNodeCompiler implements RenderGraphNodeCompiler<Eleme
 			}
 			return false;
 		};
+	}
 
+	private buildPropertyMapping(node: ElementCreatorRenderGraphNode): Map<string, string> {
 		const propertyMapping: Map<string, string> = new Map<string, string>();
 
-		const execContextEntries = new Map<string, () => any>();
 		for (let {property, name} of node.getProperties()) {
 			if (property instanceof PropertyRenderGraphNode) {
 				const prop = property as PropertyRenderGraphNode<any>;
-				execContextEntries.set(prop.getName(), prop.getProvider());
 				propertyMapping.set(name, RenderGraphKeys.property(prop))
 			}
 			if (property instanceof PropertyConstRenderGraphNode) {
 				const constProp = property as PropertyConstRenderGraphNode<any>;
-				execContextEntries.set(constProp.getName(), () => constProp.getValue());
 				propertyMapping.set(name, RenderGraphKeys.property(constProp))
 			}
+			// todo: include derived prop nodes
 		}
 
-		return [
-			new UpdateElementDataRenderGraphCommand(
-				node.getName(),
-				node.getFunc(),
-				execCondition,
-				propertyMapping
-			),
-		];
+		return propertyMapping;
 	}
-
-
 }

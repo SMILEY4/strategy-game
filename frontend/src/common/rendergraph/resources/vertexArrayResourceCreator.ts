@@ -12,11 +12,9 @@ import AttributeConfig = GLVertexArray.AttributeConfig;
 
 export class VertexArrayResourceCreator implements RenderGraphResourceCreator<DrawRenderGraphNode> {
 
-	private readonly gl: WebGL2RenderingContext;
-
-	constructor(gl: WebGL2RenderingContext) {
-		this.gl = gl;
-	}
+	constructor(
+		private readonly gl: WebGL2RenderingContext
+	) {}
 
 	appliesTo(node: RenderGraphNode<any>): boolean {
 		return node instanceof DrawRenderGraphNode;
@@ -28,13 +26,11 @@ export class VertexArrayResourceCreator implements RenderGraphResourceCreator<Dr
 		const shaderNode = node.getShaderNode();
 
 		const vertexArrayName = RenderGraphKeys.vertexArray(vertexDescriptorNode, shaderNode);
-		if (resourceManager.hasResource(vertexArrayName)) {
-			return;
+		if (!resourceManager.hasResource(vertexArrayName)) {
+			const attributes = this.buildVertexAttributes(shaderNode, vertexDescriptorNode, resourceManager);
+			const vertexArray = GLVertexArray.create(this.gl, attributes);
+			resourceManager.createResource<GLVertexArray>(vertexArrayName, vertexArray, it => it.dispose());
 		}
-
-		const attributes = this.buildVertexAttributes(shaderNode, vertexDescriptorNode, resourceManager);
-		const vertexArray = GLVertexArray.create(this.gl, attributes);
-		resourceManager.createResource<GLVertexArray>(vertexArrayName, vertexArray, it => it.dispose());
 	}
 
 
@@ -70,6 +66,5 @@ export class VertexArrayResourceCreator implements RenderGraphResourceCreator<Dr
 
 		return attributes;
 	}
-
 
 }

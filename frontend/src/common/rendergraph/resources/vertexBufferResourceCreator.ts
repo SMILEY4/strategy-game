@@ -7,10 +7,9 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 export class VertexBufferResourceCreator implements RenderGraphResourceCreator<VertexCreatorRenderGraphNode> {
 
-	private readonly gl: WebGL2RenderingContext;
-
-	constructor(gl: WebGL2RenderingContext) {
-		this.gl = gl;
+	constructor(
+		private readonly gl: WebGL2RenderingContext,
+	) {
 	}
 
 	appliesTo(node: RenderGraphNode<any>): boolean {
@@ -18,17 +17,15 @@ export class VertexBufferResourceCreator implements RenderGraphResourceCreator<V
 	}
 
 	create(node: VertexCreatorRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-
 		for (let output of node.getOutputs()) {
-
 			const bufferName = RenderGraphKeys.vertexBuffer(output);
-			if (resourceManager.hasResource(bufferName)) {
-				continue;
+			if (!resourceManager.hasResource(bufferName)) {
+				resourceManager.createResource<GLVertexBuffer>(
+					bufferName,
+					GLVertexBuffer.createEmpty(this.gl),
+					it => it.dispose(),
+				);
 			}
-
-			const buffer = GLVertexBuffer.createEmpty(this.gl);
-			resourceManager.createResource<GLVertexBuffer>(bufferName, buffer, it => it.dispose());
-
 		}
 	}
 

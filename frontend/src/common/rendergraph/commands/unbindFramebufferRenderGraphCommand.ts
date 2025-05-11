@@ -2,20 +2,16 @@ import {GLFramebuffer} from "../../webgl/glFramebuffer";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
-/**
- * Unbinds the framebuffer with the given name, i.e. no longer a render target.
- */
 export class UnbindFramebufferRenderGraphCommand extends RenderGraphCommand {
 
-	private readonly framebufferName: string;
-
-	constructor(framebufferName: string) {
+	constructor(
+		private readonly framebufferName: string
+	) {
 		super();
-		this.framebufferName = framebufferName;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
-		const framebuffer = resourceManager.getResource<GLFramebuffer>("framebuffer:" + this.framebufferName);
+	execute(resourceManager: RenderGraphResourceManager): void {
+		const framebuffer = resourceManager.getResource<GLFramebuffer>(this.framebufferName);
 		framebuffer.unbind();
 	}
 

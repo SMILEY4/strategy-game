@@ -28,7 +28,7 @@ import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
 import {FullscreenQuadVertexCreator} from "./creators/fullscreenQuadVertexCreator";
-import {WebGlContextResourceCreator} from "../../common/rendergraph/resources/webGlContextResourceCreator";
+import {WebGLContextResourceCreator} from "../../common/rendergraph/resources/webGLContextResourceCreator";
 import {FramebufferResourceCreator} from "../../common/rendergraph/resources/framebufferResourceCreator";
 import {TextureResourceCreator} from "../../common/rendergraph/resources/textureResourceCreator";
 import {ShaderProgramResourceCreator} from "../../common/rendergraph/resources/shaderProgramResourceCreator";
@@ -81,7 +81,7 @@ export class GameRenderGraphFactory {
 				new HtmlDrawNodeCompiler(),
 			]),
 			new RenderGraphResourceManager([
-				new WebGlContextResourceCreator(gl),
+				new WebGLContextResourceCreator(gl),
 				new PropertyResourceCreator(),
 				new FramebufferResourceCreator(gl),
 				new TextureResourceCreator(gl),
@@ -281,6 +281,29 @@ export class GameRenderGraphFactory {
 			.withProvider(() => gameAccess.getSelectedTile() ? [gameAccess.getSelectedTile()?.position.q, gameAccess.getSelectedTile()?.position.r] as [number, number] : [99999, 99999])
 			.withChangeTest(() => changeTracker.getTrackedChanges().selectedTile)
 			.withType(GLUniformType.INT_VEC2);
+
+		const propCamera = graph
+			.createProperty<Camera>("camera")
+			.withChangeTest(() => changeTracker.getTrackedChanges().camera)
+			.withProvider(() => {
+				return Camera.create(
+					gameAccess.getCamera(),
+					canvasHandle.getCanvasWidth(),
+					canvasHandle.getCanvasHeight(),
+					canvasHandle.getClientWidth(),
+					canvasHandle.getClientHeight(),
+				);
+			});
+
+		const propCameraVPM_derived = graph // todo: properly implement derived and use (and rename)
+			.createPropertyDerived<Float32Array>("camera-vpm-derived")
+			.withType(GLUniformType.MAT3)
+			.withValue(propCamera, camera => camera.getViewProjectionMatrixOrThrow(true))
+
+		const propCameraInvVPM_derived = graph // todo: properly implement derived and use (and rename)
+			.createPropertyDerived<Float32Array>("camera-inv-vpm-derived")
+			.withType(GLUniformType.MAT3)
+			.withValue(propCamera, camera => mat3.inverse(camera.getViewProjectionMatrixOrThrow(true)))
 
 		const propCameraVPM = graph
 			.createProperty<Float32Array>("camera-vpm")
@@ -486,6 +509,7 @@ export class GameRenderGraphFactory {
 
 		const drawWater = graph
 			.createDraw("draw-water")
+			.withCamera(propCamera)
 			.withShaderProgram(shaderWater)
 			.withVertexDescriptor(vertexDescriptorWater)
 			.withClearColor([0, 0, 0, 0])
@@ -516,6 +540,7 @@ export class GameRenderGraphFactory {
 
 		const drawLand = graph
 			.createDraw("draw-land")
+			.withCamera(propCamera)
 			.withShaderProgram(shaderLand)
 			.withVertexDescriptor(vertexDescriptorLand)
 			.withClearColor([0, 0, 0, 0]);
@@ -541,6 +566,7 @@ export class GameRenderGraphFactory {
 
 		const drawFog = graph
 			.createDraw("draw-fog")
+			.withCamera(propCamera)
 			.withShaderProgram(shaderFog)
 			.withVertexDescriptor(vertexDescriptorFog)
 			.withClearColor([0, 0, 0, 1]);
@@ -689,6 +715,7 @@ export class GameRenderGraphFactory {
 
 		const drawOverlay = graph
 			.createDraw("draw-overlay")
+			.withCamera(propCamera)
 			.withShaderProgram(shaderOverlay)
 			.withVertexDescriptor(vertexDescriptorOverlay)
 			.withClearColor([0, 0, 0, 0]);
@@ -751,6 +778,7 @@ export class GameRenderGraphFactory {
 
 		const drawMapDetails = graph
 			.createDraw("draw-mapDetails")
+			.withCamera(propCamera)
 			.withShaderProgram(shaderMapDetails)
 			.withVertexDescriptor(vertexDescriptorMapDetails)
 			.withClearColor([0, 0, 0, 0])
@@ -834,6 +862,7 @@ export class GameRenderGraphFactory {
 
 		const drawCombine = graph
 			.createDraw("draw-combine")
+			.withCamera(propCamera)
 			.withShaderProgram(shaderCombine)
 			.withVertexDescriptor(vertexDescriptorCombine)
 			.withClearColor([0, 0, 0, 1])
@@ -899,6 +928,7 @@ export class GameRenderGraphFactory {
 		graph
 			.createContainer("html-elements")
 			.withElementId("game-canvas-overlay")
+			.withCamera(propCamera)
 			.withInput(htmlRendererMovePaths)
 			.withInput(htmlRendererResourceIcons)
 			.withInput(htmlRendererLabels)

@@ -1,7 +1,6 @@
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {Camera} from "../../webgl/camera";
-import {RenderGraphKeys} from "../renderGraphKeys";
 import {ElementCreatorRenderGraphNode} from "../nodes/elementCreatorRenderGraphNode";
 import {Projections} from "../../webgl/projections";
 import Point = Projections.Point;
@@ -12,15 +11,13 @@ import {CachedHtmlElement} from "../resources/cachedHtmlElement";
 
 export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 
-	private readonly execCondition: () => boolean;
-	private readonly containerKey: string;
-	private readonly sources: RenderHtmlElementsRenderGraphCommand.Source[];
-
-	constructor(execCondition: () => boolean, containerName: string, sources: RenderHtmlElementsRenderGraphCommand.Source[]) {
+	constructor(
+		private readonly execCondition: () => boolean,
+		private readonly containerKey: string,
+		private readonly sources: RenderHtmlElementsRenderGraphCommand.Source[],
+		private readonly cameraPropertyName: string,
+	) {
 		super();
-		this.execCondition = execCondition;
-		this.containerKey = containerName;
-		this.sources = sources;
 	}
 
 	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
@@ -28,7 +25,7 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 			return;
 		}
 
-		const camera = resourceManager.getResource<Camera>(RenderGraphKeys.camera());
+		const camera = resourceManager.getResource<Camera>(this.cameraPropertyName);
 
 		const renderedHtmlElements: HTMLElement[] = [];
 

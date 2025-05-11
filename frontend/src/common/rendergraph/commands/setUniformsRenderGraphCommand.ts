@@ -3,20 +3,16 @@ import {GLProgram} from "../../webgl/glProgram";
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {GLUniformType, GLUniformValueType} from "../../webgl/glTypes";
 
-/**
- * Sets the given uniform values for the given shader
- */
 export class SetUniformsRenderGraphCommand extends RenderGraphCommand {
-	private readonly shaderProgramName: string;
-	private readonly uniforms: ProgramUniformEntry[];
 
-	constructor(uniforms: ProgramUniformEntry[], shaderProgramName: string) {
+	constructor(
+		private readonly uniforms: ProgramUniformEntry[],
+		private readonly shaderProgramName: string
+	) {
 		super();
-		this.uniforms = uniforms;
-		this.shaderProgramName = shaderProgramName;
 	}
 
-	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
+	execute(resourceManager: RenderGraphResourceManager): void {
 		const shaderProgram = resourceManager.getResource<GLProgram>(this.shaderProgramName);
 		for (let uniform of this.uniforms) {
 			if (uniform.valueProvider != null) {

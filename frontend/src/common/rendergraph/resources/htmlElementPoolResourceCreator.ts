@@ -12,19 +12,16 @@ export class HtmlElementPoolResourceCreator implements RenderGraphResourceCreato
 	}
 
 	create(node: ElementCreatorRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-
 		for (let output of node.getOutputs()) {
-
 			const elementsName = RenderGraphKeys.pooledHtmlElements(output);
-
-			if (resourceManager.hasResource(elementsName)) {
-				continue;
+			if (!resourceManager.hasResource(elementsName)) {
+				resourceManager.createResource<PooledHtmlElementData>(
+					elementsName,
+					{elements: [], templateElement: null},
+					it => it.elements.length = 0
+				);
 			}
-
-			resourceManager.createResource<PooledHtmlElementData>(elementsName, {elements: [], templateElement: null}, it => it.elements.length = 0);
 		}
-
 	}
-
 
 }
