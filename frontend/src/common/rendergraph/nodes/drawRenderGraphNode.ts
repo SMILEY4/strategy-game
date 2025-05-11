@@ -1,25 +1,35 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./vertexDescriptorRenderGraphNode";
-import {PropertyRenderGraphNode} from "./propertyRenderGraphNode";
 import {Camera} from "../../webgl/camera";
+import {UID} from "../../uid";
+import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
 
 /**
  * Draw vertex data to a canvas using shaders.
  */
-export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
+export class DrawRenderGraphNode implements RenderGraphNode {
 
-	private cameraPropertyNode: PropertyRenderGraphNode<Camera> = null as any;
+	private cameraPropertyNode: RenderGraphProperty<Camera> = null as any;
+	private vertexDescriptorNode: VertexDescriptorRenderGraphNode = null as any;
+	private shaderNode: ShaderRenderGraphNode = null as any;
+
 	private clearColor: [number, number, number, number] = [0, 0, 0, 0];
 	private scaling: number = 1;
 	private blendFunction: ((gl: WebGL2RenderingContext) => void) | null = null;
+	private name: string = UID.generate();
+
+
+	public withName(name: string): DrawRenderGraphNode {
+		this.name = name
+		return this;
+	}
 
 	/**
 	 * The camera to use (required).
 	 */
-	public withCamera(camera: PropertyRenderGraphNode<Camera>): DrawRenderGraphNode {
+	public withCamera(camera: RenderGraphProperty<Camera>): DrawRenderGraphNode {
 		this.cameraPropertyNode = camera;
-		this.registerInput(camera);
 		return this;
 	}
 
@@ -27,7 +37,7 @@ export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 	 * The mesh / vertex descriptor to use (required).
 	 */
 	public withVertexDescriptor(vertexDescriptorNode: VertexDescriptorRenderGraphNode): DrawRenderGraphNode {
-		this.registerInput(vertexDescriptorNode);
+		this.vertexDescriptorNode = vertexDescriptorNode;
 		return this;
 	}
 
@@ -35,7 +45,7 @@ export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 	 * The shader program to use (required).
 	 */
 	public withShaderProgram(shaderNode: ShaderRenderGraphNode): DrawRenderGraphNode {
-		this.registerInput(shaderNode);
+		this.shaderNode = shaderNode;
 		return this;
 	}
 
@@ -66,7 +76,7 @@ export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 	/**
 	 * @return the property providing the camera
 	 */
-	public getCameraProperty(): PropertyRenderGraphNode<Camera> {
+	public getCameraProperty(): RenderGraphProperty<Camera> {
 		return this.cameraPropertyNode;
 	}
 
@@ -74,18 +84,14 @@ export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 	 * @return the vertex descriptor node to use
 	 */
 	public getVertexDescriptorNode(): VertexDescriptorRenderGraphNode {
-		return this
-			.getInputs()
-			.find(VertexDescriptorRenderGraphNode.isType)!!
+		return this.vertexDescriptorNode
 	}
 
 	/**
 	 * @return the shader program node to use
 	 */
 	public getShaderNode(): ShaderRenderGraphNode {
-		return this
-			.getInputs()
-			.find(ShaderRenderGraphNode.isType)!!
+		return this.shaderNode
 	}
 
 	/**
@@ -112,12 +118,12 @@ export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 	validate(): string[] {
 		const errors: string[] = [];
 
-		if(this.getInputs().count(ShaderRenderGraphNode.isType) != 1) {
-			errors.push("Exactly one shader node is required")
+		if(this.vertexDescriptorNode == null) {
+			errors.push("Vertex descriptor node is required")
 		}
 
-		if(this.getInputs().count(VertexDescriptorRenderGraphNode.isType) != 1) {
-			errors.push("Exactly one vertex descriptor node is required")
+		if(this.shaderNode == null) {
+			errors.push("Shader node is required")
 		}
 
 		if(!this.cameraPropertyNode) {
@@ -125,6 +131,22 @@ export class DrawRenderGraphNode extends RenderGraphNode<DrawRenderGraphNode> {
 		}
 
 		return errors;
+	}
+
+	getInputs(): RenderGraphNode[] {
+		return [this.vertexDescriptorNode, this.shaderNode, this.cameraPropertyNode];
+	}
+
+	getName(): string {
+		return this.name;
+	}
+
+	getChangeTest(): () => boolean {
+		return PropertyRenderGraphNodeUtils.mergeChangeTests([
+			this.cameraPropertyNode.getChangeTest(),
+			this.vertexDescriptorNode.getChangeTest(),
+			this.shaderNode.getChangeTest()
+		]);
 	}
 
 }

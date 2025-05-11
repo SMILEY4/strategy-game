@@ -11,7 +11,7 @@ export class RenderGraphResourceManager {
 		this.resourceCreator = resourceCreator;
 	}
 
-	public initialize(nodes: RenderGraphNode<any>[]): void {
+	public initialize(nodes: RenderGraphNode[]): void {
 		for (let node of nodes) {
 			this.resourceCreator
 				.filter(it => it.appliesTo(node))

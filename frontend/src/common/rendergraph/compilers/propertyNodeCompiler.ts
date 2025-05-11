@@ -2,39 +2,33 @@ import {RenderGraphNodeCompiler} from "../renderGraphNodeCompiler";
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphCompileContext} from "../renderGraphCompileContext";
 import {RenderGraphCommand} from "../renderGraphCommand";
-import {PropertyRenderGraphNode} from "../nodes/propertyRenderGraphNode";
 import {UpdatePropertyCommand} from "../commands/updatePropertyCommand";
 import {RenderGraphKeys} from "../renderGraphKeys";
+import {AbstractPropertyRenderGraphNode, ConstPropertyRenderGraphNode} from "../nodes/propertyRenderGraphNode";
 
-export class PropertyNodeCompiler implements RenderGraphNodeCompiler<PropertyRenderGraphNode<any>> {
+export class PropertyNodeCompiler implements RenderGraphNodeCompiler<AbstractPropertyRenderGraphNode<any, any>> {
 
 	isInlineCompile(): boolean {
 		return true;
 	}
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
-		return node instanceof PropertyRenderGraphNode;
+	appliesTo(node: RenderGraphNode): boolean {
+		return node instanceof AbstractPropertyRenderGraphNode;
 	}
 
-	compile(node: PropertyRenderGraphNode<any>, context: RenderGraphCompileContext): RenderGraphCommand[] {
+	compile(node: AbstractPropertyRenderGraphNode<any, any>, context: RenderGraphCompileContext): RenderGraphCommand[] {
+
+		if (node instanceof ConstPropertyRenderGraphNode) {
+			return [];
+		}
+
 		return [
 			new UpdatePropertyCommand(
 				RenderGraphKeys.property(node),
-				node.getProvider(),
-				this.buildExecCondition(node)
-			)
+				node.getValueProvider(null),
+				node.getChangeTest(),
+			),
 		];
-	}
-
-	private buildExecCondition(node: PropertyRenderGraphNode<any>): () => boolean {
-		return () => {
-			for (let changeTest of node.getChangeTests()) {
-				if (changeTest()) {
-					return true;
-				}
-			}
-			return false;
-		};
 	}
 
 }

@@ -7,7 +7,7 @@ import {ElementData} from "./elementData";
 
 export class ElementDataResourceCreator implements RenderGraphResourceCreator<ElementCreatorRenderGraphNode> {
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof ElementCreatorRenderGraphNode;
 	}
 

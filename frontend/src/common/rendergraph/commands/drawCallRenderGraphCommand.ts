@@ -1,8 +1,8 @@
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {GLError} from "../../webgl/glError";
-import {VertexMetaInfo} from "../nodes/vertexDescriptorRenderGraphNode";
 import {RenderGraphCommand} from "../renderGraphCommand";
+import {VertexMetaInfo} from "../resources/vertexMetaInfo";
 
 export class DrawCallRenderGraphCommand extends RenderGraphCommand {
 

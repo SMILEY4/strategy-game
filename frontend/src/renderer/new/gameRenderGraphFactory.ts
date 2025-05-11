@@ -47,7 +47,6 @@ import {ResourceIconsElementCreator} from "./creators/resourceIconsElementCreato
 import {MovePathsElementCreator} from "./creators/movePathsElementCreator";
 import {PropertyResourceCreator} from "../../common/rendergraph/resources/propertyResourceCreator";
 import {PropertyNodeCompiler} from "../../common/rendergraph/compilers/propertyNodeCompiler";
-import {TextureRenderGraphNode} from "../../common/rendergraph/nodes/textureRenderGraphNode";
 
 export class GameRenderGraphFactory {
 
@@ -237,55 +236,55 @@ export class GameRenderGraphFactory {
 
 
 		const propTiles = graph
-			.createProperty<Tile[]>("tiles")
+			.createPropertyDynamic<Tile[]>("tiles")
 			.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
-			.withProvider(() => gameAccess.getTiles());
+			.withValue(() => gameAccess.getTiles());
 
 		const propTileByPosProvider = graph
-			.createProperty<(q: number, r: number) => Tile | null>("tileByPosProvider")
+			.createPropertyDynamic<(q: number, r: number) => Tile | null>("tileByPosProvider")
 			.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
-			.withProvider(() => ((q, r) => gameAccess.getTileAt(q, r)));
+			.withValue(() => ((q, r) => gameAccess.getTileAt(q, r)));
 
 		const propSettlements = graph
-			.createProperty<Settlement[]>("settlements")
+			.createPropertyDynamic<Settlement[]>("settlements")
 			.withChangeTest(() => changeTracker.getTrackedChanges().settlements || changeTracker.getTrackedChanges().commands)
-			.withProvider(() => gameAccess.getSettlements());
+			.withValue(() => gameAccess.getSettlements());
 
 		const propWorldObjects = graph
-			.createProperty<WorldObject[]>("worldObjects")
+			.createPropertyDynamic<WorldObject[]>("worldObjects")
 			.withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
-			.withProvider(() => gameAccess.getWorldObjects());
+			.withValue(() => gameAccess.getWorldObjects());
 
 		const propRoutes = graph
-			.createProperty<Route[]>("routes")
+			.createPropertyDynamic<Route[]>("routes")
 			.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
-			.withProvider(() => gameAccess.getRoutes());
+			.withValue(() => gameAccess.getRoutes());
 
 		const propMapMode = graph
-			.createProperty<MapMode>("mapMode")
+			.createPropertyDynamic<MapMode>("mapMode")
 			.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
-			.withProvider(() => gameAccess.getMapMode());
+			.withValue(() => gameAccess.getMapMode());
 
 		const propMoveTargets = graph
-			.createProperty<TileSummary[]>("moveTargets")
-			.withChangeTest(() => true) // todo: wrong change test
-			.withProvider(() => gameAccess.getMoveTargets());
+			.createPropertyDynamic<TileSummary[]>("moveTargets")
+			.withChangeTest(() => changeTracker.getTrackedChanges().movementTargets)
+			.withValue(() => gameAccess.getMoveTargets());
 
 		const propMovePath = graph
-			.createProperty<({ tiles: TileSummary[], pending: boolean })[]>("movePaths")
-			.withChangeTest(() => true) // todo: wrong change test
-			.withProvider(() => gameAccess.getMovePaths());
+			.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("movePaths")
+			.withChangeTest(() => changeTracker.getTrackedChanges().movementPaths)
+			.withValue(() => gameAccess.getMovePaths());
 
 		const propSelectedTile = graph
-			.createProperty<[number, number]>("selectedTile")
-			.withProvider(() => gameAccess.getSelectedTile() ? [gameAccess.getSelectedTile()?.position.q, gameAccess.getSelectedTile()?.position.r] as [number, number] : [99999, 99999])
+			.createPropertyDynamic<[number, number]>("selectedTile")
+			.withValue(() => gameAccess.getSelectedTile() ? [gameAccess.getSelectedTile()?.position.q, gameAccess.getSelectedTile()?.position.r] as [number, number] : [99999, 99999])
 			.withChangeTest(() => changeTracker.getTrackedChanges().selectedTile)
 			.withType(GLUniformType.INT_VEC2);
 
 		const propCamera = graph
-			.createProperty<Camera>("camera")
+			.createPropertyDynamic<Camera>("camera")
 			.withChangeTest(() => changeTracker.getTrackedChanges().camera)
-			.withProvider(() => {
+			.withValue(() => {
 				return Camera.create(
 					gameAccess.getCamera(),
 					canvasHandle.getCanvasWidth(),
@@ -295,56 +294,26 @@ export class GameRenderGraphFactory {
 				);
 			});
 
-		const propCameraVPM_derived = graph // todo: properly implement derived and use (and rename)
-			.createPropertyDerived<Float32Array>("camera-vpm-derived")
+		const propCameraVPM = graph
+			.createPropertyDerived<Float32Array>("camera-vpm")
 			.withType(GLUniformType.MAT3)
 			.withValue(propCamera, camera => camera.getViewProjectionMatrixOrThrow(true))
 
-		const propCameraInvVPM_derived = graph // todo: properly implement derived and use (and rename)
-			.createPropertyDerived<Float32Array>("camera-inv-vpm-derived")
+		const propCameraInvVPM = graph
+			.createPropertyDerived<Float32Array>("camera-inv-vpm")
 			.withType(GLUniformType.MAT3)
 			.withValue(propCamera, camera => mat3.inverse(camera.getViewProjectionMatrixOrThrow(true)))
 
-		const propCameraVPM = graph
-			.createProperty<Float32Array>("camera-vpm")
-			.withType(GLUniformType.MAT3)
-			.withChangeTest(() => changeTracker.getTrackedChanges().camera)
-			.withProvider(() => {
-				const camera = Camera.create(
-					gameAccess.getCamera(),
-					canvasHandle.getCanvasWidth(),
-					canvasHandle.getCanvasHeight(),
-					canvasHandle.getClientWidth(),
-					canvasHandle.getClientHeight(),
-				);
-				return camera.getViewProjectionMatrixOrThrow(true);
-			});
-
-		const propCameraInvVPM = graph
-			.createProperty<Float32Array>("camera-inv-vpm")
-			.withType(GLUniformType.MAT3)
-			.withChangeTest(() => changeTracker.getTrackedChanges().camera)
-			.withProvider(() => {
-				const camera = Camera.create(
-					gameAccess.getCamera(),
-					canvasHandle.getCanvasWidth(),
-					canvasHandle.getCanvasHeight(),
-					canvasHandle.getClientWidth(),
-					canvasHandle.getClientHeight(),
-				);
-				return mat3.inverse(camera.getViewProjectionMatrixOrThrow(true));
-			});
-
 		const propTime = graph
-			.createProperty<number>("time")
-			.withProvider(() => (Date.now() / 1000) % 10000)
+			.createPropertyDynamic<number>("time")
+			.withValue(() => (Date.now() / 1000) % 10000)
 			.withChangeTest(() => true)
 			.withType(GLUniformType.FLOAT);
 
 		const propTextureAtlasGroups = graph
-			.createProperty<Map<string, TextureAtlasEntry[]>>("textureAtlasGroups")
+			.createPropertyDynamic<Map<string, TextureAtlasEntry[]>>("textureAtlasGroups")
 			.withChangeTest(() => false)
-			.withProvider(() => {
+			.withValue(() => {
 				return buildMap<TextureAtlasEntry[]>(
 					textureAtlasDetails
 						.getGroupNames()
@@ -388,8 +357,8 @@ export class GameRenderGraphFactory {
 			.createTexture("clouds")
 			.withUrl("/textures/noise_watercolor.png");
 
-		const textureLutNormal = graph
-			.createTexture("lut_normal")
+		const textureLut = graph // todo: make conditional
+			.createTexture("lut")
 			.withUrl("/lut/lut_64_corrected.png")
 			.withConfig({
 				filterMin: GLTextureMinFilter.NEAREST,
@@ -397,19 +366,28 @@ export class GameRenderGraphFactory {
 				wrap: GLTextureWrap.CLAMP_TO_EDGE,
 			});
 
-		const textureLutGrayscale = graph
-			.createTexture("lut_grayscale")
-			.withUrl("/lut/lut_64_grayscale.png")
-			.withConfig({
-				filterMin: GLTextureMinFilter.NEAREST,
-				filterMag: GLTextureMagFilter.NEAREST,
-				wrap: GLTextureWrap.CLAMP_TO_EDGE,
-			});
-
-		const textureLut = graph
-			.createConditional<TextureRenderGraphNode>("lut")
-			.withOption(textureLutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
-			.withOption(textureLutGrayscale, () => gameAccess.getMapMode().renderData.grayscale)
+		// const textureLutNormal = graph
+		// 	.createTexture("lut_normal")
+		// 	.withUrl("/lut/lut_64_corrected.png")
+		// 	.withConfig({
+		// 		filterMin: GLTextureMinFilter.NEAREST,
+		// 		filterMag: GLTextureMagFilter.NEAREST,
+		// 		wrap: GLTextureWrap.CLAMP_TO_EDGE,
+		// 	});
+		//
+		// const textureLutGrayscale = graph
+		// 	.createTexture("lut_grayscale")
+		// 	.withUrl("/lut/lut_64_grayscale.png")
+		// 	.withConfig({
+		// 		filterMin: GLTextureMinFilter.NEAREST,
+		// 		filterMag: GLTextureMagFilter.NEAREST,
+		// 		wrap: GLTextureWrap.CLAMP_TO_EDGE,
+		// 	});
+		//
+		// const textureLut = graph
+		// 	.createConditional<TextureRenderGraphNode>("lut")
+		// 	.withOption(textureLutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
+		// 	.withOption(textureLutGrayscale, () => gameAccess.getMapMode().renderData.grayscale)
 
 		const vertexCreatorTileMesh = graph
 			.createVertexCreator("tile-mesh")

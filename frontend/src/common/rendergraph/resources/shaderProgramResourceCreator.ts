@@ -11,7 +11,7 @@ export class ShaderProgramResourceCreator implements RenderGraphResourceCreator<
 		private readonly gl: WebGL2RenderingContext
 	) {}
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof ShaderRenderGraphNode;
 	}
 

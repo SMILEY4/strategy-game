@@ -11,21 +11,22 @@ import {DrawRenderGraphNode} from "./nodes/drawRenderGraphNode";
 import {InitRenderGraphNode} from "./nodes/initRenderGraphNode";
 import {RenderGraphResourceManager} from "./renderGraphResourceManager";
 import {RenderGraphCommand} from "./renderGraphCommand";
-import {PropertyRenderGraphNode} from "./nodes/propertyRenderGraphNode";
-import {PropertyConstRenderGraphNode} from "./nodes/propertyConstRenderGraphNode";
-import {ConditionalRenderGraphNode} from "./nodes/conditionalRenderGraphNode";
 import {ElementCreatorRenderGraphNode} from "./nodes/elementCreatorRenderGraphNode";
 import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
 import {HtmlDrawRenderGraphNode} from "./nodes/htmlDrawRenderGraphNode";
-import {PropertyDerivedRenderGraphNode} from "./nodes/propertyDerivedRenderGraphNode";
+import {
+	ConstPropertyRenderGraphNode,
+	DerivedPropertyRenderGraphNode,
+	DynamicPropertyRenderGraphNode,
+} from "./nodes/propertyRenderGraphNode";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
  */
 export class RenderGraph {
 
-	private readonly unprocessedNodes: RenderGraphNode<any>[] = [];
-	private readonly sortedNodes: RenderGraphNode<any>[] = [];
+	private readonly unprocessedNodes: RenderGraphNode[] = [];
+	private readonly sortedNodes: RenderGraphNode[] = [];
 	private readonly commands: RenderGraphCommand[] = [];
 
 	private readonly sorter: RenderGraphSorter;
@@ -46,7 +47,12 @@ export class RenderGraph {
 			throw new Error("Names of render graph nodes are not unique!");
 		}
 
-		// todo: validate nodes
+		const errors = this.unprocessedNodes.flatMap(
+			node => node.validate().map(error => "[" + node.getName() + "]" + error),
+		);
+		if (errors.length > 0) {
+			throw new Error("Render graph validation error:\n" + errors.join("\n"));
+		}
 
 		this.unprocessedNodes.push(new InitRenderGraphNode().withInputs(this.unprocessedNodes));
 
@@ -75,7 +81,7 @@ export class RenderGraph {
 		this.executeCounter++;
 	}
 
-	protected addNode(node: RenderGraphNode<any>) {
+	protected addNode(node: RenderGraphNode) {
 		this.unprocessedNodes.push(node);
 	}
 
@@ -142,29 +148,22 @@ export class RenderGraph {
 		return node;
 	}
 
-	public createProperty<T>(name?: string): PropertyRenderGraphNode<T> {
-		const node = new PropertyRenderGraphNode<T>();
+	public createPropertyDynamic<T>(name?: string): DynamicPropertyRenderGraphNode<T> {
+		const node = new DynamicPropertyRenderGraphNode<T>();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;
 	}
 
-	public createPropertyConstant<T>(name?: string): PropertyConstRenderGraphNode<T> {
-		const node = new PropertyConstRenderGraphNode<T>();
+	public createPropertyConstant<T>(name?: string): ConstPropertyRenderGraphNode<T> {
+		const node = new ConstPropertyRenderGraphNode<T>();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;
 	}
 
-	public createPropertyDerived<T>(name?: string): PropertyDerivedRenderGraphNode<T> {
-		const node = new PropertyDerivedRenderGraphNode<T>();
-		if (name) node.withName(name);
-		this.addNode(node);
-		return node;
-	}
-
-	public createConditional<T extends RenderGraphNode<any>>(name?: string): ConditionalRenderGraphNode<T> {
-		const node = new ConditionalRenderGraphNode<T>();
+	public createPropertyDerived<T>(name?: string): DerivedPropertyRenderGraphNode<T> {
+		const node = new DerivedPropertyRenderGraphNode<T>();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;
@@ -175,52 +174,6 @@ export class RenderGraph {
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;
-	}
-
-	public printGraph(includeProperties: boolean): string {
-
-		function toNodeName(node: RenderGraphNode<any>): string {
-			if (node instanceof CanvasRenderGraphNode) return "canvas:" + node.getName();
-			if (node instanceof DrawRenderGraphNode) return "draw:" + node.getName();
-			if (node instanceof InitRenderGraphNode) return "init:" + node.getName();
-			if (node instanceof PropertyRenderGraphNode) return "prop:" + node.getName();
-			if (node instanceof RenderTargetRenderGraphNode) return "rendertgt:" + node.getName();
-			if (node instanceof ShaderRenderGraphNode) return "shader:" + node.getName();
-			if (node instanceof TextureRenderGraphNode) return "texture:" + node.getName();
-			if (node instanceof VertexCreatorRenderGraphNode) return "vertcreator:" + node.getName();
-			if (node instanceof VertexDescriptorRenderGraphNode) return "vertdescr:" + node.getName();
-			return node.getName();
-		}
-
-		let graphvizString = "";
-
-		graphvizString += "digraph G {\n";
-
-		graphvizString += "   node [style=filled];";
-
-		this.unprocessedNodes
-			.filter(it => includeProperties || !(it instanceof PropertyRenderGraphNode || it instanceof TextureRenderGraphNode))
-			.forEach(node => {
-				graphvizString += "    \"" + toNodeName(node) + "\";\n";
-			});
-
-		graphvizString += "\n";
-
-		this.unprocessedNodes
-			.filter(it => includeProperties || !(it instanceof PropertyRenderGraphNode || it instanceof TextureRenderGraphNode))
-			.forEach(node => {
-				const gvNodeTo = "\"" + toNodeName(node) + "\"";
-				node.getInputs()
-					.filter(it => includeProperties || !(it instanceof PropertyRenderGraphNode || it instanceof TextureRenderGraphNode))
-					.forEach(input => {
-						const gvNodeFrom = "\"" + toNodeName(input) + "\"";
-						graphvizString += "    " + gvNodeFrom + " -> " + gvNodeTo + ";\n";
-					});
-			});
-
-		graphvizString += "}\n";
-
-		return graphvizString;
 	}
 
 }

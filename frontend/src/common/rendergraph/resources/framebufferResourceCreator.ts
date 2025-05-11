@@ -12,7 +12,7 @@ export class FramebufferResourceCreator implements RenderGraphResourceCreator<Re
 	) {
 	}
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof RenderTargetRenderGraphNode;
 	}
 

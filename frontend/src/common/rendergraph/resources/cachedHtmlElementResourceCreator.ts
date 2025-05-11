@@ -7,7 +7,7 @@ import {CachedHtmlElement} from "./cachedHtmlElement";
 
 export class CachedHtmlElementResourceCreator implements RenderGraphResourceCreator<ContainerRenderGraphNode> {
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof ContainerRenderGraphNode;
 	}
 

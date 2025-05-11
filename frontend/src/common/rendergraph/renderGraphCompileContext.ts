@@ -5,13 +5,13 @@ import {RenderGraphCommand} from "./renderGraphCommand";
 export class RenderGraphCompileContext {
 
 	private readonly compiler: RenderGraphCompiler;
-	private readonly nodes: RenderGraphNode<any>[];
+	private readonly nodes: RenderGraphNode[];
 	private readonly commands: RenderGraphCommand[];
 	private readonly compileResources = new Map<string, any>();
 
 	constructor(
 		compiler: RenderGraphCompiler,
-		nodes: RenderGraphNode<any>[],
+		nodes: RenderGraphNode[],
 		commands: RenderGraphCommand[],
 		additional: Map<string, any>
 	) {
@@ -21,11 +21,11 @@ export class RenderGraphCompileContext {
 		this.compileResources = additional;
 	}
 
-	public compile(node: RenderGraphNode<any>): RenderGraphCommand[] {
+	public compile(node: RenderGraphNode): RenderGraphCommand[] {
 		return this.compiler.compile([node], this.compileResources, false);
 	}
 
-	public getNodes(): RenderGraphNode<any>[] {
+	public getNodes(): RenderGraphNode[] {
 		return this.nodes;
 	}
 

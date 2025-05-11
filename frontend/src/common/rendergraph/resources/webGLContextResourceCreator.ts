@@ -12,7 +12,7 @@ export class WebGLContextResourceCreator implements RenderGraphResourceCreator<I
 		this.gl = gl;
 	}
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof InitRenderGraphNode;
 	}
 

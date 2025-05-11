@@ -8,7 +8,7 @@ export class RenderGraphSorter {
 	/**
 	 * Sorts the render graph nodes into an order that respects dependencies between them.
 	 */
-	public sort(nodes: RenderGraphNode<any>[]): RenderGraphNode<any>[] {
+	public sort(nodes: RenderGraphNode[]): RenderGraphNode[] {
 		return this.topologicalSort(nodes).flatMap(group => group);
 	}
 
@@ -21,12 +21,12 @@ export class RenderGraphSorter {
 	 * 			b---|
 	 * this function returns [ [ a, b ], [ c ] ].
 	 */
-	private topologicalSort(nodes: RenderGraphNode<any>[]): (RenderGraphNode<any>[])[] {
-		const sorted: (RenderGraphNode<any>[])[] = [];
+	private topologicalSort(nodes: RenderGraphNode[]): (RenderGraphNode[])[] {
+		const sorted: (RenderGraphNode[])[] = [];
 		let openNodes = [...nodes];
 
 		// nodes that have no inputs that are in given list
-		function findFreeNodes(nodes: RenderGraphNode<any>[]): RenderGraphNode<any>[] {
+		function findFreeNodes(nodes: RenderGraphNode[]): RenderGraphNode[] {
 			return nodes.filter(current => {
 				return !current.getInputs().some(dependency => nodes.indexOf(dependency) !== -1);
 			});

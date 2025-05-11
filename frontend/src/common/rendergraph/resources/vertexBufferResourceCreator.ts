@@ -12,7 +12,7 @@ export class VertexBufferResourceCreator implements RenderGraphResourceCreator<V
 	) {
 	}
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof VertexCreatorRenderGraphNode;
 	}
 

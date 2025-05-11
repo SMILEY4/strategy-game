@@ -1,23 +1,25 @@
 import {RenderGraphNode} from "../renderGraphNode";
-import {TextureRenderGraphNode} from "./textureRenderGraphNode";
-import {RenderTargetRenderGraphNode} from "./renderTargetRenderGraphNode";
-import {PropertyRenderGraphNode} from "./propertyRenderGraphNode";
-import {PropertyConstRenderGraphNode} from "./propertyConstRenderGraphNode";
-import {ConditionalRenderGraphNode} from "./conditionalRenderGraphNode";
+import {UID} from "../../uid";
+import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
 
 /**
  * A shader program
  */
-export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode> {
+export class ShaderRenderGraphNode implements RenderGraphNode {
 
 	private vertexSource: string | null = null;
 	private fragmentSource: string | null = null;
+	private name: string = UID.generate();
 
-	private readonly properties: ({
-		node: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any>,
-		binding: string
-	})[] = [];
+	private readonly properties: ({ node: RenderGraphProperty<any>, binding: string })[] = [];
 
+	/**
+	 * Set the name of this node to a given custom name. Names must be unique in the render graph.
+	 */
+	public withName(name: string): RenderGraphNode {
+		this.name = name
+		return this;
+	}
 
 	/**
 	 * Specify the source code of the vertex shader
@@ -42,9 +44,8 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 	 * @param input the property, texture, ...
 	 * @param bindingName the binding name for this input
 	 */
-	public withProperty(input: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any>, bindingName: string): ShaderRenderGraphNode {
+	public withProperty(input: RenderGraphProperty<any>, bindingName: string): ShaderRenderGraphNode {
 		this.properties.push({node: input, binding: bindingName});
-		this.registerInput(input)
 		return this;
 	}
 
@@ -65,7 +66,7 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 	/**
 	 * @return all additional input nodes
 	 */
-	public getProperties(): (TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any>)[] {
+	public getProperties(): RenderGraphProperty<any>[] {
 		return this.properties.map(it => it.node);
 	}
 
@@ -73,10 +74,24 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 	 * @return all additional input nodes with their binding names
 	 */
 	public getPropertiesNamed(): {
-		node: TextureRenderGraphNode | RenderTargetRenderGraphNode | PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any>;
+		node: RenderGraphProperty<any>;
 		binding: string
 	}[] {
 		return this.properties;
+	}
+
+	getName(): string {
+		return this.name;
+	}
+
+	getInputs(): RenderGraphNode[] {
+		return this.properties.map(it => it.node);
+	}
+
+	getChangeTest(): () => boolean {
+		return PropertyRenderGraphNodeUtils.mergeChangeTests(
+			this.properties.map(it => it.node.getChangeTest())
+		)
 	}
 
 	validate(): string[] {
@@ -97,12 +112,5 @@ export class ShaderRenderGraphNode extends RenderGraphNode<ShaderRenderGraphNode
 		return errors;
 	}
 
-}
-
-export namespace ShaderRenderGraphNode {
-
-	export function isType(node: RenderGraphNode<any>): node is ShaderRenderGraphNode {
-		return node instanceof ShaderRenderGraphNode;
-	}
 
 }

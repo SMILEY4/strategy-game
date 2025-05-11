@@ -11,7 +11,7 @@ export class TextureResourceCreator implements RenderGraphResourceCreator<Textur
 		private readonly gl: WebGL2RenderingContext
 	) {}
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof TextureRenderGraphNode;
 	}
 

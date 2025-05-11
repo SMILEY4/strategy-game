@@ -1,19 +1,29 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {VertexCreatorRenderGraphNode} from "./vertexCreatorRenderGraphNode";
+import {UID} from "../../uid";
+import {PropertyRenderGraphNodeUtils} from "./propertyRenderGraphNode";
 
 /**
  * Describes a drawable mesh by combining one or multiple vertex creator outputs.
  */
-export class VertexDescriptorRenderGraphNode extends RenderGraphNode<VertexDescriptorRenderGraphNode> {
+export class VertexDescriptorRenderGraphNode implements RenderGraphNode {
 
-	private vertexCreatorOutputs: VertexCreatorRenderGraphNode.Output[] = [];
+	private sources: VertexCreatorRenderGraphNode.Output[] = [];
+	private name: string = UID.generate();
+
+	/**
+	 * Set the name of this node to a given custom name. Names must be unique in the render graph.
+	 */
+	public withName(name: string): RenderGraphNode {
+		this.name = name
+		return this;
+	}
 
 	/**
 	 * Add the given vertex creator output to this vertex descriptor.
 	 */
 	public withInput(source: VertexCreatorRenderGraphNode.Output): VertexDescriptorRenderGraphNode {
-		this.vertexCreatorOutputs.push(source);
-		this.registerInput(source.creator);
+		this.sources.push(source);
 		return this;
 	}
 
@@ -21,13 +31,33 @@ export class VertexDescriptorRenderGraphNode extends RenderGraphNode<VertexDescr
 	 * @return the specified vertex creator outputs
 	 */
 	public getVertexCreatorOutputs(): VertexCreatorRenderGraphNode.Output[] {
-		return this.vertexCreatorOutputs;
+		return this.sources;
+	}
+
+
+	getName(): string {
+		return this.name;
+	}
+
+	getInputs(): RenderGraphNode[] {
+		return this.sources
+			.map(it => it.creator)
+			.distinct();
+	}
+
+	getChangeTest(): () => boolean {
+		return PropertyRenderGraphNodeUtils.mergeChangeTests(
+			this.sources
+				.map(it => it.creator)
+				.distinct()
+				.map(it => it.getChangeTest())
+		)
 	}
 
 	validate(): string[] {
 		const errors: string[] = [];
 
-		if (this.vertexCreatorOutputs.length === 0) {
+		if (this.sources.length === 0) {
 			errors.push("At least one vertex creator output must be defined.");
 		}
 
@@ -38,7 +68,7 @@ export class VertexDescriptorRenderGraphNode extends RenderGraphNode<VertexDescr
 
 export namespace VertexDescriptorRenderGraphNode {
 
-	export function isType(node: RenderGraphNode<any>): node is VertexDescriptorRenderGraphNode {
+	export function isType(node: RenderGraphNode): node is VertexDescriptorRenderGraphNode {
 		return node instanceof VertexDescriptorRenderGraphNode;
 	}
 

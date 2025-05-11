@@ -20,7 +20,7 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 		return true;
 	}
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof DrawRenderGraphNode;
 	}
 
@@ -84,12 +84,12 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 		return commands;
 	}
 
-	private hasRenderTargetOutput(node: DrawRenderGraphNode, nodes: RenderGraphNode<any>[]): boolean {
+	private hasRenderTargetOutput(node: DrawRenderGraphNode, nodes: RenderGraphNode[]): boolean {
 		const outputsTo = nodes.find(other => other.getInputs().includes(node));
 		return outputsTo !== undefined && outputsTo instanceof RenderTargetRenderGraphNode;
 	}
 
-	private getRenderTargetOutput(node: DrawRenderGraphNode, nodes: RenderGraphNode<any>[]): RenderTargetRenderGraphNode {
+	private getRenderTargetOutput(node: DrawRenderGraphNode, nodes: RenderGraphNode[]): RenderTargetRenderGraphNode {
 		const outputsTo = nodes.find(other => other.getInputs().includes(node))!;
 		return outputsTo as RenderTargetRenderGraphNode;
 	}

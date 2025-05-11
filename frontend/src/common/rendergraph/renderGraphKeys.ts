@@ -5,9 +5,8 @@ import {VertexDescriptorRenderGraphNode} from "./nodes/vertexDescriptorRenderGra
 import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode";
 import {ElementCreatorRenderGraphNode} from "./nodes/elementCreatorRenderGraphNode";
 import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
-import {PropertyRenderGraphNode} from "./nodes/propertyRenderGraphNode";
-import {PropertyConstRenderGraphNode} from "./nodes/propertyConstRenderGraphNode";
 import {ConditionalRenderGraphNode} from "./nodes/conditionalRenderGraphNode";
+import {PropertyRenderGraphNode} from "./nodes/propertyRenderGraphNode";
 
 export namespace RenderGraphKeys {
 
@@ -72,7 +71,7 @@ export namespace RenderGraphKeys {
 		return "htmlelementcache:" + node.getElementId();
 	}
 
-	export function property(node: PropertyRenderGraphNode<any> | PropertyConstRenderGraphNode<any> | ConditionalRenderGraphNode<any> ): string {
+	export function property(node: PropertyRenderGraphNode<any, any> | ConditionalRenderGraphNode<any> ): string {
 		return propertyFromName(node.getName())
 	}
 

@@ -12,10 +12,10 @@ import {CachedHtmlElement} from "../resources/cachedHtmlElement";
 export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 
 	constructor(
-		private readonly execCondition: () => boolean,
 		private readonly containerKey: string,
-		private readonly sources: RenderHtmlElementsRenderGraphCommand.Source[],
 		private readonly cameraPropertyName: string,
+		private readonly execCondition: () => boolean,
+		private readonly sources: RenderHtmlElementsRenderGraphCommand.Source[],
 	) {
 		super();
 	}

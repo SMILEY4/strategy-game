@@ -7,7 +7,7 @@ import {PooledHtmlElementData} from "./pooledHtmlElementData";
 
 export class HtmlElementPoolResourceCreator implements RenderGraphResourceCreator<ElementCreatorRenderGraphNode> {
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof ElementCreatorRenderGraphNode;
 	}
 

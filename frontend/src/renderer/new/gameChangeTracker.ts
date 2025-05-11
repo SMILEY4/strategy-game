@@ -13,6 +13,7 @@ export interface TrackedChanges {
 	mapMode: boolean,
 	camera: boolean,
 	movementPaths: boolean,
+	movementTargets: boolean,
 	selectedTile: boolean,
 }
 
@@ -32,6 +33,7 @@ export class GameChangeTracker {
 	private readonly trackerMapMode = new ChangeDetector();
 	private readonly trackerCamera = new ChangeDetector();
 	private readonly trackerMovementPaths = new ChangeDetector();
+	private readonly trackerMovementTargets = new ChangeDetector();
 	private readonly trackerSelectedTile = new ChangeDetector();
 
 
@@ -53,7 +55,8 @@ export class GameChangeTracker {
 			mapMode: true,
 			camera: true,
 			movementPaths: true,
-			selectedTile: true
+			movementTargets: true,
+			selectedTile: true,
 		};
 	}
 
@@ -73,7 +76,8 @@ export class GameChangeTracker {
 		this.trackedChanges.mapMode = this.trackerMapMode.check(this.localStateAccess.getMapMode());
 		this.trackedChanges.camera = this.trackerCamera.check(camera.getHash());
 		this.trackedChanges.movementPaths = this.trackerMovementPaths.check(this.getMovementPathsCheckId());
-		this.trackedChanges.selectedTile = this.trackerSelectedTile.check(this.getSelectedTileCheckId())
+		this.trackedChanges.movementTargets = this.trackerMovementTargets.check(this.getMovementTargetsCheckId());
+		this.trackedChanges.selectedTile = this.trackerSelectedTile.check(this.getSelectedTileCheckId());
 	}
 
 	public getTrackedChanges(): TrackedChanges {
@@ -92,6 +96,14 @@ export class GameChangeTracker {
 				str += tile.position.q + "," + tile.position.r + "/";
 			});
 			str += path.pending + "/";
+		});
+		return str;
+	}
+
+	private getMovementTargetsCheckId(): string {
+		let str = "";
+		this.localStateAccess.getMoveTargets().forEach(tile => {
+			str += tile.position.q + "," + tile.position.r + "/";
 		});
 		return str;
 	}

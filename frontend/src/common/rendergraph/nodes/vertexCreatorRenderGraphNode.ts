@@ -1,13 +1,46 @@
-import {ProgrammableRenderGraphNode} from "./programmableRenderGraphNode";
-import CreationFuncResult = VertexCreatorRenderGraphNode.VertexCreationFuncResult;
 import {GLAttributeComponentAmount, GLAttributeType} from "../../webgl/glTypes";
+import {RenderGraphNodeContext} from "../renderGraphNodeContext";
+import {RenderGraphNode} from "../renderGraphNode";
+import VertexCreationFuncResult = VertexCreatorRenderGraphNode.VertexCreationFuncResult;
+import {UID} from "../../uid";
+import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
 
 /**
  * A node creating the data to render to a canvas using shaders.
  */
-export class VertexCreatorRenderGraphNode extends ProgrammableRenderGraphNode<CreationFuncResult, VertexCreatorRenderGraphNode> {
+export class VertexCreatorRenderGraphNode implements RenderGraphNode {
 
 	private readonly outputs = new Map<string, VertexCreatorRenderGraphNode.Output>();
+	private readonly properties: ({ property: RenderGraphProperty<any>, name: string })[] = [];
+	private func: (context: RenderGraphNodeContext) => VertexCreationFuncResult = () => undefined as any;
+	private name: string = UID.generate();
+
+	/**
+	 * Set the name of this node to a given custom name. Names must be unique in the render graph.
+	 */
+	public withName(name: string): RenderGraphNode {
+		this.name = name
+		return this;
+	}
+
+	/**
+	 * Make the given property available in the creation function via the given name.
+	 */
+	public withProperty(property: RenderGraphProperty<any>, name: string): VertexCreatorRenderGraphNode {
+		this.properties.push({
+			property: property,
+			name: name,
+		});
+		return this;
+	}
+
+	/**
+	 * Set the creation function.
+	 */
+	public withFunction(func: (context: RenderGraphNodeContext) => VertexCreationFuncResult): VertexCreatorRenderGraphNode {
+		this.func = func;
+		return this;
+	}
 
 	/**
 	 * Define a named output. Any number of separate outputs can be defined. Outputs can be used as inputs for other nodes.
@@ -28,10 +61,47 @@ export class VertexCreatorRenderGraphNode extends ProgrammableRenderGraphNode<Cr
 	}
 
 	/**
+	 * @return the available properties.
+	 */
+	public getProperties(): RenderGraphProperty<any>[] {
+		return this.properties.map(it => it.property);
+	}
+
+	/**
+	 * @return the available properties with their names.
+	 */
+	public getPropertiesNamed(): ({ property: RenderGraphProperty<any>, name: string })[] {
+		return this.properties;
+	}
+
+	/**
+	 * @return the creation function
+	 */
+	public getFunc(): (context: RenderGraphNodeContext) => VertexCreationFuncResult {
+		return this.func;
+	}
+
+
+	/**
 	 * @return the list of defined outputs.
 	 */
 	public getOutputs(): VertexCreatorRenderGraphNode.Output[] {
 		return Array.from(this.outputs.values());
+	}
+
+
+	getInputs(): RenderGraphNode[] {
+		return this.properties.map(it => it.property);
+	}
+
+	getName(): string {
+		return this.name;
+	}
+
+	getChangeTest(): () => boolean {
+		return PropertyRenderGraphNodeUtils.mergeChangeTests(
+			this.properties.map(it => it.property.getChangeTest())
+		)
 	}
 
 	validate(): string[] {

@@ -16,7 +16,7 @@ export class VertexArrayResourceCreator implements RenderGraphResourceCreator<Dr
 		private readonly gl: WebGL2RenderingContext
 	) {}
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof DrawRenderGraphNode;
 	}
 

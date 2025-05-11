@@ -1,12 +1,13 @@
 import {RenderGraphResourceCreator} from "../renderGraphResourceCreator";
-import {VertexDescriptorRenderGraphNode, VertexMetaInfo} from "../nodes/vertexDescriptorRenderGraphNode";
+import {VertexDescriptorRenderGraphNode} from "../nodes/vertexDescriptorRenderGraphNode";
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
+import {VertexMetaInfo} from "./vertexMetaInfo";
 
 export class VertexInfoResourceCreator implements RenderGraphResourceCreator<VertexDescriptorRenderGraphNode> {
 
-	appliesTo(node: RenderGraphNode<any>): boolean {
+	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof VertexDescriptorRenderGraphNode;
 	}
 

@@ -11,7 +11,7 @@ export class RenderGraphCompiler {
 		this.compilers = compilers;
 	}
 
-	public compile(nodes: RenderGraphNode<any>[], compileResources: Map<string, any>, isInlineStep: boolean): RenderGraphCommand[] {
+	public compile(nodes: RenderGraphNode[], compileResources: Map<string, any>, isInlineStep: boolean): RenderGraphCommand[] {
 		const commands: RenderGraphCommand[] = [];
 
 		for (let node of nodes) {
@@ -27,7 +27,7 @@ export class RenderGraphCompiler {
 		return commands;
 	}
 
-	private findCompiler(node: RenderGraphNode<any>, isInlineStep: boolean): RenderGraphNodeCompiler<any> | undefined {
+	private findCompiler(node: RenderGraphNode, isInlineStep: boolean): RenderGraphNodeCompiler<any> | undefined {
 		return this.compilers
 			.filter(it => isInlineStep ? it.isInlineCompile() : true)
 			.find(it => it.appliesTo(node))
