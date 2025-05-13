@@ -38,15 +38,18 @@ import {VertexInfoResourceCreator} from "../../common/rendergraph/resources/vert
 import {TileSummary} from "../../models/tile/tileSummary";
 import {mat3} from "../../common/webgl/mat3";
 import {LabelsElementCreator} from "./creators/labelsElementCreator";
-import {RenderElementGeneratorNodeCompiler} from "../../common/rendergraph/compilers/renderElementGeneratorNodeCompiler";
 import {HtmlDrawNodeCompiler} from "../../common/rendergraph/compilers/htmlDrawNodeCompiler";
-import {RenderElementDataResourceCreator} from "../../common/rendergraph/resources/renderElementDataResourceCreator";
 import {HtmlElementPoolResourceCreator} from "../../common/rendergraph/resources/htmlElementPoolResourceCreator";
 import {CachedHtmlElementResourceCreator} from "../../common/rendergraph/resources/cachedHtmlElementResourceCreator";
 import {ResourceIconsElementCreator} from "./creators/resourceIconsElementCreator";
 import {MovePathsElementCreator} from "./creators/movePathsElementCreator";
 import {PropertyResourceCreator} from "../../common/rendergraph/resources/propertyResourceCreator";
 import {PropertyNodeCompiler} from "../../common/rendergraph/compilers/propertyNodeCompiler";
+import {DataGeneratorNodeCompiler} from "../../common/rendergraph/compilers/dataGeneratorNodeCompiler";
+import {
+	RenderElementGeneratorRenderGraphNode
+} from "../../common/rendergraph/nodes/renderElementGeneratorRenderGraphNode";
+import {GeneratorDataResourceCreator} from "../../common/rendergraph/resources/generatorDataResourceCreator";
 
 export class GameRenderGraphFactory {
 
@@ -76,7 +79,7 @@ export class GameRenderGraphFactory {
 				new VertexGeneratorNodeCompiler(),
 				new WebglShaderNodeCompiler(),
 				new WebglDrawNodeCompiler(),
-				new RenderElementGeneratorNodeCompiler(),
+				new DataGeneratorNodeCompiler(node => node instanceof RenderElementGeneratorRenderGraphNode),
 				new HtmlDrawNodeCompiler(),
 			]),
 			new RenderGraphResourceManager([
@@ -88,7 +91,7 @@ export class GameRenderGraphFactory {
 				new VertexArrayResourceCreator(gl),
 				new VertexBufferResourceCreator(gl),
 				new VertexInfoResourceCreator(),
-				new RenderElementDataResourceCreator(),
+				new GeneratorDataResourceCreator(node => node instanceof RenderElementGeneratorRenderGraphNode, [], data => data.length = 0),
 				new HtmlElementPoolResourceCreator(),
 				new CachedHtmlElementResourceCreator(),
 			]),

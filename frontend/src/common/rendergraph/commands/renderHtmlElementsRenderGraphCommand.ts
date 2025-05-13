@@ -3,10 +3,10 @@ import {RenderGraphCommand} from "../renderGraphCommand";
 import {Camera} from "../../webgl/camera";
 import {Projections} from "../../webgl/projections";
 import Point = Projections.Point;
-import {RenderElementData} from "../resources/renderElementData";
 import {PooledHtmlElementData} from "../resources/pooledHtmlElementData";
 import {CachedHtmlElement} from "../resources/cachedHtmlElement";
 import {RenderElement} from "../nodes/renderElementGeneratorRenderGraphNode";
+import {GeneratedDataContainer} from "../resources/generatedDataContainer";
 
 
 export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
@@ -31,8 +31,8 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 
 		for (let i = 0, n = this.sources.length; i < n; i++) {
 			const source = this.sources[i];
-			const elementsData = resourceManager.getResource<RenderElementData>(source.elementDataKey);
-			const elements = elementsData.elements;
+			const elementsData = resourceManager.getResource<GeneratedDataContainer<any[]>>(source.elementDataKey);
+			const elements = elementsData.data;
 			if (elements.length == 0) {
 				continue;
 			}

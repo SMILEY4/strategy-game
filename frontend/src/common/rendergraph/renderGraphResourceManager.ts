@@ -51,6 +51,10 @@ export class RenderGraphResourceManager {
 		}
 	}
 
+	public getResources() {
+		return this.resources;
+	}
+
 	public dispose() {
 		for (let [name, disposer] of this.resourceDisposers) {
 			disposer(this.getResource(name));

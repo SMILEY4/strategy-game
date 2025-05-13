@@ -3,23 +3,26 @@ import {RenderElementGeneratorRenderGraphNode} from "../nodes/renderElementGener
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphCompileContext} from "../renderGraphCompileContext";
 import {RenderGraphCommand} from "../renderGraphCommand";
-import {UpdateRenderElementDataRenderGraphCommand} from "../commands/updateRenderElementDataRenderGraphCommand";
 import {PropertyRenderGraphNodeUtils} from "../nodes/propertyRenderGraphNode";
+import {DataGeneratorRenderGraphNode} from "../nodes/dataGeneratorRenderGraphNode";
+import {GeneratedDataUpdateRenderGraphCommand} from "../commands/generatedDataUpdateRenderGraphCommand";
 
-export class RenderElementGeneratorNodeCompiler implements RenderGraphNodeCompiler<RenderElementGeneratorRenderGraphNode> {
+export class DataGeneratorNodeCompiler implements RenderGraphNodeCompiler<DataGeneratorRenderGraphNode<any, any>> {
+
+	constructor(private readonly appliesToCheck: (node: RenderGraphNode) => boolean,) {
+	}
+
+	appliesTo(node: RenderGraphNode): boolean {
+		return this.appliesToCheck(node)
+	}
 
 	isInlineCompile(): boolean {
 		return true;
 	}
 
-	appliesTo(node: RenderGraphNode): boolean {
-		return node instanceof RenderElementGeneratorRenderGraphNode;
-	}
-
-
 	compile(node: RenderElementGeneratorRenderGraphNode, context: RenderGraphCompileContext): RenderGraphCommand[] {
 		return [
-			new UpdateRenderElementDataRenderGraphCommand(
+			new GeneratedDataUpdateRenderGraphCommand(
 				node.getName(),
 				node.getGeneratorFunction(),
 				node.getChangeTest(),

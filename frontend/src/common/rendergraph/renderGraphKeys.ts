@@ -9,6 +9,7 @@ import {
 import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
 import {RenderGraphProperty} from "./nodes/propertyRenderGraphNode";
 import {ConditionalTextureRenderGraphNode} from "./nodes/conditionalTextureRenderGraphNode";
+import {DataGeneratorOutputDefinition, DataGeneratorRenderGraphNode} from "./nodes/dataGeneratorRenderGraphNode";
 
 export namespace RenderGraphKeys {
 
@@ -53,12 +54,12 @@ export namespace RenderGraphKeys {
 		return "vertexbuffer:" + creatorName + ":" + outputName;
 	}
 
-	export function elementsData(output: RenderElementGeneratorOutputDefinition): string {
-		return elementsDataFromName(output.generator.getName(), output.name);
+	export function genericData(output: DataGeneratorOutputDefinition<any>): string {
+		return genericDataFromName(output.generator.getName(), output.name);
 	}
 
-	export function elementsDataFromName(creatorName: string, outputName: string): string {
-		return "elementsdata:" + creatorName + ":" + outputName;
+	export function genericDataFromName(creatorName: string, outputName: string): string {
+		return "genericdata:" + creatorName + ":" + outputName;
 	}
 
 	export function pooledHtmlElements(output: RenderElementGeneratorOutputDefinition): string {
