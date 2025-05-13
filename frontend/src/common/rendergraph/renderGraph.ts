@@ -19,6 +19,7 @@ import {
 	DerivedPropertyRenderGraphNode,
 	DynamicPropertyRenderGraphNode,
 } from "./nodes/propertyRenderGraphNode";
+import {ConditionalTextureRenderGraphNode} from "./nodes/conditionalTextureRenderGraphNode";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
@@ -64,6 +65,8 @@ export class RenderGraph {
 
 		this.commands.push(...this.compiler.compile(this.sortedNodes, compileResources, true));
 
+		console.log(this.commands.map(it => it.getDebugData()))
+
 		this.executeCounter = 0;
 	}
 
@@ -101,6 +104,13 @@ export class RenderGraph {
 
 	public createTexture(name?: string): TextureRenderGraphNode {
 		const node = new TextureRenderGraphNode();
+		if (name) node.withName(name);
+		this.addNode(node);
+		return node;
+	}
+
+	public createConditionalTexture(name?: string): ConditionalTextureRenderGraphNode {
+		const node = new ConditionalTextureRenderGraphNode();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;

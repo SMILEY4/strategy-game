@@ -14,7 +14,7 @@ export class CanvasRenderGraphNode implements RenderGraphNode {
 	/**
 	 * Set the name of this node to a given custom name. Names must be unique in the render graph.
 	 */
-	public withName(name: string): RenderGraphNode {
+	public withName(name: string): CanvasRenderGraphNode {
 		this.name = name
 		return this;
 	}

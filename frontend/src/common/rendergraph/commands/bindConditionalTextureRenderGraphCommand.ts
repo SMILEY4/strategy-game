@@ -2,25 +2,29 @@ import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {GLTexture} from "../../webgl/glTexture";
 import {RenderGraphCommand} from "../renderGraphCommand";
 
-export class BindTextureRenderGraphCommand extends RenderGraphCommand {
+export class BindConditionalTextureRenderGraphCommand extends RenderGraphCommand {
 
 	constructor(
 		private readonly textureName: string,
 		private readonly textureUnit: number,
+		private readonly condition: () => boolean,
 	) {
 		super();
 	}
 
 	execute(resourceManager: RenderGraphResourceManager): void {
-		const texture = resourceManager.getResource<GLTexture>(this.textureName);
-		texture.bind(this.textureUnit);
+		if (this.condition()) {
+			const texture = resourceManager.getResource<GLTexture>(this.textureName);
+			texture.bind(this.textureUnit);
+		}
 	}
 
 	getDebugData(): object {
 		return {
-			command: "BindTexture",
+			command: "BindConditionalTexture",
 			textureName: this.textureName,
 			textureUnit: this.textureUnit,
+			condition: ""+this.condition,
 		};
 	}
 }

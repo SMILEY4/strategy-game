@@ -357,8 +357,8 @@ export class GameRenderGraphFactory {
 			.createTexture("clouds")
 			.withUrl("/textures/noise_watercolor.png");
 
-		const textureLut = graph // todo: make conditional
-			.createTexture("lut")
+		const textureLutNormal = graph
+			.createTexture("lut_normal")
 			.withUrl("/lut/lut_64_corrected.png")
 			.withConfig({
 				filterMin: GLTextureMinFilter.NEAREST,
@@ -366,28 +366,19 @@ export class GameRenderGraphFactory {
 				wrap: GLTextureWrap.CLAMP_TO_EDGE,
 			});
 
-		// const textureLutNormal = graph
-		// 	.createTexture("lut_normal")
-		// 	.withUrl("/lut/lut_64_corrected.png")
-		// 	.withConfig({
-		// 		filterMin: GLTextureMinFilter.NEAREST,
-		// 		filterMag: GLTextureMagFilter.NEAREST,
-		// 		wrap: GLTextureWrap.CLAMP_TO_EDGE,
-		// 	});
-		//
-		// const textureLutGrayscale = graph
-		// 	.createTexture("lut_grayscale")
-		// 	.withUrl("/lut/lut_64_grayscale.png")
-		// 	.withConfig({
-		// 		filterMin: GLTextureMinFilter.NEAREST,
-		// 		filterMag: GLTextureMagFilter.NEAREST,
-		// 		wrap: GLTextureWrap.CLAMP_TO_EDGE,
-		// 	});
-		//
-		// const textureLut = graph
-		// 	.createConditional<TextureRenderGraphNode>("lut")
-		// 	.withOption(textureLutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
-		// 	.withOption(textureLutGrayscale, () => gameAccess.getMapMode().renderData.grayscale)
+		const textureLutGrayscale = graph
+			.createTexture("lut_grayscale")
+			.withUrl("/lut/lut_64_grayscale.png")
+			.withConfig({
+				filterMin: GLTextureMinFilter.NEAREST,
+				filterMag: GLTextureMagFilter.NEAREST,
+				wrap: GLTextureWrap.CLAMP_TO_EDGE,
+			});
+
+		const textureLut = graph
+			.createConditionalTexture("lut")
+			.withOption(textureLutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
+			.withOption(textureLutGrayscale, () => gameAccess.getMapMode().renderData.grayscale)
 
 		const vertexCreatorTileMesh = graph
 			.createVertexCreator("tile-mesh")

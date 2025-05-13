@@ -27,7 +27,11 @@ export class SetUniformsRenderGraphCommand extends RenderGraphCommand {
 	getDebugData(): object {
 		return {
 			command: "SetUniforms",
-			uniformNames: this.uniforms.map(it => [it.binding, ""+it.constValue, ""+it.valueProvider]),
+			uniformNames: this.uniforms.map(it => ({
+				bindingName: it.binding,
+				constValue: ""+it.constValue,
+				dynValue: ""+it.valueProvider
+			})),
 			shaderProgramName: this.shaderProgramName,
 		};
 	}
