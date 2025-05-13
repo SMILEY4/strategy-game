@@ -1,14 +1,14 @@
 import {RenderGraphNode} from "../renderGraphNode";
-import {VertexCreatorRenderGraphNode} from "./vertexCreatorRenderGraphNode";
 import {UID} from "../../uid";
 import {PropertyRenderGraphNodeUtils} from "./propertyRenderGraphNode";
+import {VertexGeneratorOutputDefinition} from "./vertexGeneratorRenderGraphNode";
 
 /**
  * Describes a drawable mesh by combining one or multiple vertex creator outputs.
  */
 export class VertexDescriptorRenderGraphNode implements RenderGraphNode {
 
-	private sources: VertexCreatorRenderGraphNode.Output[] = [];
+	private sources: VertexGeneratorOutputDefinition[] = [];
 	private name: string = UID.generate();
 
 	/**
@@ -22,7 +22,7 @@ export class VertexDescriptorRenderGraphNode implements RenderGraphNode {
 	/**
 	 * Add the given vertex creator output to this vertex descriptor.
 	 */
-	public withInput(source: VertexCreatorRenderGraphNode.Output): VertexDescriptorRenderGraphNode {
+	public withInput(source: VertexGeneratorOutputDefinition): VertexDescriptorRenderGraphNode {
 		this.sources.push(source);
 		return this;
 	}
@@ -30,7 +30,7 @@ export class VertexDescriptorRenderGraphNode implements RenderGraphNode {
 	/**
 	 * @return the specified vertex creator outputs
 	 */
-	public getVertexCreatorOutputs(): VertexCreatorRenderGraphNode.Output[] {
+	public getVertexCreatorOutputs(): VertexGeneratorOutputDefinition[] {
 		return this.sources;
 	}
 
@@ -41,14 +41,14 @@ export class VertexDescriptorRenderGraphNode implements RenderGraphNode {
 
 	getInputs(): RenderGraphNode[] {
 		return this.sources
-			.map(it => it.creator)
+			.map(it => it.generator)
 			.distinct();
 	}
 
 	getChangeTest(): () => boolean {
 		return PropertyRenderGraphNodeUtils.mergeChangeTests(
 			this.sources
-				.map(it => it.creator)
+				.map(it => it.generator)
 				.distinct()
 				.map(it => it.getChangeTest())
 		)
@@ -62,14 +62,6 @@ export class VertexDescriptorRenderGraphNode implements RenderGraphNode {
 		}
 
 		return errors;
-	}
-
-}
-
-export namespace VertexDescriptorRenderGraphNode {
-
-	export function isType(node: RenderGraphNode): node is VertexDescriptorRenderGraphNode {
-		return node instanceof VertexDescriptorRenderGraphNode;
 	}
 
 }

@@ -3,16 +3,16 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphNodeContext} from "../renderGraphNodeContext";
 import {UID} from "../../uid";
 import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
-import ElementCreationFuncResult = ElementCreatorRenderGraphNode.ElementCreationFuncResult;
+import {DataGeneratorOutputDefinition, DataGeneratorRenderGraphNode} from "./dataGeneratorRenderGraphNode";
 
 /**
  * A node creating the data to render html elements to a container.
  */
-export class ElementCreatorRenderGraphNode implements RenderGraphNode {
+export class RenderElementGeneratorRenderGraphNode implements RenderGraphNode, DataGeneratorRenderGraphNode<RenderElementGeneratorOutputDefinition, RenderElement[]> {
 
-	private readonly outputs = new Map<string, ElementCreatorRenderGraphNode.Output>();
+	private readonly outputs = new Map<string, RenderElementGeneratorOutputDefinition>();
 	private readonly properties: ({ property: RenderGraphProperty<any>, name: string })[] = [];
-	private func: (context: RenderGraphNodeContext) => ElementCreationFuncResult = () => undefined as any;
+	private func: (context: RenderGraphNodeContext) => Map<string, RenderElement[]> = () => undefined as any;
 	private name: string = UID.generate();
 
 
@@ -27,7 +27,7 @@ export class ElementCreatorRenderGraphNode implements RenderGraphNode {
 	/**
 	 * Make the given property available in the creation function via the given name.
 	 */
-	public withProperty(property: RenderGraphProperty<any>, name: string): ElementCreatorRenderGraphNode {
+	public withProperty(property: RenderGraphProperty<any>, name: string): RenderElementGeneratorRenderGraphNode {
 		this.properties.push({
 			property: property,
 			name: name,
@@ -38,7 +38,7 @@ export class ElementCreatorRenderGraphNode implements RenderGraphNode {
 	/**
 	 * Set the creation function.
 	 */
-	public withFunction(func: (context: RenderGraphNodeContext) => ElementCreationFuncResult): ElementCreatorRenderGraphNode {
+	public withFunction(func: (context: RenderGraphNodeContext) => Map<string, RenderElement[]>): RenderElementGeneratorRenderGraphNode {
 		this.func = func;
 		return this;
 	}
@@ -47,15 +47,18 @@ export class ElementCreatorRenderGraphNode implements RenderGraphNode {
 	 * Define a named output. Any number of separate outputs can be defined. Outputs can be used as inputs for other nodes.
 	 * @param name the name of the output (must be unique for this node)
 	 */
-	public withOutput(name: string): ElementCreatorRenderGraphNode {
-		this.outputs.set(name, new ElementCreatorRenderGraphNode.Output(name, this));
+	public withOutput(name: string): RenderElementGeneratorRenderGraphNode {
+		this.outputs.set(name, {
+			name: name,
+			generator: this,
+		});
 		return this;
 	}
 
 	/**
 	 * @return the output definition of this creator with the given name to use as inputs for other nodes.
 	 */
-	public useOutput(name: string): ElementCreatorRenderGraphNode.Output {
+	useOutput(name: string): RenderElementGeneratorOutputDefinition {
 		if (this.outputs.has(name)) {
 			return this.outputs.get(name)!;
 		} else {
@@ -81,14 +84,14 @@ export class ElementCreatorRenderGraphNode implements RenderGraphNode {
 	/**
 	 * @return the creation function
 	 */
-	public getFunc(): (context: RenderGraphNodeContext) => ElementCreationFuncResult {
+	getGeneratorFunction(): (context: RenderGraphNodeContext) => Map<string, RenderElement[]> {
 		return this.func;
 	}
 
 	/**
 	 * @return the list of defined outputs.
 	 */
-	public getOutputs(): ElementCreatorRenderGraphNode.Output[] {
+	getOutputDefinitions(): RenderElementGeneratorOutputDefinition[] {
 		return Array.from(this.outputs.values());
 	}
 
@@ -107,41 +110,17 @@ export class ElementCreatorRenderGraphNode implements RenderGraphNode {
 	getChangeTest(): () => boolean {
 		return PropertyRenderGraphNodeUtils.mergeChangeTests(
 			this.properties.map(it => it.property.getChangeTest()),
-		)
+		);
 	}
 
 }
 
+/**
+ * The base type for the result elements
+ */
+export interface RenderElement {
+	position: TilePosition,
+}
 
-export namespace ElementCreatorRenderGraphNode {
-
-	/**
-	 * @return whether the given node is of type ElementCreatorRenderGraphNode
-	 */
-	export function isType(node: RenderGraphNode): node is ElementCreatorRenderGraphNode {
-		return node instanceof ElementCreatorRenderGraphNode;
-	}
-
-	/**
-	 * The output type of the creation function
-	 */
-	export type ElementCreationFuncResult = Map<string, Element[]>
-
-	/**
-	 * The base type for the result elements
-	 */
-	export interface Element {
-		position: TilePosition,
-	}
-
-	/**
-	 * The definition of a named output.
-	 */
-	export class Output {
-		constructor(
-			public readonly name: string,
-			public readonly creator: ElementCreatorRenderGraphNode) {
-		}
-	}
-
+export interface RenderElementGeneratorOutputDefinition extends DataGeneratorOutputDefinition<RenderElementGeneratorRenderGraphNode> {
 }

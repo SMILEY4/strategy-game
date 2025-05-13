@@ -1,4 +1,4 @@
-import {VertexCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/vertexCreatorRenderGraphNode";
+import {VertexGeneratorResult} from "../../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {buildMap, shuffleArray} from "../../../common/utils";
 import {Tile} from "../../../models/tile/tile";
@@ -43,7 +43,7 @@ export namespace TileInstanceVertexCreator {
 	let tileIndices: number[] = [];
 
 
-	export function func(context: RenderGraphNodeContext): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
+	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
 		const tiles = context.get<Tile[]>("tiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");
 		const colorLandLight = context.get<[number, number, number]>("colorLandLight");

@@ -14,7 +14,7 @@ import {Route} from "../../models/route/route";
 import {TextureAtlas, TextureAtlasEntry} from "../../common/webgl/textureAtlas";
 import {RenderGraphSorter} from "../../common/rendergraph/renderGraphSorter";
 import {RenderGraphCompiler} from "../../common/rendergraph/renderGraphCompiler";
-import {VertexCreatorNodeCompiler} from "../../common/rendergraph/compilers/vertexCreatorNodeCompiler";
+import {VertexGeneratorNodeCompiler} from "../../common/rendergraph/compilers/vertexGeneratorNodeCompiler";
 import {WebglShaderNodeCompiler} from "../../common/rendergraph/compilers/webglShaderNodeCompiler";
 import {WebglDrawNodeCompiler} from "../../common/rendergraph/compilers/webglDrawNodeCompiler";
 import {RenderGraphResourceManager} from "../../common/rendergraph/renderGraphResourceManager";
@@ -38,9 +38,9 @@ import {VertexInfoResourceCreator} from "../../common/rendergraph/resources/vert
 import {TileSummary} from "../../models/tile/tileSummary";
 import {mat3} from "../../common/webgl/mat3";
 import {LabelsElementCreator} from "./creators/labelsElementCreator";
-import {ElementCreatorNodeCompiler} from "../../common/rendergraph/compilers/elementCreatorNodeCompiler";
+import {RenderElementGeneratorNodeCompiler} from "../../common/rendergraph/compilers/renderElementGeneratorNodeCompiler";
 import {HtmlDrawNodeCompiler} from "../../common/rendergraph/compilers/htmlDrawNodeCompiler";
-import {ElementDataResourceCreator} from "../../common/rendergraph/resources/elementDataResourceCreator";
+import {RenderElementDataResourceCreator} from "../../common/rendergraph/resources/renderElementDataResourceCreator";
 import {HtmlElementPoolResourceCreator} from "../../common/rendergraph/resources/htmlElementPoolResourceCreator";
 import {CachedHtmlElementResourceCreator} from "../../common/rendergraph/resources/cachedHtmlElementResourceCreator";
 import {ResourceIconsElementCreator} from "./creators/resourceIconsElementCreator";
@@ -73,10 +73,10 @@ export class GameRenderGraphFactory {
 			new RenderGraphSorter(),
 			new RenderGraphCompiler([
 				new PropertyNodeCompiler(),
-				new VertexCreatorNodeCompiler(),
+				new VertexGeneratorNodeCompiler(),
 				new WebglShaderNodeCompiler(),
 				new WebglDrawNodeCompiler(),
-				new ElementCreatorNodeCompiler(),
+				new RenderElementGeneratorNodeCompiler(),
 				new HtmlDrawNodeCompiler(),
 			]),
 			new RenderGraphResourceManager([
@@ -88,7 +88,7 @@ export class GameRenderGraphFactory {
 				new VertexArrayResourceCreator(gl),
 				new VertexBufferResourceCreator(gl),
 				new VertexInfoResourceCreator(),
-				new ElementDataResourceCreator(),
+				new RenderElementDataResourceCreator(),
 				new HtmlElementPoolResourceCreator(),
 				new CachedHtmlElementResourceCreator(),
 			]),
@@ -840,7 +840,7 @@ export class GameRenderGraphFactory {
 		// LABELS ==================================
 
 		const creatorLabels = graph
-			.createElementCreator("create-labels")
+			.createRenderElementGenerator("create-labels")
 			.withProperty(propSettlements, "settlements")
 			.withProperty(propWorldObjects, "worldObjects")
 			.withProperty(propCameraVPM, "_camera")
@@ -857,7 +857,7 @@ export class GameRenderGraphFactory {
 		// RESOURCE ICONS ==========================
 
 		const creatorResourceIcons = graph
-			.createElementCreator("create-resourceicons")
+			.createRenderElementGenerator("create-resourceicons")
 			.withProperty(propTiles, "tiles")
 			.withProperty(propMapMode, "mapMode")
 			.withProperty(propCameraVPM, "_camera")
@@ -874,7 +874,7 @@ export class GameRenderGraphFactory {
 		// MOVE PATHS ==============================
 
 		const creatorMovePaths = graph
-			.createElementCreator("create-movepaths")
+			.createRenderElementGenerator("create-movepaths")
 			.withProperty(propMovePath, "movePaths")
 			.withProperty(propCameraVPM, "_camera")
 			.withFunction(MovePathsElementCreator.funcCreate)

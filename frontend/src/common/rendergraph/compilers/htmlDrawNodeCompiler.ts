@@ -4,7 +4,7 @@ import {RenderGraphCompileContext} from "../renderGraphCompileContext";
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {RenderHtmlElementsRenderGraphCommand} from "../commands/renderHtmlElementsRenderGraphCommand";
 import {ContainerRenderGraphNode} from "../nodes/containerRenderGraphNode";
-import {ElementCreatorRenderGraphNode} from "../nodes/elementCreatorRenderGraphNode";
+import {RenderElementGeneratorRenderGraphNode} from "../nodes/renderElementGeneratorRenderGraphNode";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {PropertyRenderGraphNodeUtils} from "../nodes/propertyRenderGraphNode";
 
@@ -34,9 +34,9 @@ export class HtmlDrawNodeCompiler implements RenderGraphNodeCompiler<ContainerRe
 			node
 				.getDrawNodes()
 				.flatMap(it => it.getInputs())
-				.filter(it => it instanceof ElementCreatorRenderGraphNode)
+				.filter(it => it instanceof RenderElementGeneratorRenderGraphNode)
 				.distinct()
-				.map(it => it as ElementCreatorRenderGraphNode)
+				.map(it => it as RenderElementGeneratorRenderGraphNode)
 				.map(it => it.getChangeTest())
 		);
 	}

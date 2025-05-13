@@ -1,4 +1,4 @@
-import {ElementCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/elementCreatorRenderGraphNode";
+import {RenderElement} from "../../../common/rendergraph/nodes/renderElementGeneratorRenderGraphNode";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {Camera} from "../../../common/webgl/camera";
@@ -11,7 +11,7 @@ export namespace ResourceIconsElementCreator {
 
 	export const OUTPUT_ID = "resourceicons.elements";
 
-	export function funcCreate(context: RenderGraphNodeContext): ElementCreatorRenderGraphNode.ElementCreationFuncResult {
+	export function funcCreate(context: RenderGraphNodeContext): Map<string, RenderElement[]> {
 
 		const tiles = context.get<Tile[]>("tiles");
 		const mapMode = context.get<MapMode>("mapMode");
@@ -67,8 +67,8 @@ export namespace ResourceIconsElementCreator {
 	}
 
 
-	export interface ResourceIconHtmlData extends ElementCreatorRenderGraphNode.Element {
-		type: TileResourceType
+	export interface ResourceIconHtmlData extends RenderElement {
+		type: TileResourceType;
 	}
 
 }

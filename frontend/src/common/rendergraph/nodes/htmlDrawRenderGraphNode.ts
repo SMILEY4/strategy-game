@@ -1,5 +1,5 @@
 import {RenderGraphNode} from "../renderGraphNode";
-import {ElementCreatorRenderGraphNode} from "./elementCreatorRenderGraphNode";
+import {RenderElementGeneratorOutputDefinition} from "./renderElementGeneratorRenderGraphNode";
 import {Camera} from "../../webgl/camera";
 import {UID} from "../../uid";
 
@@ -8,7 +8,7 @@ import {UID} from "../../uid";
  */
 export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 
-	private source: ElementCreatorRenderGraphNode.Output = null as any;
+	private source: RenderElementGeneratorOutputDefinition = null as any;
 	private cullingRadius: number = 9999999;
 	private templateFunc: () => HTMLElement = () => undefined as any;
 	private renderFunc: (obj: any, target: HTMLElement, camera: Camera) => void = () => undefined;
@@ -26,7 +26,7 @@ export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 	/**
 	 * Draw the elements created and defined by the given creator output (required, accepts only one).
 	 */
-	public withElements(source: ElementCreatorRenderGraphNode.Output): HtmlDrawRenderGraphNode {
+	public withElements(source: RenderElementGeneratorOutputDefinition): HtmlDrawRenderGraphNode {
 		this.source = source;
 		return this;
 	}
@@ -80,12 +80,12 @@ export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 	/**
 	 * @return the creator output definition
 	 */
-	public getSource(): ElementCreatorRenderGraphNode.Output {
+	public getSource(): RenderElementGeneratorOutputDefinition {
 		return this.source;
 	}
 
 	getInputs(): RenderGraphNode[] {
-		return [this.source.creator];
+		return [this.source.generator];
 	}
 
 	getName(): string {
@@ -93,14 +93,14 @@ export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 	}
 
 	getChangeTest(): () => boolean {
-		return this.source.creator.getChangeTest();
+		return this.source.generator.getChangeTest();
 	}
 
 	validate(): string[] {
 		const errors: string[] = [];
 
-		if (this.getInputs().count(ElementCreatorRenderGraphNode.isType) != 1) {
-			errors.push("Exactly one source / creator output is required");
+		if (this.getInputs().length != 1) {
+			errors.push("Exactly one input is required");
 		}
 
 		if (this.templateFunc === undefined) {

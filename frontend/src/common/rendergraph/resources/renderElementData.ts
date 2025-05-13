@@ -1,6 +1,6 @@
 /**
  * List containing some generic data
  */
-export interface ElementData {
+export interface RenderElementData {
 	elements: any[];
 }

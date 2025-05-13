@@ -1,15 +1,15 @@
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphKeys} from "../renderGraphKeys";
-import {ElementCreatorRenderGraphNode} from "../nodes/elementCreatorRenderGraphNode";
 import {RenderGraphCommand} from "../renderGraphCommand";
-import {ElementData} from "../resources/elementData";
+import {RenderElementData} from "../resources/renderElementData";
 import {RenderGraphNodeContext} from "../renderGraphNodeContext";
+import {RenderElement} from "../nodes/renderElementGeneratorRenderGraphNode";
 
-export class UpdateElementDataRenderGraphCommand extends RenderGraphCommand {
+export class UpdateRenderElementDataRenderGraphCommand extends RenderGraphCommand {
 
 	constructor(
 		private readonly creatorName: string,
-		private readonly creationFunc: (context: RenderGraphNodeContext) => ElementCreatorRenderGraphNode.ElementCreationFuncResult,
+		private readonly creationFunc: (context: RenderGraphNodeContext) => Map<string, RenderElement[]>,
 		private readonly execCondition: () => boolean,
 		private readonly propertyMapping: Map<string, string>
 	) {
@@ -23,15 +23,16 @@ export class UpdateElementDataRenderGraphCommand extends RenderGraphCommand {
 		const context = new RenderGraphNodeContext(resourceManager, this.propertyMapping);
 		const result = this.creationFunc(context);
 		for (let [key, data] of result) {
-			const elementData = resourceManager.getResource<ElementData>(RenderGraphKeys.elementsDataFromName(this.creatorName, key));
+			const elementData = resourceManager.getResource<RenderElementData>(RenderGraphKeys.elementsDataFromName(this.creatorName, key));
 			elementData.elements = data;
 		}
 	}
 
 	getDebugData(): object {
 		return {
-			command: "UpdateElementData",
+			command: "UpdateRenderElementData",
 			creator: this.creatorName,
+			propertyMapping: this.propertyMapping,
 		};
 	}
 }

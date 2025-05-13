@@ -1,4 +1,6 @@
-import {ElementCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/elementCreatorRenderGraphNode";
+import {
+	RenderElement,
+} from "../../../common/rendergraph/nodes/renderElementGeneratorRenderGraphNode";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {TilemapUtils} from "../../../common/tilemapUtils";
@@ -11,7 +13,7 @@ export namespace LabelsElementCreator {
 
 	export const OUTPUT_ID = "labels.elements";
 
-	export function funcCreate(context: RenderGraphNodeContext): ElementCreatorRenderGraphNode.ElementCreationFuncResult {
+	export function funcCreate(context: RenderGraphNodeContext): Map<string, RenderElement[]> {
 
 		const settlements = context.get<Settlement[]>("settlements");
 		const worldObjects = context.get<WorldObject[]>("worldObjects");
@@ -124,7 +126,7 @@ export namespace LabelsElementCreator {
 	}
 
 
-	export interface LabelsHtmlData extends ElementCreatorRenderGraphNode.Element {
+	export interface LabelsHtmlData extends RenderElement {
 		tileId: string,
 		type: "location" | "location-pending" | "unit"
 		name: string,

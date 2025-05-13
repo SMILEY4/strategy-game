@@ -1,4 +1,4 @@
-import {VertexCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/vertexCreatorRenderGraphNode";
+import {VertexGeneratorResult} from "../../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {buildMap} from "../../../common/utils";
@@ -20,7 +20,7 @@ export namespace TileMeshVertexCreator {
 		MixedArrayBufferType.INT,
 	];
 
-	export function func(): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
+	export function func(): Map<string, VertexGeneratorResult> {
 		const [vertexCount, vertexData] = buildBaseMesh();
 		return buildMap([
 			[

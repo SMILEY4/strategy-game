@@ -1,4 +1,6 @@
-import {ElementCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/elementCreatorRenderGraphNode";
+import {
+	RenderElement,
+} from "../../../common/rendergraph/nodes/renderElementGeneratorRenderGraphNode";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {Camera} from "../../../common/webgl/camera";
@@ -9,7 +11,7 @@ export namespace MovePathsElementCreator {
 
 	export const OUTPUT_ID = "movepaths.elements";
 
-	export function funcCreate(context: RenderGraphNodeContext): ElementCreatorRenderGraphNode.ElementCreationFuncResult {
+	export function funcCreate(context: RenderGraphNodeContext): Map<string, RenderElement[]> {
 
 		const paths = context.get<({ tiles: TileSummary[], pending: boolean })[]>("movePaths");
 
@@ -84,7 +86,7 @@ export namespace MovePathsElementCreator {
 	}
 
 
-	export interface PathHtmlData extends ElementCreatorRenderGraphNode.Element {
+	export interface PathHtmlData extends RenderElement {
 		path: TileSummary[],
 		pending: boolean
 	}

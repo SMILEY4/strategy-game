@@ -3,9 +3,9 @@ import {RenderElementGeneratorRenderGraphNode} from "../nodes/renderElementGener
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphKeys} from "../renderGraphKeys";
-import {PooledHtmlElementData} from "./pooledHtmlElementData";
+import {RenderElementData} from "./renderElementData";
 
-export class HtmlElementPoolResourceCreator implements RenderGraphResourceCreator<RenderElementGeneratorRenderGraphNode> {
+export class RenderElementDataResourceCreator implements RenderGraphResourceCreator<RenderElementGeneratorRenderGraphNode> {
 
 	appliesTo(node: RenderGraphNode): boolean {
 		return node instanceof RenderElementGeneratorRenderGraphNode;
@@ -13,12 +13,12 @@ export class HtmlElementPoolResourceCreator implements RenderGraphResourceCreato
 
 	create(node: RenderElementGeneratorRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
 		for (let output of node.getOutputDefinitions()) {
-			const elementsName = RenderGraphKeys.pooledHtmlElements(output);
+			const elementsName = RenderGraphKeys.elementsData(output);
 			if (!resourceManager.hasResource(elementsName)) {
-				resourceManager.createResource<PooledHtmlElementData>(
+				resourceManager.createResource<RenderElementData>(
 					elementsName,
-					{elements: [], templateElement: null},
-					it => it.elements.length = 0
+					{elements: []},
+					it => it.elements.length = 0,
 				);
 			}
 		}

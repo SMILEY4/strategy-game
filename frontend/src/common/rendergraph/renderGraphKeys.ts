@@ -2,8 +2,10 @@ import {RenderTargetRenderGraphNode} from "./nodes/renderTargetRenderGraphNode";
 import {TextureRenderGraphNode} from "./nodes/textureRenderGraphNode";
 import {ShaderRenderGraphNode} from "./nodes/shaderRenderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./nodes/vertexDescriptorRenderGraphNode";
-import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode";
-import {ElementCreatorRenderGraphNode} from "./nodes/elementCreatorRenderGraphNode";
+import {VertexGeneratorRenderGraphNode, VertexGeneratorOutputDefinition} from "./nodes/vertexGeneratorRenderGraphNode";
+import {
+	RenderElementGeneratorOutputDefinition,
+} from "./nodes/renderElementGeneratorRenderGraphNode";
 import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
 import {RenderGraphProperty} from "./nodes/propertyRenderGraphNode";
 import {ConditionalTextureRenderGraphNode} from "./nodes/conditionalTextureRenderGraphNode";
@@ -35,36 +37,32 @@ export namespace RenderGraphKeys {
 		return "vertexarray:" + node.getName() + ":" + shaderNode.getName();
 	}
 
-	export function vertexInfo(output: VertexCreatorRenderGraphNode.Output): string {
-		return vertexInfoFromName(output.creator.getName(), output.name);
+	export function vertexInfo(output: VertexGeneratorOutputDefinition): string {
+		return vertexInfoFromName(output.generator.getName(), output.name);
 	}
 
 	export function vertexInfoFromName(creatorName: string, outputName: string): string {
 		return "vertexinfo:" + creatorName + ":" + outputName;
 	}
 
-	export function vertexBuffer(output: VertexCreatorRenderGraphNode.Output): string {
-		return vertexBufferFromName(output.creator.getName(), output.name);
+	export function vertexBuffer(output: VertexGeneratorOutputDefinition): string {
+		return vertexBufferFromName(output.generator.getName(), output.name);
 	}
 
 	export function vertexBufferFromName(creatorName: string, outputName: string): string {
 		return "vertexbuffer:" + creatorName + ":" + outputName;
 	}
 
-	export function conditionalTexture(options: TextureRenderGraphNode[]): string {
-		return "condtextures:" + options.map(it => texture(it)).join(",");
-	}
-
-	export function elementsData(output: ElementCreatorRenderGraphNode.Output): string {
-		return elementsDataFromName(output.creator.getName(), output.name);
+	export function elementsData(output: RenderElementGeneratorOutputDefinition): string {
+		return elementsDataFromName(output.generator.getName(), output.name);
 	}
 
 	export function elementsDataFromName(creatorName: string, outputName: string): string {
 		return "elementsdata:" + creatorName + ":" + outputName;
 	}
 
-	export function pooledHtmlElements(output: ElementCreatorRenderGraphNode.Output): string {
-		return "htmlelementpool:" + output.creator.getName() + ":" + output.name;
+	export function pooledHtmlElements(output: RenderElementGeneratorOutputDefinition): string {
+		return "htmlelementpool:" + output.generator.getName() + ":" + output.name;
 	}
 
 	export function cachedHtmlElement(node: ContainerRenderGraphNode): string {

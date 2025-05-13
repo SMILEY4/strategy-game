@@ -1,4 +1,4 @@
-import {VertexCreatorRenderGraphNode} from "../nodes/vertexCreatorRenderGraphNode";
+import {VertexGeneratorResult} from "../nodes/vertexGeneratorRenderGraphNode";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {GLVertexBuffer} from "../../webgl/glVertexBuffer";
 import {RenderGraphKeys} from "../renderGraphKeys";
@@ -10,7 +10,7 @@ export class UpdateVertexDataRenderGraphCommand extends RenderGraphCommand {
 
 	constructor(
 		private readonly creatorName: string,
-		private readonly creationFunc: (context: RenderGraphNodeContext) => VertexCreatorRenderGraphNode.VertexCreationFuncResult,
+		private readonly creationFunc: (context: RenderGraphNodeContext) => Map<string, VertexGeneratorResult>,
 		private readonly execCondition: () => boolean,
 		private readonly propertyMapping: Map<string, string>,
 	) {

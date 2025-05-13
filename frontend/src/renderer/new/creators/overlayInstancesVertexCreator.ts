@@ -1,4 +1,6 @@
-import {VertexCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/vertexCreatorRenderGraphNode";
+import {
+	VertexGeneratorResult,
+} from "../../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {Tile} from "../../../models/tile/tile";
 import {MapMode} from "../../../models/misc/mapMode";
@@ -34,7 +36,7 @@ export namespace OverlayInstancesVertexCreator {
 		...MixedArrayBufferType.VEC4,
 	];
 
-	export function func(context: RenderGraphNodeContext): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
+	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
 
 		const tiles = context.get<Tile[]>("tiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");

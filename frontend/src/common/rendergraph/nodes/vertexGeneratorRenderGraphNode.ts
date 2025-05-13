@@ -1,18 +1,18 @@
 import {GLAttributeComponentAmount, GLAttributeType} from "../../webgl/glTypes";
 import {RenderGraphNodeContext} from "../renderGraphNodeContext";
 import {RenderGraphNode} from "../renderGraphNode";
-import VertexCreationFuncResult = VertexCreatorRenderGraphNode.VertexCreationFuncResult;
 import {UID} from "../../uid";
 import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
+import {DataGeneratorOutputDefinition, DataGeneratorRenderGraphNode} from "./dataGeneratorRenderGraphNode";
 
 /**
  * A node creating the data to render to a canvas using shaders.
  */
-export class VertexCreatorRenderGraphNode implements RenderGraphNode {
+export class VertexGeneratorRenderGraphNode implements RenderGraphNode, DataGeneratorRenderGraphNode<VertexGeneratorOutputDefinition, VertexGeneratorResult> {
 
-	private readonly outputs = new Map<string, VertexCreatorRenderGraphNode.Output>();
+	private readonly outputs = new Map<string, VertexGeneratorOutputDefinition>();
 	private readonly properties: ({ property: RenderGraphProperty<any>, name: string })[] = [];
-	private func: (context: RenderGraphNodeContext) => VertexCreationFuncResult = () => undefined as any;
+	private func: (context: RenderGraphNodeContext) => Map<string, VertexGeneratorResult> = () => undefined as any;
 	private name: string = UID.generate();
 
 	/**
@@ -26,7 +26,7 @@ export class VertexCreatorRenderGraphNode implements RenderGraphNode {
 	/**
 	 * Make the given property available in the creation function via the given name.
 	 */
-	public withProperty(property: RenderGraphProperty<any>, name: string): VertexCreatorRenderGraphNode {
+	public withProperty(property: RenderGraphProperty<any>, name: string): VertexGeneratorRenderGraphNode {
 		this.properties.push({
 			property: property,
 			name: name,
@@ -37,7 +37,7 @@ export class VertexCreatorRenderGraphNode implements RenderGraphNode {
 	/**
 	 * Set the creation function.
 	 */
-	public withFunction(func: (context: RenderGraphNodeContext) => VertexCreationFuncResult): VertexCreatorRenderGraphNode {
+	public withFunction(func: (context: RenderGraphNodeContext) => Map<string, VertexGeneratorResult>): VertexGeneratorRenderGraphNode {
 		this.func = func;
 		return this;
 	}
@@ -48,15 +48,20 @@ export class VertexCreatorRenderGraphNode implements RenderGraphNode {
 	 * @param type whether this output describes vertex or instance data
 	 * @param attributes the layout specification of the resulting data
 	 */
-	public withOutput(name: string, type: "vertices" | "instances", attributes: VertexAttribute[]): VertexCreatorRenderGraphNode {
-		this.outputs.set(name, new VertexCreatorRenderGraphNode.Output(name, this, attributes, type));
+	public withOutput(name: string, type: "vertices" | "instances", attributes: VertexAttribute[]): VertexGeneratorRenderGraphNode {
+		this.outputs.set(name, {
+			name: name,
+			generator: this,
+			type: type,
+			attributes: attributes,
+		});
 		return this;
 	}
 
 	/**
 	 * @return the output definition of this creator with the given name to use as inputs for other nodes.
 	 */
-	public useOutput(name: string): VertexCreatorRenderGraphNode.Output {
+	public useOutput(name: string): VertexGeneratorOutputDefinition {
 		return this.outputs.get(name)!;
 	}
 
@@ -77,7 +82,7 @@ export class VertexCreatorRenderGraphNode implements RenderGraphNode {
 	/**
 	 * @return the creation function
 	 */
-	public getFunc(): (context: RenderGraphNodeContext) => VertexCreationFuncResult {
+	public getGeneratorFunction(): (context: RenderGraphNodeContext) => Map<string, VertexGeneratorResult> {
 		return this.func;
 	}
 
@@ -85,7 +90,7 @@ export class VertexCreatorRenderGraphNode implements RenderGraphNode {
 	/**
 	 * @return the list of defined outputs.
 	 */
-	public getOutputs(): VertexCreatorRenderGraphNode.Output[] {
+	public getOutputDefinitions(): VertexGeneratorOutputDefinition[] {
 		return Array.from(this.outputs.values());
 	}
 
@@ -111,24 +116,14 @@ export class VertexCreatorRenderGraphNode implements RenderGraphNode {
 }
 
 
-export namespace VertexCreatorRenderGraphNode {
+export interface VertexGeneratorOutputDefinition extends DataGeneratorOutputDefinition<VertexGeneratorRenderGraphNode> {
+	attributes: VertexAttribute[],
+	type: "vertices" | "instances"
+}
 
-	/**
-	 * The output type of the creation function
-	 */
-	export type VertexCreationFuncResult = Map<string, { data: ArrayBuffer, entryCount: number }>
-
-	/**
-	 * The definition of a named output.
-	 */
-	export class Output {
-		constructor(
-			public readonly name: string,
-			public readonly creator: VertexCreatorRenderGraphNode,
-			public readonly attributes: VertexAttribute[],
-			public readonly type: "vertices" | "instances") {
-		}
-	}
+export interface VertexGeneratorResult {
+	data: ArrayBuffer,
+	entryCount: number
 }
 
 /**

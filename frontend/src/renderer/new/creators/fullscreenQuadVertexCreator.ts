@@ -1,4 +1,6 @@
-import {VertexCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/vertexCreatorRenderGraphNode";
+import {
+	VertexGeneratorResult,
+} from "../../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {MixedArrayBuffer, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {buildMap} from "../../../common/utils";
 
@@ -14,7 +16,7 @@ export namespace FullscreenQuadVertexCreator {
 	];
 
 
-	export function func(): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
+	export function func(): Map<string, VertexGeneratorResult> {
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(VERTEX_COUNT, PATTERN);
 
 		// corner a, triangle a

@@ -1,4 +1,6 @@
-import {VertexCreatorRenderGraphNode} from "../../../common/rendergraph/nodes/vertexCreatorRenderGraphNode";
+import {
+	VertexGeneratorResult,
+} from "../../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {SpriteBuffer} from "../../../common/webgl/spriteBuffer";
 import {Settlement} from "../../../models/settlement/settlement";
 import {TilemapUtils} from "../../../common/tilemapUtils";
@@ -24,7 +26,7 @@ export namespace MapDetailsVertexCreator {
 	const spriteBuffer = new SpriteBuffer();
 
 
-	export function func(context: RenderGraphNodeContext): VertexCreatorRenderGraphNode.VertexCreationFuncResult {
+	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
 
 		const tiles = context.get<Tile[]>("tiles");
 		const settlements = context.get<Settlement[]>("settlements");

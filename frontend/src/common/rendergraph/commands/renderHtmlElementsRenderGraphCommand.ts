@@ -1,12 +1,12 @@
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {Camera} from "../../webgl/camera";
-import {ElementCreatorRenderGraphNode} from "../nodes/elementCreatorRenderGraphNode";
 import {Projections} from "../../webgl/projections";
 import Point = Projections.Point;
-import {ElementData} from "../resources/elementData";
+import {RenderElementData} from "../resources/renderElementData";
 import {PooledHtmlElementData} from "../resources/pooledHtmlElementData";
 import {CachedHtmlElement} from "../resources/cachedHtmlElement";
+import {RenderElement} from "../nodes/renderElementGeneratorRenderGraphNode";
 
 
 export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
@@ -31,7 +31,7 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 
 		for (let i = 0, n = this.sources.length; i < n; i++) {
 			const source = this.sources[i];
-			const elementsData = resourceManager.getResource<ElementData>(source.elementDataKey);
+			const elementsData = resourceManager.getResource<RenderElementData>(source.elementDataKey);
 			const elements = elementsData.elements;
 			if (elements.length == 0) {
 				continue;
@@ -118,7 +118,7 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 	}
 
 
-	private isVisible(dataEntry: ElementCreatorRenderGraphNode.Element, camera: Camera, clippingRadius: number): boolean {
+	private isVisible(dataEntry: RenderElement, camera: Camera, clippingRadius: number): boolean {
 		if (clippingRadius > 99999) {
 			return true;
 		}

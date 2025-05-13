@@ -3,7 +3,7 @@ import {TextureRenderGraphNode} from "./nodes/textureRenderGraphNode";
 import {ShaderRenderGraphNode} from "./nodes/shaderRenderGraphNode";
 import {CanvasRenderGraphNode} from "./nodes/canvasRenderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./nodes/vertexDescriptorRenderGraphNode";
-import {VertexCreatorRenderGraphNode} from "./nodes/vertexCreatorRenderGraphNode";
+import {VertexGeneratorRenderGraphNode} from "./nodes/vertexGeneratorRenderGraphNode";
 import {RenderGraphSorter} from "./renderGraphSorter";
 import {RenderTargetRenderGraphNode} from "./nodes/renderTargetRenderGraphNode";
 import {RenderGraphCompiler} from "./renderGraphCompiler";
@@ -11,7 +11,7 @@ import {DrawRenderGraphNode} from "./nodes/drawRenderGraphNode";
 import {InitRenderGraphNode} from "./nodes/initRenderGraphNode";
 import {RenderGraphResourceManager} from "./renderGraphResourceManager";
 import {RenderGraphCommand} from "./renderGraphCommand";
-import {ElementCreatorRenderGraphNode} from "./nodes/elementCreatorRenderGraphNode";
+import {RenderElementGeneratorRenderGraphNode} from "./nodes/renderElementGeneratorRenderGraphNode";
 import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
 import {HtmlDrawRenderGraphNode} from "./nodes/htmlDrawRenderGraphNode";
 import {
@@ -130,15 +130,15 @@ export class RenderGraph {
 		return node;
 	}
 
-	public createVertexCreator(name?: string): VertexCreatorRenderGraphNode {
-		const node = new VertexCreatorRenderGraphNode();
+	public createVertexCreator(name?: string): VertexGeneratorRenderGraphNode {
+		const node = new VertexGeneratorRenderGraphNode();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;
 	}
 
-	public createElementCreator(name?: string): ElementCreatorRenderGraphNode {
-		const node = new ElementCreatorRenderGraphNode();
+	public createRenderElementGenerator(name?: string): RenderElementGeneratorRenderGraphNode {
+		const node = new RenderElementGeneratorRenderGraphNode();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;

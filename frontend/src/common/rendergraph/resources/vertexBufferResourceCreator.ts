@@ -2,10 +2,10 @@ import {RenderGraphResourceCreator} from "../renderGraphResourceCreator";
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {GLVertexBuffer} from "../../webgl/glVertexBuffer";
-import {VertexCreatorRenderGraphNode} from "../nodes/vertexCreatorRenderGraphNode";
+import {VertexGeneratorRenderGraphNode} from "../nodes/vertexGeneratorRenderGraphNode";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
-export class VertexBufferResourceCreator implements RenderGraphResourceCreator<VertexCreatorRenderGraphNode> {
+export class VertexBufferResourceCreator implements RenderGraphResourceCreator<VertexGeneratorRenderGraphNode> {
 
 	constructor(
 		private readonly gl: WebGL2RenderingContext,
@@ -13,11 +13,11 @@ export class VertexBufferResourceCreator implements RenderGraphResourceCreator<V
 	}
 
 	appliesTo(node: RenderGraphNode): boolean {
-		return node instanceof VertexCreatorRenderGraphNode;
+		return node instanceof VertexGeneratorRenderGraphNode;
 	}
 
-	create(node: VertexCreatorRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
-		for (let output of node.getOutputs()) {
+	create(node: VertexGeneratorRenderGraphNode, resourceManager: RenderGraphResourceManager): void {
+		for (let output of node.getOutputDefinitions()) {
 			const bufferName = RenderGraphKeys.vertexBuffer(output);
 			if (!resourceManager.hasResource(bufferName)) {
 				resourceManager.createResource<GLVertexBuffer>(
