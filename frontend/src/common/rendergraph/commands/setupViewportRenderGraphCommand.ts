@@ -7,8 +7,8 @@ import {RenderGraphCommand} from "../renderGraphCommand";
 export class SetupViewportRenderGraphCommand extends RenderGraphCommand {
 
 	constructor(
-		private readonly scaling: number,
-		private readonly cameraPropertyName: string
+		public readonly scaling: number,
+		public readonly cameraPropertyName: string
 	) {
 		super();
 	}

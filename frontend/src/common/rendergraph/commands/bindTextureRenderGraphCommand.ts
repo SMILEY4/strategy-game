@@ -5,8 +5,8 @@ import {RenderGraphCommand} from "../renderGraphCommand";
 export class BindTextureRenderGraphCommand extends RenderGraphCommand {
 
 	constructor(
-		private readonly textureName: string,
-		private readonly textureUnit: number,
+		readonly textureName: string,
+		readonly textureUnit: number,
 	) {
 		super();
 	}

@@ -6,7 +6,7 @@ import {RenderGraphCommand} from "../renderGraphCommand";
 export class SetupDepthTestRenderGraphCommand extends RenderGraphCommand {
 
 	constructor(
-		private readonly enableDepth: boolean
+		public readonly enableDepth: boolean
 	) {
 		super();
 	}

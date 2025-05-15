@@ -128,5 +128,4 @@ export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRe
 		}
 		return node.getValueProvider(null);
 	}
-
 }

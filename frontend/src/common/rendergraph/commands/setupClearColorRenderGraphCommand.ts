@@ -6,7 +6,7 @@ import {RenderGraphCommand} from "../renderGraphCommand";
 export class SetupClearColorRenderGraphCommand extends RenderGraphCommand {
 
 	constructor(
-		private readonly clearColor: number[]
+		public readonly clearColor: number[]
 	) {
 		super();
 	}

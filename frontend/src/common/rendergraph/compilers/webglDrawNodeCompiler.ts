@@ -47,22 +47,27 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 		}
 
 		// setup viewport
-		commands.push(new SetupViewportRenderGraphCommand(
-			node.getScaling(),
-			cameraPropertyName
-		));
+		if (this.differentSetupViewportRenderGraphCommand(context, cameraPropertyName, node.getScaling())) {
+			commands.push(new SetupViewportRenderGraphCommand(
+				node.getScaling(),
+				cameraPropertyName,
+			));
+		}
 
 		// setup clear color
-		commands.push(new SetupClearColorRenderGraphCommand(
-			node.getClearColor(),
-		));
+		if (this.differentSetupClearColorRenderGraphCommand(context, node.getClearColor())) {
+			commands.push(new SetupClearColorRenderGraphCommand(
+				node.getClearColor(),
+			));
+		}
 
 		// setup depth test
-		commands.push(new SetupDepthTestRenderGraphCommand(
-			this.hasRenderTargetOutput(node, context.getNodes())
+		const shouldEnableDepthTest = this.hasRenderTargetOutput(node, context.getNodes())
 				? this.getRenderTargetOutput(node, context.getNodes())?.getEnableDepth()
-				: false,
-		));
+				: false;
+		if(this.differentSetupDepthTestRenderGraphCommand(context, shouldEnableDepthTest)) {
+			commands.push(new SetupDepthTestRenderGraphCommand(shouldEnableDepthTest));
+		}
 
 		// setup color blending
 		commands.push(new SetupColorBlendRenderGraphCommand(
@@ -92,6 +97,42 @@ export class WebglDrawNodeCompiler implements RenderGraphNodeCompiler<DrawRender
 	private getRenderTargetOutput(node: DrawRenderGraphNode, nodes: RenderGraphNode[]): RenderTargetRenderGraphNode {
 		const outputsTo = nodes.find(other => other.getInputs().includes(node))!;
 		return outputsTo as RenderTargetRenderGraphNode;
+	}
+
+	private differentSetupViewportRenderGraphCommand(context: RenderGraphCompileContext, cameraPropName: string, scaling: number): boolean {
+		const last = context
+			.getCommands()
+			.findLast(it => it instanceof SetupViewportRenderGraphCommand) as (SetupViewportRenderGraphCommand | undefined);
+		if (last) {
+			return last.cameraPropertyName !== cameraPropName || last.scaling !== scaling;
+		} else {
+			return true;
+		}
+	}
+
+	private differentSetupClearColorRenderGraphCommand(context: RenderGraphCompileContext, clearColor: [number, number, number, number]): boolean {
+		const last = context
+			.getCommands()
+			.findLast(it => it instanceof SetupClearColorRenderGraphCommand) as (SetupClearColorRenderGraphCommand | undefined);
+		if (last) {
+			return last.clearColor[0] !== clearColor[0]
+				|| last.clearColor[1] !== clearColor[1]
+				|| last.clearColor[2] !== clearColor[2]
+				|| last.clearColor[3] !== clearColor[3];
+		} else {
+			return true;
+		}
+	}
+
+	private differentSetupDepthTestRenderGraphCommand(context: RenderGraphCompileContext, enableDepthTest: boolean): boolean {
+		const last = context
+			.getCommands()
+			.findLast(it => it instanceof SetupDepthTestRenderGraphCommand) as (SetupDepthTestRenderGraphCommand | undefined);
+		if (last) {
+			return last.enableDepth != enableDepthTest;
+		} else {
+			return true;
+		}
 	}
 
 }
