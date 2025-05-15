@@ -18,8 +18,10 @@ import {
 	ConstPropertyRenderGraphNode,
 	DerivedPropertyRenderGraphNode,
 	DynamicPropertyRenderGraphNode,
+	GeneratedPropertyRenderGraphNode,
 } from "./nodes/propertyRenderGraphNode";
 import {ConditionalTextureRenderGraphNode} from "./nodes/conditionalTextureRenderGraphNode";
+import {IntermediateDataGeneratorRenderGraphNode} from "./nodes/intermediateDataGeneratorRenderGraphNode";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
@@ -36,10 +38,10 @@ export class RenderGraph {
 
 	private executeCounter: number = 0;
 
-	constructor(sorter: RenderGraphSorter, compiler: RenderGraphCompiler, resourceManager: RenderGraphResourceManager) {
+	constructor(sorter: RenderGraphSorter, resourceManager: RenderGraphResourceManager, compiler: RenderGraphCompiler) {
 		this.sorter = sorter;
-		this.compiler = compiler;
 		this.resourceManager = resourceManager;
+		this.compiler = compiler;
 	}
 
 	public initialize(compileResources: Map<string, any>) {
@@ -55,17 +57,17 @@ export class RenderGraph {
 			throw new Error("Render graph validation error:\n" + errors.join("\n"));
 		}
 
-		this.unprocessedNodes.push(new InitRenderGraphNode().withInputs(this.unprocessedNodes));
 
 		this.sortedNodes.push(
+			new InitRenderGraphNode(),
 			...this.sorter.sort(this.unprocessedNodes),
 		);
 
 		this.resourceManager.initialize(this.sortedNodes);
 
-		this.commands.push(...this.compiler.compile(this.sortedNodes, compileResources, true));
+		this.commands.push(...this.compiler.compile(this.sortedNodes, compileResources, true, this.resourceManager));
 
-		console.log(this.commands.map(it => it.getDebugData()))
+		console.log(this.commands.map(it => it.getDebugData()));
 
 		this.executeCounter = 0;
 	}
@@ -144,6 +146,13 @@ export class RenderGraph {
 		return node;
 	}
 
+	public createIntermediateDataGenerator(name?: string): IntermediateDataGeneratorRenderGraphNode {
+		const node = new IntermediateDataGeneratorRenderGraphNode();
+		if (name) node.withName(name);
+		this.addNode(node);
+		return node;
+	}
+
 	public createHtmlRender(name?: string): HtmlDrawRenderGraphNode {
 		const node = new HtmlDrawRenderGraphNode();
 		if (name) node.withName(name);
@@ -174,6 +183,13 @@ export class RenderGraph {
 
 	public createPropertyDerived<T>(name?: string): DerivedPropertyRenderGraphNode<T> {
 		const node = new DerivedPropertyRenderGraphNode<T>();
+		if (name) node.withName(name);
+		this.addNode(node);
+		return node;
+	}
+
+	public createPropertyGenerated<T>(name?: string): GeneratedPropertyRenderGraphNode<T> {
+		const node = new GeneratedPropertyRenderGraphNode<T>();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;

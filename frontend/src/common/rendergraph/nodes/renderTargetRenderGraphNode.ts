@@ -3,6 +3,8 @@ import {DrawRenderGraphNode} from "./drawRenderGraphNode";
 import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
 import {GLUniformType} from "../../webgl/glTypes";
 import {UID} from "../../uid";
+import {ResourceManager} from "../../../renderer/common/graph/resourceManager";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Represents an offscreen canvas / texture that can be drawn to using shaders and meshes.
@@ -65,7 +67,7 @@ export class RenderTargetRenderGraphNode implements RenderGraphNode, RenderGraph
 		}
 	}
 
-	getChangeTest(): () => boolean {
+	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
 		return PropertyRenderGraphNodeUtils.mergeChangeTests(
 			this.drawNodes.map(it => it.getChangeTest())
 		);

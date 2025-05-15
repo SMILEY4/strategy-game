@@ -2,8 +2,12 @@ import {GLUniformType} from "../../webgl/glTypes";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
+import {IntermediateDataGeneratorOutputDefinition} from "./intermediateDataGeneratorRenderGraphNode";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
+import {DataGeneratorOutputDefinition} from "./dataGeneratorRenderGraphNode";
+import {GeneratedDataContainer} from "../resources/generatedDataContainer";
 
-export interface RenderGraphProperty<TValue> extends RenderGraphNode{
+export interface RenderGraphProperty<TValue> extends RenderGraphNode {
 	getType(): GLUniformType | null;
 	getValueProvider(context: any): () => TValue;
 }
@@ -11,7 +15,8 @@ export interface RenderGraphProperty<TValue> extends RenderGraphNode{
 export abstract class AbstractPropertyRenderGraphNode<TValue, TNode extends RenderGraphNode>
 	implements RenderGraphNode, RenderGraphProperty<TValue> {
 
-	private readonly changeTests: (() => boolean)[] = [];
+	private readonly changeTests: ((resourceManager: RenderGraphResourceManager) => boolean)[] = [];
+	private readonly inputNodes: RenderGraphNode[] = [];
 	private type: GLUniformType | null = null;
 	private valueProvider: (context: any) => (() => TValue) = () => null as any;
 	private name: string = UID.generate();
@@ -20,7 +25,7 @@ export abstract class AbstractPropertyRenderGraphNode<TValue, TNode extends Rend
 	 * Set the name of this node to a given custom name. Names must be unique in the render graph.
 	 */
 	public withName(name: string): AbstractPropertyRenderGraphNode<TValue, TNode> {
-		this.name = name
+		this.name = name;
 		return this;
 	}
 
@@ -41,15 +46,19 @@ export abstract class AbstractPropertyRenderGraphNode<TValue, TNode extends Rend
 	}
 
 	getInputs(): RenderGraphNode[] {
-		return [];
+		return this.inputNodes;
 	}
 
 	getName(): string {
 		return this.name;
 	}
 
-	getChangeTest(): () => boolean {
+	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
 		return PropertyRenderGraphNodeUtils.mergeChangeTests(this.changeTests);
+	}
+
+	protected registerInputNode(node: RenderGraphNode): void {
+		this.inputNodes.push(node)
 	}
 
 	protected setType(type: GLUniformType): TNode {
@@ -65,7 +74,7 @@ export abstract class AbstractPropertyRenderGraphNode<TValue, TNode extends Rend
 		this.setValueProviderWithContext(() => provider);
 	}
 
-	protected addChangeTest(changeTest: () => boolean): void {
+	protected addChangeTest(changeTest: (resourceManager: RenderGraphResourceManager) => boolean): void {
 		this.changeTests.push(changeTest);
 	}
 
@@ -92,7 +101,7 @@ export class DynamicPropertyRenderGraphNode<TValue> extends AbstractPropertyRend
 		return this;
 	}
 
-	public withChangeTest(changeTest: () => boolean): DynamicPropertyRenderGraphNode<TValue> {
+	public withChangeTest(changeTest: (resourceManager: RenderGraphResourceManager) => boolean): DynamicPropertyRenderGraphNode<TValue> {
 		this.addChangeTest(changeTest);
 		return this;
 	}
@@ -116,7 +125,33 @@ export class DerivedPropertyRenderGraphNode<TValue> extends AbstractPropertyRend
 		this.setValueProviderWithContext(context => {
 			return () => transformation(source.getValueProvider(context)());
 		});
-		this.addChangeTest(source.getChangeTest())
+		this.addChangeTest(source.getChangeTest());
+		this.registerInputNode(source)
+		return this;
+	}
+
+}
+
+
+export class GeneratedPropertyRenderGraphNode<TValue> extends AbstractPropertyRenderGraphNode<TValue, GeneratedPropertyRenderGraphNode<TValue>> {
+
+	public withType(type: GLUniformType): GeneratedPropertyRenderGraphNode<TValue> {
+		this.setType(type);
+		return this;
+	}
+
+	public withValue(source: IntermediateDataGeneratorOutputDefinition): GeneratedPropertyRenderGraphNode<TValue> {
+		this.setValueProviderWithContext(context => {
+			const resourceManager = context as RenderGraphResourceManager;
+			const dataName = RenderGraphKeys.genericData(source);
+			return () => resourceManager.getResource(dataName);
+		});
+		this.addChangeTest((resourceManager: RenderGraphResourceManager) => {
+			const currentFrameId = resourceManager.getResource<string>(RenderGraphKeys.frameId());
+			const data = resourceManager.getResource<GeneratedDataContainer<any>>(RenderGraphKeys.genericData(source));
+			return data.frameId === currentFrameId;
+		});
+		this.registerInputNode(source.generator)
 		return this;
 	}
 
@@ -125,10 +160,10 @@ export class DerivedPropertyRenderGraphNode<TValue> extends AbstractPropertyRend
 
 export namespace PropertyRenderGraphNodeUtils {
 
-	export function mergeChangeTests(tests: (() => boolean)[]): () => boolean {
-		return () => {
+	export function mergeChangeTests(tests: ((resourceManager: RenderGraphResourceManager) => boolean)[]): (resourceManager: RenderGraphResourceManager) => boolean {
+		return (resourceManager: RenderGraphResourceManager) => {
 			for (let changeTest of tests) {
-				if (changeTest()) {
+				if (changeTest(resourceManager)) {
 					return true;
 				}
 			}
@@ -136,14 +171,20 @@ export namespace PropertyRenderGraphNodeUtils {
 		};
 	}
 
-	export function buildPropertyNameMapping(properties: ({
-		property: RenderGraphProperty<any>,
-		name: string
-	})[]) {
+	export function buildPropertyNameMapping(
+		properties: ({ property: RenderGraphProperty<any>, name: string, })[],
+		outputDefinitions: DataGeneratorOutputDefinition<any>[],
+	) {
 		const propertyMapping: Map<string, string> = new Map<string, string>();
+
 		for (let {property, name} of properties) {
 			propertyMapping.set(name, RenderGraphKeys.property(property));
 		}
+
+		for (let outputDefinition of outputDefinitions) {
+			propertyMapping.set("_this." + outputDefinition.name, RenderGraphKeys.genericData(outputDefinition));
+		}
+
 		return propertyMapping;
 	}
 

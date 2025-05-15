@@ -16,8 +16,7 @@ export class CachedHtmlElementResourceCreator implements RenderGraphResourceCrea
 		if (!resourceManager.hasResource(elementsName)) {
 			resourceManager.createResource<CachedHtmlElement>(
 				elementsName,
-				{element: null, id: node.getElementId()},
-				() => undefined,
+				{element: null, id: node.getElementId()}
 			);
 		}
 	}

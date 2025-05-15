@@ -26,7 +26,7 @@ export class DataGeneratorNodeCompiler implements RenderGraphNodeCompiler<DataGe
 				node.getName(),
 				node.getGeneratorFunction(),
 				node.getChangeTest(),
-				PropertyRenderGraphNodeUtils.buildPropertyNameMapping(node.getPropertiesNamed()),
+				PropertyRenderGraphNodeUtils.buildPropertyNameMapping(node.getPropertiesNamed(), node.getOutputDefinitions()),
 			),
 		];
 	}

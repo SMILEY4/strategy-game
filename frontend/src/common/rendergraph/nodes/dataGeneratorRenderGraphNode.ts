@@ -2,11 +2,12 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphNodeContext} from "../renderGraphNodeContext";
 import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
 import {UID} from "../../uid";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 export interface DataGeneratorRenderGraphNode<TOutputDefinition extends DataGeneratorOutputDefinition<any>, TResult> extends RenderGraphNode {
-	getGeneratorFunction(): (context: RenderGraphNodeContext) => Map<string, TResult>
-	getOutputDefinitions(): TOutputDefinition[]
-	useOutput(name: string): TOutputDefinition
+	getGeneratorFunction(): (context: RenderGraphNodeContext) => Map<string, TResult>;
+	getOutputDefinitions(): TOutputDefinition[];
+	useOutput(name: string): TOutputDefinition;
 }
 
 export interface DataGeneratorOutputDefinition<TGenerator extends DataGeneratorRenderGraphNode<any, any>> {
@@ -25,7 +26,7 @@ export abstract class AbstractDataGeneratorRenderGraphNode<TNode extends RenderG
 	 * Set the name of this node to a given custom name. Names must be unique in the render graph.
 	 */
 	public withName(name: string): TNode {
-		this.name = name
+		this.name = name;
 		return this as unknown as TNode;
 	}
 
@@ -75,7 +76,7 @@ export abstract class AbstractDataGeneratorRenderGraphNode<TNode extends RenderG
 	}
 
 	getGeneratorFunction(): (context: RenderGraphNodeContext) => Map<string, TResult> {
-		return this.func
+		return this.func;
 	}
 
 	getInputs(): RenderGraphNode[] {
@@ -91,10 +92,10 @@ export abstract class AbstractDataGeneratorRenderGraphNode<TNode extends RenderG
 	}
 
 
-	getChangeTest(): () => boolean {
+	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
 		return PropertyRenderGraphNodeUtils.mergeChangeTests(
-			this.properties.map(it => it.property.getChangeTest())
-		)
+			this.properties.map(it => it.property.getChangeTest()),
+		);
 	}
 
 	validate(): string[] {

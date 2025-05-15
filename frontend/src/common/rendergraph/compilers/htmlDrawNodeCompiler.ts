@@ -7,6 +7,7 @@ import {ContainerRenderGraphNode} from "../nodes/containerRenderGraphNode";
 import {RenderElementGeneratorRenderGraphNode} from "../nodes/renderElementGeneratorRenderGraphNode";
 import {RenderGraphKeys} from "../renderGraphKeys";
 import {PropertyRenderGraphNodeUtils} from "../nodes/propertyRenderGraphNode";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 export class HtmlDrawNodeCompiler implements RenderGraphNodeCompiler<ContainerRenderGraphNode> {
 
@@ -29,7 +30,7 @@ export class HtmlDrawNodeCompiler implements RenderGraphNodeCompiler<ContainerRe
 		];
 	}
 
-	private buildExecCondition(node: ContainerRenderGraphNode): () => boolean {
+	private buildExecCondition(node: ContainerRenderGraphNode): (resourceManager: RenderGraphResourceManager) => boolean {
 		return PropertyRenderGraphNodeUtils.mergeChangeTests(
 			node
 				.getDrawNodes()

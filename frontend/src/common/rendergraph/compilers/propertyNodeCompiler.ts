@@ -25,7 +25,7 @@ export class PropertyNodeCompiler implements RenderGraphNodeCompiler<AbstractPro
 		return [
 			new UpdatePropertyCommand(
 				RenderGraphKeys.property(node),
-				node.getValueProvider(null),
+				node.getValueProvider(context.getResourceManager()),
 				node.getChangeTest(),
 			),
 		];

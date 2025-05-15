@@ -22,6 +22,10 @@ export namespace RenderGraphKeys {
 		return "gl";
 	}
 
+	export function frameId() {
+		return "frameid";
+	}
+
 	export function framebuffer(node: RenderTargetRenderGraphNode): string {
 		return "framebuffer:" + node.getName();
 	}

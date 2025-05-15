@@ -14,14 +14,14 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 	constructor(
 		private readonly containerKey: string,
 		private readonly cameraPropertyName: string,
-		private readonly execCondition: () => boolean,
+		private readonly execCondition: (resourceManager: RenderGraphResourceManager) => boolean,
 		private readonly sources: RenderHtmlElementsRenderGraphCommand.Source[],
 	) {
 		super();
 	}
 
 	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
-		if (!this.execCondition() && !forceExecute) {
+		if (!this.execCondition(resourceManager) && !forceExecute) {
 			return;
 		}
 

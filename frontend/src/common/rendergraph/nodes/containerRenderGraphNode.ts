@@ -3,6 +3,7 @@ import {Camera} from "../../webgl/camera";
 import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
 import {RenderGraphProperty} from "./propertyRenderGraphNode";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Represents a html container that can be drawn to using html elements
@@ -19,7 +20,7 @@ export class ContainerRenderGraphNode implements RenderGraphNode {
 	 * Output the result of the given draw node to this canvas
 	 */
 	public withInput(node: HtmlDrawRenderGraphNode): ContainerRenderGraphNode {
-		this.drawNodes.push(node)
+		this.drawNodes.push(node);
 		return this;
 	}
 
@@ -40,7 +41,7 @@ export class ContainerRenderGraphNode implements RenderGraphNode {
 	}
 
 	public withName(name: string): ContainerRenderGraphNode {
-		this.name = name
+		this.name = name;
 		return this;
 	}
 
@@ -55,7 +56,7 @@ export class ContainerRenderGraphNode implements RenderGraphNode {
 	 * @return the list of nodes outputting to this container
 	 */
 	public getDrawNodes(): HtmlDrawRenderGraphNode[] {
-		return this.drawNodes
+		return this.drawNodes;
 	}
 
 	/**
@@ -84,8 +85,8 @@ export class ContainerRenderGraphNode implements RenderGraphNode {
 		return this.name;
 	}
 
-	getChangeTest(): () => boolean {
-		return () => false
+	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
+		return RenderGraphNode.NOOP_CHANGE_TEST;
 	}
 
 }

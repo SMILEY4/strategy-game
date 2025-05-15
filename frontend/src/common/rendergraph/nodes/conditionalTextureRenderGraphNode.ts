@@ -1,15 +1,16 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
 import {TextureRenderGraphNode} from "./textureRenderGraphNode";
-import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
+import {RenderGraphProperty} from "./propertyRenderGraphNode";
 import {GLUniformType} from "../../webgl/glTypes";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Represents a collection of textures where one can be active at any time depending on given conditions
  */
 export class ConditionalTextureRenderGraphNode implements RenderGraphNode, RenderGraphProperty<number> {
 
-	private readonly options: ({texture: TextureRenderGraphNode, condition: () => boolean})[] = [];
+	private readonly options: ({ texture: TextureRenderGraphNode, condition: () => boolean })[] = [];
 	private name: string = UID.generate();
 
 
@@ -24,12 +25,12 @@ export class ConditionalTextureRenderGraphNode implements RenderGraphNode, Rende
 	public withOption(texture: TextureRenderGraphNode, condition: () => boolean): ConditionalTextureRenderGraphNode {
 		this.options.push({
 			texture: texture,
-			condition: condition
-		})
+			condition: condition,
+		});
 		return this;
 	}
 
-	public getOptions(): ({texture: TextureRenderGraphNode, condition: () => boolean})[]  {
+	public getOptions(): ({ texture: TextureRenderGraphNode, condition: () => boolean })[] {
 		return this.options;
 	}
 
@@ -49,8 +50,8 @@ export class ConditionalTextureRenderGraphNode implements RenderGraphNode, Rende
 		return this.name;
 	}
 
-	getChangeTest(): () => boolean {
-		return PropertyRenderGraphNodeUtils.mergeChangeTests(this.options.map(it => it.texture.getChangeTest()));
+	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
+		return RenderGraphNode.NOOP_CHANGE_TEST;
 	}
 
 	getType(): GLUniformType | null {

@@ -47,9 +47,14 @@ import {PropertyResourceCreator} from "../../common/rendergraph/resources/proper
 import {PropertyNodeCompiler} from "../../common/rendergraph/compilers/propertyNodeCompiler";
 import {DataGeneratorNodeCompiler} from "../../common/rendergraph/compilers/dataGeneratorNodeCompiler";
 import {
-	RenderElementGeneratorRenderGraphNode
+	RenderElementGeneratorRenderGraphNode,
 } from "../../common/rendergraph/nodes/renderElementGeneratorRenderGraphNode";
 import {GeneratorDataResourceCreator} from "../../common/rendergraph/resources/generatorDataResourceCreator";
+import {
+	IntermediateDataGeneratorRenderGraphNode,
+} from "../../common/rendergraph/nodes/intermediateDataGeneratorRenderGraphNode";
+import {FrameIdResourceGenerator} from "../../common/rendergraph/resources/frameIdResourceGenerator";
+import {InitNodeCompiler} from "../../common/rendergraph/compilers/initNodeCompiler";
 
 export class GameRenderGraphFactory {
 
@@ -74,15 +79,8 @@ export class GameRenderGraphFactory {
 
 		const graph = new RenderGraph(
 			new RenderGraphSorter(),
-			new RenderGraphCompiler([
-				new PropertyNodeCompiler(),
-				new VertexGeneratorNodeCompiler(),
-				new WebglShaderNodeCompiler(),
-				new WebglDrawNodeCompiler(),
-				new DataGeneratorNodeCompiler(node => node instanceof RenderElementGeneratorRenderGraphNode),
-				new HtmlDrawNodeCompiler(),
-			]),
 			new RenderGraphResourceManager([
+				new FrameIdResourceGenerator(),
 				new WebGLContextResourceCreator(gl),
 				new PropertyResourceCreator(),
 				new FramebufferResourceCreator(gl),
@@ -91,9 +89,20 @@ export class GameRenderGraphFactory {
 				new VertexArrayResourceCreator(gl),
 				new VertexBufferResourceCreator(gl),
 				new VertexInfoResourceCreator(),
-				new GeneratorDataResourceCreator(node => node instanceof RenderElementGeneratorRenderGraphNode, [], data => data.length = 0),
+				new GeneratorDataResourceCreator(node => node instanceof RenderElementGeneratorRenderGraphNode, [], container => container.data.length = 0),
+				new GeneratorDataResourceCreator(node => node instanceof IntermediateDataGeneratorRenderGraphNode, null, container => container.data = null),
 				new HtmlElementPoolResourceCreator(),
 				new CachedHtmlElementResourceCreator(),
+			]),
+			new RenderGraphCompiler([
+				new InitNodeCompiler(),
+				new PropertyNodeCompiler(),
+				new VertexGeneratorNodeCompiler(),
+				new WebglShaderNodeCompiler(),
+				new WebglDrawNodeCompiler(),
+				new DataGeneratorNodeCompiler(node => node instanceof RenderElementGeneratorRenderGraphNode),
+				new DataGeneratorNodeCompiler(node => node instanceof IntermediateDataGeneratorRenderGraphNode),
+				new HtmlDrawNodeCompiler(),
 			]),
 		);
 
@@ -300,12 +309,12 @@ export class GameRenderGraphFactory {
 		const propCameraVPM = graph
 			.createPropertyDerived<Float32Array>("camera-vpm")
 			.withType(GLUniformType.MAT3)
-			.withValue(propCamera, camera => camera.getViewProjectionMatrixOrThrow(true))
+			.withValue(propCamera, camera => camera.getViewProjectionMatrixOrThrow(true));
 
 		const propCameraInvVPM = graph
 			.createPropertyDerived<Float32Array>("camera-inv-vpm")
 			.withType(GLUniformType.MAT3)
-			.withValue(propCamera, camera => mat3.inverse(camera.getViewProjectionMatrixOrThrow(true)))
+			.withValue(propCamera, camera => mat3.inverse(camera.getViewProjectionMatrixOrThrow(true)));
 
 		const propTime = graph
 			.createPropertyDynamic<number>("time")
@@ -381,7 +390,29 @@ export class GameRenderGraphFactory {
 		const textureLut = graph
 			.createConditionalTexture("lut")
 			.withOption(textureLutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
-			.withOption(textureLutGrayscale, () => gameAccess.getMapMode().renderData.grayscale)
+			.withOption(textureLutGrayscale, () => gameAccess.getMapMode().renderData.grayscale);
+
+		// TILE MAP BASICS =======================
+
+		const chunkDataGenerator = graph
+			.createIntermediateDataGenerator("gen-chunk-data")
+			.withProperty(propCamera, "camera")
+			.withFunction((context) => {
+				const prev = context.get<any>("_this.chunks");
+				const next = "" + Math.floor(context.get<Camera>("camera").getX() / 10) + ", " + Math.floor(context.get<Camera>("camera").getY() / 10);
+				if (prev === next) {
+					console.log("prev", prev, "next", next, " ==> SAME")
+					return new Map<string, any>();
+				} else {
+					console.log("prev", prev, "next", next, " ==> DIFF")
+					return buildMap({chunks: next});
+				}
+			}) // todo: chunk generation
+			.withOutput("chunks");
+
+		const propChunks = graph
+			.createPropertyGenerated("prop-chunks")
+			.withValue(chunkDataGenerator.useOutput("chunks"));
 
 		const vertexCreatorTileMesh = graph
 			.createVertexCreator("tile-mesh")
@@ -415,6 +446,7 @@ export class GameRenderGraphFactory {
 			.withProperty(propColorLandDark, "colorLandDark")
 			.withProperty(propTiles, "tiles")
 			.withProperty(propTileByPosProvider, "tileByPosProvider")
+			.withProperty(propChunks, "chunks")
 			.withOutput(TileInstanceVertexCreator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -903,7 +935,7 @@ export class GameRenderGraphFactory {
 			.withCamera(propCamera)
 			.withInput(htmlRendererMovePaths)
 			.withInput(htmlRendererResourceIcons)
-			.withInput(htmlRendererLabels)
+			.withInput(htmlRendererLabels);
 
 		return graph;
 	}

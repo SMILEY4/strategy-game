@@ -19,9 +19,11 @@ export class RenderGraphResourceManager {
 		}
 	}
 
-	public createResource<T>(name: string, resource: T, dispose: (resource: T) => void) {
-		this.resourceDisposers.set(name, dispose);
+	public createResource<T>(name: string, resource: T, dispose?: (resource: T) => void) {
 		this.resources.set(name, resource);
+		if(dispose != undefined) {
+			this.resourceDisposers.set(name, dispose);
+		}
 	}
 
 	public hasResource(name: string): boolean {
@@ -49,10 +51,6 @@ export class RenderGraphResourceManager {
 		} else {
 			throw new Error("No resource with name " + name);
 		}
-	}
-
-	public getResources() {
-		return this.resources;
 	}
 
 	public dispose() {

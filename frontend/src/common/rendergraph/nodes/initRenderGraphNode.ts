@@ -1,36 +1,28 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Node depending on all nodes. No node depends on this node. Created and managed automatically by render graph.
  */
-export class InitRenderGraphNode  implements RenderGraphNode {
+export class InitRenderGraphNode implements RenderGraphNode {
 
-	private readonly inputs: RenderGraphNode[] = [];
-	private readonly name: string = UID.generate();
-
-	/**
-	 * Add the given nodes as dependencies
-	 */
-	public withInputs(nodes: RenderGraphNode[]): InitRenderGraphNode {
-		this.inputs.push(...nodes)
-		return this;
-	}
+	private readonly name: string = "init-" + UID.generate();
 
 	validate(): string[] {
 		return [];
 	}
 
 	getInputs(): RenderGraphNode[] {
-		return this.inputs;
+		return [];
 	}
 
 	getName(): string {
 		return this.name;
 	}
 
-	getChangeTest(): () => boolean {
-		return () => false;
+	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
+		return RenderGraphNode.NOOP_CHANGE_TEST;
 	}
 
 }

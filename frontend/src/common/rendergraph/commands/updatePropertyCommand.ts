@@ -6,13 +6,13 @@ export class UpdatePropertyCommand extends RenderGraphCommand {
 	constructor(
 		private readonly name: string,
 		private readonly valueProvider: () => any,
-		private readonly execCondition: () => boolean
+		private readonly execCondition: (resourceManager: RenderGraphResourceManager) => boolean
 	) {
 		super();
 	}
 
 	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
-		if (!this.execCondition() && !forceExecute) {
+		if (!this.execCondition(resourceManager) && !forceExecute) {
 			return;
 		}
 		resourceManager.updateResource(this.name, this.valueProvider());

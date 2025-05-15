@@ -22,7 +22,7 @@ export class VertexGeneratorNodeCompiler implements RenderGraphNodeCompiler<Vert
 				node.getName(),
 				node.getGeneratorFunction(),
 				node.getChangeTest(),
-				PropertyRenderGraphNodeUtils.buildPropertyNameMapping(node.getPropertiesNamed()),
+				PropertyRenderGraphNodeUtils.buildPropertyNameMapping(node.getPropertiesNamed(), []),
 			),
 		];
 	}

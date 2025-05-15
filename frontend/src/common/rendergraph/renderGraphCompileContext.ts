@@ -1,28 +1,26 @@
 import {RenderGraphNode} from "./renderGraphNode";
 import {RenderGraphCompiler} from "./renderGraphCompiler";
 import {RenderGraphCommand} from "./renderGraphCommand";
+import {RenderGraphResourceManager} from "./renderGraphResourceManager";
 
 export class RenderGraphCompileContext {
 
-	private readonly compiler: RenderGraphCompiler;
-	private readonly nodes: RenderGraphNode[];
-	private readonly commands: RenderGraphCommand[];
-	private readonly compileResources = new Map<string, any>();
 
 	constructor(
-		compiler: RenderGraphCompiler,
-		nodes: RenderGraphNode[],
-		commands: RenderGraphCommand[],
-		additional: Map<string, any>
+		private readonly compiler: RenderGraphCompiler,
+		private readonly resourceManager: RenderGraphResourceManager,
+		private readonly nodes: RenderGraphNode[],
+		private readonly commands: RenderGraphCommand[],
+		private readonly compileResources: Map<string, any>
 	) {
-		this.compiler = compiler;
-		this.nodes = nodes;
-		this.commands = commands;
-		this.compileResources = additional;
+	}
+
+	public getResourceManager(): RenderGraphResourceManager {
+		return this.resourceManager;
 	}
 
 	public compile(node: RenderGraphNode): RenderGraphCommand[] {
-		return this.compiler.compile([node], this.compileResources, false);
+		return this.compiler.compile([node], this.compileResources, false, this.resourceManager);
 	}
 
 	public getNodes(): RenderGraphNode[] {

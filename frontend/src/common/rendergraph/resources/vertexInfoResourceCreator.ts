@@ -17,8 +17,8 @@ export class VertexInfoResourceCreator implements RenderGraphResourceCreator<Ver
 			if (!resourceManager.hasResource(name)) {
 				resourceManager.createResource<VertexMetaInfo>(
 					name,
-					{type: output.type, entryCount: 0},
-					() => undefined);
+					{type: output.type, entryCount: 0}
+				);
 			}
 		}
 	}

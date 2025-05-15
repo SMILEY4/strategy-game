@@ -10,7 +10,7 @@ export class GeneratorDataResourceCreator<TResult> implements RenderGraphResourc
 	constructor(
 		private readonly appliesToCheck: (node: RenderGraphNode) => boolean,
 		private readonly defaultValue: TResult,
-		private readonly disposeFunction: (data: TResult) => void,
+		private readonly disposeFunction: (container: GeneratedDataContainer<TResult>) => void,
 	) {
 	}
 
@@ -19,13 +19,14 @@ export class GeneratorDataResourceCreator<TResult> implements RenderGraphResourc
 	}
 
 	create(node: DataGeneratorRenderGraphNode<any, any>, resourceManager: RenderGraphResourceManager): void {
+		const currentFrameId = resourceManager.getResource<string>(RenderGraphKeys.frameId())
 		for (let output of node.getOutputDefinitions()) {
 			const dataName = RenderGraphKeys.genericData(output);
 			if (!resourceManager.hasResource(dataName)) {
 				resourceManager.createResource<GeneratedDataContainer<TResult>>(
 					dataName,
-					{data: this.defaultValue},
-					container => this.disposeFunction(container.data),
+					new GeneratedDataContainer(this.defaultValue, currentFrameId),
+					this.disposeFunction,
 				);
 			}
 		}

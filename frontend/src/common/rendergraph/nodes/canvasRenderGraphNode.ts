@@ -1,6 +1,7 @@
 import {DrawRenderGraphNode} from "./drawRenderGraphNode";
 import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Represents a html canvas that can be drawn to using shaders and meshes
@@ -40,8 +41,8 @@ export class CanvasRenderGraphNode implements RenderGraphNode {
 		return this.name;
 	}
 
-	getChangeTest(): () => boolean {
-		return () => false
+	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
+		return RenderGraphNode.NOOP_CHANGE_TEST
 	}
 
 }

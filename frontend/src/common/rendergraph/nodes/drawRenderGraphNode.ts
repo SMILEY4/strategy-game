@@ -4,6 +4,7 @@ import {VertexDescriptorRenderGraphNode} from "./vertexDescriptorRenderGraphNode
 import {Camera} from "../../webgl/camera";
 import {UID} from "../../uid";
 import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Draw vertex data to a canvas using shaders.
@@ -21,7 +22,7 @@ export class DrawRenderGraphNode implements RenderGraphNode {
 
 
 	public withName(name: string): DrawRenderGraphNode {
-		this.name = name
+		this.name = name;
 		return this;
 	}
 
@@ -84,14 +85,14 @@ export class DrawRenderGraphNode implements RenderGraphNode {
 	 * @return the vertex descriptor node to use
 	 */
 	public getVertexDescriptorNode(): VertexDescriptorRenderGraphNode {
-		return this.vertexDescriptorNode
+		return this.vertexDescriptorNode;
 	}
 
 	/**
 	 * @return the shader program node to use
 	 */
 	public getShaderNode(): ShaderRenderGraphNode {
-		return this.shaderNode
+		return this.shaderNode;
 	}
 
 	/**
@@ -118,15 +119,15 @@ export class DrawRenderGraphNode implements RenderGraphNode {
 	validate(): string[] {
 		const errors: string[] = [];
 
-		if(this.vertexDescriptorNode == null) {
-			errors.push("Vertex descriptor node is required")
+		if (this.vertexDescriptorNode == null) {
+			errors.push("Vertex descriptor node is required");
 		}
 
-		if(this.shaderNode == null) {
-			errors.push("Shader node is required")
+		if (this.shaderNode == null) {
+			errors.push("Shader node is required");
 		}
 
-		if(!this.cameraPropertyNode) {
+		if (!this.cameraPropertyNode) {
 			errors.push("Camera property is required.");
 		}
 
@@ -141,11 +142,11 @@ export class DrawRenderGraphNode implements RenderGraphNode {
 		return this.name;
 	}
 
-	getChangeTest(): () => boolean {
+	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
 		return PropertyRenderGraphNodeUtils.mergeChangeTests([
 			this.cameraPropertyNode.getChangeTest(),
 			this.vertexDescriptorNode.getChangeTest(),
-			this.shaderNode.getChangeTest()
+			this.shaderNode.getChangeTest(),
 		]);
 	}
 

@@ -11,14 +11,14 @@ export class UpdateVertexDataRenderGraphCommand extends RenderGraphCommand {
 	constructor(
 		private readonly creatorName: string,
 		private readonly creationFunc: (context: RenderGraphNodeContext) => Map<string, VertexGeneratorResult>,
-		private readonly execCondition: () => boolean,
+		private readonly execCondition: (resourceManager: RenderGraphResourceManager) => boolean,
 		private readonly propertyMapping: Map<string, string>,
 	) {
 		super();
 	}
 
 	execute(resourceManager: RenderGraphResourceManager, forceExecute: boolean): void {
-		if (!this.execCondition() && !forceExecute) {
+		if (!this.execCondition(resourceManager) && !forceExecute) {
 			return;
 		}
 

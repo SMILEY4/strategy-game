@@ -2,6 +2,7 @@ import {RenderGraphNodeCompiler} from "./renderGraphNodeCompiler";
 import {RenderGraphCompileContext} from "./renderGraphCompileContext";
 import {RenderGraphNode} from "./renderGraphNode";
 import {RenderGraphCommand} from "./renderGraphCommand";
+import {RenderGraphResourceManager} from "./renderGraphResourceManager";
 
 export class RenderGraphCompiler {
 
@@ -11,14 +12,14 @@ export class RenderGraphCompiler {
 		this.compilers = compilers;
 	}
 
-	public compile(nodes: RenderGraphNode[], compileResources: Map<string, any>, isInlineStep: boolean): RenderGraphCommand[] {
+	public compile(nodes: RenderGraphNode[], compileResources: Map<string, any>, isInlineStep: boolean, resourceManager: RenderGraphResourceManager): RenderGraphCommand[] {
 		const commands: RenderGraphCommand[] = [];
 
 		for (let node of nodes) {
 
 			const compiler = this.findCompiler(node, isInlineStep);
 			if (compiler) {
-				const context = new RenderGraphCompileContext(this, nodes, commands, compileResources)
+				const context = new RenderGraphCompileContext(this, resourceManager, nodes, commands, compileResources)
 				commands.push(...compiler.compile(node, context));
 			}
 
