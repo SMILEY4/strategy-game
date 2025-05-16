@@ -20,7 +20,7 @@ import {CommandService} from "./service/commandService";
 import {CommandType} from "../../models/command/commandType";
 import {UID} from "../../common/uid";
 import {MonitoringService} from "./service/monitoringService";
-import {GameRenderer} from "../../renderer/new/gameRenderer";
+import {GameRenderer} from "../../renderer/gameRenderer";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
