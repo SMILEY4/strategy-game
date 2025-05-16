@@ -1,7 +1,6 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
 import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
-import {ResourceManager} from "../../../renderer/common/graph/resourceManager";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**

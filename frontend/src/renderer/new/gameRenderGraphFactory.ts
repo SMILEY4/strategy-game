@@ -79,21 +79,24 @@ export class GameRenderGraphFactory {
 
 		const graph = new RenderGraph(
 			new RenderGraphSorter(),
-			new RenderGraphResourceManager([
-				new FrameIdResourceGenerator(),
-				new WebGLContextResourceCreator(gl),
-				new PropertyResourceCreator(),
-				new FramebufferResourceCreator(gl),
-				new TextureResourceCreator(gl),
-				new ShaderProgramResourceCreator(gl),
-				new VertexArrayResourceCreator(gl),
-				new VertexBufferResourceCreator(gl),
-				new VertexInfoResourceCreator(),
-				new GeneratorDataResourceCreator(node => node instanceof RenderElementGeneratorRenderGraphNode, [], container => container.data.length = 0),
-				new GeneratorDataResourceCreator(node => node instanceof IntermediateDataGeneratorRenderGraphNode, null, container => container.data = null),
-				new HtmlElementPoolResourceCreator(),
-				new CachedHtmlElementResourceCreator(),
-			]),
+			new RenderGraphResourceManager(
+				RenderGraphKeys.frameId(),
+				[
+					new FrameIdResourceGenerator(),
+					new WebGLContextResourceCreator(gl),
+					new PropertyResourceCreator(),
+					new FramebufferResourceCreator(gl),
+					new TextureResourceCreator(gl),
+					new ShaderProgramResourceCreator(gl),
+					new VertexArrayResourceCreator(gl),
+					new VertexBufferResourceCreator(gl),
+					new VertexInfoResourceCreator(),
+					new GeneratorDataResourceCreator(node => node instanceof RenderElementGeneratorRenderGraphNode, [], container => container.data.length = 0),
+					new GeneratorDataResourceCreator(node => node instanceof IntermediateDataGeneratorRenderGraphNode, null, container => container.data = null),
+					new HtmlElementPoolResourceCreator(),
+					new CachedHtmlElementResourceCreator(),
+				],
+			),
 			new RenderGraphCompiler([
 				new InitNodeCompiler(),
 				new PropertyNodeCompiler(),
@@ -401,10 +404,10 @@ export class GameRenderGraphFactory {
 				const prev = context.get<any>("_this.chunks");
 				const next = "" + Math.floor(context.get<Camera>("camera").getX() / 10) + ", " + Math.floor(context.get<Camera>("camera").getY() / 10);
 				if (prev === next) {
-					console.log("prev", prev, "next", next, " ==> SAME")
+					console.log("prev", prev, "next", next, " ==> SAME");
 					return new Map<string, any>();
 				} else {
-					console.log("prev", prev, "next", next, " ==> DIFF")
+					console.log("prev", prev, "next", next, " ==> DIFF");
 					return buildMap({chunks: next});
 				}
 			}) // todo: chunk generation

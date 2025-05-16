@@ -3,11 +3,14 @@ import {RenderGraphResourceCreator} from "./renderGraphResourceCreator";
 
 export class RenderGraphResourceManager {
 
+	private resourcesInitialized = false;
 	private readonly resourceCreator: RenderGraphResourceCreator<any>[];
-	private readonly resourceDisposers = new Map<string, (resource: any) => void>();
-	private readonly resources = new Map<string, any>();
+	private readonly resources = new Map<string, ManagedResource<any>>();
 
-	constructor(resourceCreator: RenderGraphResourceCreator<any>[]) {
+	constructor(
+		private readonly frameIdResourceName: string,
+		resourceCreator: RenderGraphResourceCreator<any>[],
+	) {
 		this.resourceCreator = resourceCreator;
 	}
 
@@ -17,12 +20,35 @@ export class RenderGraphResourceManager {
 				.filter(it => it.appliesTo(node))
 				.forEach(it => it.create(node, this));
 		}
+		this.resourcesInitialized = true;
 	}
 
 	public createResource<T>(name: string, resource: T, dispose?: (resource: T) => void) {
-		this.resources.set(name, resource);
-		if(dispose != undefined) {
-			this.resourceDisposers.set(name, dispose);
+		if (this.resourcesInitialized) {
+			throw new Error("All resources have been initialized. No new resources can be created.");
+		}
+		this.resources.set(name, {
+			name: name,
+			resource: resource,
+			disposeFunc: dispose == undefined ? null : dispose,
+			lastUpdateFrameId: "init",
+		});
+	}
+
+	public updateResource<T>(name: string, resource: T) {
+		const managedResource = this.getManagedResource<T>(name);
+		if (managedResource.disposeFunc != null) {
+			managedResource.disposeFunc(managedResource.resource);
+		}
+		managedResource.lastUpdateFrameId = this.getCurrentFrameId();
+		managedResource.resource = resource;
+	}
+
+	public dispose() {
+		for (let managedResource of this.resources.values()) {
+			if (managedResource.disposeFunc != null) {
+				managedResource.disposeFunc(managedResource.resource);
+			}
 		}
 	}
 
@@ -30,33 +56,31 @@ export class RenderGraphResourceManager {
 		return this.resources.has(name);
 	}
 
+	public getCurrentFrameId(): string {
+		return this.getResource<string>(this.frameIdResourceName)
+	}
+
+	public getManagedResource<T>(name: string): ManagedResource<T> {
+		const managedResource = this.resources.get(name);
+		if (!managedResource) {
+			throw new Error("No resource with name " + name);
+		}
+		return managedResource;
+	}
+
 	public getResource<T>(name: string): T {
-		const resource = this.resources.get(name);
-		if (!resource) {
-			throw new Error("No resource with name " + name);
-		}
-		return resource;
+		return this.getManagedResource<T>(name).resource;
 	}
 
-	public updateResource<T>(name: string, resource: T) {
-		const disposeFunc = this.resourceDisposers.get(name);
-		if (disposeFunc) {
-			const resource = this.resources.get(name);
-			if (resource) {
-				disposeFunc(resource);
-			}
-		}
-		if (this.resources.has(name)) {
-			this.resources.set(name, resource);
-		} else {
-			throw new Error("No resource with name " + name);
-		}
+	public getResourceLastUpdateFrameId(name: string): string {
+		return this.getManagedResource(name).lastUpdateFrameId
 	}
 
-	public dispose() {
-		for (let [name, disposer] of this.resourceDisposers) {
-			disposer(this.getResource(name));
-		}
-	}
+}
 
+export interface ManagedResource<T> {
+	name: string,
+	resource: T,
+	disposeFunc: ((resource: T) => void) | null
+	lastUpdateFrameId: string,
 }

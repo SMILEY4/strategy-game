@@ -5,7 +5,6 @@ import {UID} from "../../uid";
 import {IntermediateDataGeneratorOutputDefinition} from "./intermediateDataGeneratorRenderGraphNode";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import {DataGeneratorOutputDefinition} from "./dataGeneratorRenderGraphNode";
-import {GeneratedDataContainer} from "../resources/generatedDataContainer";
 
 export interface RenderGraphProperty<TValue> extends RenderGraphNode {
 	getType(): GLUniformType | null;
@@ -148,8 +147,8 @@ export class GeneratedPropertyRenderGraphNode<TValue> extends AbstractPropertyRe
 		});
 		this.addChangeTest((resourceManager: RenderGraphResourceManager) => {
 			const currentFrameId = resourceManager.getResource<string>(RenderGraphKeys.frameId());
-			const data = resourceManager.getResource<GeneratedDataContainer<any>>(RenderGraphKeys.genericData(source));
-			return data.frameId === currentFrameId;
+			const lastUpdateFrameId = resourceManager.getResourceLastUpdateFrameId(RenderGraphKeys.genericData(source));
+			return lastUpdateFrameId === currentFrameId;
 		});
 		this.registerInputNode(source.generator)
 		return this;

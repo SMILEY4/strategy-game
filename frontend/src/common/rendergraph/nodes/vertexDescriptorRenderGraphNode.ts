@@ -2,7 +2,6 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
 import {PropertyRenderGraphNodeUtils} from "./propertyRenderGraphNode";
 import {VertexGeneratorOutputDefinition} from "./vertexGeneratorRenderGraphNode";
-import {ResourceManager} from "../../../renderer/common/graph/resourceManager";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**

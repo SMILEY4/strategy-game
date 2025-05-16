@@ -2,14 +2,12 @@ import {RenderTargetRenderGraphNode} from "./nodes/renderTargetRenderGraphNode";
 import {TextureRenderGraphNode} from "./nodes/textureRenderGraphNode";
 import {ShaderRenderGraphNode} from "./nodes/shaderRenderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./nodes/vertexDescriptorRenderGraphNode";
-import {VertexGeneratorRenderGraphNode, VertexGeneratorOutputDefinition} from "./nodes/vertexGeneratorRenderGraphNode";
-import {
-	RenderElementGeneratorOutputDefinition,
-} from "./nodes/renderElementGeneratorRenderGraphNode";
+import {VertexGeneratorOutputDefinition} from "./nodes/vertexGeneratorRenderGraphNode";
+import {RenderElementGeneratorOutputDefinition} from "./nodes/renderElementGeneratorRenderGraphNode";
 import {ContainerRenderGraphNode} from "./nodes/containerRenderGraphNode";
 import {RenderGraphProperty} from "./nodes/propertyRenderGraphNode";
 import {ConditionalTextureRenderGraphNode} from "./nodes/conditionalTextureRenderGraphNode";
-import {DataGeneratorOutputDefinition, DataGeneratorRenderGraphNode} from "./nodes/dataGeneratorRenderGraphNode";
+import {DataGeneratorOutputDefinition} from "./nodes/dataGeneratorRenderGraphNode";
 
 export namespace RenderGraphKeys {
 
@@ -75,7 +73,7 @@ export namespace RenderGraphKeys {
 	}
 
 	export function property(node: RenderGraphProperty<any>): string {
-		return propertyFromName(node.getName())
+		return propertyFromName(node.getName());
 	}
 
 	export function propertyFromName(name: string): string {

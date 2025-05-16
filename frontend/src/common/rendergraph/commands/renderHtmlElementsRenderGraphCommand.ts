@@ -6,7 +6,6 @@ import Point = Projections.Point;
 import {PooledHtmlElementData} from "../resources/pooledHtmlElementData";
 import {CachedHtmlElement} from "../resources/cachedHtmlElement";
 import {RenderElement} from "../nodes/renderElementGeneratorRenderGraphNode";
-import {GeneratedDataContainer} from "../resources/generatedDataContainer";
 
 
 export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
@@ -31,8 +30,7 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 
 		for (let i = 0, n = this.sources.length; i < n; i++) {
 			const source = this.sources[i];
-			const elementsData = resourceManager.getResource<GeneratedDataContainer<any[]>>(source.elementDataKey);
-			const elements = elementsData.data;
+			const elements = resourceManager.getResource<any[]>(source.elementDataKey);
 			if (elements.length == 0) {
 				continue;
 			}

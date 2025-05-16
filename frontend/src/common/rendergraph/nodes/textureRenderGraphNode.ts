@@ -3,7 +3,6 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphProperty} from "./propertyRenderGraphNode";
 import {UID} from "../../uid";
 import {GLUniformType} from "../../webgl/glTypes";
-import {ResourceManager} from "../../../renderer/common/graph/resourceManager";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
