@@ -14,7 +14,6 @@ export interface RenderGraphProperty<TValue> extends RenderGraphNode {
 export abstract class AbstractPropertyRenderGraphNode<TValue, TNode extends RenderGraphNode>
 	implements RenderGraphNode, RenderGraphProperty<TValue> {
 
-	private readonly changeTests: ((resourceManager: RenderGraphResourceManager) => boolean)[] = [];
 	private readonly inputNodes: RenderGraphNode[] = [];
 	private type: GLUniformType | null = null;
 	private valueProvider: (context: any) => (() => TValue) = () => null as any;
@@ -52,10 +51,6 @@ export abstract class AbstractPropertyRenderGraphNode<TValue, TNode extends Rend
 		return this.name;
 	}
 
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return PropertyRenderGraphNodeUtils.mergeChangeTests(this.changeTests);
-	}
-
 	protected registerInputNode(node: RenderGraphNode): void {
 		this.inputNodes.push(node)
 	}
@@ -71,10 +66,6 @@ export abstract class AbstractPropertyRenderGraphNode<TValue, TNode extends Rend
 
 	protected setValueProvider(provider: () => TValue): void {
 		this.setValueProviderWithContext(() => provider);
-	}
-
-	protected addChangeTest(changeTest: (resourceManager: RenderGraphResourceManager) => boolean): void {
-		this.changeTests.push(changeTest);
 	}
 
 }
@@ -95,13 +86,15 @@ export class ConstPropertyRenderGraphNode<TValue> extends AbstractPropertyRender
 
 export class DynamicPropertyRenderGraphNode<TValue> extends AbstractPropertyRenderGraphNode<TValue, DynamicPropertyRenderGraphNode<TValue>> {
 
+	private readonly changeTests: ((resourceManager: RenderGraphResourceManager) => boolean)[] = [];
+
 	public withType(type: GLUniformType): DynamicPropertyRenderGraphNode<TValue> {
 		this.setType(type);
 		return this;
 	}
 
 	public withChangeTest(changeTest: (resourceManager: RenderGraphResourceManager) => boolean): DynamicPropertyRenderGraphNode<TValue> {
-		this.addChangeTest(changeTest);
+		this.changeTests.push(changeTest);
 		return this;
 	}
 
@@ -110,29 +103,40 @@ export class DynamicPropertyRenderGraphNode<TValue> extends AbstractPropertyRend
 		return this;
 	}
 
+	public getChangeTests(): ((resourceManager: RenderGraphResourceManager) => boolean)[] {
+		return this.changeTests
+	}
 }
 
 
 export class DerivedPropertyRenderGraphNode<TValue> extends AbstractPropertyRenderGraphNode<TValue, DerivedPropertyRenderGraphNode<TValue>> {
+
+	private source: AbstractPropertyRenderGraphNode<any, any> = null as any;
 
 	public withType(type: GLUniformType): DerivedPropertyRenderGraphNode<TValue> {
 		this.setType(type);
 		return this;
 	}
 
-	public withValue<TInput>(source: RenderGraphProperty<TInput>, transformation: (value: TInput) => TValue): DerivedPropertyRenderGraphNode<TValue> {
+	public withValue<TInput>(source: AbstractPropertyRenderGraphNode<TInput, any>, transformation: (value: TInput) => TValue): DerivedPropertyRenderGraphNode<TValue> {
 		this.setValueProviderWithContext(context => {
 			return () => transformation(source.getValueProvider(context)());
 		});
-		this.addChangeTest(source.getChangeTest());
 		this.registerInputNode(source)
+		this.source = source;
 		return this;
+	}
+
+	public getSource(): AbstractPropertyRenderGraphNode<any, any> {
+		return this.source;
 	}
 
 }
 
 
 export class GeneratedPropertyRenderGraphNode<TValue> extends AbstractPropertyRenderGraphNode<TValue, GeneratedPropertyRenderGraphNode<TValue>> {
+
+	private source: IntermediateDataGeneratorOutputDefinition = null as any;
 
 	public withType(type: GLUniformType): GeneratedPropertyRenderGraphNode<TValue> {
 		this.setType(type);
@@ -145,30 +149,19 @@ export class GeneratedPropertyRenderGraphNode<TValue> extends AbstractPropertyRe
 			const dataName = RenderGraphKeys.genericData(source);
 			return () => resourceManager.getResource(dataName);
 		});
-		this.addChangeTest((resourceManager: RenderGraphResourceManager) => {
-			const currentFrameId = resourceManager.getResource<string>(RenderGraphKeys.frameId());
-			const lastUpdateFrameId = resourceManager.getResourceLastUpdateFrameId(RenderGraphKeys.genericData(source));
-			return lastUpdateFrameId === currentFrameId;
-		});
 		this.registerInputNode(source.generator)
+		this.source= source;
 		return this;
+	}
+
+	public getSource(): IntermediateDataGeneratorOutputDefinition {
+		return this.source;
 	}
 
 }
 
 
 export namespace PropertyRenderGraphNodeUtils {
-
-	export function mergeChangeTests(tests: ((resourceManager: RenderGraphResourceManager) => boolean)[]): (resourceManager: RenderGraphResourceManager) => boolean {
-		return (resourceManager: RenderGraphResourceManager) => {
-			for (let changeTest of tests) {
-				if (changeTest(resourceManager)) {
-					return true;
-				}
-			}
-			return false;
-		};
-	}
 
 	export function buildPropertyNameMapping(
 		properties: ({ property: RenderGraphProperty<any>, name: string, })[],

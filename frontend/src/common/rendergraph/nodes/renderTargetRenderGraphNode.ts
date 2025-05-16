@@ -1,9 +1,8 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {DrawRenderGraphNode} from "./drawRenderGraphNode";
-import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
+import {RenderGraphProperty} from "./propertyRenderGraphNode";
 import {GLUniformType} from "../../webgl/glTypes";
 import {UID} from "../../uid";
-import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Represents an offscreen canvas / texture that can be drawn to using shaders and meshes.
@@ -18,7 +17,7 @@ export class RenderTargetRenderGraphNode implements RenderGraphNode, RenderGraph
 	 * Set the name of this node to a given custom name. Names must be unique in the render graph.
 	 */
 	public withName(name: string): RenderTargetRenderGraphNode {
-		this.name = name
+		this.name = name;
 		return this;
 	}
 
@@ -64,12 +63,6 @@ export class RenderTargetRenderGraphNode implements RenderGraphNode, RenderGraph
 		} else {
 			return () => -1;
 		}
-	}
-
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return PropertyRenderGraphNodeUtils.mergeChangeTests(
-			this.drawNodes.map(it => it.getChangeTest())
-		);
 	}
 
 	validate(): string[] {

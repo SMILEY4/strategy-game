@@ -4,9 +4,7 @@ import {RenderGraphCompileContext} from "../renderGraphCompileContext";
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {RenderHtmlElementsRenderGraphCommand} from "../commands/renderHtmlElementsRenderGraphCommand";
 import {ContainerRenderGraphNode} from "../nodes/containerRenderGraphNode";
-import {RenderElementGeneratorRenderGraphNode} from "../nodes/renderElementGeneratorRenderGraphNode";
 import {RenderGraphKeys} from "../renderGraphKeys";
-import {PropertyRenderGraphNodeUtils} from "../nodes/propertyRenderGraphNode";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 export class HtmlDrawNodeCompiler implements RenderGraphNodeCompiler<ContainerRenderGraphNode> {
@@ -31,15 +29,20 @@ export class HtmlDrawNodeCompiler implements RenderGraphNodeCompiler<ContainerRe
 	}
 
 	private buildExecCondition(node: ContainerRenderGraphNode): (resourceManager: RenderGraphResourceManager) => boolean {
-		return PropertyRenderGraphNodeUtils.mergeChangeTests(
-			node
-				.getDrawNodes()
-				.flatMap(it => it.getInputs())
-				.filter(it => it instanceof RenderElementGeneratorRenderGraphNode)
-				.distinct()
-				.map(it => it as RenderElementGeneratorRenderGraphNode)
-				.map(it => it.getChangeTest())
-		);
+
+		const properties = node
+			.getDrawNodes()
+			.map(it => it.getSource().generator)
+			.flatMap(it => it.getProperties())
+			.distinct()
+
+		return (resourceManager: RenderGraphResourceManager) => {
+			const currentFrameId = resourceManager.getCurrentFrameId();
+			return properties.some(property => {
+				const lastUpdatedFrameId = resourceManager.getResourceLastUpdateFrameId(RenderGraphKeys.property(property));
+				return currentFrameId === lastUpdatedFrameId;
+			});
+		}
 	}
 
 	private collectSources(node: ContainerRenderGraphNode): RenderHtmlElementsRenderGraphCommand.Source[] {

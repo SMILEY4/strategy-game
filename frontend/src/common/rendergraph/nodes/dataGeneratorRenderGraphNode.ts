@@ -1,8 +1,7 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphNodeContext} from "../renderGraphNodeContext";
-import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
+import {RenderGraphProperty} from "./propertyRenderGraphNode";
 import {UID} from "../../uid";
-import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 export interface DataGeneratorRenderGraphNode<TOutputDefinition extends DataGeneratorOutputDefinition<any>, TResult> extends RenderGraphNode {
 	getGeneratorFunction(): (context: RenderGraphNodeContext) => Map<string, TResult>;
@@ -89,13 +88,6 @@ export abstract class AbstractDataGeneratorRenderGraphNode<TNode extends RenderG
 
 	getOutputDefinitions(): TOutputDefinition[] {
 		return Array.from(this.outputs.values());
-	}
-
-
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return PropertyRenderGraphNodeUtils.mergeChangeTests(
-			this.properties.map(it => it.property.getChangeTest()),
-		);
 	}
 
 	validate(): string[] {

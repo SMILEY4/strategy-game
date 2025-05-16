@@ -3,8 +3,7 @@ import {ShaderRenderGraphNode} from "./shaderRenderGraphNode";
 import {VertexDescriptorRenderGraphNode} from "./vertexDescriptorRenderGraphNode";
 import {Camera} from "../../webgl/camera";
 import {UID} from "../../uid";
-import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
-import {RenderGraphResourceManager} from "../renderGraphResourceManager";
+import {RenderGraphProperty} from "./propertyRenderGraphNode";
 
 /**
  * Draw vertex data to a canvas using shaders.
@@ -140,14 +139,6 @@ export class DrawRenderGraphNode implements RenderGraphNode {
 
 	getName(): string {
 		return this.name;
-	}
-
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return PropertyRenderGraphNodeUtils.mergeChangeTests([
-			this.cameraPropertyNode.getChangeTest(),
-			this.vertexDescriptorNode.getChangeTest(),
-			this.shaderNode.getChangeTest(),
-		]);
 	}
 
 }

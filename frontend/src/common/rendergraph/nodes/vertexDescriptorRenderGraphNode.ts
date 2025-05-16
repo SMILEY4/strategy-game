@@ -1,8 +1,6 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
-import {PropertyRenderGraphNodeUtils} from "./propertyRenderGraphNode";
 import {VertexGeneratorOutputDefinition} from "./vertexGeneratorRenderGraphNode";
-import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Describes a drawable mesh by combining one or multiple vertex creator outputs.
@@ -44,15 +42,6 @@ export class VertexDescriptorRenderGraphNode implements RenderGraphNode {
 		return this.sources
 			.map(it => it.generator)
 			.distinct();
-	}
-
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return PropertyRenderGraphNodeUtils.mergeChangeTests(
-			this.sources
-				.map(it => it.generator)
-				.distinct()
-				.map(it => it.getChangeTest())
-		)
 	}
 
 	validate(): string[] {

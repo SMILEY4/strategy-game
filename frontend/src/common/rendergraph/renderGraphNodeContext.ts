@@ -1,5 +1,4 @@
 import {RenderGraphResourceManager} from "./renderGraphResourceManager";
-import {GeneratedDataContainer} from "./resources/generatedDataContainer";
 
 export class RenderGraphNodeContext {
 
@@ -14,12 +13,7 @@ export class RenderGraphNodeContext {
 	public get<T>(name: string): T {
 		const key = this.mapping.get(name);
 		if (key) {
-			const resource = this.resourceManager.getResource(key);
-			if(resource instanceof GeneratedDataContainer) {
-				return resource.data
-			} else {
-				return resource as T
-			}
+			return this.resourceManager.getResource<T>(key) ;
 		} else {
 			throw new Error("The requested key (" + name + ") is not available in this context.");
 		}

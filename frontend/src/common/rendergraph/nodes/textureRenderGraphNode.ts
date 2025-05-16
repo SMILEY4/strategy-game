@@ -3,7 +3,6 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {RenderGraphProperty} from "./propertyRenderGraphNode";
 import {UID} from "../../uid";
 import {GLUniformType} from "../../webgl/glTypes";
-import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * A texture loaded from an image file.
@@ -55,10 +54,6 @@ export class TextureRenderGraphNode implements RenderGraphNode, RenderGraphPrope
 
 	getInputs(): RenderGraphNode[] {
 		return [];
-	}
-
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return RenderGraphNode.NOOP_CHANGE_TEST
 	}
 
 	getType(): GLUniformType | null {

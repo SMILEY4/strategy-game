@@ -3,7 +3,6 @@ import {UID} from "../../uid";
 import {TextureRenderGraphNode} from "./textureRenderGraphNode";
 import {RenderGraphProperty} from "./propertyRenderGraphNode";
 import {GLUniformType} from "../../webgl/glTypes";
-import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Represents a collection of textures where one can be active at any time depending on given conditions
@@ -48,10 +47,6 @@ export class ConditionalTextureRenderGraphNode implements RenderGraphNode, Rende
 
 	getName(): string {
 		return this.name;
-	}
-
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return RenderGraphNode.NOOP_CHANGE_TEST;
 	}
 
 	getType(): GLUniformType | null {

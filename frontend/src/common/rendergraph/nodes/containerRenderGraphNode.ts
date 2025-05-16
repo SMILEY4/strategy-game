@@ -3,7 +3,6 @@ import {Camera} from "../../webgl/camera";
 import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
 import {RenderGraphProperty} from "./propertyRenderGraphNode";
-import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * Represents a html container that can be drawn to using html elements
@@ -83,10 +82,6 @@ export class ContainerRenderGraphNode implements RenderGraphNode {
 
 	getName(): string {
 		return this.name;
-	}
-
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return RenderGraphNode.NOOP_CHANGE_TEST;
 	}
 
 }

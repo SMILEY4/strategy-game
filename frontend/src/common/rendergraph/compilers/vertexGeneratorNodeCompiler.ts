@@ -5,6 +5,8 @@ import {VertexGeneratorRenderGraphNode} from "../nodes/vertexGeneratorRenderGrap
 import {RenderGraphCommand} from "../renderGraphCommand";
 import {UpdateVertexDataRenderGraphCommand} from "../commands/updateVertexDataRenderGraphCommand";
 import {PropertyRenderGraphNodeUtils} from "../nodes/propertyRenderGraphNode";
+import {RenderGraphResourceManager} from "../renderGraphResourceManager";
+import {RenderGraphKeys} from "../renderGraphKeys";
 
 export class VertexGeneratorNodeCompiler implements RenderGraphNodeCompiler<VertexGeneratorRenderGraphNode> {
 
@@ -21,10 +23,21 @@ export class VertexGeneratorNodeCompiler implements RenderGraphNodeCompiler<Vert
 			new UpdateVertexDataRenderGraphCommand(
 				node.getName(),
 				node.getGeneratorFunction(),
-				node.getChangeTest(),
+				this.buildExecCondition(node),
 				PropertyRenderGraphNodeUtils.buildPropertyNameMapping(node.getPropertiesNamed(), []),
 			),
 		];
+	}
+
+	private buildExecCondition(node: VertexGeneratorRenderGraphNode): (resourceManager: RenderGraphResourceManager) => boolean {
+		const properties = node.getProperties();
+		return (resourceManager: RenderGraphResourceManager) => {
+			const currentFrameId = resourceManager.getCurrentFrameId();
+			return properties.some(property => {
+				const lastUpdatedFrameId = resourceManager.getResourceLastUpdateFrameId(RenderGraphKeys.property(property));
+				return currentFrameId === lastUpdatedFrameId;
+			});
+		};
 	}
 
 }

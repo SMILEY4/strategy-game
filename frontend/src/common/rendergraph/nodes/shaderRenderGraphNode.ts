@@ -1,7 +1,6 @@
 import {RenderGraphNode} from "../renderGraphNode";
 import {UID} from "../../uid";
-import {PropertyRenderGraphNodeUtils, RenderGraphProperty} from "./propertyRenderGraphNode";
-import {RenderGraphResourceManager} from "../renderGraphResourceManager";
+import {RenderGraphProperty} from "./propertyRenderGraphNode";
 
 /**
  * A shader program
@@ -18,7 +17,7 @@ export class ShaderRenderGraphNode implements RenderGraphNode {
 	 * Set the name of this node to a given custom name. Names must be unique in the render graph.
 	 */
 	public withName(name: string): RenderGraphNode {
-		this.name = name
+		this.name = name;
 		return this;
 	}
 
@@ -89,25 +88,19 @@ export class ShaderRenderGraphNode implements RenderGraphNode {
 		return this.properties.map(it => it.node);
 	}
 
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return PropertyRenderGraphNodeUtils.mergeChangeTests(
-			this.properties.map(it => it.node.getChangeTest())
-		)
-	}
-
 	validate(): string[] {
-		const errors: string[] = []
+		const errors: string[] = [];
 
-		if(!this.vertexSource) {
-			errors.push("A valid vertex shader source must be provided.")
+		if (!this.vertexSource) {
+			errors.push("A valid vertex shader source must be provided.");
 		}
 
-		if(!this.fragmentSource) {
-			errors.push("A valid fragment shader source must be provided.")
+		if (!this.fragmentSource) {
+			errors.push("A valid fragment shader source must be provided.");
 		}
 
-		if(this.properties.map(it => it.binding).distinct().length !== this.properties.length) {
-			errors.push("Inputs must not have duplicate binding names.")
+		if (this.properties.map(it => it.binding).distinct().length !== this.properties.length) {
+			errors.push("Inputs must not have duplicate binding names.");
 		}
 
 		return errors;

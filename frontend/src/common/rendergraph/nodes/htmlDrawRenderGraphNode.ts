@@ -2,7 +2,6 @@ import {RenderGraphNode} from "../renderGraphNode";
 import {RenderElementGeneratorOutputDefinition} from "./renderElementGeneratorRenderGraphNode";
 import {Camera} from "../../webgl/camera";
 import {UID} from "../../uid";
-import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
 /**
  * "Draw" html elements to a html container.
@@ -91,10 +90,6 @@ export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 
 	getName(): string {
 		return this.name;
-	}
-
-	getChangeTest(): (resourceManager: RenderGraphResourceManager) => boolean {
-		return this.source.generator.getChangeTest();
 	}
 
 	validate(): string[] {
