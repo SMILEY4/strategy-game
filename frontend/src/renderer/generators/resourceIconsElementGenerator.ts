@@ -8,7 +8,7 @@ import {TileResourceType} from "../../models/tile/TileResourceType";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {TilemapUtils} from "../../common/tilemapUtils";
 
-export namespace ResourceIconsElementCreator {
+export namespace ResourceIconsElementGenerator {
 
 	export const OUTPUT_ID = "resourceicons.elements";
 

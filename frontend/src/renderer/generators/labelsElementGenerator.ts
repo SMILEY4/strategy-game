@@ -9,7 +9,7 @@ import {Settlement} from "../../models/settlement/settlement";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 
-export namespace LabelsElementCreator {
+export namespace LabelsElementGenerator {
 
 	export const OUTPUT_ID = "labels.elements";
 

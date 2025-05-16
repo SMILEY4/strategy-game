@@ -1,13 +1,13 @@
 import {RenderGraph} from "../common/rendergraph/renderGraph";
 import {GLAttributeType, GLUniformType} from "../common/webgl/glTypes";
-import {TileMeshVertexCreator} from "./creators/tileMeshVertexCreator";
-import {TileInstanceVertexCreator} from "./creators/tileInstancesVertexCreator";
+import {TileMeshVertexGenerator} from "./generators/tileMeshVertexGenerator";
+import {TileInstanceVertexGenerator} from "./generators/tileInstancesVertexCreator";
 import {Tile} from "../models/tile/tile";
 import {GameStateAccess} from "../state/gameStateAccess";
-import {OverlayMeshVertexCreator} from "./creators/overlayMeshVertexCreator";
+import {OverlayMeshVertexGenerator} from "./generators/overlayMeshVertexGenerator";
 import {MapMode} from "../models/misc/mapMode";
-import {OverlayInstancesVertexCreator} from "./creators/overlayInstancesVertexCreator";
-import {MapDetailsVertexCreator} from "./creators/mapDetailsVertexCreator";
+import {OverlayInstancesVertexGenerator} from "./generators/overlayInstancesVertexGenerator";
+import {MapDetailsVertexGenerator} from "./generators/mapDetailsVertexGenerator";
 import {Settlement} from "../models/settlement/settlement";
 import {WorldObject} from "../models/worldobject/worldObject";
 import {Route} from "../models/route/route";
@@ -27,7 +27,7 @@ import {Camera} from "../common/webgl/camera";
 import {CanvasHandle} from "../common/webgl/canvasHandle";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
-import {FullscreenQuadVertexCreator} from "./creators/fullscreenQuadVertexCreator";
+import {FullscreenQuadVertexGenerator} from "./generators/fullscreenQuadVertexGenerator";
 import {WebGLContextResourceCreator} from "../common/rendergraph/resources/webGLContextResourceCreator";
 import {FramebufferResourceCreator} from "../common/rendergraph/resources/framebufferResourceCreator";
 import {TextureResourceCreator} from "../common/rendergraph/resources/textureResourceCreator";
@@ -37,12 +37,12 @@ import {VertexBufferResourceCreator} from "../common/rendergraph/resources/verte
 import {VertexInfoResourceCreator} from "../common/rendergraph/resources/vertexInfoResourceCreator";
 import {TileSummary} from "../models/tile/tileSummary";
 import {mat3} from "../common/webgl/mat3";
-import {LabelsElementCreator} from "./creators/labelsElementCreator";
+import {LabelsElementGenerator} from "./generators/labelsElementGenerator";
 import {HtmlDrawNodeCompiler} from "../common/rendergraph/compilers/htmlDrawNodeCompiler";
 import {HtmlElementPoolResourceCreator} from "../common/rendergraph/resources/htmlElementPoolResourceCreator";
 import {CachedHtmlElementResourceCreator} from "../common/rendergraph/resources/cachedHtmlElementResourceCreator";
-import {ResourceIconsElementCreator} from "./creators/resourceIconsElementCreator";
-import {MovePathsElementCreator} from "./creators/movePathsElementCreator";
+import {ResourceIconsElementGenerator} from "./generators/resourceIconsElementGenerator";
+import {MovePathsElementGenerator} from "./generators/movePathsElementGenerator";
 import {PropertyResourceCreator} from "../common/rendergraph/resources/propertyResourceCreator";
 import {PropertyNodeCompiler} from "../common/rendergraph/compilers/propertyNodeCompiler";
 import {DataGeneratorNodeCompiler} from "../common/rendergraph/compilers/dataGeneratorNodeCompiler";
@@ -419,7 +419,7 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorTileMesh = graph
 			.createVertexCreator("tile-mesh")
-			.withOutput(TileMeshVertexCreator.OUTPUT_ID, "vertices", [
+			.withOutput(TileMeshVertexGenerator.OUTPUT_ID, "vertices", [
 				{
 					name: "in_vertexPosition",
 					type: GLAttributeType.FLOAT,
@@ -441,7 +441,7 @@ export class GameRenderGraphFactory {
 					amountComponents: 1,
 				},
 			])
-			.withFunction(TileMeshVertexCreator.func);
+			.withFunction(TileMeshVertexGenerator.func);
 
 		const vertexCreatorTileInstances = graph
 			.createVertexCreator("tile-instances")
@@ -450,7 +450,7 @@ export class GameRenderGraphFactory {
 			.withProperty(propTiles, "tiles")
 			.withProperty(propTileByPosProvider, "tileByPosProvider")
 			.withProperty(propChunks, "chunks")
-			.withOutput(TileInstanceVertexCreator.OUTPUT_LAND_ID, "instances", [
+			.withOutput(TileInstanceVertexGenerator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",
 					type: GLAttributeType.FLOAT,
@@ -464,7 +464,7 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 			])
-			.withOutput(TileInstanceVertexCreator.OUTPUT_WATER_ID, "instances", [
+			.withOutput(TileInstanceVertexGenerator.OUTPUT_WATER_ID, "instances", [
 				{
 					name: "in_worldPosition",
 					type: GLAttributeType.FLOAT,
@@ -484,7 +484,7 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 			])
-			.withOutput(TileInstanceVertexCreator.OUTPUT_FOG_ID, "instances", [
+			.withOutput(TileInstanceVertexGenerator.OUTPUT_FOG_ID, "instances", [
 				{
 					name: "in_worldPosition",
 					type: GLAttributeType.FLOAT,
@@ -498,14 +498,14 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 			])
-			.withFunction(TileInstanceVertexCreator.func);
+			.withFunction(TileInstanceVertexGenerator.func);
 
 		// WATER =================================
 
 		const vertexDescriptorWater = graph
 			.createVertexDescriptor("vd-water")
-			.withInput(vertexCreatorTileMesh.useOutput(TileMeshVertexCreator.OUTPUT_ID))
-			.withInput(vertexCreatorTileInstances.useOutput(TileInstanceVertexCreator.OUTPUT_WATER_ID));
+			.withInput(vertexCreatorTileMesh.useOutput(TileMeshVertexGenerator.OUTPUT_ID))
+			.withInput(vertexCreatorTileInstances.useOutput(TileInstanceVertexGenerator.OUTPUT_WATER_ID));
 
 		const shaderWater = graph
 			.createShader("shader-water")
@@ -535,8 +535,8 @@ export class GameRenderGraphFactory {
 
 		const vertexDescriptorLand = graph
 			.createVertexDescriptor("vd-land")
-			.withInput(vertexCreatorTileMesh.useOutput(TileMeshVertexCreator.OUTPUT_ID))
-			.withInput(vertexCreatorTileInstances.useOutput(TileInstanceVertexCreator.OUTPUT_LAND_ID));
+			.withInput(vertexCreatorTileMesh.useOutput(TileMeshVertexGenerator.OUTPUT_ID))
+			.withInput(vertexCreatorTileInstances.useOutput(TileInstanceVertexGenerator.OUTPUT_LAND_ID));
 
 		const shaderLand = graph
 			.createShader("shader-land")
@@ -561,8 +561,8 @@ export class GameRenderGraphFactory {
 
 		const vertexDescriptorFog = graph
 			.createVertexDescriptor("vd-fog")
-			.withInput(vertexCreatorTileMesh.useOutput(TileMeshVertexCreator.OUTPUT_ID))
-			.withInput(vertexCreatorTileInstances.useOutput(TileInstanceVertexCreator.OUTPUT_FOG_ID));
+			.withInput(vertexCreatorTileMesh.useOutput(TileMeshVertexGenerator.OUTPUT_ID))
+			.withInput(vertexCreatorTileInstances.useOutput(TileInstanceVertexGenerator.OUTPUT_FOG_ID));
 
 		const shaderFog = graph
 			.createShader("shader-fog")
@@ -587,7 +587,7 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorOverlayMesh = graph
 			.createVertexCreator("overlay-mesh")
-			.withOutput(OverlayMeshVertexCreator.OUTPUT_ID, "vertices", [
+			.withOutput(OverlayMeshVertexGenerator.OUTPUT_ID, "vertices", [
 				{
 					name: "in_vertexPosition",
 					type: GLAttributeType.FLOAT,
@@ -609,7 +609,7 @@ export class GameRenderGraphFactory {
 					amountComponents: 1,
 				},
 			])
-			.withFunction(OverlayMeshVertexCreator.func);
+			.withFunction(OverlayMeshVertexGenerator.func);
 
 		const vertexCreatorOverlayInstances = graph
 			.createVertexCreator("overlay-instances")
@@ -617,7 +617,7 @@ export class GameRenderGraphFactory {
 			.withProperty(propTileByPosProvider, "tileByPosProvider")
 			.withProperty(propMapMode, "mapMode")
 			.withProperty(propMoveTargets, "moveTargets")
-			.withOutput(OverlayInstancesVertexCreator.OUTPUT_ID, "instances", [
+			.withOutput(OverlayInstancesVertexGenerator.OUTPUT_ID, "instances", [
 				{
 					name: "in_worldPosition",
 					type: GLAttributeType.FLOAT,
@@ -667,12 +667,12 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 			])
-			.withFunction(OverlayInstancesVertexCreator.func);
+			.withFunction(OverlayInstancesVertexGenerator.func);
 
 		const vertexDescriptorOverlay = graph
 			.createVertexDescriptor("vd-overlay")
-			.withInput(vertexCreatorOverlayMesh.useOutput(OverlayMeshVertexCreator.OUTPUT_ID))
-			.withInput(vertexCreatorOverlayInstances.useOutput(OverlayInstancesVertexCreator.OUTPUT_ID));
+			.withInput(vertexCreatorOverlayMesh.useOutput(OverlayMeshVertexGenerator.OUTPUT_ID))
+			.withInput(vertexCreatorOverlayInstances.useOutput(OverlayInstancesVertexGenerator.OUTPUT_ID));
 
 		const propOverlayBorderThickness = graph
 			.createPropertyConstant<number>("overlay.borderThickness")
@@ -736,7 +736,7 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorMapDetails = graph
 			.createVertexCreator("mapdetails")
-			.withOutput(MapDetailsVertexCreator.OUTPUT_ID, "vertices", [
+			.withOutput(MapDetailsVertexGenerator.OUTPUT_ID, "vertices", [
 				{
 					name: "in_worldPosition",
 					type: GLAttributeType.FLOAT,
@@ -758,7 +758,7 @@ export class GameRenderGraphFactory {
 					amountComponents: 3,
 				},
 			])
-			.withFunction(MapDetailsVertexCreator.func)
+			.withFunction(MapDetailsVertexGenerator.func)
 			.withProperty(propTiles, "tiles")
 			.withProperty(propSettlements, "settlements")
 			.withProperty(propWorldObjects, "worldObjects")
@@ -770,7 +770,7 @@ export class GameRenderGraphFactory {
 
 		const vertexDescriptorMapDetails = graph
 			.createVertexDescriptor("vd-mapDetails")
-			.withInput(vertexCreatorMapDetails.useOutput(MapDetailsVertexCreator.OUTPUT_ID));
+			.withInput(vertexCreatorMapDetails.useOutput(MapDetailsVertexGenerator.OUTPUT_ID));
 
 
 		const shaderMapDetails = graph
@@ -800,18 +800,18 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorCombine = graph
 			.createVertexCreator("combine")
-			.withOutput(FullscreenQuadVertexCreator.OUTPUT_ID, "vertices", [
+			.withOutput(FullscreenQuadVertexGenerator.OUTPUT_ID, "vertices", [
 				{
 					name: "in_position",
 					type: GLAttributeType.FLOAT,
 					amountComponents: 2,
 				},
 			])
-			.withFunction(FullscreenQuadVertexCreator.func);
+			.withFunction(FullscreenQuadVertexGenerator.func);
 
 		const vertexDescriptorCombine = graph
 			.createVertexDescriptor("vd-combine")
-			.withInput(vertexCreatorCombine.useOutput(FullscreenQuadVertexCreator.OUTPUT_ID));
+			.withInput(vertexCreatorCombine.useOutput(FullscreenQuadVertexGenerator.OUTPUT_ID));
 
 
 		const shaderCombine = graph
@@ -882,15 +882,15 @@ export class GameRenderGraphFactory {
 			.withProperty(propSettlements, "settlements")
 			.withProperty(propWorldObjects, "worldObjects")
 			.withProperty(propCameraVPM, "_camera")
-			.withFunction(LabelsElementCreator.funcCreate)
-			.withOutput(LabelsElementCreator.OUTPUT_ID);
+			.withFunction(LabelsElementGenerator.funcCreate)
+			.withOutput(LabelsElementGenerator.OUTPUT_ID);
 
 		const htmlRendererLabels = graph
 			.createHtmlRender("html-labels")
 			.withCullingRadius(2)
-			.withTemplateFunc(LabelsElementCreator.funcTemplate)
-			.withRenderFunc(LabelsElementCreator.funcRender)
-			.withElements(creatorLabels.useOutput(LabelsElementCreator.OUTPUT_ID));
+			.withTemplateFunc(LabelsElementGenerator.funcTemplate)
+			.withRenderFunc(LabelsElementGenerator.funcRender)
+			.withElements(creatorLabels.useOutput(LabelsElementGenerator.OUTPUT_ID));
 
 		// RESOURCE ICONS ==========================
 
@@ -899,15 +899,15 @@ export class GameRenderGraphFactory {
 			.withProperty(propTiles, "tiles")
 			.withProperty(propMapMode, "mapMode")
 			.withProperty(propCameraVPM, "_camera")
-			.withFunction(ResourceIconsElementCreator.funcCreate)
-			.withOutput(ResourceIconsElementCreator.OUTPUT_ID);
+			.withFunction(ResourceIconsElementGenerator.funcCreate)
+			.withOutput(ResourceIconsElementGenerator.OUTPUT_ID);
 
 		const htmlRendererResourceIcons = graph
 			.createHtmlRender("html-resourceicons")
 			.withCullingRadius(1)
-			.withTemplateFunc(ResourceIconsElementCreator.funcTemplate)
-			.withRenderFunc(ResourceIconsElementCreator.funcRender)
-			.withElements(creatorResourceIcons.useOutput(ResourceIconsElementCreator.OUTPUT_ID));
+			.withTemplateFunc(ResourceIconsElementGenerator.funcTemplate)
+			.withRenderFunc(ResourceIconsElementGenerator.funcRender)
+			.withElements(creatorResourceIcons.useOutput(ResourceIconsElementGenerator.OUTPUT_ID));
 
 		// MOVE PATHS ==============================
 
@@ -915,15 +915,15 @@ export class GameRenderGraphFactory {
 			.createRenderElementGenerator("create-movepaths")
 			.withProperty(propMovePath, "movePaths")
 			.withProperty(propCameraVPM, "_camera")
-			.withFunction(MovePathsElementCreator.funcCreate)
-			.withOutput(MovePathsElementCreator.OUTPUT_ID);
+			.withFunction(MovePathsElementGenerator.funcCreate)
+			.withOutput(MovePathsElementGenerator.OUTPUT_ID);
 
 		const htmlRendererMovePaths = graph
 			.createHtmlRender("html-movepaths")
 			.withCullingRadius(9999999)
-			.withTemplateFunc(MovePathsElementCreator.funcTemplate)
-			.withRenderFunc(MovePathsElementCreator.funcRender)
-			.withElements(creatorMovePaths.useOutput(MovePathsElementCreator.OUTPUT_ID));
+			.withTemplateFunc(MovePathsElementGenerator.funcTemplate)
+			.withRenderFunc(MovePathsElementGenerator.funcRender)
+			.withElements(creatorMovePaths.useOutput(MovePathsElementGenerator.OUTPUT_ID));
 
 
 		// FINAL OUTPUT ============================

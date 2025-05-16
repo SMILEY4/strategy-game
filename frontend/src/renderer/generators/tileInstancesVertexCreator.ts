@@ -11,7 +11,7 @@ import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeCo
 import {BorderBuilder} from "../utils/borderBuilder";
 import {packBorder} from "../utils/packBorder";
 
-export namespace TileInstanceVertexCreator {
+export namespace TileInstanceVertexGenerator {
 
 	export const OUTPUT_WATER_ID = "tiles.instances.water";
 	export const OUTPUT_LAND_ID = "tiles.instances.land";

@@ -4,7 +4,7 @@ import {
 import {MixedArrayBuffer, MixedArrayBufferType} from "../../common/webgl/mixedArrayBuffer";
 import {buildMap} from "../../common/utils";
 
-export namespace FullscreenQuadVertexCreator {
+export namespace FullscreenQuadVertexGenerator {
 
 	export const OUTPUT_ID = "fullscreen-quad.mesh";
 

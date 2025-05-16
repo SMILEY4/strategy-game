@@ -1,11 +1,13 @@
-import {VertexGeneratorResult} from "../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
+import {
+	VertexGeneratorResult,
+} from "../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../common/webgl/mixedArrayBuffer";
-import {TilemapUtils} from "../../common/tilemapUtils";
 import {buildMap} from "../../common/utils";
+import {TilemapUtils} from "../../common/tilemapUtils";
 
-export namespace TileMeshVertexCreator {
+export namespace OverlayMeshVertexGenerator {
 
-	export const OUTPUT_ID = "tiles.mesh";
+	export const OUTPUT_ID = "overlay.mesh";
 
 	const MESH_VERTEX_COUNT = 6 * 3;
 
@@ -45,7 +47,6 @@ export namespace TileMeshVertexCreator {
 	}
 
 	function appendBaseMeshTriangle(cursor: MixedArrayBufferCursor, cornerIndexA: number, cornerIndexB: number) {
-		const scale = 1.44;
 		// center
 		cursor.append(0);
 		cursor.append(0);
@@ -53,14 +54,14 @@ export namespace TileMeshVertexCreator {
 		cursor.append([1, 0, 0]);
 		cursor.append(cornerIndexA);
 		// corner a
-		cursor.append(hexCornerPointX(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(hexCornerPointY(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
+		cursor.append(hexCornerPointX(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, 1));
+		cursor.append(hexCornerPointY(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, 1));
 		cursor.append(hexTextureCoordinates(cornerIndexA));
 		cursor.append([0, 1, 0]);
 		cursor.append(cornerIndexA);
 		// corner b
-		cursor.append(hexCornerPointX(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(hexCornerPointY(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
+		cursor.append(hexCornerPointX(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, 1));
+		cursor.append(hexCornerPointY(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, 1));
 		cursor.append(hexTextureCoordinates(cornerIndexB));
 		cursor.append([0, 0, 1]);
 		cursor.append(cornerIndexA);

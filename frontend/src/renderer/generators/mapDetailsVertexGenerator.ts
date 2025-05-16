@@ -17,7 +17,7 @@ import {buildMap} from "../../common/utils";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {RouteSpriteBuilder} from "../utils/routeSpriteBuilder";
 
-export namespace MapDetailsVertexCreator {
+export namespace MapDetailsVertexGenerator {
 
 	export const OUTPUT_ID = "mapDetails";
 

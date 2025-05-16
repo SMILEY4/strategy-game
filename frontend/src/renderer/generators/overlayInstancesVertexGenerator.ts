@@ -11,7 +11,7 @@ import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeCo
 import {BorderBuilder} from "../utils/borderBuilder";
 import {packBorder} from "../utils/packBorder";
 
-export namespace OverlayInstancesVertexCreator {
+export namespace OverlayInstancesVertexGenerator {
 
 	export const OUTPUT_ID = "overlay.instances";
 

@@ -7,7 +7,7 @@ import {Camera} from "../../common/webgl/camera";
 import {TileSummary} from "../../models/tile/tileSummary";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 
-export namespace MovePathsElementCreator {
+export namespace MovePathsElementGenerator {
 
 	export const OUTPUT_ID = "movepaths.elements";
 
