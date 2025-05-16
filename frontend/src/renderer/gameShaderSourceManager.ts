@@ -1,5 +1,3 @@
-import {DrawRenderTargetToScreenNode} from "../common/prebuilt/drawRenderTargetToScreenNode";
-
 import SHADER_COMMON_COLOR from "./shaders/common/color.glsl?raw";
 import SHADER_COMMON_MAP from "./shaders/common/map.glsl?raw";
 import SHADER_COMMON_BORDER from "./shaders/common/border.glsl?raw";
@@ -18,8 +16,6 @@ import SHADER_MAPDETAILS_VERT from "./shaders/mapdetails.vsh?raw";
 import SHADER_MAPDETAILS_FRAG from "./shaders/mapdetails.fsh?raw";
 import SHADER_OVERLAY_VERT from "./shaders/overlay.vsh?raw";
 import SHADER_OVERLAY_FRAG from "./shaders/overlay.fsh?raw";
-import SHADER_RT2SCREEN_VERT from "../common/prebuilt/rendertarget2screen.vsh?raw";
-import SHADER_RT2SCREEN_FRAG from "../common/prebuilt/rendertarget2screen.fsh?raw";
 
 export class GameShaderSourceManager {
 
@@ -51,9 +47,6 @@ export class GameShaderSourceManager {
 
 		this.register("combine.vert", SHADER_COMBINE_VERT);
 		this.register("combine.frag", SHADER_COMBINE_FRAG);
-
-		this.register(DrawRenderTargetToScreenNode.SHADER_ID_VERTEX, SHADER_RT2SCREEN_VERT);
-		this.register(DrawRenderTargetToScreenNode.SHADER_ID_FRAGMENT, SHADER_RT2SCREEN_FRAG);
 
 		this.process();
 	}

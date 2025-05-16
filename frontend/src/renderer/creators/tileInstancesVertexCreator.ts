@@ -6,10 +6,10 @@ import {Visibility} from "../../models/misc/visibility";
 import {TilemapUtils} from "../../common/tilemapUtils";
 import {TerrainType} from "../../models/tile/terrainType";
 import {Random} from "../../common/random";
-import {BorderBuilder} from "../../game/rendernodes/utils/borderBuilder";
 import {mapHiddenOrNull} from "../../common/hiddenType";
-import {packBorder} from "../../game/rendernodes/utils/packBorder";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
+import {BorderBuilder} from "../utils/borderBuilder";
+import {packBorder} from "../utils/packBorder";
 
 export namespace TileInstanceVertexCreator {
 
@@ -44,9 +44,6 @@ export namespace TileInstanceVertexCreator {
 
 
 	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
-		const chunks = context.get<any>("chunks"); // todo
-		console.log("chunks in tile instance generator", chunks) // todo
-
 		const tiles = context.get<Tile[]>("tiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");
 		const colorLandLight = context.get<[number, number, number]>("colorLandLight");

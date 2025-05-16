@@ -18,6 +18,7 @@ import {VSpacer} from "../../../../components/spacer/Spacer";
 import {Button} from "../../../../components/button/Button";
 import {Txt} from "../../../../components/text/Txt";
 import {TileId} from "../../../../../models/tile/tileId";
+import {TilemapUtils} from "../../../../../common/tilemapUtils";
 
 export interface TileWindowProps {
 	windowId: string;
@@ -138,7 +139,7 @@ function SectionBaseInformation(props: UseTileWindow.Data): ReactElement {
 			)}
 
 			<Txt.Body><Txt.String>Location:</Txt.String></Txt.Body>
-			<Txt.Body><Txt.String>{props.tile.position.q + "," + props.tile.position.r}</Txt.String></Txt.Body>
+			<Txt.Body><Txt.String>{props.tile.position.q + "," + props.tile.position.r + "  (" + TilemapUtils.getChunkCoordinate(props.tile.position, 5)[0] + "," + TilemapUtils.getChunkCoordinate(props.tile.position, 5)[1] + ")"}</Txt.String></Txt.Body>
 
 		</InsetKeyValueGrid>
 	);

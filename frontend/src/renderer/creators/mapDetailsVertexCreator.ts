@@ -8,7 +8,6 @@ import {Random} from "../../common/random";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {Color} from "../../common/color";
 import {Route} from "../../models/route/route";
-import {RouteSpriteBuilder} from "../../game/rendernodes/utils/routeSpriteBuilder";
 import {Tile} from "../../models/tile/tile";
 import {TileId} from "../../models/tile/tileId";
 import {TextureAtlasEntry} from "../../common/webgl/textureAtlas";
@@ -16,6 +15,7 @@ import {Visibility} from "../../models/misc/visibility";
 import {TerrainType} from "../../models/tile/terrainType";
 import {buildMap} from "../../common/utils";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
+import {RouteSpriteBuilder} from "../utils/routeSpriteBuilder";
 
 export namespace MapDetailsVertexCreator {
 

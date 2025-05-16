@@ -5,11 +5,11 @@ import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "..
 import {Tile} from "../../models/tile/tile";
 import {MapMode} from "../../models/misc/mapMode";
 import {TilemapUtils} from "../../common/tilemapUtils";
-import {BorderBuilder} from "../../game/rendernodes/utils/borderBuilder";
-import {packBorder} from "../../game/rendernodes/utils/packBorder";
 import {TileSummary} from "../../models/tile/tileSummary";
 import {buildMap} from "../../common/utils";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
+import {BorderBuilder} from "../utils/borderBuilder";
+import {packBorder} from "../utils/packBorder";
 
 export namespace OverlayInstancesVertexCreator {
 

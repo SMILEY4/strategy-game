@@ -6,6 +6,26 @@ export namespace TilemapUtils {
         return -pos.q - pos.r;
     }
 
+    export function getChunkCoordinate(pos: TilePosition, radius: number): [number, number] {
+        // https://observablehq.com/@sanderevers/hexagon-tiling-of-an-hexagonal-grid
+
+        const area = 3 * radius * radius + 3 * radius + 1;
+        const shift = 3 * radius + 2;
+
+        const q = pos.q;
+        const r = pos.r;
+        const s = hexCoordinateS(pos)
+
+        const qh = Math.floor((r + shift * q) / area);
+        const rh = Math.floor((s + shift * r) / area);
+        const sh = Math.floor((q + shift * s) / area);
+
+        const cq = Math.floor((1 + qh - rh) / 3);
+        const cr = Math.floor((1 + rh - sh) / 3);
+
+        return [cq, cr]
+    }
+
     export class HexOrientation {
         public readonly f0: number;
         public readonly f1: number;

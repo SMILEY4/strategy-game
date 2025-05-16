@@ -2,7 +2,6 @@ import {GameSessionClient} from "../client/gameSessionClient";
 import {handleResponseError} from "../../../common/httpClient";
 import {UnauthorizedError} from "../../../common/UnauthorizedError";
 import {GameSessionMeta} from "../../../models/misc/gameSessionMeta";
-import {RenderGraphPreloader} from "../../../renderer/game/renderGraphPreloader";
 import {TurnStartService} from "./turnStartService";
 import {GameStateMessage} from "../../../models/messages/gameStateMessage";
 import {WebsocketMessageHandler} from "../../../common/websocketMessageHandler";
@@ -105,7 +104,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 	connectSession(gameId: string): Promise<void> {
 		return Promise.resolve()
 			.then(() => this.gameStateWriter.setGameSessionState("loading"))
-			.then(() => RenderGraphPreloader.tempLoad())
 			.then(() => this.client.connect(gameId, this))
 			.catch(e => {
 				console.error(e);
