@@ -106,6 +106,8 @@ export namespace GLTexture {
 
     export function createFromPath(gl: WebGL2RenderingContext, path: string, config?: Config): GLTexture {
 
+        console.log("creating texture", path)
+
         const mergedConfig: Config = {...DEFAULT_CONFIG, ...config};
 
         // create new handle
@@ -126,6 +128,11 @@ export namespace GLTexture {
         // load real image
         const image = new Image();
         image.src = path;
+
+        image.addEventListener("error", _ => {
+            console.log("error loading image", path)
+        });
+
         image.addEventListener("load", () => {
 
             // start using texture

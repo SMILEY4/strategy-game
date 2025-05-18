@@ -55,14 +55,14 @@ export function TextureAtlasEditor(): ReactElement {
 
 			<input ref={refLoadImageInput} placeholder="Image Url..."/>
 			<button onClick={() => {
-				setImageUrl(refLoadImageInput.current!!.value)
+				setImageUrl(refLoadImageInput.current!.value)
 			}}>
 				Load Image
 			</button>
 
 			<input ref={refLoadDataInput} placeholder="JSON data..."/>
 			<button onClick={() => {
-				setEntries(loadFromClipboard(refLoadDataInput.current!!.value, image?.width ?? 1, image?.height ?? 1));
+				setEntries(loadFromClipboard(refLoadDataInput.current!.value, image?.width ?? 1, image?.height ?? 1));
 			}}>
 				Load Data
 			</button>
@@ -88,7 +88,7 @@ export function TextureAtlasEditor(): ReactElement {
 
 			<button onClick={() => {
 				if (selectedId != null) {
-					const selected = entries.find(it => it.id === selectedId)!!;
+					const selected = entries.find(it => it.id === selectedId)!;
 					const id = UID.generate();
 					setEntries([...entries, {
 						...selected,
@@ -132,7 +132,7 @@ export function TextureAtlasEditor(): ReactElement {
 					return it;
 				}));
 			}}>
-				{selectedId != null ? (entries.find(it => it.id === selectedId)!!.type === "billboard" ? "Toggle Type (Ground)" : "Toggle Type (Billboard)") : "Toggle Type"}
+				{selectedId != null ? (entries.find(it => it.id === selectedId)!.type === "billboard" ? "Toggle Type (Ground)" : "Toggle Type (Billboard)") : "Toggle Type"}
 			</button>
 
 			<Stage

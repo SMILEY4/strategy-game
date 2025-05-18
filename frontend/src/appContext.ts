@@ -1,4 +1,3 @@
-import {GameRenderer} from "./renderer/game/gameRenderer";
 import {TileService, TileServiceImpl} from "./logic/game/service/tileService";
 import {CameraService, CameraServiceImpl} from "./logic/game/service/cameraService";
 import {MovementService, MovementServiceImpl} from "./logic/game/service/movementService";
@@ -18,8 +17,6 @@ import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
 import {GameClient} from "./logic/game/client/gameClient";
 import {HttpClient} from "./common/httpClient";
 import {CommandService, CommandServiceImpl} from "./logic/game/service/commandService";
-import {ChangeProvider} from "./renderer/common/graph/changeProvider";
-import {GameChangeProvider} from "./renderer/game/gameChangeProvider";
 import {GameSessionService, GameSessionServiceImpl} from "./logic/game/service/gameSessionService";
 import {GameSessionClient} from "./logic/game/client/gameSessionClient";
 import {WebsocketClient} from "./common/websocketClient";
@@ -33,8 +30,11 @@ import {GameProxy, GameProxyImpl} from "./logic/game/gameProxy";
 import {UserProxy, UserProxyImpl} from "./logic/user/userProxy";
 import {WebGLMonitor} from "./common/webgl/monitor/webGLMonitor";
 import {MonitoringService, MonitoringServiceImpl} from "./logic/game/service/monitoringService";
-import {RenderGraphMonitor} from "./renderer/common/graph/renderGraphMonitor";
 import {GLError} from "./common/webgl/glError";
+import {GameRenderer} from "./renderer/gameRenderer";
+import {GameChangeTracker} from "./renderer/gameChangeTracker";
+import {GameShaderSourceManager} from "./renderer/gameShaderSourceManager";
+import {GameTextureAtlasDataManager} from "./renderer/gameTextureAtlasDataManager";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -47,7 +47,6 @@ export namespace App {
 
 	GLError.enabled = ENABLE_WEBGL_ERROR_CHECKING;
 	WebGLMonitor.enabled = ENABLE_RENDERER_MONITORING;
-	RenderGraphMonitor.enabled = ENABLE_RENDERER_MONITORING;
 
 	// database
 	const cameraDatabase: CameraDatabase = new CameraDatabase();
@@ -91,7 +90,6 @@ export namespace App {
 
 	// misc services
 	const webglMonitor: WebGLMonitor = new WebGLMonitor();
-	const renderGraphMonitor: RenderGraphMonitor = new RenderGraphMonitor();
 
 	// core services
 	const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
@@ -103,11 +101,13 @@ export namespace App {
 	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
 	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
 	const userService: UserService = new UserServiceImpl(userClient, userStateAccess, userStateWriter);
-	const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor, renderGraphMonitor);
+	const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor);
 
 	// rendering
-	const changeProvider: ChangeProvider = new GameChangeProvider(gameStateAccess);
-	const gameRenderer: GameRenderer = new GameRenderer(changeProvider, gameStateAccess, webglMonitor, renderGraphMonitor);
+	const changeTracker: GameChangeTracker = new GameChangeTracker(gameStateAccess);
+	const shaderSourceManager: GameShaderSourceManager = new GameShaderSourceManager();
+	const textureAtlasDataManager: GameTextureAtlasDataManager = new GameTextureAtlasDataManager();
+	const gameRenderer: GameRenderer = new GameRenderer(gameStateAccess, changeTracker, shaderSourceManager, textureAtlasDataManager);
 
 	// utility services
 	const audioService: AudioService = new AudioService();

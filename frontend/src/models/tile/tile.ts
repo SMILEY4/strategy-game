@@ -7,6 +7,8 @@ import {TileId} from "./tileId";
 import {TilePosition} from "./tilePosition";
 import {TileObject} from "./tileObject";
 import {TerrainType} from "./terrainType";
+import {Projections} from "../../common/webgl/projections";
+import Point = Projections.Point;
 
 export interface Tile {
 	id: TileId,
@@ -24,5 +26,12 @@ export interface Tile {
 		}
 	}>,
 	isValidSettlementLocation: boolean,
-	objects: TileObject[]
+	objects: TileObject[],
+	metaProperties: {
+		worldPosition: Point,
+		randomIndex: number,
+		randomValue0: number,
+		randomValue1: number,
+		randomValue2: number,
+	}
 }

@@ -18,6 +18,7 @@ import {VSpacer} from "../../../../components/spacer/Spacer";
 import {Button} from "../../../../components/button/Button";
 import {Txt} from "../../../../components/text/Txt";
 import {TileId} from "../../../../../models/tile/tileId";
+import {Projections} from "../../../../../common/webgl/projections";
 
 export interface TileWindowProps {
 	windowId: string;
@@ -96,6 +97,7 @@ function PanelPolitical(props: UseTileWindow.Data): ReactElement {
 }
 
 function PanelDebug(props: UseTileWindow.Data): ReactElement {
+	const worldCoords = Projections.hexToWorld(props.tile.position.q, props.tile.position.r);
 	return (
 		<>
 			<InsetKeyValueGrid dontGrow dontShrink>
@@ -103,8 +105,12 @@ function PanelDebug(props: UseTileWindow.Data): ReactElement {
 				<Txt.Body><Txt.String>Tile Id:</Txt.String></Txt.Body>
 				<Txt.Body><Txt.String>{props.tile.id}</Txt.String></Txt.Body>
 
-				<Txt.Body><Txt.String>Location:</Txt.String></Txt.Body>
+				<Txt.Body><Txt.String>Location (hex):</Txt.String></Txt.Body>
 				<Txt.Body><Txt.String>{props.tile.position.q + "," + props.tile.position.r}</Txt.String></Txt.Body>
+
+				<Txt.Body><Txt.String>Location (world):</Txt.String></Txt.Body>
+				<Txt.Body><Txt.String>{worldCoords.x + "," + worldCoords.y}</Txt.String></Txt.Body>
+
 
 			</InsetKeyValueGrid>
 		</>

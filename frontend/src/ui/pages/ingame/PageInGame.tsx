@@ -94,7 +94,7 @@ function useLoadGame() {
 	const connect = SessionHooks.useConnectGameSession();
 	const queryParams = useQuery();
 	return () => {
-		const paramGameId = queryParams.get("id")!!;
+		const paramGameId = queryParams.get("id")!;
 		connect(paramGameId);
 	};
 }

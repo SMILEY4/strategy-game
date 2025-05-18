@@ -8,7 +8,7 @@ import {TileResourceType} from "../../../models/tile/TileResourceType";
 import {WorldObjectType} from "../../../models/worldobject/worldObjectType";
 import {Visibility} from "../../../models/misc/visibility";
 import {mapHidden} from "../../../common/hiddenType";
-import {mapValue} from "../../../common/utils";
+import {mapValue, shuffleArray} from "../../../common/utils";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {TileEntity} from "../../../models/tile/tileEntity";
 import {TerrainType} from "../../../models/tile/terrainType";
@@ -16,6 +16,7 @@ import {CountryEntity} from "../../../models/country/countryEntity";
 import {SettlementEntity} from "../../../models/settlement/settlementEntity";
 import {WorldObjectEntity} from "../../../models/worldobject/worldObjectEntity";
 import {RouteEntity} from "../../../models/route/routeEntity";
+import {Projections} from "../../../common/webgl/projections";
 
 export interface TurnStartService {
 	/**
@@ -27,6 +28,8 @@ export interface TurnStartService {
 export class TurnStartServiceImpl implements TurnStartService {
 
 	private readonly gameStateWriter: GameStateWriter;
+
+	private cachedTileIndices: number[] = [];
 
 	constructor(gameStateWriter: GameStateWriter) {
 		this.gameStateWriter = gameStateWriter;
@@ -44,7 +47,15 @@ export class TurnStartServiceImpl implements TurnStartService {
 	}
 
 	private buildTiles(game: GameStateMessage): TileEntity[] {
-		return game.tiles.map(tileMsg => ({
+
+		if(this.cachedTileIndices.length != game.tiles.length) {
+			const indices = [...Array(game.tiles.length).keys()];
+			shuffleArray(indices);
+			this.cachedTileIndices = indices;
+		}
+
+
+		return game.tiles.map((tileMsg, index) => ({
 			id: tileMsg.identifier.id,
 			position: {
 				q: tileMsg.identifier.q,
@@ -128,6 +139,13 @@ export class TurnStartServiceImpl implements TurnStartService {
 						},
 					})),
 			],
+			metaProperties: { // todo: read from backend to make stable
+				worldPosition: Projections.hexToWorld(tileMsg.identifier.q, tileMsg.identifier.r),
+				randomIndex: this.cachedTileIndices[index],
+				randomValue0: Math.random(),
+				randomValue1: Math.random(),
+				randomValue2: Math.random(),
+			}
 		}));
 	}
 

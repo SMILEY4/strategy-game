@@ -6,12 +6,17 @@ declare global {
         associateKey<K>(keySelector: (value: T) => K): Map<K, T>
         count(condition: (value: T) => boolean): number
         sum<V>(initial: V, valueSelector: (value: T) => V): V
+        chooseWithRandomValue(randomValue: number): T // randomValue from 0 (incl.) to 1 (excl.)
     }
 }
 
 export namespace ArrayExtensions {
 
     export function setup() {
+
+        Array.prototype.chooseWithRandomValue = function (randomValue: number) {
+            return this[Math.floor(randomValue * this.length)];
+        };
 
         Array.prototype.distinct = function () {
             return Array.from(new Set(this).values());

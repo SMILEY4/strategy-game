@@ -83,8 +83,8 @@ export class LineMeshCreator {
         mesh.vertices.push(...elementData.points.map(p => lineConfig.vertexBuilder(data.currentPoint, data.index, p)));
         mesh.triangles.push(...elementData.triangles.map(t => t.map(i => i + indexOffset)));
 
-        const ipp0 = mesh.lastAttachmentPoints!![0];
-        const ipp1 = mesh.lastAttachmentPoints!![1];
+        const ipp0 = mesh.lastAttachmentPoints![0];
+        const ipp1 = mesh.lastAttachmentPoints![1];
         const ip0 = elementData.attachmentIndices[0] + indexOffset;
         const ip1 = elementData.attachmentIndices[1] + indexOffset;
         mesh.triangles.push(
@@ -103,8 +103,8 @@ export class LineMeshCreator {
         mesh.vertices.push(...elementData.points.map(p => lineConfig.vertexBuilder(data.currentPoint, data.index, p)));
         mesh.triangles.push(...elementData.triangles.map(t => t.map(i => i + indexOffset)));
 
-        const ipp0 = mesh.lastAttachmentPoints!![0];
-        const ipp1 = mesh.lastAttachmentPoints!![1];
+        const ipp0 = mesh.lastAttachmentPoints![0];
+        const ipp1 = mesh.lastAttachmentPoints![1];
         const ip0 = elementData.attachmentIndices[0] + indexOffset;
         const ip1 = elementData.attachmentIndices[1] + indexOffset;
         mesh.triangles.push(

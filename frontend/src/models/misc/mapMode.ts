@@ -32,7 +32,7 @@ export interface MapModeRenderData {
 
 export class MapMode {
 
-    private static readonly NO_COLOR: [number, number, number, number] = Color.colorToRgbaArray(Color.BLACK, 0);
+    public static readonly NO_COLOR: [number, number, number, number] = Color.colorToRgbaArray(Color.BLACK, 0);
 
     private static toColor(color: Color | null | undefined, alpha?: number): [number, number, number, number] {
         if (color) {
