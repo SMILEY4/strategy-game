@@ -19,4 +19,8 @@ export class RenderGraphNodeContext {
 		}
 	}
 
+	public getMapping(): Map<string, string> {
+		return this.mapping;
+	}
+
 }

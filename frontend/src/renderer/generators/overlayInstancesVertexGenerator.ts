@@ -6,10 +6,11 @@ import {Tile} from "../../models/tile/tile";
 import {MapMode} from "../../models/misc/mapMode";
 import {TilemapUtils} from "../../common/tilemapUtils";
 import {TileSummary} from "../../models/tile/tileSummary";
-import {buildMap} from "../../common/utils";
+import {buildMap, isPointInRectangle, Rectangle} from "../../common/utils";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {BorderBuilder} from "../utils/borderBuilder";
 import {packBorder} from "../utils/packBorder";
+import {Projections} from "../../common/webgl/projections";
 
 export namespace OverlayInstancesVertexGenerator {
 
@@ -38,21 +39,20 @@ export namespace OverlayInstancesVertexGenerator {
 
 	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
 
-		const tiles = context.get<Tile[]>("tiles");
+		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");
 		const mapMode = context.get<MapMode>("mapMode");
 		const moveTargets = context.get<TileSummary[]>("moveTargets");
 
-		const tileCounts = countTiles(tiles);
+		const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(relevantTiles.length, INSTANCE_PATTERN);
 
-		const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(tileCounts, INSTANCE_PATTERN);
 
-		const mapModeContext = mapMode.renderData.context(tiles);
+		const mapModeContext = mapMode.renderData.context(relevantTiles);
 		const highlightMovementTiles = new Set<string>(moveTargets.map(it => it.position.q + "/" + it.position.r));
 
-		for (let i = 0, n = tiles.length; i < n; i++) {
+		for (let i = 0, n = relevantTiles.length; i < n; i++) {
 			// todo: optimization: only create instances for tiles that require overlay ?
-			const tile = tiles[i];
+			const tile = relevantTiles[i];
 			appendOverlayInstance(tile, mapMode, mapModeContext, highlightMovementTiles, tileByPosProvider, cursorOverlay);
 		}
 
@@ -61,15 +61,10 @@ export namespace OverlayInstancesVertexGenerator {
 				OUTPUT_ID,
 				{
 					data: arrayBufferOverlay.getRawBuffer(),
-					entryCount: tileCounts
+					entryCount: relevantTiles.length
 				}
 			]
 		])
-	}
-
-
-	function countTiles(tiles: Tile[]): number {
-		return tiles.length;
 	}
 
 	function appendOverlayInstance(

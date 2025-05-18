@@ -1,3 +1,6 @@
+import {Projections} from "./webgl/projections";
+import Point = Projections.Point;
+
 export function mapValue<T, R>(value: T, mapping: (value: T) => R): R {
 	return mapping(value);
 }
@@ -121,4 +124,16 @@ export function emptyMap<K, V>() {
  */
 export function arrayOfSize(n: number): number[] {
 	return Array.from(Array(n).keys());
+}
+
+export interface Rectangle {
+	minX: number;
+	minY: number;
+	maxX: number;
+	maxY: number;
+}
+
+export function isPointInRectangle(point: Point, rect: Rectangle): boolean {
+	return rect.minX <= point.x && point.x <= rect.maxX
+		&& rect.minY <= point.y && point.y <= rect.maxY;
 }

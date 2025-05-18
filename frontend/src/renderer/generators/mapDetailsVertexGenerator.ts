@@ -1,6 +1,4 @@
-import {
-	VertexGeneratorResult,
-} from "../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
+import {VertexGeneratorResult} from "../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {SpriteBuffer} from "../../common/webgl/spriteBuffer";
 import {Settlement} from "../../models/settlement/settlement";
 import {TilemapUtils} from "../../common/tilemapUtils";
@@ -28,7 +26,7 @@ export namespace MapDetailsVertexGenerator {
 
 	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
 
-		const tiles = context.get<Tile[]>("tiles");
+		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const settlements = context.get<Settlement[]>("settlements");
 		const worldObjects = context.get<WorldObject[]>("worldObjects");
 		const routes = context.get<Route[]>("routes");
@@ -57,22 +55,22 @@ export namespace MapDetailsVertexGenerator {
 			addRoute(spriteBuffer, routes[i], textureAtlasGroups);
 		}
 
-		for (let i = 0, n = tiles.length; i < n; i++) {
-			const tile = tiles[i];
+		for (let i = 0, n = relevantTiles.length; i < n; i++) {
+			const tile = relevantTiles[i];
 			if (tile.visibility !== Visibility.UNKNOWN && tile.base.value.terrainType === TerrainType.LAND) {
 				addTerrain(spriteBuffer, tile, textureAtlasGroups, colorLandLight, colorLandDark);
 			}
 		}
-		
+
 		return buildMap([
 			[
 				OUTPUT_ID,
 				{
 					data: spriteBuffer.buildRawBuffer(),
-					entryCount: spriteBuffer.getVertexCount()
-				}
-			]
-		])
+					entryCount: spriteBuffer.getVertexCount(),
+				},
+			],
+		]);
 	}
 
 

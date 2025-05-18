@@ -6,7 +6,6 @@ import {Tile} from "../../models/tile/tile";
 import {MapMode} from "../../models/misc/mapMode";
 import {TileResourceType} from "../../models/tile/TileResourceType";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
-import {TilemapUtils} from "../../common/tilemapUtils";
 
 export namespace ResourceIconsElementGenerator {
 
@@ -14,18 +13,13 @@ export namespace ResourceIconsElementGenerator {
 
 	export function funcCreate(context: RenderGraphNodeContext): Map<string, RenderElement[]> {
 
-		const tiles = context.get<Tile[]>("tiles");
+		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const mapMode = context.get<MapMode>("mapMode");
 
 		const data: ResourceIconHtmlData[] = [];
 		if (mapMode == MapMode.RESOURCES) {
-			for (let i = 0, n = tiles.length; i < n; i++) {
-				const tile = tiles[i];
-				// const type = determineChunkVisualisation(tile);
-				// data.push({
-				// 	position: tile.position,
-				// 	type: type,
-				// });
+			for (let i = 0, n = relevantTiles.length; i < n; i++) {
+				const tile = relevantTiles[i];
 				if (!tile.base.visible) {
 					continue;
 				}
@@ -44,24 +38,6 @@ export namespace ResourceIconsElementGenerator {
 				data,
 			],
 		]);
-	}
-
-	function determineChunkVisualisation(tile: Tile): TileResourceType {
-		const chunk = TilemapUtils.getChunkCoordinate(tile.position, 5)
-
-		const i = chunk[0] % 3 + (chunk[1] % 2 == 0 ? 1 : 0)
-
-		if(i == 0) {
-			return TileResourceType.FISH
-		}
-		if(i == 1) {
-			return TileResourceType.METAL
-		}
-		if(i == 2) {
-			return TileResourceType.WOOD
-		}
-
-		return TileResourceType.NONE
 	}
 
 

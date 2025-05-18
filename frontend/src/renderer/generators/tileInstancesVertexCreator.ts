@@ -1,6 +1,6 @@
 import {VertexGeneratorResult} from "../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../common/webgl/mixedArrayBuffer";
-import {buildMap, shuffleArray} from "../../common/utils";
+import {buildMap, isPointInRectangle, Rectangle, shuffleArray} from "../../common/utils";
 import {Tile} from "../../models/tile/tile";
 import {Visibility} from "../../models/misc/visibility";
 import {TilemapUtils} from "../../common/tilemapUtils";
@@ -10,6 +10,7 @@ import {mapHiddenOrNull} from "../../common/hiddenType";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {BorderBuilder} from "../utils/borderBuilder";
 import {packBorder} from "../utils/packBorder";
+import {Projections} from "../../common/webgl/projections";
 
 export namespace TileInstanceVertexGenerator {
 
@@ -44,24 +45,26 @@ export namespace TileInstanceVertexGenerator {
 
 
 	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
-		const tiles = context.get<Tile[]>("tiles");
+
+		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");
 		const colorLandLight = context.get<[number, number, number]>("colorLandLight");
 		const colorLandDark = context.get<[number, number, number]>("colorLandDark");
 
-		const tileCounts = countTileTypes(tiles);
+		const tileCounts = countTileTypes(relevantTiles);
 
-		if (tileIndices.length !== tiles.length) {
-			tileIndices = buildTileIndices(tiles.length);
+		if (tileIndices.length !== relevantTiles.length) { // todo: define "random" order by pre-computed property of tile
+			tileIndices = buildTileIndices(relevantTiles.length);
 		}
 
 		const [arrayBufferWater, cursorWater] = MixedArrayBuffer.createWithCursor(tileCounts.water, WATER_PATTERN);
 		const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, LAND_PATTERN);
 		const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, FOG_PATTERN);
 
+
 		for (let i = 0, n = tileIndices.length; i < n; i++) {
 			const index = tileIndices[i];
-			const tile = tiles[index];
+			const tile = relevantTiles[index];
 			if (isFog(tile)) {
 				appendFogInstance(tile, cursorFog);
 			}
@@ -72,6 +75,7 @@ export namespace TileInstanceVertexGenerator {
 				appendWaterInstance(tile, cursorWater, tileByPosProvider);
 			}
 		}
+
 
 		return buildMap([
 			[

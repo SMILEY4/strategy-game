@@ -19,16 +19,16 @@ export class DrawCallRenderGraphCommand extends RenderGraphCommand {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		if (instanceCount === null) {
-			if (vertexCount === 0) {
-				console.warn("called draw with 0 vertexCount count");
-			}
+			// if (vertexCount === 0) {
+			// 	console.warn("called draw with 0 vertexCount count");
+			// }
 			gl.drawArrays(gl.TRIANGLES, 0, vertexCount,);
 			GLError.check(gl, "drawArrays", "drawing");
 
 		} else {
-			if (vertexCount === 0 || instanceCount === 0) {
-				console.warn("called drawInstances with 0 vertex or instance count");
-			}
+			// if (vertexCount === 0 || instanceCount === 0) {
+			// 	console.warn("called drawInstances with 0 vertex or instance count");
+			// }
 			gl.drawArraysInstanced(gl.TRIANGLES, 0, vertexCount, instanceCount,);
 			GLError.check(gl, "drawArraysInstanced", "drawing instanced");
 		}

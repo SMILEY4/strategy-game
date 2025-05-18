@@ -57,7 +57,6 @@ export class RenderGraph {
 			throw new Error("Render graph validation error:\n" + errors.join("\n"));
 		}
 
-
 		this.sortedNodes.push(
 			new InitRenderGraphNode(),
 			...this.sorter.sort(this.unprocessedNodes),

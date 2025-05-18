@@ -21,6 +21,7 @@ export class RenderGraphResourceManager {
 				.forEach(it => it.create(node, this));
 		}
 		this.resourcesInitialized = true;
+		console.log(Array.from(this.resources.keys()))
 	}
 
 	public createResource<T>(name: string, resource: T, dispose?: (resource: T) => void) {

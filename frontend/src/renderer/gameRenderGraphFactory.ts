@@ -55,6 +55,8 @@ import {
 } from "../common/rendergraph/nodes/intermediateDataGeneratorRenderGraphNode";
 import {FrameIdResourceGenerator} from "../common/rendergraph/resources/frameIdResourceGenerator";
 import {InitNodeCompiler} from "../common/rendergraph/compilers/initNodeCompiler";
+import {RelevantWorldAreaDataGenerator} from "./generators/relevantWorldAreaDataGenerator";
+import {RelevantTilesDataGenerator} from "./generators/relevantTilesDataGenerator";
 
 export class GameRenderGraphFactory {
 
@@ -397,25 +399,29 @@ export class GameRenderGraphFactory {
 
 		// TILE MAP BASICS =======================
 
-		const chunkDataGenerator = graph
-			.createIntermediateDataGenerator("gen-chunk-data")
+		const relevantWorldAreaDataGenerator = graph
+			.createIntermediateDataGenerator("gen-relevant-world-area-data")
 			.withProperty(propCamera, "camera")
-			.withFunction((context) => {
-				const prev = context.get<any>("_this.chunks");
-				const next = "" + Math.floor(context.get<Camera>("camera").getX() / 10) + ", " + Math.floor(context.get<Camera>("camera").getY() / 10);
-				if (prev === next) {
-					console.log("prev", prev, "next", next, " ==> SAME");
-					return new Map<string, any>();
-				} else {
-					console.log("prev", prev, "next", next, " ==> DIFF");
-					return buildMap({chunks: next});
-				}
-			}) // todo: chunk generation
-			.withOutput("chunks");
+			.withFunction(RelevantWorldAreaDataGenerator.func)
+			.withOutput(RelevantWorldAreaDataGenerator.OUTPUT_ID);
 
-		const propChunks = graph
-			.createPropertyGenerated("prop-chunks")
-			.withValue(chunkDataGenerator.useOutput("chunks"));
+		const propRelevantWorldArea = graph
+			.createPropertyGenerated("prop-relevant-world-area")
+			.withValue(relevantWorldAreaDataGenerator.useOutput(RelevantWorldAreaDataGenerator.OUTPUT_ID));
+
+
+
+		const relevantTilesDataGenerator = graph
+			.createIntermediateDataGenerator("gen-relevant-tiles-data")
+			.withProperty(propTiles, "tiles")
+			.withProperty(propRelevantWorldArea, "relevantWorldArea")
+			.withFunction(RelevantTilesDataGenerator.func)
+			.withOutput(RelevantTilesDataGenerator.OUTPUT_ID);
+
+		const propRelevantTiles = graph
+			.createPropertyGenerated("prop-relevant-tiles")
+			.withValue(relevantTilesDataGenerator.useOutput(RelevantTilesDataGenerator.OUTPUT_ID));
+
 
 		const vertexCreatorTileMesh = graph
 			.createVertexCreator("tile-mesh")
@@ -447,9 +453,8 @@ export class GameRenderGraphFactory {
 			.createVertexCreator("tile-instances")
 			.withProperty(propColorLandLight, "colorLandLight")
 			.withProperty(propColorLandDark, "colorLandDark")
-			.withProperty(propTiles, "tiles")
+			.withProperty(propRelevantTiles, "relevantTiles")
 			.withProperty(propTileByPosProvider, "tileByPosProvider")
-			.withProperty(propChunks, "chunks")
 			.withOutput(TileInstanceVertexGenerator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -613,7 +618,7 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorOverlayInstances = graph
 			.createVertexCreator("overlay-instances")
-			.withProperty(propTiles, "tiles")
+			.withProperty(propRelevantTiles, "relevantTiles")
 			.withProperty(propTileByPosProvider, "tileByPosProvider")
 			.withProperty(propMapMode, "mapMode")
 			.withProperty(propMoveTargets, "moveTargets")
@@ -759,7 +764,7 @@ export class GameRenderGraphFactory {
 				},
 			])
 			.withFunction(MapDetailsVertexGenerator.func)
-			.withProperty(propTiles, "tiles")
+			.withProperty(propRelevantTiles, "relevantTiles")
 			.withProperty(propSettlements, "settlements")
 			.withProperty(propWorldObjects, "worldObjects")
 			.withProperty(propRoutes, "routes")
@@ -896,7 +901,7 @@ export class GameRenderGraphFactory {
 
 		const creatorResourceIcons = graph
 			.createRenderElementGenerator("create-resourceicons")
-			.withProperty(propTiles, "tiles")
+			.withProperty(propRelevantTiles, "relevantTiles")
 			.withProperty(propMapMode, "mapMode")
 			.withProperty(propCameraVPM, "_camera")
 			.withFunction(ResourceIconsElementGenerator.funcCreate)
