@@ -55,14 +55,13 @@ export namespace ResourceIconsElementGenerator {
 	}
 
 
-	export function funcRender(obj: ResourceIconHtmlData, target: HTMLElement, camera: Camera) {
+	export function funcRender(obj: ResourceIconHtmlData, target: HTMLElement, lowQuality: boolean, camera: Camera) {
 		const pos = Projections.hexToScreen(camera, obj.position.q, obj.position.r);
 		pos.y = camera.getClientHeight() - pos.y;
 		target.style.left = pos.x.toString() + "px";
 		target.style.top = pos.y.toString() + "px";
 		target.style.backgroundImage = "url('" + obj.type.getIconPath() + "')";
-		// baseElement.className = lowQuality ? "resource-icon low-quality" : "resource-icon";
-		target.className = "resource-icon";
+		target.className = lowQuality ? "resource-icon low-quality" : "resource-icon";
 
 	}
 

@@ -57,6 +57,7 @@ import {FrameIdResourceGenerator} from "../common/rendergraph/resources/frameIdR
 import {InitNodeCompiler} from "../common/rendergraph/compilers/initNodeCompiler";
 import {RelevantWorldAreaDataGenerator} from "./generators/relevantWorldAreaDataGenerator";
 import {RelevantTilesDataGenerator} from "./generators/relevantTilesDataGenerator";
+import {AdditionalTileDataGenerator} from "./generators/coastlineBorderMaskDataGenerator";
 
 export class GameRenderGraphFactory {
 
@@ -411,6 +412,18 @@ export class GameRenderGraphFactory {
 
 
 
+		const additionalTileDataGenerator = graph
+			.createIntermediateDataGenerator("gen-additiona-tile-data")
+			.withProperty(propTiles, "tiles")
+			.withProperty(propTileByPosProvider, "tileByPosProvider")
+			.withFunction(AdditionalTileDataGenerator.func)
+			.withOutput(AdditionalTileDataGenerator.COASTLINE_BORDER_MASK_OUTPUT_ID);
+
+		const propCoastlineBorderMask = graph
+			.createPropertyGenerated("prop-coastline-border-mask")
+			.withValue(additionalTileDataGenerator.useOutput(AdditionalTileDataGenerator.COASTLINE_BORDER_MASK_OUTPUT_ID));
+
+
 		const relevantTilesDataGenerator = graph
 			.createIntermediateDataGenerator("gen-relevant-tiles-data")
 			.withProperty(propTiles, "tiles")
@@ -454,7 +467,7 @@ export class GameRenderGraphFactory {
 			.withProperty(propColorLandLight, "colorLandLight")
 			.withProperty(propColorLandDark, "colorLandDark")
 			.withProperty(propRelevantTiles, "relevantTiles")
-			.withProperty(propTileByPosProvider, "tileByPosProvider")
+			.withProperty(propCoastlineBorderMask, "coastlineBorderMaskData")
 			.withOutput(TileInstanceVertexGenerator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -910,6 +923,7 @@ export class GameRenderGraphFactory {
 		const htmlRendererResourceIcons = graph
 			.createHtmlRender("html-resourceicons")
 			.withCullingRadius(1)
+			.withLowQualityThreshold(200)
 			.withTemplateFunc(ResourceIconsElementGenerator.funcTemplate)
 			.withRenderFunc(ResourceIconsElementGenerator.funcRender)
 			.withElements(creatorResourceIcons.useOutput(ResourceIconsElementGenerator.OUTPUT_ID));

@@ -42,7 +42,7 @@ export namespace MovePathsElementGenerator {
 	}
 
 
-	export function funcRender(obj: PathHtmlData, target: HTMLElement, camera: Camera) {
+	export function funcRender(obj: PathHtmlData, target: HTMLElement, lowQuality: boolean, camera: Camera) {
 
 		let path: string = "";
 		for (let i = 0; i < obj.path.length; i++) {

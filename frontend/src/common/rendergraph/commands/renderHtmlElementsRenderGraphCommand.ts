@@ -45,7 +45,18 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 			const templateElement = this.buildTemplateElement(source.templateFunc, pooledHtmlElementData);
 			const renderFunc = source.renderFunc;
 
-			// for each element
+			// count visible elements
+			let amountVisible = 0;
+			for (let j = 0, m = elements.length; j < m; j++) {
+				const element = elements[j];
+				if (this.isVisible(element, camera, screenObjectRadius)) {
+					amountVisible++;
+				}
+			}
+
+			const isLowQualityMode = amountVisible > source.lowQualityThreshold;
+
+			// render each element
 			for (let j = 0, m = elements.length; j < m; j++) {
 				const element = elements[j];
 
@@ -60,7 +71,7 @@ export class RenderHtmlElementsRenderGraphCommand extends RenderGraphCommand {
 					: templateElement.cloneNode(true) as HTMLElement;
 
 				// render / update html element
-				renderFunc(element, htmlElement, camera);
+				renderFunc(element, htmlElement, isLowQualityMode, camera);
 				renderedHtmlElements.push(htmlElement);
 				nextPooledHtmlElements.push(htmlElement);
 			}
@@ -150,8 +161,9 @@ export namespace RenderHtmlElementsRenderGraphCommand {
 		elementDataKey: string,
 		elementPoolKey: string,
 		cullingRadius: number,
+		lowQualityThreshold: number,
 		templateFunc: () => HTMLElement,
-		renderFunc: (obj: any, target: HTMLElement, camera: Camera) => void,
+		renderFunc: (obj: any, target: HTMLElement, lowQuality: boolean, camera: Camera) => void,
 	}
 
 }

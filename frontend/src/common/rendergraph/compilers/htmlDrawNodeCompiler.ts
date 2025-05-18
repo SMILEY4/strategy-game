@@ -51,6 +51,7 @@ export class HtmlDrawNodeCompiler implements RenderGraphNodeCompiler<ContainerRe
 				elementDataKey: RenderGraphKeys.genericData(it.getSource()),
 				elementPoolKey: RenderGraphKeys.pooledHtmlElements(it.getSource()),
 				cullingRadius: it.getCullingRadius(),
+				lowQualityThreshold: it.getLowQualityThreshold(),
 				templateFunc: it.getTemplateFunc(),
 				renderFunc: it.getRenderFunc(),
 			};

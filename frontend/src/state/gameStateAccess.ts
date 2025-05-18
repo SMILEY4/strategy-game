@@ -25,8 +25,6 @@ import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
 import {SettlementSummary} from "../models/settlement/settlementSummary";
 import {DbCache} from "../common/db/dbCache";
 import {CountrySummary} from "../models/country/countrySummary";
-import {types} from "sass";
-import Error = types.Error;
 
 export interface GameStateAccess {
 	// game
@@ -183,6 +181,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 			political: entity.political,
 			isValidSettlementLocation: entity.isValidSettlementLocation,
 			objects: entity.objects,
+			metaProperties: entity.metaProperties
 		};
 	}
 
@@ -211,6 +210,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 				political: entity.political,
 				isValidSettlementLocation: entity.isValidSettlementLocation,
 				objects: entity.objects,
+				metaProperties: entity.metaProperties
 			}));
 	}
 

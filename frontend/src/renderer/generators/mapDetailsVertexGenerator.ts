@@ -7,7 +7,6 @@ import {WorldObject} from "../../models/worldobject/worldObject";
 import {Color} from "../../common/color";
 import {Route} from "../../models/route/route";
 import {Tile} from "../../models/tile/tile";
-import {TileId} from "../../models/tile/tileId";
 import {TextureAtlasEntry} from "../../common/webgl/textureAtlas";
 import {Visibility} from "../../models/misc/visibility";
 import {TerrainType} from "../../models/tile/terrainType";
@@ -19,10 +18,7 @@ export namespace MapDetailsVertexGenerator {
 
 	export const OUTPUT_ID = "mapDetails";
 
-	const TEXTURE_ATLAS_NAME = "tileset_details";
-
 	const spriteBuffer = new SpriteBuffer();
-
 
 	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
 
@@ -147,18 +143,18 @@ export namespace MapDetailsVertexGenerator {
 	}
 
 	function addTerrain(spriteBuffer: SpriteBuffer, tile: Tile, textureAtlasGroups: Map<string, TextureAtlasEntry[]>, colorLight: [number, number, number], colorDark: [number, number, number]) {
-		const terrainName = getRandomTerrainAtlasName(tile.id);
-		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.position.q, tile.position.r);
+		const terrainName = getRandomTerrainAtlasName(tile);
+		const tileCenter = [tile.metaProperties.worldPosition.x, tile.metaProperties.worldPosition.y]
 
 		// tile color todo: copied from tiles vertex node -> duplicate !!!
-		const heightJitter = Random.normalized(tile.id) * 0.1 - 0.5;
+		const heightJitter = tile.metaProperties.randomValue0 * 0.1 - 0.5;
 		const color = mix(colorLight, colorDark, tile.base.value.height * 2 + heightJitter);
 
 		if (terrainName === "none") {
 			const atlasEntriesDecorations = textureAtlasGroups.get("terrain_decoration")!;
-			for (let i = 0; i < (Random.normalized(tile.id) * 5) + 1; i++) {
-				const rngOffsetX = Random.normalized(tile.id + i + "x");
-				const rngOffsetY = Random.normalized(tile.id + i + "y");
+			for (let i = 0; i < (tile.metaProperties.randomValue1 * 5) + 1; i++) {
+				const rngOffsetX = tile.metaProperties.randomValue0;
+				const rngOffsetY = tile.metaProperties.randomValue2;
 				const x = tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
 				const y = tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
 				const z = y - 1;
@@ -177,13 +173,13 @@ export namespace MapDetailsVertexGenerator {
 		} else {
 			const x = tileCenter[0];
 			const y = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-			const randZ = Random.normalized("" + tile.position.q) * 0.1;
+			const randZ = tile.metaProperties.randomValue2 * 0.1;
 			const zMin = tileCenter[1] - TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] + randZ;
 			const zMax = tileCenter[1] + TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] + randZ;
 
 			if (terrainName === "mountain") {
 				const atlasEntriesMountain = textureAtlasGroups.get("terrain_mountain")!;
-				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesMountain, tile.position.q + "" + tile.position.r);
+				spriteBuffer.pooledEntry.atlasEntry = atlasEntriesMountain.chooseWithRandomValue(tile.metaProperties.randomValue0)
 				spriteBuffer.pooledEntry.x = x;
 				spriteBuffer.pooledEntry.y = y;
 				spriteBuffer.pooledEntry.z = [zMin, zMax];
@@ -196,7 +192,7 @@ export namespace MapDetailsVertexGenerator {
 
 			if (terrainName === "hill") {
 				const atlasEntriesHill = textureAtlasGroups.get("terrain_hill")!;
-				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesHill, tile.position.q + "" + tile.position.r);
+				spriteBuffer.pooledEntry.atlasEntry = atlasEntriesHill.chooseWithRandomValue(tile.metaProperties.randomValue0)
 				spriteBuffer.pooledEntry.x = x;
 				spriteBuffer.pooledEntry.y = y;
 				spriteBuffer.pooledEntry.z = [zMin, zMax];
@@ -209,7 +205,7 @@ export namespace MapDetailsVertexGenerator {
 
 			if (terrainName === "forest") {
 				const atlasEntriesForest = textureAtlasGroups.get("terrain_forest")!;
-				spriteBuffer.pooledEntry.atlasEntry = Random.chooseRandom(atlasEntriesForest, tile.position.q + "" + tile.position.r);
+				spriteBuffer.pooledEntry.atlasEntry = atlasEntriesForest.chooseWithRandomValue(tile.metaProperties.randomValue0)
 				spriteBuffer.pooledEntry.x = x;
 				spriteBuffer.pooledEntry.y = y;
 				spriteBuffer.pooledEntry.z = [zMin, zMax];
@@ -222,8 +218,8 @@ export namespace MapDetailsVertexGenerator {
 		}
 	}
 
-	function getRandomTerrainAtlasName(tileId: TileId): string {
-		const value = Random.normalized(tileId);
+	function getRandomTerrainAtlasName(tile: Tile): string {
+		const value = tile.metaProperties.randomValue1;
 		if (value > 0.8) {
 			return "mountain";
 		} else if (value > 0.65) {

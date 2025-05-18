@@ -92,7 +92,7 @@ export namespace LabelsElementGenerator {
 	}
 
 
-	export function funcRender(obj: LabelsHtmlData, target: HTMLElement, camera: Camera) {
+	export function funcRender(obj: LabelsHtmlData, target: HTMLElement, lowQuality: boolean, camera: Camera) {
 
 		const pos = Projections.hexToScreen(
 			camera,

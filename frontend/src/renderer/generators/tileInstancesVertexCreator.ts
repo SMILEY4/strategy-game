@@ -1,16 +1,12 @@
 import {VertexGeneratorResult} from "../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../common/webgl/mixedArrayBuffer";
-import {buildMap, isPointInRectangle, Rectangle, shuffleArray} from "../../common/utils";
+import {buildMap} from "../../common/utils";
 import {Tile} from "../../models/tile/tile";
 import {Visibility} from "../../models/misc/visibility";
-import {TilemapUtils} from "../../common/tilemapUtils";
 import {TerrainType} from "../../models/tile/terrainType";
-import {Random} from "../../common/random";
-import {mapHiddenOrNull} from "../../common/hiddenType";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
-import {BorderBuilder} from "../utils/borderBuilder";
-import {packBorder} from "../utils/packBorder";
-import {Projections} from "../../common/webgl/projections";
+import {TileId} from "../../models/tile/tileId";
+import { sort } from 'fast-sort';
 
 export namespace TileInstanceVertexGenerator {
 
@@ -41,30 +37,23 @@ export namespace TileInstanceVertexGenerator {
 		MixedArrayBufferType.INT,
 	];
 
-	let tileIndices: number[] = [];
-
-
 	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
 
 		const relevantTiles = context.get<Tile[]>("relevantTiles");
-		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");
+		const coastlineBorderMaskData = context.get<Map<TileId, number>>("coastlineBorderMaskData");
+
 		const colorLandLight = context.get<[number, number, number]>("colorLandLight");
 		const colorLandDark = context.get<[number, number, number]>("colorLandDark");
 
 		const tileCounts = countTileTypes(relevantTiles);
 
-		if (tileIndices.length !== relevantTiles.length) { // todo: define "random" order by pre-computed property of tile
-			tileIndices = buildTileIndices(relevantTiles.length);
-		}
-
 		const [arrayBufferWater, cursorWater] = MixedArrayBuffer.createWithCursor(tileCounts.water, WATER_PATTERN);
 		const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, LAND_PATTERN);
 		const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, FOG_PATTERN);
 
-
-		for (let i = 0, n = tileIndices.length; i < n; i++) {
-			const index = tileIndices[i];
-			const tile = relevantTiles[index];
+		const shuffledRelevantTiles = sort(relevantTiles).asc(e => e.metaProperties.randomIndex)
+		for (let i = 0, n = shuffledRelevantTiles.length; i < n; i++) {
+			const tile = shuffledRelevantTiles[i];
 			if (isFog(tile)) {
 				appendFogInstance(tile, cursorFog);
 			}
@@ -72,10 +61,9 @@ export namespace TileInstanceVertexGenerator {
 				appendLandInstance(tile, cursorLand, colorLandLight, colorLandDark);
 			}
 			if (isWater(tile)) {
-				appendWaterInstance(tile, cursorWater, tileByPosProvider);
+				appendWaterInstance(tile, cursorWater, coastlineBorderMaskData);
 			}
 		}
-
 
 		return buildMap([
 			[
@@ -136,13 +124,10 @@ export namespace TileInstanceVertexGenerator {
 	}
 
 	function appendFogInstance(tile: Tile, cursor: MixedArrayBufferCursor) {
-		const q = tile.position.q;
-		const r = tile.position.r;
 
 		// world position
-		const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
-		cursor.append(center[0]);
-		cursor.append(center[1]);
+		cursor.append(tile.metaProperties.worldPosition.x);
+		cursor.append(tile.metaProperties.worldPosition.y);
 
 		// visibility
 		cursor.append(tile.visibility.renderId);
@@ -158,28 +143,19 @@ export namespace TileInstanceVertexGenerator {
 	function appendWaterInstance(
 		tile: Tile,
 		cursor: MixedArrayBufferCursor,
-		tileByPosProvider: (q: number, r: number) => Tile | null,
+		coastlineBorderMaskData: Map<TileId, number>,
 	) {
-		const q = tile.position.q;
-		const r = tile.position.r;
 
 		// world position
-		const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
-		cursor.append(center[0]);
-		cursor.append(center[1]);
+		cursor.append(tile.metaProperties.worldPosition.x);
+		cursor.append(tile.metaProperties.worldPosition.y);
 
 		// color
-		const heightJitter = Random.normalized(tile.id) * 0.1 - 0.5;
+		const heightJitter = tile.metaProperties.randomValue0 * 0.1 - 0.5;
 		cursor.append(1 - clamp(0, (tile.base.value.height + 1) * 2 + heightJitter, 1));
 
 		// water border mask
-		const border = BorderBuilder.build(tile, tileByPosProvider, false, (ta, tb) => {
-			const a = mapHiddenOrNull(ta.base, it => it.terrainType);
-			const b = mapHiddenOrNull(tb.base, it => it.terrainType);
-			return (!a && !b) ? false : a === TerrainType.WATER && b !== null && a !== b;
-		});
-		const borderPacked = packBorder(border);
-		cursor.append(borderPacked);
+		cursor.append(coastlineBorderMaskData.get(tile.id)!);
 	}
 
 	//===== LAND INSTANCES ==========================================
@@ -194,30 +170,19 @@ export namespace TileInstanceVertexGenerator {
 		colorLight: [number, number, number],
 		colorDark: [number, number, number],
 	) {
-		const q = tile.position.q;
-		const r = tile.position.r;
 
 		// world position
-		const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
-		cursor.append(center[0]);
-		cursor.append(center[1]);
+		cursor.append(tile.metaProperties.worldPosition.x);
+		cursor.append(tile.metaProperties.worldPosition.y);
 
 		// color
-		const heightJitter = Random.normalized(tile.id) * 0.1 - 0.5;
+		const heightJitter = tile.metaProperties.randomValue1 * 0.1 - 0.5;
 		const color = mix(colorLight, colorDark, tile.base.value.height * 2 + heightJitter);
 		cursor.append(color);
 	}
 
 
 	//===== UTILITIES ===============================================
-
-
-	function buildTileIndices(tileCount: number): number[] {
-		const indices = [...Array(tileCount).keys()];
-		shuffleArray(indices);
-		return indices;
-	}
-
 
 	function mix(x: [number, number, number], y: [number, number, number], a: number): [number, number, number] {
 		const clampedA = clamp(0, a, 1);

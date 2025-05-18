@@ -1,16 +1,13 @@
-import {
-	VertexGeneratorResult,
-} from "../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
+import {VertexGeneratorResult} from "../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../common/webgl/mixedArrayBuffer";
 import {Tile} from "../../models/tile/tile";
 import {MapMode} from "../../models/misc/mapMode";
-import {TilemapUtils} from "../../common/tilemapUtils";
 import {TileSummary} from "../../models/tile/tileSummary";
-import {buildMap, isPointInRectangle, Rectangle} from "../../common/utils";
+import {buildMap} from "../../common/utils";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {BorderBuilder} from "../utils/borderBuilder";
 import {packBorder} from "../utils/packBorder";
-import {Projections} from "../../common/webgl/projections";
+import {Visibility} from "../../models/misc/visibility";
 
 export namespace OverlayInstancesVertexGenerator {
 
@@ -41,19 +38,18 @@ export namespace OverlayInstancesVertexGenerator {
 
 		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");
-		const mapMode = context.get<MapMode>("mapMode");
 		const moveTargets = context.get<TileSummary[]>("moveTargets");
+		const mapMode = context.get<MapMode>("mapMode");
+		const mapModeContext = mapMode.renderData.context(relevantTiles);
 
 		const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(relevantTiles.length, INSTANCE_PATTERN);
 
-
-		const mapModeContext = mapMode.renderData.context(relevantTiles);
 		const highlightMovementTiles = new Set<string>(moveTargets.map(it => it.position.q + "/" + it.position.r));
 
 		for (let i = 0, n = relevantTiles.length; i < n; i++) {
-			// todo: optimization: only create instances for tiles that require overlay ?
 			const tile = relevantTiles[i];
-			appendOverlayInstance(tile, mapMode, mapModeContext, highlightMovementTiles, tileByPosProvider, cursorOverlay);
+				appendOverlayInstance(tile, mapMode, mapModeContext, highlightMovementTiles, tileByPosProvider, cursorOverlay);
+
 		}
 
 		return buildMap([
@@ -61,10 +57,10 @@ export namespace OverlayInstancesVertexGenerator {
 				OUTPUT_ID,
 				{
 					data: arrayBufferOverlay.getRawBuffer(),
-					entryCount: relevantTiles.length
-				}
-			]
-		])
+					entryCount: relevantTiles.length,
+				},
+			],
+		]);
 	}
 
 	function appendOverlayInstance(
@@ -75,17 +71,14 @@ export namespace OverlayInstancesVertexGenerator {
 		tileByPosProvider: (q: number, r: number) => Tile | null,
 		cursor: MixedArrayBufferCursor,
 	) {
-		const q = tile.position.q;
-		const r = tile.position.r;
 
 		// world position
-		const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
-		cursor.append(center[0]);
-		cursor.append(center[1]);
+		cursor.append(tile.metaProperties.worldPosition.x);
+		cursor.append(tile.metaProperties.worldPosition.y);
 
 		// tile position
-		cursor.append(q);
-		cursor.append(r);
+		cursor.append(tile.position.q);
+		cursor.append(tile.position.r);
 
 		// primary border mask
 		const borderData = BorderBuilder.build(tile, tileByPosProvider, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);

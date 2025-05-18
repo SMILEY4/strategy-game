@@ -10,8 +10,9 @@ export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 
 	private source: RenderElementGeneratorOutputDefinition = null as any;
 	private cullingRadius: number = 9999999;
+	private lowQualityThreshold: number = 9999999;
 	private templateFunc: () => HTMLElement = () => undefined as any;
-	private renderFunc: (obj: any, target: HTMLElement, camera: Camera) => void = () => undefined;
+	private renderFunc: (obj: any, target: HTMLElement, lowQuality: boolean, camera: Camera) => void = () => undefined;
 	private name: string = UID.generate();
 
 
@@ -41,6 +42,14 @@ export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 	}
 
 	/**
+	 * Specify the amount of elements after which the low quality flag is set (for all elements)
+	 */
+	public withLowQualityThreshold(lowQualityThreshold: number): HtmlDrawRenderGraphNode {
+		this.lowQualityThreshold = lowQualityThreshold;
+		return this;
+	}
+
+	/**
 	 * Define a function creating a base html element to use as a template (required).
 	 */
 	public withTemplateFunc(templateFunc: () => HTMLElement): HtmlDrawRenderGraphNode {
@@ -51,7 +60,7 @@ export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 	/**
 	 * Define a function that transforms the input elements into a html element (required).
 	 */
-	public withRenderFunc(renderFunc: (obj: any, target: HTMLElement, camera: Camera) => void): HtmlDrawRenderGraphNode {
+	public withRenderFunc(renderFunc: (obj: any, target: HTMLElement, lowQuality: boolean, camera: Camera) => void): HtmlDrawRenderGraphNode {
 		this.renderFunc = renderFunc;
 		return this;
 	}
@@ -64,6 +73,13 @@ export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 	}
 
 	/**
+	 * @return the amount of elements after which the low quality flag is set
+	 */
+	public getLowQualityThreshold(): number {
+		return this.lowQualityThreshold;
+	}
+
+	/**
 	 * @return the template function
 	 */
 	public getTemplateFunc(): () => HTMLElement {
@@ -73,7 +89,7 @@ export class HtmlDrawRenderGraphNode implements RenderGraphNode {
 	/**
 	 * @return the render function
 	 */
-	public getRenderFunc(): (obj: any, target: HTMLElement, camera: Camera) => void {
+	public getRenderFunc(): (obj: any, target: HTMLElement, lowQuality: boolean, camera: Camera) => void {
 		return this.renderFunc;
 	}
 
