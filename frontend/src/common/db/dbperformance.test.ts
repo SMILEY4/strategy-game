@@ -9,6 +9,7 @@ import {Random} from "../random";
 import chooseRandom = Random.chooseRandom;
 import {SetState} from "../zustandUtils";
 import create from "zustand";
+import {useQuerySingle} from "./adapters/databaseHooks";
 
 interface TestEntity {
 	id: string,
@@ -35,6 +36,7 @@ describe("database performance", () => {
 
 		test("custom db", () => {
 			let checksum = 0;
+			let counter = 0;
 			const ctx = new TestContext();
 
 			// CREATE DB
