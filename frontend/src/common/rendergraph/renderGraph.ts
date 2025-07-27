@@ -45,30 +45,39 @@ export class RenderGraph {
 	}
 
 	public initialize(compileResources: Map<string, any>) {
+		this.validate();
+		this.sort();
+		this.createResources();
+		this.compile(compileResources)
+		this.executeCounter = 0;
+	}
 
+	private validate() {
 		if (this.unprocessedNodes.map(it => it.getName()).distinct().length !== this.unprocessedNodes.length) {
 			throw new Error("Names of render graph nodes are not unique!");
 		}
-
 		const errors = this.unprocessedNodes.flatMap(
 			node => node.validate().map(error => "[" + node.getName() + "]" + error),
 		);
 		if (errors.length > 0) {
 			throw new Error("Render graph validation error:\n" + errors.join("\n"));
 		}
+	}
 
+	private sort()  {
 		this.sortedNodes.push(
 			new InitRenderGraphNode(),
 			...this.sorter.sort(this.unprocessedNodes),
 		);
+	}
 
+	private createResources() {
 		this.resourceManager.initialize(this.sortedNodes);
+	}
 
+	private compile(compileResources: Map<string, any>) {
 		this.commands.push(...this.compiler.compile(this.sortedNodes, compileResources, true, this.resourceManager));
-
-		console.log(this.commands.map(it => it.getDebugData()));
-
-		this.executeCounter = 0;
+		console.log("Render Commands", this.commands.map(it => it.getDebugData()));
 	}
 
 	public dispose() {
