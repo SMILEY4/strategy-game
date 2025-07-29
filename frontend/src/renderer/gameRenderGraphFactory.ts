@@ -413,7 +413,7 @@ export class GameRenderGraphFactory {
 
 
 		const additionalTileDataGenerator = graph
-			.createIntermediateDataGenerator("gen-additiona-tile-data")
+			.createIntermediateDataGenerator("gen-additional-tile-data")
 			.withProperty(propTiles, "tiles")
 			.withProperty(propTileByPosProvider, "tileByPosProvider")
 			.withFunction(AdditionalTileDataGenerator.func)

@@ -33,7 +33,7 @@ export namespace AdditionalTileDataGenerator {
 		}
 
 		return buildMap([
-			[COASTLINE_BORDER_MASK_OUTPUT_ID],
+			[COASTLINE_BORDER_MASK_OUTPUT_ID, coastlineBorderMask],
 		]);
 	}
 

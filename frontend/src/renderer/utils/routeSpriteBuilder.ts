@@ -90,6 +90,12 @@ export namespace RouteSpriteBuilder {
 
 		outVertexData.push(ur);
 		outVertexData.push(vr);
+
+		// tile base color
+		outVertexData.push(1, 1, 1)
+
+		// country color
+		outVertexData.push(1, 1, 1)
 	}
 
 	function triangleFunction(x: number, f: number): number{
