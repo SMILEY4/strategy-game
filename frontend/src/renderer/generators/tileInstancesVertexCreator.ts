@@ -45,9 +45,14 @@ export namespace TileInstanceVertexGenerator {
 		const coastlineBorderMaskData = context.get<Map<TileId, number>>("coastlineBorderMaskData");
 
 		// wasm test
-		wasm.init_tiles([relevantTiles[0], relevantTiles[1], relevantTiles[2]])
-		wasm.compute();
+		console.time("time-wasm-send")
+		wasm.init_tiles(relevantTiles)
+		console.timeEnd("time-wasm-send")
 
+		console.time("time-wasm-run")
+		const wasmBuffer = wasm.compute();
+		console.timeEnd("time-wasm-run")
+		console.log("wasm-buffer", wasmBuffer);
 
 		const colorLandLight = context.get<[number, number, number]>("colorLandLight");
 		const colorLandDark = context.get<[number, number, number]>("colorLandDark");

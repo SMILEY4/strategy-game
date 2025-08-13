@@ -1,48 +1,49 @@
 mod utils;
 
 use wasm_bindgen::prelude::*;
-use js_sys::{ArrayBuffer, Uint8Array, Array, Reflect};
+use js_sys::{ArrayBuffer, Uint8Array, Int32Array, Array};
 use std::cell::RefCell;
-
-thread_local! {
-    static STORED_DATA: RefCell<Option<Array>> = RefCell::new(None);
-}
+use serde::Deserialize;
 
 #[wasm_bindgen]
 extern "C" {
-  #[wasm_bindgen(js_namespace = console)]
-  fn log(s: &str);
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+#[derive(Deserialize, Clone)]
+pub struct Tile {
+    pub position: TilePosition,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct TilePosition {
+    pub q: i32,
+    pub r: i32,
+}
+
+thread_local! {
+    static DATA: RefCell<Vec<Tile>> = RefCell::new(Vec::new());
+}
+
+
+#[wasm_bindgen]
+pub fn init_tiles(js_data: JsValue) {
+    let vec: Vec<Tile> = serde_wasm_bindgen::from_value(js_data).expect("Invalid JS data");
+    DATA.with(|d| *d.borrow_mut() = vec);
 }
 
 #[wasm_bindgen]
-pub fn init_tiles(data: JsValue) {
-    let arr: Array = Array::from(&data);
-    STORED_DATA.with(|slot| {
-        *slot.borrow_mut() = Some(arr);
-    });
-}
+pub fn compute() -> ArrayBuffer {
+    DATA.with(|d| {
+        let data = d.borrow();
+        let mut buffer = Vec::with_capacity(data.len());
 
-#[wasm_bindgen]
-pub fn compute() {
-    STORED_DATA.with(|slot| {
-        if let Some(arr) = &*slot.borrow() {
-            calculate_tile_instances(arr);
+        for tile in data.iter() {
+            buffer.push( tile.position.q as i32)
         }
-    });
-}
 
-fn calculate_tile_instances(arr: &Array) -> ArrayBuffer {
-    let buffer = ArrayBuffer::new(arr.length());
-    let view = Uint8Array::new(&buffer);
-
-    for i in 0..arr.length() {
-        let obj = arr.get(i);
-        let position = Reflect::get(&obj, &JsValue::from_str("position")).unwrap_or(JsValue::NULL);
-        let posQ = Reflect::get(&position, &JsValue::from_str("q")).unwrap_or(JsValue::NULL).as_f64().unwrap_or(0.0);
-        let posR = Reflect::get(&position, &JsValue::from_str("r")).unwrap_or(JsValue::NULL).as_f64().unwrap_or(0.0);
-
-        log(&format!("[wasm]: pos {}: {} {}", i, posQ, posR));
-    }
-
-    buffer
+        let array = Int32Array::from(buffer.as_slice());
+        array.buffer()
+    })
 }
