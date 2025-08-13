@@ -3,6 +3,10 @@ import ReactDOM from "react-dom/client";
 import {App} from "./ui/pages/App";
 import {ArrayExtensions} from "./common/extensions";
 
+import * as wasm from "wasm"
+
+wasm.greet()
+
 ArrayExtensions.setup()
 
 ReactDOM.createRoot(document.getElementById("root")!).render(<App/>);

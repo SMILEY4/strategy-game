@@ -3,9 +3,9 @@
   "version": "0.7.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "wasm-pack build ./wasm && rm -rf node_modules/.vite && npm install && vite",
     "preview": "vite preview",
-    "build": "tsc && vite build",
+    "build": "wasm-pack build ./wasm && rm -rf node_modules/.vite && npm install && tsc && vite build",
     "test": "jest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -31,7 +31,8 @@
     "rollup-plugin-react-scoped-css": "^0.8.4",
     "seedrandom": "^3.0.5",
     "use-image": "^1.1.1",
-    "zustand": "^4.1.2"
+    "zustand": "^4.1.2",
+    "wasm": "file:./wasm/pkg"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",
@@ -56,6 +57,7 @@
     "storybook": "^7.2.1",
     "ts-jest": "^28.0.2",
     "typescript": "^5.1.6",
-    "vite": "^5.0.10"
+    "vite": "^5.0.10",
+    "vite-plugin-wasm": "^3.5.0"
   }
 }
