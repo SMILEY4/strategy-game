@@ -8,6 +8,8 @@ import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeCo
 import {TileId} from "../../models/tile/tileId";
 import { sort } from 'fast-sort';
 
+import * as wasm from "wasm"
+
 export namespace TileInstanceVertexGenerator {
 
 	export const OUTPUT_WATER_ID = "tiles.instances.water";
@@ -41,6 +43,11 @@ export namespace TileInstanceVertexGenerator {
 
 		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const coastlineBorderMaskData = context.get<Map<TileId, number>>("coastlineBorderMaskData");
+
+		// wasm test
+		wasm.init_tiles([relevantTiles[0], relevantTiles[1], relevantTiles[2]])
+		wasm.compute();
+
 
 		const colorLandLight = context.get<[number, number, number]>("colorLandLight");
 		const colorLandDark = context.get<[number, number, number]>("colorLandDark");

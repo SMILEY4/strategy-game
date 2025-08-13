@@ -3,9 +3,10 @@
   "version": "0.7.0",
   "private": true,
   "scripts": {
-    "dev": "wasm-pack build ./wasm && rm -rf node_modules/.vite && npm install && vite",
+    "wasm": "wasm-pack build ./wasm && rm -rf node_modules/.vite && npm install",
+    "dev": "vite",
     "preview": "vite preview",
-    "build": "wasm-pack build ./wasm && rm -rf node_modules/.vite && npm install && tsc && vite build",
+    "build": "wasm && tsc && vite build",
     "test": "jest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
