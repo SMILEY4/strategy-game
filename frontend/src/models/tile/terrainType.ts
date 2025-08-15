@@ -1,7 +1,7 @@
 export class TerrainType {
 
-	public static readonly LAND = new TerrainType("LAND")
-	public static readonly WATER = new TerrainType("WATER")
+	public static readonly LAND = new TerrainType("LAND", 1)
+	public static readonly WATER = new TerrainType("WATER", 2)
 
 	public static fromString(id: string): TerrainType {
 		if(id === TerrainType.LAND.id) return TerrainType.LAND
@@ -9,9 +9,11 @@ export class TerrainType {
 		throw new Error("Unknown TerrainType ID: " + id)
 	}
 
+	readonly renderId: number;
 	readonly id: string
 
-	private constructor(id: string) {
+	private constructor(id: string, renderId: number) {
 		this.id = id;
+		this.renderId = renderId;
 	}
 }

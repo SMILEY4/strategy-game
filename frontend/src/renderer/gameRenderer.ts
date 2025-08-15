@@ -6,6 +6,7 @@ import {GameChangeTracker} from "./gameChangeTracker";
 import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {Camera} from "../common/webgl/camera";
+import {WasmApi} from "../wasm/wasmApi";
 
 export class GameRenderer {
 
@@ -15,6 +16,8 @@ export class GameRenderer {
 	private readonly textureAtlasManager: GameTextureAtlasDataManager;
 
 	private gameRenderGraph: RenderGraph | null = null;
+
+	private frameCounter = 0;
 
 	constructor(
 		gameStateAccess: GameStateAccess,
@@ -51,6 +54,12 @@ export class GameRenderer {
 		if (!canvasHandle.isReady()) {
 			return;
 		}
+
+		if(this.frameCounter < 10) {
+			WasmApi.Renderer.setTiles(this.gameStateAccess.getTiles());
+		}
+		this.frameCounter++;
+
 		this.changeTracker.prepareFrame(this.getRenderCamera(canvasHandle));
 		this.gameRenderGraph?.execute();
 	}
