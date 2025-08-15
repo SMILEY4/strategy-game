@@ -6,9 +6,8 @@ import {Visibility} from "../../models/misc/visibility";
 import {TerrainType} from "../../models/tile/terrainType";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {TileId} from "../../models/tile/tileId";
-import { sort } from 'fast-sort';
-
-import * as wasm from "wasm"
+import {sort} from "fast-sort";
+import {WasmApi} from "../../wasm/wasmApi";
 
 export namespace TileInstanceVertexGenerator {
 
@@ -44,15 +43,9 @@ export namespace TileInstanceVertexGenerator {
 		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const coastlineBorderMaskData = context.get<Map<TileId, number>>("coastlineBorderMaskData");
 
-		// wasm test
-		console.time("time-wasm-send")
-		wasm.init_tiles(relevantTiles)
-		console.timeEnd("time-wasm-send")
-
-		console.time("time-wasm-run")
-		const wasmBuffer = wasm.compute();
-		console.timeEnd("time-wasm-run")
-		console.log("wasm-buffer", wasmBuffer);
+		WasmApi.Renderer.initTiles(relevantTiles);
+		const wasmBuffer = WasmApi.Renderer.compute();
+		console.log("WASM buffer", wasmBuffer)
 
 		const colorLandLight = context.get<[number, number, number]>("colorLandLight");
 		const colorLandDark = context.get<[number, number, number]>("colorLandDark");
@@ -63,7 +56,7 @@ export namespace TileInstanceVertexGenerator {
 		const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, LAND_PATTERN);
 		const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, FOG_PATTERN);
 
-		const shuffledRelevantTiles = sort(relevantTiles).asc(e => e.metaProperties.randomIndex)
+		const shuffledRelevantTiles = sort(relevantTiles).asc(e => e.metaProperties.randomIndex);
 		for (let i = 0, n = shuffledRelevantTiles.length; i < n; i++) {
 			const tile = shuffledRelevantTiles[i];
 			if (isFog(tile)) {
