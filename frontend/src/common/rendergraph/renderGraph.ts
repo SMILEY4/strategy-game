@@ -54,7 +54,21 @@ export class RenderGraph {
 
 	private validate() {
 		if (this.unprocessedNodes.map(it => it.getName()).distinct().length !== this.unprocessedNodes.length) {
-			throw new Error("Names of render graph nodes are not unique!");
+			const nameCounts = new Map<string, number>();
+			this.unprocessedNodes.forEach(node => {
+				if(nameCounts.has(node.getName())) {
+					nameCounts.set(node.getName(), nameCounts.get(node.getName())! + 1)
+				} else {
+					nameCounts.set(node.getName(), 1)
+				}
+			})
+			const duplicateNames: string[] = [];
+			for (let [name, count] of nameCounts) {
+				if(count > 1) {
+					duplicateNames.push(name);
+				}
+			}
+			throw new Error("Names of render graph nodes are not unique! (" + duplicateNames + ")");
 		}
 		const errors = this.unprocessedNodes.flatMap(
 			node => node.validate().map(error => "[" + node.getName() + "]" + error),

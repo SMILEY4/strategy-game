@@ -28,6 +28,7 @@ export interface TileEntity {
 	isValidSettlementLocation: boolean,
 	objects: TileObject[],
 	metaProperties: {
+		randomIndex: number,
 		worldPosition: Point,
 		randomValue0: number,
 		randomValue1: number,

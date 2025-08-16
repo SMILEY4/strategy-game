@@ -7,6 +7,7 @@ import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {Camera} from "../common/webgl/camera";
 import {WasmApi} from "../wasm/wasmApi";
+import {WasmProbe} from "../wasm/wasmProbe";
 
 export class GameRenderer {
 
@@ -55,10 +56,12 @@ export class GameRenderer {
 			return;
 		}
 
-		if(this.frameCounter < 10) {
-			WasmApi.Renderer.setTiles(this.gameStateAccess.getTiles());
-		}
-		this.frameCounter++;
+		// WasmProbe.watchMemory("render")
+		//
+		// if(this.frameCounter < 10) {
+		// 	WasmApi.Renderer.setTiles(this.gameStateAccess.getTiles());
+		// }
+		// this.frameCounter++;
 
 		this.changeTracker.prepareFrame(this.getRenderCamera(canvasHandle));
 		this.gameRenderGraph?.execute();

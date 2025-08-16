@@ -7,7 +7,6 @@ import {TerrainType} from "../../models/tile/terrainType";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {TileId} from "../../models/tile/tileId";
 import {sort} from "fast-sort";
-import {WasmApi} from "../../wasm/wasmApi";
 
 export namespace TileInstanceVertexGenerator {
 
@@ -39,69 +38,64 @@ export namespace TileInstanceVertexGenerator {
 	];
 
 	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
-		console.time("TileInstanceVertexGenerator")
 
 		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const coastlineBorderMaskData = context.get<Map<TileId, number>>("coastlineBorderMaskData");
 
-		WasmApi.Renderer.update();
-		const wasmLand = WasmApi.Renderer.getVerticesLand();
-		const wasmWater = WasmApi.Renderer.getVerticesWater();
-		const wasmFog = WasmApi.Renderer.getVerticesFog();
+		// WasmApi.Renderer.update();
+		// const wasmLand = WasmApi.Renderer.getVerticesLand();
+		// const wasmWater = WasmApi.Renderer.getVerticesWater();
+		// const wasmFog = WasmApi.Renderer.getVerticesFog();
 
-		// const colorLandLight = context.get<[number, number, number]>("colorLandLight");
-		// const colorLandDark = context.get<[number, number, number]>("colorLandDark");
+		const colorLandLight = context.get<[number, number, number]>("colorLandLight");
+		const colorLandDark = context.get<[number, number, number]>("colorLandDark");
 
 		const tileCounts = countTileTypes(relevantTiles);
 
-		// const [arrayBufferWater, cursorWater] = MixedArrayBuffer.createWithCursor(tileCounts.water, WATER_PATTERN);
-		// const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, LAND_PATTERN);
-		// const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, FOG_PATTERN);
+		const [arrayBufferWater, cursorWater] = MixedArrayBuffer.createWithCursor(tileCounts.water, WATER_PATTERN);
+		const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, LAND_PATTERN);
+		const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, FOG_PATTERN);
 
-		// const shuffledRelevantTiles = sort(relevantTiles).asc(e => e.metaProperties.randomIndex);
-		// for (let i = 0, n = shuffledRelevantTiles.length; i < n; i++) {
-		// 	const tile = shuffledRelevantTiles[i];
-		// 	if (isFog(tile)) {
-		// 		appendFogInstance(tile, cursorFog);
-		// 	}
-		// 	if (isLand(tile)) {
-		// 		appendLandInstance(tile, cursorLand, colorLandLight, colorLandDark);
-		// 	}
-		// 	if (isWater(tile)) {
-		// 		appendWaterInstance(tile, cursorWater, coastlineBorderMaskData);
-		// 	}
-		// }
+		const shuffledRelevantTiles = sort(relevantTiles).asc(e => e.metaProperties.randomIndex);
+		for (let i = 0, n = shuffledRelevantTiles.length; i < n; i++) {
+			const tile = shuffledRelevantTiles[i];
+			if (isFog(tile)) {
+				appendFogInstance(tile, cursorFog);
+			}
+			if (isLand(tile)) {
+				appendLandInstance(tile, cursorLand, colorLandLight, colorLandDark);
+			}
+			if (isWater(tile)) {
+				appendWaterInstance(tile, cursorWater, coastlineBorderMaskData);
+			}
+		}
 
-		const result = buildMap([
+		return buildMap([
 			[
 				OUTPUT_WATER_ID,
 				{
-					data: wasmWater,
-					// data: arrayBufferWater.getRawBuffer(),
+					// data: wasmWater,
+					data: arrayBufferWater.getRawBuffer(),
 					entryCount: tileCounts.water,
 				},
 			],
 			[
 				OUTPUT_LAND_ID,
 				{
-					data: wasmLand,
-					// data: arrayBufferLand.getRawBuffer(),
+					// data: wasmLand,
+					data: arrayBufferLand.getRawBuffer(),
 					entryCount: tileCounts.land,
 				},
 			],
 			[
 				OUTPUT_FOG_ID,
 				{
-					data: wasmFog,
-					// data: arrayBufferFog.getRawBuffer(),
+					// data: wasmFog,
+					data: arrayBufferFog.getRawBuffer(),
 					entryCount: tileCounts.fog,
 				},
 			],
 		]);
-
-		console.timeEnd("TileInstanceVertexGenerator")
-
-		return result;
 	}
 
 

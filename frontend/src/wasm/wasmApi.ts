@@ -1,6 +1,5 @@
 import * as wasm from "wasm";
 import {Tile} from "../models/tile/tile";
-import {TileId} from "../models/tile/tileId";
 
 export namespace WasmApi {
 

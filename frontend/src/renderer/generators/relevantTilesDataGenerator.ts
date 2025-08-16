@@ -11,6 +11,8 @@ export namespace RelevantTilesDataGenerator {
 		const relevantWorldArea = context.get<Rectangle>("relevantWorldArea");
 		const tiles = context.get<Tile[]>("tiles");
 
+		console.log("gen relevant tiles")
+
 		const relevantTiles = tiles.filter(tile => {
 			const worldPos = Projections.hexToWorld(tile.position.q, tile.position.r)
 			return isPointInRectangle(worldPos, relevantWorldArea)

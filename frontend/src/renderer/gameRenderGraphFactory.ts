@@ -58,6 +58,7 @@ import {InitNodeCompiler} from "../common/rendergraph/compilers/initNodeCompiler
 import {RelevantWorldAreaDataGenerator} from "./generators/relevantWorldAreaDataGenerator";
 import {RelevantTilesDataGenerator} from "./generators/relevantTilesDataGenerator";
 import {AdditionalTileDataGenerator} from "./generators/coastlineBorderMaskDataGenerator";
+import {WasmApi} from "../wasm/wasmApi";
 
 export class GameRenderGraphFactory {
 
@@ -112,223 +113,16 @@ export class GameRenderGraphFactory {
 			]),
 		);
 
+		const configProps = this.createConfigurationProperties(graph);
+		const textureNodes = this.createTextureNodes(graph, gameAccess);
+		const externalProps = this.createExternalProps(graph, gameAccess, changeTracker, canvasHandle)
+
 		const textureAtlasDetails = TextureAtlas.createFromData(
 			textureAtlasManager.getEntries("tileset_details"),
 			textureAtlasManager.getGroupDefinitions("tileset_details"),
 		);
 
-		const propColorLandLight = graph
-			.createPropertyConstant<[number, number, number]>("colorLandLight")
-			.withType(GLUniformType.VEC3)
-			.withValue(this.hexToRgb("#949b64"));
-
-		const propColorLandDark = graph
-			.createPropertyConstant<[number, number, number]>("colorLandDark")
-			.withType(GLUniformType.VEC3)
-			.withValue(this.hexToRgb("#747e57"));
-
-		const propColorWaterLight = graph
-			.createPropertyConstant<[number, number, number]>("colorWaterLight")
-			.withType(GLUniformType.VEC3)
-			.withValue(this.hexToRgb("#a5c0c5"));
-
-		const propColorWaterDark = graph
-			.createPropertyConstant<[number, number, number]>("colorWaterDark")
-			.withType(GLUniformType.VEC3)
-			.withValue(this.hexToRgb("#7995ae"));
-
-		const propWaterWaveDistortionStrength = graph
-			.createPropertyConstant<number>("waterWaveDistortionStrength")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.225);
-
-		const propWaterWaveDistortionScale = graph
-			.createPropertyConstant<number>("waterWaveDistortionScale")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.05);
-
-		const propWaterWaveSpeed = graph
-			.createPropertyConstant<number>("waterWaveSpeed")
-			.withType(GLUniformType.FLOAT)
-			.withValue(1.15);
-
-		const propWaterWaveSharpness = graph
-			.createPropertyConstant<number>("waterWaveSharpness")
-			.withType(GLUniformType.FLOAT)
-			.withValue(1.5);
-
-
-		const propLandCutoffThreshold = graph
-			.createPropertyConstant<number>("landCutoffThreshold")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.5);
-
-		const propLandOutlineSizeLight = graph
-			.createPropertyConstant<number>("landOutlineSizeLight")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.003);
-
-		const propLandOutlineSizeDark = graph
-			.createPropertyConstant<number>("landOutlineSizeDark")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.002);
-
-
-		const propFogColorUnknown = graph
-			.createPropertyConstant<[number, number, number, number]>("fogColorUnknown")
-			.withType(GLUniformType.VEC4)
-			.withValue([0.149, 0.122, 0.082, 1]);
-
-		const propFogColorDiscovered = graph
-			.createPropertyConstant<[number, number, number, number]>("fogColorDiscovered")
-			.withType(GLUniformType.VEC4)
-			.withValue([0.149, 0.122, 0.082, 0.6]);
-
-
-		const propPaperLargeScale = graph
-			.createPropertyConstant<number>("paperLargeScale")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.002);
-
-		const propPaperLargeStrength = graph
-			.createPropertyConstant<number>("paperLargeStrength")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.25);
-
-		const propPaperLargeContrast = graph
-			.createPropertyConstant<number>("paperLargeContrast")
-			.withType(GLUniformType.FLOAT)
-			.withValue(2);
-
-		const propPaperMediumScale = graph
-			.createPropertyConstant<number>("paperMediumScale")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.002);
-
-		const propPaperMediumStrength = graph
-			.createPropertyConstant<number>("paperMediumStrength")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.3);
-
-		const propPaperMediumContrast = graph
-			.createPropertyConstant<number>("paperMediumContrast")
-			.withType(GLUniformType.FLOAT)
-			.withValue(1);
-
-
-		const propPaperSmallScale = graph
-			.createPropertyConstant<number>("paperSmallScale")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.005);
-
-		const propPaperSmallStrength = graph
-			.createPropertyConstant<number>("paperSmallStrength")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.2);
-
-		const propPaperSmallContrast = graph
-			.createPropertyConstant<number>("paperSmallContrast")
-			.withType(GLUniformType.FLOAT)
-			.withValue(2);
-
-
-		const propPaperCloudsScale = graph
-			.createPropertyConstant<number>("paperCloudsScale")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.003);
-
-		const propPaperCloudsStrength = graph
-			.createPropertyConstant<number>("paperCloudsStrength")
-			.withType(GLUniformType.FLOAT)
-			.withValue(0.2);
-
-		const propPaperCloudsContrast = graph
-			.createPropertyConstant<number>("paperCloudsContrast")
-			.withType(GLUniformType.FLOAT)
-			.withValue(1);
-
-		const propLutSize = graph
-			.createPropertyConstant<number>("lutSize")
-			.withType(GLUniformType.FLOAT)
-			.withValue(64);
-
-
-		const propTiles = graph
-			.createPropertyDynamic<Tile[]>("tiles")
-			.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
-			.withValue(() => gameAccess.getTiles());
-
-		const propTileByPosProvider = graph
-			.createPropertyDynamic<(q: number, r: number) => Tile | null>("tileByPosProvider")
-			.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
-			.withValue(() => ((q, r) => gameAccess.getTileAt(q, r)));
-
-		const propSettlements = graph
-			.createPropertyDynamic<Settlement[]>("settlements")
-			.withChangeTest(() => changeTracker.getTrackedChanges().settlements || changeTracker.getTrackedChanges().commands)
-			.withValue(() => gameAccess.getSettlements());
-
-		const propWorldObjects = graph
-			.createPropertyDynamic<WorldObject[]>("worldObjects")
-			.withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
-			.withValue(() => gameAccess.getWorldObjects());
-
-		const propRoutes = graph
-			.createPropertyDynamic<Route[]>("routes")
-			.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
-			.withValue(() => gameAccess.getRoutes());
-
-		const propMapMode = graph
-			.createPropertyDynamic<MapMode>("mapMode")
-			.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
-			.withValue(() => gameAccess.getMapMode());
-
-		const propMoveTargets = graph
-			.createPropertyDynamic<TileSummary[]>("moveTargets")
-			.withChangeTest(() => changeTracker.getTrackedChanges().movementTargets)
-			.withValue(() => gameAccess.getMoveTargets());
-
-		const propMovePath = graph
-			.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("movePaths")
-			.withChangeTest(() => changeTracker.getTrackedChanges().movementPaths)
-			.withValue(() => gameAccess.getMovePaths());
-
-		const propSelectedTile = graph
-			.createPropertyDynamic<[number, number]>("selectedTile")
-			.withValue(() => gameAccess.getSelectedTile() ? [gameAccess.getSelectedTile()?.position.q, gameAccess.getSelectedTile()?.position.r] as [number, number] : [99999, 99999])
-			.withChangeTest(() => changeTracker.getTrackedChanges().selectedTile)
-			.withType(GLUniformType.INT_VEC2);
-
-		const propCamera = graph
-			.createPropertyDynamic<Camera>("camera")
-			.withChangeTest(() => changeTracker.getTrackedChanges().camera)
-			.withValue(() => {
-				return Camera.create(
-					gameAccess.getCamera(),
-					canvasHandle.getCanvasWidth(),
-					canvasHandle.getCanvasHeight(),
-					canvasHandle.getClientWidth(),
-					canvasHandle.getClientHeight(),
-				);
-			});
-
-		const propCameraVPM = graph
-			.createPropertyDerived<Float32Array>("camera-vpm")
-			.withType(GLUniformType.MAT3)
-			.withValue(propCamera, camera => camera.getViewProjectionMatrixOrThrow(true));
-
-		const propCameraInvVPM = graph
-			.createPropertyDerived<Float32Array>("camera-inv-vpm")
-			.withType(GLUniformType.MAT3)
-			.withValue(propCamera, camera => mat3.inverse(camera.getViewProjectionMatrixOrThrow(true)));
-
-		const propTime = graph
-			.createPropertyDynamic<number>("time")
-			.withValue(() => (Date.now() / 1000) % 10000)
-			.withChangeTest(() => true)
-			.withType(GLUniformType.FLOAT);
-
-		const propTextureAtlasGroups = graph
+		const tilesetTextureAtlas = graph
 			.createPropertyDynamic<Map<string, TextureAtlasEntry[]>>("textureAtlasGroups")
 			.withChangeTest(() => false)
 			.withValue(() => {
@@ -339,70 +133,29 @@ export class GameRenderGraphFactory {
 				);
 			});
 
-		const textureGroundPlotch = graph
-			.createTexture("ground-splotch")
-			.withUrl("/textures/groundSplotches.png");
-
-		const textureNoiseWatercolor = graph
-			.createTexture("noise_watercolor")
-			.withUrl("/textures/noise_watercolor.png");
-
-		const textureTilesetColor = graph
-			.createTexture("tileset_color")
-			.withUrl("/tileset_color.png");
-
-		const textureTilesetOutline = graph
-			.createTexture("tileset_outline")
-			.withUrl("/tileset_outline.png");
-
-		const textureTilesetMask = graph
-			.createTexture("tileset_mask")
-			.withUrl("/tileset_mask.png");
-
-		const textureParchment = graph
-			.createTexture("parchment")
-			.withUrl("/textures/seamless_parchment_texture.jpg");
-
-		const textureConcrete = graph
-			.createTexture("concrete")
-			.withUrl("/textures/non_uniform_concret_wall.jpg");
-
-		const texturePaper = graph
-			.createTexture("paper")
-			.withUrl("/textures/seamless_paper_texture.jpg");
-
-		const textureClouds = graph
-			.createTexture("clouds")
-			.withUrl("/textures/noise_watercolor.png");
-
-		const textureLutNormal = graph
-			.createTexture("lut_normal")
-			.withUrl("/lut/lut_64_corrected.png")
-			.withConfig({
-				filterMin: GLTextureMinFilter.NEAREST,
-				filterMag: GLTextureMagFilter.NEAREST,
-				wrap: GLTextureWrap.CLAMP_TO_EDGE,
+		const propTilesWasm = graph
+			.createPropertyDerived<undefined>("tiles-wasm")
+			.withValue(externalProps.tiles, tiles => {
+				WasmApi.Renderer.setTiles(tiles);
+				return undefined;
 			});
 
-		const textureLutGrayscale = graph
-			.createTexture("lut_grayscale")
-			.withUrl("/lut/lut_64_grayscale.png")
-			.withConfig({
-				filterMin: GLTextureMinFilter.NEAREST,
-				filterMag: GLTextureMagFilter.NEAREST,
-				wrap: GLTextureWrap.CLAMP_TO_EDGE,
-			});
+		const propCameraVPM = graph
+			.createPropertyDerived<Float32Array>("camera-vpm")
+			.withType(GLUniformType.MAT3)
+			.withValue(externalProps.camera, camera => camera.getViewProjectionMatrixOrThrow(true));
 
-		const textureLut = graph
-			.createConditionalTexture("lut")
-			.withOption(textureLutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
-			.withOption(textureLutGrayscale, () => gameAccess.getMapMode().renderData.grayscale);
+		const propCameraInvVPM = graph
+			.createPropertyDerived<Float32Array>("camera-inv-vpm")
+			.withType(GLUniformType.MAT3)
+			.withValue(externalProps.camera, camera => mat3.inverse(camera.getViewProjectionMatrixOrThrow(true)));
+
 
 		// TILE MAP BASICS =======================
 
 		const relevantWorldAreaDataGenerator = graph
 			.createIntermediateDataGenerator("gen-relevant-world-area-data")
-			.withProperty(propCamera, "camera")
+			.withProperty(externalProps.camera, "camera")
 			.withFunction(RelevantWorldAreaDataGenerator.func)
 			.withOutput(RelevantWorldAreaDataGenerator.OUTPUT_ID);
 
@@ -411,11 +164,10 @@ export class GameRenderGraphFactory {
 			.withValue(relevantWorldAreaDataGenerator.useOutput(RelevantWorldAreaDataGenerator.OUTPUT_ID));
 
 
-
 		const additionalTileDataGenerator = graph
 			.createIntermediateDataGenerator("gen-additional-tile-data")
-			.withProperty(propTiles, "tiles")
-			.withProperty(propTileByPosProvider, "tileByPosProvider")
+			.withProperty(externalProps.tiles, "tiles")
+			.withProperty(externalProps.tilesByPosProvider, "tileByPosProvider")
 			.withFunction(AdditionalTileDataGenerator.func)
 			.withOutput(AdditionalTileDataGenerator.COASTLINE_BORDER_MASK_OUTPUT_ID);
 
@@ -426,7 +178,7 @@ export class GameRenderGraphFactory {
 
 		const relevantTilesDataGenerator = graph
 			.createIntermediateDataGenerator("gen-relevant-tiles-data")
-			.withProperty(propTiles, "tiles")
+			.withProperty(externalProps.tiles, "tiles")
 			.withProperty(propRelevantWorldArea, "relevantWorldArea")
 			.withFunction(RelevantTilesDataGenerator.func)
 			.withOutput(RelevantTilesDataGenerator.OUTPUT_ID);
@@ -464,10 +216,11 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorTileInstances = graph
 			.createVertexCreator("tile-instances")
-			.withProperty(propColorLandLight, "colorLandLight")
-			.withProperty(propColorLandDark, "colorLandDark")
+			.withProperty(configProps.landColorLight, "colorLandLight")
+			.withProperty(configProps.landColorDark, "colorLandDark")
 			.withProperty(propRelevantTiles, "relevantTiles")
 			.withProperty(propCoastlineBorderMask, "coastlineBorderMaskData")
+			.withProperty(propTilesWasm, "tilesWasm")
 			.withOutput(TileInstanceVertexGenerator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -530,11 +283,11 @@ export class GameRenderGraphFactory {
 			.withVertexShaderSource(shaderSourceManager.get("water.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("water.frag"))
 			.withProperty(propCameraVPM, "u_viewProjection")
-			.withProperty(textureGroundPlotch, "u_texture");
+			.withProperty(textureNodes.groundSplotch, "u_texture");
 
 		const drawWater = graph
 			.createDraw("draw-water")
-			.withCamera(propCamera)
+			.withCamera(externalProps.camera)
 			.withShaderProgram(shaderWater)
 			.withVertexDescriptor(vertexDescriptorWater)
 			.withClearColor([0, 0, 0, 0])
@@ -561,11 +314,11 @@ export class GameRenderGraphFactory {
 			.withVertexShaderSource(shaderSourceManager.get("land.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("land.frag"))
 			.withProperty(propCameraVPM, "u_viewProjection")
-			.withProperty(textureGroundPlotch, "u_texture");
+			.withProperty(textureNodes.groundSplotch, "u_texture");
 
 		const drawLand = graph
 			.createDraw("draw-land")
-			.withCamera(propCamera)
+			.withCamera(externalProps.camera)
 			.withShaderProgram(shaderLand)
 			.withVertexDescriptor(vertexDescriptorLand)
 			.withClearColor([0, 0, 0, 0]);
@@ -587,11 +340,11 @@ export class GameRenderGraphFactory {
 			.withVertexShaderSource(shaderSourceManager.get("fog.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("fog.frag"))
 			.withProperty(propCameraVPM, "u_viewProjection")
-			.withProperty(textureGroundPlotch, "u_texture");
+			.withProperty(textureNodes.groundSplotch, "u_texture");
 
 		const drawFog = graph
 			.createDraw("draw-fog")
-			.withCamera(propCamera)
+			.withCamera(externalProps.camera)
 			.withShaderProgram(shaderFog)
 			.withVertexDescriptor(vertexDescriptorFog)
 			.withClearColor([0, 0, 0, 1]);
@@ -632,9 +385,9 @@ export class GameRenderGraphFactory {
 		const vertexCreatorOverlayInstances = graph
 			.createVertexCreator("overlay-instances")
 			.withProperty(propRelevantTiles, "relevantTiles")
-			.withProperty(propTileByPosProvider, "tileByPosProvider")
-			.withProperty(propMapMode, "mapMode")
-			.withProperty(propMoveTargets, "moveTargets")
+			.withProperty(externalProps.tilesByPosProvider, "tileByPosProvider")
+			.withProperty(externalProps.mapMode, "mapMode")
+			.withProperty(externalProps.moveTargets, "moveTargets")
 			.withOutput(OverlayInstancesVertexGenerator.OUTPUT_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -692,55 +445,25 @@ export class GameRenderGraphFactory {
 			.withInput(vertexCreatorOverlayMesh.useOutput(OverlayMeshVertexGenerator.OUTPUT_ID))
 			.withInput(vertexCreatorOverlayInstances.useOutput(OverlayInstancesVertexGenerator.OUTPUT_ID));
 
-		const propOverlayBorderThickness = graph
-			.createPropertyConstant<number>("overlay.borderThickness")
-			.withValue(0.15)
-			.withType(GLUniformType.FLOAT);
-
-		const propOverlayBorderOpacity = graph
-			.createPropertyConstant<number>("overlay.borderOpacity")
-			.withValue(1.0)
-			.withType(GLUniformType.FLOAT);
-
-		const propOverlayFillOpacity = graph
-			.createPropertyConstant<number>("overlay.fillOpacity")
-			.withValue(0.5)
-			.withType(GLUniformType.FLOAT);
-
-		const propOverlayTileSelectionThickness = graph
-			.createPropertyConstant<number>("overlay.tileSelection.thickness")
-			.withValue(0.1)
-			.withType(GLUniformType.FLOAT);
-
-		const propOverlayTileSelectionColor0 = graph
-			.createPropertyConstant<[number, number, number, number]>("overlay.tileSelection.color0")
-			.withValue([255 / 255, 215 / 255, 0 / 255, 1.0])
-			.withType(GLUniformType.VEC4);
-
-		const propOverlayTileSelectionColor1 = graph
-			.createPropertyConstant<[number, number, number, number]>("overlay.tileSelection.color1")
-			.withValue([1.0, 1.0, 1.0, 1.0])
-			.withType(GLUniformType.VEC4);
-
 		const shaderOverlay = graph
 			.createShader("shader-overlay")
 			.withVertexShaderSource(shaderSourceManager.get("overlay.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("overlay.frag"))
 			.withProperty(propCameraVPM, "u_viewProjection")
-			.withProperty(textureNoiseWatercolor, "u_noise")
-			.withProperty(propTime, "u_time")
-			.withProperty(propOverlayBorderThickness, "u_overlay.borderThickness")
-			.withProperty(propOverlayBorderOpacity, "u_overlay.borderOpacity")
-			.withProperty(propOverlayFillOpacity, "u_overlay.fillOpacity")
-			.withProperty(propSelectedTile, "u_tileSelection.position")
-			.withProperty(propOverlayTileSelectionThickness, "u_tileSelection.thickness")
-			.withProperty(propOverlayTileSelectionColor0, "u_tileSelection.color0")
-			.withProperty(propOverlayTileSelectionColor1, "u_tileSelection.color1");
+			.withProperty(textureNodes.noiseWatercolor, "u_noise")
+			.withProperty(externalProps.time, "u_time")
+			.withProperty(configProps.overlayBorderThickness, "u_overlay.borderThickness")
+			.withProperty(configProps.overlayBorderOpacity, "u_overlay.borderOpacity")
+			.withProperty(configProps.overlayFillOpacity, "u_overlay.fillOpacity")
+			.withProperty(externalProps.selectedTile, "u_tileSelection.position")
+			.withProperty(configProps.selectedTileThickness, "u_tileSelection.thickness")
+			.withProperty(configProps.selectedTileColor0, "u_tileSelection.color0")
+			.withProperty(configProps.selectedTileColor1, "u_tileSelection.color1");
 
 
 		const drawOverlay = graph
 			.createDraw("draw-overlay")
-			.withCamera(propCamera)
+			.withCamera(externalProps.camera)
 			.withShaderProgram(shaderOverlay)
 			.withVertexDescriptor(vertexDescriptorOverlay)
 			.withClearColor([0, 0, 0, 0]);
@@ -778,12 +501,12 @@ export class GameRenderGraphFactory {
 			])
 			.withFunction(MapDetailsVertexGenerator.func)
 			.withProperty(propRelevantTiles, "relevantTiles")
-			.withProperty(propSettlements, "settlements")
-			.withProperty(propWorldObjects, "worldObjects")
-			.withProperty(propRoutes, "routes")
-			.withProperty(propColorLandLight, "colorLandLight")
-			.withProperty(propColorLandDark, "colorLandDark")
-			.withProperty(propTextureAtlasGroups, "textureAtlasGroups");
+			.withProperty(externalProps.settlements, "settlements")
+			.withProperty(externalProps.worldObjects, "worldObjects")
+			.withProperty(externalProps.routes, "routes")
+			.withProperty(configProps.landColorLight, "colorLandLight")
+			.withProperty(configProps.landColorDark, "colorLandDark")
+			.withProperty(tilesetTextureAtlas, "textureAtlasGroups");
 
 
 		const vertexDescriptorMapDetails = graph
@@ -796,14 +519,14 @@ export class GameRenderGraphFactory {
 			.withVertexShaderSource(shaderSourceManager.get("mapdetails.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("mapdetails.frag"))
 			.withProperty(propCameraVPM, "u_viewProjection")
-			.withProperty(textureTilesetColor, "u_textureColor")
-			.withProperty(textureTilesetOutline, "u_textureOutline")
-			.withProperty(textureTilesetMask, "u_textureMask");
+			.withProperty(textureNodes.tilesetColor, "u_textureColor")
+			.withProperty(textureNodes.tilesetOutline, "u_textureOutline")
+			.withProperty(textureNodes.tilesetMask, "u_textureMask");
 
 
 		const drawMapDetails = graph
 			.createDraw("draw-mapDetails")
-			.withCamera(propCamera)
+			.withCamera(externalProps.camera)
 			.withShaderProgram(shaderMapDetails)
 			.withVertexDescriptor(vertexDescriptorMapDetails)
 			.withClearColor([0, 0, 0, 0])
@@ -837,57 +560,57 @@ export class GameRenderGraphFactory {
 			.withVertexShaderSource(shaderSourceManager.get("combine.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("combine.frag"))
 
-			.withProperty(propTime, "u_common.timestamp")
-			.withProperty(textureNoiseWatercolor, "u_common.noise")
+			.withProperty(externalProps.time, "u_common.timestamp")
+			.withProperty(textureNodes.noiseWatercolor, "u_common.noise")
 			.withProperty(propCameraInvVPM, "u_common.invViewProjection")
 
 			.withProperty(renderTargetWater, "u_water.layer")
-			.withProperty(propColorWaterLight, "u_water.colorLight")
-			.withProperty(propColorWaterDark, "u_water.colorDark")
-			.withProperty(propWaterWaveDistortionStrength, "u_water.waveDistortionStrength")
-			.withProperty(propWaterWaveDistortionScale, "u_water.waveDistortionScale")
-			.withProperty(propWaterWaveSpeed, "u_water.waveSpeed")
-			.withProperty(propWaterWaveSharpness, "u_water.waveSharpnesss")
+			.withProperty(configProps.waterColorLight, "u_water.colorLight")
+			.withProperty(configProps.waterColorDark, "u_water.colorDark")
+			.withProperty(configProps.waterWaveDistortionStrength, "u_water.waveDistortionStrength")
+			.withProperty(configProps.waterWaveDistortionScale, "u_water.waveDistortionScale")
+			.withProperty(configProps.waterWaveSpeed, "u_water.waveSpeed")
+			.withProperty(configProps.waterWaveSharpness, "u_water.waveSharpnesss")
 
 			.withProperty(renderTargetLand, "u_land.layer")
-			.withProperty(propLandCutoffThreshold, "u_land.cutoff")
-			.withProperty(propLandOutlineSizeLight, "u_land.outlineSizeLight")
-			.withProperty(propLandOutlineSizeDark, "u_land.outlineSizeDark")
+			.withProperty(configProps.landCutoffThreshold, "u_land.cutoff")
+			.withProperty(configProps.landOutlineLightSize, "u_land.outlineSizeLight")
+			.withProperty(configProps.landOutlineDarkSize, "u_land.outlineSizeDark")
 
 			.withProperty(renderTargetFog, "u_fog.layer")
-			.withProperty(propFogColorUnknown, "u_fog.colorUnknown")
-			.withProperty(propFogColorDiscovered, "u_fog.colorDiscovered")
+			.withProperty(configProps.fogUnknownColor, "u_fog.colorUnknown")
+			.withProperty(configProps.fogDiscoveredColor, "u_fog.colorDiscovered")
 
 			.withProperty(renderTargetMapDetails, "u_mapDetails.layer")
 
 			.withProperty(renderTargetOverlay, "u_overlay.layer")
 
-			.withProperty(textureParchment, "u_paper.large.texture")
-			.withProperty(propPaperLargeScale, "u_paper.large.scale")
-			.withProperty(propPaperLargeStrength, "u_paper.large.strength")
-			.withProperty(propPaperLargeContrast, "u_paper.large.contrast")
+			.withProperty(textureNodes.textureParchment, "u_paper.large.texture")
+			.withProperty(configProps.paperLargeScale, "u_paper.large.scale")
+			.withProperty(configProps.paperLargeStrength, "u_paper.large.strength")
+			.withProperty(configProps.paperLargeContrast, "u_paper.large.contrast")
 
-			.withProperty(textureConcrete, "u_paper.medium.texture")
-			.withProperty(propPaperMediumScale, "u_paper.medium.scale")
-			.withProperty(propPaperMediumStrength, "u_paper.medium.strength")
-			.withProperty(propPaperMediumContrast, "u_paper.medium.contrast")
+			.withProperty(textureNodes.textureConcrete, "u_paper.medium.texture")
+			.withProperty(configProps.paperMediumScale, "u_paper.medium.scale")
+			.withProperty(configProps.paperMediumStrength, "u_paper.medium.strength")
+			.withProperty(configProps.paperMediumContrast, "u_paper.medium.contrast")
 
-			.withProperty(texturePaper, "u_paper.small.texture")
-			.withProperty(propPaperSmallScale, "u_paper.small.scale")
-			.withProperty(propPaperSmallStrength, "u_paper.small.strength")
-			.withProperty(propPaperSmallContrast, "u_paper.small.contrast")
+			.withProperty(textureNodes.texturePaper, "u_paper.small.texture")
+			.withProperty(configProps.paperSmallScale, "u_paper.small.scale")
+			.withProperty(configProps.paperSmallStrength, "u_paper.small.strength")
+			.withProperty(configProps.paperSmallContrast, "u_paper.small.contrast")
 
-			.withProperty(textureClouds, "u_paper.clouds.texture")
-			.withProperty(propPaperCloudsScale, "u_paper.clouds.scale")
-			.withProperty(propPaperCloudsStrength, "u_paper.clouds.strength")
-			.withProperty(propPaperCloudsContrast, "u_paper.clouds.contrast")
+			.withProperty(textureNodes.textureClouds, "u_paper.clouds.texture")
+			.withProperty(configProps.paperCloudsScale, "u_paper.clouds.scale")
+			.withProperty(configProps.paperCloudsStrength, "u_paper.clouds.strength")
+			.withProperty(configProps.paperCloudsContrast, "u_paper.clouds.contrast")
 
-			.withProperty(textureLut, "u_lutColorCorrection")
-			.withProperty(propLutSize, "u_lutSize");
+			.withProperty(textureNodes.lut, "u_lutColorCorrection")
+			.withProperty(textureNodes.lutSize, "u_lutSize");
 
 		const drawCombine = graph
 			.createDraw("draw-combine")
-			.withCamera(propCamera)
+			.withCamera(externalProps.camera)
 			.withShaderProgram(shaderCombine)
 			.withVertexDescriptor(vertexDescriptorCombine)
 			.withClearColor([0, 0, 0, 1])
@@ -897,8 +620,8 @@ export class GameRenderGraphFactory {
 
 		const creatorLabels = graph
 			.createRenderElementGenerator("create-labels")
-			.withProperty(propSettlements, "settlements")
-			.withProperty(propWorldObjects, "worldObjects")
+			.withProperty(externalProps.settlements, "settlements")
+			.withProperty(externalProps.worldObjects, "worldObjects")
 			.withProperty(propCameraVPM, "_camera")
 			.withFunction(LabelsElementGenerator.funcCreate)
 			.withOutput(LabelsElementGenerator.OUTPUT_ID);
@@ -915,7 +638,7 @@ export class GameRenderGraphFactory {
 		const creatorResourceIcons = graph
 			.createRenderElementGenerator("create-resourceicons")
 			.withProperty(propRelevantTiles, "relevantTiles")
-			.withProperty(propMapMode, "mapMode")
+			.withProperty(externalProps.mapMode, "mapMode")
 			.withProperty(propCameraVPM, "_camera")
 			.withFunction(ResourceIconsElementGenerator.funcCreate)
 			.withOutput(ResourceIconsElementGenerator.OUTPUT_ID);
@@ -932,7 +655,7 @@ export class GameRenderGraphFactory {
 
 		const creatorMovePaths = graph
 			.createRenderElementGenerator("create-movepaths")
-			.withProperty(propMovePath, "movePaths")
+			.withProperty(externalProps.movePaths, "movePaths")
 			.withProperty(propCameraVPM, "_camera")
 			.withFunction(MovePathsElementGenerator.funcCreate)
 			.withOutput(MovePathsElementGenerator.OUTPUT_ID);
@@ -954,7 +677,7 @@ export class GameRenderGraphFactory {
 		graph
 			.createContainer("html-elements")
 			.withElementId("game-canvas-overlay")
-			.withCamera(propCamera)
+			.withCamera(externalProps.camera)
 			.withInput(htmlRendererMovePaths)
 			.withInput(htmlRendererResourceIcons)
 			.withInput(htmlRendererLabels);
@@ -969,6 +692,252 @@ export class GameRenderGraphFactory {
 			parseInt(result[2], 16) / 255,
 			parseInt(result[3], 16) / 255,
 		] : [0, 0, 0];
+	}
+
+	private createConfigurationProperties(graph: RenderGraph) {
+		return {
+			landColorLight: graph
+				.createPropertyConstant<[number, number, number]>("colorLandLight")
+				.withType(GLUniformType.VEC3)
+				.withValue(this.hexToRgb("#949b64")),
+			landColorDark: graph
+				.createPropertyConstant<[number, number, number]>("colorLandDark")
+				.withType(GLUniformType.VEC3)
+				.withValue(this.hexToRgb("#747e57")),
+			landCutoffThreshold: graph
+				.createPropertyConstant<number>("landCutoffThreshold")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.5),
+			landOutlineLightSize: graph
+				.createPropertyConstant<number>("landOutlineSizeLight")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.003),
+			landOutlineDarkSize: graph
+				.createPropertyConstant<number>("landOutlineSizeDark")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.002),
+			waterColorLight: graph
+				.createPropertyConstant<[number, number, number]>("colorWaterLight")
+				.withType(GLUniformType.VEC3)
+				.withValue(this.hexToRgb("#a5c0c5")),
+			waterColorDark: graph
+				.createPropertyConstant<[number, number, number]>("colorWaterDark")
+				.withType(GLUniformType.VEC3)
+				.withValue(this.hexToRgb("#7995ae")),
+			waterWaveDistortionStrength: graph
+				.createPropertyConstant<number>("waterWaveDistortionStrength")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.225),
+			waterWaveDistortionScale: graph
+				.createPropertyConstant<number>("waterWaveDistortionScale")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.05),
+			waterWaveSpeed: graph
+				.createPropertyConstant<number>("waterWaveSpeed")
+				.withType(GLUniformType.FLOAT)
+				.withValue(1.15),
+			waterWaveSharpness: graph
+				.createPropertyConstant<number>("waterWaveSharpness")
+				.withType(GLUniformType.FLOAT)
+				.withValue(1.5),
+			fogUnknownColor: graph
+				.createPropertyConstant<[number, number, number, number]>("fogColorUnknown")
+				.withType(GLUniformType.VEC4)
+				.withValue([0.149, 0.122, 0.082, 1]),
+			fogDiscoveredColor: graph
+				.createPropertyConstant<[number, number, number, number]>("fogColorDiscovered")
+				.withType(GLUniformType.VEC4)
+				.withValue([0.149, 0.122, 0.082, 0.6]),
+			paperLargeScale: graph
+				.createPropertyConstant<number>("paperLargeScale")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.002),
+			paperLargeStrength: graph
+				.createPropertyConstant<number>("paperLargeStrength")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.25),
+			paperLargeContrast: graph
+				.createPropertyConstant<number>("paperLargeContrast")
+				.withType(GLUniformType.FLOAT)
+				.withValue(2),
+			paperMediumScale: graph
+				.createPropertyConstant<number>("paperMediumScale")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.002),
+			paperMediumStrength: graph
+				.createPropertyConstant<number>("paperMediumStrength")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.3),
+			paperMediumContrast: graph
+				.createPropertyConstant<number>("paperMediumContrast")
+				.withType(GLUniformType.FLOAT)
+				.withValue(1),
+			paperSmallScale: graph
+				.createPropertyConstant<number>("paperSmallScale")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.005),
+			paperSmallStrength: graph
+				.createPropertyConstant<number>("paperSmallStrength")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.2),
+			paperSmallContrast: graph
+				.createPropertyConstant<number>("paperSmallContrast")
+				.withType(GLUniformType.FLOAT)
+				.withValue(2),
+			paperCloudsScale: graph
+				.createPropertyConstant<number>("paperCloudsScale")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.003),
+			paperCloudsStrength: graph
+				.createPropertyConstant<number>("paperCloudsStrength")
+				.withType(GLUniformType.FLOAT)
+				.withValue(0.2),
+			paperCloudsContrast: graph
+				.createPropertyConstant<number>("paperCloudsContrast")
+				.withType(GLUniformType.FLOAT)
+				.withValue(1),
+			overlayBorderThickness: graph
+				.createPropertyConstant<number>("overlay.borderThickness")
+				.withValue(0.15)
+				.withType(GLUniformType.FLOAT),
+			overlayBorderOpacity: graph
+				.createPropertyConstant<number>("overlay.borderOpacity")
+				.withValue(1.0)
+				.withType(GLUniformType.FLOAT),
+			overlayFillOpacity: graph
+				.createPropertyConstant<number>("overlay.fillOpacity")
+				.withValue(0.5)
+				.withType(GLUniformType.FLOAT),
+			selectedTileThickness: graph
+				.createPropertyConstant<number>("overlay.tileSelection.thickness")
+				.withValue(0.1)
+				.withType(GLUniformType.FLOAT),
+			selectedTileColor0: graph
+				.createPropertyConstant<[number, number, number, number]>("overlay.tileSelection.color0")
+				.withValue([255 / 255, 215 / 255, 0 / 255, 1.0])
+				.withType(GLUniformType.VEC4),
+			selectedTileColor1: graph
+				.createPropertyConstant<[number, number, number, number]>("overlay.tileSelection.color1")
+				.withValue([1.0, 1.0, 1.0, 1.0])
+				.withType(GLUniformType.VEC4),
+		};
+	}
+
+	private createExternalProps(graph: RenderGraph, gameAccess: GameStateAccess, changeTracker: GameChangeTracker, canvasHandle: CanvasHandle) {
+		return {
+			tiles: graph
+				.createPropertyDynamic<Tile[]>("tiles")
+				.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
+				.withValue(() => gameAccess.getTiles()),
+			tilesByPosProvider: graph
+				.createPropertyDynamic<(q: number, r: number) => Tile | null>("tileByPosProvider")
+				.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
+				.withValue(() => ((q, r) => gameAccess.getTileAt(q, r))),
+			settlements: graph
+				.createPropertyDynamic<Settlement[]>("settlements")
+				.withChangeTest(() => changeTracker.getTrackedChanges().settlements || changeTracker.getTrackedChanges().commands)
+				.withValue(() => gameAccess.getSettlements()),
+			worldObjects: graph
+				.createPropertyDynamic<WorldObject[]>("worldObjects")
+				.withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
+				.withValue(() => gameAccess.getWorldObjects()),
+			routes: graph
+				.createPropertyDynamic<Route[]>("routes")
+				.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
+				.withValue(() => gameAccess.getRoutes()),
+			mapMode: graph
+				.createPropertyDynamic<MapMode>("mapMode")
+				.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
+				.withValue(() => gameAccess.getMapMode()),
+			moveTargets: graph
+				.createPropertyDynamic<TileSummary[]>("moveTargets")
+				.withChangeTest(() => changeTracker.getTrackedChanges().movementTargets)
+				.withValue(() => gameAccess.getMoveTargets()),
+			movePaths: graph
+				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("movePaths")
+				.withChangeTest(() => changeTracker.getTrackedChanges().movementPaths)
+				.withValue(() => gameAccess.getMovePaths()),
+			selectedTile: graph
+				.createPropertyDynamic<[number, number]>("selectedTile")
+				.withValue(() => gameAccess.getSelectedTile() ? [gameAccess.getSelectedTile()?.position.q, gameAccess.getSelectedTile()?.position.r] as [number, number] : [99999, 99999])
+				.withChangeTest(() => changeTracker.getTrackedChanges().selectedTile)
+				.withType(GLUniformType.INT_VEC2),
+			camera: graph
+				.createPropertyDynamic<Camera>("camera")
+				.withChangeTest(() => changeTracker.getTrackedChanges().camera)
+				.withValue(() => {
+					return Camera.create(
+						gameAccess.getCamera(),
+						canvasHandle.getCanvasWidth(),
+						canvasHandle.getCanvasHeight(),
+						canvasHandle.getClientWidth(),
+						canvasHandle.getClientHeight(),
+					);
+				}),
+			time: graph
+				.createPropertyDynamic<number>("time")
+				.withValue(() => (Date.now() / 1000) % 10000)
+				.withChangeTest(() => true)
+				.withType(GLUniformType.FLOAT),
+		}
+	}
+
+	private createTextureNodes(graph: RenderGraph, gameAccess: GameStateAccess) {
+		const lutNormal = graph
+			.createTexture("lut_normal")
+			.withUrl("/lut/lut_64_corrected.png")
+			.withConfig({
+				filterMin: GLTextureMinFilter.NEAREST,
+				filterMag: GLTextureMagFilter.NEAREST,
+				wrap: GLTextureWrap.CLAMP_TO_EDGE,
+			});
+		const lutGrayscale = graph
+			.createTexture("lut_grayscale")
+			.withUrl("/lut/lut_64_grayscale.png")
+			.withConfig({
+				filterMin: GLTextureMinFilter.NEAREST,
+				filterMag: GLTextureMagFilter.NEAREST,
+				wrap: GLTextureWrap.CLAMP_TO_EDGE,
+			});
+		return {
+			groundSplotch: graph
+				.createTexture("ground-splotch")
+				.withUrl("/textures/groundSplotches.png"),
+			noiseWatercolor: graph
+				.createTexture("noise_watercolor")
+				.withUrl("/textures/noise_watercolor.png"),
+			textureClouds: graph
+			.createTexture("clouds")
+				.withUrl("/textures/noise_watercolor.png"),
+			textureParchment: graph
+				.createTexture("parchment")
+				.withUrl("/textures/seamless_parchment_texture.jpg"),
+			textureConcrete: graph
+				.createTexture("concrete")
+				.withUrl("/textures/non_uniform_concret_wall.jpg"),
+			texturePaper: graph
+				.createTexture("paper")
+				.withUrl("/textures/seamless_paper_texture.jpg"),
+			tilesetColor: graph
+				.createTexture("tileset_color")
+				.withUrl("/tileset_color.png"),
+			tilesetOutline: graph
+				.createTexture("tileset_outline")
+				.withUrl("/tileset_outline.png"),
+			tilesetMask: graph
+				.createTexture("tileset_mask")
+				.withUrl("/tileset_mask.png"),
+			lutSize: graph
+				.createPropertyConstant<number>("lutSize")
+				.withType(GLUniformType.FLOAT)
+				.withValue(64),
+			lutNormal: lutNormal,
+			lutGrayscale: lutGrayscale,
+			lut: graph
+				.createConditionalTexture("lut")
+				.withOption(lutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
+				.withOption(lutGrayscale, () => gameAccess.getMapMode().renderData.grayscale)
+		}
 	}
 
 }
