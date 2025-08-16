@@ -180,13 +180,6 @@ export class GameRenderGraphFactory {
 			.createPropertyGenerated<Tile[]>("prop-relevant-tiles")
 			.withValue(relevantTilesDataGenerator.useOutput(RelevantTilesDataGenerator.OUTPUT_ID));
 
-		// const propRelevantTilesWasm = graph
-		// 	.createPropertyDerived<undefined>("tiles-wasm")
-		// 	.withValue(propRelevantTiles, tiles => {
-		// 		WasmApi.Renderer.setTiles(tiles);
-		// 		return undefined;
-		// 	});
-
 		const vertexCreatorTileMesh = graph
 			.createVertexCreator("tile-mesh")
 			.withOutput(TileMeshVertexGenerator.OUTPUT_ID, "vertices", [
@@ -219,7 +212,6 @@ export class GameRenderGraphFactory {
 			.withProperty(configProps.landColorDark, "colorLandDark")
 			.withProperty(propRelevantTiles, "relevantTiles")
 			.withProperty(propCoastlineBorderMask, "coastlineBorderMaskData")
-			// .withProperty(propRelevantTilesWasm, "tilesWasm")
 			.withOutput(TileInstanceVertexGenerator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",

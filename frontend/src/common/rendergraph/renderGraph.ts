@@ -22,6 +22,7 @@ import {
 } from "./nodes/propertyRenderGraphNode";
 import {ConditionalTextureRenderGraphNode} from "./nodes/conditionalTextureRenderGraphNode";
 import {IntermediateDataGeneratorRenderGraphNode} from "./nodes/intermediateDataGeneratorRenderGraphNode";
+import {RenderGraphMonitor} from "./renderGraphMonitor";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
@@ -102,10 +103,15 @@ export class RenderGraph {
 	}
 
 	public execute() {
+		RenderGraphMonitor.startFrame()
 		for (let i = 0, n = this.commands.length; i < n; i++) {
-			this.commands[i].execute(this.resourceManager, this.executeCounter < 10);
+			const command = this.commands[i];
+			RenderGraphMonitor.startCommand(command.getDebugData())
+			command.execute(this.resourceManager, this.executeCounter < 10);
+			RenderGraphMonitor.endCommand()
 		}
 		this.executeCounter++;
+		RenderGraphMonitor.endFrame()
 	}
 
 	protected addNode(node: RenderGraphNode) {
