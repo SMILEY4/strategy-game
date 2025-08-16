@@ -133,13 +133,6 @@ export class GameRenderGraphFactory {
 				);
 			});
 
-		const propTilesWasm = graph
-			.createPropertyDerived<undefined>("tiles-wasm")
-			.withValue(externalProps.tiles, tiles => {
-				WasmApi.Renderer.setTiles(tiles);
-				return undefined;
-			});
-
 		const propCameraVPM = graph
 			.createPropertyDerived<Float32Array>("camera-vpm")
 			.withType(GLUniformType.MAT3)
@@ -184,9 +177,15 @@ export class GameRenderGraphFactory {
 			.withOutput(RelevantTilesDataGenerator.OUTPUT_ID);
 
 		const propRelevantTiles = graph
-			.createPropertyGenerated("prop-relevant-tiles")
+			.createPropertyGenerated<Tile[]>("prop-relevant-tiles")
 			.withValue(relevantTilesDataGenerator.useOutput(RelevantTilesDataGenerator.OUTPUT_ID));
 
+		// const propRelevantTilesWasm = graph
+		// 	.createPropertyDerived<undefined>("tiles-wasm")
+		// 	.withValue(propRelevantTiles, tiles => {
+		// 		WasmApi.Renderer.setTiles(tiles);
+		// 		return undefined;
+		// 	});
 
 		const vertexCreatorTileMesh = graph
 			.createVertexCreator("tile-mesh")
@@ -220,7 +219,7 @@ export class GameRenderGraphFactory {
 			.withProperty(configProps.landColorDark, "colorLandDark")
 			.withProperty(propRelevantTiles, "relevantTiles")
 			.withProperty(propCoastlineBorderMask, "coastlineBorderMaskData")
-			.withProperty(propTilesWasm, "tilesWasm")
+			// .withProperty(propRelevantTilesWasm, "tilesWasm")
 			.withOutput(TileInstanceVertexGenerator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -269,7 +268,7 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 			])
-			.withFunction(TileInstanceVertexGenerator.func);
+			.withFunction(TileInstanceVertexGenerator.funcWasm);
 
 		// WATER =================================
 

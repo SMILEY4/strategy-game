@@ -7,6 +7,7 @@ import {TerrainType} from "../../models/tile/terrainType";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {TileId} from "../../models/tile/tileId";
 import {sort} from "fast-sort";
+import {WasmApi} from "../../wasm/wasmApi";
 
 export namespace TileInstanceVertexGenerator {
 
@@ -37,15 +38,46 @@ export namespace TileInstanceVertexGenerator {
 		MixedArrayBufferType.INT,
 	];
 
+	export function funcWasm(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
+
+		const relevantTiles = context.get<Tile[]>("relevantTiles");
+		const tileCounts = countTileTypes(relevantTiles);
+
+		WasmApi.Renderer.update();
+		const wasmLand = WasmApi.Renderer.getVerticesLand();
+		const wasmWater = WasmApi.Renderer.getVerticesWater();
+		const wasmFog = WasmApi.Renderer.getVerticesFog();
+
+
+		return buildMap([
+			[
+				OUTPUT_WATER_ID,
+				{
+					data: wasmWater,
+					entryCount: tileCounts.water,
+				},
+			],
+			[
+				OUTPUT_LAND_ID,
+				{
+					data: wasmLand,
+					entryCount: tileCounts.land,
+				},
+			],
+			[
+				OUTPUT_FOG_ID,
+				{
+					data: wasmFog,
+					entryCount: tileCounts.fog,
+				},
+			],
+		]);
+	}
+
 	export function func(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
 
 		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const coastlineBorderMaskData = context.get<Map<TileId, number>>("coastlineBorderMaskData");
-
-		// WasmApi.Renderer.update();
-		// const wasmLand = WasmApi.Renderer.getVerticesLand();
-		// const wasmWater = WasmApi.Renderer.getVerticesWater();
-		// const wasmFog = WasmApi.Renderer.getVerticesFog();
 
 		const colorLandLight = context.get<[number, number, number]>("colorLandLight");
 		const colorLandDark = context.get<[number, number, number]>("colorLandDark");
@@ -74,7 +106,6 @@ export namespace TileInstanceVertexGenerator {
 			[
 				OUTPUT_WATER_ID,
 				{
-					// data: wasmWater,
 					data: arrayBufferWater.getRawBuffer(),
 					entryCount: tileCounts.water,
 				},
@@ -82,7 +113,6 @@ export namespace TileInstanceVertexGenerator {
 			[
 				OUTPUT_LAND_ID,
 				{
-					// data: wasmLand,
 					data: arrayBufferLand.getRawBuffer(),
 					entryCount: tileCounts.land,
 				},
@@ -90,7 +120,6 @@ export namespace TileInstanceVertexGenerator {
 			[
 				OUTPUT_FOG_ID,
 				{
-					// data: wasmFog,
 					data: arrayBufferFog.getRawBuffer(),
 					entryCount: tileCounts.fog,
 				},

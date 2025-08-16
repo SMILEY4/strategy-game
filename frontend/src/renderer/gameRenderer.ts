@@ -56,12 +56,7 @@ export class GameRenderer {
 			return;
 		}
 
-		// WasmProbe.watchMemory("render")
-		//
-		// if(this.frameCounter < 10) {
-		// 	WasmApi.Renderer.setTiles(this.gameStateAccess.getTiles());
-		// }
-		// this.frameCounter++;
+		WasmProbe.watchMemory("render")
 
 		this.changeTracker.prepareFrame(this.getRenderCamera(canvasHandle));
 		this.gameRenderGraph?.execute();

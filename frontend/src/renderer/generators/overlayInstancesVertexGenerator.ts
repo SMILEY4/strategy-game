@@ -7,7 +7,6 @@ import {buildMap} from "../../common/utils";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {BorderBuilder} from "../utils/borderBuilder";
 import {packBorder} from "../utils/packBorder";
-import {Visibility} from "../../models/misc/visibility";
 
 export namespace OverlayInstancesVertexGenerator {
 
@@ -48,8 +47,7 @@ export namespace OverlayInstancesVertexGenerator {
 
 		for (let i = 0, n = relevantTiles.length; i < n; i++) {
 			const tile = relevantTiles[i];
-				appendOverlayInstance(tile, mapMode, mapModeContext, highlightMovementTiles, tileByPosProvider, cursorOverlay);
-
+			appendOverlayInstance(tile, mapMode, mapModeContext, highlightMovementTiles, tileByPosProvider, cursorOverlay);
 		}
 
 		return buildMap([

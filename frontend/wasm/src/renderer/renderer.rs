@@ -1,8 +1,8 @@
-use crate::api::Tile;
+use crate::api::{console_log, Tile};
+use crate::renderer::{build_borders, pack, TileBorderData};
+use js_sys::Math::{max, min};
 use js_sys::Uint8Array;
 use std::cell::RefCell;
-use std::collections::HashMap;
-use js_sys::Math::{max, min};
 
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
@@ -16,7 +16,7 @@ pub struct LandTileVertex {
 pub struct WaterTileVertex {
     position: [f32; 2],
     depth: f32,
-    border_mask: i32,
+    border_mask: u32,
 }
 
 #[repr(C, packed)]
@@ -36,7 +36,7 @@ struct VertexData {
 #[derive(Default)]
 struct TileData {
     tiles: Vec<Tile>,
-    coastline: HashMap<String, i32>
+    borders: Vec<TileBorderData>,
 }
 
 thread_local! {
@@ -44,21 +44,22 @@ thread_local! {
     static VERTEX_DATA: RefCell<VertexData> = RefCell::new(VertexData::default());
 }
 
-
 pub fn set_tiles(tiles: Vec<Tile>) {
     TILES.with(|d| {
-        d.borrow_mut().tiles = tiles;
+        let mut data = d.borrow_mut();
+        data.tiles = tiles;
+        data.borders = build_borders(&data.tiles);
     });
 }
 
 pub fn update_vertex_data() {
-
-    let color_land_light: [f32; 3] = [148.0/255.0, 155.0/255.0, 100.0/255.0];
-    let color_land_dark: [f32; 3] = [116.0/255.0, 126.0/255.0, 87.0/255.0];
+    let color_land_light: [f32; 3] = [148.0 / 255.0, 155.0 / 255.0, 100.0 / 255.0];
+    let color_land_dark: [f32; 3] = [116.0 / 255.0, 126.0 / 255.0, 87.0 / 255.0];
 
     TILES.with(|data_tiles| {
         let tile_data = data_tiles.borrow();
         let tiles = &tile_data.tiles;
+        let borders = &tile_data.borders;
 
         VERTEX_DATA.with(|data| {
             let mut vertex_data = data.borrow_mut();
@@ -67,7 +68,8 @@ pub fn update_vertex_data() {
             vertex_data.water.clear();
             vertex_data.fog.clear();
 
-            for tile in tiles.iter() {
+            for (index, tile) in tiles.iter().enumerate() {
+                let border = &borders[index];
 
                 // land
                 if tile.terrain_type == 1 {
@@ -85,7 +87,7 @@ pub fn update_vertex_data() {
                     vertex_data.water.push(WaterTileVertex {
                         position: [tile.world_position.x, tile.world_position.y],
                         depth: 1.0 - clamp(0.0, 1.0, (tile.height + 1.0) * 2.0 + height_jitter),
-                        border_mask: 0,
+                        border_mask: pack(&border.coast),
                     });
                 }
 

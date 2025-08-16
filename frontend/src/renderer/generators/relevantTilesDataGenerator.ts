@@ -2,6 +2,7 @@ import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeCo
 import {buildMap, isPointInRectangle, Rectangle} from "../../common/utils";
 import {Tile} from "../../models/tile/tile";
 import {Projections} from "../../common/webgl/projections";
+import {WasmApi} from "../../wasm/wasmApi";
 
 export namespace RelevantTilesDataGenerator {
 
@@ -11,12 +12,12 @@ export namespace RelevantTilesDataGenerator {
 		const relevantWorldArea = context.get<Rectangle>("relevantWorldArea");
 		const tiles = context.get<Tile[]>("tiles");
 
-		console.log("gen relevant tiles")
-
 		const relevantTiles = tiles.filter(tile => {
 			const worldPos = Projections.hexToWorld(tile.position.q, tile.position.r)
 			return isPointInRectangle(worldPos, relevantWorldArea)
 		})
+
+		WasmApi.Renderer.setTiles(relevantTiles);
 
 		return buildMap([
 			[OUTPUT_ID, relevantTiles],

@@ -3,6 +3,9 @@ export namespace WasmProbe {
 	let last = 0;
 
 	export function watchMemory(tag) {
+		if(!window.__wasmMemory) {
+			return;
+		}
 
 		const memory = window.__wasmMemory;
 
