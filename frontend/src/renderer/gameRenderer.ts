@@ -36,6 +36,7 @@ export class GameRenderer {
 	 * Initialize the renderer for the given canvas
 	 */
 	public initialize(canvasHandle: CanvasHandle): void {
+		WasmApi.Renderer.init();
 		const factory = new GameRenderGraphFactory();
 		this.changeTracker.initialize();
 		this.gameRenderGraph = factory.create(
@@ -66,6 +67,7 @@ export class GameRenderer {
 	 * Dispose the renderer and all resources
 	 */
 	public dispose() {
+		WasmApi.Renderer.dispose();
 		this.gameRenderGraph?.dispose();
 		this.gameRenderGraph = null;
 	}

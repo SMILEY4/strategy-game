@@ -43,7 +43,7 @@ export namespace TileInstanceVertexGenerator {
 		const relevantTiles = context.get<Tile[]>("relevantTiles");
 		const tileCounts = countTileTypes(relevantTiles);
 
-		WasmApi.Renderer.update();
+		WasmApi.Renderer.updateTerrainTileVertices();
 		const wasmLand = WasmApi.Renderer.getVerticesLand();
 		const wasmWater = WasmApi.Renderer.getVerticesWater();
 		const wasmFog = WasmApi.Renderer.getVerticesFog();

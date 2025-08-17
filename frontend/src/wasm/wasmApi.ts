@@ -1,4 +1,4 @@
-import * as wasm from "wasm";
+import {WasmRenderApp} from "wasm";
 import {Tile} from "../models/tile/tile";
 
 export namespace WasmApi {
@@ -22,6 +22,16 @@ export namespace WasmApi {
 
 	export namespace Renderer {
 
+		let wasmRenderApp: WasmRenderApp | null = null;
+
+		export function init() {
+			wasmRenderApp = new WasmRenderApp();
+		}
+
+		export function dispose() {
+			wasmRenderApp = null;
+		}
+
 		export function setTiles(tiles: Tile[]) {
 			const wasmTiles: TileWasm[] = tiles.map(it => ({
 				id: it.id,
@@ -39,23 +49,24 @@ export namespace WasmApi {
 				random_0: it.metaProperties.randomValue0,
 				random_1: it.metaProperties.randomValue1,
 			}));
-			wasm.RendererApi.init_tiles(wasmTiles);
+			wasmRenderApp!.set_tiles(wasmTiles);
+			wasmRenderApp!.update_borders();
 		}
 
-		export function update() {
-			wasm.RendererApi.update();
+		export function updateTerrainTileVertices() {
+			wasmRenderApp!.update_terrain_tile_vertices();
 		}
 
 		export function getVerticesLand(): Uint8Array {
-			return wasm.RendererApi.get_vertices_land();
+			return wasmRenderApp!.get_vertex_buffer_land();
 		}
 
 		export function getVerticesWater(): Uint8Array {
-			return wasm.RendererApi.get_vertices_water();
+			return wasmRenderApp!.get_vertex_buffer_water();
 		}
 
 		export function getVerticesFog(): Uint8Array {
-			return wasm.RendererApi.get_vertices_fog();
+			return wasmRenderApp!.get_vertex_buffer_fog();
 		}
 	}
 
