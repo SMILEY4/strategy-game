@@ -13,6 +13,7 @@ import {TerrainType} from "../../models/tile/terrainType";
 import {buildMap} from "../../common/utils";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {RouteSpriteBuilder} from "../utils/routeSpriteBuilder";
+import {WasmApi} from "../../wasm/wasmApi";
 
 export namespace MapDetailsVertexGenerator {
 
@@ -51,6 +52,7 @@ export namespace MapDetailsVertexGenerator {
 			addRoute(spriteBuffer, routes[i], textureAtlasGroups);
 		}
 
+		// terrain
 		for (let i = 0, n = relevantTiles.length; i < n; i++) {
 			const tile = relevantTiles[i];
 			if (tile.visibility !== Visibility.UNKNOWN && tile.base.value.terrainType === TerrainType.LAND) {
@@ -64,6 +66,23 @@ export namespace MapDetailsVertexGenerator {
 				{
 					data: spriteBuffer.buildRawBuffer(),
 					entryCount: spriteBuffer.getVertexCount(),
+				},
+			],
+		]);
+	}
+
+	export function funcWasm(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
+
+		WasmApi.Renderer.updateDetailVertices()
+		const wasmVertices = WasmApi.Renderer.getVerticesDetails();
+		const wasmVertexCount = WasmApi.Renderer.getVertexCountDetails();
+
+		return buildMap([
+			[
+				OUTPUT_ID,
+				{
+					data: wasmVertices,
+					entryCount: wasmVertexCount,
 				},
 			],
 		]);

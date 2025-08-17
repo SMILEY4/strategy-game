@@ -1,14 +1,21 @@
-use crate::renderer::models::{FogTileVertex, LandTileVertex, OverlayTileVertex, WaterTileVertex};
+use crate::js::models::{TextureAtlasEntry, Tile, TilePosition};
+use crate::renderer::app::RenderApp;
+use crate::renderer::models::{FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, WaterTileVertex};
 use js_sys::Uint8Array;
+use std::collections::HashMap;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
-use crate::js::models::{Tile, TilePosition};
-use crate::renderer::app::RenderApp;
 
-mod renderer;
 mod js;
+mod renderer;
 mod utils;
-mod panic_hook;
+
+#[wasm_bindgen]
+pub struct DirectBuffer {
+    pub ptr: *mut Tile,
+    pub len: usize,
+    pub item_size: usize,
+}
 
 #[wasm_bindgen]
 pub struct WasmRenderApp {
@@ -19,23 +26,43 @@ pub struct WasmRenderApp {
 impl WasmRenderApp {
     #[wasm_bindgen(constructor)]
     pub fn new() -> WasmRenderApp {
+        console_error_panic_hook::set_once();
         WasmRenderApp {
             app: RenderApp::new(),
         }
     }
 
-    pub fn set_map_mode(&mut self, js_map_mode: JsValue) {
-        let map_mode: String = serde_wasm_bindgen::from_value(js_map_mode).expect("valid js data");
-        self.app.set_map_mode(map_mode)
+    pub fn set_texture_atlas_entries(&mut self, js_entries: JsValue) {
+        let entries: HashMap<String, Vec<TextureAtlasEntry>> = serde_wasm_bindgen::from_value(js_entries).expect("valid js data");
+        self.app.set_texture_atlas_entries(entries);
     }
 
-    pub fn set_tiles(&mut self, js_tiles: JsValue) {
-        let tiles: Vec<Tile> = serde_wasm_bindgen::from_value(js_tiles).expect("valid js data");
-        self.app.set_tiles(tiles)
+    pub fn set_map_mode(&mut self, js_map_mode: JsValue) {
+        let map_mode: String = serde_wasm_bindgen::from_value(js_map_mode).expect("valid js data");
+        self.app.set_map_mode(map_mode);
+    }
+
+    pub fn reserve_tiles_memory(&self, len: usize) -> DirectBuffer {
+        let mut vec = Vec::with_capacity(len);
+        let ptr = vec.as_mut_ptr();
+        std::mem::forget(vec);
+        DirectBuffer {
+            ptr: ptr,
+            len: len,
+            item_size: size_of::<Tile>(),
+        }
+    }
+
+    pub fn upload_direct_tile_memory(&mut self, ptr: *mut Tile, len: usize) {
+        unsafe {
+            let tiles = Vec::from_raw_parts(ptr, len, len);
+            self.app.set_tiles(tiles)
+        }
     }
 
     pub fn set_move_targets(&mut self, js_move_targets: JsValue) {
-        let move_targets: Vec<TilePosition> = serde_wasm_bindgen::from_value(js_move_targets).expect("valid js data");
+        let move_targets: Vec<TilePosition> =
+            serde_wasm_bindgen::from_value(js_move_targets).expect("valid js data");
         self.app.set_move_targets(move_targets)
     }
 
@@ -51,8 +78,8 @@ impl WasmRenderApp {
         self.app.update_overlay_tile_vertices()
     }
 
-    pub fn update_detail_vertices(&self) {
-        // todo...
+    pub fn update_detail_vertices(&mut self) {
+        self.app.update_detail_vertices()
     }
 
     pub fn get_vertex_buffer_water(&self) -> Uint8Array {
@@ -73,6 +100,15 @@ impl WasmRenderApp {
     pub fn get_vertex_buffer_overlay(&self) -> Uint8Array {
         let vertices = self.app.get_vertex_buffer_overlay();
         self.as_js_vertex_buffer::<OverlayTileVertex>(vertices)
+    }
+
+    pub fn get_vertex_buffer_detail(&self) -> Uint8Array {
+        let vertices = self.app.get_vertex_buffer_detail();
+        self.as_js_vertex_buffer::<MapDetailVertex>(vertices)
+    }
+
+    pub fn get_vertex_count_detail(&self) -> usize {
+        self.app.get_vertex_buffer_detail().len()
     }
 
     fn as_js_vertex_buffer<T>(&self, vertices: &Vec<T>) -> Uint8Array {

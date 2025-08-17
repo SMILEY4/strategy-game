@@ -126,11 +126,13 @@ export class GameRenderGraphFactory {
 			.createPropertyDynamic<Map<string, TextureAtlasEntry[]>>("textureAtlasGroups")
 			.withChangeTest(() => false)
 			.withValue(() => {
-				return buildMap<TextureAtlasEntry[]>(
+				const groups =  buildMap<TextureAtlasEntry[]>(
 					textureAtlasDetails
 						.getGroupNames()
 						.map(it => [it, textureAtlasDetails.getGroup(it)] as [string, TextureAtlasEntry[]]),
 				);
+				WasmApi.Renderer.setTextureAtlasEntries(groups);
+				return groups;
 			});
 
 		const propCameraVPM = graph
@@ -490,7 +492,7 @@ export class GameRenderGraphFactory {
 					amountComponents: 3,
 				},
 			])
-			.withFunction(MapDetailsVertexGenerator.func)
+			.withFunction(MapDetailsVertexGenerator.funcWasm)
 			.withProperty(propRelevantTiles, "relevantTiles")
 			.withProperty(externalProps.settlements, "settlements")
 			.withProperty(externalProps.worldObjects, "worldObjects")

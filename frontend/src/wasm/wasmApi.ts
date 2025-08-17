@@ -1,8 +1,11 @@
-import {WasmRenderApp} from "wasm";
+import {DirectBuffer, WasmRenderApp} from "wasm";
+
 import {Tile} from "../models/tile/tile";
-import {Color} from "../common/color";
 import {MapMode} from "../models/misc/mapMode";
 import {TileSummary} from "../models/tile/tileSummary";
+import {memory} from "wasm/wasm_bg.wasm";
+import {TileResourceType} from "../models/tile/TileResourceType";
+import {TextureAtlasEntry} from "../common/webgl/textureAtlas";
 
 export namespace WasmApi {
 
@@ -42,55 +45,131 @@ export namespace WasmApi {
 			wasmRenderApp = null;
 		}
 
+		export function setTextureAtlasEntries(entries: Map<string, TextureAtlasEntry[]>) {
+			const wasmEntries = new Map<string, any>();
+			for (let [key, group] of entries) {
+				wasmEntries.set(key, group.map(it => ({
+					name: it.name,
+					vertices: it.vertices.flatMap(it => it),
+					texture_coordinates: it.textureCoordinates.flatMap(it => it),
+					offset: it.offset,
+					scale: it.scale,
+					mode: it.mode,
+				})))
+			}
+			wasmRenderApp!.set_texture_atlas_entries(wasmEntries);
+		}
+
 		export function setMapMode(mapMode: MapMode) {
-			let wasmMapMode: string = "default"
-			if(mapMode === MapMode.DEFAULT) wasmMapMode = "default"
-			if(mapMode === MapMode.COUNTRIES) wasmMapMode = "countries"
-			if(mapMode === MapMode.SETTLEMENTS) wasmMapMode = "settlements"
-			if(mapMode === MapMode.SETTLEMENT_LOCATIONS) wasmMapMode = "settlement_locations"
-			if(mapMode === MapMode.RESOURCES) wasmMapMode = "resources"
-			if(mapMode === MapMode.TERRAIN) wasmMapMode = "terrain"
-			wasmRenderApp!.set_map_mode(wasmMapMode)
+			let wasmMapMode: string = "default";
+			if (mapMode === MapMode.DEFAULT) wasmMapMode = "default";
+			if (mapMode === MapMode.COUNTRIES) wasmMapMode = "countries";
+			if (mapMode === MapMode.SETTLEMENTS) wasmMapMode = "settlements";
+			if (mapMode === MapMode.SETTLEMENT_LOCATIONS) wasmMapMode = "settlement_locations";
+			if (mapMode === MapMode.RESOURCES) wasmMapMode = "resources";
+			if (mapMode === MapMode.TERRAIN) wasmMapMode = "terrain";
+			wasmRenderApp!.set_map_mode(wasmMapMode);
 		}
 
 		export function setMoveTargets(tiles: TileSummary[]) {
 			const wasmTilePositions: TilePositionWasm[] = tiles.map(it => it.position);
-			wasmRenderApp!.set_move_targets(wasmTilePositions)
+			wasmRenderApp!.set_move_targets(wasmTilePositions);
 		}
 
 		export function setTiles(tiles: Tile[]) {
-			const wasmTiles: TileWasm[] = tiles.map(tile => ({
-				position: {
-					q: tile.position.q,
-					r: tile.position.r,
-				},
-				world_position: {
-					x: tile.metaProperties.worldPosition.x,
-					y: tile.metaProperties.worldPosition.y,
-				},
-				visibility: tile.visibility.renderId,
-				terrain_type: tile.base.visible ? tile.base.value.terrainType.renderId : 0,
-				owner_country_id: tile.political.visible && tile.political.value.controlledBy != null
-					? tile.political.value.controlledBy.country.id
-					: null,
-				owner_country_color: tile.political.visible && tile.political.value.controlledBy != null
-					? Color.colorToRgbArray(tile.political.value.controlledBy.country.color)
-					: null,
-				owner_settlement_id: tile.political.visible && tile.political.value.controlledBy != null
-					? tile.political.value.controlledBy.settlement.id
-					: null,
-				owner_settlement_color: tile.political.visible && tile.political.value.controlledBy != null
-					? Color.colorToRgbArray(tile.political.value.controlledBy.settlement.color)
-					: null,
-				is_valid_settlement_location: tile.isValidSettlementLocation,
-				resource_color: tile.base.visible && tile.base.value?.resourceType.color != null
-					? Color.colorToRgbaArray(tile.base.value?.resourceType.color!, 1.0)
-					: null,
-				height: tile.base.visible ? tile.base.value.height : 0,
-				random_0: tile.metaProperties.randomValue0,
-				random_1: tile.metaProperties.randomValue1,
-			}));
-			wasmRenderApp!.set_tiles(wasmTiles);
+
+			const reservedMemory: DirectBuffer = wasmRenderApp!.reserve_tiles_memory(tiles.length);
+			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
+
+			const writer = new DataViewWriter();
+
+			for (let i = 0, n = tiles.length; i < n; i++) {
+				const tile = tiles[i];
+				const offset = i * reservedMemory.item_size;
+				const view = new DataView(bytes.buffer, bytes.byteOffset + offset, reservedMemory.item_size);
+				writer.pushDataView(view);
+
+				// position_q: i32,
+				// position_r: i32,
+				writer.pushInt32(tile.position.q);
+				writer.pushInt32(tile.position.r);
+
+				// world_x: f32,
+				// world_y: f32,
+				writer.pushFloat32(tile.metaProperties.worldPosition.x);
+				writer.pushFloat32(tile.metaProperties.worldPosition.y);
+
+				// visibility: u8,
+				writer.pushUint8(tile.visibility.renderId);
+
+				// terrain_type: u8,
+				writer.pushUint8(tile.base.visible ? tile.base.value.terrainType.renderId : 0);
+
+				// owner_country_id: u8, // "0" = no owner
+				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0);
+
+				// owner_country_color_r: f32,
+				// owner_country_color_g: f32,
+				// owner_country_color_b: f32,
+				if (tile.political.visible && tile.political.value.controlledBy != null) {
+					writer.pushFloat32(tile.political.value.controlledBy.country.color.red / 255);
+					writer.pushFloat32(tile.political.value.controlledBy.country.color.green / 255);
+					writer.pushFloat32(tile.political.value.controlledBy.country.color.blue / 255);
+				} else {
+					writer.pushFloat32(0);
+					writer.pushFloat32(0);
+					writer.pushFloat32(0);
+				}
+
+				// owner_settlement_id: u8, // "0" = no owner
+				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0);
+
+				// owner_settlement_color_r: f32,
+				// owner_settlement_color_g: f32,
+				// owner_settlement_color_b: f32,
+				if (tile.political.visible && tile.political.value.controlledBy != null) {
+					writer.pushFloat32(tile.political.value.controlledBy.settlement.color.red / 255);
+					writer.pushFloat32(tile.political.value.controlledBy.settlement.color.green / 255);
+					writer.pushFloat32(tile.political.value.controlledBy.settlement.color.blue / 255);
+				} else {
+					writer.pushFloat32(0);
+					writer.pushFloat32(0);
+					writer.pushFloat32(0);
+				}
+
+				// is_valid_settlement_location: u8,
+				writer.pushUint8(tile.isValidSettlementLocation ? 1 : 0);
+
+				// resource_id: u8, // "0" = no resource
+				writer.pushUint8((tile.base.visible && tile.base.value.resourceType != null && tile.base.value.resourceType != TileResourceType.NONE) ? 1 : 0);
+
+				// resource_color_r: f32,
+				// resource_color_g: f32,
+				// resource_color_b: f32,
+				// resource_color_a: f32,
+				if (tile.base.visible && tile.base.value.resourceType != null && tile.base.value.resourceType != TileResourceType.NONE) {
+					writer.pushFloat32(tile.base.value.resourceType.color!.red / 255);
+					writer.pushFloat32(tile.base.value.resourceType.color!.green / 255);
+					writer.pushFloat32(tile.base.value.resourceType.color!.blue / 255);
+					writer.pushFloat32(1.0);
+				} else {
+					writer.pushFloat32(0);
+					writer.pushFloat32(0);
+					writer.pushFloat32(0);
+					writer.pushFloat32(0);
+				}
+
+
+				// height: f32,
+				writer.pushFloat32(tile.base.visible ? tile.base.value.height : 0);
+
+				// random_0: f32,
+				// random_1: f32,
+				writer.pushFloat32(tile.metaProperties.randomValue0);
+				writer.pushFloat32(tile.metaProperties.randomValue1);
+			}
+
+			wasmRenderApp!.upload_direct_tile_memory(reservedMemory.ptr, reservedMemory.len);
 			wasmRenderApp!.update_borders();
 		}
 
@@ -100,6 +179,10 @@ export namespace WasmApi {
 
 		export function updateOverlayTileVertices() {
 			wasmRenderApp!.update_overlay_vertices();
+		}
+
+		export function updateDetailVertices() {
+			wasmRenderApp!.update_detail_vertices();
 		}
 
 		export function getVerticesLand(): Uint8Array {
@@ -117,6 +200,41 @@ export namespace WasmApi {
 		export function getVerticesOverlay(): Uint8Array {
 			return wasmRenderApp!.get_vertex_buffer_overlay();
 		}
+
+		export function getVerticesDetails(): Uint8Array {
+			return wasmRenderApp!.get_vertex_buffer_detail();
+		}
+
+		export function getVertexCountDetails(): number {
+			return wasmRenderApp!.get_vertex_count_detail();
+		}
+	}
+
+}
+
+class DataViewWriter {
+
+	dataView: DataView = null!;
+	counter = 0;
+
+	pushDataView(dataView: DataView) {
+		this.dataView = dataView;
+		this.counter = 0;
+	}
+
+	pushUint8(value: number) {
+		this.dataView.setUint8(this.counter, value);
+		this.counter += 1;
+	}
+
+	pushInt32(value: number) {
+		this.dataView.setInt32(this.counter, value, true);
+		this.counter += 4;
+	}
+
+	pushFloat32(value: number) {
+		this.dataView.setFloat32(this.counter, value, true);
+		this.counter += 4;
 	}
 
 }

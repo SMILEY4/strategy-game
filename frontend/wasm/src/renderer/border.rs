@@ -26,7 +26,7 @@ pub fn build_tile_borders(tiles: &Vec<Tile>) -> Vec<TileBorderData> {
     // build map of "tile position" -> "tile"
     let tiles_by_position = tiles
         .iter()
-        .map(|it| ((it.position.q, it.position.r), it))
+        .map(|it| ((it.position_q, it.position_r), it))
         .collect::<HashMap<(i32, i32), &Tile>>();
 
     // build border data for each tile and for each border
@@ -81,7 +81,7 @@ fn build_direction_border(
     border_default: bool
 ) -> bool {
     by_pos
-        .get(&(tile.position.q + offset.0, tile.position.r + offset.1))
+        .get(&(tile.position_q + offset.0, tile.position_r + offset.1))
         .map(|it| border_test(tile, it))
         .unwrap_or(border_default)
 }

@@ -35,12 +35,22 @@ pub struct OverlayTileVertex {
     pub highlight_fill_color: [f32; 4],
 }
 
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy)]
+pub struct MapDetailVertex {
+    pub position: [f32; 3],
+    pub texture_coordinates: [f32; 2],
+    pub base_color: [f32; 3],
+    pub country_color: [f32; 3],
+}
+
 #[derive(Default)]
 pub struct VertexData {
     pub land: Vec<LandTileVertex>,
     pub water: Vec<WaterTileVertex>,
     pub fog: Vec<FogTileVertex>,
     pub overlay: Vec<OverlayTileVertex>,
+    pub map_detail: Vec<MapDetailVertex>,
 }
 
 #[derive(Default)]
