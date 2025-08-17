@@ -115,7 +115,7 @@ export class GameRenderGraphFactory {
 
 		const configProps = this.createConfigurationProperties(graph);
 		const textureNodes = this.createTextureNodes(graph, gameAccess);
-		const externalProps = this.createExternalProps(graph, gameAccess, changeTracker, canvasHandle)
+		const externalProps = this.createExternalProps(graph, gameAccess, changeTracker, canvasHandle);
 
 		const textureAtlasDetails = TextureAtlas.createFromData(
 			textureAtlasManager.getEntries("tileset_details"),
@@ -161,7 +161,7 @@ export class GameRenderGraphFactory {
 			.createIntermediateDataGenerator("gen-additional-tile-data")
 			.withProperty(externalProps.tiles, "tiles")
 			.withProperty(externalProps.tilesByPosProvider, "tileByPosProvider")
-			.withFunction(AdditionalTileDataGenerator.func)
+			.withFunction(AdditionalTileDataGenerator.funcWasm)
 			.withOutput(AdditionalTileDataGenerator.COASTLINE_BORDER_MASK_OUTPUT_ID);
 
 		const propCoastlineBorderMask = graph
@@ -173,7 +173,7 @@ export class GameRenderGraphFactory {
 			.createIntermediateDataGenerator("gen-relevant-tiles-data")
 			.withProperty(externalProps.tiles, "tiles")
 			.withProperty(propRelevantWorldArea, "relevantWorldArea")
-			.withFunction(RelevantTilesDataGenerator.func)
+			.withFunction(RelevantTilesDataGenerator.funcWasm)
 			.withOutput(RelevantTilesDataGenerator.OUTPUT_ID);
 
 		const propRelevantTiles = graph
@@ -429,7 +429,7 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 			])
-			.withFunction(OverlayInstancesVertexGenerator.func);
+			.withFunction(OverlayInstancesVertexGenerator.funcWasm);
 
 		const vertexDescriptorOverlay = graph
 			.createVertexDescriptor("vd-overlay")
@@ -815,6 +815,14 @@ export class GameRenderGraphFactory {
 	}
 
 	private createExternalProps(graph: RenderGraph, gameAccess: GameStateAccess, changeTracker: GameChangeTracker, canvasHandle: CanvasHandle) {
+		const mapMode = graph
+			.createPropertyDynamic<MapMode>("mapMode")
+			.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
+			.withValue(() => gameAccess.getMapMode());
+		const moveTargets = graph
+			.createPropertyDynamic<TileSummary[]>("moveTargets")
+			.withChangeTest(() => changeTracker.getTrackedChanges().movementTargets)
+			.withValue(() => gameAccess.getMoveTargets());
 		return {
 			tiles: graph
 				.createPropertyDynamic<Tile[]>("tiles")
@@ -837,13 +845,17 @@ export class GameRenderGraphFactory {
 				.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
 				.withValue(() => gameAccess.getRoutes()),
 			mapMode: graph
-				.createPropertyDynamic<MapMode>("mapMode")
-				.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
-				.withValue(() => gameAccess.getMapMode()),
+				.createPropertyDerived<MapMode>("mapMode-wasm")
+				.withValue(mapMode, it => {
+					WasmApi.Renderer.setMapMode(it);
+					return it;
+				}),
 			moveTargets: graph
-				.createPropertyDynamic<TileSummary[]>("moveTargets")
-				.withChangeTest(() => changeTracker.getTrackedChanges().movementTargets)
-				.withValue(() => gameAccess.getMoveTargets()),
+				.createPropertyDerived<TileSummary[]>("moveTargets-wasm")
+				.withValue(moveTargets, it => {
+					WasmApi.Renderer.setMoveTargets(it);
+					return it;
+				}),
 			movePaths: graph
 				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("movePaths")
 				.withChangeTest(() => changeTracker.getTrackedChanges().movementPaths)
@@ -870,7 +882,7 @@ export class GameRenderGraphFactory {
 				.withValue(() => (Date.now() / 1000) % 10000)
 				.withChangeTest(() => true)
 				.withType(GLUniformType.FLOAT),
-		}
+		};
 	}
 
 	private createTextureNodes(graph: RenderGraph, gameAccess: GameStateAccess) {
@@ -898,7 +910,7 @@ export class GameRenderGraphFactory {
 				.createTexture("noise_watercolor")
 				.withUrl("/textures/noise_watercolor.png"),
 			textureClouds: graph
-			.createTexture("clouds")
+				.createTexture("clouds")
 				.withUrl("/textures/noise_watercolor.png"),
 			textureParchment: graph
 				.createTexture("parchment")
@@ -927,8 +939,8 @@ export class GameRenderGraphFactory {
 			lut: graph
 				.createConditionalTexture("lut")
 				.withOption(lutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
-				.withOption(lutGrayscale, () => gameAccess.getMapMode().renderData.grayscale)
-		}
+				.withOption(lutGrayscale, () => gameAccess.getMapMode().renderData.grayscale),
+		};
 	}
 
 }

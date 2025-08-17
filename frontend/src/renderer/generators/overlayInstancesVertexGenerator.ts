@@ -7,6 +7,7 @@ import {buildMap} from "../../common/utils";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {BorderBuilder} from "../utils/borderBuilder";
 import {packBorder} from "../utils/packBorder";
+import {WasmApi} from "../../wasm/wasmApi";
 
 export namespace OverlayInstancesVertexGenerator {
 
@@ -55,6 +56,24 @@ export namespace OverlayInstancesVertexGenerator {
 				OUTPUT_ID,
 				{
 					data: arrayBufferOverlay.getRawBuffer(),
+					entryCount: relevantTiles.length,
+				},
+			],
+		]);
+	}
+
+	export function funcWasm(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
+
+		const relevantTiles = context.get<Tile[]>("relevantTiles");
+
+		WasmApi.Renderer.updateOverlayTileVertices();
+		const wasmOverlay = WasmApi.Renderer.getVerticesOverlay();
+
+		return buildMap([
+			[
+				OUTPUT_ID,
+				{
+					data: wasmOverlay,
 					entryCount: relevantTiles.length,
 				},
 			],

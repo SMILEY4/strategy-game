@@ -18,8 +18,6 @@ export class GameRenderer {
 
 	private gameRenderGraph: RenderGraph | null = null;
 
-	private frameCounter = 0;
-
 	constructor(
 		gameStateAccess: GameStateAccess,
 		changeTracker: GameChangeTracker,

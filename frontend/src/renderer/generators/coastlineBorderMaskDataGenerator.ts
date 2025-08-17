@@ -11,6 +11,8 @@ export namespace AdditionalTileDataGenerator {
 
 	export const COASTLINE_BORDER_MASK_OUTPUT_ID = "add-tile-data.coastlineBorderMaskData";
 
+	export const EMPTY = new Map<TileId, number>();
+
 	export function func(context: RenderGraphNodeContext): Map<string, any> {
 		const tiles = context.get<Tile[]>("tiles");
 		const tileByPosProvider = context.get<(q: number, r: number) => Tile | null>("tileByPosProvider");
@@ -34,6 +36,12 @@ export namespace AdditionalTileDataGenerator {
 
 		return buildMap([
 			[COASTLINE_BORDER_MASK_OUTPUT_ID, coastlineBorderMask],
+		]);
+	}
+
+	export function funcWasm(context: RenderGraphNodeContext): Map<string, any> {
+		return buildMap([
+			[COASTLINE_BORDER_MASK_OUTPUT_ID, EMPTY],
 		]);
 	}
 

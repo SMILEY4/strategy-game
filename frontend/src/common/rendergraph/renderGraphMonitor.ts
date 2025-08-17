@@ -11,16 +11,13 @@ export namespace RenderGraphMonitor {
 	}
 
 	export function endFrame() {
-		// console.log("command samples", samples);
-
-		let str = ""
-
+		let str = "";
 		samples.forEach((sample, index) => {
-			str += index + "-" + sample.commandDebugData.command + "|" + sample.duration + "\n";
+			const command = sample.commandDebugData.command;
+			const creator = sample.commandDebugData.creator ? ("-" + sample.commandDebugData.creator) : "";
+			str += index + "-" + command + creator + "|" + sample.duration + "\n";
 		});
-
-		console.log(str)
-
+		console.log(str);
 	}
 
 	export function startCommand(commandDebugData: any) {

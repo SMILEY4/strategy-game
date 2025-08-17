@@ -17,10 +17,20 @@ export namespace RelevantTilesDataGenerator {
 			return isPointInRectangle(worldPos, relevantWorldArea)
 		})
 
-		WasmApi.Renderer.setTiles(relevantTiles);
-
 		return buildMap([
 			[OUTPUT_ID, relevantTiles],
+		]);
+	}
+
+	export function funcWasm(context: RenderGraphNodeContext): Map<string, any> {
+		const tiles = context.get<Tile[]>("tiles");
+
+		console.time("send tiles to wasm")
+		WasmApi.Renderer.setTiles(tiles);
+		console.timeEnd("send tiles to wasm")
+
+		return buildMap([
+			[OUTPUT_ID, tiles],
 		]);
 	}
 

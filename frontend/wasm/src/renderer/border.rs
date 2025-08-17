@@ -1,4 +1,4 @@
-use crate::js::models::Tile;
+use crate::js::models::{MapMode, Tile};
 use crate::renderer::models::{BorderData, TileBorderData};
 use std::collections::HashMap;
 
@@ -44,9 +44,19 @@ fn build_tile_border(
     tiles_by_position: &HashMap<(i32, i32), &Tile>,
 ) -> TileBorderData {
     TileBorderData {
+        none: BorderData {
+            right: false,
+            top_right: false,
+            top_left: false,
+            left: false,
+            bottom_left: false,
+            bottom_right: false,
+        },
         coast: build_border(tile, &tiles_by_position, false, |a, b| {
             (a.terrain_type == 1 || b.terrain_type == 1) && a.terrain_type != b.terrain_type
         }),
+        countries: build_border(tile, &tiles_by_position, MapMode::COUNTRIES.border_default, MapMode::COUNTRIES.border_check),
+        settlements: build_border(tile, &tiles_by_position, MapMode::COUNTRIES.border_default, MapMode::SETTLEMENTS.border_check),
     }
 }
 
