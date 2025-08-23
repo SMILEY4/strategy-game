@@ -1,7 +1,7 @@
-use crate::js::models::{TextureAtlasEntry, Tile, TilePosition};
+use crate::js::models::{Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject};
 use crate::renderer::app::RenderApp;
 use crate::renderer::models::{FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, WaterTileVertex};
-use js_sys::Uint8Array;
+use js_sys::{Uint8Array};
 use std::collections::HashMap;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
@@ -11,8 +11,22 @@ mod renderer;
 mod utils;
 
 #[wasm_bindgen]
-pub struct DirectBuffer {
+pub struct DirectTileBuffer {
     pub ptr: *mut Tile,
+    pub len: usize,
+    pub item_size: usize,
+}
+
+#[wasm_bindgen]
+pub struct DirectSettlementBuffer {
+    pub ptr: *mut Settlement,
+    pub len: usize,
+    pub item_size: usize,
+}
+
+#[wasm_bindgen]
+pub struct DirectWorldObjectBuffer {
+    pub ptr: *mut WorldObject,
     pub len: usize,
     pub item_size: usize,
 }
@@ -42,11 +56,11 @@ impl WasmRenderApp {
         self.app.set_map_mode(map_mode);
     }
 
-    pub fn reserve_tiles_memory(&self, len: usize) -> DirectBuffer {
-        let mut vec = Vec::with_capacity(len);
+    pub fn reserve_tiles_memory(&self, len: usize) -> DirectTileBuffer {
+        let mut vec: Vec<Tile> = Vec::with_capacity(len);
         let ptr = vec.as_mut_ptr();
         std::mem::forget(vec);
-        DirectBuffer {
+        DirectTileBuffer {
             ptr: ptr,
             len: len,
             item_size: size_of::<Tile>(),
@@ -57,6 +71,42 @@ impl WasmRenderApp {
         unsafe {
             let tiles = Vec::from_raw_parts(ptr, len, len);
             self.app.set_tiles(tiles)
+        }
+    }
+
+    pub fn reserve_settlement_memory(&self, len: usize) -> DirectSettlementBuffer {
+        let mut vec: Vec<Settlement> = Vec::with_capacity(len);
+        let ptr = vec.as_mut_ptr();
+        std::mem::forget(vec);
+        DirectSettlementBuffer {
+            ptr: ptr,
+            len: len,
+            item_size: size_of::<Settlement>(),
+        }
+    }
+
+    pub fn upload_direct_settlement_memory(&mut self, ptr: *mut Settlement, len: usize) {
+        unsafe {
+            let settlements = Vec::from_raw_parts(ptr, len, len);
+            self.app.set_settlements(settlements)
+        }
+    }
+
+    pub fn reserve_world_object_memory(&self, len: usize) -> DirectWorldObjectBuffer {
+        let mut vec: Vec<WorldObject> = Vec::with_capacity(len);
+        let ptr = vec.as_mut_ptr();
+        std::mem::forget(vec);
+        DirectWorldObjectBuffer {
+            ptr: ptr,
+            len: len,
+            item_size: size_of::<WorldObject>(),
+        }
+    }
+
+    pub fn upload_direct_world_object_memory(&mut self, ptr: *mut WorldObject, len: usize) {
+        unsafe {
+            let world_objects = Vec::from_raw_parts(ptr, len, len);
+            self.app.set_world_objects(world_objects)
         }
     }
 

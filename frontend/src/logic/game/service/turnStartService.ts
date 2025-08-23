@@ -17,6 +17,8 @@ import {SettlementEntity} from "../../../models/settlement/settlementEntity";
 import {WorldObjectEntity} from "../../../models/worldobject/worldObjectEntity";
 import {RouteEntity} from "../../../models/route/routeEntity";
 import {Projections} from "../../../common/webgl/projections";
+import {Random} from "../../../common/random";
+import normalized = Random.normalized;
 
 export interface TurnStartService {
 	/**
@@ -142,9 +144,9 @@ export class TurnStartServiceImpl implements TurnStartService {
 			metaProperties: { // todo: read from backend to make stable
 				worldPosition: Projections.hexToWorld(tileMsg.identifier.q, tileMsg.identifier.r),
 				randomIndex: this.cachedTileIndices[index],
-				randomValue0: Math.random(),
-				randomValue1: Math.random(),
-				randomValue2: Math.random(),
+				randomValue0: normalized(tileMsg.identifier.r + "-" + tileMsg.identifier.q + "-1"),
+				randomValue1: normalized(tileMsg.identifier.r + "-" + tileMsg.identifier.q + "-2"),
+				randomValue2: normalized(tileMsg.identifier.r + "-" + tileMsg.identifier.q + "-2"),
 			}
 		}));
 	}

@@ -1,4 +1,4 @@
-import {DirectBuffer, WasmRenderApp} from "wasm";
+import {DirectSettlementBuffer, DirectTileBuffer, DirectWorldObjectBuffer, WasmRenderApp} from "wasm";
 
 import {Tile} from "../models/tile/tile";
 import {MapMode} from "../models/misc/mapMode";
@@ -6,6 +6,11 @@ import {TileSummary} from "../models/tile/tileSummary";
 import {memory} from "wasm/wasm_bg.wasm";
 import {TileResourceType} from "../models/tile/TileResourceType";
 import {TextureAtlasEntry} from "../common/webgl/textureAtlas";
+import {Settlement} from "../models/settlement/settlement";
+import {TilemapUtils} from "../common/tilemapUtils";
+import {Random} from "../common/random";
+import {WorldObject} from "../models/worldobject/worldObject";
+import {Color} from "../common/color";
 
 export namespace WasmApi {
 
@@ -76,9 +81,83 @@ export namespace WasmApi {
 			wasmRenderApp!.set_move_targets(wasmTilePositions);
 		}
 
+		export function setWorldObjects(worldObjects: WorldObject[]) {
+
+			const reservedMemory: DirectWorldObjectBuffer = wasmRenderApp!.reserve_world_object_memory(worldObjects.length);
+			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
+
+			const writer = new DataViewWriter();
+
+			for (let i = 0, n = worldObjects.length; i < n; i++) {
+				const worldObject = worldObjects[i];
+				const offset = i * reservedMemory.item_size;
+				const view = new DataView(bytes.buffer, bytes.byteOffset + offset, reservedMemory.item_size);
+				writer.setDataView(view);
+
+				// position_q: i32,
+				// position_r: i32,
+				writer.pushInt32(worldObject.tile.position.q);
+				writer.pushInt32(worldObject.tile.position.r);
+
+				// world_x: f32,
+				// world_y: f32,
+				const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, worldObject.tile.position.q, worldObject.tile.position.r);
+				writer.pushFloat32(tileCenter[0]);
+				writer.pushFloat32(tileCenter[1]);
+
+				// country_color_r: f32,
+				// country_color_g: f32,
+				// country_color_b: f32,
+				const countryColor = Color.colorToRgbArray(worldObject.country.color);
+				writer.pushFloat32(countryColor[0]);
+				writer.pushFloat32(countryColor[1]);
+				writer.pushFloat32(countryColor[2]);
+			}
+
+			wasmRenderApp!.upload_direct_world_object_memory(reservedMemory.ptr, reservedMemory.len);
+		}
+
+		export function setSettlements(settlements: Settlement[]) {
+
+			const reservedMemory: DirectSettlementBuffer = wasmRenderApp!.reserve_settlement_memory(settlements.length);
+			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
+
+			const writer = new DataViewWriter();
+
+			for (let i = 0, n = settlements.length; i < n; i++) {
+				const settlement = settlements[i];
+				const offset = i * reservedMemory.item_size;
+				const view = new DataView(bytes.buffer, bytes.byteOffset + offset, reservedMemory.item_size);
+				writer.setDataView(view);
+
+				// position_q: i32,
+				// position_r: i32,
+				writer.pushInt32(settlement.tile.position.q);
+				writer.pushInt32(settlement.tile.position.r);
+
+				// world_x: f32,
+				// world_y: f32,
+				const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, settlement.tile.position.q, settlement.tile.position.r);
+				writer.pushFloat32(tileCenter[0]);
+				writer.pushFloat32(tileCenter[1]);
+
+				// population_size: i32,
+				writer.pushInt32(settlement.population.size.visible ? settlement.population.size.value.size : 1);
+
+				// random_0: f32,
+				// random_1: f32,
+				// random_2: f32,
+				writer.pushFloat32(Random.normalized(settlement.id + i));
+				writer.pushFloat32(Random.normalized(settlement.id + i + "x"));
+				writer.pushFloat32(Random.normalized(settlement.id + i + "y"));
+			}
+
+			wasmRenderApp!.upload_direct_settlement_memory(reservedMemory.ptr, reservedMemory.len);
+		}
+
 		export function setTiles(tiles: Tile[]) {
 
-			const reservedMemory: DirectBuffer = wasmRenderApp!.reserve_tiles_memory(tiles.length);
+			const reservedMemory: DirectTileBuffer = wasmRenderApp!.reserve_tiles_memory(tiles.length);
 			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
 
 			const writer = new DataViewWriter();
@@ -87,7 +166,7 @@ export namespace WasmApi {
 				const tile = tiles[i];
 				const offset = i * reservedMemory.item_size;
 				const view = new DataView(bytes.buffer, bytes.byteOffset + offset, reservedMemory.item_size);
-				writer.pushDataView(view);
+				writer.setDataView(view);
 
 				// position_q: i32,
 				// position_r: i32,
@@ -165,8 +244,10 @@ export namespace WasmApi {
 
 				// random_0: f32,
 				// random_1: f32,
+				// random_2: f32,
 				writer.pushFloat32(tile.metaProperties.randomValue0);
 				writer.pushFloat32(tile.metaProperties.randomValue1);
+				writer.pushFloat32(tile.metaProperties.randomValue2);
 			}
 
 			wasmRenderApp!.upload_direct_tile_memory(reservedMemory.ptr, reservedMemory.len);
@@ -217,7 +298,7 @@ class DataViewWriter {
 	dataView: DataView = null!;
 	counter = 0;
 
-	pushDataView(dataView: DataView) {
+	setDataView(dataView: DataView) {
 		this.dataView = dataView;
 		this.counter = 0;
 	}

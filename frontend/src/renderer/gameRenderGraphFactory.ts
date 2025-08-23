@@ -126,7 +126,7 @@ export class GameRenderGraphFactory {
 			.createPropertyDynamic<Map<string, TextureAtlasEntry[]>>("textureAtlasGroups")
 			.withChangeTest(() => false)
 			.withValue(() => {
-				const groups =  buildMap<TextureAtlasEntry[]>(
+				const groups = buildMap<TextureAtlasEntry[]>(
 					textureAtlasDetails
 						.getGroupNames()
 						.map(it => [it, textureAtlasDetails.getGroup(it)] as [string, TextureAtlasEntry[]]),
@@ -825,6 +825,14 @@ export class GameRenderGraphFactory {
 			.createPropertyDynamic<TileSummary[]>("moveTargets")
 			.withChangeTest(() => changeTracker.getTrackedChanges().movementTargets)
 			.withValue(() => gameAccess.getMoveTargets());
+		const settlements = graph
+			.createPropertyDynamic<Settlement[]>("settlements")
+			.withChangeTest(() => changeTracker.getTrackedChanges().settlements || changeTracker.getTrackedChanges().commands)
+			.withValue(() => gameAccess.getSettlements());
+		const worldObjects = graph
+			.createPropertyDynamic<WorldObject[]>("worldObjects")
+			.withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
+			.withValue(() => gameAccess.getWorldObjects());
 		return {
 			tiles: graph
 				.createPropertyDynamic<Tile[]>("tiles")
@@ -835,13 +843,17 @@ export class GameRenderGraphFactory {
 				.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
 				.withValue(() => ((q, r) => gameAccess.getTileAt(q, r))),
 			settlements: graph
-				.createPropertyDynamic<Settlement[]>("settlements")
-				.withChangeTest(() => changeTracker.getTrackedChanges().settlements || changeTracker.getTrackedChanges().commands)
-				.withValue(() => gameAccess.getSettlements()),
+				.createPropertyDerived<Settlement[]>("settlements-wasm")
+				.withValue(settlements, it => {
+					WasmApi.Renderer.setSettlements(it);
+					return it;
+				}),
 			worldObjects: graph
-				.createPropertyDynamic<WorldObject[]>("worldObjects")
-				.withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
-				.withValue(() => gameAccess.getWorldObjects()),
+				.createPropertyDerived<WorldObject[]>("worldObjects-wasm")
+				.withValue(worldObjects, it => {
+					WasmApi.Renderer.setWorldObjects(it);
+					return it;
+				}),
 			routes: graph
 				.createPropertyDynamic<Route[]>("routes")
 				.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)

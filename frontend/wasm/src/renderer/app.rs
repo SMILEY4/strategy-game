@@ -1,21 +1,22 @@
-use crate::js::models::{MapMode, TextureAtlasEntry, Tile, TilePosition};
+use crate::js::models::{MapMode, Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject};
 use crate::renderer::border;
-use crate::renderer::models::{
-    FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, WaterTileVertex,
-};
+use crate::renderer::models::{FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, VertexData, WaterTileVertex};
 use crate::renderer::state::RenderState;
-use crate::utils::math::mix;
+use crate::utils::math::{mix, Random};
 use std::collections::{HashMap, HashSet};
 use std::iter::FromIterator;
+use crate::js::imported::console_log;
 
 pub struct RenderApp {
     state: RenderState,
+    vertex_data: VertexData
 }
 
 impl RenderApp {
     pub fn new() -> RenderApp {
         RenderApp {
             state: RenderState::default(),
+            vertex_data: VertexData::default()
         }
     }
 
@@ -31,6 +32,14 @@ impl RenderApp {
         self.state.tiles = tiles;
     }
 
+    pub fn set_settlements(&mut self, settlements: Vec<Settlement>) {
+        self.state.settlements = settlements;
+    }
+
+    pub fn set_world_objects(&mut self, world_objects: Vec<WorldObject>) {
+        self.state.world_objects = world_objects;
+    }
+
     pub fn set_move_targets(&mut self, targets: Vec<TilePosition>) {
         self.state.move_targets = HashSet::from_iter(targets);
     }
@@ -44,7 +53,7 @@ impl RenderApp {
         let color_land_dark: [f32; 3] = [116.0 / 255.0, 126.0 / 255.0, 87.0 / 255.0];
 
         // todo: possible optimization: count instances before and init vecs with correct capacity
-        let vertex_data = &mut self.state.vertex_data;
+        let vertex_data = &mut self.vertex_data;
         vertex_data.land.clear();
         vertex_data.water.clear();
         vertex_data.fog.clear();
@@ -84,7 +93,7 @@ impl RenderApp {
 
     pub fn update_overlay_tile_vertices(&mut self) {
         // todo: possible optimization: count instances before and init vecs with correct capacity
-        let vertex_data = &mut self.state.vertex_data;
+        let vertex_data = &mut self.vertex_data;
         vertex_data.overlay.clear();
 
         let map_mode_data: MapMode = match self.state.map_mode.as_str() {
@@ -127,15 +136,101 @@ impl RenderApp {
     pub fn update_detail_vertices(&mut self) {
         let color_land_light: [f32; 3] = [148.0 / 255.0, 155.0 / 255.0, 100.0 / 255.0];
         let color_land_dark: [f32; 3] = [116.0 / 255.0, 126.0 / 255.0, 87.0 / 255.0];
-        let terrain_names = vec!["mountain", "hill", "forest", "none"];
 
-        let vertex_data = &mut self.state.vertex_data;
+        let tile_width = 10.0;
+        let tile_height = 7.0;
+
+        let vertex_data = &mut self.vertex_data;
         vertex_data.map_detail.clear();
 
         let atlas_entries_mountain = &self.state.texture_atlas_entries["terrain_mountain"];
         let atlas_entries_hill = &self.state.texture_atlas_entries["terrain_hill"];
         let atlas_entries_forest = &self.state.texture_atlas_entries["terrain_forest"];
+        let atlas_entries_terrain_decoration = &self.state.texture_atlas_entries["terrain_decoration"];
+        let atlas_entries_houses = &self.state.texture_atlas_entries["settlement_houses_all"];
+        let atlas_entries_settlement_decoration = &self.state.texture_atlas_entries["settlement_decoration"];
+        let atlas_entries_units = &self.state.texture_atlas_entries["unit"];
 
+        // add world objects
+        for world_object in self.state.world_objects.iter() {
+
+            let x = world_object.world_x;
+            let y = world_object.world_y - tile_height / 2.0;
+            let z = y - 1.0;
+
+            vertex_data.map_detail.extend(Self::create_sprite(
+                &atlas_entries_units[0],
+                (
+                    x,
+                    y
+                ),
+                (
+                    z,
+                    z
+                ),
+                (
+                    6.0,
+                    6.0
+                ),
+                [0.0, 0.0, 0.0],
+                [world_object.country_color_r, world_object.country_color_g, world_object.country_color_b],
+            ));
+
+        }
+
+        // add settlements
+        for settlement in self.state.settlements.iter() {
+
+            let mut rng = Random::new((settlement.position_q * 3 + settlement.position_r * 5) as u64);
+            for _i in 0..=(settlement.population_size+1) {
+                let x = settlement.world_x + (rng.f32() * 2.0 - 1.0) * tile_width / 2.0;
+                let y = settlement.world_y + (rng.f32() * 2.0 - 1.0) * tile_height / 2.0;
+                let z = y - 1.0;
+                vertex_data.map_detail.extend(Self::create_sprite(
+                    &atlas_entries_houses[(rng.f32() * atlas_entries_houses.len() as f32) as usize],
+                    (
+                        x,
+                        y
+                    ),
+                    (
+                        z,
+                        z
+                    ),
+                    (
+                        4.0,
+                        4.0
+                    ),
+                    [0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0],
+                ));
+            }
+
+            for _i in 0..(settlement.population_size) {
+                let x = settlement.world_x + (rng.f32() * 2.0 - 1.0) * tile_width / 2.0;
+                let y = settlement.world_y + (rng.f32() * 2.0 - 1.0) * tile_height / 2.0;
+                let z = y - 1.0;
+                vertex_data.map_detail.extend(Self::create_sprite(
+                    &atlas_entries_settlement_decoration[(rng.f32() * atlas_entries_settlement_decoration.len() as f32) as usize],
+                    (
+                        x,
+                        y
+                    ),
+                    (
+                        z,
+                        z
+                    ),
+                    (
+                        4.0,
+                        4.0
+                    ),
+                    [0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0],
+                ));
+            }
+
+        }
+
+        // add terrain
         for tile in self.state.tiles.iter() {
             if tile.visibility == 2 {
                 continue;
@@ -144,74 +239,111 @@ impl RenderApp {
                 continue;
             }
 
-            let terrain = terrain_names[(tile.random_0 * terrain_names.len() as f32) as usize].to_string();
+            let height_jitter = tile.random_1 * 0.1 - 0.5;
+            let height = tile.height * 2.0 + height_jitter;
+            let color = mix(&color_land_light, &color_land_dark, height);
 
-            match terrain.as_str() {
+            let mut terrain = "none";
+            if tile.random_1 > 0.8 {
+                terrain = "mountain"
+            } else if tile.random_1 > 0.65 {
+                terrain = "hill"
+            } else if tile.random_1 > 0.5 {
+                terrain = "forest"
+            } else {
+                terrain = "none"
+            }
+
+            match terrain {
                 "mountain" => {
-                    vertex_data.map_detail.extend(Self::add_sprite(
+                    vertex_data.map_detail.extend(Self::create_sprite(
                         &atlas_entries_mountain[(tile.random_1 * atlas_entries_mountain.len() as f32) as usize],
                         (
                             tile.world_x,
-                            tile.world_y
+                            tile.world_y - tile_height
                         ),
                         (
-                            tile.world_y - 3.5,
-                            tile.world_y + 3.5
+                            tile.world_y - tile_height + tile.random_2 * 0.1,
+                            tile.world_y + tile_height + tile.random_2 * 0.1
                         ),
                         (
                             22.0,
                             16.0
                         ),
-                        color_land_light,
+                        color,
                         [0.0, 0.0, 0.0],
                     ));
                 }
                 "hill" => {
-                    vertex_data.map_detail.extend(Self::add_sprite(
+                    vertex_data.map_detail.extend(Self::create_sprite(
                         &atlas_entries_hill[(tile.random_1 * atlas_entries_hill.len() as f32) as usize],
                         (
                             tile.world_x,
-                            tile.world_y
+                            tile.world_y - tile_height
                         ),
                         (
-                            tile.world_y - 3.5,
-                            tile.world_y + 3.5
+                            tile.world_y - tile_height + tile.random_2 * 0.1,
+                            tile.world_y + tile_height + tile.random_2 * 0.1
                         ),
                         (
                             22.0,
                             16.0
                         ),
-                        color_land_light,
+                        color,
                         [0.0, 0.0, 0.0],
                     ));
                 }
                 "forest" => {
-                    vertex_data.map_detail.extend(Self::add_sprite(
+                    vertex_data.map_detail.extend(Self::create_sprite(
                         &atlas_entries_forest[(tile.random_1 * atlas_entries_forest.len() as f32) as usize],
                         (
                             tile.world_x,
-                            tile.world_y
+                            tile.world_y - tile_height
                         ),
                         (
-                            tile.world_y - 3.5,
-                            tile.world_y + 3.5
+                            tile.world_y - tile_height + tile.random_2 * 0.1,
+                            tile.world_y + tile_height + tile.random_2 * 0.1
                         ),
                         (
                             22.0,
                             16.0
                         ),
-                        color_land_light,
+                        color,
                         [0.0, 0.0, 0.0],
                     ));
                 }
                 "none" | _ => {
-                    // add none
+                    for _i in 0..((tile.random_1 * 5.0) + 1.0) as i32 {
+                        let rng_offset_x = tile.random_0;
+                        let rng_offset_y = tile.random_2;
+                        let x = tile.world_x + (rng_offset_x * 2.0 - 1.0) * (tile_width / 2.0);
+                        let y = tile.world_y + (rng_offset_y * 2.0 - 1.0) * (tile_height / 2.0);
+                        let z = y - 1.0;
+
+                        vertex_data.map_detail.extend(Self::create_sprite(
+                            &atlas_entries_terrain_decoration[(tile.random_1 * atlas_entries_terrain_decoration.len() as f32) as usize],
+                            (
+                                x,
+                                y
+                            ),
+                            (
+                                z,
+                                z
+                            ),
+                            (
+                                4.0,
+                                4.0
+                            ),
+                            [0.0, 0.0, 0.0],
+                            [0.0, 0.0, 0.0],
+                        ));
+                    }
                 }
             }
         }
     }
 
-    fn add_sprite(
+    fn create_sprite(
         atlas_entry: &TextureAtlasEntry,
         pos: (f32, f32),
         sprite_z: (f32, f32),
@@ -246,22 +378,22 @@ impl RenderApp {
     }
 
     pub fn get_vertex_buffer_water(&self) -> &Vec<WaterTileVertex> {
-        &self.state.vertex_data.water
+        &self.vertex_data.water
     }
 
     pub fn get_vertex_buffer_land(&self) -> &Vec<LandTileVertex> {
-        &self.state.vertex_data.land
+        &self.vertex_data.land
     }
 
     pub fn get_vertex_buffer_fog(&self) -> &Vec<FogTileVertex> {
-        &self.state.vertex_data.fog
+        &self.vertex_data.fog
     }
 
     pub fn get_vertex_buffer_overlay(&self) -> &Vec<OverlayTileVertex> {
-        &self.state.vertex_data.overlay
+        &self.vertex_data.overlay
     }
 
     pub fn get_vertex_buffer_detail(&self) -> &Vec<MapDetailVertex> {
-        &self.state.vertex_data.map_detail
+        &self.vertex_data.map_detail
     }
 }

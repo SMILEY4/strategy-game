@@ -3,6 +3,36 @@ use serde::Deserialize;
 
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
+pub struct WorldObject {
+    pub position_q: i32,
+    pub position_r: i32,
+
+    pub world_x: f32,
+    pub world_y: f32,
+
+    pub country_color_r: f32,
+    pub country_color_g: f32,
+    pub country_color_b: f32,
+}
+
+#[repr(C, packed)]
+#[derive(Copy, Clone)]
+pub struct Settlement {
+    pub position_q: i32,
+    pub position_r: i32,
+
+    pub world_x: f32,
+    pub world_y: f32,
+
+    pub population_size: i32,
+
+    pub random_0: f32,
+    pub random_1: f32,
+    pub random_2: f32,
+}
+
+#[repr(C, packed)]
+#[derive(Copy, Clone)]
 pub struct Tile {
     pub position_q: i32,
     pub position_r: i32,
@@ -36,6 +66,7 @@ pub struct Tile {
 
     pub random_0: f32,
     pub random_1: f32,
+    pub random_2: f32,
 }
 
 #[derive(Deserialize, Clone, Hash, Eq, PartialEq)]

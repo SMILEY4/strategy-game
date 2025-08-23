@@ -219,6 +219,12 @@ export namespace MapDetailsVertexGenerator {
 				spriteBuffer.pooledEntry.scaleY = 16;
 				spriteBuffer.pooledEntry.colorCountry = [0, 0, 0];
 				spriteBuffer.pooledEntry.colorBaseTile = color;
+
+				if(tile.position.q == -1 && tile.position.r == -1) {
+					console.log("[JS DBG]: x,y", x, y)
+					console.log("[JS DBG]: z,Z", zMin, zMax)
+				}
+
 				spriteBuffer.addPooledGroundSprite();
 			}
 
