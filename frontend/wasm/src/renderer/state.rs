@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use crate::js::models::{Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject};
+use crate::js::models::{RouteNode, Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject};
 use crate::renderer::models::{TileBorderData};
 
 #[derive(Default)]
@@ -8,6 +8,7 @@ pub struct RenderState {
     pub settlements: Vec<Settlement>,
     pub world_objects: Vec<WorldObject>,
     pub move_targets: HashSet<TilePosition>,
+    pub routes: Vec<Vec<RouteNode>>,
     pub borders: Vec<TileBorderData>,
     pub map_mode: String,
     pub texture_atlas_entries: HashMap<String, Vec<TextureAtlasEntry>>,

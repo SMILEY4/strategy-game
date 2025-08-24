@@ -1,4 +1,4 @@
-use crate::js::models::{Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject};
+use crate::js::models::{RouteNode, Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject};
 use crate::renderer::app::RenderApp;
 use crate::renderer::models::{FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, WaterTileVertex};
 use js_sys::{Uint8Array};
@@ -9,6 +9,13 @@ use wasm_bindgen::JsValue;
 mod js;
 mod renderer;
 mod utils;
+
+#[wasm_bindgen]
+pub struct DirectRouteBuffer {
+    pub ptr: *mut RouteNode,
+    pub len: usize,
+    pub item_size: usize,
+}
 
 #[wasm_bindgen]
 pub struct DirectTileBuffer {
@@ -70,7 +77,7 @@ impl WasmRenderApp {
     pub fn upload_direct_tile_memory(&mut self, ptr: *mut Tile, len: usize) {
         unsafe {
             let tiles = Vec::from_raw_parts(ptr, len, len);
-            self.app.set_tiles(tiles)
+            self.app.set_tiles(tiles);
         }
     }
 
@@ -88,7 +95,7 @@ impl WasmRenderApp {
     pub fn upload_direct_settlement_memory(&mut self, ptr: *mut Settlement, len: usize) {
         unsafe {
             let settlements = Vec::from_raw_parts(ptr, len, len);
-            self.app.set_settlements(settlements)
+            self.app.set_settlements(settlements);
         }
     }
 
@@ -106,7 +113,33 @@ impl WasmRenderApp {
     pub fn upload_direct_world_object_memory(&mut self, ptr: *mut WorldObject, len: usize) {
         unsafe {
             let world_objects = Vec::from_raw_parts(ptr, len, len);
-            self.app.set_world_objects(world_objects)
+            self.app.set_world_objects(world_objects);
+        }
+    }
+
+
+    pub fn reserve_route_memory(&self, len: usize) -> DirectRouteBuffer {
+        let mut vec: Vec<RouteNode> = Vec::with_capacity(len);
+        let ptr = vec.as_mut_ptr();
+        std::mem::forget(vec);
+        DirectRouteBuffer {
+            ptr: ptr,
+            len: len,
+            item_size: size_of::<RouteNode>(),
+        }
+    }
+
+    pub fn upload_direct_route_memory(&mut self, ptr: *mut RouteNode, len: usize) {
+        unsafe {
+            let route_nodes = Vec::from_raw_parts(ptr, len, len);
+
+            let mut groups: HashMap<i32, Vec<RouteNode>> = HashMap::new();
+            for node in route_nodes {
+                let route_id = node.route_id;
+                groups.entry(route_id).or_insert_with(Vec::new).push(node);
+            }
+
+            self.app.set_routes(groups.into_values().collect());
         }
     }
 

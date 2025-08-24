@@ -1,4 +1,10 @@
-import {DirectSettlementBuffer, DirectTileBuffer, DirectWorldObjectBuffer, WasmRenderApp} from "wasm";
+import {
+	DirectRouteBuffer,
+	DirectSettlementBuffer,
+	DirectTileBuffer,
+	DirectWorldObjectBuffer,
+	WasmRenderApp,
+} from "wasm";
 
 import {Tile} from "../models/tile/tile";
 import {MapMode} from "../models/misc/mapMode";
@@ -11,27 +17,9 @@ import {TilemapUtils} from "../common/tilemapUtils";
 import {Random} from "../common/random";
 import {WorldObject} from "../models/worldobject/worldObject";
 import {Color} from "../common/color";
+import {Route} from "../models/route/route";
 
 export namespace WasmApi {
-
-	interface TileWasm {
-		position: TilePositionWasm,
-		world_position: {
-			x: number,
-			y: number,
-		},
-		visibility: number
-		terrain_type: number,
-		owner_country_id: string | null,
-		owner_country_color: [number, number, number] | null,
-		owner_settlement_id: string | null,
-		owner_settlement_color: [number, number, number] | null,
-		is_valid_settlement_location: boolean,
-		resource_color: [number, number, number, number] | null,
-		height: number,
-		random_0: number,
-		random_1: number,
-	}
 
 	interface TilePositionWasm {
 		q: number,
@@ -60,7 +48,7 @@ export namespace WasmApi {
 					offset: it.offset,
 					scale: it.scale,
 					mode: it.mode,
-				})))
+				})));
 			}
 			wasmRenderApp!.set_texture_atlas_entries(wasmEntries);
 		}
@@ -79,6 +67,47 @@ export namespace WasmApi {
 		export function setMoveTargets(tiles: TileSummary[]) {
 			const wasmTilePositions: TilePositionWasm[] = tiles.map(it => it.position);
 			wasmRenderApp!.set_move_targets(wasmTilePositions);
+		}
+
+		export function setRoutes(routes: Route[]) {
+
+			const amountRouteNodes = routes.flatMap(route => route.path).length;
+
+			const reservedMemory: DirectRouteBuffer = wasmRenderApp!.reserve_route_memory(amountRouteNodes);
+			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
+
+			const writer = new DataViewWriter();
+
+			let index = 0;
+			for (let i = 0, n = routes.length; i < n; i++) {
+				const route = routes[i];
+
+				for (let j = 0, m = route.path.length; j < m; j++) {
+					const tile = route.path[j];
+
+					const offset = index * reservedMemory.item_size;
+					const view = new DataView(bytes.buffer, bytes.byteOffset + offset, reservedMemory.item_size);
+					writer.setDataView(view);
+
+					// route_id: i32,
+					writer.pushInt32(i);
+
+					// position_q: i32,
+					// position_r: i32,
+					writer.pushInt32(tile.position.q);
+					writer.pushInt32(tile.position.r);
+
+					// world_x: f32,
+					// world_y: f32,
+					const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.position.q, tile.position.r);
+					writer.pushFloat32(tileCenter[0]);
+					writer.pushFloat32(tileCenter[1]);
+
+					index++;
+				}
+			}
+
+			wasmRenderApp!.upload_direct_route_memory(reservedMemory.ptr, reservedMemory.len);
 		}
 
 		export function setWorldObjects(worldObjects: WorldObject[]) {

@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 pub fn mix(x: &[f32; 3], y: &[f32; 3], a: f32) -> [f32; 3] {
     let clamped_a = a.clamp(0.0, 1.0);
     [
@@ -5,6 +7,15 @@ pub fn mix(x: &[f32; 3], y: &[f32; 3], a: f32) -> [f32; 3] {
         x[1] * (1.0 - clamped_a) + y[1] * clamped_a,
         x[2] * (1.0 - clamped_a) + y[2] * clamped_a,
     ]
+}
+
+pub fn triangle_wave(x: f32, f: f32) -> f32 {
+    // source: https://www.desmos.com/calculator/ivdvmfo7or
+    if ((x * f) % 1.0) < 0.5 {
+        ((x*f) % 1.0) * 4.0 - 1.0
+    } else {
+        3.0 + ((x*f) % 1.0) * -4.0
+    }
 }
 
 pub struct Random {
@@ -34,4 +45,109 @@ impl Random {
         (bits & max) as f32 / max as f32
     }
 
+}
+
+pub struct Vec2d {
+    pub x: f32,
+    pub y: f32,
+}
+
+impl Vec2d {
+
+    pub const ZERO: Vec2d = Vec2d { x: 0.0, y: 0.0 };
+    
+    pub fn from_vec2d(from: &Vec2d, to: &Vec2d) -> Self {
+        Self {
+            x: to.x - from.x,
+            y: to.y - from.y,
+        }
+    }
+
+    pub fn from_points(from: [f32;2], to: [f32;2]) -> Self {
+        Self {
+            x: to[0] - from[0],
+            y: to[1] - from[1],
+        }
+    }
+
+    pub fn copy(&self) -> Vec2d {
+        Vec2d {
+            x: self.x,
+            y: self.y,
+        }
+    }
+
+    pub fn to(&self, to: &Vec2d) -> Vec2d {
+        Vec2d {
+            x: to.x - self.x,
+            y: to.y - self.y,
+        }
+    }
+
+    pub fn length2(&self) -> f32 {
+        self.x * self.x + self.y * self.y
+    }
+
+    pub fn length(&self) -> f32 {
+        self.length2().sqrt()
+    }
+
+    pub fn distance2(&self, other: &Vec2d) -> f32 {
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        dx * dx + dy * dy
+    }
+
+    pub fn distance(&self, other: &Vec2d) -> f32 {
+        self.distance2(other).sqrt()
+    }
+
+    pub fn normalize(&self) -> Vec2d {
+        let length = self.length();
+        Vec2d {
+            x: self.x / length,
+            y: self.y / length,
+        }
+    }
+
+    pub fn scale(&self, scalar: f32) -> Vec2d {
+        Vec2d {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
+    }
+
+    pub fn add(&self, other: &Vec2d) -> Vec2d {
+        Vec2d {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+
+    pub fn dot(&self, other: &Vec2d) -> f32 {
+        self.x * other.x + self.y * other.y
+    }
+
+    pub fn rotate_90deg_cw(&self) -> Vec2d {
+        Vec2d {
+            x: self.y,
+            y: -self.x,
+        }
+    }
+
+    pub fn rotate_90deg_cc(&self) -> Vec2d {
+        Vec2d {
+            x: -self.y,
+            y: self.x,
+        }
+    }
+}
+
+pub fn interpolate_curve(a: &Vec2d, b: &Vec2d, c: &Vec2d, t: f32) -> Vec2d {
+    let ab_t = a.to(b).scale(t);
+    let bc_t = b.to(c).scale(t);
+    let x1 = a.add(&ab_t);
+    let x2 = b.add(&bc_t);
+    let x_t = x1.to(&x2).scale(t);
+    x1.add(&x_t)
 }

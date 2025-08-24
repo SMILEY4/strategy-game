@@ -76,4 +76,3 @@ pub struct BorderData {
     pub bottom_left: bool,
     pub bottom_right: bool,
 }
-

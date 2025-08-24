@@ -833,6 +833,10 @@ export class GameRenderGraphFactory {
 			.createPropertyDynamic<WorldObject[]>("worldObjects")
 			.withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
 			.withValue(() => gameAccess.getWorldObjects());
+		const routes = graph
+			.createPropertyDynamic<Route[]>("routes")
+			.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
+			.withValue(() => gameAccess.getRoutes());
 		return {
 			tiles: graph
 				.createPropertyDynamic<Tile[]>("tiles")
@@ -855,9 +859,11 @@ export class GameRenderGraphFactory {
 					return it;
 				}),
 			routes: graph
-				.createPropertyDynamic<Route[]>("routes")
-				.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
-				.withValue(() => gameAccess.getRoutes()),
+				.createPropertyDerived<Route[]>("routes-wasm")
+				.withValue(routes, it => {
+					WasmApi.Renderer.setRoutes(it);
+					return it;
+				}),
 			mapMode: graph
 				.createPropertyDerived<MapMode>("mapMode-wasm")
 				.withValue(mapMode, it => {

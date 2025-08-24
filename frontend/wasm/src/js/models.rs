@@ -3,6 +3,18 @@ use serde::Deserialize;
 
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
+pub struct RouteNode {
+    pub route_id: i32,
+
+    pub position_q: i32,
+    pub position_r: i32,
+
+    pub world_x: f32,
+    pub world_y: f32,
+}
+
+#[repr(C, packed)]
+#[derive(Copy, Clone)]
 pub struct WorldObject {
     pub position_q: i32,
     pub position_r: i32,
