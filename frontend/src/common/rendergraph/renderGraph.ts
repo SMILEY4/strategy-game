@@ -107,8 +107,8 @@ export class RenderGraph {
 		for (let i = 0, n = this.commands.length; i < n; i++) {
 			const command = this.commands[i];
 			// RenderGraphMonitor.startCommand(command.getDebugData())
-			command.execute(this.resourceManager, this.executeCounter < 10);
-			// command.execute(this.resourceManager, true);
+			// command.execute(this.resourceManager, this.executeCounter < 10);
+			command.execute(this.resourceManager, true);
 			// RenderGraphMonitor.endCommand()
 		}
 		this.executeCounter++;

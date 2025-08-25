@@ -2,6 +2,7 @@ import {Projections} from "../../common/webgl/projections";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {Camera} from "../../common/webgl/camera";
 import {buildMap, Rectangle} from "../../common/utils";
+import {WasmApi} from "../../wasm/wasmApi";
 
 export namespace RelevantWorldAreaDataGenerator {
 
@@ -10,7 +11,7 @@ export namespace RelevantWorldAreaDataGenerator {
 	const AREA_EXPANSION_PERCENTAGE = 0.1;
 	const CHUNK_SIZE = 250; // in "world units" todo: maybe make dependent on zoom-> lookup table from "zoom range" to "chunk size" to keep divisible by e.g. 50
 
-	export function func(context: RenderGraphNodeContext): Map<string, any> {
+	export function func(context: RenderGraphNodeContext): Map<string, Rectangle> {
 		const camera = context.get<Camera>("camera");
 		const prevArea = context.get<Rectangle>("_this." + OUTPUT_ID);
 
@@ -27,9 +28,11 @@ export namespace RelevantWorldAreaDataGenerator {
 			maxY: ceilTo(visibleWorldMax.y + visibleWorldHeight * AREA_EXPANSION_PERCENTAGE, CHUNK_SIZE),
 		};
 
+
 		if (areEqual(area, prevArea)) {
 			return buildMap([]);
 		} else {
+			WasmApi.Renderer.setRelevantWorldArea(area);
 			return buildMap([
 				[OUTPUT_ID, area],
 			]);

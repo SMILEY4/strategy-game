@@ -10,9 +10,10 @@ use crate::renderer::models::{
 };
 use crate::renderer::state::RenderState;
 use crate::utils::math::{mix, Random};
-use crate::utils::{interpolate_curve, triangle_wave, Vec2d};
+use crate::utils::{interpolate_curve, triangle_wave, Rect2d, Vec2d};
 use std::collections::{HashMap, HashSet};
 use std::iter::FromIterator;
+use crate::js::imported::console_log;
 
 pub struct RenderApp {
     state: RenderState,
@@ -41,6 +42,7 @@ impl RenderApp {
 
     pub fn set_tiles(&mut self, tiles: Vec<Tile>) {
         self.state.tiles = tiles;
+        self.update_relevant_area();
     }
 
     pub fn set_settlements(&mut self, settlements: Vec<Settlement>) {
@@ -59,6 +61,28 @@ impl RenderApp {
         self.state.borders = border::build_tile_borders(&self.state.tiles)
     }
 
+    pub fn set_relevant_world_area(&mut self, min_x: f32, min_y: f32, max_x: f32, max_y: f32) {
+        let area = Rect2d {
+            min_x: min_x,
+            min_y: min_y,
+            max_x: max_x,
+            max_y: max_y,
+        };
+        console_log(format!("[WASM] relevant area {}, {}, {}, {}", min_x, min_y, max_x, max_y).as_str());
+        self.state.relevant_world_area = area;
+        self.update_relevant_area();
+    }
+
+    fn update_relevant_area(&mut self) {
+        self.state.relevant_tile_indices.clear();
+        for (index, tile) in self.state.tiles.iter().enumerate() {
+            if self.state.relevant_world_area.contains_point(tile.world_x, tile.world_y) {
+                self.state.relevant_tile_indices.push(index);
+            }
+        }
+        console_log(format!("[WASM] relevant tiles {}", self.state.relevant_tile_indices.len()).as_str());
+    }
+
     pub fn update_terrain_tile_vertices(&mut self) {
         let color_land_light: [f32; 3] = [148.0 / 255.0, 155.0 / 255.0, 100.0 / 255.0];
         let color_land_dark: [f32; 3] = [116.0 / 255.0, 126.0 / 255.0, 87.0 / 255.0];
@@ -69,8 +93,9 @@ impl RenderApp {
         vertex_data.water.clear();
         vertex_data.fog.clear();
 
-        for (index, tile) in self.state.tiles.iter().enumerate() {
-            let border = &self.state.borders[index];
+        for index in &self.state.relevant_tile_indices {
+            let tile = &self.state.tiles[*index];
+            let border = &self.state.borders[*index];
 
             // land
             if tile.terrain_type == 1 {
@@ -117,8 +142,9 @@ impl RenderApp {
             _ => MapMode::DEFAULT,
         };
 
-        for (index, tile) in self.state.tiles.iter().enumerate() {
-            let border = &self.state.borders[index];
+        for index in &self.state.relevant_tile_indices {
+            let tile = &self.state.tiles[*index];
+            let border = &self.state.borders[*index];
 
             if tile.visibility != 2 {
                 let position = TilePosition {
@@ -312,7 +338,9 @@ impl RenderApp {
         }
 
         // add terrain
-        for tile in &self.state.tiles {
+        for index in &self.state.relevant_tile_indices {
+            let tile = &self.state.tiles[*index];
+
             if tile.visibility == 2 {
                 continue;
             }

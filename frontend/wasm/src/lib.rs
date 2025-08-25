@@ -63,6 +63,10 @@ impl WasmRenderApp {
         self.app.set_map_mode(map_mode);
     }
 
+    pub fn set_relevant_world_area(&mut self, min_x: f32, min_y: f32, max_x: f32, max_y: f32) {
+        self.app.set_relevant_world_area(min_x, min_y, max_x, max_y);
+    }
+    
     pub fn reserve_tiles_memory(&self, len: usize) -> DirectTileBuffer {
         let mut vec: Vec<Tile> = Vec::with_capacity(len);
         let ptr = vec.as_mut_ptr();

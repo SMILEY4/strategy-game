@@ -47,6 +47,27 @@ impl Random {
 
 }
 
+#[derive(Default, Copy, Clone)]
+pub struct Rect2d {
+    pub min_x: f32,
+    pub min_y: f32,
+    pub max_x: f32,
+    pub max_y: f32,
+}
+
+impl Rect2d {
+    
+    pub fn contains_point(&self, x: f32, y: f32) -> bool { 
+        self.min_x <= x && x <= self.max_x && self.min_y <= y && y <= self.max_y
+    }
+
+    pub fn contains(&self, p: &Vec2d) -> bool {
+        self.contains_point(p.x, p.y)
+    }
+    
+}
+
+#[derive(Default, Copy, Clone)]
 pub struct Vec2d {
     pub x: f32,
     pub y: f32,

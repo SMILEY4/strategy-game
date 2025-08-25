@@ -18,7 +18,7 @@ import {VertexGeneratorNodeCompiler} from "../common/rendergraph/compilers/verte
 import {WebglShaderNodeCompiler} from "../common/rendergraph/compilers/webglShaderNodeCompiler";
 import {WebglDrawNodeCompiler} from "../common/rendergraph/compilers/webglDrawNodeCompiler";
 import {RenderGraphResourceManager} from "../common/rendergraph/renderGraphResourceManager";
-import {buildMap} from "../common/utils";
+import {buildMap, Rectangle} from "../common/utils";
 import {RenderGraphKeys} from "../common/rendergraph/renderGraphKeys";
 import {TextureUnitHandler} from "../common/rendergraph/compilers/textureUnitHandler";
 import {GameChangeTracker} from "./gameChangeTracker";
@@ -155,7 +155,7 @@ export class GameRenderGraphFactory {
 			.withOutput(RelevantWorldAreaDataGenerator.OUTPUT_ID);
 
 		const propRelevantWorldArea = graph
-			.createPropertyGenerated("prop-relevant-world-area")
+			.createPropertyGenerated<Rectangle>("prop-relevant-world-area")
 			.withValue(relevantWorldAreaDataGenerator.useOutput(RelevantWorldAreaDataGenerator.OUTPUT_ID));
 
 

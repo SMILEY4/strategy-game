@@ -18,6 +18,7 @@ import {Random} from "../common/random";
 import {WorldObject} from "../models/worldobject/worldObject";
 import {Color} from "../common/color";
 import {Route} from "../models/route/route";
+import {Rectangle} from "../common/utils";
 
 export namespace WasmApi {
 
@@ -67,6 +68,11 @@ export namespace WasmApi {
 		export function setMoveTargets(tiles: TileSummary[]) {
 			const wasmTilePositions: TilePositionWasm[] = tiles.map(it => it.position);
 			wasmRenderApp!.set_move_targets(wasmTilePositions);
+		}
+
+		export function setRelevantWorldArea(relevantArea: Rectangle) {
+			console.log("[  JS] relevantArea", relevantArea)
+			wasmRenderApp!.set_relevant_world_area(relevantArea.minX, relevantArea.minY, relevantArea.maxX, relevantArea.maxY);
 		}
 
 		export function setRoutes(routes: Route[]) {
