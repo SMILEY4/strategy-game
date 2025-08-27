@@ -71,8 +71,9 @@ export namespace WasmApi {
 		}
 
 		export function setRelevantWorldArea(relevantArea: Rectangle) {
-			console.log("[  JS] relevantArea", relevantArea)
-			wasmRenderApp!.set_relevant_world_area(relevantArea.minX, relevantArea.minY, relevantArea.maxX, relevantArea.maxY);
+			if(relevantArea) {
+				wasmRenderApp!.set_relevant_world_area(relevantArea.minX, relevantArea.minY, relevantArea.maxX, relevantArea.maxY);
+			}
 		}
 
 		export function setRoutes(routes: Route[]) {
@@ -220,7 +221,7 @@ export namespace WasmApi {
 				writer.pushUint8(tile.base.visible ? tile.base.value.terrainType.renderId : 0);
 
 				// owner_country_id: u8, // "0" = no owner
-				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0);
+				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0); // todo: proper id
 
 				// owner_country_color_r: f32,
 				// owner_country_color_g: f32,
@@ -236,7 +237,7 @@ export namespace WasmApi {
 				}
 
 				// owner_settlement_id: u8, // "0" = no owner
-				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0);
+				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0); // todo: proper id
 
 				// owner_settlement_color_r: f32,
 				// owner_settlement_color_g: f32,

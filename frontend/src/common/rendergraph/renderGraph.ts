@@ -18,7 +18,7 @@ import {
 	ConstPropertyRenderGraphNode,
 	DerivedPropertyRenderGraphNode,
 	DynamicPropertyRenderGraphNode,
-	GeneratedPropertyRenderGraphNode,
+	GeneratedPropertyRenderGraphNode, WasmPropertyRenderGraphNode,
 } from "./nodes/propertyRenderGraphNode";
 import {ConditionalTextureRenderGraphNode} from "./nodes/conditionalTextureRenderGraphNode";
 import {IntermediateDataGeneratorRenderGraphNode} from "./nodes/intermediateDataGeneratorRenderGraphNode";
@@ -219,6 +219,13 @@ export class RenderGraph {
 
 	public createPropertyGenerated<T>(name?: string): GeneratedPropertyRenderGraphNode<T> {
 		const node = new GeneratedPropertyRenderGraphNode<T>();
+		if (name) node.withName(name);
+		this.addNode(node);
+		return node;
+	}
+
+	public createPropertyWasm<T>(name?: string): WasmPropertyRenderGraphNode<T> {
+		const node = new WasmPropertyRenderGraphNode<T>();
 		if (name) node.withName(name);
 		this.addNode(node);
 		return node;

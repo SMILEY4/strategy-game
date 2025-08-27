@@ -133,6 +133,28 @@ export class DerivedPropertyRenderGraphNode<TValue> extends AbstractPropertyRend
 
 }
 
+export class WasmPropertyRenderGraphNode<TValue> extends AbstractPropertyRenderGraphNode<void, WasmPropertyRenderGraphNode<TValue>> {
+
+	private source: AbstractPropertyRenderGraphNode<any, any> = null as any;
+
+	public withValue(source: AbstractPropertyRenderGraphNode<TValue, any>, wasmUpload: (value: TValue) => void): WasmPropertyRenderGraphNode<TValue> {
+		this.setValueProviderWithContext(context => {
+			return () => {
+				const value = source.getValueProvider(context)();
+				wasmUpload(value);
+			}
+		});
+		this.registerInputNode(source)
+		this.source = source;
+		return this;
+	}
+
+	public getSource(): AbstractPropertyRenderGraphNode<any, any> {
+		return this.source;
+	}
+
+}
+
 
 export class GeneratedPropertyRenderGraphNode<TValue> extends AbstractPropertyRenderGraphNode<TValue, GeneratedPropertyRenderGraphNode<TValue>> {
 

@@ -55,10 +55,8 @@ import {
 } from "../common/rendergraph/nodes/intermediateDataGeneratorRenderGraphNode";
 import {FrameIdResourceGenerator} from "../common/rendergraph/resources/frameIdResourceGenerator";
 import {InitNodeCompiler} from "../common/rendergraph/compilers/initNodeCompiler";
-import {RelevantWorldAreaDataGenerator} from "./generators/relevantWorldAreaDataGenerator";
-import {RelevantTilesDataGenerator} from "./generators/relevantTilesDataGenerator";
-import {AdditionalTileDataGenerator} from "./generators/coastlineBorderMaskDataGenerator";
 import {WasmApi} from "../wasm/wasmApi";
+import {RelevantWorldAreaDataGenerator} from "./generators/relevantWorldAreaDataGenerator";
 
 export class GameRenderGraphFactory {
 
@@ -145,9 +143,6 @@ export class GameRenderGraphFactory {
 			.withType(GLUniformType.MAT3)
 			.withValue(externalProps.camera, camera => mat3.inverse(camera.getViewProjectionMatrixOrThrow(true)));
 
-
-		// TILE MAP BASICS =======================
-
 		const relevantWorldAreaDataGenerator = graph
 			.createIntermediateDataGenerator("gen-relevant-world-area-data")
 			.withProperty(externalProps.camera, "camera")
@@ -158,29 +153,12 @@ export class GameRenderGraphFactory {
 			.createPropertyGenerated<Rectangle>("prop-relevant-world-area")
 			.withValue(relevantWorldAreaDataGenerator.useOutput(RelevantWorldAreaDataGenerator.OUTPUT_ID));
 
-
-		const additionalTileDataGenerator = graph
-			.createIntermediateDataGenerator("gen-additional-tile-data")
-			.withProperty(externalProps.tiles, "tiles")
-			.withProperty(externalProps.tilesByPosProvider, "tileByPosProvider")
-			.withFunction(AdditionalTileDataGenerator.funcWasm)
-			.withOutput(AdditionalTileDataGenerator.COASTLINE_BORDER_MASK_OUTPUT_ID);
-
-		const propCoastlineBorderMask = graph
-			.createPropertyGenerated("prop-coastline-border-mask")
-			.withValue(additionalTileDataGenerator.useOutput(AdditionalTileDataGenerator.COASTLINE_BORDER_MASK_OUTPUT_ID));
+		const propRelevantWorldAreaWasm = graph
+			.createPropertyWasm<Rectangle>("prop-relevant-world-area-wasm")
+			.withValue(propRelevantWorldArea, it => WasmApi.Renderer.setRelevantWorldArea(it));
 
 
-		const relevantTilesDataGenerator = graph
-			.createIntermediateDataGenerator("gen-relevant-tiles-data")
-			.withProperty(externalProps.tiles, "tiles")
-			.withProperty(propRelevantWorldArea, "relevantWorldArea")
-			.withFunction(RelevantTilesDataGenerator.funcWasm)
-			.withOutput(RelevantTilesDataGenerator.OUTPUT_ID);
-
-		const propRelevantTiles = graph
-			.createPropertyGenerated<Tile[]>("prop-relevant-tiles")
-			.withValue(relevantTilesDataGenerator.useOutput(RelevantTilesDataGenerator.OUTPUT_ID));
+		// TILE MAP BASICS =======================
 
 		const vertexCreatorTileMesh = graph
 			.createVertexCreator("tile-mesh")
@@ -210,10 +188,8 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorTileInstances = graph
 			.createVertexCreator("tile-instances")
-			.withProperty(configProps.landColorLight, "colorLandLight")
-			.withProperty(configProps.landColorDark, "colorLandDark")
-			.withProperty(propRelevantTiles, "relevantTiles")
-			.withProperty(propCoastlineBorderMask, "coastlineBorderMaskData")
+			.withProperty(externalProps.tilesWasm, "relevantTiles")
+			.withProperty(propRelevantWorldAreaWasm, "relevant-world-area")
 			.withOutput(TileInstanceVertexGenerator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -377,10 +353,10 @@ export class GameRenderGraphFactory {
 
 		const vertexCreatorOverlayInstances = graph
 			.createVertexCreator("overlay-instances")
-			.withProperty(propRelevantTiles, "relevantTiles")
-			.withProperty(externalProps.tilesByPosProvider, "tileByPosProvider")
-			.withProperty(externalProps.mapMode, "mapMode")
-			.withProperty(externalProps.moveTargets, "moveTargets")
+			.withProperty(externalProps.tilesWasm, "relevantTiles")
+			.withProperty(externalProps.mapModeWasm, "mapMode")
+			.withProperty(externalProps.moveTargetsWasm, "moveTargets")
+			.withProperty(propRelevantWorldAreaWasm, "relevant-world-area")
 			.withOutput(OverlayInstancesVertexGenerator.OUTPUT_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -493,12 +469,10 @@ export class GameRenderGraphFactory {
 				},
 			])
 			.withFunction(MapDetailsVertexGenerator.funcWasm)
-			.withProperty(propRelevantTiles, "relevantTiles")
-			.withProperty(externalProps.settlements, "settlements")
-			.withProperty(externalProps.worldObjects, "worldObjects")
-			.withProperty(externalProps.routes, "routes")
-			.withProperty(configProps.landColorLight, "colorLandLight")
-			.withProperty(configProps.landColorDark, "colorLandDark")
+			.withProperty(externalProps.tilesWasm, "relevantTiles")
+			.withProperty(externalProps.settlementsWasm, "settlements")
+			.withProperty(externalProps.worldObjectsWasm, "worldObjects")
+			.withProperty(externalProps.routesWasm, "routes")
 			.withProperty(tilesetTextureAtlas, "textureAtlasGroups");
 
 
@@ -630,7 +604,7 @@ export class GameRenderGraphFactory {
 
 		const creatorResourceIcons = graph
 			.createRenderElementGenerator("create-resourceicons")
-			.withProperty(propRelevantTiles, "relevantTiles")
+			.withProperty(externalProps.tiles, "relevantTiles")
 			.withProperty(externalProps.mapMode, "mapMode")
 			.withProperty(propCameraVPM, "_camera")
 			.withFunction(ResourceIconsElementGenerator.funcCreate)
@@ -837,45 +811,37 @@ export class GameRenderGraphFactory {
 			.createPropertyDynamic<Route[]>("routes")
 			.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
 			.withValue(() => gameAccess.getRoutes());
+		const tiles = graph
+			.createPropertyDynamic<Tile[]>("tiles")
+			.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
+			.withValue(() => gameAccess.getTiles());
 		return {
-			tiles: graph
-				.createPropertyDynamic<Tile[]>("tiles")
-				.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
-				.withValue(() => gameAccess.getTiles()),
+			tiles: tiles,
+			tilesWasm: graph
+				.createPropertyWasm<Tile[]>("tiles-wasm")
+				.withValue(tiles, it => WasmApi.Renderer.setTiles(it)),
 			tilesByPosProvider: graph
 				.createPropertyDynamic<(q: number, r: number) => Tile | null>("tileByPosProvider")
 				.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
 				.withValue(() => ((q, r) => gameAccess.getTileAt(q, r))),
-			settlements: graph
-				.createPropertyDerived<Settlement[]>("settlements-wasm")
-				.withValue(settlements, it => {
-					WasmApi.Renderer.setSettlements(it);
-					return it;
-				}),
-			worldObjects: graph
-				.createPropertyDerived<WorldObject[]>("worldObjects-wasm")
-				.withValue(worldObjects, it => {
-					WasmApi.Renderer.setWorldObjects(it);
-					return it;
-				}),
-			routes: graph
-				.createPropertyDerived<Route[]>("routes-wasm")
-				.withValue(routes, it => {
-					WasmApi.Renderer.setRoutes(it);
-					return it;
-				}),
-			mapMode: graph
-				.createPropertyDerived<MapMode>("mapMode-wasm")
-				.withValue(mapMode, it => {
-					WasmApi.Renderer.setMapMode(it);
-					return it;
-				}),
-			moveTargets: graph
-				.createPropertyDerived<TileSummary[]>("moveTargets-wasm")
-				.withValue(moveTargets, it => {
-					WasmApi.Renderer.setMoveTargets(it);
-					return it;
-				}),
+			settlements: settlements,
+			settlementsWasm: graph
+				.createPropertyWasm<Settlement[]>("settlements-wasm")
+				.withValue(settlements, it => WasmApi.Renderer.setSettlements(it)),
+			worldObjects: worldObjects,
+			worldObjectsWasm: graph
+				.createPropertyWasm<WorldObject[]>("worldObjects-wasm")
+				.withValue(worldObjects, it => WasmApi.Renderer.setWorldObjects(it)),
+			routesWasm: graph
+				.createPropertyWasm<Route[]>("routes-wasm")
+				.withValue(routes, it => WasmApi.Renderer.setRoutes(it)),
+			mapMode: mapMode,
+			mapModeWasm: graph
+				.createPropertyWasm<MapMode>("mapMode-wasm")
+				.withValue(mapMode, it => WasmApi.Renderer.setMapMode(it)),
+			moveTargetsWasm: graph
+				.createPropertyWasm<TileSummary[]>("moveTargets-wasm")
+				.withValue(moveTargets, it => WasmApi.Renderer.setMoveTargets(it)),
 			movePaths: graph
 				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("movePaths")
 				.withChangeTest(() => changeTracker.getTrackedChanges().movementPaths)

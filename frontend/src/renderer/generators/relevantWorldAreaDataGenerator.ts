@@ -2,7 +2,6 @@ import {Projections} from "../../common/webgl/projections";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 import {Camera} from "../../common/webgl/camera";
 import {buildMap, Rectangle} from "../../common/utils";
-import {WasmApi} from "../../wasm/wasmApi";
 
 export namespace RelevantWorldAreaDataGenerator {
 
@@ -32,7 +31,6 @@ export namespace RelevantWorldAreaDataGenerator {
 		if (areEqual(area, prevArea)) {
 			return buildMap([]);
 		} else {
-			WasmApi.Renderer.setRelevantWorldArea(area);
 			return buildMap([
 				[OUTPUT_ID, area],
 			]);

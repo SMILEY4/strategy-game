@@ -9,7 +9,7 @@ import {
 	ConstPropertyRenderGraphNode,
 	DerivedPropertyRenderGraphNode,
 	DynamicPropertyRenderGraphNode,
-	GeneratedPropertyRenderGraphNode,
+	GeneratedPropertyRenderGraphNode, WasmPropertyRenderGraphNode,
 } from "../nodes/propertyRenderGraphNode";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 
@@ -56,6 +56,10 @@ export class PropertyNodeCompiler implements RenderGraphNodeCompiler<AbstractPro
 		}
 
 		if (node instanceof DerivedPropertyRenderGraphNode) {
+			return this.buildExecCondition(node.getSource());
+		}
+
+		if (node instanceof WasmPropertyRenderGraphNode) {
 			return this.buildExecCondition(node.getSource());
 		}
 
