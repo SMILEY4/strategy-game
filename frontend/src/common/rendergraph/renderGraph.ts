@@ -103,16 +103,16 @@ export class RenderGraph {
 	}
 
 	public execute() {
-		// RenderGraphMonitor.startFrame()
+		RenderGraphMonitor.startFrame()
 		for (let i = 0, n = this.commands.length; i < n; i++) {
 			const command = this.commands[i];
-			// RenderGraphMonitor.startCommand(command.getDebugData())
+			RenderGraphMonitor.startCommand(command.getDebugData())
 			// command.execute(this.resourceManager, this.executeCounter < 10);
 			command.execute(this.resourceManager, true);
-			// RenderGraphMonitor.endCommand()
+			RenderGraphMonitor.endCommand()
 		}
 		this.executeCounter++;
-		// RenderGraphMonitor.endFrame()
+		RenderGraphMonitor.endFrame()
 	}
 
 	protected addNode(node: RenderGraphNode) {

@@ -57,7 +57,7 @@ pub struct Tile {
     pub terrain_type: u8,
 
     pub owner_country_id: u8, // "0" = no owner
-    pub owner_country_color_r: f32,
+    pub owner_country_color_r: f32, // todo: colors could be u8?
     pub owner_country_color_g: f32,
     pub owner_country_color_b: f32,
 

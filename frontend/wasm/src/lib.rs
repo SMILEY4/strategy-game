@@ -174,9 +174,17 @@ impl WasmRenderApp {
         self.as_js_vertex_buffer::<WaterTileVertex>(vertices)
     }
 
+    pub fn get_vertex_buffer_water_size(&self) -> usize {
+        self.app.get_vertex_buffer_water().len()
+    }
+
     pub fn get_vertex_buffer_land(&self) -> Uint8Array {
         let vertices = self.app.get_vertex_buffer_land();
         self.as_js_vertex_buffer::<LandTileVertex>(vertices)
+    }
+
+    pub fn get_vertex_buffer_land_size(&self) -> usize {
+        self.app.get_vertex_buffer_land().len()
     }
 
     pub fn get_vertex_buffer_fog(&self) -> Uint8Array {
@@ -184,9 +192,17 @@ impl WasmRenderApp {
         self.as_js_vertex_buffer::<FogTileVertex>(vertices)
     }
 
+    pub fn get_vertex_buffer_fog_size(&self) -> usize {
+        self.app.get_vertex_buffer_fog().len()
+    }
+
     pub fn get_vertex_buffer_overlay(&self) -> Uint8Array {
         let vertices = self.app.get_vertex_buffer_overlay();
         self.as_js_vertex_buffer::<OverlayTileVertex>(vertices)
+    }
+
+    pub fn get_vertex_buffer_overlay_size(&self) -> usize {
+        self.app.get_vertex_buffer_overlay().len()
     }
 
     pub fn get_vertex_buffer_detail(&self) -> Uint8Array {

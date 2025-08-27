@@ -305,16 +305,32 @@ export namespace WasmApi {
 			return wasmRenderApp!.get_vertex_buffer_land();
 		}
 
+		export function getVerticesLandCount(): number {
+			return wasmRenderApp!.get_vertex_buffer_land_size();
+		}
+
 		export function getVerticesWater(): Uint8Array {
 			return wasmRenderApp!.get_vertex_buffer_water();
+		}
+
+		export function getVerticesWaterCount(): number {
+			return wasmRenderApp!.get_vertex_buffer_water_size();
 		}
 
 		export function getVerticesFog(): Uint8Array {
 			return wasmRenderApp!.get_vertex_buffer_fog();
 		}
 
+		export function getVerticesFogCount(): number {
+			return wasmRenderApp!.get_vertex_buffer_fog_size();
+		}
+
 		export function getVerticesOverlay(): Uint8Array {
 			return wasmRenderApp!.get_vertex_buffer_overlay();
+		}
+
+		export function getVerticesOverlayCount(): number {
+			return wasmRenderApp!.get_vertex_buffer_overlay_size();
 		}
 
 		export function getVerticesDetails(): Uint8Array {

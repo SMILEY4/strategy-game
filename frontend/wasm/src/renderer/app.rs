@@ -68,7 +68,6 @@ impl RenderApp {
             max_x: max_x,
             max_y: max_y,
         };
-        console_log(format!("[WASM] relevant area {}, {}, {}, {}", min_x, min_y, max_x, max_y).as_str());
         self.state.relevant_world_area = area;
         self.update_relevant_area();
     }
@@ -80,7 +79,6 @@ impl RenderApp {
                 self.state.relevant_tile_indices.push(index);
             }
         }
-        console_log(format!("[WASM] relevant tiles {}", self.state.relevant_tile_indices.len()).as_str());
     }
 
     pub fn update_terrain_tile_vertices(&mut self) {

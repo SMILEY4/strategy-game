@@ -63,18 +63,16 @@ export namespace OverlayInstancesVertexGenerator {
 	}
 
 	export function funcWasm(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
-
-		const relevantTiles = context.get<Tile[]>("relevantTiles");
-
 		WasmApi.Renderer.updateOverlayTileVertices();
 		const wasmOverlay = WasmApi.Renderer.getVerticesOverlay();
+		const countOverlay = WasmApi.Renderer.getVerticesOverlayCount();
 
 		return buildMap([
 			[
 				OUTPUT_ID,
 				{
 					data: wasmOverlay,
-					entryCount: relevantTiles.length,
+					entryCount: countOverlay,
 				},
 			],
 		]);
