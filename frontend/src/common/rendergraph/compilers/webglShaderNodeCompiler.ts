@@ -99,6 +99,7 @@ export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRe
 				uniforms.push(new ProgramUniformEntry({
 					binding: namedProperty.binding,
 					valueConst: this.getValueProvider(property, boundTextures)(),
+					resourceName: null,
 					type: property.getType()!,
 				}));
 				continue;
@@ -108,6 +109,7 @@ export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRe
 				uniforms.push(new ProgramUniformEntry({
 					binding: namedProperty.binding,
 					valueConst: this.getValueProvider(property, boundTextures)(),
+					resourceName: null,
 					type: property.getType()!,
 				}));
 				continue;
@@ -115,7 +117,7 @@ export class WebglShaderNodeCompiler implements RenderGraphNodeCompiler<ShaderRe
 
 			uniforms.push(new ProgramUniformEntry({
 				binding: namedProperty.binding,
-				valueProvider: this.getValueProvider(property, boundTextures),
+				resourceName: RenderGraphKeys.property(property),
 				type: property.getType()!,
 			}));
 		}
