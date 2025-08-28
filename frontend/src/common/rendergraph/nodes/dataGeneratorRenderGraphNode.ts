@@ -32,10 +32,11 @@ export abstract class AbstractDataGeneratorRenderGraphNode<TNode extends RenderG
 	/**
 	 * Make the given property available in the generator function via the given name.
 	 */
-	public withProperty(property: RenderGraphProperty<any>, name: string): TNode {
+	public withProperty(property: RenderGraphProperty<any>, name?: string): TNode {
+		const bindingName = name ? name : UID.generate();
 		this.properties.push({
 			property: property,
-			name: name,
+			name: bindingName,
 		});
 		return this as unknown as TNode;
 	}

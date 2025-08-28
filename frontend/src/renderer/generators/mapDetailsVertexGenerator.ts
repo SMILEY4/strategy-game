@@ -8,17 +8,13 @@ export namespace MapDetailsVertexGenerator {
 	export const OUTPUT_ID = "mapDetails";
 
 	export function funcWasm(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
-
 		WasmApi.Renderer.updateDetailVertices();
-		const wasmVertices = WasmApi.Renderer.getVerticesDetails();
-		const wasmVertexCount = WasmApi.Renderer.getVertexCountDetails();
-
 		return buildMap([
 			[
 				OUTPUT_ID,
 				{
-					data: wasmVertices,
-					entryCount: wasmVertexCount,
+					data: WasmApi.Renderer.getVerticesDetails(),
+					entryCount: WasmApi.Renderer.getVertexCountDetails(),
 				},
 			],
 		]);

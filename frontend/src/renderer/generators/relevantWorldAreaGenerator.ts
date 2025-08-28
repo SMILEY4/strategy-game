@@ -3,7 +3,7 @@ import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeCo
 import {Camera} from "../../common/webgl/camera";
 import {buildMap, Rectangle} from "../../common/utils";
 
-export namespace RelevantWorldAreaDataGenerator {
+export namespace RelevantWorldAreaGenerator {
 
 	export const OUTPUT_ID = "relevant-area";
 

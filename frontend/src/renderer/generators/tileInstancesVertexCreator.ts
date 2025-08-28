@@ -13,34 +13,26 @@ export namespace TileInstanceVertexGenerator {
 
 		WasmApi.Renderer.updateTerrainTileVertices();
 
-		const wasmLand = WasmApi.Renderer.getVerticesLand();
-		const wasmWater = WasmApi.Renderer.getVerticesWater();
-		const wasmFog = WasmApi.Renderer.getVerticesFog();
-
-		const countLand = WasmApi.Renderer.getVerticesLandCount();
-		const countWater = WasmApi.Renderer.getVerticesWaterCount();
-		const countFog = WasmApi.Renderer.getVerticesFogCount();
-
 		return buildMap([
 			[
 				OUTPUT_WATER_ID,
 				{
-					data: wasmWater,
-					entryCount: countWater,
+					data: WasmApi.Renderer.getVerticesWater(),
+					entryCount: WasmApi.Renderer.getVerticesWaterCount(),
 				},
 			],
 			[
 				OUTPUT_LAND_ID,
 				{
-					data: wasmLand,
-					entryCount: countLand,
+					data: WasmApi.Renderer.getVerticesLand(),
+					entryCount: WasmApi.Renderer.getVerticesLandCount(),
 				},
 			],
 			[
 				OUTPUT_FOG_ID,
 				{
-					data: wasmFog,
-					entryCount: countFog,
+					data: WasmApi.Renderer.getVerticesFog(),
+					entryCount: WasmApi.Renderer.getVerticesFogCount(),
 				},
 			],
 		]);

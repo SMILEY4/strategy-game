@@ -56,7 +56,7 @@ import {
 import {FrameIdResourceGenerator} from "../common/rendergraph/resources/frameIdResourceGenerator";
 import {InitNodeCompiler} from "../common/rendergraph/compilers/initNodeCompiler";
 import {WasmApi} from "../wasm/wasmApi";
-import {RelevantWorldAreaDataGenerator} from "./generators/relevantWorldAreaDataGenerator";
+import {RelevantWorldAreaGenerator} from "./generators/relevantWorldAreaGenerator";
 
 export class GameRenderGraphFactory {
 
@@ -77,81 +77,45 @@ export class GameRenderGraphFactory {
 		textureAtlasManager: GameTextureAtlasDataManager,
 	): RenderGraph {
 
-		const gl = canvasHandle.getGL();
-
-		const graph = new RenderGraph(
-			new RenderGraphSorter(),
-			new RenderGraphResourceManager(
-				RenderGraphKeys.frameId(),
-				[
-					new FrameIdResourceGenerator(),
-					new WebGLContextResourceCreator(gl),
-					new PropertyResourceCreator(),
-					new FramebufferResourceCreator(gl),
-					new TextureResourceCreator(gl),
-					new ShaderProgramResourceCreator(gl),
-					new VertexArrayResourceCreator(gl),
-					new VertexBufferResourceCreator(gl),
-					new VertexInfoResourceCreator(),
-					new GeneratorDataResourceCreator(node => node instanceof RenderElementGeneratorRenderGraphNode, [], data => data.length = 0),
-					new GeneratorDataResourceCreator(node => node instanceof IntermediateDataGeneratorRenderGraphNode, null, _ => undefined),
-					new HtmlElementPoolResourceCreator(),
-					new CachedHtmlElementResourceCreator(),
-				],
-			),
-			new RenderGraphCompiler([
-				new InitNodeCompiler(),
-				new PropertyNodeCompiler(),
-				new VertexGeneratorNodeCompiler(),
-				new WebglShaderNodeCompiler(),
-				new WebglDrawNodeCompiler(),
-				new DataGeneratorNodeCompiler(node => node instanceof RenderElementGeneratorRenderGraphNode),
-				new DataGeneratorNodeCompiler(node => node instanceof IntermediateDataGeneratorRenderGraphNode),
-				new HtmlDrawNodeCompiler(),
-			]),
-		);
+		const graph = this.configureBaseRenderGraph(canvasHandle.getGL());
 
 		const configProps = this.createConfigurationProperties(graph);
 		const textureNodes = this.createTextureNodes(graph, gameAccess);
-		const externalProps = this.createExternalProps(graph, gameAccess, changeTracker, canvasHandle);
+		const commonProperties = this.createCommonProperties(graph, gameAccess, changeTracker, canvasHandle);
 
-		const textureAtlasDetails = TextureAtlas.createFromData(
+		// TEXTURE ATLAS =========================
+
+		const textureAtlas = TextureAtlas.createFromData(
 			textureAtlasManager.getEntries("tileset_details"),
 			textureAtlasManager.getGroupDefinitions("tileset_details"),
 		);
 
-		const tilesetTextureAtlas = graph
+		const propTextureAtlas = graph
 			.createPropertyDynamic<Map<string, TextureAtlasEntry[]>>("textureAtlasGroups")
 			.withChangeTest(() => false)
 			.withValue(() => {
-				const groups = buildMap<TextureAtlasEntry[]>(
-					textureAtlasDetails
+				return buildMap<TextureAtlasEntry[]>(
+					textureAtlas
 						.getGroupNames()
-						.map(it => [it, textureAtlasDetails.getGroup(it)] as [string, TextureAtlasEntry[]]),
+						.map(it => [it, textureAtlas.getGroup(it)] as [string, TextureAtlasEntry[]]),
 				);
-				WasmApi.Renderer.setTextureAtlasEntries(groups);
-				return groups;
 			});
 
-		const propCameraVPM = graph
-			.createPropertyDerived<Float32Array>("camera-vpm")
-			.withType(GLUniformType.MAT3)
-			.withValue(externalProps.camera, camera => camera.getViewProjectionMatrixOrThrow(true));
+		const propTextureAtlasWasm = graph
+			.createPropertyWasm<Map<string, TextureAtlasEntry[]>>("textureAtlasGroups-wasm")
+			.withValue(propTextureAtlas, it => WasmApi.Renderer.setTextureAtlasEntries(it))
 
-		const propCameraInvVPM = graph
-			.createPropertyDerived<Float32Array>("camera-inv-vpm")
-			.withType(GLUniformType.MAT3)
-			.withValue(externalProps.camera, camera => mat3.inverse(camera.getViewProjectionMatrixOrThrow(true)));
+		// RELEVANT WORLD AREA ===================
 
-		const relevantWorldAreaDataGenerator = graph
-			.createIntermediateDataGenerator("gen-relevant-world-area-data")
-			.withProperty(externalProps.camera, "camera")
-			.withFunction(RelevantWorldAreaDataGenerator.func)
-			.withOutput(RelevantWorldAreaDataGenerator.OUTPUT_ID);
+		const relevantWorldAreaGenerator = graph
+			.createIntermediateDataGenerator("gen-relevant-world-area")
+			.withProperty(commonProperties.camera, "camera")
+			.withFunction(RelevantWorldAreaGenerator.func)
+			.withOutput(RelevantWorldAreaGenerator.OUTPUT_ID);
 
 		const propRelevantWorldArea = graph
 			.createPropertyGenerated<Rectangle>("prop-relevant-world-area")
-			.withValue(relevantWorldAreaDataGenerator.useOutput(RelevantWorldAreaDataGenerator.OUTPUT_ID));
+			.withValue(relevantWorldAreaGenerator.useOutput(RelevantWorldAreaGenerator.OUTPUT_ID));
 
 		const propRelevantWorldAreaWasm = graph
 			.createPropertyWasm<Rectangle>("prop-relevant-world-area-wasm")
@@ -161,7 +125,7 @@ export class GameRenderGraphFactory {
 		// TILE MAP BASICS =======================
 
 		const vertexCreatorTileMesh = graph
-			.createVertexCreator("tile-mesh")
+			.createVertexCreator("gen-tile-mesh")
 			.withOutput(TileMeshVertexGenerator.OUTPUT_ID, "vertices", [
 				{
 					name: "in_vertexPosition",
@@ -192,9 +156,9 @@ export class GameRenderGraphFactory {
 			.withFunction(TileMeshVertexGenerator.func);
 
 		const vertexCreatorTileInstances = graph
-			.createVertexCreator("tile-instances")
-			.withProperty(externalProps.tilesWasm, "relevantTiles")
-			.withProperty(propRelevantWorldAreaWasm, "relevant-world-area")
+			.createVertexCreator("gen-tile-instances")
+			.withProperty(commonProperties.tilesWasm)
+			.withProperty(propRelevantWorldAreaWasm)
 			.withOutput(TileInstanceVertexGenerator.OUTPUT_LAND_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -240,7 +204,7 @@ export class GameRenderGraphFactory {
 					type: GLAttributeType.PADDING,
 					amountComponents: 3,
 					divisor: 1,
-				}
+				},
 			])
 			.withOutput(TileInstanceVertexGenerator.OUTPUT_FOG_ID, "instances", [
 				{
@@ -269,12 +233,12 @@ export class GameRenderGraphFactory {
 			.createShader("shader-water")
 			.withVertexShaderSource(shaderSourceManager.get("water.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("water.frag"))
-			.withProperty(propCameraVPM, "u_viewProjection")
+			.withProperty(commonProperties.cameraVPM, "u_viewProjection")
 			.withProperty(textureNodes.groundSplotch, "u_texture");
 
 		const drawWater = graph
 			.createDraw("draw-water")
-			.withCamera(externalProps.camera)
+			.withCamera(commonProperties.camera)
 			.withShaderProgram(shaderWater)
 			.withVertexDescriptor(vertexDescriptorWater)
 			.withClearColor([0, 0, 0, 0])
@@ -300,12 +264,12 @@ export class GameRenderGraphFactory {
 			.createShader("shader-land")
 			.withVertexShaderSource(shaderSourceManager.get("land.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("land.frag"))
-			.withProperty(propCameraVPM, "u_viewProjection")
+			.withProperty(commonProperties.cameraVPM, "u_viewProjection")
 			.withProperty(textureNodes.groundSplotch, "u_texture");
 
 		const drawLand = graph
 			.createDraw("draw-land")
-			.withCamera(externalProps.camera)
+			.withCamera(commonProperties.camera)
 			.withShaderProgram(shaderLand)
 			.withVertexDescriptor(vertexDescriptorLand)
 			.withClearColor([0, 0, 0, 0]);
@@ -326,12 +290,12 @@ export class GameRenderGraphFactory {
 			.createShader("shader-fog")
 			.withVertexShaderSource(shaderSourceManager.get("fog.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("fog.frag"))
-			.withProperty(propCameraVPM, "u_viewProjection")
+			.withProperty(commonProperties.cameraVPM, "u_viewProjection")
 			.withProperty(textureNodes.groundSplotch, "u_texture");
 
 		const drawFog = graph
 			.createDraw("draw-fog")
-			.withCamera(externalProps.camera)
+			.withCamera(commonProperties.camera)
 			.withShaderProgram(shaderFog)
 			.withVertexDescriptor(vertexDescriptorFog)
 			.withClearColor([0, 0, 0, 1]);
@@ -344,7 +308,7 @@ export class GameRenderGraphFactory {
 		// OVERLAY =================================
 
 		const vertexCreatorOverlayMesh = graph
-			.createVertexCreator("overlay-mesh")
+			.createVertexCreator("gen-overlay-mesh")
 			.withOutput(OverlayMeshVertexGenerator.OUTPUT_ID, "vertices", [
 				{
 					name: "in_vertexPosition",
@@ -375,11 +339,11 @@ export class GameRenderGraphFactory {
 			.withFunction(OverlayMeshVertexGenerator.func);
 
 		const vertexCreatorOverlayInstances = graph
-			.createVertexCreator("overlay-instances")
-			.withProperty(externalProps.tilesWasm, "relevantTiles")
-			.withProperty(externalProps.mapModeWasm, "mapMode")
-			.withProperty(externalProps.moveTargetsWasm, "moveTargets")
-			.withProperty(propRelevantWorldAreaWasm, "relevant-world-area")
+			.createVertexCreator("gen-overlay-instances")
+			.withProperty(commonProperties.tilesWasm)
+			.withProperty(commonProperties.mapModeWasm)
+			.withProperty(commonProperties.moveTargetsWasm)
+			.withProperty(propRelevantWorldAreaWasm)
 			.withOutput(OverlayInstancesVertexGenerator.OUTPUT_ID, "instances", [
 				{
 					name: "in_worldPosition",
@@ -451,13 +415,13 @@ export class GameRenderGraphFactory {
 			.createShader("shader-overlay")
 			.withVertexShaderSource(shaderSourceManager.get("overlay.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("overlay.frag"))
-			.withProperty(propCameraVPM, "u_viewProjection")
+			.withProperty(commonProperties.cameraVPM, "u_viewProjection")
 			.withProperty(textureNodes.noiseWatercolor, "u_noise")
-			.withProperty(externalProps.time, "u_time")
+			.withProperty(commonProperties.time, "u_time")
 			.withProperty(configProps.overlayBorderThickness, "u_overlay.borderThickness")
 			.withProperty(configProps.overlayBorderOpacity, "u_overlay.borderOpacity")
 			.withProperty(configProps.overlayFillOpacity, "u_overlay.fillOpacity")
-			.withProperty(externalProps.selectedTile, "u_tileSelection.position")
+			.withProperty(commonProperties.selectedTile, "u_tileSelection.position")
 			.withProperty(configProps.selectedTileThickness, "u_tileSelection.thickness")
 			.withProperty(configProps.selectedTileColor0, "u_tileSelection.color0")
 			.withProperty(configProps.selectedTileColor1, "u_tileSelection.color1");
@@ -465,7 +429,7 @@ export class GameRenderGraphFactory {
 
 		const drawOverlay = graph
 			.createDraw("draw-overlay")
-			.withCamera(externalProps.camera)
+			.withCamera(commonProperties.camera)
 			.withShaderProgram(shaderOverlay)
 			.withVertexDescriptor(vertexDescriptorOverlay)
 			.withClearColor([0, 0, 0, 0]);
@@ -478,7 +442,13 @@ export class GameRenderGraphFactory {
 		// DETAILS =================================
 
 		const vertexCreatorMapDetails = graph
-			.createVertexCreator("mapdetails")
+			.createVertexCreator("gen-mapdetails")
+			.withProperty(propRelevantWorldAreaWasm)
+			.withProperty(commonProperties.tilesWasm)
+			.withProperty(commonProperties.settlementsWasm)
+			.withProperty(commonProperties.worldObjectsWasm)
+			.withProperty(commonProperties.routesWasm)
+			.withProperty(propTextureAtlasWasm)
 			.withOutput(MapDetailsVertexGenerator.OUTPUT_ID, "vertices", [
 				{
 					name: "in_worldPosition",
@@ -509,12 +479,6 @@ export class GameRenderGraphFactory {
 				},
 			])
 			.withFunction(MapDetailsVertexGenerator.funcWasm)
-			.withProperty(propRelevantWorldAreaWasm, "relevantArea")
-			.withProperty(externalProps.tilesWasm, "relevantTiles")
-			.withProperty(externalProps.settlementsWasm, "settlements")
-			.withProperty(externalProps.worldObjectsWasm, "worldObjects")
-			.withProperty(externalProps.routesWasm, "routes")
-			.withProperty(tilesetTextureAtlas, "textureAtlasGroups");
 
 
 		const vertexDescriptorMapDetails = graph
@@ -526,7 +490,7 @@ export class GameRenderGraphFactory {
 			.createShader("shader-mapDetails")
 			.withVertexShaderSource(shaderSourceManager.get("mapdetails.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("mapdetails.frag"))
-			.withProperty(propCameraVPM, "u_viewProjection")
+			.withProperty(commonProperties.cameraVPM, "u_viewProjection")
 			.withProperty(textureNodes.tilesetColor, "u_textureColor")
 			.withProperty(textureNodes.tilesetOutline, "u_textureOutline")
 			.withProperty(textureNodes.tilesetMask, "u_textureMask");
@@ -534,7 +498,7 @@ export class GameRenderGraphFactory {
 
 		const drawMapDetails = graph
 			.createDraw("draw-mapDetails")
-			.withCamera(externalProps.camera)
+			.withCamera(commonProperties.camera)
 			.withShaderProgram(shaderMapDetails)
 			.withVertexDescriptor(vertexDescriptorMapDetails)
 			.withClearColor([0, 0, 0, 0])
@@ -548,7 +512,7 @@ export class GameRenderGraphFactory {
 		// COMBINE =================================
 
 		const vertexCreatorCombine = graph
-			.createVertexCreator("combine")
+			.createVertexCreator("gen-combine")
 			.withOutput(FullscreenQuadVertexGenerator.OUTPUT_ID, "vertices", [
 				{
 					name: "in_position",
@@ -568,9 +532,9 @@ export class GameRenderGraphFactory {
 			.withVertexShaderSource(shaderSourceManager.get("combine.vert"))
 			.withFragmentShaderSource(shaderSourceManager.get("combine.frag"))
 
-			.withProperty(externalProps.time, "u_common.timestamp")
+			.withProperty(commonProperties.time, "u_common.timestamp")
 			.withProperty(textureNodes.noiseWatercolor, "u_common.noise")
-			.withProperty(propCameraInvVPM, "u_common.invViewProjection")
+			.withProperty(commonProperties.cameraInvVPM, "u_common.invViewProjection")
 
 			.withProperty(renderTargetWater, "u_water.layer")
 			.withProperty(configProps.waterColorLight, "u_water.colorLight")
@@ -618,7 +582,7 @@ export class GameRenderGraphFactory {
 
 		const drawCombine = graph
 			.createDraw("draw-combine")
-			.withCamera(externalProps.camera)
+			.withCamera(commonProperties.camera)
 			.withShaderProgram(shaderCombine)
 			.withVertexDescriptor(vertexDescriptorCombine)
 			.withClearColor([0, 0, 0, 1])
@@ -627,10 +591,10 @@ export class GameRenderGraphFactory {
 		// LABELS ==================================
 
 		const creatorLabels = graph
-			.createRenderElementGenerator("create-labels")
-			.withProperty(externalProps.settlements, "settlements")
-			.withProperty(externalProps.worldObjects, "worldObjects")
-			.withProperty(propCameraVPM, "_camera")
+			.createRenderElementGenerator("gen-labels")
+			.withProperty(commonProperties.settlements, "settlements")
+			.withProperty(commonProperties.worldObjects, "worldObjects")
+			.withProperty(commonProperties.cameraVPM, "_camera")
 			.withFunction(LabelsElementGenerator.funcCreate)
 			.withOutput(LabelsElementGenerator.OUTPUT_ID);
 
@@ -644,10 +608,10 @@ export class GameRenderGraphFactory {
 		// RESOURCE ICONS ==========================
 
 		const creatorResourceIcons = graph
-			.createRenderElementGenerator("create-resourceicons")
-			.withProperty(externalProps.tiles, "relevantTiles")
-			.withProperty(externalProps.mapMode, "mapMode")
-			.withProperty(propCameraVPM, "_camera")
+			.createRenderElementGenerator("gen-resourceicons")
+			.withProperty(commonProperties.tiles, "relevantTiles")
+			.withProperty(commonProperties.mapMode, "mapMode")
+			.withProperty(commonProperties.cameraVPM, "_camera")
 			.withFunction(ResourceIconsElementGenerator.funcCreate)
 			.withOutput(ResourceIconsElementGenerator.OUTPUT_ID);
 
@@ -662,9 +626,9 @@ export class GameRenderGraphFactory {
 		// MOVE PATHS ==============================
 
 		const creatorMovePaths = graph
-			.createRenderElementGenerator("create-movepaths")
-			.withProperty(externalProps.movePaths, "movePaths")
-			.withProperty(propCameraVPM, "_camera")
+			.createRenderElementGenerator("gen-movepaths")
+			.withProperty(commonProperties.movePaths, "movePaths")
+			.withProperty(commonProperties.cameraVPM, "_camera")
 			.withFunction(MovePathsElementGenerator.funcCreate)
 			.withOutput(MovePathsElementGenerator.OUTPUT_ID);
 
@@ -683,9 +647,9 @@ export class GameRenderGraphFactory {
 			.withInput(drawCombine);
 
 		graph
-			.createContainer("html-elements")
+			.createContainer("canvas-html")
 			.withElementId("game-canvas-overlay")
-			.withCamera(externalProps.camera)
+			.withCamera(commonProperties.camera)
 			.withInput(htmlRendererMovePaths)
 			.withInput(htmlRendererResourceIcons)
 			.withInput(htmlRendererLabels);
@@ -700,6 +664,40 @@ export class GameRenderGraphFactory {
 			parseInt(result[2], 16) / 255,
 			parseInt(result[3], 16) / 255,
 		] : [0, 0, 0];
+	}
+
+	private configureBaseRenderGraph(gl: WebGL2RenderingContext): RenderGraph {
+		return new RenderGraph(
+			new RenderGraphSorter(),
+			new RenderGraphResourceManager(
+				RenderGraphKeys.frameId(),
+				[
+					new FrameIdResourceGenerator(),
+					new WebGLContextResourceCreator(gl),
+					new PropertyResourceCreator(),
+					new FramebufferResourceCreator(gl),
+					new TextureResourceCreator(gl),
+					new ShaderProgramResourceCreator(gl),
+					new VertexArrayResourceCreator(gl),
+					new VertexBufferResourceCreator(gl),
+					new VertexInfoResourceCreator(),
+					new GeneratorDataResourceCreator(node => node instanceof RenderElementGeneratorRenderGraphNode, [], data => data.length = 0),
+					new GeneratorDataResourceCreator(node => node instanceof IntermediateDataGeneratorRenderGraphNode, null, _ => undefined),
+					new HtmlElementPoolResourceCreator(),
+					new CachedHtmlElementResourceCreator(),
+				],
+			),
+			new RenderGraphCompiler([
+				new InitNodeCompiler(),
+				new PropertyNodeCompiler(),
+				new VertexGeneratorNodeCompiler(),
+				new WebglShaderNodeCompiler(),
+				new WebglDrawNodeCompiler(),
+				new DataGeneratorNodeCompiler(node => node instanceof RenderElementGeneratorRenderGraphNode),
+				new DataGeneratorNodeCompiler(node => node instanceof IntermediateDataGeneratorRenderGraphNode),
+				new HtmlDrawNodeCompiler(),
+			]),
+		)
 	}
 
 	private createConfigurationProperties(graph: RenderGraph) {
@@ -831,81 +829,86 @@ export class GameRenderGraphFactory {
 		};
 	}
 
-	private createExternalProps(graph: RenderGraph, gameAccess: GameStateAccess, changeTracker: GameChangeTracker, canvasHandle: CanvasHandle) {
+	private createCommonProperties(graph: RenderGraph, gameAccess: GameStateAccess, changeTracker: GameChangeTracker, canvasHandle: CanvasHandle) {
 		const mapMode = graph
-			.createPropertyDynamic<MapMode>("mapMode")
+			.createPropertyDynamic<MapMode>("prop-mapMode")
 			.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
 			.withValue(() => gameAccess.getMapMode());
 		const moveTargets = graph
-			.createPropertyDynamic<TileSummary[]>("moveTargets")
+			.createPropertyDynamic<TileSummary[]>("prop-moveTargets")
 			.withChangeTest(() => changeTracker.getTrackedChanges().movementTargets)
 			.withValue(() => gameAccess.getMoveTargets());
 		const settlements = graph
-			.createPropertyDynamic<Settlement[]>("settlements")
+			.createPropertyDynamic<Settlement[]>("prop-settlements")
 			.withChangeTest(() => changeTracker.getTrackedChanges().settlements || changeTracker.getTrackedChanges().commands)
 			.withValue(() => gameAccess.getSettlements());
 		const worldObjects = graph
-			.createPropertyDynamic<WorldObject[]>("worldObjects")
+			.createPropertyDynamic<WorldObject[]>("prop-worldObjects")
 			.withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
 			.withValue(() => gameAccess.getWorldObjects());
 		const routes = graph
-			.createPropertyDynamic<Route[]>("routes")
+			.createPropertyDynamic<Route[]>("prop-routes")
 			.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
 			.withValue(() => gameAccess.getRoutes());
 		const tiles = graph
-			.createPropertyDynamic<Tile[]>("tiles")
+			.createPropertyDynamic<Tile[]>("prop-tiles")
 			.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
 			.withValue(() => gameAccess.getTiles());
+		const camera =graph
+			.createPropertyDynamic<Camera>("prop-camera")
+			.withChangeTest(() => changeTracker.getTrackedChanges().camera)
+			.withValue(() => {
+				return Camera.create(
+					gameAccess.getCamera(),
+					canvasHandle.getCanvasWidth(),
+					canvasHandle.getCanvasHeight(),
+					canvasHandle.getClientWidth(),
+					canvasHandle.getClientHeight(),
+				);
+			});
 		return {
 			tiles: tiles,
 			tilesWasm: graph
-				.createPropertyWasm<Tile[]>("tiles-wasm")
+				.createPropertyWasm<Tile[]>("prop-wasm-tiles")
 				.withValue(tiles, it => WasmApi.Renderer.setTiles(it)),
-			tilesByPosProvider: graph
-				.createPropertyDynamic<(q: number, r: number) => Tile | null>("tileByPosProvider")
-				.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
-				.withValue(() => ((q, r) => gameAccess.getTileAt(q, r))),
 			settlements: settlements,
 			settlementsWasm: graph
-				.createPropertyWasm<Settlement[]>("settlements-wasm")
+				.createPropertyWasm<Settlement[]>("prop-wasm-settlements")
 				.withValue(settlements, it => WasmApi.Renderer.setSettlements(it)),
 			worldObjects: worldObjects,
 			worldObjectsWasm: graph
-				.createPropertyWasm<WorldObject[]>("worldObjects-wasm")
+				.createPropertyWasm<WorldObject[]>("prop-wasm-worldObjects")
 				.withValue(worldObjects, it => WasmApi.Renderer.setWorldObjects(it)),
 			routesWasm: graph
-				.createPropertyWasm<Route[]>("routes-wasm")
+				.createPropertyWasm<Route[]>("prop-wasm-routes")
 				.withValue(routes, it => WasmApi.Renderer.setRoutes(it)),
 			mapMode: mapMode,
 			mapModeWasm: graph
-				.createPropertyWasm<MapMode>("mapMode-wasm")
+				.createPropertyWasm<MapMode>("prop-wasm-mapMode")
 				.withValue(mapMode, it => WasmApi.Renderer.setMapMode(it)),
 			moveTargetsWasm: graph
-				.createPropertyWasm<TileSummary[]>("moveTargets-wasm")
+				.createPropertyWasm<TileSummary[]>("prop-wasm-moveTargets")
 				.withValue(moveTargets, it => WasmApi.Renderer.setMoveTargets(it)),
 			movePaths: graph
-				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("movePaths")
+				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("prop-movePaths")
 				.withChangeTest(() => changeTracker.getTrackedChanges().movementPaths)
 				.withValue(() => gameAccess.getMovePaths()),
 			selectedTile: graph
-				.createPropertyDynamic<[number, number]>("selectedTile")
+				.createPropertyDynamic<[number, number]>("prop-selectedTile")
 				.withValue(() => gameAccess.getSelectedTile() ? [gameAccess.getSelectedTile()?.position.q, gameAccess.getSelectedTile()?.position.r] as [number, number] : [99999, 99999])
 				.withChangeTest(() => changeTracker.getTrackedChanges().selectedTile)
 				.withType(GLUniformType.INT_VEC2),
-			camera: graph
-				.createPropertyDynamic<Camera>("camera")
-				.withChangeTest(() => changeTracker.getTrackedChanges().camera)
-				.withValue(() => {
-					return Camera.create(
-						gameAccess.getCamera(),
-						canvasHandle.getCanvasWidth(),
-						canvasHandle.getCanvasHeight(),
-						canvasHandle.getClientWidth(),
-						canvasHandle.getClientHeight(),
-					);
-				}),
+			camera: camera,
+			cameraVPM: graph
+				.createPropertyDerived<Float32Array>("prop-camera-vpm")
+				.withType(GLUniformType.MAT3)
+				.withValue(camera, camera => camera.getViewProjectionMatrixOrThrow(true)),
+			cameraInvVPM: graph
+				.createPropertyDerived<Float32Array>("prop-camera-inv-vpm")
+				.withType(GLUniformType.MAT3)
+				.withValue(camera, camera => mat3.inverse(camera.getViewProjectionMatrixOrThrow(true))),
 			time: graph
-				.createPropertyDynamic<number>("time")
+				.createPropertyDynamic<number>("prop-time")
 				.withValue(() => (Date.now() / 1000) % 10000)
 				.withChangeTest(() => true)
 				.withType(GLUniformType.FLOAT),
@@ -914,7 +917,7 @@ export class GameRenderGraphFactory {
 
 	private createTextureNodes(graph: RenderGraph, gameAccess: GameStateAccess) {
 		const lutNormal = graph
-			.createTexture("lut_normal")
+			.createTexture("tx-lut_normal")
 			.withUrl("/lut/lut_64_corrected.png")
 			.withConfig({
 				filterMin: GLTextureMinFilter.NEAREST,
@@ -922,7 +925,7 @@ export class GameRenderGraphFactory {
 				wrap: GLTextureWrap.CLAMP_TO_EDGE,
 			});
 		const lutGrayscale = graph
-			.createTexture("lut_grayscale")
+			.createTexture("tx-lut_grayscale")
 			.withUrl("/lut/lut_64_grayscale.png")
 			.withConfig({
 				filterMin: GLTextureMinFilter.NEAREST,
@@ -931,40 +934,40 @@ export class GameRenderGraphFactory {
 			});
 		return {
 			groundSplotch: graph
-				.createTexture("ground-splotch")
+				.createTexture("txtr-ground-splotch")
 				.withUrl("/textures/groundSplotches.png"),
 			noiseWatercolor: graph
-				.createTexture("noise_watercolor")
+				.createTexture("txtr-noise_watercolor")
 				.withUrl("/textures/noise_watercolor.png"),
 			textureClouds: graph
-				.createTexture("clouds")
+				.createTexture("txtr-clouds")
 				.withUrl("/textures/noise_watercolor.png"),
 			textureParchment: graph
-				.createTexture("parchment")
+				.createTexture("txtr-parchment")
 				.withUrl("/textures/seamless_parchment_texture.jpg"),
 			textureConcrete: graph
-				.createTexture("concrete")
+				.createTexture("txtr-concrete")
 				.withUrl("/textures/non_uniform_concret_wall.jpg"),
 			texturePaper: graph
-				.createTexture("paper")
+				.createTexture("txtr-paper")
 				.withUrl("/textures/seamless_paper_texture.jpg"),
 			tilesetColor: graph
-				.createTexture("tileset_color")
+				.createTexture("txtr-tileset_color")
 				.withUrl("/tileset_color.png"),
 			tilesetOutline: graph
-				.createTexture("tileset_outline")
+				.createTexture("txtr-tileset_outline")
 				.withUrl("/tileset_outline.png"),
 			tilesetMask: graph
-				.createTexture("tileset_mask")
+				.createTexture("txtr-tileset_mask")
 				.withUrl("/tileset_mask.png"),
 			lutSize: graph
-				.createPropertyConstant<number>("lutSize")
+				.createPropertyConstant<number>("prop-lutSize")
 				.withType(GLUniformType.FLOAT)
 				.withValue(64),
 			lutNormal: lutNormal,
 			lutGrayscale: lutGrayscale,
 			lut: graph
-				.createConditionalTexture("lut")
+				.createConditionalTexture("ctxtr-lut")
 				.withOption(lutNormal, () => !gameAccess.getMapMode().renderData.grayscale)
 				.withOption(lutGrayscale, () => gameAccess.getMapMode().renderData.grayscale),
 		};
