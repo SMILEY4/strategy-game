@@ -50,7 +50,7 @@ bool isEqual(ivec2 a, ivec2 b) {
 }
 
 // mask for tile fill colors, i.e. where to paint fill (="1") and where not to (="0")
-float getFillMask(vec3 cornerData, int edgeDirection, int mask) {
+float getFillMask(vec3 cornerData, uint edgeDirection, uint mask) {
     return 1.0 - border(cornerData, edgeDirection, mask, 0.15);
 }
 
@@ -96,7 +96,7 @@ vec4 bounceColor(vec4 color0, vec4 color1, float speedFactor) {
 //          PRIMARY BORDER           //
 // ==================================//
 
-vec4 getPrimaryBorder(vec4 color, vec3 cornerData, int edgeDirection, int mask) {
+vec4 getPrimaryBorder(vec4 color, vec3 cornerData, uint edgeDirection, uint mask) {
     float randomThicknessFactor = 0.1;
     float randomScaleFactor = 0.5;
     vec2 thickness = getVariableThickness(u_overlay.borderThickness, randomScaleFactor, randomThicknessFactor);
@@ -160,10 +160,10 @@ vec4 getTileBorder() {
 
 void main() {
 
-    float fillMask = getFillMask(v_cornerData, int(v_directionData), int(v_borderMask));
+    float fillMask = getFillMask(v_cornerData, v_directionData, v_borderMask);
 
     vec4 colorPrimaryFill = getPrimaryFill(v_fillColor) * fillMask;
-    vec4 colorPrimaryBorder = getPrimaryBorder(v_borderColor, v_cornerData, int(v_directionData), int(v_borderMask));
+    vec4 colorPrimaryBorder = getPrimaryBorder(v_borderColor, v_cornerData, v_directionData, v_borderMask);
 
     vec4 colorHighlightFill = getHighlightFill(v_highlightFillColor);
 
