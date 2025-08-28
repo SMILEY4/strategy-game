@@ -6,7 +6,7 @@ export class CameraDatabase extends AbstractSingletonDatabase<CameraEntity> {
 		super({
 			x: 0,
 			y: 0,
-			zoom: 1.5,
+			zoom: 3.5,
 		});
 	}
 }

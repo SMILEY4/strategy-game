@@ -7,12 +7,12 @@ in vec2 in_textureCoordinates;
 in vec2 in_worldPosition;
 in int in_visibility;
 in vec3 in_cornerData;
-in int in_directionData;
+in uint in_directionData;
 
 out vec2 v_textureCoordinates;
 flat out int v_visibility;
 out vec3 v_cornerData;
-flat out int v_directionData;
+flat out uint v_directionData;
 
 #include random
 

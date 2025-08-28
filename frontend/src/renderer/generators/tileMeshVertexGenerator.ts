@@ -17,7 +17,11 @@ export namespace TileMeshVertexGenerator {
 		// corner data
 		...MixedArrayBufferType.VEC3,
 		// direction data
-		MixedArrayBufferType.INT,
+		MixedArrayBufferType.U_BYTE,
+		// padding
+		MixedArrayBufferType.U_BYTE,
+		MixedArrayBufferType.U_BYTE,
+		MixedArrayBufferType.U_BYTE,
 	];
 
 	export function func(): Map<string, VertexGeneratorResult> {
@@ -52,18 +56,21 @@ export namespace TileMeshVertexGenerator {
 		cursor.append(hexTextureCoordinates(-1));
 		cursor.append([1, 0, 0]);
 		cursor.append(cornerIndexA);
+		cursor.append([0,0,0])
 		// corner a
 		cursor.append(hexCornerPointX(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
 		cursor.append(hexCornerPointY(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
 		cursor.append(hexTextureCoordinates(cornerIndexA));
 		cursor.append([0, 1, 0]);
 		cursor.append(cornerIndexA);
+		cursor.append([0,0,0])
 		// corner b
 		cursor.append(hexCornerPointX(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
 		cursor.append(hexCornerPointY(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
 		cursor.append(hexTextureCoordinates(cornerIndexB));
 		cursor.append([0, 0, 1]);
 		cursor.append(cornerIndexA);
+		cursor.append([0,0,0])
 	}
 
 	function hexCornerPointX(cornerIndex: number, size: [number, number], scale: number): number {

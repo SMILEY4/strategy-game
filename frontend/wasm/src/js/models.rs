@@ -57,22 +57,22 @@ pub struct Tile {
     pub terrain_type: u8,
 
     pub owner_country_id: u8, // "0" = no owner
-    pub owner_country_color_r: f32, // todo: colors could be u8?
-    pub owner_country_color_g: f32,
-    pub owner_country_color_b: f32,
+    pub owner_country_color_r: u8,
+    pub owner_country_color_g: u8,
+    pub owner_country_color_b: u8,
 
     pub owner_settlement_id: u8, // "0" = no owner
-    pub owner_settlement_color_r: f32,
-    pub owner_settlement_color_g: f32,
-    pub owner_settlement_color_b: f32,
+    pub owner_settlement_color_r: u8,
+    pub owner_settlement_color_g: u8,
+    pub owner_settlement_color_b: u8,
 
     pub is_valid_settlement_location: u8,
 
     pub resource_id: u8, // "0" = no resource
-    pub resource_color_r: f32,
-    pub resource_color_g: f32,
-    pub resource_color_b: f32,
-    pub resource_color_a: f32,
+    pub resource_color_r: u8,
+    pub resource_color_g: u8,
+    pub resource_color_b: u8,
+    pub resource_color_a: u8,
 
     pub height: f32,
 
@@ -128,9 +128,9 @@ impl MapMode {
                 [0.0; 4]
             } else {
                 [
-                    tile.owner_country_color_r,
-                    tile.owner_country_color_g,
-                    tile.owner_country_color_b,
+                    tile.owner_country_color_r as f32 / 255.0,
+                    tile.owner_country_color_g as f32 / 255.0,
+                    tile.owner_country_color_b as f32 / 255.0,
                     0.7,
                 ]
             };
@@ -140,9 +140,9 @@ impl MapMode {
                 [0.0; 4]
             } else {
                 [
-                    tile.owner_country_color_r,
-                    tile.owner_country_color_g,
-                    tile.owner_country_color_b,
+                    tile.owner_country_color_r as f32 / 255.0,
+                    tile.owner_country_color_g as f32 / 255.0,
+                    tile.owner_country_color_b as f32 / 255.0,
                     1.0,
                 ]
             };
@@ -159,9 +159,9 @@ impl MapMode {
                 [0.0; 4]
             } else {
                 [
-                    tile.owner_country_color_r,
-                    tile.owner_country_color_g,
-                    tile.owner_country_color_b,
+                    tile.owner_country_color_r as f32 / 255.0,
+                    tile.owner_country_color_g as f32 / 255.0,
+                    tile.owner_country_color_b as f32 / 255.0,
                     0.7,
                 ]
             };
@@ -171,9 +171,9 @@ impl MapMode {
                 [0.0; 4]
             } else {
                 [
-                    tile.owner_country_color_r,
-                    tile.owner_country_color_g,
-                    tile.owner_country_color_b,
+                    tile.owner_country_color_r as f32 / 255.0,
+                    tile.owner_country_color_g as f32 / 255.0,
+                    tile.owner_country_color_b as f32 / 255.0,
                     1.0,
                 ]
             };
@@ -190,9 +190,9 @@ impl MapMode {
                 [0.0; 4]
             } else {
                 [
-                    tile.owner_settlement_color_r,
-                    tile.owner_settlement_color_g,
-                    tile.owner_settlement_color_b,
+                    tile.owner_settlement_color_r as f32 / 255.0,
+                    tile.owner_settlement_color_g as f32 / 255.0,
+                    tile.owner_settlement_color_b as f32 / 255.0,
                     0.7,
                 ]
             };
@@ -202,9 +202,9 @@ impl MapMode {
                 [0.0; 4]
             } else {
                 [
-                    tile.owner_settlement_color_r,
-                    tile.owner_settlement_color_g,
-                    tile.owner_settlement_color_b,
+                    tile.owner_settlement_color_r as f32 / 255.0,
+                    tile.owner_settlement_color_g as f32 / 255.0,
+                    tile.owner_settlement_color_b as f32 / 255.0,
                     1.0,
                 ]
             };
@@ -236,10 +236,10 @@ impl MapMode {
                 [0.0; 4]
             } else {
                 [
-                    tile.resource_color_r,
-                    tile.resource_color_g,
-                    tile.resource_color_b,
-                    tile.resource_color_a
+                    tile.resource_color_r as f32 / 255.0,
+                    tile.resource_color_g as f32 / 255.0,
+                    tile.resource_color_b as f32 / 255.0,
+                    tile.resource_color_a as f32 / 255.0
                 ]
             }
         },

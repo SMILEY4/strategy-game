@@ -4,7 +4,8 @@ use crate::js::models::Tile;
 #[derive(Debug, Clone, Copy)]
 pub struct LandTileVertex {
     pub position: [f32; 2],
-    pub color: [f32; 3],
+    pub color: [u8; 3],
+    pub _padding: u8,
 }
 
 #[repr(C, packed)]
@@ -12,7 +13,8 @@ pub struct LandTileVertex {
 pub struct WaterTileVertex {
     pub position: [f32; 2],
     pub depth: f32,
-    pub border_mask: u32, // todo: optimize data types (i.e. u8) here and in webgl vao
+    pub border_mask: u8,
+    pub _padding: [u8; 3],
 }
 
 #[repr(C, packed)]
@@ -27,12 +29,13 @@ pub struct FogTileVertex {
 pub struct OverlayTileVertex {
     pub position: [f32; 2],
     pub tile_position: [i32; 2],
-    pub primary_border_mask: u32, // todo: optimize data types (i.e. u8) here and in webgl vao
-    pub primary_border_color: [f32; 4],
-    pub primary_fill_color: [f32; 4],
-    pub highlight_border_mask: u32, // todo: optimize data types (i.e. u8) here and in webgl vao
-    pub highlight_border_color: [f32; 4],
-    pub highlight_fill_color: [f32; 4],
+    pub primary_border_mask: u8,
+    pub primary_border_color: [u8; 4],
+    pub primary_fill_color: [u8; 4],
+    pub highlight_border_mask: u8,
+    pub highlight_border_color: [u8; 4],
+    pub highlight_fill_color: [u8; 4],
+    pub _padding: [u8; 2],
 }
 
 #[repr(C, packed)]
@@ -40,8 +43,9 @@ pub struct OverlayTileVertex {
 pub struct MapDetailVertex {
     pub position: [f32; 3],
     pub texture_coordinates: [f32; 2],
-    pub base_color: [f32; 3],
-    pub country_color: [f32; 3],
+    pub base_color: [u8; 3],
+    pub country_color: [u8; 3],
+    pub _padding: [u8; 2],
 }
 
 #[derive(Default)]

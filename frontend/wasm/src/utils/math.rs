@@ -9,12 +9,29 @@ pub fn mix(x: &[f32; 3], y: &[f32; 3], a: f32) -> [f32; 3] {
     ]
 }
 
+pub fn rgb_f32_to_u8(color: &[f32; 3]) -> [u8; 3] {
+    [
+        (color[0] * 255.0) as u8,
+        (color[1] * 255.0) as u8,
+        (color[2] * 255.0) as u8,
+    ]
+}
+
+pub fn rgba_f32_to_u8(color: &[f32; 4]) -> [u8; 4] {
+    [
+        (color[0] * 255.0) as u8,
+        (color[1] * 255.0) as u8,
+        (color[2] * 255.0) as u8,
+        (color[3] * 255.0) as u8,
+    ]
+}
+
 pub fn triangle_wave(x: f32, f: f32) -> f32 {
     // source: https://www.desmos.com/calculator/ivdvmfo7or
     if ((x * f) % 1.0) < 0.5 {
-        ((x*f) % 1.0) * 4.0 - 1.0
+        ((x * f) % 1.0) * 4.0 - 1.0
     } else {
-        3.0 + ((x*f) % 1.0) * -4.0
+        3.0 + ((x * f) % 1.0) * -4.0
     }
 }
 
@@ -23,13 +40,17 @@ pub struct Random {
 }
 
 impl Random {
-
     pub fn new(seed: u64) -> Self {
-        Self { seed_internal: seed }
+        Self {
+            seed_internal: seed,
+        }
     }
 
     pub fn u64(&mut self) -> u64 {
-        self.seed_internal = self.seed_internal.wrapping_mul(6364136223846793005).wrapping_add(1);
+        self.seed_internal = self
+            .seed_internal
+            .wrapping_mul(6364136223846793005)
+            .wrapping_add(1);
         self.seed_internal
     }
 
@@ -44,7 +65,6 @@ impl Random {
         let max = (1u32 << 24) - 1;
         (bits & max) as f32 / max as f32
     }
-
 }
 
 #[derive(Default, Copy, Clone)]
@@ -56,15 +76,13 @@ pub struct Rect2d {
 }
 
 impl Rect2d {
-    
-    pub fn contains_point(&self, x: f32, y: f32) -> bool { 
+    pub fn contains_point(&self, x: f32, y: f32) -> bool {
         self.min_x <= x && x <= self.max_x && self.min_y <= y && y <= self.max_y
     }
 
     pub fn contains(&self, p: &Vec2d) -> bool {
         self.contains_point(p.x, p.y)
     }
-    
 }
 
 #[derive(Default, Copy, Clone)]
@@ -74,9 +92,8 @@ pub struct Vec2d {
 }
 
 impl Vec2d {
-
     pub const ZERO: Vec2d = Vec2d { x: 0.0, y: 0.0 };
-    
+
     pub fn from_vec2d(from: &Vec2d, to: &Vec2d) -> Self {
         Self {
             x: to.x - from.x,
@@ -84,7 +101,7 @@ impl Vec2d {
         }
     }
 
-    pub fn from_points(from: [f32;2], to: [f32;2]) -> Self {
+    pub fn from_points(from: [f32; 2], to: [f32; 2]) -> Self {
         Self {
             x: to[0] - from[0],
             y: to[1] - from[1],

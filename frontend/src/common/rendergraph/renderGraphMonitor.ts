@@ -24,8 +24,6 @@ export namespace RenderGraphMonitor {
 		pendingCommand = {
 			commandDebugData: commandDebugData,
 			start: Date.now(),
-			wasmBytesSent: 0,
-			wasmBytesGenerated: 0,
 		};
 	}
 

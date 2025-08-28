@@ -18,6 +18,17 @@ bool border_checkBit(int value, int digit) {
     return (value & mask) > 0;
 }
 
+bool border_checkBit_uint(uint value, uint digit) {
+    uint mask = 0u;
+    if (digit == 1u) { mask = 1u; }
+    else if (digit == 2u) { mask = 2u; }
+    else if (digit == 3u) { mask = 4u; }
+    else if (digit == 4u) { mask = 8u; }
+    else if (digit == 5u) { mask = 16u; }
+    else if (digit == 6u) { mask = 32u; }
+    return (value & mask) > 0u;
+}
+
 /*
 return information about the borders in the current direction
 x: whether there is a border in the previous direction (0.0 or 1.0)
@@ -33,6 +44,19 @@ vec3 border_maskDirection(int mask, int edgeDirection) {
     bool isPrev = border_checkBit(mask, dirPrev+1);
     bool isCurr = border_checkBit(mask, dirCurr+1);
     bool isNext = border_checkBit(mask, dirNext+1);
+    // as float values - either 0 or 1
+    return vec3((isPrev ? 1.0 : 0.0), (isCurr ? 1.0 : 0.0), (isNext ? 1.0 : 0.0));
+}
+
+vec3 border_maskDirection_uint(uint mask, uint edgeDirection) {
+    // get direction indices
+    uint dirPrev = (edgeDirection-1u) < 0u ? 5u : edgeDirection-1u;
+    uint dirCurr = edgeDirection;
+    uint dirNext = uint(mod(float(edgeDirection+1u), 6.0));
+    // check if bit in mask is set
+    bool isPrev = border_checkBit_uint(mask, dirPrev + 1u);
+    bool isCurr = border_checkBit_uint(mask, dirCurr + 1u);
+    bool isNext = border_checkBit_uint(mask, dirNext + 1u);
     // as float values - either 0 or 1
     return vec3((isPrev ? 1.0 : 0.0), (isCurr ? 1.0 : 0.0), (isNext ? 1.0 : 0.0));
 }
@@ -144,6 +168,15 @@ Return a gradient border from the edge to the center taking the given mask into 
 */
 float border_gradient(vec3 cornerData, int edgeDirection, int mask) {
     vec3 maskDirection = border_maskDirection(mask, edgeDirection);
+    vec3 maskEdge = border_maskGradientEdge(cornerData);
+    return border_combineMasksGradient(maskDirection, maskEdge);
+}
+
+/*
+Return a gradient border from the edge to the center taking the given mask into account.
+*/
+float border_gradient_uint(vec3 cornerData, uint edgeDirection, uint mask) {
+    vec3 maskDirection = border_maskDirection_uint(mask, edgeDirection);
     vec3 maskEdge = border_maskGradientEdge(cornerData);
     return border_combineMasksGradient(maskDirection, maskEdge);
 }

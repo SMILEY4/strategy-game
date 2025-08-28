@@ -23,6 +23,7 @@ pub fn pack(border: &BorderData) -> u8 {
 
 /// compute all border data for all given tiles. The indices of the input and output arrays match.
 pub fn build_tile_borders(tiles: &Vec<Tile>) -> Vec<TileBorderData> {
+
     // build map of "tile position" -> "tile"
     let tiles_by_position = tiles
         .iter()
@@ -43,6 +44,14 @@ fn build_tile_border(
     tile: &Tile,
     tiles_by_position: &HashMap<(i32, i32), &Tile>,
 ) -> TileBorderData {
+
+    let tile_right        = tiles_by_position.get(&(tile.position_q + 1, tile.position_r + 0));
+    let tile_top_right    = tiles_by_position.get(&(tile.position_q + 0, tile.position_r + 1));
+    let tile_top_left     = tiles_by_position.get(&(tile.position_q - 1, tile.position_r + 1));
+    let tile_left         = tiles_by_position.get(&(tile.position_q - 1, tile.position_r + 0));
+    let tile_bottom_left  = tiles_by_position.get(&(tile.position_q + 0, tile.position_r - 1));
+    let tile_bottom_right = tiles_by_position.get(&(tile.position_q + 1, tile.position_r - 1));
+
     TileBorderData {
         none: BorderData {
             right: false,
@@ -52,36 +61,60 @@ fn build_tile_border(
             bottom_left: false,
             bottom_right: false,
         },
-        coast: build_border(tile, &tiles_by_position, false, |a, b| {
-            (a.terrain_type == 1 || b.terrain_type == 1) && a.terrain_type != b.terrain_type
-        }),
-        countries: build_border(tile, &tiles_by_position, MapMode::COUNTRIES.border_default, MapMode::COUNTRIES.border_check),
-        settlements: build_border(tile, &tiles_by_position, MapMode::COUNTRIES.border_default, MapMode::SETTLEMENTS.border_check),
+        coast: build_border(
+            false,
+            |a, b| { (a.terrain_type == 1 || b.terrain_type == 1) && a.terrain_type != b.terrain_type },
+            tile,
+            tile_right,
+            tile_top_right,
+            tile_top_left,
+            tile_left,
+            tile_bottom_left,
+            tile_bottom_right,
+        ),
+        countries: build_border(
+            MapMode::COUNTRIES.border_default,
+            MapMode::COUNTRIES.border_check,
+            tile,
+            tile_right,
+            tile_top_right,
+            tile_top_left,
+            tile_left,
+            tile_bottom_left,
+            tile_bottom_right,
+        ),
+        settlements: build_border(
+            MapMode::COUNTRIES.border_default,
+            MapMode::SETTLEMENTS.border_check,
+            tile,
+            tile_right,
+            tile_top_right,
+            tile_top_left,
+            tile_left,
+            tile_bottom_left,
+            tile_bottom_right,
+        ),
     }
 }
 
 /// compute a specific border for the given tile
-fn build_border(tile: &Tile, by_pos: &HashMap<(i32, i32), &Tile>, border_default: bool, border_test: fn(&Tile, &Tile) -> bool) -> BorderData {
-    BorderData {
-        right: build_direction_border((1, 0), tile, by_pos, border_test, border_default),
-        top_right: build_direction_border((0, 1), tile, by_pos, border_test, border_default),
-        top_left: build_direction_border((-1, 1), tile, by_pos, border_test, border_default),
-        left: build_direction_border((-1, 0), tile, by_pos, border_test, border_default),
-        bottom_left: build_direction_border((0, -1), tile, by_pos, border_test, border_default),
-        bottom_right: build_direction_border((1, -1), tile, by_pos, border_test, border_default),
-    }
-}
-
-/// compute a specific border for the given tile and specific direction/neighbour
-fn build_direction_border(
-    offset: (i32, i32),
-    tile: &Tile,
-    by_pos: &HashMap<(i32, i32), &Tile>,
+fn build_border(
+    border_default: bool,
     border_test: fn(&Tile, &Tile) -> bool,
-    border_default: bool
-) -> bool {
-    by_pos
-        .get(&(tile.position_q + offset.0, tile.position_r + offset.1))
-        .map(|it| border_test(tile, it))
-        .unwrap_or(border_default)
+    tile_center: &Tile,
+    tile_right: Option<&&Tile>,
+    tile_top_right: Option<&&Tile>,
+    tile_top_left: Option<&&Tile>,
+    tile_left: Option<&&Tile>,
+    tile_bottom_left: Option<&&Tile>,
+    tile_bottom_right: Option<&&Tile>
+) -> BorderData {
+    BorderData {
+        right: tile_right.map(|it| border_test(tile_center, it)).unwrap_or(border_default),
+        top_right: tile_top_right.map(|it| border_test(tile_center, it)).unwrap_or(border_default),
+        top_left: tile_top_left.map(|it| border_test(tile_center, it)).unwrap_or(border_default),
+        left: tile_left.map(|it| border_test(tile_center, it)).unwrap_or(border_default),
+        bottom_left: tile_bottom_left.map(|it| border_test(tile_center, it)).unwrap_or(border_default),
+        bottom_right: tile_bottom_right.map(|it| border_test(tile_center, it)).unwrap_or(border_default),
+    }
 }

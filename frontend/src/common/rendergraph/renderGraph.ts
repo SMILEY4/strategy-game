@@ -23,6 +23,7 @@ import {
 import {ConditionalTextureRenderGraphNode} from "./nodes/conditionalTextureRenderGraphNode";
 import {IntermediateDataGeneratorRenderGraphNode} from "./nodes/intermediateDataGeneratorRenderGraphNode";
 import {RenderGraphMonitor} from "./renderGraphMonitor";
+import {WasmProbe} from "../../wasm/wasmProbe";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.
@@ -103,20 +104,11 @@ export class RenderGraph {
 	}
 
 	public execute() {
-		RenderGraphMonitor.startFrame()
 		for (let i = 0, n = this.commands.length; i < n; i++) {
 			const command = this.commands[i];
-			RenderGraphMonitor.startCommand(command.getDebugData())
-			// command.execute(this.resourceManager, this.executeCounter < 10);
-			command.execute(this.resourceManager, true);
-			RenderGraphMonitor.endCommand()
+			command.execute(this.resourceManager, this.executeCounter < 10);
 		}
 		this.executeCounter++;
-		RenderGraphMonitor.endFrame()
-
-		console.log("========")
-		RenderGraphMonitor.printAverageTotal()
-		RenderGraphMonitor.printLastFrame(2)
 	}
 
 	protected addNode(node: RenderGraphNode) {

@@ -180,8 +180,13 @@ export class GameRenderGraphFactory {
 				},
 				{
 					name: "in_directionData",
-					type: GLAttributeType.INT,
+					type: GLAttributeType.U_BYTE,
 					amountComponents: 1,
+				},
+				{
+					name: "_padding",
+					type: GLAttributeType.PADDING,
+					amountComponents: 3,
 				},
 			])
 			.withFunction(TileMeshVertexGenerator.func);
@@ -199,8 +204,15 @@ export class GameRenderGraphFactory {
 				},
 				{
 					name: "in_color",
-					type: GLAttributeType.FLOAT,
+					type: GLAttributeType.U_BYTE,
 					amountComponents: 3,
+					divisor: 1,
+					normalized: true,
+				},
+				{
+					name: "_padding",
+					type: GLAttributeType.PADDING,
+					amountComponents: 1,
 					divisor: 1,
 				},
 			])
@@ -219,10 +231,16 @@ export class GameRenderGraphFactory {
 				},
 				{
 					name: "in_borderMask",
-					type: GLAttributeType.INT,
+					type: GLAttributeType.U_BYTE,
 					amountComponents: 1,
 					divisor: 1,
 				},
+				{
+					name: "_padding",
+					type: GLAttributeType.PADDING,
+					amountComponents: 3,
+					divisor: 1,
+				}
 			])
 			.withOutput(TileInstanceVertexGenerator.OUTPUT_FOG_ID, "instances", [
 				{
@@ -345,8 +363,13 @@ export class GameRenderGraphFactory {
 				},
 				{
 					name: "in_directionData",
-					type: GLAttributeType.INT,
+					type: GLAttributeType.U_BYTE,
 					amountComponents: 1,
+				},
+				{
+					name: "_padding",
+					type: GLAttributeType.PADDING,
+					amountComponents: 3,
 				},
 			])
 			.withFunction(OverlayMeshVertexGenerator.func);
@@ -372,38 +395,48 @@ export class GameRenderGraphFactory {
 				},
 				{
 					name: "in_borderMask",
-					type: GLAttributeType.INT,
+					type: GLAttributeType.U_BYTE,
 					amountComponents: 1,
 					divisor: 1,
 				},
 				{
 					name: "in_borderColor",
-					type: GLAttributeType.FLOAT,
+					type: GLAttributeType.U_BYTE,
+					normalized: true,
 					amountComponents: 4,
 					divisor: 1,
 				},
 				{
 					name: "in_fillColor",
-					type: GLAttributeType.FLOAT,
+					type: GLAttributeType.U_BYTE,
+					normalized: true,
 					amountComponents: 4,
 					divisor: 1,
 				},
 				{
 					name: "in_highlightBorderMask",
-					type: GLAttributeType.INT,
+					type: GLAttributeType.U_BYTE,
 					amountComponents: 1,
 					divisor: 1,
 				},
 				{
 					name: "in_highlightBorderColor",
-					type: GLAttributeType.FLOAT,
+					type: GLAttributeType.U_BYTE,
+					normalized: true,
 					amountComponents: 4,
 					divisor: 1,
 				},
 				{
 					name: "in_highlightFillColor",
-					type: GLAttributeType.FLOAT,
+					type: GLAttributeType.U_BYTE,
+					normalized: true,
 					amountComponents: 4,
+					divisor: 1,
+				},
+				{
+					name: "_padding",
+					type: GLAttributeType.PADDING,
+					amountComponents: 2,
 					divisor: 1,
 				},
 			])
@@ -459,16 +492,24 @@ export class GameRenderGraphFactory {
 				},
 				{
 					name: "in_baseTileColor",
-					type: GLAttributeType.FLOAT,
+					type: GLAttributeType.U_BYTE,
+					normalized: true,
 					amountComponents: 3,
 				},
 				{
 					name: "in_countryColor",
-					type: GLAttributeType.FLOAT,
+					type: GLAttributeType.U_BYTE,
+					normalized: true,
 					amountComponents: 3,
+				},
+				{
+					name: "_padding",
+					type: GLAttributeType.PADDING,
+					amountComponents: 2,
 				},
 			])
 			.withFunction(MapDetailsVertexGenerator.funcWasm)
+			.withProperty(propRelevantWorldAreaWasm, "relevantArea")
 			.withProperty(externalProps.tilesWasm, "relevantTiles")
 			.withProperty(externalProps.settlementsWasm, "settlements")
 			.withProperty(externalProps.worldObjectsWasm, "worldObjects")

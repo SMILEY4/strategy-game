@@ -10,7 +10,7 @@ use crate::renderer::models::{
 };
 use crate::renderer::state::RenderState;
 use crate::utils::math::{mix, Random};
-use crate::utils::{interpolate_curve, triangle_wave, Rect2d, Vec2d};
+use crate::utils::{rgb_f32_to_u8, interpolate_curve, triangle_wave, Rect2d, Vec2d, rgba_f32_to_u8};
 use std::collections::{HashMap, HashSet};
 use std::iter::FromIterator;
 use crate::js::imported::console_log;
@@ -99,9 +99,11 @@ impl RenderApp {
             if tile.terrain_type == 1 {
                 let height_jitter = tile.random_1 * 0.1 - 0.5;
                 let height = tile.height * 2.0 + height_jitter;
+                let color = mix(&color_land_light, &color_land_dark, height);
                 vertex_data.land.push(LandTileVertex {
                     position: [tile.world_x, tile.world_y],
-                    color: mix(&color_land_light, &color_land_dark, height),
+                    color: rgb_f32_to_u8(&color),
+                    _padding: 0,
                 });
             }
 
@@ -111,7 +113,8 @@ impl RenderApp {
                 vertex_data.water.push(WaterTileVertex {
                     position: [tile.world_x, tile.world_y],
                     depth: 1.0 - ((tile.height + 1.0) * 2.0 + height_jitter).clamp(0.0, 1.0),
-                    border_mask: border::pack(&border.coast) as u32,
+                    border_mask: border::pack(&border.coast),
+                    _padding: [0,0,0]
                 });
             }
 
@@ -152,17 +155,17 @@ impl RenderApp {
                 vertex_data.overlay.push(OverlayTileVertex {
                     position: [tile.world_x, tile.world_y],
                     tile_position: [tile.position_q, tile.position_r],
-                    primary_border_mask: border::pack((map_mode_data.border_provider)(border))
-                        as u32,
-                    primary_border_color: (map_mode_data.border_color)(tile),
-                    primary_fill_color: (map_mode_data.fill_color)(tile),
+                    primary_border_mask: border::pack((map_mode_data.border_provider)(border)),
+                    primary_border_color: rgba_f32_to_u8(&(map_mode_data.border_color)(tile)),
+                    primary_fill_color: rgba_f32_to_u8(&(map_mode_data.fill_color)(tile)),
                     highlight_border_mask: 0,
-                    highlight_border_color: [0.0, 0.0, 0.0, 0.0],
-                    highlight_fill_color: if (self.state.move_targets.contains(&position)) {
-                        [0.941, 0.921, 0.686, 0.5]
+                    highlight_border_color: [0, 0, 0, 0],
+                    highlight_fill_color: if self.state.move_targets.contains(&position) {
+                        rgba_f32_to_u8(&[0.941, 0.921, 0.686, 0.5])
                     } else {
-                        [0.0, 0.0, 0.0, 0.0]
+                        [0, 0, 0, 0]
                     },
+                    _padding: [0,0]
                 });
             }
         }
@@ -275,8 +278,9 @@ impl RenderApp {
                     vertex_data.map_detail.push(MapDetailVertex {
                         position: [line_vertex.x, line_vertex.y, line_vertex.y - 2.0],
                         texture_coordinates: [u, v],
-                        base_color: [0.0, 0.0, 0.0],
-                        country_color: [0.0, 0.0, 0.0],
+                        base_color: [0, 0, 0],
+                        country_color: [0, 0, 0],
+                        _padding: [0, 0]
                     })
                 }
             }
@@ -454,8 +458,9 @@ impl RenderApp {
                     atlas_entry.texture_coordinates[index * 2 + 0],
                     atlas_entry.texture_coordinates[index * 2 + 1],
                 ],
-                base_color: color_base,
-                country_color: color_country,
+                base_color: rgb_f32_to_u8(&color_base),
+                country_color: rgb_f32_to_u8(&color_country),
+                _padding: [0, 0]
             })
         }
 

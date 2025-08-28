@@ -1,20 +1,11 @@
 export namespace WasmProbe {
 
-	let last = 0;
-
-	export function watchMemory(tag) {
+	export function getMemory(): number {
 		if(!window.__wasmMemory) {
-			return;
+			return 0;
 		}
-
 		const memory = window.__wasmMemory;
-
-		const now = memory.buffer.byteLength;
-		if (now !== last) {
-			console.log(`[wasm] memory grew: ${(now / 65536) | 0} pages, ${now} bytes (from ${last}) at ${tag}`);
-			last = now;
-		}
-
+		return memory.buffer.byteLength;
 	}
 
 }

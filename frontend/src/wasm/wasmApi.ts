@@ -19,7 +19,6 @@ import {WorldObject} from "../models/worldobject/worldObject";
 import {Color} from "../common/color";
 import {Route} from "../models/route/route";
 import {Rectangle} from "../common/utils";
-import {RenderGraphMonitor} from "../common/rendergraph/renderGraphMonitor";
 
 export namespace WasmApi {
 
@@ -115,8 +114,6 @@ export namespace WasmApi {
 				}
 			}
 
-			console.log("sending wasm routes", reservedMemory.len * reservedMemory.item_size)
-
 			wasmRenderApp!.upload_direct_route_memory(reservedMemory.ptr, reservedMemory.len);
 		}
 
@@ -152,8 +149,6 @@ export namespace WasmApi {
 				writer.pushFloat32(countryColor[1]);
 				writer.pushFloat32(countryColor[2]);
 			}
-
-			console.log("sending wasm world objects", reservedMemory.len * reservedMemory.item_size)
 
 			wasmRenderApp!.upload_direct_world_object_memory(reservedMemory.ptr, reservedMemory.len);
 		}
@@ -193,8 +188,6 @@ export namespace WasmApi {
 				writer.pushFloat32(Random.normalized(settlement.id + i + "y"));
 			}
 
-			console.log("sending wasm settlements", reservedMemory.len * reservedMemory.item_size)
-
 			wasmRenderApp!.upload_direct_settlement_memory(reservedMemory.ptr, reservedMemory.len);
 		}
 
@@ -230,33 +223,33 @@ export namespace WasmApi {
 				// owner_country_id: u8, // "0" = no owner
 				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0); // todo: proper id
 
-				// owner_country_color_r: f32,
-				// owner_country_color_g: f32,
-				// owner_country_color_b: f32,
+				// owner_country_color_r: u8,
+				// owner_country_color_g: u8,
+				// owner_country_color_b: u8,
 				if (tile.political.visible && tile.political.value.controlledBy != null) {
-					writer.pushFloat32(tile.political.value.controlledBy.country.color.red / 255);
-					writer.pushFloat32(tile.political.value.controlledBy.country.color.green / 255);
-					writer.pushFloat32(tile.political.value.controlledBy.country.color.blue / 255);
+					writer.pushUint8(tile.political.value.controlledBy.country.color.red);
+					writer.pushUint8(tile.political.value.controlledBy.country.color.green);
+					writer.pushUint8(tile.political.value.controlledBy.country.color.blue);
 				} else {
-					writer.pushFloat32(0);
-					writer.pushFloat32(0);
-					writer.pushFloat32(0);
+					writer.pushUint8(0);
+					writer.pushUint8(0);
+					writer.pushUint8(0);
 				}
 
 				// owner_settlement_id: u8, // "0" = no owner
 				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0); // todo: proper id
 
-				// owner_settlement_color_r: f32,
-				// owner_settlement_color_g: f32,
-				// owner_settlement_color_b: f32,
+				// owner_settlement_color_r: u8,
+				// owner_settlement_color_g: u8,
+				// owner_settlement_color_b: u8,
 				if (tile.political.visible && tile.political.value.controlledBy != null) {
-					writer.pushFloat32(tile.political.value.controlledBy.settlement.color.red / 255);
-					writer.pushFloat32(tile.political.value.controlledBy.settlement.color.green / 255);
-					writer.pushFloat32(tile.political.value.controlledBy.settlement.color.blue / 255);
+					writer.pushUint8(tile.political.value.controlledBy.settlement.color.red);
+					writer.pushUint8(tile.political.value.controlledBy.settlement.color.green);
+					writer.pushUint8(tile.political.value.controlledBy.settlement.color.blue);
 				} else {
-					writer.pushFloat32(0);
-					writer.pushFloat32(0);
-					writer.pushFloat32(0);
+					writer.pushUint8(0);
+					writer.pushUint8(0);
+					writer.pushUint8(0);
 				}
 
 				// is_valid_settlement_location: u8,
@@ -265,22 +258,21 @@ export namespace WasmApi {
 				// resource_id: u8, // "0" = no resource
 				writer.pushUint8((tile.base.visible && tile.base.value.resourceType != null && tile.base.value.resourceType != TileResourceType.NONE) ? 1 : 0);
 
-				// resource_color_r: f32,
-				// resource_color_g: f32,
-				// resource_color_b: f32,
-				// resource_color_a: f32,
+				// resource_color_r: u8,
+				// resource_color_g: u8,
+				// resource_color_b: u8,
+				// resource_color_a: u8,
 				if (tile.base.visible && tile.base.value.resourceType != null && tile.base.value.resourceType != TileResourceType.NONE) {
-					writer.pushFloat32(tile.base.value.resourceType.color!.red / 255);
-					writer.pushFloat32(tile.base.value.resourceType.color!.green / 255);
-					writer.pushFloat32(tile.base.value.resourceType.color!.blue / 255);
-					writer.pushFloat32(1.0);
+					writer.pushUint8(tile.base.value.resourceType.color!.red);
+					writer.pushUint8(tile.base.value.resourceType.color!.green);
+					writer.pushUint8(tile.base.value.resourceType.color!.blue);
+					writer.pushUint8(1);
 				} else {
-					writer.pushFloat32(0);
-					writer.pushFloat32(0);
-					writer.pushFloat32(0);
-					writer.pushFloat32(0);
+					writer.pushUint8(0);
+					writer.pushUint8(0);
+					writer.pushUint8(0);
+					writer.pushUint8(0);
 				}
-
 
 				// height: f32,
 				writer.pushFloat32(tile.base.visible ? tile.base.value.height : 0);
@@ -292,8 +284,6 @@ export namespace WasmApi {
 				writer.pushFloat32(tile.metaProperties.randomValue1);
 				writer.pushFloat32(tile.metaProperties.randomValue2);
 			}
-
-			console.log("sending wasm tiles", reservedMemory.len * reservedMemory.item_size)
 
 			wasmRenderApp!.upload_direct_tile_memory(reservedMemory.ptr, reservedMemory.len);
 			wasmRenderApp!.update_borders();

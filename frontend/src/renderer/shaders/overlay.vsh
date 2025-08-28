@@ -5,15 +5,15 @@ uniform mat3 u_viewProjection;
 in vec2 in_vertexPosition;
 in vec2 in_textureCoordinates;
 in vec3 in_cornerData;
-in int in_directionData;
+in uint in_directionData;
 in vec2 in_worldPosition;
 in ivec2 in_tilePosition;
 
-in int in_borderMask;
+in uint in_borderMask;
 in vec4 in_borderColor;
 in vec4 in_fillColor;
 
-in int in_highlightBorderMask;
+in uint in_highlightBorderMask;
 in vec4 in_highlightBorderColor;
 in vec4 in_highlightFillColor;
 
@@ -21,13 +21,13 @@ out vec2 v_textureCoordinates;
 flat out ivec2 v_tilePosition;
 out vec2 v_worldCoordinates;
 out vec3 v_cornerData;
-flat out int v_directionData;
+flat out uint v_directionData;
 
-flat out int v_borderMask;
+flat out uint v_borderMask;
 out vec4 v_borderColor;
 out vec4 v_fillColor;
 
-flat out int v_highlightBorderMask;
+flat out uint v_highlightBorderMask;
 out vec4 v_highlightBorderColor;
 out vec4 v_highlightFillColor;
 

@@ -4,6 +4,7 @@ import {GLAttributeComponentAmount, GLAttributeType} from "./glTypes";
 import {isPresent} from "../utils";
 import {GLIndexBuffer} from "./glIndexBuffer";
 import {GLDisposable} from "./glDisposable";
+import * as buffer from "node:buffer";
 
 export class GLVertexArray implements GLDisposable {
 
@@ -71,16 +72,21 @@ export namespace GLVertexArray {
 		const buffers = getBuffers(attributes);
 		const stride = calculateStridePerBuffer(attributes, buffers);
 		const offset = initialOffsets(buffers);
+		const bytesLargestType = getBytesLargestTypePerBuffer(attributes, buffers);
 
 		// configure attributes
 		attributes.forEach(attribute => {
+
+			if(attribute.type == GLAttributeType.PADDING) {
+				incrementOffset(offset, attribute.buffer, attribute.type.bytes * attribute.amountComponents);
+				return
+			}
 
 			if (attribute.location < 0) {
 				console.warn("Ignoring vertex attribute with invalid location", attribute.debugName, attribute);
 				incrementOffset(offset, attribute.buffer, attribute.type.bytes * attribute.amountComponents);
 				return
 			}
-
 
 			// enable
 			gl.enableVertexAttribArray(attribute.location);
@@ -89,14 +95,20 @@ export namespace GLVertexArray {
 			// bind source buffer
 			attribute.buffer.bind();
 
+			const attributeStride = isPresent(attribute.stride) ? attribute.stride! : stride.get(attribute.buffer)!;
+			const attributeOffset = isPresent(attribute.offset) ? attribute.offset! : offset.get(attribute.buffer)!;
+			if(attributeStride % bytesLargestType.get(attribute.buffer)! != 0) {
+				console.warn("Invalid stride for attribute " + attribute.debugName + ": stride must be a multiple of " +  bytesLargestType.get(attribute.buffer)!, "Consider a different layout or add padding.")
+			}
+
 			// set attrib pointers
-			if (attribute.type.isInteger) {
+			if (attribute.type.isInteger && attribute.normalized != true) {
 				gl.vertexAttribIPointer(
 					attribute.location,
 					attribute.amountComponents,
 					attribute.type.glEnum,
-					isPresent(attribute.stride) ? attribute.stride! : stride.get(attribute.buffer)!,
-					isPresent(attribute.offset) ? attribute.offset! : offset.get(attribute.buffer)!,
+					attributeStride,
+					attributeOffset,
 				);
 				GLError.check(gl, "vertexAttribIPointer");
 			} else {
@@ -105,8 +117,8 @@ export namespace GLVertexArray {
 					attribute.amountComponents,
 					attribute.type.glEnum,
 					isPresent(attribute.normalized) ? attribute.normalized! : false,
-					isPresent(attribute.stride) ? attribute.stride! : stride.get(attribute.buffer)!,
-					isPresent(attribute.offset) ? attribute.offset! : offset.get(attribute.buffer)!,
+					attributeStride,
+					attributeOffset,
 				);
 				GLError.check(gl, "vertexAttribPointer");
 			}
@@ -165,5 +177,18 @@ export namespace GLVertexArray {
 			.reduce((a, b) => a + b, 0);
 	}
 
+	function getBytesLargestTypePerBuffer(attributes: AttributeConfig[], buffers: GLVertexBuffer[]): Map<GLVertexBuffer, number> {
+		const map = new Map<GLVertexBuffer, number>();
+		buffers.forEach(buffer => {
+			let bytesLargestType = 0;
+			attributes
+				.filter(attribute => attribute.buffer == buffer)
+				.forEach(attribute => {
+					bytesLargestType = Math.max(bytesLargestType, attribute.type.bytes);
+				})
+			map.set(buffer, bytesLargestType);
+		});
+		return map;
+	}
 
 }

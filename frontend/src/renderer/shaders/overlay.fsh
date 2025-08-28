@@ -22,13 +22,13 @@ in vec2 v_textureCoordinates;
 flat in ivec2 v_tilePosition;
 in vec2 v_worldCoordinates;
 in vec3 v_cornerData;
-flat in int v_directionData;
+flat in uint v_directionData;
 
-flat in int v_borderMask;
+flat in uint v_borderMask;
 in vec4 v_borderColor;
 in vec4 v_fillColor;
 
-flat in int v_highlightBorderMask;
+flat in uint v_highlightBorderMask;
 in vec4 v_highlightBorderColor;
 in vec4 v_highlightFillColor;
 
@@ -160,10 +160,10 @@ vec4 getTileBorder() {
 
 void main() {
 
-    float fillMask = getFillMask(v_cornerData, v_directionData, v_borderMask);
+    float fillMask = getFillMask(v_cornerData, int(v_directionData), int(v_borderMask));
 
     vec4 colorPrimaryFill = getPrimaryFill(v_fillColor) * fillMask;
-    vec4 colorPrimaryBorder = getPrimaryBorder(v_borderColor, v_cornerData, v_directionData, v_borderMask);
+    vec4 colorPrimaryBorder = getPrimaryBorder(v_borderColor, v_cornerData, int(v_directionData), int(v_borderMask));
 
     vec4 colorHighlightFill = getHighlightFill(v_highlightFillColor);
 

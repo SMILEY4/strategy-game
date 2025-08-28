@@ -5,16 +5,16 @@ uniform mat3 u_viewProjection;
 in vec2 in_vertexPosition;
 in vec2 in_textureCoordinates;
 in vec2 in_worldPosition;
-in int in_borderMask;
+in uint in_borderMask;
 in float in_depth;
 in vec3 in_cornerData;
-in int in_directionData;
+in uint in_directionData;
 
 out vec2 v_textureCoordinates;
 out float v_depth;
-flat out int v_borderMask;
+flat out uint v_borderMask;
 out vec3 v_cornerData;
-flat out int v_directionData;
+flat out uint v_directionData;
 
 #include random
 

@@ -55,7 +55,7 @@ export class GameRenderer {
 			return;
 		}
 
-		WasmProbe.watchMemory("render")
+		WasmProbe.getMemory("render")
 
 		this.changeTracker.prepareFrame(this.getRenderCamera(canvasHandle));
 		this.gameRenderGraph?.execute();

@@ -9,6 +9,7 @@ import {GLVertexBuffer} from "../../webgl/glVertexBuffer";
 import {GLProgram} from "../../webgl/glProgram";
 import {RenderGraphResourceManager} from "../renderGraphResourceManager";
 import AttributeConfig = GLVertexArray.AttributeConfig;
+import {GLAttributeType} from "../../webgl/glTypes";
 
 export class VertexArrayResourceCreator implements RenderGraphResourceCreator<DrawRenderGraphNode> {
 
@@ -53,7 +54,7 @@ export class VertexArrayResourceCreator implements RenderGraphResourceCreator<Dr
 			const buffer = resourceManager.getResource<GLVertexBuffer>(RenderGraphKeys.vertexBuffer(output));
 			attributes.push(...output.attributes.map(it => ({
 				buffer: buffer,
-				location: getLocation(it.name),
+				location: it.type == GLAttributeType.PADDING ? -1 : getLocation(it.name),
 				type: it.type,
 				amountComponents: it.amountComponents,
 				normalized: it.normalized,
