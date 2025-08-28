@@ -1,6 +1,7 @@
 import {Route} from "../../models/route/route";
 import {TilemapUtils} from "../../common/tilemapUtils";
 import {TileSummary} from "../../models/tile/tileSummary";
+import {WasmDataViewWriter} from "./wasmDataViewWriter";
 
 export namespace RouteWasmSerializer {
 

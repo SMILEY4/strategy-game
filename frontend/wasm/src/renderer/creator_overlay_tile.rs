@@ -1,13 +1,11 @@
 use crate::js::models::{MapMode, TilePosition};
 use crate::renderer::border_calculator;
-use crate::renderer::models::{
-    OverlayTileVertex, RenderState, VertexData,
-};
+use crate::renderer::models::{OverlayTileVertex, RenderState, RendererConfiguration, VertexData};
 use crate::utils::rgba_f32_to_u8;
 
 /// Calculate the overlay tiles vertex data from the given render state.
 /// Writes the result to the given vertex data.
-pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
+pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: &mut VertexData) {
     // todo: possible optimization: count instances before and init vecs with correct capacity
     vertex_data.overlay.clear();
 
@@ -41,7 +39,7 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
                 highlight_border_mask: 0,
                 highlight_border_color: [0, 0, 0, 0],
                 highlight_fill_color: if state.move_targets.contains(&position) {
-                    rgba_f32_to_u8(&[0.941, 0.921, 0.686, 0.5])
+                    rgba_f32_to_u8(&config.move_target_color)
                 } else {
                     [0, 0, 0, 0]
                 },

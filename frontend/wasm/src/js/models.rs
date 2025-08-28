@@ -88,21 +88,7 @@ pub struct TilePosition {
 }
 
 #[derive(Deserialize, Clone)]
-pub struct Point {
-    pub x: f32,
-    pub y: f32,
-}
-
-#[derive(Deserialize, Clone)]
-pub struct TileSummary {
-    pub position: TilePosition,
-    pub world_position: Point,
-}
-
-
-#[derive(Deserialize, Clone)]
 pub struct TextureAtlasEntry {
-    pub name: String,
     pub vertices: Vec<f32>,
     pub texture_coordinates: Vec<f32>,
     pub offset: f32,
@@ -112,7 +98,6 @@ pub struct TextureAtlasEntry {
 
 
 pub struct MapMode {
-    pub name: &'static str,
     pub fill_color: fn(tile: &Tile) -> [f32; 4],
     pub border_color: fn(tile: &Tile) -> [f32; 4],
     pub border_check: fn(a: &Tile, b: &Tile) -> bool,
@@ -122,7 +107,6 @@ pub struct MapMode {
 
 impl MapMode {
     pub const DEFAULT: MapMode = MapMode {
-        name: "default",
         fill_color: |tile| {
             return if tile.owner_country_id == 0 {
                 [0.0; 4]
@@ -153,7 +137,6 @@ impl MapMode {
     };
 
     pub const COUNTRIES: MapMode = MapMode {
-        name: "countries",
         fill_color: |tile| {
             return if tile.owner_country_id == 0 {
                 [0.0; 4]
@@ -184,7 +167,6 @@ impl MapMode {
     };
 
     pub const SETTLEMENTS: MapMode = MapMode {
-        name: "settlements",
         fill_color: |tile| {
             return if tile.owner_settlement_id == 0 {
                 [0.0; 4]
@@ -215,7 +197,6 @@ impl MapMode {
     };
 
     pub const SETTLEMENT_LOCATIONS: MapMode = MapMode {
-        name: "settlement_locations",
         fill_color: |tile| {
             if tile.is_valid_settlement_location == 1 {
                 [50.0 / 255.0, 194.0 / 255.0, 73.0 / 255.0, 0.9]
@@ -230,7 +211,6 @@ impl MapMode {
     };
 
     pub const RESOURCES: MapMode = MapMode {
-        name: "resources",
         fill_color: |tile| {
             return if tile.resource_id == 0 {
                 [0.0; 4]
@@ -250,7 +230,6 @@ impl MapMode {
     };
 
     pub const TERRAIN: MapMode = MapMode {
-        name: "terrain",
         fill_color: |_| [0.0; 4],
         border_color: |_| [0.0; 4],
         border_check: |_, _| false,

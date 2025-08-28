@@ -1,5 +1,3 @@
-use std::ops::Add;
-
 /// mix the individual elements of "x" with "y" according to "a".
 /// "a" = 0.0 => returns "x"
 /// "a" = 1.0 => returns "y"
@@ -202,7 +200,7 @@ impl Vec2d {
             y: -self.x,
         }
     }
-    
+
     /// returns a new vector created by rotating this vector 90 degrees counter-clockwise.
     pub fn rotate_90deg_cc(&self) -> Vec2d {
         Vec2d {
@@ -216,7 +214,7 @@ impl Vec2d {
 /// returns the point at progress "t".
 /// t = 0.0 => returns "a"
 /// t = 1.0 => returns "c"
-/// t = 0.5 => returns point on curve halfway between a and c 
+/// t = 0.5 => returns point on curve halfway between a and c
 pub fn interpolate_curve(a: &Vec2d, b: &Vec2d, c: &Vec2d, t: f32) -> Vec2d {
     let ab_t = a.to(b).scale(t);
     let bc_t = b.to(c).scale(t);

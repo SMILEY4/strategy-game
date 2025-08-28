@@ -2,8 +2,8 @@ use crate::js::models::{
     RouteNode, Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject,
 };
 use crate::renderer::models::{
-    FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, RenderState, VertexData,
-    WaterTileVertex,
+    FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, RenderState,
+    RendererConfiguration, VertexData, WaterTileVertex,
 };
 use crate::renderer::{
     border_calculator, creator_details, creator_overlay_tile, creator_terrain_tile,
@@ -16,6 +16,7 @@ use std::iter::FromIterator;
 /// Keeps its own copy of relevant game state.
 /// Writes vertices to wasm memory that can be shared with js and webgl.
 pub struct RenderApp {
+    config: RendererConfiguration,
     state: RenderState,
     vertex_data: VertexData,
 }
@@ -25,6 +26,15 @@ impl RenderApp {
     /// Create a new empty renderer.
     pub fn new() -> RenderApp {
         RenderApp {
+            config: RendererConfiguration {
+                land_color_light: [148.0 / 255.0, 155.0 / 255.0, 100.0 / 255.0],
+                land_color_dark: [116.0 / 255.0, 126.0 / 255.0, 87.0 / 255.0],
+                tile_width: 10.0,
+                tile_height: 7.0,
+                route_line_thickness: 0.8,
+                route_rng_offset: 0.3,
+                move_target_color: [0.941, 0.921, 0.686, 0.5],
+            },
             state: RenderState::default(),
             vertex_data: VertexData::default(),
         }
@@ -107,17 +117,17 @@ impl RenderApp {
 
     /// Re-calculate the vertex data for terrain tiles (land, water, fog).
     pub fn update_terrain_tile_vertices(&mut self) {
-        creator_terrain_tile::update(&self.state, &mut self.vertex_data);
+        creator_terrain_tile::update(&self.state, &self.config, &mut self.vertex_data);
     }
 
     /// Re-calculate the vertex data for overlay tiles.
     pub fn update_overlay_tile_vertices(&mut self) {
-        creator_overlay_tile::update(&self.state, &mut self.vertex_data);
+        creator_overlay_tile::update(&self.state, &self.config, &mut self.vertex_data);
     }
 
     /// Re-calculate the vertex data for map details.
     pub fn update_detail_vertices(&mut self) {
-        creator_details::update(&self.state, &mut self.vertex_data);
+        creator_details::update(&self.state, &self.config, &mut self.vertex_data);
     }
 
     /// returns the current vertex data for water tiles.

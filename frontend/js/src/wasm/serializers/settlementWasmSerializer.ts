@@ -1,6 +1,7 @@
 import {TilemapUtils} from "../../common/tilemapUtils";
 import {Random} from "../../common/random";
 import {Settlement} from "../../models/settlement/settlement";
+import {WasmDataViewWriter} from "./wasmDataViewWriter";
 
 export namespace SettlementWasmSerializer {
 

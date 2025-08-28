@@ -1,6 +1,7 @@
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {TilemapUtils} from "../../common/tilemapUtils";
 import {Color} from "../../common/color";
+import {WasmDataViewWriter} from "./wasmDataViewWriter";
 
 export namespace WorldObjectWasmSerializer {
 

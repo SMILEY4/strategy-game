@@ -1,4 +1,4 @@
-class WasmDataViewWriter {
+export class WasmDataViewWriter {
 
 	dataView: DataView = null!;
 	counter = 0;

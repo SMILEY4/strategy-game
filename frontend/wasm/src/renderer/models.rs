@@ -2,6 +2,17 @@ use std::collections::{HashMap, HashSet};
 use crate::js::models::{RouteNode, Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject};
 use crate::utils::Rect2d;
 
+#[derive(Clone)]
+pub struct RendererConfiguration {
+    pub land_color_light: [f32; 3],
+    pub land_color_dark: [f32; 3],
+    pub tile_width: f32,
+    pub tile_height: f32,
+    pub route_line_thickness: f32,
+    pub route_rng_offset: f32,
+    pub move_target_color: [f32; 4],
+}
+
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
 pub struct LandTileVertex {
@@ -71,12 +82,6 @@ pub struct VertexData {
     pub fog: Vec<FogTileVertex>,
     pub overlay: Vec<OverlayTileVertex>,
     pub map_detail: Vec<MapDetailVertex>,
-}
-
-#[derive(Default)]
-pub struct TileData {
-    pub tiles: Vec<Tile>,
-    pub borders: Vec<TileBorderData>,
 }
 
 #[derive(Debug)]

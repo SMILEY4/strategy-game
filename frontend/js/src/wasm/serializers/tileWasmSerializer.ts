@@ -1,9 +1,10 @@
 import {Tile} from "../../models/tile/tile";
 import {TileResourceType} from "../../models/tile/TileResourceType";
+import {WasmDataViewWriter} from "./wasmDataViewWriter";
 
 export namespace TileWasmSerializer {
 
-	const writer = new WasmDataViewWriter();
+	const writer: WasmDataViewWriter = new WasmDataViewWriter();
 
 	export function serialize(tiles: Tile[], bytesPerEntry: number, targetBuffer: Uint8Array) {
 		for (let i = 0, n = tiles.length; i < n; i++) {

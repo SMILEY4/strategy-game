@@ -1,11 +1,3 @@
-import {
-	DirectRouteBuffer,
-	DirectSettlementBuffer,
-	DirectTileBuffer,
-	DirectWorldObjectBuffer,
-	WasmRenderApp,
-} from "wasm";
-
 import {Tile} from "../models/tile/tile";
 import {MapMode} from "../models/misc/mapMode";
 import {TileSummary} from "../models/tile/tileSummary";
@@ -19,6 +11,13 @@ import {TileWasmSerializer} from "./serializers/tileWasmSerializer";
 import {RouteWasmSerializer} from "./serializers/routeWasmSerializer";
 import {WorldObjectWasmSerializer} from "./serializers/worldObjectWasmSerializer";
 import {SettlementWasmSerializer} from "./serializers/settlementWasmSerializer";
+import {
+	DirectRouteBuffer,
+	DirectSettlementBuffer,
+	DirectTileBuffer,
+	DirectWorldObjectBuffer,
+	WasmRenderApp,
+} from "../../../wasm/pkg";
 
 export namespace WasmApi {
 
@@ -43,7 +42,6 @@ export namespace WasmApi {
 			const wasmEntries = new Map<string, any>();
 			for (let [key, group] of entries) {
 				wasmEntries.set(key, group.map(it => ({
-					name: it.name,
 					vertices: it.vertices.flatMap(it => it),
 					texture_coordinates: it.textureCoordinates.flatMap(it => it),
 					offset: it.offset,

@@ -2,17 +2,12 @@ use crate::js::models::TextureAtlasEntry;
 use crate::renderer::line_mesh::{
     build_line_mesh, cap_butt_end, cap_butt_start, join_miter, LineMeshConfig,
 };
-use crate::renderer::models::{MapDetailVertex, RenderState, VertexData};
+use crate::renderer::models::{MapDetailVertex, RenderState, RendererConfiguration, VertexData};
 use crate::utils::{interpolate_curve, mix, rgb_f32_to_u8, triangle_wave, Random, Vec2d};
 
 /// Calculate the map details vertex data from the given render state.
 /// Writes the result to the given vertex data.
-pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
-    let color_land_light: [f32; 3] = [148.0 / 255.0, 155.0 / 255.0, 100.0 / 255.0];
-    let color_land_dark: [f32; 3] = [116.0 / 255.0, 126.0 / 255.0, 87.0 / 255.0];
-
-    let tile_width = 10.0;
-    let tile_height = 7.0;
+pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: &mut VertexData) {
 
     vertex_data.map_detail.clear();
 
@@ -27,7 +22,7 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
 
     // routes line mesh config
     let route_mesh_config = LineMeshConfig {
-        thickness: 0.8,
+        thickness: config.route_line_thickness,
         cap_start: cap_butt_start,
         cap_end: cap_butt_end,
         join: join_miter,
@@ -80,8 +75,8 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
                     let p = interpolate_curve(&ah, &b, &bh, t);
 
                     let offset = Vec2d {
-                        x: (rng.f32() * 2.0 - 1.0) * 0.3,
-                        y: (rng.f32() * 2.0 - 1.0) * 0.3,
+                        x: (rng.f32() * 2.0 - 1.0) * config.route_rng_offset,
+                        y: (rng.f32() * 2.0 - 1.0) * config.route_rng_offset,
                     };
 
                     let p0 = p.add(&offset);
@@ -119,7 +114,7 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
     // add world objects
     for world_object in &state.world_objects {
         let x = world_object.world_x;
-        let y = world_object.world_y - tile_height / 2.0;
+        let y = world_object.world_y - config.tile_height / 2.0;
         let z = y - 1.0;
 
         vertex_data.map_detail.extend(create_sprite(
@@ -140,8 +135,8 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
     for settlement in &state.settlements {
         let mut rng = Random::new((settlement.position_q * 3 + settlement.position_r * 5) as u64);
         for _i in 0..=(settlement.population_size + 1) {
-            let x = settlement.world_x + (rng.f32() * 2.0 - 1.0) * tile_width / 2.0;
-            let y = settlement.world_y + (rng.f32() * 2.0 - 1.0) * tile_height / 2.0;
+            let x = settlement.world_x + (rng.f32() * 2.0 - 1.0) * config.tile_width / 2.0;
+            let y = settlement.world_y + (rng.f32() * 2.0 - 1.0) * config.tile_height / 2.0;
             let z = y - 1.0;
             vertex_data.map_detail.extend(create_sprite(
                 &atlas_entries_houses[(rng.f32() * atlas_entries_houses.len() as f32) as usize],
@@ -154,8 +149,8 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
         }
 
         for _i in 0..(settlement.population_size) {
-            let x = settlement.world_x + (rng.f32() * 2.0 - 1.0) * tile_width / 2.0;
-            let y = settlement.world_y + (rng.f32() * 2.0 - 1.0) * tile_height / 2.0;
+            let x = settlement.world_x + (rng.f32() * 2.0 - 1.0) * config.tile_width / 2.0;
+            let y = settlement.world_y + (rng.f32() * 2.0 - 1.0) * config.tile_height / 2.0;
             let z = y - 1.0;
             vertex_data.map_detail.extend(create_sprite(
                 &atlas_entries_settlement_decoration
@@ -182,7 +177,7 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
 
         let height_jitter = tile.random_1 * 0.1 - 0.5;
         let height = tile.height * 2.0 + height_jitter;
-        let color = mix(&color_land_light, &color_land_dark, height);
+        let color = mix(&config.land_color_light, &config.land_color_dark, height);
 
         let mut terrain = "none";
         if tile.random_1 > 0.8 {
@@ -200,10 +195,10 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
                 vertex_data.map_detail.extend(create_sprite(
                     &atlas_entries_mountain
                         [(tile.random_1 * atlas_entries_mountain.len() as f32) as usize],
-                    (tile.world_x, tile.world_y - tile_height),
+                    (tile.world_x, tile.world_y - config.tile_height),
                     (
-                        tile.world_y - tile_height + tile.random_2 * 0.1,
-                        tile.world_y + tile_height + tile.random_2 * 0.1,
+                        tile.world_y - config.tile_height + tile.random_2 * 0.1,
+                        tile.world_y + config.tile_height + tile.random_2 * 0.1,
                     ),
                     (22.0, 16.0),
                     color,
@@ -213,10 +208,10 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
             "hill" => {
                 vertex_data.map_detail.extend(create_sprite(
                     &atlas_entries_hill[(tile.random_1 * atlas_entries_hill.len() as f32) as usize],
-                    (tile.world_x, tile.world_y - tile_height),
+                    (tile.world_x, tile.world_y - config.tile_height),
                     (
-                        tile.world_y - tile_height + tile.random_2 * 0.1,
-                        tile.world_y + tile_height + tile.random_2 * 0.1,
+                        tile.world_y - config.tile_height + tile.random_2 * 0.1,
+                        tile.world_y + config.tile_height + tile.random_2 * 0.1,
                     ),
                     (22.0, 16.0),
                     color,
@@ -227,10 +222,10 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
                 vertex_data.map_detail.extend(create_sprite(
                     &atlas_entries_forest
                         [(tile.random_1 * atlas_entries_forest.len() as f32) as usize],
-                    (tile.world_x, tile.world_y - tile_height),
+                    (tile.world_x, tile.world_y - config.tile_height),
                     (
-                        tile.world_y - tile_height + tile.random_2 * 0.1,
-                        tile.world_y + tile_height + tile.random_2 * 0.1,
+                        tile.world_y - config.tile_height + tile.random_2 * 0.1,
+                        tile.world_y + config.tile_height + tile.random_2 * 0.1,
                     ),
                     (22.0, 16.0),
                     color,
@@ -241,8 +236,8 @@ pub fn update(state: &RenderState, vertex_data: &mut VertexData) {
                 for _i in 0..((tile.random_1 * 5.0) + 1.0) as i32 {
                     let rng_offset_x = tile.random_0;
                     let rng_offset_y = tile.random_2;
-                    let x = tile.world_x + (rng_offset_x * 2.0 - 1.0) * (tile_width / 2.0);
-                    let y = tile.world_y + (rng_offset_y * 2.0 - 1.0) * (tile_height / 2.0);
+                    let x = tile.world_x + (rng_offset_x * 2.0 - 1.0) * (config.tile_height / 2.0);
+                    let y = tile.world_y + (rng_offset_y * 2.0 - 1.0) * (config.tile_height / 2.0);
                     let z = y - 1.0;
 
                     vertex_data.map_detail.extend(create_sprite(
