@@ -10,15 +10,15 @@ import {Tile} from "../models/tile/tile";
 import {MapMode} from "../models/misc/mapMode";
 import {TileSummary} from "../models/tile/tileSummary";
 import {memory} from "wasm/wasm_bg.wasm";
-import {TileResourceType} from "../models/tile/TileResourceType";
 import {TextureAtlasEntry} from "../common/webgl/textureAtlas";
 import {Settlement} from "../models/settlement/settlement";
-import {TilemapUtils} from "../common/tilemapUtils";
-import {Random} from "../common/random";
 import {WorldObject} from "../models/worldobject/worldObject";
-import {Color} from "../common/color";
 import {Route} from "../models/route/route";
 import {Rectangle} from "../common/utils";
+import {TileWasmSerializer} from "./serializers/tileWasmSerializer";
+import {RouteWasmSerializer} from "./serializers/routeWasmSerializer";
+import {WorldObjectWasmSerializer} from "./serializers/worldObjectWasmSerializer";
+import {SettlementWasmSerializer} from "./serializers/settlementWasmSerializer";
 
 export namespace WasmApi {
 
@@ -77,214 +77,31 @@ export namespace WasmApi {
 		}
 
 		export function setRoutes(routes: Route[]) {
-
 			const amountRouteNodes = routes.flatMap(route => route.path).length;
-
 			const reservedMemory: DirectRouteBuffer = wasmRenderApp!.reserve_route_memory(amountRouteNodes);
 			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
-
-			const writer = new DataViewWriter();
-
-			let index = 0;
-			for (let i = 0, n = routes.length; i < n; i++) {
-				const route = routes[i];
-
-				for (let j = 0, m = route.path.length; j < m; j++) {
-					const tile = route.path[j];
-
-					const offset = index * reservedMemory.item_size;
-					const view = new DataView(bytes.buffer, bytes.byteOffset + offset, reservedMemory.item_size);
-					writer.setDataView(view);
-
-					// route_id: i32,
-					writer.pushInt32(i);
-
-					// position_q: i32,
-					// position_r: i32,
-					writer.pushInt32(tile.position.q);
-					writer.pushInt32(tile.position.r);
-
-					// world_x: f32,
-					// world_y: f32,
-					const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.position.q, tile.position.r);
-					writer.pushFloat32(tileCenter[0]);
-					writer.pushFloat32(tileCenter[1]);
-
-					index++;
-				}
-			}
-
+			RouteWasmSerializer.serialize(routes, reservedMemory.item_size, bytes);
 			wasmRenderApp!.upload_direct_route_memory(reservedMemory.ptr, reservedMemory.len);
 		}
 
 		export function setWorldObjects(worldObjects: WorldObject[]) {
-
 			const reservedMemory: DirectWorldObjectBuffer = wasmRenderApp!.reserve_world_object_memory(worldObjects.length);
 			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
-
-			const writer = new DataViewWriter();
-
-			for (let i = 0, n = worldObjects.length; i < n; i++) {
-				const worldObject = worldObjects[i];
-				const offset = i * reservedMemory.item_size;
-				const view = new DataView(bytes.buffer, bytes.byteOffset + offset, reservedMemory.item_size);
-				writer.setDataView(view);
-
-				// position_q: i32,
-				// position_r: i32,
-				writer.pushInt32(worldObject.tile.position.q);
-				writer.pushInt32(worldObject.tile.position.r);
-
-				// world_x: f32,
-				// world_y: f32,
-				const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, worldObject.tile.position.q, worldObject.tile.position.r);
-				writer.pushFloat32(tileCenter[0]);
-				writer.pushFloat32(tileCenter[1]);
-
-				// country_color_r: f32,
-				// country_color_g: f32,
-				// country_color_b: f32,
-				const countryColor = Color.colorToRgbArray(worldObject.country.color);
-				writer.pushFloat32(countryColor[0]);
-				writer.pushFloat32(countryColor[1]);
-				writer.pushFloat32(countryColor[2]);
-			}
-
+			WorldObjectWasmSerializer.serialize(worldObjects, reservedMemory.item_size, bytes);
 			wasmRenderApp!.upload_direct_world_object_memory(reservedMemory.ptr, reservedMemory.len);
 		}
 
 		export function setSettlements(settlements: Settlement[]) {
-
 			const reservedMemory: DirectSettlementBuffer = wasmRenderApp!.reserve_settlement_memory(settlements.length);
 			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
-
-			const writer = new DataViewWriter();
-
-			for (let i = 0, n = settlements.length; i < n; i++) {
-				const settlement = settlements[i];
-				const offset = i * reservedMemory.item_size;
-				const view = new DataView(bytes.buffer, bytes.byteOffset + offset, reservedMemory.item_size);
-				writer.setDataView(view);
-
-				// position_q: i32,
-				// position_r: i32,
-				writer.pushInt32(settlement.tile.position.q);
-				writer.pushInt32(settlement.tile.position.r);
-
-				// world_x: f32,
-				// world_y: f32,
-				const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, settlement.tile.position.q, settlement.tile.position.r);
-				writer.pushFloat32(tileCenter[0]);
-				writer.pushFloat32(tileCenter[1]);
-
-				// population_size: i32,
-				writer.pushInt32(settlement.population.size.visible ? settlement.population.size.value.size : 1);
-
-				// random_0: f32,
-				// random_1: f32,
-				// random_2: f32,
-				writer.pushFloat32(Random.normalized(settlement.id + i));
-				writer.pushFloat32(Random.normalized(settlement.id + i + "x"));
-				writer.pushFloat32(Random.normalized(settlement.id + i + "y"));
-			}
-
+			SettlementWasmSerializer.serialize(settlements, reservedMemory.item_size, bytes);
 			wasmRenderApp!.upload_direct_settlement_memory(reservedMemory.ptr, reservedMemory.len);
 		}
 
 		export function setTiles(tiles: Tile[]) {
-
 			const reservedMemory: DirectTileBuffer = wasmRenderApp!.reserve_tiles_memory(tiles.length);
 			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
-
-			const writer = new DataViewWriter();
-
-			for (let i = 0, n = tiles.length; i < n; i++) {
-				const tile = tiles[i];
-				const offset = i * reservedMemory.item_size;
-				const view = new DataView(bytes.buffer, bytes.byteOffset + offset, reservedMemory.item_size);
-				writer.setDataView(view);
-
-				// position_q: i32,
-				// position_r: i32,
-				writer.pushInt32(tile.position.q);
-				writer.pushInt32(tile.position.r);
-
-				// world_x: f32,
-				// world_y: f32,
-				writer.pushFloat32(tile.metaProperties.worldPosition.x);
-				writer.pushFloat32(tile.metaProperties.worldPosition.y);
-
-				// visibility: u8,
-				writer.pushUint8(tile.visibility.renderId);
-
-				// terrain_type: u8,
-				writer.pushUint8(tile.base.visible ? tile.base.value.terrainType.renderId : 0);
-
-				// owner_country_id: u8, // "0" = no owner
-				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0); // todo: proper id
-
-				// owner_country_color_r: u8,
-				// owner_country_color_g: u8,
-				// owner_country_color_b: u8,
-				if (tile.political.visible && tile.political.value.controlledBy != null) {
-					writer.pushUint8(tile.political.value.controlledBy.country.color.red);
-					writer.pushUint8(tile.political.value.controlledBy.country.color.green);
-					writer.pushUint8(tile.political.value.controlledBy.country.color.blue);
-				} else {
-					writer.pushUint8(0);
-					writer.pushUint8(0);
-					writer.pushUint8(0);
-				}
-
-				// owner_settlement_id: u8, // "0" = no owner
-				writer.pushUint8((tile.political.visible && tile.political.value.controlledBy != null) ? 1 : 0); // todo: proper id
-
-				// owner_settlement_color_r: u8,
-				// owner_settlement_color_g: u8,
-				// owner_settlement_color_b: u8,
-				if (tile.political.visible && tile.political.value.controlledBy != null) {
-					writer.pushUint8(tile.political.value.controlledBy.settlement.color.red);
-					writer.pushUint8(tile.political.value.controlledBy.settlement.color.green);
-					writer.pushUint8(tile.political.value.controlledBy.settlement.color.blue);
-				} else {
-					writer.pushUint8(0);
-					writer.pushUint8(0);
-					writer.pushUint8(0);
-				}
-
-				// is_valid_settlement_location: u8,
-				writer.pushUint8(tile.isValidSettlementLocation ? 1 : 0);
-
-				// resource_id: u8, // "0" = no resource
-				writer.pushUint8((tile.base.visible && tile.base.value.resourceType != null && tile.base.value.resourceType != TileResourceType.NONE) ? 1 : 0);
-
-				// resource_color_r: u8,
-				// resource_color_g: u8,
-				// resource_color_b: u8,
-				// resource_color_a: u8,
-				if (tile.base.visible && tile.base.value.resourceType != null && tile.base.value.resourceType != TileResourceType.NONE) {
-					writer.pushUint8(tile.base.value.resourceType.color!.red);
-					writer.pushUint8(tile.base.value.resourceType.color!.green);
-					writer.pushUint8(tile.base.value.resourceType.color!.blue);
-					writer.pushUint8(1);
-				} else {
-					writer.pushUint8(0);
-					writer.pushUint8(0);
-					writer.pushUint8(0);
-					writer.pushUint8(0);
-				}
-
-				// height: f32,
-				writer.pushFloat32(tile.base.visible ? tile.base.value.height : 0);
-
-				// random_0: f32,
-				// random_1: f32,
-				// random_2: f32,
-				writer.pushFloat32(tile.metaProperties.randomValue0);
-				writer.pushFloat32(tile.metaProperties.randomValue1);
-				writer.pushFloat32(tile.metaProperties.randomValue2);
-			}
-
+			TileWasmSerializer.serialize(tiles, reservedMemory.item_size, bytes);
 			wasmRenderApp!.upload_direct_tile_memory(reservedMemory.ptr, reservedMemory.len);
 			wasmRenderApp!.update_borders();
 		}
@@ -301,72 +118,41 @@ export namespace WasmApi {
 			wasmRenderApp!.update_detail_vertices();
 		}
 
-		export function getVerticesLand(): Uint8Array {
-			return wasmRenderApp!.get_vertex_buffer_land();
+		export function getVerticesWater(): [Uint8Array, number] {
+			return [
+				wasmRenderApp!.get_vertex_buffer_water(),
+				wasmRenderApp!.get_vertex_buffer_water_size()
+			];
 		}
 
-		export function getVerticesLandCount(): number {
-			return wasmRenderApp!.get_vertex_buffer_land_size();
+		export function getVerticesLand(): [Uint8Array, number] {
+			return [
+				wasmRenderApp!.get_vertex_buffer_land(),
+				wasmRenderApp!.get_vertex_buffer_land_size()
+			];
 		}
 
-		export function getVerticesWater(): Uint8Array {
-			return wasmRenderApp!.get_vertex_buffer_water();
+		export function getVerticesFog(): [Uint8Array, number] {
+			return [
+				wasmRenderApp!.get_vertex_buffer_fog(),
+				wasmRenderApp!.get_vertex_buffer_fog_size()
+			]
 		}
 
-		export function getVerticesWaterCount(): number {
-			return wasmRenderApp!.get_vertex_buffer_water_size();
+		export function getVerticesOverlay(): [Uint8Array, number] {
+			return [
+				wasmRenderApp!.get_vertex_buffer_overlay(),
+				wasmRenderApp!.get_vertex_buffer_overlay_size()
+			]
 		}
 
-		export function getVerticesFog(): Uint8Array {
-			return wasmRenderApp!.get_vertex_buffer_fog();
+		export function getVerticesDetails(): [Uint8Array, number] {
+			return [
+				wasmRenderApp!.get_vertex_buffer_detail(),
+				wasmRenderApp!.get_vertex_count_detail()
+			]
 		}
 
-		export function getVerticesFogCount(): number {
-			return wasmRenderApp!.get_vertex_buffer_fog_size();
-		}
-
-		export function getVerticesOverlay(): Uint8Array {
-			return wasmRenderApp!.get_vertex_buffer_overlay();
-		}
-
-		export function getVerticesOverlayCount(): number {
-			return wasmRenderApp!.get_vertex_buffer_overlay_size();
-		}
-
-		export function getVerticesDetails(): Uint8Array {
-			return wasmRenderApp!.get_vertex_buffer_detail();
-		}
-
-		export function getVertexCountDetails(): number {
-			return wasmRenderApp!.get_vertex_count_detail();
-		}
-	}
-
-}
-
-class DataViewWriter {
-
-	dataView: DataView = null!;
-	counter = 0;
-
-	setDataView(dataView: DataView) {
-		this.dataView = dataView;
-		this.counter = 0;
-	}
-
-	pushUint8(value: number) {
-		this.dataView.setUint8(this.counter, value);
-		this.counter += 1;
-	}
-
-	pushInt32(value: number) {
-		this.dataView.setInt32(this.counter, value, true);
-		this.counter += 4;
-	}
-
-	pushFloat32(value: number) {
-		this.dataView.setFloat32(this.counter, value, true);
-		this.counter += 4;
 	}
 
 }

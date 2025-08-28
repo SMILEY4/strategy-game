@@ -12,27 +12,30 @@ export namespace TileInstanceVertexGenerator {
 	export function funcWasm(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
 
 		WasmApi.Renderer.updateTerrainTileVertices();
+		const [bufferWater, countWater] = WasmApi.Renderer.getVerticesWater();
+		const [bufferLand, countLand] = WasmApi.Renderer.getVerticesLand();
+		const [bufferFog, countFog] = WasmApi.Renderer.getVerticesFog();
 
 		return buildMap([
 			[
 				OUTPUT_WATER_ID,
 				{
-					data: WasmApi.Renderer.getVerticesWater(),
-					entryCount: WasmApi.Renderer.getVerticesWaterCount(),
+					data: bufferWater,
+					entryCount: countWater,
 				},
 			],
 			[
 				OUTPUT_LAND_ID,
 				{
-					data: WasmApi.Renderer.getVerticesLand(),
-					entryCount: WasmApi.Renderer.getVerticesLandCount(),
+					data: bufferLand,
+					entryCount: countLand,
 				},
 			],
 			[
 				OUTPUT_FOG_ID,
 				{
-					data: WasmApi.Renderer.getVerticesFog(),
-					entryCount: WasmApi.Renderer.getVerticesFogCount(),
+					data: bufferFog,
+					entryCount: countFog,
 				},
 			],
 		]);

@@ -21,7 +21,7 @@ pub fn pack(border: &BorderData) -> u8 {
     packed
 }
 
-/// compute all border data for all given tiles. The indices of the input and output arrays match.
+/// Compute all border data for all given tiles. The indices of the input and output arrays match.
 pub fn build_tile_borders(tiles: &Vec<Tile>) -> Vec<TileBorderData> {
 
     // build map of "tile position" -> "tile"
@@ -39,7 +39,7 @@ pub fn build_tile_borders(tiles: &Vec<Tile>) -> Vec<TileBorderData> {
     borders
 }
 
-/// compute all border data for the given tile
+/// Compute all border data for the given tile
 fn build_tile_border(
     tile: &Tile,
     tiles_by_position: &HashMap<(i32, i32), &Tile>,
@@ -97,7 +97,7 @@ fn build_tile_border(
     }
 }
 
-/// compute a specific border for the given tile
+/// Compute a specific border for the given tile
 fn build_border(
     border_default: bool,
     border_test: fn(&Tile, &Tile) -> bool,

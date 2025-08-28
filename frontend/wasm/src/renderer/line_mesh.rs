@@ -1,5 +1,6 @@
 use crate::utils::Vec2d;
 
+/// Data for a vertex in a line mesh. 
 #[derive(Copy, Clone)]
 pub struct LineMeshVertex {
     pub x: f32,
@@ -8,12 +9,17 @@ pub struct LineMeshVertex {
     pub v: f32,
 }
 
+/// Data for a (complete) line mesh.
+/// Contains the list of vertices and triangles.
+/// A single vertex may be shared by multiple triangles.
+/// Triangles reference vertices by their index in the list.
 pub struct LineMesh {
     pub vertices: Vec<LineMeshVertex>,
     pub attachment_indices: Vec<usize>,
     pub triangles: Vec<[usize; 3]>,
 }
 
+/// Configuration of the shape of a line mesh.
 pub struct LineMeshConfig {
     pub thickness: f32,
     pub cap_start: fn(thickness: f32, curr_point: &Vec2d, next_point: &Vec2d) -> LineMesh,
@@ -23,6 +29,7 @@ pub struct LineMeshConfig {
 
 //==== MESH BUILDER ==================
 
+/// Flatten the list of triangles and vertices into a single list of vertices.
 pub fn flatten(mesh: &LineMesh) -> Vec<LineMeshVertex> {
     let mut vertices = Vec::new();
 
@@ -35,6 +42,7 @@ pub fn flatten(mesh: &LineMesh) -> Vec<LineMeshVertex> {
     vertices
 }
 
+/// Build the line mesh for the given list of points and configuration.
 pub fn build_line_mesh(points: &Vec<Vec2d>, config: &LineMeshConfig) -> LineMesh {
     if points.len() <= 1 || config.thickness <= 0.0 {
         return LineMesh {
@@ -83,6 +91,7 @@ pub fn build_line_mesh(points: &Vec<Vec2d>, config: &LineMeshConfig) -> LineMesh
     mesh
 }
 
+/// Append the start segment to the given line mesh.
 fn build_segment_start(mesh: &mut LineMesh, curr_point: &Vec2d, next_point: &Vec2d, config: &LineMeshConfig) {
     // create segment mesh
     let mesh_data = (config.cap_start)(config.thickness, curr_point, next_point);
@@ -97,6 +106,7 @@ fn build_segment_start(mesh: &mut LineMesh, curr_point: &Vec2d, next_point: &Vec
     mesh.attachment_indices = vec![mesh_data.attachment_indices[2], mesh_data.attachment_indices[3]]
 }
 
+/// Append the end segment to the given line mesh.
 fn build_segment_end(mesh: &mut LineMesh, prev_point: &Vec2d, curr_point: &Vec2d, config: &LineMeshConfig) {
     // create segment mesh
     let mut mesh_data = (config.cap_end)(config.thickness, prev_point, curr_point);
@@ -128,6 +138,7 @@ fn build_segment_end(mesh: &mut LineMesh, prev_point: &Vec2d, curr_point: &Vec2d
     mesh.attachment_indices = vec![mesh_data.attachment_indices[2] + vertex_index_offset, mesh_data.attachment_indices[3] + vertex_index_offset]
 }
 
+/// Append a middle segment to the given line mesh.
 fn build_segment_middle(mesh: &mut LineMesh, prev_point: &Vec2d, curr_point: &Vec2d, next_point: &Vec2d, current_length: f32, total_length: f32, config: &LineMeshConfig) {
     // create segment mesh
     let mut mesh_data = (config.join)(config.thickness, prev_point, curr_point, next_point, current_length, total_length);
@@ -159,6 +170,7 @@ fn build_segment_middle(mesh: &mut LineMesh, prev_point: &Vec2d, curr_point: &Ve
     mesh.attachment_indices = vec![mesh_data.attachment_indices[2] + vertex_index_offset, mesh_data.attachment_indices[3] + vertex_index_offset]
 }
 
+/// returns the total length of the line.
 fn calc_total_length(points: &[Vec2d]) -> f32 {
     let mut total = 0.0;
     for pair in points.windows(2) {
@@ -169,6 +181,8 @@ fn calc_total_length(points: &[Vec2d]) -> f32 {
 
 //==== CAPS ==========================
 
+/// Function for creating a start segment.
+/// Rectangular shape with the current/starting point position in the center.  
 pub fn cap_butt_start(thickness: f32, curr_point: &Vec2d, next_point: &Vec2d) -> LineMesh {
     let direction = curr_point.to(next_point).normalize();
     let p0 = direction.rotate_90deg_cw().scale(thickness / 2.0).add(curr_point);
@@ -193,6 +207,8 @@ pub fn cap_butt_start(thickness: f32, curr_point: &Vec2d, next_point: &Vec2d) ->
     }
 }
 
+/// Function for creating an end segment.
+/// Rectangular shape with the current/ending point position in the center.  
 pub fn cap_butt_end(thickness: f32, prev_point: &Vec2d, curr_point: &Vec2d) -> LineMesh {
     let direction = prev_point.to(curr_point).normalize();
     let p0 = direction.rotate_90deg_cw().scale(thickness / 2.0).add(curr_point);
@@ -219,6 +235,8 @@ pub fn cap_butt_end(thickness: f32, prev_point: &Vec2d, curr_point: &Vec2d) -> L
 
 //==== JOINS =========================
 
+/// Function for creating a middle segment.
+/// Connects the previous and next points with a sharp corner.
 pub fn join_miter(thickness: f32, prev_point: &Vec2d, curr_point: &Vec2d, next_point: &Vec2d, current_length: f32, total_length: f32) -> LineMesh {
     let direction_in = prev_point.to(curr_point).normalize();
     let direction_out = curr_point.to(next_point).normalize();

@@ -1,4 +1,6 @@
-use crate::js::models::Tile;
+use std::collections::{HashMap, HashSet};
+use crate::js::models::{RouteNode, Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject};
+use crate::utils::Rect2d;
 
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
@@ -46,6 +48,20 @@ pub struct MapDetailVertex {
     pub base_color: [u8; 3],
     pub country_color: [u8; 3],
     pub _padding: [u8; 2],
+}
+
+#[derive(Default)]
+pub struct RenderState {
+    pub relevant_world_area: Rect2d,
+    pub tiles: Vec<Tile>,
+    pub relevant_tile_indices: Vec<usize>,
+    pub settlements: Vec<Settlement>,
+    pub world_objects: Vec<WorldObject>,
+    pub move_targets: HashSet<TilePosition>,
+    pub routes: Vec<Vec<RouteNode>>,
+    pub borders: Vec<TileBorderData>,
+    pub map_mode: String,
+    pub texture_atlas_entries: HashMap<String, Vec<TextureAtlasEntry>>,
 }
 
 #[derive(Default)]
