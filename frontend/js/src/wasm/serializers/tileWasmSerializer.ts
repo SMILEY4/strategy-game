@@ -90,12 +90,8 @@ export namespace TileWasmSerializer {
 		// height: f32,
 		writer.pushFloat32(tile.base.visible ? tile.base.value.height : 0);
 
-		// random_0: f32,
-		// random_1: f32,
-		// random_2: f32,
-		writer.pushFloat32(tile.metaProperties.randomValue0);
-		writer.pushFloat32(tile.metaProperties.randomValue1);
-		writer.pushFloat32(tile.metaProperties.randomValue2);
+		// rng_seed: u64,
+		writer.pushUint32(tile.metaProperties.randomValue1 * 1000000);
 	}
 
 }

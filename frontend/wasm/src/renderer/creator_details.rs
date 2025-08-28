@@ -20,6 +20,8 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
     let atlas_entries_units = &state.texture_atlas_entries["unit"];
     let atlas_entries_road = &state.texture_atlas_entries["road"];
 
+    let mut rng = Random::new(0);
+
     // routes line mesh config
     let route_mesh_config = LineMeshConfig {
         thickness: config.route_line_thickness,
@@ -42,7 +44,8 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
 
     // add routes
     for route in &state.routes {
-        let mut rng = Random::new((route.first().unwrap().route_id) as u64);
+
+        rng.set_seed(route.first().unwrap().route_id as u64);
 
         let n_tiles: f32 = route.len() as f32;
 
@@ -133,7 +136,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
 
     // add settlements
     for settlement in &state.settlements {
-        let mut rng = Random::new((settlement.position_q * 3 + settlement.position_r * 5) as u64);
+        rng.set_seed(settlement.rng_seed as u64);
         for _i in 0..=(settlement.population_size + 1) {
             let x = settlement.world_x + (rng.f32() * 2.0 - 1.0) * config.tile_width / 2.0;
             let y = settlement.world_y + (rng.f32() * 2.0 - 1.0) * config.tile_height / 2.0;
@@ -167,6 +170,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
     // add terrain
     for index in &state.relevant_tile_indices {
         let tile = &state.tiles[*index];
+        rng.set_seed(tile.rng_seed as u64 * 5);
 
         if tile.visibility == 2 {
             continue;
@@ -175,16 +179,17 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
             continue;
         }
 
-        let height_jitter = tile.random_1 * 0.1 - 0.5;
+        let height_jitter = rng.f32() * 0.1 - 0.5;
         let height = tile.height * 2.0 + height_jitter;
         let color = mix(&config.land_color_light, &config.land_color_dark, height);
 
+        let rng_terrain = rng.f32();
         let mut terrain = "none";
-        if tile.random_1 > 0.8 {
+        if rng_terrain > 0.8 {
             terrain = "mountain"
-        } else if tile.random_1 > 0.65 {
+        } else if rng_terrain > 0.65 {
             terrain = "hill"
-        } else if tile.random_1 > 0.5 {
+        } else if rng_terrain > 0.5 {
             terrain = "forest"
         } else {
             terrain = "none"
@@ -192,13 +197,13 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
 
         match terrain {
             "mountain" => {
+                let texture_index = (rng.f32() * atlas_entries_mountain.len() as f32) as usize;
                 vertex_data.map_detail.extend(create_sprite(
-                    &atlas_entries_mountain
-                        [(tile.random_1 * atlas_entries_mountain.len() as f32) as usize],
+                    &atlas_entries_mountain[texture_index],
                     (tile.world_x, tile.world_y - config.tile_height),
                     (
-                        tile.world_y - config.tile_height + tile.random_2 * 0.1,
-                        tile.world_y + config.tile_height + tile.random_2 * 0.1,
+                        tile.world_y - config.tile_height + rng.f32() * 0.1,
+                        tile.world_y + config.tile_height + rng.f32() * 0.1,
                     ),
                     (22.0, 16.0),
                     color,
@@ -206,12 +211,13 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                 ));
             }
             "hill" => {
+                let texture_index = (rng.f32() * atlas_entries_hill.len() as f32) as usize;
                 vertex_data.map_detail.extend(create_sprite(
-                    &atlas_entries_hill[(tile.random_1 * atlas_entries_hill.len() as f32) as usize],
+                    &atlas_entries_hill[texture_index],
                     (tile.world_x, tile.world_y - config.tile_height),
                     (
-                        tile.world_y - config.tile_height + tile.random_2 * 0.1,
-                        tile.world_y + config.tile_height + tile.random_2 * 0.1,
+                        tile.world_y - config.tile_height + rng.f32() * 0.1,
+                        tile.world_y + config.tile_height + rng.f32() * 0.1,
                     ),
                     (22.0, 16.0),
                     color,
@@ -219,13 +225,13 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                 ));
             }
             "forest" => {
+                let texture_index = (rng.f32() * atlas_entries_forest.len() as f32) as usize;
                 vertex_data.map_detail.extend(create_sprite(
-                    &atlas_entries_forest
-                        [(tile.random_1 * atlas_entries_forest.len() as f32) as usize],
+                    &atlas_entries_forest[texture_index],
                     (tile.world_x, tile.world_y - config.tile_height),
                     (
-                        tile.world_y - config.tile_height + tile.random_2 * 0.1,
-                        tile.world_y + config.tile_height + tile.random_2 * 0.1,
+                        tile.world_y - config.tile_height + rng.f32() * 0.1,
+                        tile.world_y + config.tile_height + rng.f32() * 0.1,
                     ),
                     (22.0, 16.0),
                     color,
@@ -233,17 +239,15 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                 ));
             }
             "none" | _ => {
-                for _i in 0..((tile.random_1 * 5.0) + 1.0) as i32 {
-                    let rng_offset_x = tile.random_0;
-                    let rng_offset_y = tile.random_2;
-                    let x = tile.world_x + (rng_offset_x * 2.0 - 1.0) * (config.tile_height / 2.0);
-                    let y = tile.world_y + (rng_offset_y * 2.0 - 1.0) * (config.tile_height / 2.0);
+                for _i in 0..((rng.f32() * 5.0) + 1.0) as i32 {
+                    let x = tile.world_x + (rng.f32() * 2.0 - 1.0) * (config.tile_height / 2.0);
+                    let y = tile.world_y + (rng.f32() * 2.0 - 1.0) * (config.tile_height / 2.0);
                     let z = y - 1.0;
 
+                    let texture_index = (rng.f32() * atlas_entries_terrain_decoration.len() as f32) as usize;
+
                     vertex_data.map_detail.extend(create_sprite(
-                        &atlas_entries_terrain_decoration[(tile.random_1
-                            * atlas_entries_terrain_decoration.len() as f32)
-                            as usize],
+                        &atlas_entries_terrain_decoration[texture_index],
                         (x, y),
                         (z, z),
                         (4.0, 4.0),

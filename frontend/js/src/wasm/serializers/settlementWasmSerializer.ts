@@ -32,12 +32,8 @@ export namespace SettlementWasmSerializer {
 		// population_size: i32,
 		writer.pushInt32(settlement.population.size.visible ? settlement.population.size.value.size : 1);
 
-		// random_0: f32,
-		// random_1: f32,
-		// random_2: f32,
-		writer.pushFloat32(Random.normalized(settlement.id + indexEntry));
-		writer.pushFloat32(Random.normalized(settlement.id + indexEntry + "x"));
-		writer.pushFloat32(Random.normalized(settlement.id + indexEntry + "y"));
+		// rng_seed: u32
+		writer.pushFloat32(Random.normalized(settlement.id) * 10000000);
 	}
 
 }

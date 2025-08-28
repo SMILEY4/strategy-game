@@ -38,9 +38,7 @@ pub struct Settlement {
 
     pub population_size: i32,
 
-    pub random_0: f32,
-    pub random_1: f32,
-    pub random_2: f32,
+    pub rng_seed: u32
 }
 
 #[repr(C, packed)]
@@ -76,9 +74,7 @@ pub struct Tile {
 
     pub height: f32,
 
-    pub random_0: f32,
-    pub random_1: f32,
-    pub random_2: f32,
+    pub rng_seed: u32
 }
 
 #[derive(Deserialize, Clone, Hash, Eq, PartialEq)]

@@ -18,6 +18,11 @@ export class WasmDataViewWriter {
 		this.counter += 4;
 	}
 
+	pushUint32(value: number) {
+		this.dataView.setUint32(this.counter, value, true);
+		this.counter += 4;
+	}
+
 	pushFloat32(value: number) {
 		this.dataView.setFloat32(this.counter, value, true);
 		this.counter += 4;
