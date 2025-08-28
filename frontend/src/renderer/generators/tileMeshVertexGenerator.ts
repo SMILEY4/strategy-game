@@ -19,9 +19,7 @@ export namespace TileMeshVertexGenerator {
 		// direction data
 		MixedArrayBufferType.U_BYTE,
 		// padding
-		MixedArrayBufferType.U_BYTE,
-		MixedArrayBufferType.U_BYTE,
-		MixedArrayBufferType.U_BYTE,
+		...MixedArrayBufferType.PADDING_3
 	];
 
 	export function func(): Map<string, VertexGeneratorResult> {
@@ -51,26 +49,23 @@ export namespace TileMeshVertexGenerator {
 	function appendBaseMeshTriangle(cursor: MixedArrayBufferCursor, cornerIndexA: number, cornerIndexB: number) {
 		const scale = 1.44;
 		// center
-		cursor.append(0);
-		cursor.append(0);
-		cursor.append(hexTextureCoordinates(-1));
-		cursor.append([1, 0, 0]);
-		cursor.append(cornerIndexA);
-		cursor.append([0,0,0])
+		cursor.push(0);
+		cursor.push(0);
+		cursor.push(hexTextureCoordinates(-1));
+		cursor.push([1, 0, 0]);
+		cursor.push(cornerIndexA);
 		// corner a
-		cursor.append(hexCornerPointX(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(hexCornerPointY(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(hexTextureCoordinates(cornerIndexA));
-		cursor.append([0, 1, 0]);
-		cursor.append(cornerIndexA);
-		cursor.append([0,0,0])
+		cursor.push(hexCornerPointX(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
+		cursor.push(hexCornerPointY(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
+		cursor.push(hexTextureCoordinates(cornerIndexA));
+		cursor.push([0, 1, 0]);
+		cursor.push(cornerIndexA);
 		// corner b
-		cursor.append(hexCornerPointX(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(hexCornerPointY(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(hexTextureCoordinates(cornerIndexB));
-		cursor.append([0, 0, 1]);
-		cursor.append(cornerIndexA);
-		cursor.append([0,0,0])
+		cursor.push(hexCornerPointX(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
+		cursor.push(hexCornerPointY(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
+		cursor.push(hexTextureCoordinates(cornerIndexB));
+		cursor.push([0, 0, 1]);
+		cursor.push(cornerIndexA);
 	}
 
 	function hexCornerPointX(cornerIndex: number, size: [number, number], scale: number): number {

@@ -20,28 +20,28 @@ export namespace FullscreenQuadVertexGenerator {
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(VERTEX_COUNT, PATTERN);
 
 		// corner a, triangle a
-		cursor.append(-1);
-		cursor.append(-1);
+		cursor.push(-1);
+		cursor.push(-1);
 
 		// corner b, triangle a
-		cursor.append(+1);
-		cursor.append(-1);
+		cursor.push(+1);
+		cursor.push(-1);
 
 		// corner c, triangle a
-		cursor.append(+1);
-		cursor.append(+1);
+		cursor.push(+1);
+		cursor.push(+1);
 
 		// corner a, triangle b
-		cursor.append(-1);
-		cursor.append(-1);
+		cursor.push(-1);
+		cursor.push(-1);
 
 		// corner d, triangle b
-		cursor.append(-1);
-		cursor.append(+1);
+		cursor.push(-1);
+		cursor.push(+1);
 
 		// corner c, triangle b
-		cursor.append(+1);
-		cursor.append(+1);
+		cursor.push(+1);
+		cursor.push(+1);
 
 		return buildMap([
 			[

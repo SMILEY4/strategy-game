@@ -1,4 +1,5 @@
 export enum MixedArrayBufferType {
+	PADDING,
 	FLOAT,
 	BYTE,
 	SHORT,
@@ -6,7 +7,7 @@ export enum MixedArrayBufferType {
 	U_BYTE,
 	U_SHORT,
 	U_INT,
-} // todo: => improved enum
+}
 
 export namespace MixedArrayBufferType {
 
@@ -46,22 +47,27 @@ export namespace MixedArrayBufferType {
 		MixedArrayBufferType.INT,
 	];
 
+	export const PADDING_2: MixedArrayBufferType[] = [
+		MixedArrayBufferType.PADDING,
+		MixedArrayBufferType.PADDING,
+	];
+
+	export const PADDING_3: MixedArrayBufferType[] = [
+		MixedArrayBufferType.PADDING,
+		MixedArrayBufferType.PADDING,
+		MixedArrayBufferType.PADDING,
+	];
 }
 
 
 export class MixedArrayBuffer {
 
 	private readonly bytes: Uint8Array;
-	private readonly view: DataView;
-	private readonly writer: DataViewWriter;
 	private readonly pattern: MixedArrayBufferType[];
 
 
 	constructor(lengthBytes: number, pattern: MixedArrayBufferType[]) {
 		this.bytes = new Uint8Array(lengthBytes);
-		this.view = new DataView(this.bytes.buffer, 0, lengthBytes);
-		this.writer = new DataViewWriter();
-		this.writer.setDataView(this.view);
 		this.pattern = pattern;
 	}
 
@@ -69,64 +75,41 @@ export class MixedArrayBuffer {
 		return this.pattern;
 	}
 
-
-	public getRawBuffer(): ArrayBuffer {
+	public getBackingBuffer(): Uint8Array {
 		return this.bytes;
 	}
 
-	public append(type: MixedArrayBufferType, value: number) {
-		switch (type) {
-			case MixedArrayBufferType.U_BYTE:
-				this.writer.pushUint8(value)
-				break;
-			case MixedArrayBufferType.BYTE:
-				this.writer.pushInt8(value)
-				break;
-			case MixedArrayBufferType.U_SHORT:
-				this.writer.pushUint16(value)
-				break;
-			case MixedArrayBufferType.SHORT:
-				this.writer.pushInt16(value)
-				break;
-			case MixedArrayBufferType.U_INT:
-				this.writer.pushUint32(value)
-				break;
-			case MixedArrayBufferType.INT:
-				this.writer.pushInt32(value)
-				break;
-			case MixedArrayBufferType.FLOAT:
-				this.writer.pushFloat32(value)
-				break;
-			default:
-				throw new Error("Could not push value. Invalid type:", type);
-		}
+	public getRawBuffer(): ArrayBuffer {
+		return this.getBackingBuffer();
 	}
 
-	public static getBytes(type: MixedArrayBufferType) {
+	public static getRequiredBytes(type: MixedArrayBufferType) {
 		switch (type) {
-			case MixedArrayBufferType.FLOAT:
-				return 4;
+			case MixedArrayBufferType.PADDING:
+				return 1;
 			case MixedArrayBufferType.BYTE:
 				return 1;
-			case MixedArrayBufferType.SHORT:
-				return 2;
-			case MixedArrayBufferType.INT:
-				return 4;
 			case MixedArrayBufferType.U_BYTE:
 				return 1;
 			case MixedArrayBufferType.U_SHORT:
 				return 2;
+			case MixedArrayBufferType.SHORT:
+				return 2;
 			case MixedArrayBufferType.U_INT:
 				return 4;
+			case MixedArrayBufferType.INT:
+				return 4;
+			case MixedArrayBufferType.FLOAT:
+				return 4;
 			default:
-				throw new Error("Could not get amount of bytes for type. Invalid type:", type);
+				throw new Error("Could not get amount of bytes for type. Invalid type.");
 		}
 	}
 
 	public static getTotalRequiredBytes(amountRepetitions: number, pattern: MixedArrayBufferType[]): number {
 		let bytesPerPattern = 0;
 		pattern.forEach(type => {
-			bytesPerPattern += MixedArrayBuffer.getBytes(type);
+			bytesPerPattern += MixedArrayBuffer.getRequiredBytes(type);
 		});
 		return amountRepetitions * bytesPerPattern;
 	}
@@ -135,37 +118,77 @@ export class MixedArrayBuffer {
 
 export class MixedArrayBufferCursor {
 
-	private readonly buffer: MixedArrayBuffer;
 	private readonly pattern: MixedArrayBufferType[];
-	private index: number = 0;
+	private readonly view: DataView;
+
+	private indexPattern: number = 0;
+	private indexBytes: number = 0;
 
 
 	constructor(buffer: MixedArrayBuffer) {
-		this.buffer = buffer;
+		this.view = new DataView(buffer.getBackingBuffer().buffer, 0, buffer.getBackingBuffer().byteLength);
 		this.pattern = buffer.getPattern();
 	}
 
-	public appendValues(values: number[]) {
-		for (let value of values) {
-			this.appendValue(value);
-		}
-	}
-
-	public appendValue(value: number) {
-		const type = this.pattern[this.index % this.pattern.length];
-		this.buffer.append(type, value);
-		this.index += 1;
-	}
-
-
-	public append(value: number | number[]) {
+	public push(value: number | number[]) {
 		if (Array.isArray(value)) {
-			this.appendValues(value);
+			this.pushValues(value);
 		} else {
-			this.appendValue(value);
+			this.pushValue(value);
 		}
 	}
 
+	public pushValues(values: number[]) {
+		for (let value of values) {
+			this.pushValue(value);
+		}
+	}
+
+	public pushValue(value: number) {
+		const type = this.pattern[this.indexPattern % this.pattern.length];
+		if(type == MixedArrayBufferType.PADDING) {
+			this.indexBytes += 1;
+			this.indexPattern += 1;
+			this.pushValue(value);
+			return;
+		}
+
+		// littleEndian largely untested!!
+		switch (type) {
+			case MixedArrayBufferType.U_BYTE:
+				this.view.setUint8(this.indexBytes, value);
+				this.indexBytes += 1;
+				break;
+			case MixedArrayBufferType.BYTE:
+				this.view.setInt8(this.indexBytes, value);
+				this.indexBytes += 1;
+				break;
+			case MixedArrayBufferType.U_SHORT:
+				this.view.setUint16(this.indexBytes, value, false);
+				this.indexBytes += 2;
+				break;
+			case MixedArrayBufferType.SHORT:
+				this.view.setInt16(this.indexBytes, value, false);
+				this.indexBytes += 2;
+				break;
+			case MixedArrayBufferType.U_INT:
+				this.view.setUint32(this.indexBytes, value, false);
+				this.indexBytes += 4;
+				break;
+			case MixedArrayBufferType.INT:
+				this.view.setInt32(this.indexBytes, value, true);
+				this.indexBytes += 4;
+				break;
+			case MixedArrayBufferType.FLOAT:
+				this.view.setFloat32(this.indexBytes, value, true);
+				this.indexBytes += 4;
+				break;
+			default:
+				throw new Error("Could not set value. Invalid type.");
+		}
+
+		this.indexPattern += 1;
+	}
 }
 
 export namespace MixedArrayBuffer {
@@ -174,54 +197,6 @@ export namespace MixedArrayBuffer {
 		const array = new MixedArrayBuffer(MixedArrayBuffer.getTotalRequiredBytes(amountRepetitions, pattern), pattern);
 		const cursor = new MixedArrayBufferCursor(array);
 		return [array, cursor];
-	}
-
-}
-
-// todo: duplicate
-class DataViewWriter {
-
-	dataView: DataView = null!;
-	counter = 0;
-
-	setDataView(dataView: DataView) {
-		this.dataView = dataView;
-		this.counter = 0;
-	}
-
-	pushUint8(value: number) {
-		this.dataView.setUint8(this.counter, value);
-		this.counter += 1;
-	}
-
-	pushInt8(value: number) {
-		this.dataView.setInt8(this.counter, value);
-		this.counter += 1;
-	}
-
-	pushUint16(value: number) {
-		this.dataView.setUint16(this.counter, value, false);
-		this.counter += 2;
-	}
-
-	pushInt16(value: number) {
-		this.dataView.setInt16(this.counter, value, false);
-		this.counter += 2;
-	}
-
-	pushUint32(value: number) {
-		this.dataView.setUint32(this.counter, value, false);
-		this.counter += 4;
-	}
-
-	pushInt32(value: number) {
-		this.dataView.setInt32(this.counter, value, true);
-		this.counter += 4;
-	}
-
-	pushFloat32(value: number) {
-		this.dataView.setFloat32(this.counter, value, true);
-		this.counter += 4;
 	}
 
 }

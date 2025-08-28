@@ -130,7 +130,7 @@ export class SpriteBuffer {
 
 	public buildRawBuffer(): ArrayBuffer {
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(this.vertexCount, SpriteBuffer.BUFFER_LAYOUT_PATTERN);
-		cursor.appendValues(this.vertexData);
+		cursor.pushValues(this.vertexData);
 		return arrayBuffer.getRawBuffer();
 	}
 
