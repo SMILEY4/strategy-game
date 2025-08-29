@@ -9,14 +9,14 @@ import io.github.smiley4.strategygame.backend.engine.application.core.GameConfig
 internal class TileVisibilityCalculator {
 
     fun calculateVisibility(game: GameExtended, povCountryId: Country.Id, tile: Tile): TileVisibilityDTO {
-//        return TileVisibilityDTO.VISIBLE
-        if (!tile.dataPolitical.discoveredByCountries.contains(povCountryId)) {
-            return TileVisibilityDTO.UNKNOWN
-        }
-        if (hasInfluenceVision(povCountryId, tile) || hasLineOfSight(game, povCountryId, tile)) {
-            return TileVisibilityDTO.VISIBLE
-        }
-        return TileVisibilityDTO.DISCOVERED
+        return TileVisibilityDTO.VISIBLE
+//        if (!tile.dataPolitical.discoveredByCountries.contains(povCountryId)) {
+//            return TileVisibilityDTO.UNKNOWN
+//        }
+//        if (hasInfluenceVision(povCountryId, tile) || hasLineOfSight(game, povCountryId, tile)) {
+//            return TileVisibilityDTO.VISIBLE
+//        }
+//        return TileVisibilityDTO.DISCOVERED
     }
 
 
