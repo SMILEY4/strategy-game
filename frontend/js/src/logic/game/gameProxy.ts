@@ -252,14 +252,15 @@ export class GameProxyImpl implements GameProxy {
 
 	mouseMoved(dx: number, dy: number, clientX: number, clientY: number, leftBtnDown: boolean): void {
 		if (leftBtnDown) {
-			this.cameraService.move(dx, dy);
+			this.cameraService.move(dx, dy, this.canvasHandle);
 		} else {
 			this.updateMouseOver(clientX, clientY);
 		}
 	}
 
 	mouseScrolled(d: number, clientX: number, clientY: number): void {
-		this.cameraService.zoom(d > 0 ? 0.1 : -0.1);
+		// this.cameraService.zoom(d > 0 ? "out" : "in");
+		this.cameraService.zoomAt(clientX, clientY, d > 0 ? "out" : "in", this.canvasHandle)
 		this.updateMouseOver(clientX, clientY);
 	}
 
@@ -271,7 +272,7 @@ export class GameProxyImpl implements GameProxy {
 	//========== CAMERA =======================================================
 
 	focusCamera(tilePosition: TilePosition): void {
-		this.cameraService.center(tilePosition);
+		this.cameraService.centerOnTile(tilePosition);
 	}
 
 
