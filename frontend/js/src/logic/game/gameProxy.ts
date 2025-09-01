@@ -259,7 +259,6 @@ export class GameProxyImpl implements GameProxy {
 	}
 
 	mouseScrolled(d: number, clientX: number, clientY: number): void {
-		// this.cameraService.zoom(d > 0 ? "out" : "in");
 		this.cameraService.zoomAt(clientX, clientY, d > 0 ? "out" : "in", this.canvasHandle)
 		this.updateMouseOver(clientX, clientY);
 	}
