@@ -1,6 +1,6 @@
 {
   "name": "strategy-game-frontend",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "scripts": {
     "wasm": "wasm-pack build ./../wasm && rm -rf node_modules/.vite && npm install",
