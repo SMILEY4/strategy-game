@@ -1,0 +1,86 @@
+# Project Information
+# https://www.mkdocs.org/user-guide/configuration/#project-information
+site_name: Strategy Game
+site_url: https://github.com/SMILEY4/strategy-game
+site_description: A multiplayer browser strategy game.
+
+
+# Documentation Layout
+# https://www.mkdocs.org/user-guide/configuration/#documentation-layout
+nav:
+  - Home: index.md
+
+# Validation
+# # https://www.mkdocs.org/user-guide/configuration/#validation
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    absolute_links: warn
+    unrecognized_links: warn
+
+# Configuration
+# https://www.mkdocs.org/user-guide/configuration/#build-directories
+theme:
+  name: material
+  icon:
+    logo: material/library
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: white
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.expand
+    - navigation.indexes
+    - navigation.footer
+    - toc.integrate
+    - search.suggest
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+extra_css:
+  - assets/stylesheets/extra.css
+plugins:
+  - search
+  - privacy
+
+
+# Formatting Options
+# https://www.mkdocs.org/user-guide/configuration/#formatting-options
+markdown_extensions:
+  # https://python-markdown.github.io/extensions/
+  - attr_list
+  - admonition
+  - md_in_html
+  - tables
+  # https://facelessuser.github.io/pymdown-extensions/extensions/arithmatex/
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: vegalite
+          class: vegalite
+          format: !!python/name:mkdocs_charts_plugin.fences.fence_vegalite
