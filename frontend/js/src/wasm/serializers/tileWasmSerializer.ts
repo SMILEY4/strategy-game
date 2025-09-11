@@ -79,7 +79,7 @@ export namespace TileWasmSerializer {
 			writer.pushUint8(tile.base.value.resourceType.color!.red);
 			writer.pushUint8(tile.base.value.resourceType.color!.green);
 			writer.pushUint8(tile.base.value.resourceType.color!.blue);
-			writer.pushUint8(1);
+			writer.pushUint8(255);
 		} else {
 			writer.pushUint8(0);
 			writer.pushUint8(0);
