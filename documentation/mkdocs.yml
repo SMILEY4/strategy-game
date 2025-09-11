@@ -1,0 +1,107 @@
+# Project Information
+# https://www.mkdocs.org/user-guide/configuration/#project-information
+site_name: Strategy Game
+site_url: https://github.com/SMILEY4/strategy-game
+site_description: A multiplayer browser strategy game.
+
+
+# Documentation Layout
+# https://www.mkdocs.org/user-guide/configuration/#documentation-layout
+nav:
+  - Home: index.md
+  - Game:
+      - Mechanics: game/mechanics.md
+      - Ideas: game/ideas.md
+  - Technical:
+      - Useful Resources: technical/useful_resources.md
+      - Game Turn: technical/game_turn.md
+      - Hex Coordinate System: technical/hex_coordinate_system.md
+      - Economy Simulation: technical/economy_simulation.md
+      - Notes:
+          - Docker Swarm: technical/notes_docker_swarm.md
+          - Kubernetes Cluster: technical/notes_kubernetes_cluster.md
+  - Changelog: changelog/changelog.md
+  - Milestones:
+      - 0.2: milestones/milestone_0_2.md
+      - 0.3: milestones/milestone_0_3.md
+      - 0.4: milestones/milestone_0_4.md
+      - 0.5: milestones/milestone_0_5.md
+      - 0.6: milestones/milestone_0_6.md
+      - 0.7: milestones/milestone_0_7.md
+      - 0.8: milestones/milestone_0_8.md
+
+# Validation
+# # https://www.mkdocs.org/user-guide/configuration/#validation
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    absolute_links: warn
+    unrecognized_links: warn
+
+# Configuration
+# https://www.mkdocs.org/user-guide/configuration/#build-directories
+theme:
+  name: material
+  icon:
+    logo: material/library
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: white
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.expand
+    - navigation.indexes
+    - navigation.footer
+    - toc.integrate
+    - search.suggest
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+extra_css:
+  - assets/stylesheets/extra.css
+plugins:
+  - search
+  - privacy
+  - mermaid2
+
+# Formatting Options
+# https://www.mkdocs.org/user-guide/configuration/#formatting-options
+markdown_extensions:
+  # https://python-markdown.github.io/extensions/
+  - attr_list
+  - admonition
+  - md_in_html
+  - tables
+  # https://facelessuser.github.io/pymdown-extensions/extensions/arithmatex/
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+        # make exceptions to highlighting of code:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom

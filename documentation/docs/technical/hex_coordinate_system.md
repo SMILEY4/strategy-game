@@ -1,23 +1,14 @@
----
-title: Coordinate System
----
-
-# Coordinate System
-
 The game uses the "Axial Coordinate System". Instead of using x and y (and z) coordinates, the hexagonal coordinate-system uses q and r (and s). 
 
 The axis are aligned as follows: 
 
-<img src="images\axis.jpg" alt="axis" style="float:left" />
+![axis](./images/axis.jpg)
 
 The "s"-coordinate is usually not stored and can be calculated on the fly from q and r: `s = -q - r` (`q+r+s = 0` must always be true).
 
 This results in the following positions around the origin (image shows the values of "q" and "r"on top and the value of "s" below)
 
-<img src="images\coordinates.jpg" alt="axis" style="float: left; zoom: 50%;" />
-
-
-
+![coordinates](./images/coordinates.jpg)
 
 
 ## Additional Information
