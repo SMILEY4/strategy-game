@@ -1,5 +1,3 @@
-# Milestone 0.5
-
 *Main Gameplay Goal: "Life-cycle of a city"*
 
 1. City Creation

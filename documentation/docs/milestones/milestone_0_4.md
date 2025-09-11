@@ -1,5 +1,3 @@
-# Milestone 0.4
-
 **Main Gameplay Goal: "Basic Economy (Production-Chain + Trading)"**
 
 1. economic areas share resources/production/consumption

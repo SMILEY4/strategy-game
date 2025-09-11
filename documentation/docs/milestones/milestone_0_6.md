@@ -1,5 +1,3 @@
-# Milestone 0.6
-
 *Frontend*
 
 - refactor code/architecture (make future-proof)

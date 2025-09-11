@@ -1,5 +1,3 @@
-# Milestone 0.3
-
 **Main Gameplay Goal: "Resource Gathering"**
 
 1. fog of war system

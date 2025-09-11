@@ -1,5 +1,3 @@
-# Milestone 0.2
-
 **Main Gameplay Goal: "Country Basics**
 
 - Create new city

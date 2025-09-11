@@ -1,6 +1,4 @@
-# Milestone 0.8 (Draft)
-
-**Prepare World for Gameplay**
+**[Draft] Prepare World for Gameplay**
 
 - tile resources
     - define types of resources
