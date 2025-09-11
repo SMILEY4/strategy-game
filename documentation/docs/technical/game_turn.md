@@ -1,10 +1,4 @@
----
-title: Game Turn
----
-
-# Game Turn
-
-```mermaid
+``` mermaid
 flowchart TD
     A[submit turn] --> B[persist commands]
     B --> C{all players submitted}
