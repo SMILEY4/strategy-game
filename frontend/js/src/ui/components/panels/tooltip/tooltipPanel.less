@@ -1,0 +1,23 @@
+@import "./../../common.less";
+
+.tooltip-panel {
+  position:      relative;
+  box-sizing:    border-box;
+  border:        1px solid transparent;
+  background:    @gradient-border-primary;
+  border-radius: @border-radius;
+  color:         @color-background-content;
+
+  box-shadow:    0 0 3px rgba(0, 0, 0, 60%),
+                 0 7px 15px rgba(0, 0, 0, 40%);
+
+  .tooltip-panel__inner {
+    position:      relative;
+    white-space:   nowrap;
+    background:    @gradient-background-tooltip;
+    border-radius: @border-radius;
+    box-shadow:    @shadow-inset-back;
+    padding:       @spacing-s;
+  }
+
+}

@@ -1,0 +1,89 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+
+scrape_configs:
+
+  - job_name: syslog
+    syslog:
+      listen_address: 0.0.0.0:1514
+      listen_protocol: tcp
+      label_structured_data: yes
+      labels:
+        job: syslog
+
+    relabel_configs:
+      - source_labels: ['__syslog_message_app_name']
+        target_label: appname
+
+    pipeline_stages:
+
+      - match:
+          selector: '{appname="caddy"}'
+          stages:
+            - json:
+                expressions:
+                  message: msg
+                  level: level
+                  logger: logger
+            - labels:
+                level:
+                logger:
+                appname:
+            - template:
+                source: outputMessage
+                template: '{{ .message }}'
+            - output:
+                source: outputMessage
+
+      - match:
+          selector: '{appname="arango"}'
+          stages:
+            - json:
+                expressions:
+                  message: message
+                  level: level
+            - labels:
+                level:
+                logger: "default"
+                appname:
+            - template:
+                source: outputMessage
+                template: '{{ .message }}'
+            - output:
+                source: outputMessage
+
+      - match:
+          selector: '{appname="backend"}'
+          stages:
+            - json:
+                expressions:
+                  message: message
+                  level: level
+                  logger: logger_name
+                  stackTrace: stack_trace
+                  threadName: thread_name
+                  traceId: traceId
+            - labels:
+                level:
+                logger:
+                appname:
+                loggerName:
+                threadName:
+                traceId:
+            - template:
+                source: outputMessage
+                template: '{{ .message }} {{ .stackTrace }}'
+            - replace:
+                source: outputMessage
+                expression: "(<no value>)"
+                replace: ""
+            - output:
+                source: outputMessage

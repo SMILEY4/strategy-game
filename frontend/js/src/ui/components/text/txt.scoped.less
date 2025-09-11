@@ -1,0 +1,175 @@
+@import "./../common.less";
+
+
+.txt-body {
+
+	text-shadow: @shadow-text;
+	font-size:   @font-size-m;
+	font-weight: @font-weight-m;
+	font-family: @font-type-primary;
+
+	&.txt-body--secondary {
+		opacity: 50%;
+	}
+
+	&.txt-body--left {
+		text-align: left;
+	}
+
+	&.txt-body--center {
+		text-align: center;
+	}
+
+	&.txt-body--right {
+		text-align: right;
+	}
+
+}
+
+.txt-header {
+
+	&::after,
+	&::before {
+		content: '';
+		display: block;
+		height:  0;
+		width:   0;
+	}
+
+	&.txt-header--secondary {
+		opacity: 50%;
+	}
+
+	&.txt-header--left {
+		text-align: left;
+	}
+
+	&.txt-header--center {
+		text-align: center;
+	}
+
+	&.txt-header--right {
+		text-align: right;
+	}
+
+	&.txt-header--1 {
+		font-size:   @font-size-xxl;
+		font-weight: @font-weight-l;
+		font-family: @font-type-primary-special;
+
+		&::before {
+			margin-bottom: @font-crop-special-top-xxl;
+		}
+
+		&::after {
+			margin-bottom: @font-crop-special-bottom-xxl;
+		}
+	}
+
+	&.txt-header--2 {
+		font-size:   @font-size-xl;
+		font-weight: @font-weight-l;
+		font-family: @font-type-primary-special;
+
+		&::before {
+			margin-bottom: @font-crop-special-top-xl;
+		}
+
+		&::after {
+			margin-bottom: @font-crop-special-bottom-xl;
+		}
+	}
+
+	&.txt-header--3 {
+		font-size:      @font-size-l;
+		font-weight:    @font-weight-l;
+		font-family:    @font-type-primary-special;
+		letter-spacing: 0.07rem;
+
+		&::before {
+			margin-bottom: @font-crop-special-top-l;
+		}
+
+		&::after {
+			margin-bottom: @font-crop-special-bottom-l;
+		}
+	}
+
+	&.txt-header--4 {
+		font-size:   @font-size-l;
+		font-weight: @font-weight-l;
+		font-family: @font-type-primary;
+
+		&::before {
+			margin-bottom: @font-crop-primary-top-l;
+		}
+
+		&::after {
+			margin-bottom: @font-crop-primary-bottom-l;
+		}
+	}
+
+	&.txt-header--5 {
+		font-size:   @font-size-s;
+		font-weight: @font-weight-m;
+		font-family: @font-type-primary-special;
+
+		&::before {
+			margin-bottom: @font-crop-special-top-s;
+		}
+
+		&::after {
+			margin-bottom: @font-crop-special-bottom-s;
+		}
+	}
+
+}
+
+
+.txt-link {
+	text-decoration: underline;
+	cursor:          pointer;
+}
+
+
+.txt-string {
+
+	&.txt-string--positive {
+		color: hsl(117, 46%, 45%);
+	}
+
+	&.txt-string--negative {
+		color: hsl(0, 87%, 65%);
+	}
+
+}
+
+
+.txt-number {
+
+	&.txt-number--positive {
+		color: hsl(117, 46%, 45%);
+	}
+
+	&.txt-number--negative {
+		color: hsl(0, 87%, 65%);
+	}
+
+}
+
+.txt-icon {
+
+	display:        inline-block;
+	height:         1em;
+	width:          1em;
+	vertical-align: middle;
+
+	&.txt-icon--svg {
+	}
+
+	&.txt-icon--image {
+		background-position: 50% 50%;
+		background-size:     contain;
+	}
+
+}

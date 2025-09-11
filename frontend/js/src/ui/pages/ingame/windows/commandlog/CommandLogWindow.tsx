@@ -1,0 +1,198 @@
+import React, {ReactElement} from "react";
+import {UseCommandLogWindow} from "./useCommandLogWindow";
+import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
+import {HBox} from "../../../../components/layout/hbox/HBox";
+import {VBox} from "../../../../components/layout/vbox/VBox";
+import {Button} from "../../../../components/button/Button";
+import {CgClose} from "react-icons/cg";
+import {Divider} from "../../../../components/divider/Divider";
+import {IndentBox} from "../../../../components/layout/indent/IndentBox";
+import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
+import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {Else, If, Then} from "react-if";
+import {Txt} from "../../../../components/text/Txt";
+import {
+	Command,
+	CreateSettlementCommand, DisbandWorldObjectCommand,
+	MoveCommand,
+	ProductionQueueAddCommand,
+	ProductionQueueCancelCommand,
+} from "../../../../../models/command/command";
+import {CommandType} from "../../../../../models/command/commandType";
+
+export interface CommandLogWindowProps {
+	windowId: string;
+}
+
+/**
+ * Windows showing a list of all currently pending commands of this turn
+ */
+export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
+
+	const data: UseCommandLogWindow.Data = UseCommandLogWindow.useData();
+
+	return (
+		<DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
+			<VBox padding_l gap_m fullSize>
+
+				<Txt.Header1>
+					<Txt.String>Commands</Txt.String>
+				</Txt.Header1>
+
+				<Divider line/>
+
+				<If condition={data.commands.length > 0}>
+					<Then>
+						<InsetPanel shrink>
+							<VBox padding_s gap_s fullSize scrollable>
+								{data.commands.map(command => (
+									<CommandEntry data={data} command={command} key={command.id}/>
+								))}
+							</VBox>
+						</InsetPanel>
+					</Then>
+					<Else>
+						<VBox fullSize>
+							<Txt.Body secondary center>
+								<Txt.String>No commands given this turn.</Txt.String>
+							</Txt.Body>
+						</VBox>
+					</Else>
+				</If>
+
+			</VBox>
+		</DecoratedWindow>
+	);
+}
+
+
+/**
+ * A single issued and pending command
+ */
+export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: Command }): ReactElement {
+	return (
+		<DecoratedPanel blue pattern>
+			<HBox padding_m gap_s>
+				<VBox grow shrink>
+					{renderCommand(props.command)}
+				</VBox>
+				<Button
+					warn circle small
+					dontGrow dontShrink
+					onClick={() => props.data.cancel(props.command)}
+				>
+					<CgClose/>
+				</Button>
+			</HBox>
+		</DecoratedPanel>
+	);
+
+	function renderCommand(command: Command): any {
+		if (command.type == CommandType.MOVE) {
+			const cmd = command as MoveCommand;
+			return (
+				<>
+					<Txt.Header4>
+						<Txt.String>Move Unit</Txt.String>
+					</Txt.Header4>
+					<Divider line/>
+					<IndentBox>
+						<Txt.Body>
+							<Txt.String>{"world object " + cmd.worldObjectId}</Txt.String>
+							<br/>
+							<Txt.String>{"from " + cmd.path[0].position.q + "," + cmd.path[0].position.r}</Txt.String>
+							<br/>
+							<Txt.String>{"to " + cmd.path[cmd.path.length - 1].position.q + "," + cmd.path[cmd.path.length - 1].position.r}</Txt.String>
+						</Txt.Body>
+					</IndentBox>
+				</>
+			);
+		}
+		if (command.type == CommandType.CREATE_SETTLEMENT) {
+			const cmd = command as CreateSettlementCommand;
+			return (
+				<>
+					<Txt.Header4>
+						<Txt.String>Found Settlement</Txt.String>
+					</Txt.Header4>
+					<Divider line/>
+					<IndentBox>
+						<Txt.Body>
+							<Txt.String>{"with name " + cmd.name}</Txt.String>
+							<br/>
+							<Txt.String>{"at " + cmd.tile.position.q + "," + cmd.tile.position.r}</Txt.String>
+							<br/>
+							<Txt.String>{"by settler " + cmd.worldObjectId}</Txt.String>
+						</Txt.Body>
+					</IndentBox>
+				</>
+			);
+		}
+		if (command.type == CommandType.PRODUCTION_QUEUE_ADD) {
+			const cmd = command as ProductionQueueAddCommand;
+			return (
+				<>
+					<Txt.Header4>
+						<Txt.String>Add Production Queue</Txt.String>
+					</Txt.Header4>
+					<Divider line/>
+					<IndentBox>
+						<Txt.Body>
+							<Txt.String>{"produce " + cmd.entry.type}</Txt.String>
+							<br/>
+							<Txt.String>{"in settlement " + cmd.settlement.name}</Txt.String>
+						</Txt.Body>
+					</IndentBox>
+				</>
+			);
+		}
+		if (command.type == CommandType.PRODUCTION_QUEUE_CANCEL) {
+			const cmd = command as ProductionQueueCancelCommand;
+			return (
+				<>
+					<Txt.Header4>
+						<Txt.String>Cancel Production Queue</Txt.String>
+					</Txt.Header4>
+					<Divider line/>
+					<IndentBox>
+						<Txt.Body>
+							<Txt.String>{"cancel " + cmd.entry.type}</Txt.String>
+							<br/>
+							<Txt.String>{"in settlement " + cmd.settlement.name}</Txt.String>
+						</Txt.Body>
+					</IndentBox>
+				</>
+			);
+		}
+		if (command.type == CommandType.DISBAND_WORLD_OBJECT) {
+			const cmd = command as DisbandWorldObjectCommand;
+			return (
+				<>
+					<Txt.Header4>
+						<Txt.String>Disband World Object</Txt.String>
+					</Txt.Header4>
+					<Divider line/>
+					<IndentBox>
+						<Txt.Body>
+							<Txt.String>{"world object " + cmd.worldObjectId}</Txt.String>
+						</Txt.Body>
+					</IndentBox>
+				</>
+			);
+		}
+		return (
+			<>
+				<Txt.Header4>
+					<Txt.String>{command.type.id}</Txt.String>
+				</Txt.Header4>
+				<Divider line/>
+				<IndentBox>
+					<Txt.Body>
+						<Txt.String>{command.id}</Txt.String>
+					</Txt.Body>
+				</IndentBox>
+			</>
+		);
+	}
+
+}

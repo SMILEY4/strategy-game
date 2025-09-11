@@ -1,0 +1,46 @@
+name: Check
+
+on: workflow_dispatch
+
+permissions:
+    contents: read
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+        if: github.repository == 'SMILEY4/strategy-game'
+
+        steps:
+
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+
+            -   name: Setup Node.js environment
+                uses: actions/setup-node@v2.1.5
+                with:
+                    node-version: "20.12.2"
+
+
+            -   name: Cache Frontend Dependencies
+                uses: actions/cache@v2
+                with:
+                    path: ~/.npm
+                    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                    restore-keys: |
+                        ${{ runner.os }}-node-
+
+
+            -   name: Install Frontend Dependencies
+                working-directory: ./frontend
+                run: npm i
+
+
+            -   name: Build Frontend
+                working-directory: ./frontend
+                run: npm run build
+
+            -   name: Build Backend
+                working-directory: ./backend
+                run: ./gradlew build --parallel --no-daemon

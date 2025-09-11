@@ -1,0 +1,1 @@
+export type GameTurnState = "playing" | "waiting" // todo: replaec with more typesafe "enum"

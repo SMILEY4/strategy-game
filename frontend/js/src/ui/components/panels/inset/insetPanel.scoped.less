@@ -1,0 +1,27 @@
+@import "./../../common.less";
+
+.inset-panel {
+  position:      relative;
+
+  border-radius: @border-radius;
+  border:        @border-inset;
+  box-shadow:    @shadow-inset-back;
+
+  min-height: 0;
+
+  &::after {
+    content:        "";
+    position:       absolute;
+    top:            0;
+    bottom:         0;
+    left:           0;
+    right:          0;
+    box-shadow:     @shadow-inset-front;
+    pointer-events: none;
+  }
+
+}
+
+.inset-panel--no-padding {
+  padding: unset;
+}

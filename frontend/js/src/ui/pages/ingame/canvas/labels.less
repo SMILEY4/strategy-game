@@ -1,0 +1,110 @@
+@import "./../../../components/common.less";
+
+.game-canvas {
+
+	.world-ui__label {
+		position:  absolute;
+		transform: translate(-50%, -50%);
+	}
+
+	.world-ui__label__location {
+
+		.world-ui__label__outer {
+			position:      relative;
+			box-sizing:    border-box;
+			border:        1px solid transparent;
+			background:    @gradient-border-primary;
+			border-radius: 999px;
+			color:         @color-background-content;
+
+			box-shadow:    0 0 3px rgba(0, 0, 0, 60%),
+						   0 7px 15px rgba(0, 0, 0, 40%);
+		}
+
+		.world-ui__label__inner {
+
+			position:       relative;
+
+			box-shadow:     @shadow-inset-back;
+			border-radius:  999px;
+
+			padding:        3px 10px;
+
+			color:          white;
+			text-shadow:    -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, 10px 4px 10px black;
+			font-weight:    500;
+			letter-spacing: 1px;
+			font-size:      0.8rem;
+		}
+
+	}
+
+	.world-ui__label__location-pending {
+
+		filter: saturate(50%);
+
+		.world-ui__label__outer {
+			position:      relative;
+			box-sizing:    border-box;
+			border:        1px dashed;
+			background:    @gradient-border-primary;
+			border-radius: 999px;
+			color:         @color-background-content;
+
+			box-shadow:    0 0 3px rgba(0, 0, 0, 60%),
+						   0 7px 15px rgba(0, 0, 0, 40%);
+		}
+
+		.world-ui__label__inner {
+
+			position:       relative;
+
+			box-shadow:     @shadow-inset-back;
+			border-radius:  999px;
+
+			padding:        3px 10px;
+
+			color:          white;
+			text-shadow:    -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, 10px 4px 10px black;
+			font-weight:    500;
+			letter-spacing: 1px;
+			font-size:      0.8rem;
+			font-style:     italic;
+
+		}
+
+	}
+
+	.world-ui__label__unit {
+
+		.world-ui__label__outer {
+			position:      relative;
+			box-sizing:    border-box;
+			border:        1px solid transparent;
+			background:    @gradient-border-primary;
+			color:         @color-background-content;
+			border-radius: 0;
+
+			box-shadow:    0 0 3px rgba(0, 0, 0, 60%),
+						   0 7px 15px rgba(0, 0, 0, 40%);
+		}
+
+		.world-ui__label__inner {
+
+			position:       relative;
+
+			box-shadow:     @shadow-inset-back;
+			border-radius:  0;
+
+			padding:        2px 5px;
+
+			color:          white;
+			text-shadow:    -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, 10px 4px 10px black;
+			font-weight:    500;
+			letter-spacing: 1px;
+			font-size:      0.7rem;
+		}
+
+	}
+
+}

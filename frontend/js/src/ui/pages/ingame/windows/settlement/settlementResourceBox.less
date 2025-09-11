@@ -1,0 +1,31 @@
+@import "../../../../components/common";
+
+.resource-ledger-box {
+
+  width:  @height-l;
+  height: @height-l;
+
+  .resource-ledger-box__icon {
+
+    width:           @height-m;
+    height:          @height-m;
+
+    position:        absolute;
+    left:            0;
+    right:           0;
+    margin:          auto;
+    bottom:          10px;
+    background-size: contain;
+
+    mask-image:      linear-gradient(rgb(0 0 0 100%) 40%, transparent 90%);
+  }
+
+  .resource-ledger-box__label {
+    position:  absolute;
+    bottom:    5%;
+    left:      50%;
+    transform: translate(-50%, 0);
+    font-weight: @font-weight-l;
+  }
+
+}
