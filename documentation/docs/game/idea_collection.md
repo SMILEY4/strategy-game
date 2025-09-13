@@ -256,7 +256,7 @@ https://civilization.fandom.com/wiki/Combat_(Civ4) -> simple army combat calcula
 
 
 
-# Military Tech
+## Military Tech
 
 - change armies,strategies,strengths over time
 - over time: change tech to unlock in certain direction to favor/focus different parts
@@ -400,7 +400,7 @@ Add. Ideas https://fallfromheaven.fandom.com/wiki/Spells
         - supply depot can be bought at anytime (friendly/occupied cities), take some time to be built/filled up
         - supply chains can be attacked -> stops supply chain, gives enemy some supplies 
     - forage/plunder nearby territory/tiles (feeds army first, left over goes into supply)
-  
+    
         - supply of any tile depends on nearest city, weather, season, past raids, ... 
         - choose how aggressive vs local population (independent if tile is friendly,neutral,hostile)
             - friendly ("buy")
@@ -1037,12 +1037,12 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
             - each turn, nation produces, 2 wood, 2 tools
             - Wood currently costs 0.5 Gold, Tools cost 1 Gold
             - building takes 5 turns to complete and costs 10 Gold
-  
+    
     - require worker-pop of specific type to function
         - consume
             - some resource
             - ...
-  
+    
     - produce
         - some resource
             - some effect
@@ -1094,7 +1094,7 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
 - structure
 
     - Nation has multiple cities
-  
+    
     - cities have multiple towns
     - one city + its towns define one area/province inside a nation
 
@@ -1188,7 +1188,7 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
 - **Possible Solutions**
     - limit amount of buildings per city
         - yes, but is just a simple limit, not strategic option
-  
+    
     - bonus based on city location (e.g. resource availability,terrain)
         - yes, but is just a "hidden limit" where building is effectively possible, no strategic option (why build at a factually worse place)
 - **Solution: Synergies**
@@ -1221,7 +1221,7 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
     - maybe still produce settler in another city
     - settler is a resource that can be used in country or in same province or in influence area of city or in certain radius or ...
     - effect: no units on map that need managing, but action is still a choice between creating city and something else
-  
+
 
 - **Idea 2**: limit via resources
     - generate "influence"/"control" as country-resource via various sources
@@ -1288,7 +1288,7 @@ Government Ideas - "Laws"
 - "laws "must be passed / voted on by nobility/royal courty
 
     - different people have different opinions on different laws
-  
+    
     - voters can be swayed/persuaded via various means
         - also passing other laws in same package
         - happiness/opinion
@@ -1751,3 +1751,215 @@ Ingame:
 - divine magic
 
 -> types can be combined, some borders are blurry
+
+
+
+
+
+## Research on Settlement Foundation 
+
+
+
+### What was the process by which different levels of settlement (village, town, city) were founded in feudal England?
+
+https://www.reddit.com/r/AskHistorians/comments/dbv22z/what_was_the_process_by_which_different_levels_of/
+
+
+
+- no real new settlements outside of frontier regions by 11th century
+  - vast majority of useful land long inhabited
+  - even areas of low population density -> same number of villages, just smaller
+
+- new settlements to fortify border and expand & unify england
+  - burhs developed an urban function (often result of planning), either accreted population
+    - as result of their specific function (required butchers, bakers, potters, ...)
+    - mandated as hubs of vast a array of civil functions due to expansion of royal authority
+- new villages
+  - often as a result of nearby Burh in order to lay greater claim to a territory; land was often granted specifically for this purpose
+
+>  Burh = an Anglo-Saxon fortification or fortified settlement.
+
+
+
+
+
+### How did anglo saxons burhs become towns?     
+
+https://www.reddit.com/r/AskHistorians/comments/d31vy8/comment/f00mqxo/
+
+
+
+- Burhs
+  - at a purely basic level, *burhs* were 'just' fortifications
+  - well protected garrison sites designed to defend Wessex and Mercia from the Viking threat
+  - situated roughly 40 miles apart, *burhs* were designed to curtail the war of manoeuvre and raiding
+  - typically situated at important transport or infrastructure nexi, specifically to control those points and to deny their use to an invader.
+    - major bridges and river crossings
+    - road junctions
+    - prominent landing sites
+  - resembling what a modern military might call a Forward Operating Base
+- Maintaining such an extensive series of fortifications and garrisons to man them was an enormous logistical and economic undertaking
+- Building new fortresses from scratch could be an incredibly expensive project
+  - make use of whatever is already in place
+    - major river crossings, landing sites and road junctions tend to already attract settlements
+    - restore previous roman defenses
+    - fortify already existing settlements in convenient locations
+  - build from scratch
+    - *burhs* were explicity intended to become proto-urban sites
+    - safety, prominent location and the necessary presence of administrative officers meant  that a wide variety of civil and social functions were moved inside the *burhs*
+- Some *burhs* developed as a result of their function
+  - e.g. Stafford was intended to act as a logistical hub to supply the various disparate garrisons
+  - The task of maintaining this supply required a large number of herdsmen, stockmen, butchers, bakers, metalworkers and blacksmiths, potters and a steady stream of farmers delivering produce, and convoys distributing  supplies
+  - This population then required housing, but also required the requisite  amenities to support them: a church, meeting halls, grazing land and the like
+
+
+
+
+
+### I am a minor knight in 13th-century England, and thanks to friends in  high places I've been awarded some land of my own... but currently  nobody lives there. Where/how do I recruit some peasants to farm my  lands for me? How much will it cost? What rights will they have?
+
+https://www.reddit.com/r/AskHistorians/comments/cgi3wa/comment/eujvygs/
+
+
+
+- lack of residents
+
+  1. broadly speaking, if there was viable land, somebody was living there and farming it
+
+  2. other option is that you're involved in seizing territory on a frontier somewhere (go with that)
+
+- transforming your claim into tangible control was a long task
+  1. construction of a castle to offer protection and stability
+     - The castle needn't be large
+     - allow you to establish control over a relatively large area
+  2. simply the presence of a castle would often be enough to encourage the rapid development of a small borough under its walls
+
+
+
+
+
+## Settlement Life-cycle ❤
+
+The game world is built around **tiles**. Players can place **improvements** on tiles that eventually spawn **settlements**. Settlements then expand further by adding **buildings** and **districts** (in the form of more improvements). Everything is tied together with **routes** for resource movement.
+
+
+
+### Entities in Simple Terms
+
+#### Workers
+
+- Units you train in your settlements.
+- Construct improvements on tiles - this consumes the worker unit.
+- They’re your main “agents of expansion.”
+
+#### Improvements
+
+- Built by workers on tiles.
+- Each improvement does one thing (mine = metal, quarry = stone, farmstead = food).
+- They take upkeep (usually food).
+- They can be upgraded to produce more.
+- Only one improvement per tile (can share tile with settlement).
+- They can eventually spawn settlements (either on same tile or on neighboring tile).
+
+#### Settlements
+
+- Either created from scratch (frontier town) or grown out of an improvement.
+- Can partially feed themselves through subsistence farming, but efficiency depends on population mix - more specialists (miners, artisans, ...) = less subsistence farming, more pop not tied to a specialized job =  more subsistence farming
+- Small settlements are usually specialized (a mining town grows around a mine, a fishing village around a dock, etc.).
+- They’re more flexible than raw improvements, since they can house multiple buildings and connect districts.
+- building slots
+  - amount depends on settlement/population size
+  - is the max number of buildings in this settlement
+- district slots
+  - amount depends on settlement/population size (and available tiles)
+  - is the max number of districs in this settlement
+  - effect: no mini settlement with 9 different districts
+
+#### Buildings
+
+- Constructed *inside* a settlement.
+- They don’t take a map tile, just a building slot in the settlement.
+- Give specialized functions (armor smith = turns metal into armor, toolmakers workshop = turns wood into tools, walls = defense).
+- Small, modular, and complementary to districts.
+
+#### Districts
+
+- Former improvements that now belong to a settlement.
+- They’re still tied to map tiles, unlike buildings.
+- Examples: The mine you started with becomes the “Mining District” of the nearby town.
+- Districts initially define the *character* of a settlement (mining town, fishing village, trade hub, etc.).
+
+#### Routes
+
+- Connects nearby settlements and improvements.
+- Allow resources to move.
+- Enable trade and strategic supply (e.g. feeding a hungry city, sending weapons to an army).
+
+
+
+
+
+### How the Game Flow Works
+
+#### Improvements
+
+1. Train a worker in a settlement.
+   - UX: select settlement -> production -> Hire worker
+2. Find a good tile (fertile land, hill, forest, coast, etc.).
+   - UX: select worker unit -> move
+3. Place an improvement (farmstead, mine, quarry, fort, etc.).
+   - UX: select worker unit -> construct -> select improvement
+4. The improvement produces resources but requires upkeep.
+   - select improvement on map -> see information
+5. Over time, you can upgrade the improvement or spawn a settlement.
+   - select improvement on map -> spawn settlement (overlay buttons on valid tiles) -> click button for tile -> select name
+
+#### Settlements
+
+1. Found a settlement:
+   - Directly as a frontier colony, OR
+   - Spawn from an existing improvement.
+2. Growth:
+   - More food + more resources = bigger population.
+   - Early growth mainly tied to specialization (a mining town grows faster the bigger its mine is).
+3. Expansion:
+   - Build buildings inside the settlement (doesn’t take a map tile).
+   - Add districts on nearby tiles (takes a map tile).
+   - Districts can be absorbed improvements or newly built ones.
+   - Nearby improvements get automatically absorbed into settlement over time if enough district slots are available.
+
+
+
+### Subsistence Farming in Settlements
+
+- Most population can grow food for themselves if not tied to a specialized job.
+- Specialists (miners, artisans, administrators, soldiers) *don’t* farm → they require food from others.
+- As settlements grow, they produce less food themselves, pushing you to build more specialized farms or trade for supplies.
+
+
+
+### Settlement Sizes
+
+- **Improvements** = single-purpose resource spots (not a real settlement yet).
+- **Small / Towns** = small, specialized settlements (usually self-sufficient in food).
+- **Large / Cities** = larger, generalized settlements (focus on artisans and trade, rely on food imports).
+
+
+
+### Example
+
+1. You train a worker in your capital and send him to a hill.
+2. He builds a mine → produces metal, consumes food.
+3. The mine camp grows → spawns a mining town. The mine now shows up as a district. Small town produces own food, but is not yet fully self sufficient
+4. You add a smithy building inside the town → improves weapon production.
+5. As the town grows larger, it becomes self sufficient
+6. Later, the town grows into a city. It still has its Mining District, but now you add a Market District, City Walls and other advanced buildings.
+7. Due to its population being mainly artisans, it is no longer self sufficient and requires imported supplies.
+
+
+
+### Flavor
+
+- each improvement, settlement keeps track of its history
+- can be read like a history book
+- "iron mine was founded here in 915 AD. Mining town was formed in 932 AD. ..."

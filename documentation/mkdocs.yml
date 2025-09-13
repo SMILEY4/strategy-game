@@ -11,7 +11,7 @@ nav:
   - Home: index.md
   - Game:
       - Mechanics: game/mechanics.md
-      - Ideas: game/ideas.md
+      - Idea Collection: game/idea_collection.md
   - Technical:
       - Useful Resources: technical/useful_resources.md
       - Game Turn: technical/game_turn.md
