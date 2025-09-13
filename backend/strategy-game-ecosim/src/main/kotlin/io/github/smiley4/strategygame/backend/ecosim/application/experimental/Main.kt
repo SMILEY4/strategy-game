@@ -75,20 +75,19 @@ fun main() {
     nodeA.storage.produces += 7
     nodeE.storage.produces += 4
     nodeH.storage.produces += 3
-    nodeJ.storage.produces += 4 // 18
+    nodeJ.storage.produces += 4
 
     nodeA.storage.consumes += 2
     nodeB.storage.consumes += 3
     nodeD.storage.consumes += 8
     nodeG.storage.consumes += 2
-    nodeK.storage.consumes += 4 // 17
+    nodeK.storage.consumes += 4
+
 
 
     val trades = TradeSystem.generateTrades(graph)
-
     trades.forEach { trade ->
         println(" - ${trade.producer.name} -> ${trade.consumer.name}: ${trade.amount}  (${trade.path.joinToString(",") {it.name}})")
-
     }
 
 }
