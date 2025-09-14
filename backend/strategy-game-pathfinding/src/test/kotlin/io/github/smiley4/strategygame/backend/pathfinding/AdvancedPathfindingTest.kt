@@ -2,13 +2,9 @@ package io.github.smiley4.strategygame.backend.pathfinding
 
 import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
-import io.github.smiley4.strategygame.backend.commondata.Country
-import io.github.smiley4.strategygame.backend.commondata.Province
-import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.pathfinding.algorithms.backtracking.BacktrackingPathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
@@ -16,7 +12,6 @@ import io.github.smiley4.strategygame.backend.pathfinding.score.ScoreCalculator
 import io.github.smiley4.strategygame.backend.pathfinding.utils.BlockingTilesRule
 import io.github.smiley4.strategygame.backend.pathfinding.utils.MaxPathCostRule
 import io.github.smiley4.strategygame.backend.pathfinding.utils.MaxPathLengthRule
-import io.github.smiley4.strategygame.backend.pathfinding.utils.MaxProvincesRule
 import io.github.smiley4.strategygame.backend.pathfinding.utils.NextNodeRule
 import io.github.smiley4.strategygame.backend.pathfinding.utils.SwitchFromToWaterViaPointsRule
 import io.github.smiley4.strategygame.backend.pathfinding.utils.TestNode
@@ -54,13 +49,13 @@ class AdvancedPathfindingTest : StringSpec({
             tiles.get(2, 3).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(0, 0),
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(1, 2),
-            TilePosition(1, 3),
-            TilePosition(2, 3),
+            Tile.Position(0, 0),
+            Tile.Position(1, 0),
+            Tile.Position(2, 0),
+            Tile.Position(2, 1),
+            Tile.Position(1, 2),
+            Tile.Position(1, 3),
+            Tile.Position(2, 3),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(7.0f, 0.1)
 
@@ -93,12 +88,12 @@ class AdvancedPathfindingTest : StringSpec({
             tiles.get(2, 3).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(0, 0),
-            TilePosition(0, 1),
-            TilePosition(0, 2),
-            TilePosition(1, 2),
-            TilePosition(1, 3),
-            TilePosition(2, 3),
+            Tile.Position(0, 0),
+            Tile.Position(0, 1),
+            Tile.Position(0, 2),
+            Tile.Position(1, 2),
+            Tile.Position(1, 3),
+            Tile.Position(2, 3),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(14.0f, 0.1)
 
@@ -158,10 +153,10 @@ class AdvancedPathfindingTest : StringSpec({
             tiles.get(1, 2).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(1, 2),
+            Tile.Position(1, 0),
+            Tile.Position(2, 0),
+            Tile.Position(2, 1),
+            Tile.Position(1, 2),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(3.0f, 0.1)
 
@@ -192,10 +187,10 @@ class AdvancedPathfindingTest : StringSpec({
             tiles.get(1, 2).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(1, 0),
-            TilePosition(0, 1),
-            TilePosition(0, 2),
-            TilePosition(1, 2),
+            Tile.Position(1, 0),
+            Tile.Position(0, 1),
+            Tile.Position(0, 2),
+            Tile.Position(1, 2),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(3.0f, 0.1)
     }
@@ -227,151 +222,6 @@ class AdvancedPathfindingTest : StringSpec({
         path.nodes.shouldBeEmpty()
     }
 
-    "valid path starts in unclaimed tile and crosses through max allowed provinces" {
-        val tiles = buildTiles(
-            listOf(
-                listOf(0, 0, 0),
-                listOf(0, 1, 0),
-                listOf(0, 1, 0),
-                listOf(0, 1, 0),
-                listOf(0, 0, 0),
-            ),
-            listOf(
-                listOf(0, 0, 0),
-                listOf(1, 1, 1),
-                listOf(2, 2, 2),
-                listOf(3, 3, 3),
-                listOf(0, 0, 0),
-            )
-        )
-        val pathfinder = BacktrackingPathfinder(
-            AdvancedNeighbourProvider(tiles).withRules(
-                BlockingTilesRule(setOf(TerrainType.WATER)),
-                MaxProvincesRule(3)
-            ),
-            AdvancedScoreCalculator(emptyMap())
-        )
-        val path = pathfinder.find(
-            tiles.get(1, 0).node(),
-            tiles.get(1, 4).node(),
-        )
-        path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(2, 2),
-            TilePosition(2, 3),
-            TilePosition(1, 4),
-        )
-    }
-
-    "valid path starts in province and crosses through multiple provinces" {
-        val tiles = buildTiles(
-            listOf(
-                listOf(0, 0, 0),
-                listOf(0, 1, 0),
-                listOf(0, 1, 0),
-                listOf(0, 1, 0),
-                listOf(0, 0, 0),
-            ),
-            listOf(
-                listOf(1, 1, 1),
-                listOf(2, 2, 2),
-                listOf(0, 0, 0),
-                listOf(3, 3, 3),
-                listOf(4, 4, 4),
-            )
-        )
-        val pathfinder = BacktrackingPathfinder(
-            AdvancedNeighbourProvider(tiles).withRules(
-                BlockingTilesRule(setOf(TerrainType.WATER)),
-                MaxProvincesRule(10)
-            ),
-            AdvancedScoreCalculator(emptyMap())
-        )
-        val path = pathfinder.find(
-            tiles.get(1, 0).node(),
-            tiles.get(1, 4).node(),
-        )
-        path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(2, 2),
-            TilePosition(2, 3),
-            TilePosition(1, 4),
-        )
-    }
-
-    "valid path crosses through unclaimed land instead of multiple provinces" {
-        val tiles = buildTiles(
-            listOf(
-                listOf(0, 0, 0),
-                listOf(0, 1, 0),
-                listOf(0, 1, 0),
-                listOf(0, 1, 0),
-                listOf(0, 0, 0),
-            ),
-            listOf(
-                listOf(1, 1, 1),
-                listOf(2, 0, 0),
-                listOf(3, 0, 0),
-                listOf(4, 0, 0),
-                listOf(5, 5, 5),
-            )
-        )
-        val pathfinder = BacktrackingPathfinder(
-            AdvancedNeighbourProvider(tiles).withRules(
-                BlockingTilesRule(setOf(TerrainType.WATER)),
-                MaxProvincesRule(3)
-            ),
-            AdvancedScoreCalculator(emptyMap())
-        )
-        val path = pathfinder.find(
-            tiles.get(1, 0).node(),
-            tiles.get(1, 4).node(),
-        )
-        path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(2, 2),
-            TilePosition(2, 3),
-            TilePosition(1, 4),
-        )
-    }
-
-    "path may not cross more than max allowed provinces " {
-        val tiles = buildTiles(
-            listOf(
-                listOf(0, 0, 0),
-                listOf(0, 1, 0),
-                listOf(0, 1, 0),
-                listOf(0, 1, 0),
-                listOf(0, 0, 0),
-            ),
-            listOf(
-                listOf(1, 1, 1),
-                listOf(2, 2, 2),
-                listOf(3, 3, 3),
-                listOf(4, 4, 4),
-                listOf(5, 5, 5),
-            )
-        )
-        val pathfinder = BacktrackingPathfinder(
-            AdvancedNeighbourProvider(tiles).withRules(
-                BlockingTilesRule(setOf(TerrainType.WATER)),
-                MaxProvincesRule(3)
-            ),
-            AdvancedScoreCalculator(emptyMap())
-        )
-        val path = pathfinder.find(
-            tiles.get(1, 0).node(),
-            tiles.get(1, 4).node(),
-        )
-        path.nodes.shouldBeEmpty()
-    }
-
     "path allowed two switch between water/land at specified positions" {
         val tiles = buildTiles(
             listOf(
@@ -385,8 +235,8 @@ class AdvancedPathfindingTest : StringSpec({
             AdvancedNeighbourProvider(tiles).withRules(
                 SwitchFromToWaterViaPointsRule(
                     setOf(
-                        TilePosition(2, 0),
-                        TilePosition(3, 3)
+                        Tile.Position(2, 0),
+                        Tile.Position(3, 3)
                     )
                 )
             ),
@@ -397,16 +247,16 @@ class AdvancedPathfindingTest : StringSpec({
             tiles.get(0, 3).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(0, 0),
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(2, 2),
-            TilePosition(3, 2),
-            TilePosition(3, 3),
-            TilePosition(2, 3),
-            TilePosition(1, 3),
-            TilePosition(0, 3),
+            Tile.Position(0, 0),
+            Tile.Position(1, 0),
+            Tile.Position(2, 0),
+            Tile.Position(2, 1),
+            Tile.Position(2, 2),
+            Tile.Position(3, 2),
+            Tile.Position(3, 3),
+            Tile.Position(2, 3),
+            Tile.Position(1, 3),
+            Tile.Position(0, 3),
         )
 
     }
@@ -424,7 +274,7 @@ class AdvancedPathfindingTest : StringSpec({
             AdvancedNeighbourProvider(tiles).withRules(
                 SwitchFromToWaterViaPointsRule(
                     setOf(
-                        TilePosition(2, 0),
+                        Tile.Position(2, 0),
                     )
                 )
 
@@ -462,11 +312,6 @@ class AdvancedPathfindingTest : StringSpec({
                     if (neighbourTile != null) {
                         val neighbourNode = TestNode(neighbourTile,
                             pathLength = current.pathLength + 1,
-                            visitedProvinces = current.visitedProvinces + (neighbourTile.dataPolitical.controlledBy?.province?.let {
-                                setOf(
-                                    it.value
-                                )
-                            } ?: setOf()),
                             prevNode = current
                         )
                         if (allRulesApply(current, neighbourNode)) {
@@ -505,7 +350,7 @@ class AdvancedPathfindingTest : StringSpec({
                     tiles.add(
                         Tile(
                             id = Tile.Id("$q/$r"),
-                            position = TilePosition(q, r),
+                            position = Tile.Position(q, r),
                             dataWorld = Tile.WorldData(
                                 terrainType = when (id) {
                                     1 -> TerrainType.WATER
@@ -515,19 +360,6 @@ class AdvancedPathfindingTest : StringSpec({
                                 resourceType = TileResourceType.NONE,
                                 height = 1f
                             ),
-                            dataPolitical = Tile.PoliticalData(
-                                influences = mutableListOf(),
-                                discoveredByCountries = mutableSetOf(),
-                                controlledBy = when (val pid = provinceIds?.let { it[r][q] } ?: 0) {
-                                    0 -> null
-                                    else -> Tile.Owner(
-                                        country = Country.Id("testCountry"),
-                                        province = Province.Id(pid.toString()),
-                                        settlement = Settlement.Id("testCity")
-                                    )
-                                },
-                            )
-
                         )
                     )
                 }

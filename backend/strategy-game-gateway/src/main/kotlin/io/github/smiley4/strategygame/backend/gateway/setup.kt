@@ -37,7 +37,6 @@ import io.github.smiley4.strategygame.backend.sessions.ports.provided.DeleteGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectAllPlayers
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectPlayer
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameMessageProducer
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameService
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.ListGames
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.RequestConnectionToGame
@@ -249,14 +248,13 @@ private fun Route.routingGateway() {
             }
         }
 
-        val gameService by inject<GameService>()
         authenticate("user") {
             route("game") {
                 route("movement") {
-                    routeMovementAvailablePositions(gameService)
+                    routeMovementAvailablePositions()
                 }
                 route("settlement") {
-                    routeSettlementName(gameService)
+                    routeSettlementName()
                 }
             }
         }

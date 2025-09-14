@@ -23,7 +23,6 @@ dependencies {
     implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-common-arangodb"))
     implementation(project(":strategy-game-common-data"))
-    implementation(project(":strategy-game-ecosim"))
     implementation(project(":strategy-game-engine"))
     implementation(project(":strategy-game-gateway"))
     implementation(project(":strategy-game-pathfinding"))

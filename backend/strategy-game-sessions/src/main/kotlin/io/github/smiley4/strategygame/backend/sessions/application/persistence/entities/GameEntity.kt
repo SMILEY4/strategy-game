@@ -3,7 +3,6 @@ package io.github.smiley4.strategygame.backend.sessions.application.persistence.
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.GameMeta
 import io.github.smiley4.strategygame.backend.commondata.PlayerContainer
 
 
@@ -24,15 +23,6 @@ internal class GameEntity(
                 turn = serviceModel.turn,
                 players = serviceModel.players.map { PlayerEntity.of(it) }.toList(),
             )
-
-        fun of(serviceModel: GameMeta, game: GameEntity) =
-            GameEntity(
-                key = DbId.asDbId(serviceModel.id.value),
-                turn = serviceModel.turn,
-                name = game.name,
-                creationTimestamp = game.creationTimestamp,
-                players = game.players.toList()
-            )
     }
 
 
@@ -45,4 +35,3 @@ internal class GameEntity(
     )
 
 }
-

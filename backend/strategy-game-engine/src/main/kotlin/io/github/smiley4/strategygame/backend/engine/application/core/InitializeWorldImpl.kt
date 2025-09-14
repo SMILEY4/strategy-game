@@ -3,15 +3,11 @@ package io.github.smiley4.strategygame.backend.engine.application.core
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.common.utils.gen
-import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.GameMeta
-import io.github.smiley4.strategygame.backend.commondata.Route
-import io.github.smiley4.strategygame.backend.commondata.Settlement
+import io.github.smiley4.strategygame.backend.commondata.GameState
+import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.tracking
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializeWorld
@@ -22,10 +18,10 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
 
     private val metricId = MetricId.action(InitializeWorld::class)
 
-    override suspend fun perform(game: Game, worldSeed: Int?): GameExtended {
+    override suspend fun perform(game: Game, worldSeed: Int?): GameState {
         return time(metricId) {
             val tiles = buildTiles(WorldGenSettings.default(worldSeed))
-            buildGameExtended(game, tiles)
+            buildGameState(game, tiles)
         }
     }
 
@@ -33,32 +29,22 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
         return worldGenerator.buildTiles(worldSettings).map {
             Tile(
                 id = Tile.Id.gen(),
-                position = TilePosition(it.q, it.r),
+                position = Tile.Position(it.q, it.r),
                 dataWorld = Tile.WorldData(
                     terrainType = it.type,
                     resourceType = it.resource,
                     height = it.height,
                 ),
-                dataPolitical = Tile.PoliticalData(
-                    influences = mutableListOf(),
-                    discoveredByCountries = mutableSetOf(),
-                    controlledBy = null
-                ),
             )
         }
     }
 
-    private fun buildGameExtended(game: Game, tiles: List<Tile>): GameExtended {
-        return GameExtended(
-            meta = GameMeta(
-                id = game.id,
-                turn = game.turn
-            ),
+    private fun buildGameState(game: Game, tiles: List<Tile>): GameState {
+        return GameState(
+            game = game,
             tiles = TileContainer(tiles),
             worldObjects = emptyList<WorldObject>().tracking(),
-            countries = emptyList<Country>().tracking(),
-            settlements = emptyList<Settlement>().tracking(),
-            routes = emptyList<Route>().tracking()
+            realms = emptyList<Realm>().tracking(),
         )
     }
 

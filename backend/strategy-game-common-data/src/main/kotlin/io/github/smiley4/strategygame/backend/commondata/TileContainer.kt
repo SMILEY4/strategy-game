@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.backend.commondata
 
-
 class TileContainer() : Collection<Tile> {
 
     private val tilesList = mutableListOf<Tile>()
@@ -19,7 +18,7 @@ class TileContainer() : Collection<Tile> {
         return tilesById[tileId]
     }
 
-    fun get(pos: TilePosition): Tile? {
+    fun get(pos: Tile.Position): Tile? {
         return get(pos.q, pos.r)
     }
 
@@ -27,11 +26,11 @@ class TileContainer() : Collection<Tile> {
         return tilesByPos[toKey(q, r, tilesList.size)]
     }
 
-    fun get(ref: TileRef): Tile? {
+    fun get(ref: Tile.Ref): Tile? {
         return get(ref.id)
     }
 
-    private fun toKey(pos: TilePosition, a: Int) = toKey(pos.q, pos.r, a)
+    private fun toKey(pos: Tile.Position, a: Int) = toKey(pos.q, pos.r, a)
 
     private fun toKey(q: Int, r: Int, a: Int) = q + r * a
 

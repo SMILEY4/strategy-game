@@ -16,12 +16,11 @@ import io.github.smiley4.strategygame.backend.sessions.application.core.TurnSubm
 import io.github.smiley4.strategygame.backend.sessions.application.engine.GameStepAdapter
 import io.github.smiley4.strategygame.backend.sessions.application.engine.InitializePlayerAdapter
 import io.github.smiley4.strategygame.backend.sessions.application.engine.InitializeWorldAdapter
-import io.github.smiley4.strategygame.backend.sessions.application.engine.MovementServiceAdapter
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsByGameQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsInsert
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameDelete
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExistsQuery
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedQuery
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameInsert
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameUpdate
@@ -32,7 +31,6 @@ import io.github.smiley4.strategygame.backend.sessions.ports.provided.CreateGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.DeleteGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectAllPlayers
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectPlayer
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameService
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.ListGames
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.RequestConnectionToGame
@@ -41,7 +39,6 @@ import io.github.smiley4.strategygame.backend.sessions.ports.provided.TurnSubmit
 import io.github.smiley4.strategygame.backend.sessions.ports.required.GameStep
 import io.github.smiley4.strategygame.backend.sessions.ports.required.InitializePlayer
 import io.github.smiley4.strategygame.backend.sessions.ports.required.InitializeWorld
-import io.github.smiley4.strategygame.backend.sessions.ports.required.MovementService
 import kotlinx.coroutines.runBlocking
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.createdAtStart
@@ -61,7 +58,6 @@ fun Module.dependenciesSessions() {
     single<RequestConnectionToGame> { RequestConnectionToGameImpl(get()) }
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get(), get(), get(), get()) }
     single<TurnSubmit> { TurnSubmitImpl(get(), get(), get(), get()) }
-    single<GameService> { io.github.smiley4.strategygame.backend.sessions.application.core.GameServiceImpl(get(), get(), get()) }
 
     // persistence
     single<DatabaseProvider.Config> {
@@ -80,9 +76,9 @@ fun Module.dependenciesSessions() {
     single<CommandsInsert> { CommandsInsert(get()) }
     single<GameDelete> { GameDelete(get()) }
     single<GameExistsQuery> { GameExistsQuery(get()) }
-    single<GameExtendedQuery> { GameExtendedQuery(get()) }
-    single<io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedUpdate> {
-        io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedUpdate(
+    single<GameStateQuery> { GameStateQuery(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateUpdate> {
+        io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateUpdate(
             get()
         )
     }
@@ -96,6 +92,5 @@ fun Module.dependenciesSessions() {
     single<GameStep> { GameStepAdapter(get()) }
     single<InitializePlayer> { InitializePlayerAdapter(get()) }
     single<InitializeWorld> { InitializeWorldAdapter(get()) }
-    single<MovementService> { MovementServiceAdapter(get()) }
 
 }

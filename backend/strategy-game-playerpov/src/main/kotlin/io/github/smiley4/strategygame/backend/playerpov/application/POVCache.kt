@@ -2,37 +2,32 @@ package io.github.smiley4.strategygame.backend.playerpov.application
 
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
-import io.github.smiley4.strategygame.backend.commondata.Country
-import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.Settlement
+import io.github.smiley4.strategygame.backend.commondata.GameState
+import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 
 internal class POVCache(
-    val povCountryId: Country.Id,
-    private val game: GameExtended,
-    private val tileVisibilityCalculator: TileVisibilityCalculator
+    game: GameState,
 ) {
 
     // json-objects for all identifiers in the game
-    private val countryIdentifiers = mutableMapOf<Country.Id, JsonType>()
+    private val realmIdentifiers = mutableMapOf<Realm.Id, JsonType>()
     private val tileIdentifiers = mutableMapOf<Tile.Id, JsonType>()
 
 
     // visibility states for all things
     private val tileVisibilities = mutableMapOf<Tile.Id, TileVisibilityDTO>()
-    private val settlementVisibilities = mutableMapOf<Settlement.Id, TileVisibilityDTO>()
     private val worldObjectVisibilities = mutableMapOf<WorldObject.Id, TileVisibilityDTO>()
 
     init {
 
         // build json-identifiers for all things in the game
-        game.countries.forEach { country ->
-            countryIdentifiers[country.id] = obj {
-                "id" to country.id.value
-                "name" to country.id.value
-                "color" to country.color
+        game.realms.forEach { realm ->
+            realmIdentifiers[realm.id] = obj {
+                "id" to realm.id.value
+                "name" to realm.id.value
             }
         }
         game.tiles.forEach { tile ->
@@ -45,12 +40,7 @@ internal class POVCache(
 
         // calculate visibility state for all tiles
         game.tiles.forEach { tile ->
-            tileVisibilities[tile.id] = tileVisibilityCalculator.calculateVisibility(game, povCountryId, tile)
-        }
-
-        // calculate visibility state for all settlements
-        game.settlements.forEach { settlement ->
-            settlementVisibilities[settlement.id] = tileVisibilities[settlement.tile.id] ?: TileVisibilityDTO.UNKNOWN
+            tileVisibilities[tile.id] = TileVisibilityDTO.VISIBLE
         }
 
         // calculate visible world objects
@@ -61,12 +51,11 @@ internal class POVCache(
         }
     }
 
+    fun realmIdentifier(id: Realm.Id): JsonType =
+        realmIdentifiers[id] ?: throw Exception("No realm identifier for $id")
 
-    fun countryIdentifier(countryId: Country.Id): JsonType =
-        countryIdentifiers[countryId] ?: throw Exception("No country identifier for $countryId")
-
-    fun countryIdentifierOrNull(countryId: Country.Id?): JsonType? =
-        countryId?.let { countryIdentifiers[countryId] }
+    fun realmIdentifierOrNull(id: Realm.Id?): JsonType? =
+        id?.let { realmIdentifiers[id] }
 
     fun tileIdentifier(tileId: Tile.Id): JsonType =
         tileIdentifiers[tileId] ?: throw Exception("No tile identifier for $tileId")
@@ -76,9 +65,6 @@ internal class POVCache(
 
     fun tileVisibility(tileId: Tile.Id): TileVisibilityDTO =
         tileVisibilities[tileId] ?: throw Exception("No visibility for tile $tileId")
-
-    fun settlementVisibility(settlementId: Settlement.Id): TileVisibilityDTO =
-        settlementVisibilities[settlementId] ?: throw Exception("No visibility for settlement $settlementId")
 
     fun worldObjectVisibility(worldObjectId: WorldObject.Id): TileVisibilityDTO =
         worldObjectVisibilities[worldObjectId] ?: throw Exception("No visibility for world-object $worldObjectId")

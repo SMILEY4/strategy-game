@@ -15,21 +15,17 @@ internal class GameDelete(private val database: ArangoDatabase) {
         time(metricId) {
             database.assertCollections(
                 DbCollections.GAMES,
-                DbCollections.COUNTRIES,
+                DbCollections.COMMANDS,
+                DbCollections.REALMS,
                 DbCollections.TILES,
                 DbCollections.WORLD_OBJECTS,
-                DbCollections.SETTLEMENTS,
-                DbCollections.COMMANDS,
-                DbCollections.ROUTES,
             )
             parallelIO(
                 { deleteGame(game) },
-                { deleteCountries(game) },
+                { deleteCommands(game) },
+                { deleteRealms(game) },
                 { deleteTiles(game) },
                 { deleteWorldObjects(game) },
-                { deleteCities(game) },
-                { deleteCommands(game) },
-                { deleteRoutes(game) }
             )
         }
     }
@@ -38,13 +34,13 @@ internal class GameDelete(private val database: ArangoDatabase) {
         database.deleteDocument(DbCollections.GAMES, gameId.value)
     }
 
-    private suspend fun deleteCountries(gameId: Game.Id) {
+    private suspend fun deleteRealms(gameId: Game.Id) {
         database.execute(
             //language=aql
             """
-				FOR country IN ${DbCollections.COUNTRIES}
-					FILTER country.gameId == @gameId
-                    REMOVE country in ${DbCollections.COUNTRIES}
+				FOR realm IN ${DbCollections.REALMS}
+					FILTER realm.gameId == @gameId
+                    REMOVE realm in ${DbCollections.REALMS}
             """.trimIndent(),
             mapOf("gameId" to gameId.value)
         )
@@ -74,18 +70,6 @@ internal class GameDelete(private val database: ArangoDatabase) {
         )
     }
 
-    private suspend fun deleteCities(gameId: Game.Id) {
-        database.execute(
-            //language=aql
-            """
-				FOR city IN ${DbCollections.SETTLEMENTS}
-					FILTER city.gameId == @gameId
-                    REMOVE city in ${DbCollections.SETTLEMENTS}
-            """.trimIndent(),
-            mapOf("gameId" to gameId.value)
-        )
-    }
-
     private suspend fun deleteCommands(gameId: Game.Id) {
         database.execute(
             //language=aql
@@ -93,18 +77,6 @@ internal class GameDelete(private val database: ArangoDatabase) {
 				FOR command IN ${DbCollections.COMMANDS}
 					FILTER command.gameId == @gameId
                     REMOVE command in ${DbCollections.COMMANDS}
-            """.trimIndent(),
-            mapOf("gameId" to gameId.value)
-        )
-    }
-
-    private suspend fun deleteRoutes(gameId: Game.Id) {
-        database.execute(
-            //language=aql
-            """
-				FOR route IN ${DbCollections.ROUTES}
-					FILTER route.gameId == @gameId
-                    REMOVE route in ${DbCollections.ROUTES}
             """.trimIndent(),
             mapOf("gameId" to gameId.value)
         )

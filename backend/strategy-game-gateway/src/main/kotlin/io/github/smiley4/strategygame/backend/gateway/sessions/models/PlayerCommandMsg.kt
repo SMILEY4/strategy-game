@@ -3,11 +3,6 @@ package io.github.smiley4.strategygame.backend.gateway.sessions.models
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commondata.CommandData
-import io.github.smiley4.strategygame.backend.commondata.ProductionIds
-import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
-import io.github.smiley4.strategygame.backend.commondata.Settlement
-import io.github.smiley4.strategygame.backend.commondata.TileRef
-import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -19,65 +14,7 @@ internal sealed class PlayerCommandMsg {
 }
 
 
-@JsonTypeName("move")
-internal class MoveCommandMsg(
-    val worldObjectId: String,
-    val path: List<TileRef>
-) : PlayerCommandMsg() {
-    override fun asCommandData() = CommandData.Move(
-        worldObject = WorldObject.Id(worldObjectId),
-        path = this.path
-    )
-}
-
-@JsonTypeName("create-settlement")
-internal class CreateSettlementCommandMsg(
-    val name: String,
-    val worldObjectId: String
-) : PlayerCommandMsg() {
-    override fun asCommandData() = CommandData.CreateSettlement(
-        name = this.name,
-        worldObject = WorldObject.Id(this.worldObjectId)
-    )
-}
-
-
-@JsonTypeName("production-queue.remove-entry")
-internal class ProductionQueueRemoveEntryCommandMsg(
-    val entryId: String,
-    val settlementId: String
-) : PlayerCommandMsg() {
-    override fun asCommandData() = CommandData.ProductionQueueRemoveEntry(
-        entry = ProductionQueueEntry.Id(this.entryId),
-        settlement = Settlement.Id(this.settlementId)
-    )
-}
-
-
-@JsonTypeName("production-queue.add")
-internal class ProductionQueueAddCommandMsg(
-    val entryType: String,
-    val settlementId: String,
-) : PlayerCommandMsg() {
-    override fun asCommandData(): CommandData {
-        return when {
-            ProductionIds.isSettler(entryType) -> CommandData.ProductionQueueAddEntry.Settler(
-                settlement = Settlement.Id(settlementId),
-            )
-            ProductionIds.isBuilding(entryType) -> CommandData.ProductionQueueAddEntry.Building(
-                settlement = Settlement.Id(settlementId),
-                building = ProductionIds.extractBuilding(entryType)
-            )
-            else -> throw UnsupportedOperationException("unexpected production-type: '$entryType'")
-        }
-    }
-}
-
-@JsonTypeName("disband-world-object")
-internal class DisbandWorldObjectCommandMsg(
-    val worldObjectId: String,
-) : PlayerCommandMsg() {
-    override fun asCommandData() = CommandData.DisbandWorldObject(
-        worldObject = WorldObject.Id(this.worldObjectId)
-    )
+@JsonTypeName("noop")
+internal class NoOpCommandMsg() : PlayerCommandMsg() {
+    override fun asCommandData() = CommandData.NoOp()
 }

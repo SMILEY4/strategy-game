@@ -5,7 +5,6 @@ import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.pathfinding.algorithms.astar.AStarPathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
@@ -37,13 +36,13 @@ class AStarPathfindingTest : StringSpec({
             tiles.get(2, 3).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(0, 0),
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(1, 2),
-            TilePosition(1, 3),
-            TilePosition(2, 3),
+            Tile.Position(0, 0),
+            Tile.Position(1, 0),
+            Tile.Position(2, 0),
+            Tile.Position(2, 1),
+            Tile.Position(1, 2),
+            Tile.Position(1, 3),
+            Tile.Position(2, 3),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(6.0f, 0.1)
     }
@@ -84,7 +83,7 @@ class AStarPathfindingTest : StringSpec({
             tiles.get(0, 0).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(0, 0)
+            Tile.Position(0, 0)
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(0.0f, 0.1)
     }
@@ -105,8 +104,8 @@ class AStarPathfindingTest : StringSpec({
             tiles.get(1, 0).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(0, 0),
-            TilePosition(1, 0)
+            Tile.Position(0, 0),
+            Tile.Position(1, 0)
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(1.0f, 0.1)
     }
@@ -130,11 +129,11 @@ class AStarPathfindingTest : StringSpec({
             tiles.get(1, 3).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(2, 2),
-            TilePosition(1, 3),
+            Tile.Position(1, 0),
+            Tile.Position(2, 0),
+            Tile.Position(2, 1),
+            Tile.Position(2, 2),
+            Tile.Position(1, 3),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(5.0f, 0.1)
     }
@@ -152,7 +151,6 @@ class AStarPathfindingTest : StringSpec({
                             TestNode(
                                 tile = neighbour,
                                 pathLength = current.pathLength + 1,
-                                visitedProvinces = emptySet(),
                                 prevNode = current
                             )
                         )
@@ -206,7 +204,7 @@ class AStarPathfindingTest : StringSpec({
                     tiles.add(
                         Tile(
                             id = Tile.Id("$q/$r"),
-                            position = TilePosition(q, r),
+                            position = Tile.Position(q, r),
                             dataWorld = Tile.WorldData(
                                 terrainType = when (id) {
                                     1 -> TerrainType.WATER
@@ -215,11 +213,6 @@ class AStarPathfindingTest : StringSpec({
                                 },
                                 resourceType = TileResourceType.NONE,
                                 height = 1f
-                            ),
-                            dataPolitical = Tile.PoliticalData(
-                                influences = mutableListOf(),
-                                discoveredByCountries = mutableSetOf(),
-                                controlledBy = null,
                             ),
                         )
                     )

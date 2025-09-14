@@ -6,7 +6,6 @@ import io.github.smiley4.strategygame.backend.pathfinding.Node
 class TestNode(
     val tile: Tile,
     val pathLength: Int,
-    val visitedProvinces: Set<String>,
     prevNode: Node?
 ) : Node(
     locationId = "${tile.position.q},${tile.position.r}",
@@ -21,7 +20,6 @@ fun Tile?.node(): TestNode {
     return TestNode(
         tile = this!!,
         pathLength = 1,
-        visitedProvinces = this.dataPolitical.controlledBy?.province?.let { setOf(it.value) } ?: setOf(),
         prevNode = null
     )
 }

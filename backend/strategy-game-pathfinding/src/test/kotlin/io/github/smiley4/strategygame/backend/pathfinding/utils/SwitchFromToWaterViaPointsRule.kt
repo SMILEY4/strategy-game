@@ -2,12 +2,11 @@ package io.github.smiley4.strategygame.backend.pathfinding.utils
 
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
 
 /**
  * The path may only switch from water to land (or from land to water) at specified points
  */
-class SwitchFromToWaterViaPointsRule(private val switchingPoints: Collection<TilePosition>) : NextNodeRule<TestNode> {
+class SwitchFromToWaterViaPointsRule(private val switchingPoints: Collection<Tile.Position>) : NextNodeRule<TestNode> {
 
     override fun evaluate(prev: TestNode, next: TestNode): Boolean {
         if(isLand(prev.tile) && isWater(next.tile)) {

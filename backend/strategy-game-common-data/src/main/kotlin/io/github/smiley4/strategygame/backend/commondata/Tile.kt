@@ -2,14 +2,26 @@ package io.github.smiley4.strategygame.backend.commondata
 
 data class Tile(
     val id: Id,
-    val position: TilePosition,
+    val position: Position,
     val dataWorld: WorldData,
-    val dataPolitical: PoliticalData,
 ) {
+
+
 
     @JvmInline
     value class Id(val value: String) {
         companion object
+    }
+
+    data class Ref(val id: Id, val position: Position) {
+        constructor(tile: Tile) : this(tile.id, tile.position)
+    }
+
+    fun ref() = Ref(this)
+
+    data class Position(val q: Int, val r: Int) {
+        constructor(pos: Position) : this(pos.q, pos.r)
+        constructor(ref: Ref) : this(ref.position.q, ref.position.r)
     }
 
     data class WorldData(
@@ -17,22 +29,4 @@ data class Tile(
         var resourceType: TileResourceType,
         var height: Float,
     )
-
-    data class PoliticalData(
-        val influences: MutableList<Influence>,
-        val discoveredByCountries: MutableSet<Country.Id>,
-        var controlledBy: Owner?
-    )
-
-    data class Owner(
-        val country: Country.Id,
-        val settlement: Settlement.Id
-    )
-
-    data class Influence(
-        val country: Country.Id,
-        val settlement: Settlement.Id,
-        val amount: Double
-    )
-
 }

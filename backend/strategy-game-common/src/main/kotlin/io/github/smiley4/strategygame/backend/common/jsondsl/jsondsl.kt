@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.common.jsondsl
 
-import io.github.smiley4.strategygame.backend.commondata.RGBColor
+import org.w3c.dom.css.RGBColor
 
 
 fun main() {
@@ -74,10 +74,6 @@ class JsonObjectBlock(val type: ObjectType = ObjectType()) {
                 items.add(JsonType.from(it))
             }
         }
-    }
-
-    infix fun String.to(value: RGBColor) {
-        type.properties[this] = ColorType(value)
     }
 
     infix fun String.to(value: Any?) {

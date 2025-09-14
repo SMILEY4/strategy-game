@@ -1,11 +1,8 @@
 package io.github.smiley4.strategygame.backend.commondata
 
-
-data class Country(
+data class Realm(
     val id: Id,
-    val user: User.Id,
-    val color: RGBColor,
-    val name: String,
+    val user: User.Id
 ) {
     @JvmInline
     value class Id(val value: String) {

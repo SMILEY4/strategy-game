@@ -1,7 +1,6 @@
 package io.github.smiley4.strategygame.backend.common.utils
 
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
-import io.github.smiley4.strategygame.backend.commondata.TileRef
+import io.github.smiley4.strategygame.backend.commondata.Tile
 import kotlin.math.abs
 
 /**
@@ -74,51 +73,51 @@ fun hexDistance(q0: Int, r0: Int, q1: Int, r1: Int): Int {
 
 
 /**
- * @return all [TilePosition]s that lie inside the given circle
+ * @return all [Tile.Position]s that lie inside the given circle
  */
-fun positionsCircle(center: TileRef, radius: Int): List<TilePosition> {
+fun positionsCircle(center: Tile.Ref, radius: Int): List<Tile.Position> {
+    return positionsCircle(center.position.q, center.position.r, radius)
+}
+
+
+/**
+ * @return all [Tile.Position]s that lie inside the given circle
+ */
+fun positionsCircle(center: Tile.Position, radius: Int): List<Tile.Position> {
     return positionsCircle(center.q, center.r, radius)
 }
 
 
 /**
- * @return all [TilePosition]s that lie inside the given circle
+ * @return all [Tile.Position]s that lie inside the given circle
  */
-fun positionsCircle(center: TilePosition, radius: Int): List<TilePosition> {
-    return positionsCircle(center.q, center.r, radius)
-}
-
-
-/**
- * @return all [TilePosition]s that lie inside the given circle
- */
-fun positionsCircle(centerQ: Int, centerR: Int, radius: Int): List<TilePosition> {
-    return mutableListOf<TilePosition>().apply {
+fun positionsCircle(centerQ: Int, centerR: Int, radius: Int): List<Tile.Position> {
+    return mutableListOf<Tile.Position>().apply {
         positionsCircle(centerQ, centerR, radius) { q, r ->
-            add(TilePosition(q, r))
+            add(Tile.Position(q, r))
         }
     }
 }
 
 
 /**
- * iterate over all [TilePosition]s that lie inside the given circle
+ * iterate over all [Tile.Position]s that lie inside the given circle
  */
-fun positionsCircle(center: TileRef, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
+fun positionsCircle(center: Tile.Ref, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
+    return positionsCircle(center.position.q, center.position.r, radius, consumer)
+}
+
+
+/**
+ * iterate over all [Tile.Position]s that lie inside the given circle
+ */
+fun positionsCircle(center: Tile.Position, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
     return positionsCircle(center.q, center.r, radius, consumer)
 }
 
 
 /**
- * iterate over all [TilePosition]s that lie inside the given circle
- */
-fun positionsCircle(center: TilePosition, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
-    return positionsCircle(center.q, center.r, radius, consumer)
-}
-
-
-/**
- * iterate over all [TilePosition]s that lie inside the given circle
+ * iterate over all [Tile.Position]s that lie inside the given circle
  */
 fun positionsCircle(centerQ: Int, centerR: Int, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
     for (iq in (centerQ - radius)..(centerQ + radius)) {
@@ -134,7 +133,7 @@ fun positionsCircle(centerQ: Int, centerR: Int, radius: Int, consumer: (q: Int, 
 /**
  * iterate over all tile positions that are neighbours of the given tile position
  */
-fun positionsNeighbours(pos: TilePosition, consumer: (q: Int, r: Int) -> Unit) {
+fun positionsNeighbours(pos: Tile.Position, consumer: (q: Int, r: Int) -> Unit) {
     positionsNeighbours(pos.q, pos.r, consumer)
 }
 
@@ -164,13 +163,13 @@ fun getNeighbourPositions(q: Int, r: Int): List<Pair<Int, Int>> {
 /**
  * @return all tile positions that are neighbours of the given tile position
  */
-fun getNeighbourPositions(pos: TilePosition): List<Pair<Int, Int>> {
+fun getNeighbourPositions(pos: Tile.Position): List<Pair<Int, Int>> {
     return getNeighbourPositions(pos.q, pos.r)
 }
 
 /**
  * @return all tile positions that are neighbours of the given tile position
  */
-fun getNeighbourPositions(pos: TileRef): List<Pair<Int, Int>> {
-    return getNeighbourPositions(pos.q, pos.r)
+fun getNeighbourPositions(pos: Tile.Ref): List<Pair<Int, Int>> {
+    return getNeighbourPositions(pos.position.q, pos.position.r)
 }

@@ -15,7 +15,6 @@ dependencies {
 
     implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-common-data"))
-    implementation(project(":strategy-game-ecosim"))
     implementation(project(":strategy-game-worldgen"))
     implementation(project(":strategy-game-pathfinding"))
 

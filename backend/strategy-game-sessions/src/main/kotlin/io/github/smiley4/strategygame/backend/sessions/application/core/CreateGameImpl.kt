@@ -14,7 +14,7 @@ import java.time.Instant
 internal class CreateGameImpl(
     private val gameInsert: GameInsert,
     private val initializeWorld: InitializeWorld,
-    private val gameExtendedUpdate: io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedUpdate,
+    private val gameStateUpdate: io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateUpdate,
 ) : CreateGame, Logging {
 
     private val metricId = MetricId.action(CreateGame::class)
@@ -52,7 +52,7 @@ internal class CreateGameImpl(
      */
     private suspend fun initialize(game: Game, worldSeed: Int?) {
         val gameExtended = initializeWorld.perform(game, worldSeed)
-        gameExtendedUpdate.execute(gameExtended)
+        gameStateUpdate.execute(gameExtended)
     }
 
 }

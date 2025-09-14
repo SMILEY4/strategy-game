@@ -5,13 +5,10 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MonitoringServic
 import io.github.smiley4.strategygame.backend.common.monitoring.NoOpMonitoringService
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DatabaseProvider
-import io.github.smiley4.strategygame.backend.commondata.Settlement
-import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.GameMeta
+import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.PlayerState
-import io.github.smiley4.strategygame.backend.commondata.Province
+import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
@@ -365,19 +362,19 @@ class SessionsTest : FreeSpec({
 
             listGames.perform(User.Id("test-user-1")).also { games ->
                 games shouldHaveSize 2
-                games.find { it.game == gameId1 }!!.also { game ->
-                    game.game shouldBe gameId1
+                games.find { it.id == gameId1 }!!.also { game ->
+                    game.id shouldBe gameId1
                     game.name shouldBe "test-game-1"
                     game.creationTimestamp shouldBeGreaterThan 0
                     game.players shouldBe 1
-                    game.currentTurn shouldBe 0
+                    game.turn shouldBe 0
                 }
-                games.find { it.game == gameId2 }!!.also { game ->
-                    game.game shouldBe gameId2
+                games.find { it.id == gameId2 }!!.also { game ->
+                    game.id shouldBe gameId2
                     game.name shouldBe "test-game-2"
                     game.creationTimestamp shouldBeGreaterThan 0
                     game.players shouldBe 2
-                    game.currentTurn shouldBe 0
+                    game.turn shouldBe 0
                 }
             }
         }
@@ -654,17 +651,11 @@ class SessionsTest : FreeSpec({
                             mockk<InitializeWorld>().also {
                                 coEvery { it.perform(any(), any()) } answers {
                                     val game = firstArg<Game>()
-                                    GameExtended(
-                                        meta = GameMeta(
-                                            id = game.id,
-                                            turn = game.turn
-                                        ),
+                                    GameState(
+                                        game = game,
                                         tiles = TileContainer(emptyList()),
-                                        countries = emptyList<Country>().tracking(),
-                                        settlements = emptyList<Settlement>().tracking(),
-                                        provinces = emptyList<Province>().tracking(),
+                                        realms = emptyList<Realm>().tracking(),
                                         worldObjects = emptyList<WorldObject>().tracking()
-//                                        routes = emptyList<Route>().tracking()
                                     )
                                 }
                             }
@@ -681,8 +672,8 @@ class SessionsTest : FreeSpec({
                         single<GameStep> {
                             mockk<GameStep>().also {
                                 coEvery { it.perform(any(), any()) } answers {
-                                    val game = firstArg<GameExtended>()
-                                    game.meta.turn += 1
+                                    val gameState = firstArg<GameState>()
+                                    gameState.game.turn += 1
                                 }
                             }
                         }

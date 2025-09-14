@@ -4,7 +4,6 @@ import io.github.smiley4.ktorswaggerui.dsl.routing.get
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
-import io.github.smiley4.strategygame.backend.commondata.GameSessionData
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
 import io.github.smiley4.strategygame.backend.gateway.sessions.models.GameSessionDto
@@ -19,7 +18,7 @@ internal object RouteList {
         description = "List all games with the user as a participant."
         response {
             HttpStatusCode.OK to {
-                body<Array<GameSessionData>> {
+                body<Array<GameSessionDto>> {
                     description = "the list of games the user has joined."
                 }
             }
@@ -30,11 +29,10 @@ internal object RouteList {
             val games = listGames.perform(User.Id(userId))
                 .map {
                     GameSessionDto(
-                        id = it.game.value,
+                        id = it.id.value,
                         name = it.name,
                         creationTimestamp = it.creationTimestamp,
-                        players = it.players,
-                        currentTurn = it.currentTurn,
+                        currentTurn = it.turn,
                     )
                 }
             call.respond(HttpStatusCode.OK, games)
