@@ -1,8 +1,12 @@
-package io.github.smiley4.strategygame.backend.playerpov.application
+package io.github.smiley4.strategygame.backend.playerpov.application.builders
 
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
 import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.playerpov.application.POVCache
+import io.github.smiley4.strategygame.backend.playerpov.application.TileVisibilityDTO
+import io.github.smiley4.strategygame.backend.playerpov.application.hidden
+import io.github.smiley4.strategygame.backend.playerpov.application.isAtLeast
 
 
 internal class TilePOVBuilder(private val povCache: POVCache) {

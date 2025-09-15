@@ -36,6 +36,10 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$versionKtor")
     implementation("io.ktor:ktor-server-metrics:$versionKtor")
     implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
+    testImplementation("io.ktor:ktor-client-core:${versionKtor}")
+    testImplementation("io.ktor:ktor-client-cio:${versionKtor}")
+    testImplementation("io.ktor:ktor-client-content-negotiation:${versionKtor}")
+    testImplementation("io.ktor:ktor-serialization-jackson:${versionKtor}")
 
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")

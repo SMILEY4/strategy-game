@@ -5,5 +5,5 @@ import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.User
 
 interface PlayerViewCreator {
-    fun build(userId: User.Id, game: GameState): JsonType
+    fun build(userId: User.Id, gameState: GameState): JsonType
 }

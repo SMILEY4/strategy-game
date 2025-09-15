@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.playerpov.application
+package io.github.smiley4.strategygame.backend.playerpov.application.builders
 
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
