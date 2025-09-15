@@ -4,20 +4,22 @@ import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
+import io.github.smiley4.strategygame.backend.playerpov.application.POVCache
+import io.github.smiley4.strategygame.backend.playerpov.application.TileVisibilityDTO
+import io.github.smiley4.strategygame.backend.playerpov.application.isLessThan
 
 
-internal class  WorldObjectPOVBuilder {
+internal class  WorldObjectPOVBuilder(private val povCache: POVCache) {
 
-    fun build(worldObject: WorldObject): JsonType {
+    fun build(worldObject: WorldObject): JsonType? {
+        if(povCache.worldObjectVisibility(worldObject.id).isLessThan(TileVisibilityDTO.DISCOVERED)) {
+            return null
+        }
         return obj {
             "id" to worldObject.id.value
             "type" to worldObject.type
-            "realm" to worldObject.realmId.value
-            "tile" to obj {
-                "id" to worldObject.tile.id.value
-                "q" to worldObject.tile.position.q
-                "r" to worldObject.tile.position.r
-            }
+            "realm" to povCache.realmIdentifier(worldObject.realmId)
+            "tile" to povCache.tileIdentifier(worldObject.tile.id)
             "components" to worldObject.components.map { component ->
                 when(component) {
                     is WorldObjectComponent.Movement -> obj {
@@ -26,7 +28,7 @@ internal class  WorldObjectPOVBuilder {
                     }
                     is WorldObjectComponent.Vision -> obj {
                         "type" to "vision"
-                        "maxVisionDistance" to component.maxVisionDistance
+                        "radius" to component.radius
                     }
                 }
             }

@@ -14,6 +14,10 @@ data class WorldObject(
         companion object
     }
 
+    inline fun <reified T : WorldObjectComponent> hasComponent(): Boolean {
+        return components.any { component -> component is T }
+    }
+
     inline fun <reified T : WorldObjectComponent> getComponentOrNull(): T? {
         return components.filterIsInstance<T>().firstOrNull()
     }
@@ -32,7 +36,7 @@ sealed interface WorldObjectComponent {
     ) : WorldObjectComponent
 
     data class Vision(
-        val maxVisionDistance: Int
+        val radius: Int
     ) : WorldObjectComponent
 
 }

@@ -3,10 +3,9 @@ package io.github.smiley4.strategygame.backend.commondata
 data class Tile(
     val id: Id,
     val position: Position,
+    val discoveredBy: MutableSet<Realm.Id>,
     val dataWorld: WorldData,
 ) {
-
-
 
     @JvmInline
     value class Id(val value: String) {
@@ -29,4 +28,5 @@ data class Tile(
         var resourceType: TileResourceType,
         var height: Float,
     )
+
 }

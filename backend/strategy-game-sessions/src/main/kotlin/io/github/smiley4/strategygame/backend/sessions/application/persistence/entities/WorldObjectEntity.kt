@@ -30,7 +30,7 @@ internal class WorldObjectEntity(
                             maxMovement = it.maxMovement,
                         )
                         is WorldObjectComponent.Vision -> WorldObjectComponentEntity.Vision(
-                            maxVisionDistance = it.maxVisionDistance
+                            radius = it.radius
                         )
                     }
                 }
@@ -50,7 +50,7 @@ internal class WorldObjectEntity(
                         maxMovement = it.maxMovement,
                     )
                     is WorldObjectComponentEntity.Vision -> WorldObjectComponent.Vision(
-                        maxVisionDistance = it.maxVisionDistance
+                        radius = it.radius
                     )
                 }
             }
@@ -72,7 +72,7 @@ internal sealed interface WorldObjectComponentEntity {
     ) : WorldObjectComponentEntity
 
     data class Vision(
-        val maxVisionDistance: Int
+        val radius: Int
     ) : WorldObjectComponentEntity
 
 }

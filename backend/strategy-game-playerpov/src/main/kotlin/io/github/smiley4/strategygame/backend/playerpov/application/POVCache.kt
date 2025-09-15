@@ -6,10 +6,13 @@ import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
+import io.github.smiley4.strategygame.backend.playerpov.VisibilityCalculator
 
 
 internal class POVCache(
-    game: GameState,
+    gameState: GameState,
+    visibilityCalculator: VisibilityCalculator,
+    povRealm: Realm.Id
 ) {
 
     // json-objects for all identifiers in the game
@@ -24,13 +27,13 @@ internal class POVCache(
     init {
 
         // build json-identifiers for all things in the game
-        game.realms.forEach { realm ->
+        gameState.realms.forEach { realm ->
             realmIdentifiers[realm.id] = obj {
                 "id" to realm.id.value
                 "name" to realm.id.value
             }
         }
-        game.tiles.forEach { tile ->
+        gameState.tiles.forEach { tile ->
             tileIdentifiers[tile.id] = obj {
                 "id" to tile.id.value
                 "q" to tile.position.q
@@ -39,12 +42,12 @@ internal class POVCache(
         }
 
         // calculate visibility state for all tiles
-        game.tiles.forEach { tile ->
-            tileVisibilities[tile.id] = TileVisibilityDTO.VISIBLE
+        gameState.tiles.forEach { tile ->
+            tileVisibilities[tile.id] = visibilityCalculator.calculate(gameState, povRealm, tile)
         }
 
         // calculate visible world objects
-        game.worldObjects.forEach { worldObject ->
+        gameState.worldObjects.forEach { worldObject ->
             worldObjectVisibilities[worldObject.id] =
                 if (tileVisibility(worldObject.tile.id).isAtLeast(TileVisibilityDTO.VISIBLE)) TileVisibilityDTO.VISIBLE
                 else TileVisibilityDTO.UNKNOWN
@@ -54,14 +57,8 @@ internal class POVCache(
     fun realmIdentifier(id: Realm.Id): JsonType =
         realmIdentifiers[id] ?: throw Exception("No realm identifier for $id")
 
-    fun realmIdentifierOrNull(id: Realm.Id?): JsonType? =
-        id?.let { realmIdentifiers[id] }
-
     fun tileIdentifier(tileId: Tile.Id): JsonType =
         tileIdentifiers[tileId] ?: throw Exception("No tile identifier for $tileId")
-
-    fun tileIdentifierOrNull(tileId: Tile.Id?): JsonType? =
-        tileId?.let { tileIdentifiers[tileId] }
 
     fun tileVisibility(tileId: Tile.Id): TileVisibilityDTO =
         tileVisibilities[tileId] ?: throw Exception("No visibility for tile $tileId")

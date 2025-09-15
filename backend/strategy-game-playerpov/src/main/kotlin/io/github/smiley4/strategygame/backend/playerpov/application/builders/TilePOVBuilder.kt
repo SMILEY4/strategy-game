@@ -14,11 +14,7 @@ internal class TilePOVBuilder(private val povCache: POVCache) {
     fun build(tile: Tile): JsonType {
         val visibility = povCache.tileVisibility(tile.id)
         return obj {
-            "identifier" to obj {
-                "id" to tile.id.value
-                "q" to tile.position.q
-                "r" to tile.position.r
-            }
+            "identifier" to povCache.tileIdentifier(tile.id)
             "visibility" to visibility
             "base" to hidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
                 obj {

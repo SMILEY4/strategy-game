@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.backend.sessions.application.persistence.
 
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
@@ -9,6 +10,7 @@ import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 
 internal class TileEntity(
     val gameId: String,
+    val discoveredBy: Set<String>,
     val position: TilePositionEntity,
     val dataWorld: TileWorldDataEntity,
     key: String? = null
@@ -20,6 +22,7 @@ internal class TileEntity(
             gameId = gameId,
             position = TilePositionEntity.of(serviceModel.position),
             dataWorld = TileWorldDataEntity.of(serviceModel.dataWorld),
+            discoveredBy = serviceModel.discoveredBy.map { it.value }.toSet(),
         )
     }
 
@@ -27,6 +30,7 @@ internal class TileEntity(
         id = Tile.Id(this.getKeyOrThrow()),
         position = this.position.asServiceModel(),
         dataWorld = this.dataWorld.asServiceModel(),
+        discoveredBy = this.discoveredBy.map { Realm.Id(it) }.toMutableSet()
     )
 
 }

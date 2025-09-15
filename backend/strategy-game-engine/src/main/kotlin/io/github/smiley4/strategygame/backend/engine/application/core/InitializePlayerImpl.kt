@@ -11,6 +11,7 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
+import io.github.smiley4.strategygame.backend.engine.application.core.tools.Tools
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer
 
 
@@ -62,7 +63,7 @@ internal class InitializePlayerImpl() : InitializePlayer {
         return realm.id
     }
 
-    private fun spawnScout(spawnTiles: List<Tile.Ref>, game: GameState, realmId: Realm.Id) {
+    private fun spawnScout(spawnTiles: List<Tile.Ref>, gameState: GameState, realmId: Realm.Id) {
         val spawnLocation = spawnTiles.random()
         val scout = WorldObject(
             id = WorldObject.Id.gen(),
@@ -74,15 +75,15 @@ internal class InitializePlayerImpl() : InitializePlayer {
                     maxMovement = 5,
                 ),
                 WorldObjectComponent.Vision(
-                    maxVisionDistance = 3,
+                    radius = 3,
                 )
             )
         )
-        game.worldObjects.add(scout)
+        gameState.worldObjects.add(scout)
+        Tools.discoverArea(gameState, scout)
     }
 
-
-    private fun spawnWorker(spawnTiles: List<Tile.Ref>, game: GameState, realmId: Realm.Id) {
+    private fun spawnWorker(spawnTiles: List<Tile.Ref>, gameState: GameState, realmId: Realm.Id) {
         val spawnLocation = spawnTiles.random()
         val worker = WorldObject(
             id = WorldObject.Id.gen(),
@@ -94,11 +95,12 @@ internal class InitializePlayerImpl() : InitializePlayer {
                     maxMovement = 4,
                 ),
                 WorldObjectComponent.Vision(
-                    maxVisionDistance = 1,
+                    radius = 1,
                 )
             )
         )
-        game.worldObjects.add(worker)
+        gameState.worldObjects.add(worker)
+        Tools.discoverArea(gameState, worker)
     }
 
 }
