@@ -6,7 +6,9 @@ import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.User
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 internal class CommandEntity<T : CommandEntityData>(
     val userId: String,
@@ -28,7 +30,10 @@ internal class CommandEntity<T : CommandEntityData>(
 
         private fun of(serviceModel: CommandData): CommandEntityData {
             return when (serviceModel) {
-                is CommandData.NoOp -> NoOpCommandEntityData()
+                is CommandData.Move -> MoveCommandEntityData(
+                    worldObject = serviceModel.worldObject.value,
+                    path = serviceModel.path.map { TileRefEntity.of(it) }
+                )
             }
         }
 
@@ -44,7 +49,10 @@ internal class CommandEntity<T : CommandEntityData>(
 
     private fun asServiceModel(entity: CommandEntityData): CommandData {
         return when (entity) {
-            is NoOpCommandEntityData -> CommandData.NoOp()
+            is MoveCommandEntityData -> CommandData.Move(
+                worldObject = WorldObject.Id(entity.worldObject),
+                path = entity.path.map { it.asServiceModel() }
+            )
         }
     }
 
@@ -58,4 +66,7 @@ internal class CommandEntity<T : CommandEntityData>(
 )
 internal sealed class CommandEntityData
 
-internal class NoOpCommandEntityData() : CommandEntityData()
+internal class MoveCommandEntityData(
+    val worldObject: String,
+    val path: List<TileRefEntity>,
+) : CommandEntityData()

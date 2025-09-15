@@ -12,6 +12,7 @@ import io.github.smiley4.strategygame.backend.playerpov.lib.PlayerViewCreator
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsByGameQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateUpdate
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameUpdate
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameMessageProducer
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.TurnEnd
@@ -19,8 +20,8 @@ import io.github.smiley4.strategygame.backend.sessions.ports.required.GameStep
 
 internal class TurnEndImpl(
     private val commandsByGameQuery: CommandsByGameQuery,
-    private val queryGameExtended: GameStateQuery,
-    private val updateGameExtended: io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateUpdate,
+    private val queryGameState: GameStateQuery,
+    private val updateGameState: GameStateUpdate,
     private val queryGame: GameQuery,
     private val updateGame: GameUpdate,
     private val gameStepAction: GameStep,
@@ -34,7 +35,7 @@ internal class TurnEndImpl(
         return time(metricId) {
             log().info("End turn of game $gameId")
             val game = getGame(gameId)
-            val gameExtended = getGameExtended(gameId)
+            val gameExtended = getGameState(gameId)
             stepGame(gameExtended)
             updateGameInfo(game, gameExtended)
             sendPoVGameState(game, gameExtended)
@@ -57,9 +58,9 @@ internal class TurnEndImpl(
     /**
      * @return the complete game state or throw
      */
-    private suspend fun getGameExtended(gameId: Game.Id): GameState {
+    private suspend fun getGameState(gameId: Game.Id): GameState {
         try {
-            return queryGameExtended.execute(gameId)
+            return queryGameState.execute(gameId)
         } catch (e: EntityNotFoundError) {
             throw TurnEnd.GameNotFoundError(e)
         }
@@ -72,7 +73,7 @@ internal class TurnEndImpl(
     private suspend fun stepGame(gameState: GameState) {
         val commands = commandsByGameQuery.execute(gameState.game.id, gameState.game.turn)
         gameStepAction.perform(gameState, commands)
-        updateGameExtended.execute(gameState)
+        updateGameState.execute(gameState)
     }
 
 

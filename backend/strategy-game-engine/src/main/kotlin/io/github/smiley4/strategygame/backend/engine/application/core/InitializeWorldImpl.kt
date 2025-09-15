@@ -30,6 +30,7 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
             Tile(
                 id = Tile.Id.gen(),
                 position = Tile.Position(it.q, it.r),
+                discoveredBy = mutableSetOf(),
                 dataWorld = Tile.WorldData(
                     terrainType = it.type,
                     resourceType = it.resource,

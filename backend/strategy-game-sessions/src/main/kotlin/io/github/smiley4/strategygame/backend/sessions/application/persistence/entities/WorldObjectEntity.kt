@@ -5,12 +5,13 @@ import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
+import io.github.smiley4.strategygame.backend.commondata.WorldObjectType
 
 internal class WorldObjectEntity(
     val id: String,
     val realmId: String,
     val gameId: String,
-    val type: String,
+    val type: WorldObjectTypeEntity,
     val tile: TileRefEntity,
     val components: List<WorldObjectComponentEntity>,
     key: String? = null
@@ -20,9 +21,12 @@ internal class WorldObjectEntity(
         fun of(serviceModel: WorldObject, gameId: String): WorldObjectEntity {
             return WorldObjectEntity(
                 id = serviceModel.id.value,
-                realmId = serviceModel.realmId.value,
+                realmId = serviceModel.realm.value,
                 gameId = gameId,
-                type = serviceModel.type,
+                type = WorldObjectTypeEntity(
+                    group = serviceModel.type.group,
+                    name = serviceModel.type.name
+                ),
                 tile = TileRefEntity.of(serviceModel.tile),
                 components = serviceModel.components.map {
                     when (it) {
@@ -41,8 +45,11 @@ internal class WorldObjectEntity(
     fun asServiceModel(): WorldObject {
         return WorldObject(
             id = WorldObject.Id(this.id),
-            realmId = Realm.Id(this.realmId),
-            type = this.type,
+            realm = Realm.Id(this.realmId),
+            type = WorldObjectType(
+                group = this.type.group,
+                name = this.type.name
+            ),
             tile = this.tile.asServiceModel(),
             components = this.components.map {
                 when (it) {
@@ -59,6 +66,10 @@ internal class WorldObjectEntity(
 
 }
 
+data class WorldObjectTypeEntity(
+    val group: String,
+    val name: String,
+)
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.SIMPLE_NAME,

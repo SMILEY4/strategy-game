@@ -4,15 +4,16 @@ import kotlin.reflect.typeOf
 
 data class WorldObject(
     val id: Id,
-    val realmId: Realm.Id,
-    val type: String,
-    val tile: Tile.Ref,
+    val realm: Realm.Id,
+    val type: WorldObjectType,
+    var tile: Tile.Ref,
     val components: List<WorldObjectComponent>
 ) {
     @JvmInline
     value class Id(val value: String) {
         companion object
     }
+
 
     inline fun <reified T : WorldObjectComponent> hasComponent(): Boolean {
         return components.any { component -> component is T }
@@ -28,6 +29,17 @@ data class WorldObject(
 
 }
 
+data class WorldObjectType(
+    val group: String,
+    val name: String,
+) {
+
+    companion object {
+        val WORKER = WorldObjectType("unit", "worker")
+        val SCOUT = WorldObjectType("unit", "scout")
+    }
+
+}
 
 sealed interface WorldObjectComponent {
 

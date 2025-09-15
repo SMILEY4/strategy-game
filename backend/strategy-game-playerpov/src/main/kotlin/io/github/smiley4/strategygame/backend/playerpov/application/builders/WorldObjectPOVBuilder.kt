@@ -17,8 +17,11 @@ internal class  WorldObjectPOVBuilder(private val povCache: POVCache) {
         }
         return obj {
             "id" to worldObject.id.value
-            "type" to worldObject.type
-            "realm" to povCache.realmIdentifier(worldObject.realmId)
+            "type" to obj {
+                "group" to worldObject.type.group
+                "name" to worldObject.type.name
+            }
+            "realm" to povCache.realmIdentifier(worldObject.realm)
             "tile" to povCache.tileIdentifier(worldObject.tile.id)
             "components" to worldObject.components.map { component ->
                 when(component) {

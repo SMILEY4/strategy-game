@@ -24,7 +24,7 @@ internal class VisibilityCalculator {
         return gameState
             .worldObjects
             .asSequence()
-            .filter { it.realmId == povRealm }
+            .filter { it.realm == povRealm }
             .filter { it.hasComponent<WorldObjectComponent.Vision>() }
             .any { tile.position.distance(it.tile) <= it.getComponent<WorldObjectComponent.Vision>().radius }
     }

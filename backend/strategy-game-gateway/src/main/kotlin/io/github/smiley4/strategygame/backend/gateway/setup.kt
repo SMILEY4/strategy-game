@@ -37,6 +37,7 @@ import io.github.smiley4.strategygame.backend.sessions.ports.provided.DeleteGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectAllPlayers
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectPlayer
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameMessageProducer
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameService
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.ListGames
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.RequestConnectionToGame
@@ -76,6 +77,7 @@ import mu.two.KotlinLogging
 import org.koin.core.module.Module
 import org.koin.ktor.ext.inject
 import org.slf4j.event.Level
+import kotlin.getValue
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
@@ -248,10 +250,11 @@ private fun Route.routingGateway() {
             }
         }
 
+        val gameService by inject<GameService>()
         authenticate("user") {
             route("game") {
                 route("movement") {
-                    routeMovementAvailablePositions()
+                    routeMovementAvailablePositions(gameService)
                 }
                 route("settlement") {
                     routeSettlementName()

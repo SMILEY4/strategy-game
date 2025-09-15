@@ -16,6 +16,9 @@ class Command<T : CommandData>(
 
 sealed class CommandData {
 
-    class NoOp() : CommandData()
+    class Move(
+        val worldObject: WorldObject.Id,
+        val path: List<Tile.Ref>
+    ) : CommandData()
 
 }

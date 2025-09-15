@@ -11,6 +11,7 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
+import io.github.smiley4.strategygame.backend.commondata.WorldObjectType
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.Tools
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer
 
@@ -67,8 +68,8 @@ internal class InitializePlayerImpl() : InitializePlayer {
         val spawnLocation = spawnTiles.random()
         val scout = WorldObject(
             id = WorldObject.Id.gen(),
-            realmId = realmId,
-            type = "scout",
+            realm = realmId,
+            type = WorldObjectType.SCOUT,
             tile = spawnLocation,
             components = listOf(
                 WorldObjectComponent.Movement(
@@ -87,8 +88,8 @@ internal class InitializePlayerImpl() : InitializePlayer {
         val spawnLocation = spawnTiles.random()
         val worker = WorldObject(
             id = WorldObject.Id.gen(),
-            realmId = realmId,
-            type = "worker",
+            realm = realmId,
+            type = WorldObjectType.WORKER,
             tile = spawnLocation,
             components = listOf(
                 WorldObjectComponent.Movement(

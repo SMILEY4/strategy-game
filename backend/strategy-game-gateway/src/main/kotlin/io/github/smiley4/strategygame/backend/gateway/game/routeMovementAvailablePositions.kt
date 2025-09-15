@@ -1,9 +1,17 @@
 package io.github.smiley4.strategygame.backend.gateway.game
 
 import io.github.smiley4.ktorswaggerui.dsl.routing.get
+import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
+import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
+import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
+import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.MovementTarget
+import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
+import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -38,7 +46,7 @@ internal object RouteMovementAvailablePositions {
         detail = "The position with the given id does not exist."
     )
 
-    fun Route.routeMovementAvailablePositions() = get("availablepositions", {
+    fun Route.routeMovementAvailablePositions(service: GameService) = get("availablepositions", {
         description = "Get the next available positions to move to for the given world-object."
         request {
             queryParameter<String>("gameId") {
@@ -69,7 +77,23 @@ internal object RouteMovementAvailablePositions {
             }
         }
     }) {
-        call.respond(HttpStatusCode.NotImplemented)
+        val userId = call.getUserIdOrThrow()
+        withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
+            val gameId = call.parameters["gameId"]!!
+            val worldObjectId = call.parameters["worldObjectId"]!!
+            val tileId = call.parameters["pos"]!!
+            val points = call.parameters["points"]!!.toInt()
+            try {
+                val targets = service.getAvailableMovementPositions(Game.Id(gameId), WorldObject.Id(worldObjectId), Tile.Id(tileId), points)
+                call.respond(HttpStatusCode.OK, targets)
+            } catch (e: GameService.GameServiceError) {
+                when(e) {
+                    is GameService.GameNotFoundError -> call.respond(GameNotFound)
+                    is GameService.TileNotFoundError -> call.respond(PositionNotFound)
+                    is GameService.WorldObjectNotFoundError -> call.respond(WorldObjectNotFound)
+                }
+            }
+        }
     }
 
 }
