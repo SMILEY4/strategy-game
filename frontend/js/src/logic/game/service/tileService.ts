@@ -1,5 +1,4 @@
 import {UseTileWindow} from "../../../ui/pages/ingame/windows/tile/useTileWindow";
-import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {TileSummary} from "../../../models/tile/tileSummary";
 import {GameStateAccess} from "../../../state/gameStateAccess";
@@ -7,6 +6,7 @@ import {CanvasHandle} from "../../../common/webgl/canvasHandle";
 import {Projections} from "../../../common/webgl/projections";
 import {Camera} from "../../../common/webgl/camera";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
+import {UseUnitWindow} from "../../../ui/pages/ingame/windows/unit/useUnitWindow";
 
 export interface TileService {
 	/**
@@ -44,7 +44,7 @@ export class TileServiceImpl implements TileService {
 			return;
 		}
 		if (worldObjects.length === 1) {
-			UseWorldObjectWindow.open(worldObjects[0].id);
+			UseUnitWindow.open(worldObjects[0].id);
 			return;
 		}
 		UseTileWindow.open(tile.id);

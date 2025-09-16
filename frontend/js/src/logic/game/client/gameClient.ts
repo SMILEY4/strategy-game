@@ -31,8 +31,8 @@ export class GameClient {
 			tile: {
 				id: tgt.tile.id,
 				position: {
-					q: tgt.tile.q,
-					r: tgt.tile.r,
+					q: tgt.tile.position.q,
+					r: tgt.tile.position.r,
 				},
 			},
 			cost: tgt.cost,
@@ -55,8 +55,10 @@ export class GameClient {
 interface MovementTargetResponse {
 	tile: {
 		id: string,
-		q: number,
-		r: number
+		position: {
+			q: number,
+			r: number
+		}
 	},
 	cost: number
 }

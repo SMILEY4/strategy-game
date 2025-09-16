@@ -2,7 +2,6 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import React from "react";
 import {OutlinerWindow} from "./OutlinerWindow";
-import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
 import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectOutline";
@@ -10,6 +9,7 @@ import {RealmOutline} from "../../../../../models/country/realmOutline";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {UseRealmWindow} from "../realm/useRealmWindow";
+import {UseUnitWindow} from "../unit/useUnitWindow";
 
 export namespace UseOutlinerWindow {
 
@@ -43,7 +43,7 @@ export namespace UseOutlinerWindow {
 		return {
 			unit: {
 				entries: units,
-				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.id),
+				open: (outline: WorldObjectOutline) => UseUnitWindow.open(outline.id),
 				focusCamera: (outline: WorldObjectOutline) => App.gameProxy.focusCamera(outline.tile.position),
 			},
 			realms: {

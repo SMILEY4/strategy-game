@@ -8,6 +8,10 @@ export interface WorldObjectComponent {
 
 export namespace WorldObjectComponent {
 
+	export function has(worldObject: WorldObject, type: WorldObjectComponentType): boolean {
+		return worldObject.components.some(it => it.type === type)
+	}
+
 	export function get<T extends WorldObjectComponent>(worldObject: WorldObject, type: WorldObjectComponentType): T {
 		const component = getOrNull<T>(worldObject, type);
 		if (component == null) {

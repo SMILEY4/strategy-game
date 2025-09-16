@@ -85,7 +85,7 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 	);
 
 	function renderCommand(command: Command): any {
-		if (command.type == CommandType.MOVE) {
+		if (command.type == CommandType.WORLD_OBJECT_MOVE) {
 			const cmd = command as MoveCommand;
 			return (
 				<>

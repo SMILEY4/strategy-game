@@ -2,7 +2,6 @@ import {TileService, TileServiceImpl} from "./logic/game/service/tileService";
 import {CameraService, CameraServiceImpl} from "./logic/game/service/cameraService";
 import {MovementService, MovementServiceImpl} from "./logic/game/service/movementService";
 import {TurnEndService, TurnEndServiceImpl} from "./logic/game/service/turnEndService";
-import {SettlementService, SettlementServiceImpl} from "./logic/game/service/settlementService";
 import {GameStateWriter, GameStateWriterImpl} from "./state/gameStateWriter";
 import {AudioService} from "./common/audioService";
 import {GameStateAccess, GameStateAccessImpl} from "./state/gameStateAccess";
@@ -90,7 +89,6 @@ export namespace App {
 	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
 	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, turnStartService, cameraService, gameStateAccess, gameStateWriter);
 	const turnEndService: TurnEndService = new TurnEndServiceImpl(gameSessionService, movementService, gameStateWriter, gameStateAccess);
-	const settlementService: SettlementService = new SettlementServiceImpl(commandService, gameClient, gameStateAccess);
 	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
 	const userService: UserService = new UserServiceImpl(userClient, userStateAccess, userStateWriter);
 	const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor);
@@ -114,7 +112,6 @@ export namespace App {
 		cameraService,
 		movementService,
 		turnEndService,
-		settlementService,
 		commandService,
 		monitoringService,
 		gameSessionService,

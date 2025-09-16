@@ -2,15 +2,14 @@ import React from "react";
 import {TileWindow} from "./TileWindow";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
 import {TileId} from "../../../../../models/tile/tileId";
 import {Tile} from "../../../../../models/tile/tile";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
-import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
+import {UseUnitWindow} from "../unit/useUnitWindow";
 
 export namespace UseTileWindow {
 
@@ -41,7 +40,7 @@ export namespace UseTileWindow {
 			return {
 				tile: tile,
 				open: {
-					worldObject: worldObjectId => UseWorldObjectWindow.open(worldObjectId)
+					worldObject: worldObjectId => UseUnitWindow.open(worldObjectId)
 				},
 				centerCamera: () => App.gameProxy.focusCamera(tile.position),
 			};

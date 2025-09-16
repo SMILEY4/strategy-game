@@ -73,7 +73,7 @@ export class MovementServiceImpl implements MovementService {
 		if (currentMovementState && currentMovementState.path.length > 0) {
 			this.commandService.addCommand<MoveCommand>({
 				id: UID.generate(),
-				type: CommandType.MOVE,
+				type: CommandType.WORLD_OBJECT_MOVE,
 				worldObjectId: currentMovementState.worldObjectId,
 				path: currentMovementState.path.map(it => it.tile)
 			})

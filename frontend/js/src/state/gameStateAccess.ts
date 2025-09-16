@@ -257,7 +257,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 				pending: true,
 			});
 		}
-		this.getCommandsOfType<MoveCommand>(CommandType.MOVE).forEach(cmd => {
+		this.getCommandsOfType<MoveCommand>(CommandType.WORLD_OBJECT_MOVE).forEach(cmd => {
 			results.push({
 				tiles: cmd.path,
 				pending: false,

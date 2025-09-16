@@ -103,7 +103,7 @@ function SectionUnits(props: UseRealmWindow.Data): ReactElement {
 						<HBox fullSize padding_s gap_s>
 							<Txt.Body>
 								<Txt.Link onClick={() => props.open.worldObject(worldObject)}>
-									<Txt.String>{worldObject.type.id}</Txt.String>
+									<Txt.String>{worldObject.type.group + "/" + worldObject.type.name}</Txt.String>
 								</Txt.Link>
 							</Txt.Body>
 						</HBox>

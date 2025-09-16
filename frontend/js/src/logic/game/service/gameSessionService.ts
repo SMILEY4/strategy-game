@@ -6,10 +6,11 @@ import {TurnStartService} from "./turnStartService";
 import {GameStateMessage} from "../../../models/messages/gameStateMessage";
 import {WebsocketMessageHandler} from "../../../common/websocketMessageHandler";
 import {
+	DisbandWorldObjectCommandMessage,
 	MoveCommandMessage,
 } from "../../../models/messages/commandMessage";
 import {
-	Command,
+	Command, DisbandCommand,
 	MoveCommand,
 } from "../../../models/command/command";
 import {CommandType} from "../../../models/command/commandType";
@@ -138,19 +139,32 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 			"submit-turn",
 			{
 				commands: commands.map(it => {
-					if (it.type === CommandType.MOVE) {
+
+					if (it.type === CommandType.WORLD_OBJECT_MOVE) {
 						const cmd = it as MoveCommand;
 						const cmdMsg: MoveCommandMessage = {
 							type: cmd.type.id,
 							worldObjectId: cmd.worldObjectId!,
 							path: cmd.path.map(it => ({
 								id: it.id,
-								q: it.position.q,
-								r: it.position.r,
+								position: {
+									q: it.position.q,
+									r: it.position.r,
+								}
 							})),
 						};
 						return cmdMsg;
 					}
+
+					if (it.type === CommandType.WORLD_OBJECT_DISBAND) {
+						const cmd = it as DisbandCommand;
+						const cmdMsg: DisbandWorldObjectCommandMessage = {
+							type: cmd.type.id,
+							worldObjectId: cmd.worldObjectId!,
+						};
+						return cmdMsg;
+					}
+
 					throw new Error("Unexpected command type: " + it.type.id);
 				}),
 			},

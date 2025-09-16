@@ -6,19 +6,16 @@ import {AudioService, AudioType} from "../../common/audioService";
 import {TurnEndService} from "./service/turnEndService";
 import {MapMode} from "../../models/misc/mapMode";
 import {TilePosition} from "../../models/tile/tilePosition";
-import {Command} from "../../models/command/command";
-import {TileId} from "../../models/tile/tileId";
+import {Command, DisbandCommand} from "../../models/command/command";
 import {WorldObjectId} from "../../models/worldobject/worldObjectId";
 import {GameStateWriter} from "../../state/gameStateWriter";
-import {TileSummary} from "../../models/tile/tileSummary";
-import {SettlementService} from "./service/settlementService";
-import {SettlementSummary} from "../../models/settlement/settlementSummary";
-import {SettlementProductionOption} from "../../models/settlement/settlement";
 import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
 import {GameSessionService} from "./service/gameSessionService";
 import {CommandService} from "./service/commandService";
 import {MonitoringService} from "./service/monitoringService";
 import {GameRenderer} from "../../renderer/gameRenderer";
+import {UID} from "../../common/uid";
+import {CommandType} from "../../models/command/commandType";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
@@ -94,28 +91,6 @@ export interface GameProxy {
 	 * Cancel the given command.
 	 */
 	commandCancel(command: Command): void;
-	// settlements
-	/**
-	 * Get a random name for a settlement.
-	 */
-	getRandomSettlementName(): Promise<string>;
-	/**
-	 * Validate whether the settlement can be created.
-	 * Returns a list of reasons if invalid.
-	 */
-	validateFoundSettlement(tile: TileId, name: string): string[];
-	/**
-	 * Create a new settlement.
-	 */
-	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void;
-	/**
-	 * Add a new entry to the given settlements production queue.
-	 */
-	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void,
-	/**
-	 * Cancel the given entry in the given settlements production queue.
-	 */
-	cancelProduction(settlement: SettlementSummary, entryId: string): void,
 	// units / world objects
 	/**
 	 * Start "move" mode for the given world object.
@@ -151,7 +126,6 @@ export class GameProxyImpl implements GameProxy {
 	private readonly cameraService: CameraService;
 	private readonly movementService: MovementService;
 	private readonly turnEndService: TurnEndService;
-	private readonly settlementService: SettlementService;
 	private readonly commandService: CommandService;
 	private readonly monitoringService: MonitoringService;
 	private readonly gameSessionService: GameSessionService;
@@ -165,7 +139,6 @@ export class GameProxyImpl implements GameProxy {
 		cameraService: CameraService,
 		movementService: MovementService,
 		turnEndService: TurnEndService,
-		settlementService: SettlementService,
 		commandService: CommandService,
 		monitoringService: MonitoringService,
 		gameSessionService: GameSessionService,
@@ -177,7 +150,6 @@ export class GameProxyImpl implements GameProxy {
 		this.cameraService = cameraService;
 		this.movementService = movementService;
 		this.turnEndService = turnEndService;
-		this.settlementService = settlementService;
 		this.commandService = commandService;
 		this.monitoringService = monitoringService;
 		this.gameSessionService = gameSessionService;
@@ -290,31 +262,6 @@ export class GameProxyImpl implements GameProxy {
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
-	//========== SETTLEMENTS ==================================================
-
-	getRandomSettlementName(): Promise<string> {
-		return this.settlementService.getRandomName();
-	}
-
-	validateFoundSettlement(tile: TileId, name: string): string[] {
-		return this.settlementService.validateFounding(tile, name);
-	}
-
-	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void {
-		this.settlementService.foundSettlement(tile, worldObjectId, name);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
-	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void {
-		this.settlementService.addProduction(settlement, entry);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
-	cancelProduction(settlement: SettlementSummary, entryId: string): void {
-		this.settlementService.cancelProduction(settlement, entryId);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
 	//========== UNITS / WORLD OBJECTS ========================================
 
 	beginMovement(worldObjectId: WorldObjectId): void {
@@ -333,7 +280,12 @@ export class GameProxyImpl implements GameProxy {
 	}
 
 	disbandWorldObject(worldObjectId: WorldObjectId): void {
-		throw new Error("Not Implemented")
+		this.commandService.addCommand<DisbandCommand>({
+			id: UID.generate(),
+			type: CommandType.WORLD_OBJECT_DISBAND,
+			worldObjectId: worldObjectId,
+		});
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
 	//========== DEV FUNCTIONALITY ============================================
