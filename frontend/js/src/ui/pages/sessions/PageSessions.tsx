@@ -137,11 +137,6 @@ function GameSessionEntry(props: {
 						</Txt.Body>
 						<Txt.Body secondary style={{marginRight: "16px"}}>
 							<Txt.String>
-								{"Players: " + props.session.players}
-							</Txt.String>
-						</Txt.Body>
-						<Txt.Body secondary style={{marginRight: "16px"}}>
-							<Txt.String>
 								{"Turn: " + props.session.currentTurn}
 							</Txt.String>
 						</Txt.Body>

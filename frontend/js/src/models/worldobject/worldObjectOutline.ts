@@ -1,11 +1,13 @@
-import {WorldObjectType} from "./worldObjectType";
 import {TileSummary} from "../tile/tileSummary";
-import {CountrySummary} from "../country/countrySummary";
+import {RealmSummary} from "../country/realmSummary";
 import {WorldObjectId} from "./worldObjectId";
 
 export interface WorldObjectOutline {
 	id: WorldObjectId,
-	type: WorldObjectType,
+	type: {
+		group: string,
+		name: string
+	},
 	tile: TileSummary,
-	country: CountrySummary,
+	realm: RealmSummary,
 }

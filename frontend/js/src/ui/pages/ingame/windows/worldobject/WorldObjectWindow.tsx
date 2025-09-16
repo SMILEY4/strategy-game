@@ -2,10 +2,8 @@ import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {UseWorldObjectWindow} from "./useWorldObjectWindow";
 import {Button} from "../../../../components/button/Button";
-import {Else, If, Then, When} from "react-if";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Banner} from "../../../../components/banner/Banner";
-import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
 import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
@@ -33,9 +31,9 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 				<VBox fullSize>
 
 					<Banner
-						title={data.worldObject.type.id}
+						title={data.worldObject.type.group + "/" + data.worldObject.type.name}
 						subtitle={"World Object"}
-						color={data.worldObject.country.color}
+						color={data.worldObject.realm.color}
 						spaceAbove
 					>
 						<Button circle small onClick={data.open.tile}><Txt.Icon.Tile/></Button>
@@ -43,46 +41,12 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 					</Banner>
 
 					<VBox padding_l gap_m scrollable grow shrink>
-						{data.worldObject.country.isUserControlled && (
+						{data.worldObject.realm.ownedByUser && (
 							<>
 								<Txt.Header2 center>
 									<Txt.String>Actions</Txt.String>
 								</Txt.Header2>
 								<Divider line/>
-
-								<InsetPanel dontShrink dontGrow>
-									<VBox padding_s gap_s fullSize>
-
-										<When condition={data.movement.possible}>
-											<If condition={data.movement.canCancel}>
-												<Then>
-													<Button onClick={data.movement.cancel}>
-														Cancel Movement
-													</Button>
-												</Then>
-												<Else>
-													<Button onClick={data.movement.start}
-															disabled={!data.movement.enabled}>
-														Move
-													</Button>
-												</Else>
-											</If>
-										</When>
-
-										<When condition={data.settlement.possible}>
-											<Button onClick={data.settlement.start} disabled={!data.settlement.enabled}>
-												Found Settlement
-											</Button>
-										</When>
-
-										<When condition={data.disband.possible}>
-											<Button onClick={data.disband.start} disabled={!data.disband.enabled}>
-												Disband
-											</Button>
-										</When>
-
-									</VBox>
-								</InsetPanel>
 							</>
 						)}
 					</VBox>

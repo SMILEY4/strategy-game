@@ -13,10 +13,7 @@ import {
 } from "../../../models/messages/commandMessage";
 import {
 	Command,
-	CreateSettlementCommand, DisbandWorldObjectCommand,
 	MoveCommand,
-	ProductionQueueAddCommand,
-	ProductionQueueCancelCommand,
 } from "../../../models/command/command";
 import {CommandType} from "../../../models/command/commandType";
 import {GameStateAccess} from "../../../state/gameStateAccess";
@@ -123,7 +120,7 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 		if (type === "game-state") {
 			const gameState = payload as GameStateMessage;
 			this.turnStartService.setGameState(gameState);
-			this.gameStateWriter.setCurrentTurn(gameState.meta.turn);
+			this.gameStateWriter.setCurrentTurn(gameState.game.turn);
 			if (this.localStateAccess.getGameSessionState() === "loading") {
 				this.gameStateWriter.setGameSessionState("playing");
 			}
@@ -139,7 +136,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 			"submit-turn",
 			{
 				commands: commands.map(it => {
-
 					if (it.type === CommandType.MOVE) {
 						const cmd = it as MoveCommand;
 						const cmdMsg: MoveCommandMessage = {
@@ -153,46 +149,6 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 						};
 						return cmdMsg;
 					}
-
-					if (it.type === CommandType.CREATE_SETTLEMENT) {
-						const cmd = it as CreateSettlementCommand;
-						const cmdMsg: CreateSettlementCommandMessage = {
-							type: cmd.type.id,
-							name: cmd.name,
-							worldObjectId: cmd.worldObjectId!,
-						};
-						return cmdMsg;
-					}
-
-					if (it.type === CommandType.PRODUCTION_QUEUE_ADD) {
-						const cmd = it as ProductionQueueAddCommand;
-						const cmdMsg: ProductionQueueAddCommandMessage = {
-							type: cmd.type.id,
-							entryType: cmd.entry.type,
-							settlementId: cmd.settlement.id,
-						};
-						return cmdMsg;
-					}
-
-					if (it.type === CommandType.PRODUCTION_QUEUE_CANCEL) {
-						const cmd = it as ProductionQueueCancelCommand;
-						const cmdMsg: ProductionQueueCancelCommandMessage = {
-							type: cmd.type.id,
-							entryId: cmd.entry.entryId,
-							settlementId: cmd.settlement.id,
-						};
-						return cmdMsg;
-					}
-
-					if (it.type === CommandType.DISBAND_WORLD_OBJECT) {
-						const cmd = it as DisbandWorldObjectCommand;
-						const cmdMsg: DisbandWorldObjectCommandMessage = {
-							type: cmd.type.id,
-							worldObjectId: cmd.worldObjectId,
-						};
-						return cmdMsg;
-					}
-
 					throw new Error("Unexpected command type: " + it.type.id);
 				}),
 			},

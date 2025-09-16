@@ -5,6 +5,7 @@ import {WindowStore} from "../../../../components/window/windowStore";
 import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
+import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
 
 export namespace UseMoveWindow {
 
@@ -45,9 +46,10 @@ export namespace UseMoveWindow {
 		}, []);
 
 		if (worldObject) {
+			const maxMovement = WorldObjectComponent.get<WorldObjectComponent.Move>(worldObject, "movement").maxMovement;
 			return {
 				remainingPoints: remainingMovement,
-				totalPoints: worldObject.maxMovementPoints,
+				totalPoints: maxMovement,
 				cancel: () => {
 					App.gameProxy.endMovement(false);
 					closeWindow(windowId);

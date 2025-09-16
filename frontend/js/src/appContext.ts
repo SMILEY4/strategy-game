@@ -8,10 +8,8 @@ import {AudioService} from "./common/audioService";
 import {GameStateAccess, GameStateAccessImpl} from "./state/gameStateAccess";
 import {CameraDatabase} from "./state/database/cameraDatabase";
 import {CommandDatabase} from "./state/database/commandDatabase";
-import {CountryDatabase} from "./state/database/countryDatabase";
+import {RealmDatabase} from "./state/database/realmDatabase";
 import {GameSessionDatabase} from "./state/database/gameSessionDatabase";
-import {RouteDatabase} from "./state/database/routeDatabase";
-import {SettlementDatabase} from "./state/database/settlementDatabase";
 import {TileDatabase} from "./state/database/tileDatabase";
 import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
 import {GameClient} from "./logic/game/client/gameClient";
@@ -51,10 +49,8 @@ export namespace App {
 	// database
 	const cameraDatabase: CameraDatabase = new CameraDatabase();
 	const commandDatabase: CommandDatabase = new CommandDatabase();
-	const countryDatabase: CountryDatabase = new CountryDatabase();
+	const realmDatabase: RealmDatabase = new RealmDatabase();
 	const gameSessionDatabase: GameSessionDatabase = new GameSessionDatabase();
-	const routeDatabase: RouteDatabase = new RouteDatabase();
-	const settlementDatabase: SettlementDatabase = new SettlementDatabase();
 	const tileDatabase: TileDatabase = new TileDatabase();
 	const worldObjectDatabase: WorldObjectDatabase = new WorldObjectDatabase();
 
@@ -65,19 +61,15 @@ export namespace App {
 		cameraDatabase,
 		tileDatabase,
 		gameSessionDatabase,
-		countryDatabase,
+		realmDatabase,
 		worldObjectDatabase,
-		settlementDatabase,
-		routeDatabase,
 		commandDatabase,
 	);
 	const gameStateWriter: GameStateWriter = new GameStateWriterImpl(
 		commandDatabase,
 		tileDatabase,
-		countryDatabase,
-		settlementDatabase,
+		realmDatabase,
 		worldObjectDatabase,
-		routeDatabase,
 		cameraDatabase,
 		gameSessionDatabase,
 	);
@@ -133,10 +125,8 @@ export namespace App {
 		gameSessionDatabase: gameSessionDatabase,
 		tileDatabase: tileDatabase,
 		commandDatabase: commandDatabase,
-		settlementDatabase: settlementDatabase,
 		worldObjectDatabase: worldObjectDatabase,
-		countryDatabase: countryDatabase,
-		routeDatabase: routeDatabase,
+		countryDatabase: realmDatabase,
 		cameraDatabase: cameraDatabase,
 	});
 

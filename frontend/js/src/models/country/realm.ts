@@ -1,15 +1,13 @@
 import {Color} from "../../common/color";
 import {Player} from "../misc/player";
-import {CountryId} from "./countryId";
-import {SettlementSummary} from "../settlement/settlementSummary";
+import {RealmId} from "./realmId";
 import {WorldObjectSummary} from "../worldobject/worldObjectSummary";
 
-export interface Country {
-	id: CountryId,
+export interface Realm {
+	id: RealmId,
 	name: string,
 	color: Color,
-	isUserControlled: boolean,
+	ownedByUser: boolean,
 	player: Player,
-	settlements: SettlementSummary[],
 	worldObjects: WorldObjectSummary[],
 }

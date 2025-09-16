@@ -16,7 +16,7 @@ interface WorldObjectStorageConfig extends DatabaseStorageConfig<WorldObjectEnti
     supporting: {
         array: ArraySupportingStorage<WorldObjectEntity>,
         byPos: MapUniqueSupportingStorage<WorldObjectEntity, string>,
-        byCountry: MapSupportingStorage<WorldObjectEntity, string>
+        byRealm: MapSupportingStorage<WorldObjectEntity, string>
     }
 }
 
@@ -32,7 +32,7 @@ class WorldObjectStorage extends DatabaseStorage<WorldObjectStorageConfig, World
             supporting: {
                 array: new ArraySupportingStorage<WorldObjectEntity>(),
                 byPos: new MapUniqueSupportingStorage<WorldObjectEntity, string>(e => WorldObjectStorage.toKey(e.tile.position.q, e.tile.position.r)),
-                byCountry: new MapSupportingStorage<WorldObjectEntity, string>(e => e.country.id)
+                byRealm: new MapSupportingStorage<WorldObjectEntity, string>(e => e.realm.id)
             },
         });
     }
@@ -71,9 +71,9 @@ export namespace WorldObjectDatabase {
         },
     };
 
-    export const QUERY_BY_COUNTRY_ID: WorldObjectQuery<string> = {
+    export const QUERY_BY_REALM_ID: WorldObjectQuery<string> = {
         run(storage: WorldObjectStorage, args: string): WorldObjectEntity[] {
-            return storage.config.supporting.byCountry.getByKey(args)
+            return storage.config.supporting.byRealm.getByKey(args)
         },
     };
 

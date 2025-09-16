@@ -5,7 +5,6 @@ import {buildMap} from "../../common/utils";
 import {Projections} from "../../common/webgl/projections";
 import {TilemapUtils} from "../../common/tilemapUtils";
 import {Camera} from "../../common/webgl/camera";
-import {Settlement} from "../../models/settlement/settlement";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 
@@ -15,7 +14,6 @@ export namespace LabelsElementGenerator {
 
 	export function funcCreate(context: RenderGraphNodeContext): Map<string, RenderElement[]> {
 
-		const settlements = context.get<Settlement[]>("settlements");
 		const worldObjects = context.get<WorldObject[]>("worldObjects");
 
 		const elementsByTile = new Map<string, LabelsHtmlData[]>();
@@ -28,44 +26,14 @@ export namespace LabelsElementGenerator {
 			}
 		}
 
-		for (let i = 0, n = settlements.length; i < n; i++) {
-			const settlement = settlements[i];
-			addElement({
-				position: settlement.tile.position,
-				tileId: settlement.tile.id,
-				type: "location",
-				name: settlement.name,
-				color: `rgb(${settlement.country.color.red},${settlement.country.color.green},${settlement.country.color.blue})`,
-				index: 0,
-			});
-		}
-		// todo
-		// const createSettlementCommands = context.commands
-		// 	.filter(it => it.type === CommandType.CREATE_SETTLEMENT)
-		// 	.map(it => it as CreateSettlementCommand);
-		// for (let i = 0, n = createSettlementCommands.length; i < n; i++) {
-		// 	const command = createSettlementCommands[i];
-		// 	addElement({
-		// 		type: "location-pending",
-		// 		tile: command.tile,
-		// 		name: command.name,
-		// 		color: `rgb(${context.playerCountry.color.red},${context.playerCountry.color.green},${context.playerCountry.color.blue})`,
-		// 		index: 0,
-		// 	});
-		// }
-
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
-			// todo
-			// if (createSettlementCommands.some(cmd => cmd.worldObjectId === worldObject.id)) {
-			// 	continue;
-			// }
 			addElement({
 				position: worldObject.tile.position,
 				tileId: worldObject.tile.id,
-				type: "location",
-				name: worldObject.type.id,
-				color: `rgb(${worldObject.country.color.red},${worldObject.country.color.green},${worldObject.country.color.blue})`,
+				type: "unit",
+				name: worldObject.type.group + "/" + worldObject.type.name,
+				color: `rgb(${worldObject.realm.color.red},${worldObject.realm.color.green},${worldObject.realm.color.blue})`,
 				index: 0,
 			});
 		}

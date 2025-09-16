@@ -13,10 +13,8 @@ import {CommandDatabase} from "./database/commandDatabase";
 import {MovementModeState} from "./database/movementModeState";
 import {Transaction} from "../common/db/database/transaction";
 import {TileDatabase} from "./database/tileDatabase";
-import {SettlementDatabase} from "./database/settlementDatabase";
 import {WorldObjectDatabase} from "./database/worldObjectDatabase";
-import {CountryDatabase} from "./database/countryDatabase";
-import {RouteDatabase} from "./database/routeDatabase";
+import {RealmDatabase} from "./database/realmDatabase";
 
 export interface GameStateWriter {
 	setGameSessionState(state: GameSessionState): void;
@@ -39,30 +37,23 @@ export class GameStateWriterImpl implements GameStateWriter {
 
 	private readonly commandDatabase: CommandDatabase;
 	private readonly tileDatabase: TileDatabase;
-	private readonly countryDatabase: CountryDatabase;
-	private readonly settlementDatabase: SettlementDatabase;
+	private readonly realmDatabase: RealmDatabase;
 	private readonly worldObjectDatabase: WorldObjectDatabase;
-	private readonly routeDatabase: RouteDatabase;
 	private readonly cameraDatabase: CameraDatabase;
 	private readonly gameSessionDatabase: GameSessionDatabase;
-
 
 	constructor(
 		commandDatabase: CommandDatabase,
 		tileDatabase: TileDatabase,
-		countryDatabase: CountryDatabase,
-		settlementDatabase: SettlementDatabase,
+		realmDatabase: RealmDatabase,
 		worldObjectDatabase: WorldObjectDatabase,
-		routeDatabase: RouteDatabase,
 		cameraDatabase: CameraDatabase,
 		gameSessionDatabase: GameSessionDatabase,
 	) {
 		this.commandDatabase = commandDatabase;
 		this.tileDatabase = tileDatabase;
-		this.countryDatabase = countryDatabase;
-		this.settlementDatabase = settlementDatabase;
+		this.realmDatabase = realmDatabase;
 		this.worldObjectDatabase = worldObjectDatabase;
-		this.routeDatabase = routeDatabase;
 		this.cameraDatabase = cameraDatabase;
 		this.gameSessionDatabase = gameSessionDatabase;
 	}
@@ -80,19 +71,15 @@ export class GameStateWriterImpl implements GameStateWriter {
 	}
 
 	replaceGameState(state: GameState): void {
-		Transaction.run([this.commandDatabase, this.tileDatabase, this.countryDatabase, this.settlementDatabase, this.worldObjectDatabase, this.routeDatabase], () => {
+		Transaction.run([this.commandDatabase, this.tileDatabase, this.realmDatabase, this.worldObjectDatabase], () => {
 			this.commandDatabase.deleteAll();
 			this.commandDatabase.insertMany(state.commands);
 			this.tileDatabase.deleteAll();
 			this.tileDatabase.insertMany(state.tiles);
-			this.countryDatabase.deleteAll();
-			this.countryDatabase.insertMany(state.countries);
-			this.settlementDatabase.deleteAll();
-			this.settlementDatabase.insertMany(state.settlements);
+			this.realmDatabase.deleteAll();
+			this.realmDatabase.insertMany(state.realms);
 			this.worldObjectDatabase.deleteAll();
 			this.worldObjectDatabase.insertMany(state.worldObjects);
-			this.routeDatabase.deleteAll();
-			this.routeDatabase.insertMany(state.routes);
 		});
 	}
 

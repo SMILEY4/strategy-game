@@ -1,14 +1,14 @@
 import {Visibility} from "../misc/visibility";
 import {HiddenType} from "../../common/hiddenType";
 import {TileResourceType} from "./TileResourceType";
-import {CountrySummary} from "../country/countrySummary";
-import {SettlementSummary} from "../settlement/settlementSummary";
 import {TileId} from "./tileId";
 import {TilePosition} from "./tilePosition";
-import {TileObject} from "./tileObject";
 import {TerrainType} from "./terrainType";
 import {Projections} from "../../common/webgl/projections";
 import Point = Projections.Point;
+import {WorldObjectSummary} from "../worldobject/worldObjectSummary";
+import {TileEntity} from "./tileEntity";
+import {WorldObject} from "../worldobject/worldObject";
 
 export interface Tile {
 	id: TileId,
@@ -19,14 +19,7 @@ export interface Tile {
 		resourceType: TileResourceType,
 		height: number
 	}>,
-	political: HiddenType<{
-		controlledBy: null | {
-			country: CountrySummary,
-			settlement: SettlementSummary
-		}
-	}>,
-	isValidSettlementLocation: boolean,
-	objects: TileObject[],
+	worldObjects: WorldObjectSummary[],
 	metaProperties: {
 		worldPosition: Point,
 		randomIndex: number,
@@ -34,4 +27,19 @@ export interface Tile {
 		randomValue1: number,
 		randomValue2: number,
 	}
+}
+
+export namespace Tile {
+
+	export function from(tile: TileEntity, worldObjects: WorldObject[]): Tile {
+		return {
+			id: tile.id,
+			position: tile.position,
+			visibility: tile.visibility,
+			base: tile.base,
+			worldObjects: worldObjects,
+			metaProperties: tile.metaProperties
+		}
+	}
+
 }

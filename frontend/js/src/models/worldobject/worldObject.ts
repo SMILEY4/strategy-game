@@ -1,12 +1,15 @@
-import {WorldObjectType} from "./worldObjectType";
 import {TileSummary} from "../tile/tileSummary";
-import {CountrySummary} from "../country/countrySummary";
+import {RealmSummary} from "../country/realmSummary";
 import {WorldObjectId} from "./worldObjectId";
+import {WorldObjectComponent} from "./worldObjectComponent";
 
 export interface WorldObject {
 	id: WorldObjectId,
-	type: WorldObjectType,
-	tile: TileSummary,
-	country: CountrySummary,
-	maxMovementPoints: number,
+	type: {
+		group: string,
+		name: string
+	},
+	realm: RealmSummary,
+	tile: TileSummary
+	components: WorldObjectComponent[]
 }

@@ -3,17 +3,11 @@ import {MapMode} from "../models/misc/mapMode";
 import {TileSummary} from "../models/tile/tileSummary";
 import {memory} from "wasm/wasm_bg.wasm";
 import {TextureAtlasEntry} from "../common/webgl/textureAtlas";
-import {Settlement} from "../models/settlement/settlement";
 import {WorldObject} from "../models/worldobject/worldObject";
-import {Route} from "../models/route/route";
 import {Rectangle} from "../common/utils";
 import {TileWasmSerializer} from "./serializers/tileWasmSerializer";
-import {RouteWasmSerializer} from "./serializers/routeWasmSerializer";
 import {WorldObjectWasmSerializer} from "./serializers/worldObjectWasmSerializer";
-import {SettlementWasmSerializer} from "./serializers/settlementWasmSerializer";
 import {
-	DirectRouteBuffer,
-	DirectSettlementBuffer,
 	DirectTileBuffer,
 	DirectWorldObjectBuffer,
 	WasmRenderApp,
@@ -74,26 +68,11 @@ export namespace WasmApi {
 			}
 		}
 
-		export function setRoutes(routes: Route[]) {
-			const amountRouteNodes = routes.flatMap(route => route.path).length;
-			const reservedMemory: DirectRouteBuffer = wasmRenderApp!.reserve_route_memory(amountRouteNodes);
-			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
-			RouteWasmSerializer.serialize(routes, reservedMemory.item_size, bytes);
-			wasmRenderApp!.upload_direct_route_memory(reservedMemory.ptr, reservedMemory.len);
-		}
-
 		export function setWorldObjects(worldObjects: WorldObject[]) {
 			const reservedMemory: DirectWorldObjectBuffer = wasmRenderApp!.reserve_world_object_memory(worldObjects.length);
 			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
 			WorldObjectWasmSerializer.serialize(worldObjects, reservedMemory.item_size, bytes);
 			wasmRenderApp!.upload_direct_world_object_memory(reservedMemory.ptr, reservedMemory.len);
-		}
-
-		export function setSettlements(settlements: Settlement[]) {
-			const reservedMemory: DirectSettlementBuffer = wasmRenderApp!.reserve_settlement_memory(settlements.length);
-			const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
-			SettlementWasmSerializer.serialize(settlements, reservedMemory.item_size, bytes);
-			wasmRenderApp!.upload_direct_settlement_memory(reservedMemory.ptr, reservedMemory.len);
 		}
 
 		export function setTiles(tiles: Tile[]) {

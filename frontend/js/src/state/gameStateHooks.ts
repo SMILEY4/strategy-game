@@ -9,26 +9,25 @@ import {
 } from "../common/db/adapters/databaseHooks";
 import {TileDatabase} from "./database/tileDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
-import {SettlementDatabase} from "./database/settlementDatabase";
 import {WorldObjectDatabase} from "./database/worldObjectDatabase";
 import {MovementModeState} from "./database/movementModeState";
-import {CountryDatabase} from "./database/countryDatabase";
-import {RouteDatabase} from "./database/routeDatabase";
-import {Settlement, SettlementProductionOption, SettlementProductionQueueEntry} from "../models/settlement/settlement";
-import {SettlementOutline} from "../models/settlement/settlementOutline";
+import {RealmDatabase} from "./database/realmDatabase";
 import {Command} from "../models/command/command";
-import {CountryOutline} from "../models/country/countryOutline";
+import {RealmOutline} from "../models/country/realmOutline";
 import {WorldObjectOutline} from "../models/worldobject/worldObjectOutline";
 import {TileSummary} from "../models/tile/tileSummary";
 import {Tile} from "../models/tile/tile";
 import {WorldObjectId} from "../models/worldobject/worldObjectId";
 import {TileId} from "../models/tile/tileId";
 import {WorldObject} from "../models/worldobject/worldObject";
-import {SettlementBuilder} from "./utils/settlementBuilder";
 import {CameraEntity} from "../models/misc/cameraEntity";
 import {CameraDatabase} from "./database/cameraDatabase";
-import {CountryId} from "../models/country/countryId";
-import {Country} from "../models/country/country";
+import {RealmId} from "../models/country/realmId";
+import {Realm} from "../models/country/realm";
+import {Color} from "../common/color";
+import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
+import {WorldObjectComponent} from "../models/worldobject/worldObjectComponent";
+import {TilePosition} from "../models/tile/tilePosition";
 
 export namespace GameStateHooks {
 
@@ -39,29 +38,23 @@ export namespace GameStateHooks {
 	let gameSessionDatabase: GameSessionDatabase = UNINITIALIZED();
 	let tileDatabase: TileDatabase = UNINITIALIZED();
 	let commandDatabase: CommandDatabase = UNINITIALIZED();
-	let settlementDatabase: SettlementDatabase = UNINITIALIZED();
 	let worldObjectDatabase: WorldObjectDatabase = UNINITIALIZED();
-	let countryDatabase: CountryDatabase = UNINITIALIZED();
-	let routeDatabase: RouteDatabase = UNINITIALIZED();
+	let countryDatabase: RealmDatabase = UNINITIALIZED();
 	let cameraDatabase: CameraDatabase = UNINITIALIZED();
 
 	export function initialize(dependencies: {
 		gameSessionDatabase: GameSessionDatabase
 		tileDatabase: TileDatabase
 		commandDatabase: CommandDatabase
-		settlementDatabase: SettlementDatabase
 		worldObjectDatabase: WorldObjectDatabase
-		countryDatabase: CountryDatabase
-		routeDatabase: RouteDatabase
+		countryDatabase: RealmDatabase
 		cameraDatabase: CameraDatabase
 	}) {
 		gameSessionDatabase = dependencies.gameSessionDatabase;
 		tileDatabase = dependencies.tileDatabase;
 		commandDatabase = dependencies.commandDatabase;
-		settlementDatabase = dependencies.settlementDatabase;
 		worldObjectDatabase = dependencies.worldObjectDatabase;
 		countryDatabase = dependencies.countryDatabase;
-		routeDatabase = dependencies.routeDatabase;
 		cameraDatabase = dependencies.cameraDatabase;
 	}
 
@@ -115,7 +108,8 @@ export namespace GameStateHooks {
 		const path = MovementModeState.useState(state => state.path);
 		const worldObject = useWorldObject(worldObjectId);
 		if (worldObject) {
-			return worldObject.maxMovementPoints - path.sum(0, it => it.cost);
+			const maxMovement = WorldObjectComponent.get<WorldObjectComponent.Move>(worldObject, "movement").maxMovement
+			return maxMovement - path.sum(0, it => it.cost);
 		} else {
 			return 0;
 		}
@@ -124,79 +118,23 @@ export namespace GameStateHooks {
 	/**
 	 * Get the outline information about all countries
 	 */
-	export function useOutlineCountries(): CountryOutline[] {
-		return useQueryMultiple(countryDatabase, CountryDatabase.QUERY_ALL, null)
-			.map(it => ({
-				id: it.id,
-				name: it.name,
-				color: it.color,
-				isUserControlled: it.isUserControlled,
-				playerName: it.player.name,
-			}));
-	}
-
-	/**
-	 * Get the outline information about all settlements
-	 */
-	export function useOutlineSettlements(): SettlementOutline[] {
-		return useQueryMultiple(settlementDatabase, SettlementDatabase.QUERY_ALL, null)
-			.map(it => ({
-				id: it.id,
-				name: it.name,
-				color: it.color,
-				tile: it.tile,
-			}));
+	export function useOutlineRealms(): RealmOutline[] {
+		return useQueryMultiple(countryDatabase, RealmDatabase.QUERY_ALL, null)
+			.map(it => RealmOutline.from(it));
 	}
 
 	/**
 	 * Get the outline information about all world objects
 	 */
-	export function useOutlineWorldObjects(): WorldObjectOutline[] {
+	export function useOutlineUnits(): WorldObjectOutline[] {
 		return useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_ALL, null)
+			.filter(it => it.type.group === "unit")
 			.map(it => ({
 				id: it.id,
 				type: it.type,
 				tile: it.tile,
-				country: it.country,
+				realm: it.realm,
 			}));
-	}
-
-	/**
-	 * Get the settlement with the given id
-	 */
-	export function useSettlement(settlementId: string | null): Settlement | null {
-		const settlement = useQuerySingle(settlementDatabase, SettlementDatabase.QUERY_BY_ID, settlementId);
-		const settlements = useQueryMultiple(settlementDatabase, SettlementDatabase.QUERY_ALL, null);
-		const routes = useQueryMultiple(routeDatabase, RouteDatabase.QUERY_BY_SETTLEMENT, settlementId);
-		const commands = useQueryMultiple(commandDatabase, CommandDatabase.QUERY_ALL, null);
-		if (settlement == null) {
-			return null;
-		}
-		return SettlementBuilder.buildSettlement(settlement, routes, settlements, commands);
-	}
-
-	/**
-	 * Get the current production options for the settlement with the given id
-	 */
-	export function useProductionOptions(settlementId: string): SettlementProductionOption[] {
-		const settlement = useQuerySingle(settlementDatabase, SettlementDatabase.QUERY_BY_ID, settlementId);
-		const commands = useQueryMultiple(commandDatabase, CommandDatabase.QUERY_ALL, null);
-		if (settlement == null) {
-			return [];
-		}
-		return SettlementBuilder.buildProductionOptions(settlement, commands);
-	}
-
-	/**
-	 * Get the current production queue for the settlement with the given id
-	 */
-	export function useProductionQueue(settlementId: string): SettlementProductionQueueEntry[] {
-		const settlement = useQuerySingle(settlementDatabase, SettlementDatabase.QUERY_BY_ID, settlementId);
-		const commands = useQueryMultiple(commandDatabase, CommandDatabase.QUERY_ALL, null);
-		if (settlement == null) {
-			return [];
-		}
-		return SettlementBuilder.buildProductionQueue(settlement, commands);
 	}
 
 	/**
@@ -210,7 +148,18 @@ export namespace GameStateHooks {
 	 * Get the tile with the given id
 	 */
 	export function useTile(tileId: TileId | null): Tile | null {
-		return useQuerySingle(tileDatabase, TileDatabase.QUERY_BY_ID, tileId);
+		const tileEntity = useQuerySingle(tileDatabase, TileDatabase.QUERY_BY_ID, tileId);
+		const worldObjects = useWorldObjectAt(tileEntity ? tileEntity.position : TilePosition.NOWHERE)
+		return tileEntity
+			? Tile.from(tileEntity, worldObjects)
+			: null;
+	}
+
+	/**
+	 * Get the world objects at the given location
+	 */
+	export function useWorldObjectAt(pos: TilePosition): WorldObject[] {
+		return useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_POSITION, [pos.q, pos.r]);
 	}
 
 	/**
@@ -223,29 +172,18 @@ export namespace GameStateHooks {
 	/**
 	 * Get the country with the given id
 	 */
-	export function useCountry(id: CountryId | null): Country | null {
-		const country = useQuerySingle(countryDatabase, CountryDatabase.QUERY_BY_ID, id);
-		const settlements = useQueryMultiple(settlementDatabase, SettlementDatabase.QUERY_BY_COUNTRY_ID, id);
-		const worldObjects = useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_COUNTRY_ID, id);
+	export function useRealm(id: RealmId | null): Realm | null {
+		const realm = useQuerySingle(countryDatabase, RealmDatabase.QUERY_BY_ID, id);
+		const worldObjects = useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_REALM_ID, id);
 
-		if (country) {
+		if (realm) {
 			return {
-				id: country.id,
-				name: country.name,
-				color: country.color,
-				isUserControlled: country.isUserControlled,
-				player: country.player,
-				settlements: settlements.map(it => ({
-					id: it.id,
-					name: it.name,
-					color: it.color,
-					isUserControlled: it.country.isUserControlled,
-				})),
-				worldObjects: worldObjects.map(it => ({
-					id: it.id,
-					type: it.type,
-					tile: it.tile,
-				})),
+				id: realm.id,
+				name: realm.id,
+				color: Color.BLACK,
+				ownedByUser: realm.ownedByUser,
+				player: realm.player,
+				worldObjects: worldObjects.map(it => WorldObjectSummary.from(it)),
 			};
 		} else {
 			return null;

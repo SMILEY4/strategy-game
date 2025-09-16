@@ -1,17 +1,12 @@
 import {UseTileWindow} from "../../../ui/pages/ingame/windows/tile/useTileWindow";
 import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
-import {UseSettlementWindow} from "../../../ui/pages/ingame/windows/settlement/useSettlementWindow";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {TileSummary} from "../../../models/tile/tileSummary";
-import {WorldObject} from "../../../models/worldobject/worldObject";
-import {Settlement} from "../../../models/settlement/settlement";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 import {CanvasHandle} from "../../../common/webgl/canvasHandle";
-import {Tile} from "../../../models/tile/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {Camera} from "../../../common/webgl/camera";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
-import {SettlementSummary} from "../../../models/settlement/settlementSummary";
 
 export interface TileService {
 	/**
@@ -43,22 +38,13 @@ export class TileServiceImpl implements TileService {
 		this.gameStateWriter.setSelectedTile(tile)
 
 		const worldObjects: WorldObjectSummary[] = this.localStateAccess.getWorldObjectSummariesAt(tile.position.q, tile.position.r)
-		const settlement: SettlementSummary | null = this.localStateAccess.getSettlementSummaryAt(tile.position.q, tile.position.r)
 
-		let optionCount = 0;
-		optionCount += settlement ? 1 : 0;
-		optionCount += worldObjects.length;
-
-		if (optionCount > 1) {
+		if (worldObjects.length > 1) {
 			UseTileWindow.open(tile.id);
 			return;
 		}
 		if (worldObjects.length === 1) {
 			UseWorldObjectWindow.open(worldObjects[0].id);
-			return;
-		}
-		if (settlement) {
-			UseSettlementWindow.open(settlement.id);
 			return;
 		}
 		UseTileWindow.open(tile.id);

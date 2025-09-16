@@ -1,10 +1,27 @@
-import {WorldObjectType} from "./worldObjectType";
 import {TileSummary} from "../tile/tileSummary";
-import {CountrySummary} from "../country/countrySummary";
 import {WorldObjectId} from "./worldObjectId";
+import {WorldObject} from "./worldObject";
+import {RealmSummary} from "../country/realmSummary";
 
 export interface WorldObjectSummary {
 	id: WorldObjectId,
-	type: WorldObjectType,
+	type: {
+		group: string,
+		name: string
+	},
+	realm: RealmSummary,
 	tile: TileSummary,
+}
+
+export namespace WorldObjectSummary {
+
+	export function from(worldObject: WorldObject): WorldObjectSummary {
+		return {
+			id: worldObject.id,
+			type: worldObject.type,
+			tile: worldObject.tile,
+			realm: worldObject.realm,
+		}
+	}
+
 }

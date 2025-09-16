@@ -32,10 +32,10 @@ export namespace WorldObjectWasmSerializer {
 		// country_color_r: f32,
 		// country_color_g: f32,
 		// country_color_b: f32,
-		const countryColor = Color.colorToRgbArray(worldObject.country.color);
-		writer.pushFloat32(countryColor[0]);
-		writer.pushFloat32(countryColor[1]);
-		writer.pushFloat32(countryColor[2]);
+		const realmColor = Color.colorToRgbArray(worldObject.realm.color);
+		writer.pushFloat32(realmColor[0]);
+		writer.pushFloat32(realmColor[1]);
+		writer.pushFloat32(realmColor[2]);
 	}
 
 }

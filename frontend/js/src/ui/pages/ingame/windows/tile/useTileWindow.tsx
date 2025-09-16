@@ -2,16 +2,15 @@ import React from "react";
 import {TileWindow} from "./TileWindow";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
 import {TileId} from "../../../../../models/tile/tileId";
 import {Tile} from "../../../../../models/tile/tile";
-import {TileObject} from "../../../../../models/tile/tileObject";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
-import {UseCountryWindow} from "../country/useCountryWindow";
+import {WorldObject} from "../../../../../models/worldobject/worldObject";
+import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 
 export namespace UseTileWindow {
 
@@ -28,9 +27,7 @@ export namespace UseTileWindow {
 	export interface Data {
 		tile: Tile;
 		open: {
-			controllingSettlement: () => void,
-			controllingCountry: () => void
-			tileObject: (tileObject: TileObject) => void,
+			worldObject: (worldObjectId: WorldObjectId) => void,
 		};
 		centerCamera: () => void,
 	}
@@ -44,24 +41,7 @@ export namespace UseTileWindow {
 			return {
 				tile: tile,
 				open: {
-					controllingSettlement: () => {
-						if (tile.political.value?.controlledBy?.settlement) {
-							UseSettlementWindow.open(tile.political.value?.controlledBy?.settlement!.id);
-						}
-					},
-					controllingCountry: () => {
-						if (tile.political.value?.controlledBy?.country) {
-							UseCountryWindow.open(tile.political.value?.controlledBy?.country!.id);
-						}
-					},
-					tileObject: (tileObject) => {
-						if (tileObject.worldObject !== null) {
-							UseWorldObjectWindow.open(tileObject.worldObject.id);
-						}
-						if (tileObject.settlement !== null) {
-							UseSettlementWindow.open(tileObject.settlement.id);
-						}
-					},
+					worldObject: worldObjectId => UseWorldObjectWindow.open(worldObjectId)
 				},
 				centerCamera: () => App.gameProxy.focusCamera(tile.position),
 			};

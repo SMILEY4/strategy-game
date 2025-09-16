@@ -6,9 +6,7 @@ export interface TrackedChanges {
 	isInitFrame: boolean;
 	turn: boolean,
 	tiles: boolean,
-	settlements: boolean,
 	worldObjects: boolean,
-	routes: boolean
 	commands: boolean,
 	mapMode: boolean,
 	camera: boolean,
@@ -26,9 +24,7 @@ export class GameChangeTracker {
 
 	private readonly trackerTurn = new ChangeDetector();
 	private readonly trackerTiles = new ChangeDetector();
-	private readonly trackerSettlements = new ChangeDetector();
 	private readonly trackerWorldObjects = new ChangeDetector();
-	private readonly trackerRoutes = new ChangeDetector();
 	private readonly trackerCommands = new ChangeDetector();
 	private readonly trackerMapMode = new ChangeDetector();
 	private readonly trackerCamera = new ChangeDetector();
@@ -48,9 +44,7 @@ export class GameChangeTracker {
 			isInitFrame: true,
 			turn: true,
 			tiles: true,
-			settlements: true,
 			worldObjects: true,
-			routes: true,
 			commands: true,
 			mapMode: true,
 			camera: true,
@@ -69,9 +63,7 @@ export class GameChangeTracker {
 		}
 		this.trackedChanges.turn = this.trackerTurn.check(this.localStateAccess.getCurrentTurn());
 		this.trackedChanges.tiles = this.trackerTiles.check(this.localStateAccess.getTilesRevId());
-		this.trackedChanges.settlements = this.trackerSettlements.check(this.localStateAccess.getSettlementsRevId());
 		this.trackedChanges.worldObjects = this.trackerWorldObjects.check(this.localStateAccess.getWorldObjectsRevId());
-		this.trackedChanges.routes = this.trackerRoutes.check(this.localStateAccess.getRoutesRevId());
 		this.trackedChanges.commands = this.trackerCommands.check(this.localStateAccess.getCommandRevId());
 		this.trackedChanges.mapMode = this.trackerMapMode.check(this.localStateAccess.getMapMode());
 		this.trackedChanges.camera = this.trackerCamera.check(camera.getHash());

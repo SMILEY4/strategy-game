@@ -7,7 +7,6 @@ import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {Camera} from "../common/webgl/camera";
 import {WasmApi} from "../wasm/wasmApi";
-import {WasmProbe} from "../wasm/wasmProbe";
 
 export class GameRenderer {
 

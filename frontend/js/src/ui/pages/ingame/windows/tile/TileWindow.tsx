@@ -92,7 +92,7 @@ function PanelOverview(props: UseTileWindow.Data): ReactElement {
 
 function PanelPolitical(props: UseTileWindow.Data): ReactElement {
 	return (
-		<SectionControlledBy {...props}/>
+		<></>
 	);
 }
 
@@ -167,49 +167,35 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
 				</Txt.Body>
 			)}
 
-			{(props.tile.visibility === Visibility.VISIBLE && props.tile.objects.length === 0) && (
+			{(props.tile.visibility === Visibility.VISIBLE && props.tile.worldObjects.length === 0) && (
 				<Txt.Body secondary center>
 					<Txt.String>Nothing on this tile.</Txt.String>
 				</Txt.Body>
 			)}
 
-			{props.tile.objects.length > 0 && (
+			{props.tile.worldObjects.length > 0 && (
 				<InsetPanel grow>
 					<VBox padding_s gap_s fullSize>
-						{props.tile.objects.map(tileObject => (
+						{props.tile.worldObjects.map(worldObject => (
 
 							<DecoratedPanel
-								key={tileObject.settlement?.id + "/" + tileObject.worldObject?.id}
+								key={worldObject.id}
 								background={
-									<DecoratedPanel.ColorBackground color={Color.toCss(tileObject.country.color)}/>
+									<DecoratedPanel.ColorBackground color={Color.toCss(worldObject.realm.color)}/>
 								}
 								blue
 								pattern
 								dontGrow
 								dontShrink
 							>
-								<Switch>
-									<Case condition={tileObject.settlement != null}>
-										<HBox padding_s gap_s spaceBetween centerVertical>
-											<Txt.Body>
-												<Txt.Link onClick={() => props.open.tileObject(tileObject)}>
-													<Txt.String>{tileObject.settlement?.name}</Txt.String>
-												</Txt.Link>
-											</Txt.Body>
-											<Txt.Body secondary><Txt.String>Settlement</Txt.String></Txt.Body>
-										</HBox>
-									</Case>
-									<Case condition={tileObject.worldObject != null}>
-										<HBox padding_s gap_s spaceBetween centerVertical>
-											<Txt.Body>
-												<Txt.Link onClick={() => props.open.tileObject(tileObject)}>
-													<Txt.String>{tileObject.worldObject?.type.id}</Txt.String>
-												</Txt.Link>
-											</Txt.Body>
-											<Txt.Body secondary><Txt.String>Unit</Txt.String></Txt.Body>
-										</HBox>
-									</Case>
-								</Switch>
+								<HBox padding_s gap_s spaceBetween centerVertical>
+									<Txt.Body>
+										<Txt.Link onClick={() => props.open.worldObject(worldObject.id)}>
+											<Txt.String>{worldObject.type.group + "/" + worldObject.type.name}</Txt.String>
+										</Txt.Link>
+									</Txt.Body>
+									<Txt.Body secondary><Txt.String>Unit</Txt.String></Txt.Body>
+								</HBox>
 							</DecoratedPanel>
 
 						))}
@@ -217,56 +203,5 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
 				</InsetPanel>
 			)}
 		</VBox>
-	);
-}
-
-function SectionControlledBy(props: UseTileWindow.Data): ReactElement {
-	return (
-		<InsetPanel dontShrink>
-			<VBox padding_s gap_s fullSize>
-
-				<Txt.Body secondary>
-					<Txt.String>Controlled by:</Txt.String>
-				</Txt.Body>
-
-				{!props.tile.political.visible && (
-					<Txt.Body secondary center>
-						<Txt.String>Unknown</Txt.String>
-					</Txt.Body>
-				)}
-
-				{(props.tile.political.visible && props.tile.political.value.controlledBy == null) && (
-					<Txt.Body secondary center>
-						<Txt.String>Unclaimed</Txt.String>
-					</Txt.Body>
-				)}
-
-				{(props.tile.political.visible && props.tile.political.value.controlledBy != null) && (
-					<DecoratedPanel
-						blue
-						pattern
-						background={
-							<DecoratedPanel.ColorBackground
-								color={Color.toCss(props.tile.political.value.controlledBy?.country.color!)}
-							/>
-						}
-					>
-						<VBox padding_m gap_s>
-							<Txt.Header3>
-								<Txt.Link onClick={props.open.controllingCountry}>
-									<Txt.String>{props.tile.political.value.controlledBy?.country.name}</Txt.String>
-								</Txt.Link>
-							</Txt.Header3>
-							<Txt.Body>
-								<Txt.Link onClick={props.open.controllingSettlement}>
-									<Txt.String>{props.tile.political.value.controlledBy?.settlement.name}</Txt.String>
-								</Txt.Link>
-							</Txt.Body>
-						</VBox>
-					</DecoratedPanel>
-				)}
-
-			</VBox>
-		</InsetPanel>
 	);
 }

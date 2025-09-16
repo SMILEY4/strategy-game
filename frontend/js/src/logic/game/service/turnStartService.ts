@@ -1,24 +1,21 @@
 import {
-	CountryMessage,
+	RealmMessage,
 	GameStateMessage,
-	SettlementMessage,
-	WorldObjectMessage,
 } from "../../../models/messages/gameStateMessage";
 import {TileResourceType} from "../../../models/tile/TileResourceType";
-import {WorldObjectType} from "../../../models/worldobject/worldObjectType";
 import {Visibility} from "../../../models/misc/visibility";
 import {mapHidden} from "../../../common/hiddenType";
-import {mapValue, shuffleArray} from "../../../common/utils";
+import {shuffleArray} from "../../../common/utils";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {TileEntity} from "../../../models/tile/tileEntity";
 import {TerrainType} from "../../../models/tile/terrainType";
-import {CountryEntity} from "../../../models/country/countryEntity";
-import {SettlementEntity} from "../../../models/settlement/settlementEntity";
+import {RealmEntity} from "../../../models/country/realmEntity";
 import {WorldObjectEntity} from "../../../models/worldobject/worldObjectEntity";
-import {RouteEntity} from "../../../models/route/routeEntity";
 import {Projections} from "../../../common/webgl/projections";
 import {Random} from "../../../common/random";
 import normalized = Random.normalized;
+import {WorldObjectComponent} from "../../../models/worldobject/worldObjectComponent";
+import {Color} from "../../../common/color";
 
 export interface TurnStartService {
 	/**
@@ -41,22 +38,17 @@ export class TurnStartServiceImpl implements TurnStartService {
 		this.gameStateWriter.replaceGameState({
 			commands: [],
 			tiles: this.buildTiles(gameState),
-			countries: this.buildCountries(gameState),
-			settlements: this.buildSettlements(gameState),
+			realms: this.buildRealms(gameState),
 			worldObjects: this.buildWorldObjects(gameState),
-			routes: this.buildRoutes(gameState),
 		});
 	}
 
 	private buildTiles(game: GameStateMessage): TileEntity[] {
-
 		if(this.cachedTileIndices.length != game.tiles.length) {
 			const indices = [...Array(game.tiles.length).keys()];
 			shuffleArray(indices);
 			this.cachedTileIndices = indices;
 		}
-
-
 		return game.tiles.map((tileMsg, index) => ({
 			id: tileMsg.identifier.id,
 			position: {
@@ -69,78 +61,6 @@ export class TurnStartServiceImpl implements TurnStartService {
 				resourceType: TileResourceType.fromString(baseMsg.resourceType),
 				height: baseMsg.height,
 			})),
-			political: mapHidden(tileMsg.political, politicalMsg => ({
-				controlledBy: politicalMsg.controlledBy ? {
-					country: mapValue(this.findCountryById(game, politicalMsg.controlledBy.country), country => ({
-						id: country.id,
-						name: country.name,
-						color: country.color,
-						isUserControlled: country.ownedByUser,
-						playerName: country.player.name
-					})),
-					settlement: mapValue(this.findSettlementById(game, politicalMsg.controlledBy.settlement), settlement => ({
-						id: settlement.id,
-						name: settlement.name,
-						color: settlement.color,
-						isUserControlled: this.findCountryById(game, settlement.country).ownedByUser
-					})),
-				} : null,
-			})),
-			isValidSettlementLocation: tileMsg.createSettlement,
-			objects: [
-				...game.settlements
-					.filter(it => it.tile.id === tileMsg.identifier.id)
-					.map(it => [it, this.findCountryById(game, it.country)])
-					.map(it => ({
-						settlement: {
-							id: (it[0] as SettlementMessage).id,
-							name: (it[0] as SettlementMessage).name,
-							color: (it[0] as SettlementMessage).color,
-							isUserControlled: (it[1] as CountryMessage).ownedByUser
-						},
-						worldObject: null,
-						country: {
-							id: (it[1] as CountryMessage).id,
-							name: (it[1] as CountryMessage).name,
-							color: (it[1] as CountryMessage).color,
-							isUserControlled: (it[1] as CountryMessage).ownedByUser,
-							playerName: (it[1] as CountryMessage).player.name
-						},
-					})),
-				...game.worldObjects
-					.filter(it => it.tile.id === tileMsg.identifier.id)
-					.map(it => [it, this.findCountryById(game, it.country)])
-					.map(it => ({
-						settlement: null,
-						worldObject: {
-							id: (it[0] as WorldObjectMessage).id,
-							type: WorldObjectType.fromString((it[0] as WorldObjectMessage).type),
-							isUserControlled: (it[1] as CountryMessage).ownedByUser,
-							tile: {
-								id: (it[0] as WorldObjectMessage).tile.id,
-								position: {
-									q: (it[0] as WorldObjectMessage).tile.q,
-									r: (it[0] as WorldObjectMessage).tile.r
-								}
-							},
-							country: {
-								id: (it[1] as CountryMessage).id,
-								name: (it[1] as CountryMessage).name,
-								color: (it[1] as CountryMessage).color,
-								isUserControlled: (it[1] as CountryMessage).ownedByUser,
-								playerName: (it[1] as CountryMessage).player.name
-							},
-							maxMovementPoints: (it[0] as WorldObjectMessage).maxMovement
-						},
-						country: {
-							id: (it[1] as CountryMessage).id,
-							name: (it[1] as CountryMessage).name,
-							color: (it[1] as CountryMessage).color,
-							isUserControlled: (it[1] as CountryMessage).ownedByUser,
-							playerName: (it[1] as CountryMessage).player.name
-						},
-					})),
-			],
 			metaProperties: { // todo: read from backend to make stable
 				worldPosition: Projections.hexToWorld(tileMsg.identifier.q, tileMsg.identifier.r),
 				randomIndex: this.cachedTileIndices[index],
@@ -151,169 +71,62 @@ export class TurnStartServiceImpl implements TurnStartService {
 		}));
 	}
 
-	private buildCountries(game: GameStateMessage): CountryEntity[] {
-		return game.countries.map(countryMsg => ({
-			id: countryMsg.id,
-			name: countryMsg.name,
-			color: countryMsg.color,
-			isUserControlled: countryMsg.ownedByUser,
+	private buildRealms(game: GameStateMessage): RealmEntity[] {
+		return game.realms.map(realmMsg => ({
+			id: realmMsg.id,
+			name: realmMsg.name,
+			color: realmMsg.color,
+			ownedByUser: realmMsg.ownedByUser,
 			player: {
-				userId: countryMsg.player.userId,
-				name: countryMsg.player.name,
+				userId: realmMsg.player.userId,
+				name: realmMsg.player.name,
 			},
 		}));
 	}
 
-	private buildSettlements(game: GameStateMessage): SettlementEntity[] {
-		return game.settlements.map(settlementMsg => {
-			const countryMsg = this.findCountryById(game, settlementMsg.country);
-			return {
-				id: settlementMsg.id,
-				name: settlementMsg.name,
-				color: settlementMsg.color,
-				country: {
-					id: countryMsg.id,
-					name: countryMsg.name,
-					color: countryMsg.color,
-					isUserControlled: countryMsg.ownedByUser,
-					playerName: countryMsg.player.name,
-				},
-				tile: {
-					id: settlementMsg.tile.id,
-					position: {
-						q: settlementMsg.tile.q,
-						r: settlementMsg.tile.r,
-					},
-				},
-				population: {
-					size: settlementMsg.population.size,
-					growth: settlementMsg.population.growth,
-				},
-				productionQueue: mapHidden(settlementMsg.productionQueue, productionQueueMsg => productionQueueMsg.map(entryMsg => ({
-					type: entryMsg.type,
-					entryId: entryMsg.entryId,
-					progress: entryMsg.progress,
-				}))),
-				productionOptions: mapHidden(settlementMsg.productionOptions, optionsMsg => optionsMsg.map(optionMsg => ({
-					type: optionMsg.type,
-					availableTiles: optionMsg.availableTiles === null ? 0 : optionMsg.availableTiles,
-					requiresTile: optionMsg.availableTiles !== null,
-				}))),
-				buildings: mapHidden(settlementMsg.buildings, buildingsMsg => buildingsMsg.map(buildingMsg => ({
-					type: buildingMsg.type,
-					workTile: {
-						requiredTerrain: buildingMsg.workTile.requiredTerrain == null ? null : TerrainType.fromString(buildingMsg.workTile.requiredTerrain),
-						requiredResource: buildingMsg.workTile.requiredResource == null ? null : TileResourceType.fromString(buildingMsg.workTile.requiredResource),
-						tile: buildingMsg.workTile.tile
-							? ({
-								id: buildingMsg.workTile.tile.id,
-								position: {
-									q: buildingMsg.workTile.tile.q,
-									r: buildingMsg.workTile.tile.r,
-								},
-							})
-							: null,
-					},
-					validity: buildingMsg.validity,
-					activity: buildingMsg.activity,
-				}))),
-				resources: mapHidden(settlementMsg.resources, resourcesMsg => resourcesMsg),
-			};
-		});
-	}
-
 	private buildWorldObjects(game: GameStateMessage): WorldObjectEntity[] {
 		return game.worldObjects.map(worldObjMsg => {
-			const countryMsg = this.findCountryById(game, worldObjMsg.country);
-			if (worldObjMsg.type === "scout") {
-				return {
-					id: worldObjMsg.id,
-					type: WorldObjectType.SCOUT,
-					tile: {
-						id: worldObjMsg.tile.id,
-						position: {
-							q: worldObjMsg.tile.q,
-							r: worldObjMsg.tile.r,
-						},
-					},
-					country: {
-						id: countryMsg.id,
-						name: countryMsg.name,
-						color: countryMsg.color,
-						isUserControlled: countryMsg.ownedByUser,
-						playerName: countryMsg.player.name,
-					},
-					maxMovementPoints: worldObjMsg.maxMovement,
-				} as WorldObjectEntity;
-			}
-			if (worldObjMsg.type === "settler") {
-				return {
-					id: worldObjMsg.id,
-					type: WorldObjectType.SETTLER,
-					tile: {
-						id: worldObjMsg.tile.id,
-						position: {
-							q: worldObjMsg.tile.q,
-							r: worldObjMsg.tile.r,
-						},
-					},
-					country: {
-						id: countryMsg.id,
-						name: countryMsg.name,
-						color: countryMsg.color,
-						isUserControlled: countryMsg.ownedByUser,
-						playerName: countryMsg.player.name,
-					},
-					maxMovementPoints: worldObjMsg.maxMovement,
-				} as WorldObjectEntity;
-			}
-			return null;
-		}).filterDefined();
-	}
-
-	private buildRoutes(game: GameStateMessage): RouteEntity[] {
-		return game.routes.map(routeMsg => {
-			const settlementA = this.findSettlementById(game, routeMsg.settlementA);
-			const settlementB = this.findSettlementById(game, routeMsg.settlementB);
-			const countryA = this.findCountryById(game, settlementA.country)
-			const countryB = this.findCountryById(game, settlementB.country)
+			const realmMsg = this.findRealmById(game, worldObjMsg.realm.id);
 			return {
-				id: routeMsg.id,
-				settlementA: {
-					id: settlementA.id,
-					name: settlementA.name,
-					color: settlementA.color,
-					isUserControlled: countryA.ownedByUser
+				id: worldObjMsg.id,
+				type: worldObjMsg.type,
+				realm: {
+					id: realmMsg.id,
+					name: realmMsg.name,
+					color: realmMsg.color,
+					ownedByUser: realmMsg.ownedByUser,
+					playerName: realmMsg.player.name,
 				},
-				settlementB: {
-					id: settlementB.id,
-					name: settlementB.name,
-					color: settlementB.color,
-					isUserControlled: countryB.ownedByUser
-				},
-				path: routeMsg.path.map(tileMsg => ({
-					id: tileMsg.id,
+				tile: {
+					id: worldObjMsg.tile.id,
 					position: {
-						q: tileMsg.q,
-						r: tileMsg.r,
-					},
-				})),
-			};
-		});
+						q: worldObjMsg.tile.q,
+						r: worldObjMsg.tile.r
+					}
+				},
+				components: worldObjMsg.components.map(componentMsg => {
+					if(componentMsg.type == "movement") {
+						return {
+							type: "movement",
+							maxMovement: componentMsg.maxMovement
+						} as WorldObjectComponent.Move
+					}
+					if(componentMsg.type == "vision") {
+						return {
+							type: "vision",
+							radius: componentMsg.radius,
+						} as WorldObjectComponent.Vision
+					}
+					throw new Error("Unexpected component type")
+				})
+			}
+		})
 	}
 
-	private findCountryById(game: GameStateMessage, id: string): CountryMessage {
-		const result = game.countries.find(it => it.id === id);
+	private findRealmById(game: GameStateMessage, id: string): RealmMessage {
+		const result = game.realms.find(it => it.id === id);
 		if (!result) {
-			throw new Error("Could not find country with id '" + id + "'");
-		}
-		return result;
-	}
-
-	private findSettlementById(game: GameStateMessage, id: string): SettlementMessage {
-		const result = game.settlements.find(it => it.id === id);
-		if (!result) {
-			throw new Error("Could not find settlement with id '" + id + "'");
+			throw new Error("Could not find realm with id '" + id + "'");
 		}
 		return result;
 	}

@@ -6,7 +6,7 @@ import {AudioService, AudioType} from "../../common/audioService";
 import {TurnEndService} from "./service/turnEndService";
 import {MapMode} from "../../models/misc/mapMode";
 import {TilePosition} from "../../models/tile/tilePosition";
-import {Command, DisbandWorldObjectCommand} from "../../models/command/command";
+import {Command} from "../../models/command/command";
 import {TileId} from "../../models/tile/tileId";
 import {WorldObjectId} from "../../models/worldobject/worldObjectId";
 import {GameStateWriter} from "../../state/gameStateWriter";
@@ -17,8 +17,6 @@ import {SettlementProductionOption} from "../../models/settlement/settlement";
 import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
 import {GameSessionService} from "./service/gameSessionService";
 import {CommandService} from "./service/commandService";
-import {CommandType} from "../../models/command/commandType";
-import {UID} from "../../common/uid";
 import {MonitoringService} from "./service/monitoringService";
 import {GameRenderer} from "../../renderer/gameRenderer";
 
@@ -335,11 +333,7 @@ export class GameProxyImpl implements GameProxy {
 	}
 
 	disbandWorldObject(worldObjectId: WorldObjectId): void {
-		this.commandService.addCommand<DisbandWorldObjectCommand>({
-			id: UID.generate(),
-			type: CommandType.DISBAND_WORLD_OBJECT,
-			worldObjectId: worldObjectId,
-		});
+		throw new Error("Not Implemented")
 	}
 
 	//========== DEV FUNCTIONALITY ============================================
