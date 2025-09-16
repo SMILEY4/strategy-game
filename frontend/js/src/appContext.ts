@@ -87,11 +87,11 @@ export namespace App {
 	const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
 	const movementService: MovementService = new MovementServiceImpl(gameStateAccess, gameStateWriter, gameClient, commandService);
 	const turnStartService: TurnStartService = new TurnStartServiceImpl(gameStateWriter);
-	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, turnStartService, gameStateAccess, gameStateWriter);
+	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
+	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, turnStartService, cameraService, gameStateAccess, gameStateWriter);
 	const turnEndService: TurnEndService = new TurnEndServiceImpl(gameSessionService, movementService, gameStateWriter, gameStateAccess);
 	const settlementService: SettlementService = new SettlementServiceImpl(commandService, gameClient, gameStateAccess);
 	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
-	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
 	const userService: UserService = new UserServiceImpl(userClient, userStateAccess, userStateWriter);
 	const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor);
 

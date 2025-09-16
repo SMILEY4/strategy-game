@@ -9,7 +9,7 @@ export interface CameraService {
 	/**
 	 * Set the camera position to center on the given tile
 	 */
-	centerOnTile(tile: TilePosition): void;
+	centerOnTile(tile: TilePosition, zoom?: number): void;
 	/**
 	 * Move the camera by the given x and y distance
 	 */
@@ -39,13 +39,13 @@ export class CameraServiceImpl implements CameraService {
 		this.gameStateWriter = gameStateWriter;
 	}
 
-	centerOnTile(tile: TilePosition): void {
+	centerOnTile(tile: TilePosition, zoom?: number): void {
 		const pos = Projections.hexToWorld(tile.q, tile.r);
 		const camera = this.localStateAccess.getCamera();
 		this.gameStateWriter.setCameraData({
 			x: -pos.x,
 			y: -pos.y,
-			zoom: camera.zoom,
+			zoom: zoom == undefined ? camera.zoom : zoom,
 		});
 	}
 

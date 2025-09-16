@@ -6,10 +6,7 @@ import {TurnStartService} from "./turnStartService";
 import {GameStateMessage} from "../../../models/messages/gameStateMessage";
 import {WebsocketMessageHandler} from "../../../common/websocketMessageHandler";
 import {
-	CreateSettlementCommandMessage, DisbandWorldObjectCommandMessage,
 	MoveCommandMessage,
-	ProductionQueueAddCommandMessage,
-	ProductionQueueCancelCommandMessage,
 } from "../../../models/messages/commandMessage";
 import {
 	Command,
@@ -18,6 +15,7 @@ import {
 import {CommandType} from "../../../models/command/commandType";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
+import {CameraService} from "./cameraService";
 
 export interface GameSessionService {
 	/**
@@ -54,17 +52,20 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 
 	private readonly client: GameSessionClient;
 	private readonly turnStartService: TurnStartService;
+	private readonly cameraService: CameraService;
 	private readonly localStateAccess: GameStateAccess;
 	private readonly gameStateWriter: GameStateWriter;
 
 	constructor(
 		client: GameSessionClient,
 		turnStartService: TurnStartService,
+		cameraService: CameraService,
 		localStateAccess: GameStateAccess,
 		gameStateWriter: GameStateWriter,
 	) {
 		this.client = client;
 		this.turnStartService = turnStartService;
+		this.cameraService = cameraService;
 		this.localStateAccess = localStateAccess;
 		this.gameStateWriter = gameStateWriter;
 	}
@@ -123,6 +124,7 @@ export class GameSessionServiceImpl implements WebsocketMessageHandler, GameSess
 			this.gameStateWriter.setCurrentTurn(gameState.game.turn);
 			if (this.localStateAccess.getGameSessionState() === "loading") {
 				this.gameStateWriter.setGameSessionState("playing");
+				this.cameraService.centerOnTile(this.localStateAccess.getSpawnTile().position, 15)
 			}
 			this.gameStateWriter.setTurnState("playing");
 			return;

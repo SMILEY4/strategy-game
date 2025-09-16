@@ -18,6 +18,7 @@ import {CommandDatabase} from "./database/commandDatabase";
 import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
 import {DbCache} from "../common/db/dbCache";
 import {RealmSummary} from "../models/country/realmSummary";
+import {TilePosition} from "../models/tile/tilePosition";
 
 export interface GameStateAccess {
 	// game
@@ -35,6 +36,7 @@ export interface GameStateAccess {
 	getTileSummaryAt(q: number, r: number): TileSummary | null;
 	getTiles(): Tile[];
 	getTilesRevId(): string;
+	getSpawnTile(): TileSummary;
 	// realms
 	getPlayerRealmSummary(): RealmSummary;
 	// world objects
@@ -162,6 +164,25 @@ export class GameStateAccessImpl implements GameStateAccess {
 		};
 	}
 
+	getSpawnTile(): TileSummary {
+
+		const playerRealm = this.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
+
+		const scout = this.worldObjectDatabase
+			.queryMany(WorldObjectDatabase.QUERY_BY_REALM_ID, playerRealm.id)
+			.find(it => it.type.group == "unit" && it.type.name == "scout")
+		if(scout) {
+			return scout.tile
+		}
+
+		const tileCenter =  this.getTileSummaryAt(0, 0);
+		if(tileCenter) {
+			return tileCenter;
+		}
+
+		throw new Error("Could not find spawn tile.")
+	}
+
 	getTiles(): Tile[] {
 		return this.tilesCache.get();
 	}
@@ -186,6 +207,8 @@ export class GameStateAccessImpl implements GameStateAccess {
 		const entity = this.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
 		return {
 			id: entity.id,
+			name: entity.name,
+			color: entity.color,
 			ownedByUser: entity.ownedByUser,
 			playerName: entity.player.name,
 		}
