@@ -8,7 +8,6 @@ import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectType
 
 internal class WorldObjectEntity(
-    val id: String,
     val realmId: String,
     val gameId: String,
     val type: WorldObjectTypeEntity,
@@ -20,7 +19,7 @@ internal class WorldObjectEntity(
     companion object {
         fun of(serviceModel: WorldObject, gameId: String): WorldObjectEntity {
             return WorldObjectEntity(
-                id = serviceModel.id.value,
+                key = serviceModel.id.value,
                 realmId = serviceModel.realm.value,
                 gameId = gameId,
                 type = WorldObjectTypeEntity(
@@ -44,7 +43,7 @@ internal class WorldObjectEntity(
 
     fun asServiceModel(): WorldObject {
         return WorldObject(
-            id = WorldObject.Id(this.id),
+            id = WorldObject.Id(this.getKeyOrThrow()),
             realm = Realm.Id(this.realmId),
             type = WorldObjectType(
                 group = this.type.group,

@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.backend.engine.application.core.GameStepIm
 import io.github.smiley4.strategygame.backend.engine.application.core.GenericGameServiceImpl
 import io.github.smiley4.strategygame.backend.engine.application.core.InitializePlayerImpl
 import io.github.smiley4.strategygame.backend.engine.application.core.InitializeWorldImpl
+import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.DisbandCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.MoveCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GenericGameService
@@ -14,8 +15,9 @@ import org.koin.core.module.Module
 fun Module.dependenciesEngine() {
 
     single<MoveCommandExecutor> { MoveCommandExecutor() }
+    single<DisbandCommandExecutor> { DisbandCommandExecutor() }
 
-    single<GameStep> { GameStepImpl(get()) }
+    single<GameStep> { GameStepImpl(get(), get()) }
     single<InitializePlayer> { InitializePlayerImpl() }
     single<InitializeWorld> { InitializeWorldImpl(get()) }
     single<GenericGameService> { GenericGameServiceImpl() }

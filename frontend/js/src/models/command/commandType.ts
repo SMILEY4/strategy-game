@@ -1,7 +1,7 @@
 export class CommandType {
 
-	public static readonly WORLD_OBJECT_MOVE = new CommandType("move")
-	public static readonly WORLD_OBJECT_DISBAND = new CommandType("disband-world-object")
+	public static readonly WORLD_OBJECT_MOVE = new CommandType("world-object-move")
+	public static readonly WORLD_OBJECT_DISBAND = new CommandType("world-object-disband")
 
 
 	readonly id: string;

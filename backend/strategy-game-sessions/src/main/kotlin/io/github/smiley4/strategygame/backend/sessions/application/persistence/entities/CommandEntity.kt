@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.CommandData.Disband
+import io.github.smiley4.strategygame.backend.commondata.CommandData.Move
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.User
-import io.github.smiley4.strategygame.backend.commondata.WorldObject
+import io.github.smiley4.strategygame.backend.commondata.WorldObject.Id
 
 internal class CommandEntity<T : CommandEntityData>(
     val userId: String,
@@ -30,9 +31,12 @@ internal class CommandEntity<T : CommandEntityData>(
 
         private fun of(serviceModel: CommandData): CommandEntityData {
             return when (serviceModel) {
-                is CommandData.Move -> MoveCommandEntityData(
+                is Move -> MoveCommandEntityData(
                     worldObject = serviceModel.worldObject.value,
                     path = serviceModel.path.map { TileRefEntity.of(it) }
+                )
+                is Disband -> DisbandCommandEntityData(
+                    worldObject = serviceModel.worldObject.value,
                 )
             }
         }
@@ -49,9 +53,12 @@ internal class CommandEntity<T : CommandEntityData>(
 
     private fun asServiceModel(entity: CommandEntityData): CommandData {
         return when (entity) {
-            is MoveCommandEntityData -> CommandData.Move(
-                worldObject = WorldObject.Id(entity.worldObject),
+            is MoveCommandEntityData -> Move(
+                worldObject = Id(entity.worldObject),
                 path = entity.path.map { it.asServiceModel() }
+            )
+            is DisbandCommandEntityData -> Disband(
+                worldObject = Id(entity.worldObject),
             )
         }
     }
@@ -69,4 +76,9 @@ internal sealed class CommandEntityData
 internal class MoveCommandEntityData(
     val worldObject: String,
     val path: List<TileRefEntity>,
+) : CommandEntityData()
+
+
+internal class DisbandCommandEntityData(
+    val worldObject: String,
 ) : CommandEntityData()

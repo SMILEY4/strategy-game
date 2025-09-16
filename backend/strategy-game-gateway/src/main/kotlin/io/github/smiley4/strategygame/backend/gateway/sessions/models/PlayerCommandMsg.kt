@@ -16,7 +16,7 @@ internal sealed class PlayerCommandMsg {
 }
 
 
-@JsonTypeName("move")
+@JsonTypeName("world-object-move")
 internal class MoveCommandMsg(
     val worldObjectId: String,
     val path: List<Tile.Ref>
@@ -24,5 +24,15 @@ internal class MoveCommandMsg(
     override fun asCommandData() = CommandData.Move(
         worldObject = WorldObject.Id(worldObjectId),
         path = this.path
+    )
+}
+
+
+@JsonTypeName("world-object-disband")
+internal class DisbandCommandMsg(
+    val worldObjectId: String,
+) : PlayerCommandMsg() {
+    override fun asCommandData() = CommandData.Disband(
+        worldObject = WorldObject.Id(worldObjectId),
     )
 }

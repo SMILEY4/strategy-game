@@ -21,4 +21,8 @@ sealed class CommandData {
         val path: List<Tile.Ref>
     ) : CommandData()
 
+    class Disband(
+        val worldObject: WorldObject.Id,
+    ) : CommandData()
+
 }

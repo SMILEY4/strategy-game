@@ -8,7 +8,6 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.Tools
-import kotlin.collections.toMutableList
 
 class MoveCommandExecutor : Logging {
 
@@ -16,7 +15,7 @@ class MoveCommandExecutor : Logging {
         log().debug("Executing move command for object ${command.data.worldObject} with path length ${command.data.path.size}.")
 
         // skip if path is empty
-        if(command.data.path.isEmpty() || command.data.path.size == 1) {
+        if (command.data.path.isEmpty() || command.data.path.size == 1) {
             log().debug("Path to move is empty, skipping.")
             return
         }
@@ -25,14 +24,20 @@ class MoveCommandExecutor : Logging {
         val worldObject = gameState.worldObjects.find { it.id == command.data.worldObject }
             ?: throw Exception("Could not find world object ${command.data.worldObject}")
 
+        // validate: world object must be owned by player
+        val realm = gameState.realms.find { it.id == worldObject.realm }
+            ?: throw Exception("Could not find realm ${worldObject.realm}")
+        if (realm.user != command.user) {
+            throw Exception("Player does not own world object.")
+        }
 
         // validate: world object must be movable
-        if(!worldObject.hasComponent<WorldObjectComponent.Movement>()) {
+        if (!worldObject.hasComponent<WorldObjectComponent.Movement>()) {
             throw Exception("World object can not be moved.")
         }
 
         // validate: first tile in path must match current location
-        if(worldObject.tile.id != command.data.path.first().id) {
+        if (worldObject.tile.id != command.data.path.first().id) {
             throw Exception("World object not located at start of path (obj at ${worldObject.tile} vs start at ${command.data.path.first()}")
         }
 

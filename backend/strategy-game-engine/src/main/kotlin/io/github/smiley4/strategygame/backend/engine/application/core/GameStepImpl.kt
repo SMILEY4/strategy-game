@@ -6,12 +6,14 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
+import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.DisbandCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.MoveCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
 
 
 internal class GameStepImpl(
     val moveCommandExecutor: MoveCommandExecutor,
+    val disbandCommandExecutor: DisbandCommandExecutor,
 ) : GameStep, Logging {
 
     private val metricId = MetricId.action(GameStep::class)
@@ -30,6 +32,7 @@ internal class GameStepImpl(
                 @Suppress("UNCHECKED_CAST")
                 when (it.data) {
                     is CommandData.Move -> moveCommandExecutor.execute(game, it as Command<CommandData.Move>)
+                    is CommandData.Disband -> disbandCommandExecutor.execute(game, it as Command<CommandData.Disband>)
                 }
             } catch (e: Exception) {
                 log().error("Error when executing command", e)
