@@ -5,6 +5,7 @@ data class Tile(
     val position: Position,
     val discoveredBy: MutableSet<Realm.Id>,
     val dataWorld: WorldData,
+    val metaProperties: MetaProperties,
 ) {
 
     @JvmInline
@@ -27,6 +28,10 @@ data class Tile(
         var terrainType: TerrainType,
         var resourceType: TileResourceType,
         var height: Float,
+    )
+
+    data class MetaProperties(
+        val seed: Long
     )
 
     class Container() : Collection<Tile> {

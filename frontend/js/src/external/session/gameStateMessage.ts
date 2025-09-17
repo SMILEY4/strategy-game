@@ -27,6 +27,9 @@ export interface TileMessage {
 		resourceType: ResourceTypeMsg,
 		height: number
 	}>,
+	metaProperties: {
+		seed: number
+	}
 }
 
 export interface RealmMessage {

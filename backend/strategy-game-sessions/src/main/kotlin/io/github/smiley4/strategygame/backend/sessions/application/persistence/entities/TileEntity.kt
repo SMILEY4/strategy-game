@@ -13,6 +13,7 @@ internal class TileEntity(
     val discoveredBy: Set<String>,
     val position: TilePositionEntity,
     val dataWorld: TileWorldDataEntity,
+    val seed: Long,
     key: String? = null
 ) : DbEntity(key) {
 
@@ -23,6 +24,7 @@ internal class TileEntity(
             position = TilePositionEntity.of(serviceModel.position),
             dataWorld = TileWorldDataEntity.of(serviceModel.dataWorld),
             discoveredBy = serviceModel.discoveredBy.map { it.value }.toSet(),
+            seed = serviceModel.metaProperties.seed
         )
     }
 
@@ -30,7 +32,10 @@ internal class TileEntity(
         id = Tile.Id(this.getKeyOrThrow()),
         position = this.position.asServiceModel(),
         dataWorld = this.dataWorld.asServiceModel(),
-        discoveredBy = this.discoveredBy.map { Realm.Id(it) }.toMutableSet()
+        discoveredBy = this.discoveredBy.map { Realm.Id(it) }.toMutableSet(),
+        metaProperties = Tile.MetaProperties(
+            seed = this.seed
+        )
     )
 
 }

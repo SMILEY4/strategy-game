@@ -1,7 +1,4 @@
 use crate::js::models::TextureAtlasEntry;
-use crate::renderer::line_mesh::{
-    cap_butt_end, cap_butt_start, join_miter, LineMeshConfig,
-};
 use crate::renderer::models::{MapDetailVertex, RenderState, RendererConfiguration, VertexData};
 use crate::utils::{mix, rgb_f32_to_u8, Random};
 
@@ -15,29 +12,8 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
     let atlas_entries_forest = &state.texture_atlas_entries["terrain_forest"];
     let atlas_entries_terrain_decoration = &state.texture_atlas_entries["terrain_decoration"];
     let atlas_entries_units = &state.texture_atlas_entries["unit"];
-    let atlas_entries_road = &state.texture_atlas_entries["road"];
 
     let mut rng = Random::new(0);
-
-    // routes line mesh config
-    let route_mesh_config = LineMeshConfig {
-        thickness: config.route_line_thickness,
-        cap_start: cap_butt_start,
-        cap_end: cap_butt_end,
-        join: join_miter,
-    };
-
-    // routes mesh uv
-    let mut route_u_min: f32 = 99999999.9;
-    let mut route_v_min: f32 = 99999999.9;
-    let mut route_u_max: f32 = -99999999.9;
-    let mut route_v_max: f32 = -99999999.9;
-    for texture_coordinate in atlas_entries_road[0].texture_coordinates.chunks_exact(2) {
-        route_u_min = route_u_min.min(texture_coordinate[0]);
-        route_v_min = route_v_min.min(texture_coordinate[1]);
-        route_u_max = route_u_max.max(texture_coordinate[0]);
-        route_v_max = route_v_max.max(texture_coordinate[1]);
-    }
 
     // add world objects
     for world_object in &state.world_objects {

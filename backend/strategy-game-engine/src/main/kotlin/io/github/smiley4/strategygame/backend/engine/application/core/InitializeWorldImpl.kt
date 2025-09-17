@@ -12,6 +12,8 @@ import io.github.smiley4.strategygame.backend.commondata.utils.tracking
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializeWorld
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenSettings
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenerator
+import kotlin.random.Random
+import kotlin.random.nextLong
 
 internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) : InitializeWorld {
 
@@ -35,6 +37,9 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
                     resourceType = it.resource,
                     height = it.height,
                 ),
+                metaProperties = Tile.MetaProperties(
+                    seed = Random.nextLong(),
+                )
             )
         }
     }

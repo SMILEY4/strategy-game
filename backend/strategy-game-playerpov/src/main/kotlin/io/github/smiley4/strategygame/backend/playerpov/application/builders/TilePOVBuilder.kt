@@ -23,6 +23,9 @@ internal class TilePOVBuilder(private val povCache: POVCache) {
                     "height" to tile.dataWorld.height
                 }
             }
+            "metaProperties" to obj {
+                "seed" to tile.metaProperties.seed
+            }
         }
     }
 

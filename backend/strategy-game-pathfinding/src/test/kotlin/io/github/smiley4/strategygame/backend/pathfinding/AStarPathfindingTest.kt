@@ -214,6 +214,9 @@ class AStarPathfindingTest : StringSpec({
                                 height = 1f
                             ),
                             discoveredBy = mutableSetOf(),
+                            metaProperties = Tile.MetaProperties(
+                                seed = 0
+                            )
                         )
                     )
                 }

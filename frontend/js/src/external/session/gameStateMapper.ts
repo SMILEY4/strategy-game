@@ -1,7 +1,6 @@
 import {GameStateMessage, RealmMessage, ResourceTypeMsg, TerrainTypeMsg, VisibilityMsg} from "./gameStateMessage";
 import {GameStateContainer} from "../../models/misc/gameStateContainer";
 import {Tile} from "../../models/tile/tile";
-import {shuffleArray} from "../../common/utils";
 import {Visibility} from "../../models/misc/visibility";
 import {mapHidden} from "../../common/hiddenType";
 import {TerrainType} from "../../models/misc/terrainType";
@@ -9,18 +8,13 @@ import {Projections} from "../../common/webgl/projections";
 import {Realm} from "../../models/realm/realm";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {WorldObjectComponent} from "../../models/worldobject/worldObjectComponent";
-import {Random} from "../../common/random";
 import {User} from "../../models/misc/userId";
 import {TileResourceType} from "../../models/misc/tileResourceType";
-import normalized = Random.normalized;
 import {Color} from "../../common/color/color";
 
 export namespace GameStateMapper {
 
-	let cachedTileIndices: number[] = [];
-
 	export function map(gameStateMsg: GameStateMessage): GameStateContainer {
-		cachedTileIndices = [];
 		return {
 			turn: gameStateMsg.game.turn,
 			commands: [],
@@ -50,11 +44,6 @@ export namespace GameStateMapper {
 	};
 
 	function buildTiles(gameStateMsg: GameStateMessage): Tile[] {
-		if (cachedTileIndices.length != gameStateMsg.tiles.length) {
-			const indices = [...Array(gameStateMsg.tiles.length).keys()];
-			shuffleArray(indices);
-			cachedTileIndices = indices;
-		}
 		return gameStateMsg.tiles.map((tileMsg, index) => ({
 			id: tileMsg.identifier.id as Tile.Id,
 			position: {
@@ -67,12 +56,9 @@ export namespace GameStateMapper {
 				resourceType: resourceTypeMapping[baseMsg.resourceType],
 				height: baseMsg.height,
 			})),
-			metaProperties: { // todo: read from backend to make stable
+			metaProperties: {
+				seed: tileMsg.metaProperties.seed,
 				worldPosition: Projections.hexToWorld(tileMsg.identifier.q, tileMsg.identifier.r),
-				randomIndex: cachedTileIndices[index],
-				randomValue0: normalized(tileMsg.identifier.r + "-" + tileMsg.identifier.q + "-1"),
-				randomValue1: normalized(tileMsg.identifier.r + "-" + tileMsg.identifier.q + "-2"),
-				randomValue2: normalized(tileMsg.identifier.r + "-" + tileMsg.identifier.q + "-2"),
 			},
 		}));
 	}

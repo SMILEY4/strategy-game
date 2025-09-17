@@ -56,7 +56,7 @@ export namespace TileWasmSerializer {
 		writer.pushFloat32(tile.base.visible ? tile.base.value.height : 0);
 
 		// rng_seed: u64,
-		writer.pushUint32(tile.metaProperties.randomValue1 * 1000000);
+		writer.pushUint32(tile.metaProperties.seed);
 	}
 
 }

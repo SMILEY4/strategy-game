@@ -65,6 +65,7 @@ export class GameSessionClientImpl implements GameSessionClient {
 	public connect(game: Game.Id, handler: GameMessageHandler): Promise<void> {
 		return this.getWebsocketTicket().then(ticket => {
 			return this.wsClient.open(`/api/session/connect/${game}`, ticket, message => {
+				console.debug("received message", message);
 				this.handleMessage(message.type, message.payload, handler);
 			});
 		});

@@ -19,11 +19,8 @@ export interface Tile {
 		height: number
 	}>,
 	metaProperties: {
-		randomIndex: number,
 		worldPosition: Point,
-		randomValue0: number,
-		randomValue1: number,
-		randomValue2: number,
+		seed: number,
 	}
 }
 

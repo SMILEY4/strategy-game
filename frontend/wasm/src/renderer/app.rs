@@ -55,6 +55,7 @@ impl RenderApp {
     /// This does not automatically trigger a re-calculation of anything else.
     pub fn set_tiles(&mut self, tiles: Vec<Tile>) {
         self.state.tiles = tiles;
+        self.state.tiles.sort_by_key(|it| it.rng_seed);
         self.update_relevant_area();
     }
 
