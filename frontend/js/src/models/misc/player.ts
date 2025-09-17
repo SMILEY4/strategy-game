@@ -1,4 +1,9 @@
+import {User} from "./userId";
+
+/**
+ * A player in a game.
+ */
 export interface Player {
-	userId: string,
+	userId: User.Id,
 	name: string
 }

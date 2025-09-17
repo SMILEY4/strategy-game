@@ -4,8 +4,6 @@ import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileContainer
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.pathfinding.algorithms.backtracking.BacktrackingPathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
@@ -41,13 +39,13 @@ class BacktrackingPathfindingTest : StringSpec({
             tiles.get(2, 3).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(0, 0),
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(1, 2),
-            TilePosition(1, 3),
-            TilePosition(2, 3),
+            Tile.Position(0, 0),
+            Tile.Position(1, 0),
+            Tile.Position(2, 0),
+            Tile.Position(2, 1),
+            Tile.Position(1, 2),
+            Tile.Position(1, 3),
+            Tile.Position(2, 3),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(6.0f, 0.1)
     }
@@ -91,7 +89,7 @@ class BacktrackingPathfindingTest : StringSpec({
             tiles.get(0, 0).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(0, 0)
+            Tile.Position(0, 0)
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(0.0f, 0.1)
     }
@@ -114,8 +112,8 @@ class BacktrackingPathfindingTest : StringSpec({
             tiles.get(1, 0).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(0, 0),
-            TilePosition(1, 0)
+            Tile.Position(0, 0),
+            Tile.Position(1, 0)
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(1.0f, 0.1)
     }
@@ -147,11 +145,11 @@ class BacktrackingPathfindingTest : StringSpec({
             tiles.get(1, 3).node(),
         )
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
-            TilePosition(1, 0),
-            TilePosition(2, 0),
-            TilePosition(2, 1),
-            TilePosition(2, 2),
-            TilePosition(1, 3),
+            Tile.Position(1, 0),
+            Tile.Position(2, 0),
+            Tile.Position(2, 1),
+            Tile.Position(2, 2),
+            Tile.Position(1, 3),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(5.0f, 0.1)
     }
@@ -160,7 +158,7 @@ class BacktrackingPathfindingTest : StringSpec({
 
     private companion object {
 
-        class AdvancedNeighbourProvider(private val tiles: TileContainer) : NeighbourProvider<TestNode> {
+        class AdvancedNeighbourProvider(private val tiles: Tile.Container) : NeighbourProvider<TestNode> {
 
             private val rules = mutableListOf<NextNodeRule<TestNode>>()
 
@@ -180,11 +178,6 @@ class BacktrackingPathfindingTest : StringSpec({
                     if (neighbourTile != null) {
                         val neighbourNode = TestNode(neighbourTile,
                             pathLength = current.pathLength + 1,
-                            visitedProvinces = current.visitedProvinces + (neighbourTile.dataPolitical.controlledBy?.province?.let {
-                                setOf(
-                                    it.value
-                                )
-                            } ?: setOf()),
                             prevNode = current
                         )
                         if (allRulesApply(current, neighbourNode)) {
@@ -217,14 +210,14 @@ class BacktrackingPathfindingTest : StringSpec({
         }
 
 
-        fun buildTiles(ids: List<List<Int>>): TileContainer {
+        fun buildTiles(ids: List<List<Int>>): Tile.Container {
             val tiles = mutableListOf<Tile>()
             ids.forEachIndexed { r, qIds ->
                 qIds.forEachIndexed { q, id ->
                     tiles.add(
                         Tile(
                             id = Tile.Id("$q/$r"),
-                            position = TilePosition(q, r),
+                            position = Tile.Position(q, r),
                             dataWorld = Tile.WorldData(
                                 terrainType = when (id) {
                                     1 -> TerrainType.WATER
@@ -234,16 +227,15 @@ class BacktrackingPathfindingTest : StringSpec({
                                 resourceType = TileResourceType.NONE,
                                 height = 1f
                             ),
-                            dataPolitical = Tile.PoliticalData(
-                                influences = mutableListOf(),
-                                discoveredByCountries = mutableSetOf(),
-                                controlledBy = null,
-                            ),
+                            discoveredBy = mutableSetOf(),
+                            metaProperties = Tile.MetaProperties(
+                                seed = 0
+                            )
                         )
                     )
                 }
             }
-            return TileContainer(tiles)
+            return Tile.Container(tiles)
         }
 
     }

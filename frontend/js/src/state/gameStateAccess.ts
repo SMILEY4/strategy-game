@@ -1,40 +1,32 @@
 import {TileSummary} from "../models/tile/tileSummary";
 import {Tile} from "../models/tile/tile";
-import {CameraEntity} from "../models/misc/cameraEntity";
+import {CameraData} from "../models/misc/cameraData";
 import {CameraDatabase} from "./database/cameraDatabase";
 import {TileDatabase} from "./database/tileDatabase";
 import {GameSessionDatabase} from "./database/gameSessionDatabase";
 import {WorldObject} from "../models/worldobject/worldObject";
-import {WorldObjectId} from "../models/worldobject/worldObjectId";
 import {MovementState} from "../models/misc/movementState";
-import {Settlement, SettlementProductionQueueEntry} from "../models/settlement/settlement";
-import {Command, MoveCommand} from "../models/command/command";
-import {CommandType} from "../models/command/commandType";
-import {SettlementId} from "../models/settlement/settlementId";
 import {MapMode} from "../models/misc/mapMode";
-import {Route} from "../models/route/route";
-import {GameSessionState} from "../models/misc/gameSessionState";
-import {CountryDatabase} from "./database/countryDatabase";
+import {RealmDatabase} from "./database/realmDatabase";
 import {WorldObjectDatabase} from "./database/worldObjectDatabase";
 import {MovementModeState} from "./database/movementModeState";
-import {SettlementDatabase} from "./database/settlementDatabase";
-import {RouteDatabase} from "./database/routeDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
-import {SettlementBuilder} from "./utils/settlementBuilder";
 import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
-import {SettlementSummary} from "../models/settlement/settlementSummary";
 import {DbCache} from "../common/db/dbCache";
-import {CountrySummary} from "../models/country/countrySummary";
+import {RealmSummary} from "../models/realm/realmSummary";
+import {GameSession} from "../models/misc/gameSession";
+import {Command} from "../models/command/command";
+import Mapping = Command.Mapping;
 
 export interface GameStateAccess {
 	// game
 	getGameIdOrThrow(): string
 	getCurrentTurn(): number;
-	getGameSessionState(): GameSessionState;
+	getGameSessionState(): GameSession.SessionState;
 	// map
 	getMapMode(): MapMode;
 	// camera
-	getCamera(): CameraEntity;
+	getCamera(): CameraData;
 	// tiles
 	getSelectedTile(): TileSummary | null;
 	getHoveredTile(): TileSummary | null;
@@ -42,29 +34,20 @@ export interface GameStateAccess {
 	getTileSummaryAt(q: number, r: number): TileSummary | null;
 	getTiles(): Tile[];
 	getTilesRevId(): string;
-	// country
-	getPlayerCountrySummary(): CountrySummary;
+	getSpawnTile(): TileSummary;
+	// realms
+	getPlayerRealmSummary(): RealmSummary;
 	// world objects
-	getWorldObjectSummary(id: WorldObjectId): WorldObjectSummary | null;
+	getWorldObjectSummary(id: WorldObject.Id): WorldObjectSummary | null;
 	getWorldObjectSummariesAt(q: number, r: number): WorldObjectSummary[];
 	getWorldObjects(): WorldObject[];
 	getCurrentMovementState(): MovementState | null;
 	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[];
 	getMoveTargets(): TileSummary[];
 	getWorldObjectsRevId(): string;
-	// settlements
-	// todo: maybe own reduced settlement model for rendering
-	getSettlements(): Settlement[];
-	getSettlementAt(q: number, r: number): Settlement | null;
-	getSettlementSummaryAt(q: number, r: number): SettlementSummary | null;
-	getSettlementProductionQueue(id: SettlementId): SettlementProductionQueueEntry[] | null;
-	getSettlementsRevId(): string;
-	// routes
-	getRoutes(): Route[];
-	getRoutesRevId(): string;
 	// commands
 	getCommands(): Command[];
-	getCommandsOfType<T extends Command>(type: CommandType): T[];
+	getCommandsOfType<T extends Command.Type>(type: T): (Command.Mapping[T])[];
 	getCommandRevId(): string;
 }
 
@@ -73,50 +56,34 @@ export class GameStateAccessImpl implements GameStateAccess {
 	private readonly cameraDatabase: CameraDatabase;
 	private readonly tileDatabase: TileDatabase;
 	private readonly gameSessionDatabase: GameSessionDatabase;
-	private readonly countryDatabase: CountryDatabase;
+	private readonly realmDatabase: RealmDatabase;
 	private readonly worldObjectDatabase: WorldObjectDatabase;
-	private readonly settlementDatabase: SettlementDatabase;
-	private readonly routeDatabase: RouteDatabase;
 	private readonly commandDatabase: CommandDatabase;
 
 	private readonly tilesCache: DbCache<Tile[]>;
-	private readonly settlementsCache: DbCache<Settlement[]>;
 	private readonly worldObjectsCache: DbCache<WorldObject[]>;
-	private readonly routesCache: DbCache<Route[]>;
 
 	constructor(
 		cameraDatabase: CameraDatabase,
 		tileDatabase: TileDatabase,
 		gameSessionDatabase: GameSessionDatabase,
-		countryDatabase: CountryDatabase,
+		realmDatabase: RealmDatabase,
 		worldObjectDatabase: WorldObjectDatabase,
-		settlementDatabase: SettlementDatabase,
-		routeDatabase: RouteDatabase,
 		commandDatabase: CommandDatabase,
 	) {
 		this.cameraDatabase = cameraDatabase;
 		this.tileDatabase = tileDatabase;
 		this.gameSessionDatabase = gameSessionDatabase;
-		this.countryDatabase = countryDatabase;
+		this.realmDatabase = realmDatabase;
 		this.worldObjectDatabase = worldObjectDatabase;
-		this.settlementDatabase = settlementDatabase;
-		this.routeDatabase = routeDatabase;
 		this.commandDatabase = commandDatabase;
 		this.tilesCache = new DbCache({
 			dataProvider: () => this.getTilesUncached(),
 			dependencies: [this.tileDatabase],
 		});
-		this.settlementsCache = new DbCache({
-			dataProvider: () => this.getSettlementsUncached(),
-			dependencies: [this.settlementDatabase, this.routeDatabase, this.commandDatabase],
-		});
 		this.worldObjectsCache = new DbCache({
 			dataProvider: () => this.getWorldObjectsUncached(),
 			dependencies: [this.worldObjectDatabase],
-		});
-		this.routesCache = new DbCache({
-			dataProvider: () => this.getRoutesUncached(),
-			dependencies: [this.routeDatabase],
 		});
 	}
 
@@ -136,7 +103,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 		return this.gameSessionDatabase.get().turn;
 	}
 
-	getGameSessionState(): GameSessionState {
+	getGameSessionState(): GameSession.SessionState {
 		return this.gameSessionDatabase.get().sessionState;
 	}
 
@@ -149,7 +116,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== CAMERA ========================================================
 
-	getCamera(): CameraEntity {
+	getCamera(): CameraData {
 		return this.cameraDatabase.get();
 	}
 
@@ -169,19 +136,16 @@ export class GameStateAccessImpl implements GameStateAccess {
 	}
 
 	getTileAt(q: number, r: number): Tile | null {
-		const entity = this.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
-		if (!entity) {
+		const tile = this.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
+		if (!tile) {
 			return null;
 		}
 		return {
-			id: entity.id,
-			position: entity.position,
-			visibility: entity.visibility,
-			base: entity.base,
-			political: entity.political,
-			isValidSettlementLocation: entity.isValidSettlementLocation,
-			objects: entity.objects,
-			metaProperties: entity.metaProperties
+			id: tile.id,
+			position: tile.position,
+			visibility: tile.visibility,
+			base: tile.base,
+			metaProperties: tile.metaProperties
 		};
 	}
 
@@ -196,33 +160,52 @@ export class GameStateAccessImpl implements GameStateAccess {
 		};
 	}
 
+	getSpawnTile(): TileSummary {
+
+		const playerRealm = this.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
+
+		const scout = this.worldObjectDatabase
+			.queryMany(WorldObjectDatabase.QUERY_BY_REALM_ID, playerRealm.id)
+			.find(it => it.type.group == "unit" && it.type.name == "scout")
+		if(scout) {
+			return scout.tile
+		}
+
+		const tileCenter =  this.getTileSummaryAt(0, 0);
+		if(tileCenter) {
+			return tileCenter;
+		}
+
+		throw new Error("Could not find spawn tile.")
+	}
+
 	getTiles(): Tile[] {
 		return this.tilesCache.get();
 	}
 
 	private getTilesUncached(): Tile[] {
 		return this.tileDatabase.queryMany(TileDatabase.QUERY_ALL, null)
-			.map(entity => ({
-				id: entity.id,
-				position: entity.position,
-				visibility: entity.visibility,
-				base: entity.base,
-				political: entity.political,
-				isValidSettlementLocation: entity.isValidSettlementLocation,
-				objects: entity.objects,
-				metaProperties: entity.metaProperties
+			.map(tile => ({
+				id: tile.id,
+				position: tile.position,
+				visibility: tile.visibility,
+				base: tile.base,
+				worldObjects: this.worldObjectDatabase
+					.queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [tile.position.q, tile.position.r])
+					.map(it => WorldObjectSummary.from(it)),
+				metaProperties: tile.metaProperties
 			}));
 	}
 
-	//========== COUNTRY =======================================================
+	//========== REALM =========================================================
 
-	getPlayerCountrySummary(): CountrySummary {
-		const entity = this.countryDatabase.querySingleOrThrow(CountryDatabase.QUERY_IS_USER_COUNTRY, null);
+	getPlayerRealmSummary(): RealmSummary {
+		const entity = this.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
 		return {
 			id: entity.id,
 			name: entity.name,
 			color: entity.color,
-			isUserControlled: entity.isUserControlled,
+			ownedByUser: entity.ownedByUser,
 			playerName: entity.player.name,
 		}
 	}
@@ -233,7 +216,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 		return this.worldObjectDatabase.getRevId();
 	}
 
-	getWorldObjectSummary(id: WorldObjectId): WorldObjectSummary | null {
+	getWorldObjectSummary(id: WorldObject.Id): WorldObjectSummary | null {
 		return this.worldObjectDatabase.querySingle(WorldObjectDatabase.QUERY_BY_ID, id);
 	}
 
@@ -270,7 +253,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 				pending: true,
 			});
 		}
-		this.getCommandsOfType<MoveCommand>(CommandType.MOVE).forEach(cmd => {
+		this.getCommandsOfType(Command.Type.Move).forEach(cmd => {
 			results.push({
 				tiles: cmd.path,
 				pending: false,
@@ -287,73 +270,6 @@ export class GameStateAccessImpl implements GameStateAccess {
 		}
 	}
 
-	//========== SETTLEMENTS ===================================================
-
-	getSettlementsRevId(): string {
-		return this.settlementDatabase.getRevId()
-	}
-
-	getSettlements(): Settlement[] {
-		return this.settlementsCache.get();
-	}
-
-	private getSettlementsUncached(): Settlement[] {
-		const settlements = this.settlementDatabase.queryMany(SettlementDatabase.QUERY_ALL, null);
-		const routes = this.routeDatabase.queryMany(RouteDatabase.QUERY_ALL, null);
-		const commands = this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
-		return settlements.map(it => SettlementBuilder.buildSettlement(it, routes, settlements, commands));
-	}
-
-	getSettlementAt(q: number, r: number): Settlement | null {
-		const settlement = this.settlementDatabase.querySingle(SettlementDatabase.QUERY_BY_POSITION, [q, r]);
-		if (settlement) {
-			const settlements = this.settlementDatabase.queryMany(SettlementDatabase.QUERY_ALL, null);
-			const routes = this.routeDatabase.queryMany(RouteDatabase.QUERY_ALL, null);
-			const commands = this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
-			return SettlementBuilder.buildSettlement(settlement, routes, settlements, commands);
-		} else {
-			return null;
-		}
-	}
-
-	getSettlementSummaryAt(q: number, r: number): SettlementSummary | null {
-		const settlement = this.settlementDatabase.querySingle(SettlementDatabase.QUERY_BY_POSITION, [q, r]);
-		if (settlement) {
-			return {
-				id: settlement.id,
-				name: settlement.name,
-				color: settlement.color,
-				isUserControlled: settlement.country.isUserControlled,
-			};
-		} else {
-			return null;
-		}
-	}
-
-	getSettlementProductionQueue(id: SettlementId): SettlementProductionQueueEntry[] | null {
-		const settlement = this.settlementDatabase.querySingle(SettlementDatabase.QUERY_BY_ID, id);
-		if (settlement) {
-			const commands = this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
-			return SettlementBuilder.buildProductionQueue(settlement, commands);
-		} else {
-			return null;
-		}
-	}
-
-	//========== ROUTES ========================================================
-
-	getRoutesRevId(): string {
-		return this.routeDatabase.getRevId()
-	}
-
-	getRoutes(): Route[] {
-		return this.routesCache.get()
-	}
-
-	getRoutesUncached(): Route[] {
-		return this.routeDatabase.queryMany(RouteDatabase.QUERY_ALL, null);
-	}
-
 	//========== COMMANDS ======================================================
 
 	getCommandRevId(): string {
@@ -364,10 +280,10 @@ export class GameStateAccessImpl implements GameStateAccess {
 		return this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
 	}
 
-	getCommandsOfType<T extends Command>(type: CommandType): T[] {
+	getCommandsOfType<T extends Command.Type>(type: T): (Command.Mapping[T])[] {
 		return this.commandDatabase
 			.queryMany(CommandDatabase.QUERY_ALL, null)
-			.filter(cmd => cmd.type === type) as T[];
+			.filter((it): it is Mapping[T] => it.type === type)
 	}
 
 }

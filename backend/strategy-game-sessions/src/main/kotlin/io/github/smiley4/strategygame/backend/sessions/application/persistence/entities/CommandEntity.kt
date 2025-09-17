@@ -2,15 +2,14 @@ package io.github.smiley4.strategygame.backend.sessions.application.persistence.
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
-import io.github.smiley4.strategygame.backend.commondata.BuildingType
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
-import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.CommandData.Disband
+import io.github.smiley4.strategygame.backend.commondata.CommandData.Move
+import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
-import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.User
-import io.github.smiley4.strategygame.backend.commondata.WorldObject
+import io.github.smiley4.strategygame.backend.commondata.WorldObject.Id
 
 internal class CommandEntity<T : CommandEntityData>(
     val userId: String,
@@ -32,27 +31,12 @@ internal class CommandEntity<T : CommandEntityData>(
 
         private fun of(serviceModel: CommandData): CommandEntityData {
             return when (serviceModel) {
-                is CommandData.Move -> MoveCommandEntityData(
-                    worldObjectId = serviceModel.worldObject.value,
-                    path = serviceModel.path.map { TileRefEntity.of(it) },
+                is Move -> MoveCommandEntityData(
+                    worldObject = serviceModel.worldObject.value,
+                    path = serviceModel.path.map { TileRefEntity.of(it) }
                 )
-                is CommandData.CreateSettlement -> CreateSettlementCommandEntityData(
-                    name = serviceModel.name,
-                    worldObjectId = serviceModel.worldObject.value
-                )
-                is CommandData.ProductionQueueRemoveEntry -> ProductionQueueRemoveEntryCommandEntityData(
-                    entryId = serviceModel.entry.value,
-                    settlementId = serviceModel.settlement.value
-                )
-                is CommandData.ProductionQueueAddEntry.Settler -> ProductionQueueAddSettlerCommandEntityData(
-                    settlementId = serviceModel.settlement.value
-                )
-                is CommandData.ProductionQueueAddEntry.Building -> ProductionQueueAddBuildingCommandEntityData(
-                    settlementId = serviceModel.settlement.value,
-                    building = serviceModel.building.name
-                )
-                is CommandData.DisbandWorldObject -> DisbandWorldObjectCommandEntityData(
-                    worldObjectId = serviceModel.worldObject.value,
+                is Disband -> DisbandCommandEntityData(
+                    worldObject = serviceModel.worldObject.value,
                 )
             }
         }
@@ -69,27 +53,12 @@ internal class CommandEntity<T : CommandEntityData>(
 
     private fun asServiceModel(entity: CommandEntityData): CommandData {
         return when (entity) {
-            is MoveCommandEntityData -> CommandData.Move(
-                worldObject = WorldObject.Id(entity.worldObjectId),
-                path = entity.path.map { it.asServiceModel() },
+            is MoveCommandEntityData -> Move(
+                worldObject = Id(entity.worldObject),
+                path = entity.path.map { it.asServiceModel() }
             )
-            is CreateSettlementCommandEntityData -> CommandData.CreateSettlement(
-                name = entity.name,
-                worldObject = WorldObject.Id(entity.worldObjectId),
-            )
-            is ProductionQueueRemoveEntryCommandEntityData -> CommandData.ProductionQueueRemoveEntry(
-                entry = ProductionQueueEntry.Id(entity.entryId),
-                settlement = Settlement.Id(entity.settlementId)
-            )
-            is ProductionQueueAddSettlerCommandEntityData -> CommandData.ProductionQueueAddEntry.Settler(
-                settlement = Settlement.Id(entity.settlementId)
-            )
-            is ProductionQueueAddBuildingCommandEntityData -> CommandData.ProductionQueueAddEntry.Building(
-                settlement = Settlement.Id(entity.settlementId),
-                building = BuildingType.valueOf(entity.building)
-            )
-            is DisbandWorldObjectCommandEntityData -> CommandData.DisbandWorldObject(
-                worldObject = WorldObject.Id(entity.worldObjectId),
+            is DisbandCommandEntityData -> Disband(
+                worldObject = Id(entity.worldObject),
             )
         }
     }
@@ -105,31 +74,11 @@ internal class CommandEntity<T : CommandEntityData>(
 internal sealed class CommandEntityData
 
 internal class MoveCommandEntityData(
-    val worldObjectId: String,
+    val worldObject: String,
     val path: List<TileRefEntity>,
 ) : CommandEntityData()
 
-internal class CreateSettlementCommandEntityData(
-    val name: String,
-    val worldObjectId: String
-) : CommandEntityData()
 
-
-internal class ProductionQueueRemoveEntryCommandEntityData(
-    val entryId: String,
-    val settlementId: String
-) : CommandEntityData()
-
-
-internal class ProductionQueueAddSettlerCommandEntityData(
-    val settlementId: String
-) : CommandEntityData()
-
-internal class ProductionQueueAddBuildingCommandEntityData(
-    val settlementId: String,
-    val building: String
-) : CommandEntityData()
-
-internal class DisbandWorldObjectCommandEntityData(
-    val worldObjectId: String,
+internal class DisbandCommandEntityData(
+    val worldObject: String,
 ) : CommandEntityData()

@@ -1,7 +1,7 @@
 import {AbstractSingletonDatabase} from "../../common/db/database/abstractSingletonDatabase";
-import {CameraEntity} from "../../models/misc/cameraEntity";
+import {CameraData} from "../../models/misc/cameraData";
 
-export class CameraDatabase extends AbstractSingletonDatabase<CameraEntity> {
+export class CameraDatabase extends AbstractSingletonDatabase<CameraData> {
 	constructor() {
 		super({
 			x: 0,

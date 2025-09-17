@@ -3,24 +3,24 @@ import {AbstractDatabase} from "../../common/db/database/abstractDatabase";
 import {Query} from "../../common/db/query/query";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../common/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySupportingStorage";
-import {MapUniqueSupportingStorage} from "../../common/db/storage/supporting/mapUniqueSupportingStorage";
 import {MapSupportingStorage} from "../../common/db/storage/supporting/mapSupportingStorage";
-import {WorldObjectEntity} from "../../models/worldobject/worldObjectEntity";
+import {WorldObject} from "../../models/worldobject/worldObject";
+import {Realm} from "../../models/realm/realm";
 
-function provideId(e: WorldObjectEntity): string {
+function provideId(e: WorldObject): WorldObject.Id {
     return e.id;
 }
 
-interface WorldObjectStorageConfig extends DatabaseStorageConfig<WorldObjectEntity, string> {
-    primary: MapPrimaryStorage<WorldObjectEntity, string>,
+interface WorldObjectStorageConfig extends DatabaseStorageConfig<WorldObject, WorldObject.Id> {
+    primary: MapPrimaryStorage<WorldObject, WorldObject.Id>,
     supporting: {
-        array: ArraySupportingStorage<WorldObjectEntity>,
-        byPos: MapUniqueSupportingStorage<WorldObjectEntity, string>,
-        byCountry: MapSupportingStorage<WorldObjectEntity, string>
+        array: ArraySupportingStorage<WorldObject>,
+        byPos: MapSupportingStorage<WorldObject, string>,
+        byRealm: MapSupportingStorage<WorldObject, Realm.Id>
     }
 }
 
-class WorldObjectStorage extends DatabaseStorage<WorldObjectStorageConfig, WorldObjectEntity, string> {
+class WorldObjectStorage extends DatabaseStorage<WorldObjectStorageConfig, WorldObject, WorldObject.Id> {
 
     public static toKey(q: number, r: number): string {
         return q + "/" + r;
@@ -28,36 +28,36 @@ class WorldObjectStorage extends DatabaseStorage<WorldObjectStorageConfig, World
 
     constructor() {
         super({
-            primary: new MapPrimaryStorage<WorldObjectEntity, string>(provideId),
+            primary: new MapPrimaryStorage<WorldObject, WorldObject.Id>(provideId),
             supporting: {
-                array: new ArraySupportingStorage<WorldObjectEntity>(),
-                byPos: new MapUniqueSupportingStorage<WorldObjectEntity, string>(e => WorldObjectStorage.toKey(e.tile.position.q, e.tile.position.r)),
-                byCountry: new MapSupportingStorage<WorldObjectEntity, string>(e => e.country.id)
+                array: new ArraySupportingStorage<WorldObject>(),
+                byPos: new MapSupportingStorage<WorldObject, string>(e => WorldObjectStorage.toKey(e.tile.position.q, e.tile.position.r)),
+                byRealm: new MapSupportingStorage<WorldObject, Realm.Id>(e => e.realm.id)
             },
         });
     }
 }
 
-export class WorldObjectDatabase extends AbstractDatabase<WorldObjectStorage, WorldObjectEntity, string> {
+export class WorldObjectDatabase extends AbstractDatabase<WorldObjectStorage, WorldObject, WorldObject.Id> {
     constructor() {
         super(new WorldObjectStorage(), provideId);
     }
 }
 
-interface WorldObjectQuery<ARGS> extends Query<WorldObjectStorage, WorldObjectEntity, string, ARGS> {
+interface WorldObjectQuery<ARGS> extends Query<WorldObjectStorage, WorldObject, WorldObject.Id, ARGS> {
 }
 
 
 export namespace WorldObjectDatabase {
 
     export const QUERY_ALL: WorldObjectQuery<void> = {
-        run(storage: WorldObjectStorage, args: void): WorldObjectEntity[] {
+        run(storage: WorldObjectStorage, args: void): WorldObject[] {
             return storage.config.supporting.array.getAll();
         },
     };
 
-    export const QUERY_BY_ID: WorldObjectQuery<string | null> = {
-        run(storage: WorldObjectStorage, args: string): WorldObjectEntity | null {
+    export const QUERY_BY_ID: WorldObjectQuery<WorldObject.Id | null> = {
+        run(storage: WorldObjectStorage, args: WorldObject.Id): WorldObject | null {
             if (args === null) {
                 return null;
             }
@@ -66,14 +66,17 @@ export namespace WorldObjectDatabase {
     };
 
     export const QUERY_BY_POSITION: WorldObjectQuery<[number, number]> = {
-        run(storage: WorldObjectStorage, args: [number, number]): WorldObjectEntity | null {
+        run(storage: WorldObjectStorage, args: [number, number]): WorldObject[] {
             return storage.config.supporting.byPos.getByKey(WorldObjectStorage.toKey(args[0], args[1]));
         },
     };
 
-    export const QUERY_BY_COUNTRY_ID: WorldObjectQuery<string> = {
-        run(storage: WorldObjectStorage, args: string): WorldObjectEntity[] {
-            return storage.config.supporting.byCountry.getByKey(args)
+    export const QUERY_BY_REALM_ID: WorldObjectQuery<Realm.Id | null> = {
+        run(storage: WorldObjectStorage, args: Realm.Id): WorldObject[] {
+			if (args === null) {
+				return [];
+			}
+			return storage.config.supporting.byRealm.getByKey(args)
         },
     };
 

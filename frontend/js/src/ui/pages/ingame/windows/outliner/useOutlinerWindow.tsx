@@ -2,16 +2,14 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import React from "react";
 import {OutlinerWindow} from "./OutlinerWindow";
-import {UseSettlementWindow} from "../settlement/useSettlementWindow";
-import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
-import {SettlementOutline} from "../../../../../models/settlement/settlementOutline";
 import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectOutline";
-import {CountryOutline} from "../../../../../models/country/countryOutline";
+import {RealmOutline} from "../../../../../models/realm/realmOutline";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
-import {UseCountryWindow} from "../country/useCountryWindow";
+import {UseRealmWindow} from "../realm/useRealmWindow";
+import {UseUnitWindow} from "../unit/useUnitWindow";
 
 export namespace UseOutlinerWindow {
 
@@ -26,42 +24,31 @@ export namespace UseOutlinerWindow {
 	}
 
 	export interface Data {
-		settlements: {
-			entries: SettlementOutline[],
-			open: (outline: SettlementOutline) => void,
-			focusCamera: (outline: SettlementOutline) => void,
-		},
-		worldObjects: {
+		unit: {
 			entries: WorldObjectOutline[],
 			open: (outline: WorldObjectOutline) => void,
 			focusCamera: (outline: WorldObjectOutline) => void,
 		},
-		countries: {
-			entries: CountryOutline[],
-			open: (outline: CountryOutline) => void,
+		realms: {
+			entries: RealmOutline[],
+			open: (outline: RealmOutline) => void,
 		}
 	}
 
 	export function useData(): UseOutlinerWindow.Data {
 
-		const countries = GameStateHooks.useOutlineCountries();
-		const settlements = GameStateHooks.useOutlineSettlements();
-		const units = GameStateHooks.useOutlineWorldObjects();
+		const realms = GameStateHooks.useOutlineRealms();
+		const units = GameStateHooks.useOutlineUnits();
 
 		return {
-			settlements: {
-				entries: settlements,
-				open: (outline: SettlementOutline) => UseSettlementWindow.open(outline.id),
-				focusCamera: (outline: SettlementOutline) => App.gameProxy.focusCamera(outline.tile.position),
-			},
-			worldObjects: {
+			unit: {
 				entries: units,
-				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.id),
+				open: (outline: WorldObjectOutline) => UseUnitWindow.open(outline.id),
 				focusCamera: (outline: WorldObjectOutline) => App.gameProxy.focusCamera(outline.tile.position),
 			},
-			countries: {
-				entries: countries,
-				open: (outline: CountryOutline) => UseCountryWindow.open(outline.id),
+			realms: {
+				entries: realms,
+				open: (outline: RealmOutline) => UseRealmWindow.open(outline.id),
 			},
 		};
 	}

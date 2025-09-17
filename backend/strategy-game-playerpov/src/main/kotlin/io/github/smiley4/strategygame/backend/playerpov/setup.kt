@@ -5,5 +5,6 @@ import org.koin.core.module.Module
 
 
 fun Module.dependenciesPlayerPoV() {
-    single<PlayerViewCreator> { PlayerViewCreatorImpl(get(), get()) }
+    single<VisibilityCalculator> { VisibilityCalculator() }
+    single<PlayerViewCreator> { PlayerViewCreatorImpl(get()) }
 }

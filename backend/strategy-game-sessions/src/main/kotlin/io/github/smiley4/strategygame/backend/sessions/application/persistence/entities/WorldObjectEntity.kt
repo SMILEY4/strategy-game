@@ -2,101 +2,91 @@ package io.github.smiley4.strategygame.backend.sessions.application.persistence.
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
-import io.github.smiley4.strategygame.backend.commondata.Country
-import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
+import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
+import io.github.smiley4.strategygame.backend.commondata.WorldObjectType
+
+internal class WorldObjectEntity(
+    val realmId: String,
+    val gameId: String,
+    val type: WorldObjectTypeEntity,
+    val tile: TileRefEntity,
+    val components: List<WorldObjectComponentEntity>,
+    key: String? = null
+) : DbEntity(key) {
+
+    companion object {
+        fun of(serviceModel: WorldObject, gameId: String): WorldObjectEntity {
+            return WorldObjectEntity(
+                key = serviceModel.id.value,
+                realmId = serviceModel.realm.value,
+                gameId = gameId,
+                type = WorldObjectTypeEntity(
+                    group = serviceModel.type.group,
+                    name = serviceModel.type.name
+                ),
+                tile = TileRefEntity.of(serviceModel.tile),
+                components = serviceModel.components.map {
+                    when (it) {
+                        is WorldObjectComponent.Movement -> WorldObjectComponentEntity.Movement(
+                            maxMovement = it.maxMovement,
+                        )
+                        is WorldObjectComponent.Vision -> WorldObjectComponentEntity.Vision(
+                            radius = it.radius
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    fun asServiceModel(): WorldObject {
+        return WorldObject(
+            id = WorldObject.Id(this.getKeyOrThrow()),
+            realm = Realm.Id(this.realmId),
+            type = WorldObjectType(
+                group = this.type.group,
+                name = this.type.name
+            ),
+            tile = this.tile.asServiceModel(),
+            components = this.components.map {
+                when (it) {
+                    is WorldObjectComponentEntity.Movement -> WorldObjectComponent.Movement(
+                        maxMovement = it.maxMovement,
+                    )
+                    is WorldObjectComponentEntity.Vision -> WorldObjectComponent.Vision(
+                        radius = it.radius
+                    )
+                }
+            }
+        )
+    }
+
+}
+
+data class WorldObjectTypeEntity(
+    val group: String,
+    val name: String,
+)
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.SIMPLE_NAME,
     include = JsonTypeInfo.As.PROPERTY,
     property = "type"
 )
-internal sealed class WorldObjectEntity(
-    val gameId: String,
-    val tile: TileRefEntity,
-    val countryId: String,
-    val maxMovement: Int,
-    val viewDistance: Int,
-    key: String? = null
-) : DbEntity(key) {
+internal sealed interface WorldObjectComponentEntity {
 
-    companion object {
-        fun of(serviceModel: WorldObject, gameId: String): WorldObjectEntity {
-            return when (serviceModel) {
-                is WorldObject.Scout -> ScoutWorldObjectEntity(
-                    gameId = gameId,
-                    key = DbId.asDbId(serviceModel.id.value),
-                    tile = TileRefEntity.of(serviceModel.tile),
-                    countryId = serviceModel.country.value,
-                    maxMovement = serviceModel.maxMovement,
-                    viewDistance = serviceModel.viewDistance
-                )
-                is WorldObject.Settler -> SettlerWorldObjectEntity(
-                    gameId = gameId,
-                    key = DbId.asDbId(serviceModel.id.value),
-                    tile = TileRefEntity.of(serviceModel.tile),
-                    countryId = serviceModel.country.value,
-                    maxMovement = serviceModel.maxMovement,
-                    viewDistance = serviceModel.viewDistance
-                )
-            }
-        }
-    }
+    data class Movement(
+        val maxMovement: Int
+    ) : WorldObjectComponentEntity
 
-    fun asServiceModel(): WorldObject {
-        return when (this) {
-            is ScoutWorldObjectEntity -> WorldObject.Scout(
-                id = WorldObject.Id(this.getKeyOrThrow()),
-                tile = this.tile.asServiceModel(),
-                country = Country.Id(this.countryId),
-                maxMovement = this.maxMovement,
-                viewDistance = this.viewDistance
-            )
-            is SettlerWorldObjectEntity -> WorldObject.Settler(
-                id = WorldObject.Id(this.getKeyOrThrow()),
-                tile = this.tile.asServiceModel(),
-                country = Country.Id(this.countryId),
-                maxMovement = this.maxMovement,
-                viewDistance = this.viewDistance
-            )
-        }
-    }
+    data class Vision(
+        val radius: Int
+    ) : WorldObjectComponentEntity
 
 }
 
-
-internal class ScoutWorldObjectEntity(
-    key: String?,
-    gameId: String,
-    tile: TileRefEntity,
-    countryId: String,
-    maxMovement: Int,
-    viewDistance: Int,
-) : WorldObjectEntity(
-    gameId = gameId,
-    tile = tile,
-    countryId = countryId,
-    maxMovement = maxMovement,
-    viewDistance = viewDistance,
-    key = key
-)
-
-
-internal class SettlerWorldObjectEntity(
-    key: String?,
-    gameId: String,
-    tile: TileRefEntity,
-    countryId: String,
-    maxMovement: Int,
-    viewDistance: Int,
-) : WorldObjectEntity(
-    gameId = gameId,
-    tile = tile,
-    countryId = countryId,
-    maxMovement = maxMovement,
-    viewDistance = viewDistance,
-    key = key
-)
 
 /**
  * Required to retain type information (i.e. data from JsonTypeInfo) of otherwise generic list during serialization.

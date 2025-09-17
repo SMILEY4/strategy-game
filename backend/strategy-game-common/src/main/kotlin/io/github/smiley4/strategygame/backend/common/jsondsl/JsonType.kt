@@ -1,7 +1,5 @@
 package io.github.smiley4.strategygame.backend.common.jsondsl
 
-import io.github.smiley4.strategygame.backend.commondata.RGBColor
-
 interface JsonType {
 
     companion object {
@@ -13,7 +11,6 @@ interface JsonType {
                 is Number -> NumberType(value)
                 is Boolean -> BooleanType(value)
                 is String -> TextType(value)
-                is RGBColor -> ColorType(value)
                 is Enum<*> -> TextType(value.name)
                 is Collection<*> -> ArrayType().apply { value.forEach { items.add(from(it)) } }
                 else -> throw Exception("unknown type for json")//UnknownType(value)
@@ -153,20 +150,6 @@ class TextType(val value: String) : PrimitiveJsonType {
 class BooleanType(val value: Boolean) : PrimitiveJsonType {
     override fun toJsonString(config: JsonStringConfig) = value.toString()
     override fun toPrettyJsonString(level: Int, config: JsonStringConfig) = toJsonString(config)
-}
-
-class ColorType(val value: RGBColor) : PrimitiveJsonType {
-    override fun toJsonString(config: JsonStringConfig) = obj {
-        "red" to value.red
-        "green" to value.green
-        "blue" to value.blue
-    }.toJsonString(config)
-
-    override fun toPrettyJsonString(level: Int, config: JsonStringConfig) = obj {
-        "red" to value.red
-        "green" to value.green
-        "blue" to value.blue
-    }.toPrettyJsonString(level, config)
 }
 
 class NullType : PrimitiveJsonType {

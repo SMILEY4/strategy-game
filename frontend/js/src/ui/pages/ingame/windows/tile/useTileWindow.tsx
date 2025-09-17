@@ -2,20 +2,18 @@ import React from "react";
 import {TileWindow} from "./TileWindow";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {UseSettlementWindow} from "../settlement/useSettlementWindow";
-import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {TileId} from "../../../../../models/tile/tileId";
 import {Tile} from "../../../../../models/tile/tile";
-import {TileObject} from "../../../../../models/tile/tileObject";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
-import {UseCountryWindow} from "../country/useCountryWindow";
+import {UseUnitWindow} from "../unit/useUnitWindow";
+import {WorldObject} from "../../../../../models/worldobject/worldObject";
+import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
 
 export namespace UseTileWindow {
 
-	export function open(identifier: TileId | null) {
+	export function open(identifier: Tile.Id | null) {
 		const windowId = UID.generate();
 		openWindow({
 			id: windowId,
@@ -27,41 +25,25 @@ export namespace UseTileWindow {
 
 	export interface Data {
 		tile: Tile;
+		worldObjects: WorldObjectSummary[];
 		open: {
-			controllingSettlement: () => void,
-			controllingCountry: () => void
-			tileObject: (tileObject: TileObject) => void,
+			worldObject: (worldObjectId: WorldObject.Id) => void,
 		};
 		centerCamera: () => void,
 	}
 
-	export function useData(overwriteTile: TileId | null): UseTileWindow.Data | null {
+	export function useData(overwriteTile: Tile.Id | null): UseTileWindow.Data | null {
 
 		const selectedTile = GameStateHooks.useSelectedTile();
 		const tile = GameStateHooks.useTile((overwriteTile ?? selectedTile?.id) ?? null);
+		const worldObjects = GameStateHooks.useWorldObjectAt(tile?.position ?? null)
 
 		if (tile) {
 			return {
 				tile: tile,
+				worldObjects: worldObjects,
 				open: {
-					controllingSettlement: () => {
-						if (tile.political.value?.controlledBy?.settlement) {
-							UseSettlementWindow.open(tile.political.value?.controlledBy?.settlement!.id);
-						}
-					},
-					controllingCountry: () => {
-						if (tile.political.value?.controlledBy?.country) {
-							UseCountryWindow.open(tile.political.value?.controlledBy?.country!.id);
-						}
-					},
-					tileObject: (tileObject) => {
-						if (tileObject.worldObject !== null) {
-							UseWorldObjectWindow.open(tileObject.worldObject.id);
-						}
-						if (tileObject.settlement !== null) {
-							UseSettlementWindow.open(tileObject.settlement.id);
-						}
-					},
+					worldObject: worldObjectId => UseUnitWindow.open(worldObjectId)
 				},
 				centerCamera: () => App.gameProxy.focusCamera(tile.position),
 			};

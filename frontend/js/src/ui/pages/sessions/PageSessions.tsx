@@ -7,7 +7,7 @@ import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
 import {VSpacer} from "../../components/spacer/Spacer";
 import {AudioType} from "../../../common/audioService";
-import {GameSessionMeta} from "../../../models/misc/gameSessionMeta";
+import {Game} from "../../../models/misc/game";
 import {SessionHooks} from "./sessions";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {ModalWindow} from "../../components/modal/ModalWindow";
@@ -113,7 +113,7 @@ export function PageSessions(): ReactElement {
 }
 
 function GameSessionEntry(props: {
-	session: GameSessionMeta,
+	session: Game,
 	onConnect: () => void,
 	onDelete: () => void
 }): ReactElement {
@@ -133,11 +133,6 @@ function GameSessionEntry(props: {
 						<Txt.Body secondary style={{marginRight: "16px"}}>
 							<Txt.String>
 								{"Id: " + props.session.id}
-							</Txt.String>
-						</Txt.Body>
-						<Txt.Body secondary style={{marginRight: "16px"}}>
-							<Txt.String>
-								{"Players: " + props.session.players}
 							</Txt.String>
 						</Txt.Body>
 						<Txt.Body secondary style={{marginRight: "16px"}}>
@@ -236,13 +231,13 @@ function ModalCreateGame(props: {
 
 
 function useSessionData() {
-	const [sessions, setSessions] = useState<GameSessionMeta[]>([]);
+	const [sessions, setSessions] = useState<Game[]>([]);
 	const loadGameSessions = SessionHooks.useLoadGameSessions();
 
 	return {
 		sessions: sessions,
 		loadSessions: () => {
-			loadGameSessions().then((list: GameSessionMeta[]) => setSessions(list));
+			loadGameSessions().then((list: Game[]) => setSessions(list));
 		},
 	};
 }
@@ -290,33 +285,33 @@ function useCreateSession(reloadSessions: () => void) {
 function useJoinSession(reloadSessions: () => void) {
 	const joinGameSession = SessionHooks.useJoinGameSession();
 	const [show, setShow] = useState(false);
-	const [sessionId, setSessionId] = useState("");
+	const [gameId, setGameId] = useState("");
 
 	return {
 		startJoinSession: () => {
-			setSessionId("");
+			setGameId("");
 			setShow(true);
 		},
 		cancelJoinSession: () => {
-			setSessionId("");
+			setGameId("");
 			setShow(false);
 		},
 		acceptJoinSession: () => {
-			setSessionId("");
+			setGameId("");
 			setShow(false);
-			joinGameSession(sessionId)
+			joinGameSession(gameId as Game.Id)
 				.then(() => reloadSessions())
 				.catch(console.error);
 		},
 		showJoinSession: show,
-		sessionIdJoin: sessionId,
-		setSessionIdJoin: setSessionId,
+		sessionIdJoin: gameId,
+		setSessionIdJoin: setGameId,
 	};
 }
 
 function useDeleteSession(reloadSessions: () => void) {
 	const deleteGameSession = SessionHooks.useDeleteGameSession();
-	return (id: string) => {
+	return (id: Game.Id) => {
 		deleteGameSession(id)
 			.then(() => reloadSessions())
 			.catch(console.error);

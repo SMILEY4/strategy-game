@@ -23,7 +23,7 @@ import {
 import {ConditionalTextureRenderGraphNode} from "./nodes/conditionalTextureRenderGraphNode";
 import {IntermediateDataGeneratorRenderGraphNode} from "./nodes/intermediateDataGeneratorRenderGraphNode";
 import {RenderGraphMonitor} from "./renderGraphMonitor";
-import {WasmProbe} from "../../wasm/wasmProbe";
+import {WasmProbe} from "../../external/wasm/wasmProbe";
 
 /**
  * Manages all nodes and processes. Entry point for rendering.

@@ -113,7 +113,7 @@ internal class NameGeneratorImpl : NameGenerator {
 
         // names copied from
         // https://www.fantasynamegenerators.com/country-names.php
-        private val COUNTRY_NAMES = setOf(
+        private val REALM_NAMES = setOf(
             "Lewhoastein",
             "Geglaijan",
             "Vebrad",
@@ -172,8 +172,8 @@ internal class NameGeneratorImpl : NameGenerator {
         return SETTLEMENT_NAMES.random()
     }
 
-    override fun generateCountryName(): String {
-        return COUNTRY_NAMES.random()
+    override fun generateRealmName(): String {
+        return REALM_NAMES.random()
     }
 
 }

@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.playerpov.lib.PlayerViewCreator
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedQuery
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameUpdate
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.ConnectToGame
@@ -17,7 +17,7 @@ import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameMessag
 internal class ConnectToGameImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
-    private val gameExtendedQuery: GameExtendedQuery,
+    private val gameStateQuery: GameStateQuery,
     private val playerViewCreator: PlayerViewCreator,
     private val producer: GameMessageProducer
 ) : ConnectToGame, Logging {
@@ -56,7 +56,7 @@ internal class ConnectToGameImpl(
      * */
     private suspend fun sendInitialGameStateMessage(gameId: Game.Id, userId: User.Id, connectionId: Long) {
         val game = try {
-            gameExtendedQuery.execute(gameId)
+            gameStateQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
             throw ConnectToGame.GameNotFoundError(e)
         }

@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.sessions.ports.required
 
-import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.User
 
 internal interface InitializePlayer {
@@ -13,5 +13,5 @@ internal interface InitializePlayer {
      * Initializes the player
      * @throws InitializePlayerError
      */
-    suspend fun perform(game: GameExtended, userId: User.Id)
+    suspend fun perform(game: GameState, userId: User.Id)
 }

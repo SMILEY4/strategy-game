@@ -5,22 +5,16 @@ import {MovementService} from "./service/movementService";
 import {AudioService, AudioType} from "../../common/audioService";
 import {TurnEndService} from "./service/turnEndService";
 import {MapMode} from "../../models/misc/mapMode";
-import {TilePosition} from "../../models/tile/tilePosition";
-import {Command, DisbandWorldObjectCommand} from "../../models/command/command";
-import {TileId} from "../../models/tile/tileId";
-import {WorldObjectId} from "../../models/worldobject/worldObjectId";
+import {Command} from "../../models/command/command";
 import {GameStateWriter} from "../../state/gameStateWriter";
-import {TileSummary} from "../../models/tile/tileSummary";
-import {SettlementService} from "./service/settlementService";
-import {SettlementSummary} from "../../models/settlement/settlementSummary";
-import {SettlementProductionOption} from "../../models/settlement/settlement";
-import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
+import {Game} from "../../models/misc/game";
 import {GameSessionService} from "./service/gameSessionService";
 import {CommandService} from "./service/commandService";
-import {CommandType} from "../../models/command/commandType";
-import {UID} from "../../common/uid";
 import {MonitoringService} from "./service/monitoringService";
 import {GameRenderer} from "../../renderer/gameRenderer";
+import {UID} from "../../common/uid";
+import {Tile} from "../../models/tile/tile";
+import {WorldObject} from "../../models/worldobject/worldObject";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
@@ -30,7 +24,7 @@ export interface GameProxy {
 	/**
 	 * Get all games of the currently logged-in user.
 	 */
-	listSessions(): Promise<GameSessionMeta[]>;
+	listSessions(): Promise<Game[]>;
 	/**
 	 * Create a new game with the given name and settings.
 	 */
@@ -38,15 +32,15 @@ export interface GameProxy {
 	/**
 	 * Join a game with the given id as a new player.
 	 */
-	joinSession(gameId: string): Promise<void>;
+	joinSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Delete a game with the given id.
 	 */
-	deleteSession(gameId: string): Promise<void>;
+	deleteSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Connect to the game with the given id and "start" playing.
 	 */
-	connectSession(gameId: string): Promise<void>;
+	connectSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Disconnect from the current session.
 	 */
@@ -81,7 +75,7 @@ export interface GameProxy {
 	/**
 	 * Move the camera to focus on the given tile.
 	 */
-	focusCamera(tilePosition: TilePosition): void
+	focusCamera(tilePosition: Tile.Position): void
 	// basic game functionality
 	/**
 	 * End the current turn and send commands to server.
@@ -96,33 +90,11 @@ export interface GameProxy {
 	 * Cancel the given command.
 	 */
 	commandCancel(command: Command): void;
-	// settlements
-	/**
-	 * Get a random name for a settlement.
-	 */
-	getRandomSettlementName(): Promise<string>;
-	/**
-	 * Validate whether the settlement can be created.
-	 * Returns a list of reasons if invalid.
-	 */
-	validateFoundSettlement(tile: TileId, name: string): string[];
-	/**
-	 * Create a new settlement.
-	 */
-	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void;
-	/**
-	 * Add a new entry to the given settlements production queue.
-	 */
-	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void,
-	/**
-	 * Cancel the given entry in the given settlements production queue.
-	 */
-	cancelProduction(settlement: SettlementSummary, entryId: string): void,
 	// units / world objects
 	/**
 	 * Start "move" mode for the given world object.
 	 */
-	beginMovement(worldObjectId: WorldObjectId): void;
+	beginMovement(worldObjectId: WorldObject.Id): void;
 	/**
 	 * End the movement. Submit or discard the move command.
 	 */
@@ -130,7 +102,7 @@ export interface GameProxy {
 	/**
 	 * Disband (i.e. delete) the given world object.
 	 */
-	disbandWorldObject(worldObjectId: WorldObjectId): void;
+	disbandWorldObject(worldObjectId: WorldObject.Id): void;
 	// dev functions
 	/**
 	 * Loose the current webgl context for debug purposes.
@@ -153,7 +125,6 @@ export class GameProxyImpl implements GameProxy {
 	private readonly cameraService: CameraService;
 	private readonly movementService: MovementService;
 	private readonly turnEndService: TurnEndService;
-	private readonly settlementService: SettlementService;
 	private readonly commandService: CommandService;
 	private readonly monitoringService: MonitoringService;
 	private readonly gameSessionService: GameSessionService;
@@ -167,7 +138,6 @@ export class GameProxyImpl implements GameProxy {
 		cameraService: CameraService,
 		movementService: MovementService,
 		turnEndService: TurnEndService,
-		settlementService: SettlementService,
 		commandService: CommandService,
 		monitoringService: MonitoringService,
 		gameSessionService: GameSessionService,
@@ -179,7 +149,6 @@ export class GameProxyImpl implements GameProxy {
 		this.cameraService = cameraService;
 		this.movementService = movementService;
 		this.turnEndService = turnEndService;
-		this.settlementService = settlementService;
 		this.commandService = commandService;
 		this.monitoringService = monitoringService;
 		this.gameSessionService = gameSessionService;
@@ -190,7 +159,7 @@ export class GameProxyImpl implements GameProxy {
 
 	//========== SESSION ========================================================
 
-	listSessions(): Promise<GameSessionMeta[]> {
+	listSessions(): Promise<Game[]> {
 		return this.gameSessionService.listSessions();
 	}
 
@@ -198,15 +167,15 @@ export class GameProxyImpl implements GameProxy {
 		return this.gameSessionService.createSession(name, seed);
 	}
 
-	joinSession(gameId: string): Promise<void> {
+	joinSession(gameId: Game.Id): Promise<void> {
 		return this.gameSessionService.joinSession(gameId);
 	}
 
-	deleteSession(gameId: string): Promise<void> {
+	deleteSession(gameId: Game.Id): Promise<void> {
 		return this.gameSessionService.deleteSession(gameId);
 	}
 
-	connectSession(gameId: string): Promise<void> {
+	connectSession(gameId: Game.Id): Promise<void> {
 		return this.gameSessionService.connectSession(gameId);
 	}
 
@@ -270,7 +239,7 @@ export class GameProxyImpl implements GameProxy {
 
 	//========== CAMERA =======================================================
 
-	focusCamera(tilePosition: TilePosition): void {
+	focusCamera(tilePosition: Tile.Position): void {
 		this.cameraService.centerOnTile(tilePosition);
 	}
 
@@ -292,34 +261,9 @@ export class GameProxyImpl implements GameProxy {
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
-	//========== SETTLEMENTS ==================================================
-
-	getRandomSettlementName(): Promise<string> {
-		return this.settlementService.getRandomName();
-	}
-
-	validateFoundSettlement(tile: TileId, name: string): string[] {
-		return this.settlementService.validateFounding(tile, name);
-	}
-
-	foundSettlement(tile: TileSummary, worldObjectId: WorldObjectId, name: string): void {
-		this.settlementService.foundSettlement(tile, worldObjectId, name);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
-	addProduction(settlement: SettlementSummary, entry: SettlementProductionOption): void {
-		this.settlementService.addProduction(settlement, entry);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
-	cancelProduction(settlement: SettlementSummary, entryId: string): void {
-		this.settlementService.cancelProduction(settlement, entryId);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
 	//========== UNITS / WORLD OBJECTS ========================================
 
-	beginMovement(worldObjectId: WorldObjectId): void {
+	beginMovement(worldObjectId: WorldObject.Id): void {
 		this.movementService.beginMovement(worldObjectId).then();
 		AudioType.CLICK_PRIMARY.play(this.audioService);
 	}
@@ -334,12 +278,13 @@ export class GameProxyImpl implements GameProxy {
 		}
 	}
 
-	disbandWorldObject(worldObjectId: WorldObjectId): void {
-		this.commandService.addCommand<DisbandWorldObjectCommand>({
-			id: UID.generate(),
-			type: CommandType.DISBAND_WORLD_OBJECT,
+	disbandWorldObject(worldObjectId: WorldObject.Id): void {
+		this.commandService.addCommand({
+			type: Command.Type.Disband,
+			id: Command.genId(),
 			worldObjectId: worldObjectId,
 		});
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
 	//========== DEV FUNCTIONALITY ============================================

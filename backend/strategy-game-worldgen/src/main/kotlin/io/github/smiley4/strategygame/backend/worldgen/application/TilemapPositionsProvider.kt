@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.worldgen.application
 
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.commondata.Tile
 import java.lang.Integer.min
 import kotlin.math.floor
 import kotlin.math.max
@@ -24,11 +24,11 @@ internal class TilemapPositionsProvider {
 		maxQ: Int,
 		minR: Int,
 		maxR: Int
-	): List<TilePosition> {
+	): List<Tile.Position> {
 		return positions {
 			for (q in minQ..maxQ) {
 				for (r in minR..maxR) {
-					it.add(TilePosition(q, r))
+					it.add(Tile.Position(q, r))
 				}
 			}
 		}
@@ -40,11 +40,11 @@ internal class TilemapPositionsProvider {
 	 * @param size the number of tiles on each side of the triangle
 	 * @return the list of tile-positions
 	 */
-	fun createTriangleTypeA(size: Int): List<TilePosition> {
+	fun createTriangleTypeA(size: Int): List<Tile.Position> {
 		return positions {
 			for (q in 0 until size) {
 				for (r in 0 until (size - q)) {
-					it.add(TilePosition(q, r))
+					it.add(Tile.Position(q, r))
 				}
 			}
 		}
@@ -56,11 +56,11 @@ internal class TilemapPositionsProvider {
 	 * @param size the number of tiles on each side of the triangle
 	 * @return the list of tile-positions
 	 */
-	fun createTriangleTypeB(size: Int): List<TilePosition> {
+	fun createTriangleTypeB(size: Int): List<Tile.Position> {
 		return positions {
 			for (q in 0 until size) {
 				for (r in (size - q)..size) {
-					it.add(TilePosition(q, r))
+					it.add(Tile.Position(q, r))
 				}
 			}
 		}
@@ -72,13 +72,13 @@ internal class TilemapPositionsProvider {
 	 * @param radius the radius of the hexagon
 	 * @return the list of tile-positions
 	 */
-	fun createHexagon(radius: Int): List<TilePosition> {
+	fun createHexagon(radius: Int): List<Tile.Position> {
 		return positions {
 			for (q in -radius..radius) {
 				val r1 = max(-radius, -q - radius)
 				val r2 = min(radius, -q + radius)
 				for (r in r1..r2) {
-					it.add(TilePosition(q, r))
+					it.add(Tile.Position(q, r))
 				}
 			}
 		}
@@ -93,7 +93,7 @@ internal class TilemapPositionsProvider {
 	 * @param right the coordinate of the right side (inclusive)
 	 * @return the list of tile-positions
 	 */
-	fun createRectanglePointyTop(top: Int, bottom: Int, left: Int, right: Int): List<TilePosition> {
+	fun createRectanglePointyTop(top: Int, bottom: Int, left: Int, right: Int): List<Tile.Position> {
 		return createRectangle(top, bottom, left, right, false)
 	}
 
@@ -106,7 +106,7 @@ internal class TilemapPositionsProvider {
 	 * @param right the coordinate of the right side (inclusive)
 	 * @return the list of tile-positions
 	 */
-	fun createRectangleFlatTop(top: Int, bottom: Int, left: Int, right: Int): List<TilePosition> {
+	fun createRectangleFlatTop(top: Int, bottom: Int, left: Int, right: Int): List<Tile.Position> {
 		return createRectangle(left, right, top, bottom, true)
 	}
 
@@ -119,13 +119,13 @@ internal class TilemapPositionsProvider {
 	 * @param j1 the max value of the inner loop (inclusive)
 	 * @return the list of tile-positions
 	 */
-	private fun createRectangle(i0: Int, i1: Int, j0: Int, j1: Int, iIsQ: Boolean): List<TilePosition> {
+	private fun createRectangle(i0: Int, i1: Int, j0: Int, j1: Int, iIsQ: Boolean): List<Tile.Position> {
 		return positions {
 			for (i in i0..i1) {
 				val iOffset = floor(i / 2.0).toInt()
 				for (j in (j0 - iOffset)..(j1 - iOffset)) {
 					it.add(
-						TilePosition(
+                        Tile.Position(
 							if (iIsQ) i else j,
 							if (iIsQ) j else i
 						)
@@ -136,8 +136,8 @@ internal class TilemapPositionsProvider {
 	}
 
 
-	private fun positions(factory: (MutableList<TilePosition>) -> Unit): List<TilePosition> {
-		return mutableListOf<TilePosition>().also(factory)
+	private fun positions(factory: (MutableList<Tile.Position>) -> Unit): List<Tile.Position> {
+		return mutableListOf<Tile.Position>().also(factory)
 	}
 
 }

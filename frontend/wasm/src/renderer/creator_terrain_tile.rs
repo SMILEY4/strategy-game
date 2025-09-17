@@ -32,7 +32,6 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
 
         // water
         if tile.terrain_type == 2 {
-            rng.set_seed(tile.rng_seed as u64);
             let height_jitter = rng.f32_seeded(tile.rng_seed as u64) * 0.1 - 0.5;
             vertex_data.water.push(WaterTileVertex {
                 position: [tile.world_x, tile.world_y],

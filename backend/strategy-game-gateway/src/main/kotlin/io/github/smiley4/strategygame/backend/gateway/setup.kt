@@ -77,6 +77,7 @@ import mu.two.KotlinLogging
 import org.koin.core.module.Module
 import org.koin.ktor.ext.inject
 import org.slf4j.event.Level
+import kotlin.getValue
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
@@ -256,7 +257,7 @@ private fun Route.routingGateway() {
                     routeMovementAvailablePositions(gameService)
                 }
                 route("settlement") {
-                    routeSettlementName(gameService)
+                    routeSettlementName()
                 }
             }
         }

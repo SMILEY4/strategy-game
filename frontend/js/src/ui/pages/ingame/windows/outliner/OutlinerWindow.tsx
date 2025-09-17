@@ -34,25 +34,16 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
 					<TabOption name="All">
 						<InsetPanel shrink>
 							<VBox scrollable padding_s gap_s fullSize>
-								<SectionCountries {...data}/>
-								<SectionSettlements {...data}/>
+								<SectionRealms {...data}/>
 								<SectionWorldObjects {...data}/>
 							</VBox>
 						</InsetPanel>
 					</TabOption>
 
-					<TabOption name="Countries">
+					<TabOption name="Realms">
 						<InsetPanel shrink>
 							<VBox scrollable padding_s gap_s fullSize>
-								<SectionCountries {...data}/>
-							</VBox>
-						</InsetPanel>
-					</TabOption>
-
-					<TabOption name="Settlements">
-						<InsetPanel shrink>
-							<VBox scrollable padding_s gap_s fullSize>
-								<SectionSettlements {...data}/>
+								<SectionRealms {...data}/>
 							</VBox>
 						</InsetPanel>
 					</TabOption>
@@ -73,58 +64,27 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
 	);
 }
 
-function SectionCountries(props: UseOutlinerWindow.Data): ReactElement {
+function SectionRealms(props: UseOutlinerWindow.Data): ReactElement {
 	return (
 		<>
-			{props.countries.entries.length > 0 && (
+			{props.realms.entries.length > 0 && (
 				<Txt.Header5>
-					<Txt.String>Countries</Txt.String>
+					<Txt.String>Realms</Txt.String>
 				</Txt.Header5>
 			)}
-			{props.countries.entries.map(country => (
+			{props.realms.entries.map(realm => (
 				<DecoratedPanel
-					key={country.id}
+					key={realm.id}
 					pattern
 					blue
 				>
 					<HBox fullSize gap_s padding_s>
 						<Txt.Body>
-							<Txt.Link onClick={() => props.countries.open(country)}>
-								<Txt.String>{country.name}</Txt.String>
+							<Txt.Link onClick={() => props.realms.open(realm)}>
+								<Txt.String>{realm.name}</Txt.String>
 							</Txt.Link>
 						</Txt.Body>
 						<HSpacer grow/>
-					</HBox>
-				</DecoratedPanel>
-			))}
-		</>
-	);
-}
-
-function SectionSettlements(props: UseOutlinerWindow.Data): ReactElement {
-	return (
-		<>
-			{props.settlements.entries.length > 0 && (
-				<Txt.Header5>
-					<Txt.String>Settlements</Txt.String>
-				</Txt.Header5>
-			)}
-			{props.settlements.entries.map(settlement => (
-				<DecoratedPanel
-					key={settlement.id}
-					pattern
-					blue
-				>
-					<HBox fullSize gap_s padding_s>
-						<Txt.Body>
-							<Txt.Link onClick={() => props.settlements.open(settlement)}>
-								<Txt.String>{settlement.name}</Txt.String>
-							</Txt.Link>
-						</Txt.Body>
-						<HSpacer grow/>
-						<Button circle small onClick={() => props.settlements.focusCamera(settlement)}>
-							<Txt.Icon.Eye/>
-						</Button>
 					</HBox>
 				</DecoratedPanel>
 			))}
@@ -135,12 +95,12 @@ function SectionSettlements(props: UseOutlinerWindow.Data): ReactElement {
 function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
 	return (
 		<>
-			{props.worldObjects.entries.length > 0 && (
+			{props.unit.entries.length > 0 && (
 				<Txt.Header5>
 					<Txt.String>Units</Txt.String>
 				</Txt.Header5>
 			)}
-			{props.worldObjects.entries.map(worldObject => (
+			{props.unit.entries.map(worldObject => (
 				<DecoratedPanel
 					key={worldObject.id}
 					pattern
@@ -148,12 +108,12 @@ function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
 				>
 					<HBox fullSize gap_s padding_s>
 						<Txt.Body>
-							<Txt.Link onClick={() => props.worldObjects.open(worldObject)}>
-								<Txt.String>{worldObject.type.id}</Txt.String>
+							<Txt.Link onClick={() => props.unit.open(worldObject)}>
+								<Txt.String>{worldObject.type.group + "/" + worldObject.type.name}</Txt.String>
 							</Txt.Link>
 						</Txt.Body>
 						<HSpacer grow/>
-						<Button circle small onClick={() => props.worldObjects.focusCamera(worldObject)}>
+						<Button circle small onClick={() => props.unit.focusCamera(worldObject)}>
 							<Txt.Icon.Eye/>
 						</Button>
 					</HBox>

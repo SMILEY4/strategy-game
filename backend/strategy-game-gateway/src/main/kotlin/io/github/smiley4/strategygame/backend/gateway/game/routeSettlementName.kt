@@ -7,7 +7,6 @@ import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextA
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -21,7 +20,7 @@ internal object RouteSettlementName {
         detail = "The provided email or password is invalid.",
     )
 
-    fun Route.routeSettlementName(service: GameService) = get("randomname", {
+    fun Route.routeSettlementName() = get("randomname", {
         description = "Get a randomly generated name for a new settlement"
         request { }
         response {
@@ -33,15 +32,7 @@ internal object RouteSettlementName {
             }
         }
     }) {
-        val userId = call.getUserIdOrThrow()
-        withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
-            try {
-                val name = service.getSettlementName()
-                call.respond(HttpStatusCode.OK, RandomNameResponse(name))
-            } catch (e: GameService.GameServiceError) {
-                call.respond(HttpStatusCode.InternalServerError, "")
-            }
-        }
+        call.respond(HttpStatusCode.NotImplemented)
     }
 
     data class RandomNameResponse(

@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.sessions.application.engine
 
-import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.sessions.ports.required.InitializePlayer
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer as EngineInitializePlayer
@@ -14,7 +14,7 @@ internal class InitializePlayerAdapter(private val impl: EngineInitializePlayer)
      * Initializes the player
      * @throws InitializePlayerError
      */
-    override suspend fun perform(game: GameExtended, userId: User.Id) {
+    override suspend fun perform(game: GameState, userId: User.Id) {
         try {
             return impl.perform(game, userId)
         } catch (e: EngineInitializePlayer.InitializePlayerError) {

@@ -5,17 +5,14 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MonitoringServic
 import io.github.smiley4.strategygame.backend.common.monitoring.NoOpMonitoringService
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DatabaseProvider
-import io.github.smiley4.strategygame.backend.commondata.Settlement
-import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.GameMeta
-import io.github.smiley4.strategygame.backend.commondata.PlayerState
-import io.github.smiley4.strategygame.backend.commondata.Province
-import io.github.smiley4.strategygame.backend.commondata.TileContainer
+import io.github.smiley4.strategygame.backend.commondata.GameState
+import io.github.smiley4.strategygame.backend.commondata.Player
+import io.github.smiley4.strategygame.backend.commondata.Realm
+import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
-import io.github.smiley4.strategygame.backend.commondata.tracking
+import io.github.smiley4.strategygame.backend.commondata.utils.tracking
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializeWorld
@@ -133,7 +130,7 @@ class SessionsTest : FreeSpec({
                 game.players.first().also { player ->
                     player.user.value shouldBe "test-user"
                     player.connectionId shouldBe null
-                    player.state shouldBe PlayerState.PLAYING
+                    player.state shouldBe Player.State.PLAYING
                 }
             }
         }
@@ -171,7 +168,7 @@ class SessionsTest : FreeSpec({
                 game.players.first().also { player ->
                     player.user.value shouldBe "test-user"
                     player.connectionId shouldBe null
-                    player.state shouldBe PlayerState.PLAYING
+                    player.state shouldBe Player.State.PLAYING
                 }
             }
         }
@@ -255,7 +252,7 @@ class SessionsTest : FreeSpec({
                 game.players.first().also { player ->
                     player.user.value shouldBe "test-user"
                     player.connectionId shouldBe 42
-                    player.state shouldBe PlayerState.PLAYING
+                    player.state shouldBe Player.State.PLAYING
                 }
             }
 
@@ -365,19 +362,19 @@ class SessionsTest : FreeSpec({
 
             listGames.perform(User.Id("test-user-1")).also { games ->
                 games shouldHaveSize 2
-                games.find { it.game == gameId1 }!!.also { game ->
-                    game.game shouldBe gameId1
+                games.find { it.id == gameId1 }!!.also { game ->
+                    game.id shouldBe gameId1
                     game.name shouldBe "test-game-1"
                     game.creationTimestamp shouldBeGreaterThan 0
                     game.players shouldBe 1
-                    game.currentTurn shouldBe 0
+                    game.turn shouldBe 0
                 }
-                games.find { it.game == gameId2 }!!.also { game ->
-                    game.game shouldBe gameId2
+                games.find { it.id == gameId2 }!!.also { game ->
+                    game.id shouldBe gameId2
                     game.name shouldBe "test-game-2"
                     game.creationTimestamp shouldBeGreaterThan 0
                     game.players shouldBe 2
-                    game.currentTurn shouldBe 0
+                    game.turn shouldBe 0
                 }
             }
         }
@@ -441,10 +438,10 @@ class SessionsTest : FreeSpec({
 //            koin.get<GameQuery>().execute(gameId).also { game ->
 //                game.turn shouldBe 0
 //                game.players.find { it.userId == "test-user-1" }!!.also { player ->
-//                    player.state shouldBe PlayerState.SUBMITTED
+//                    player.state shouldBe Player.State.SUBMITTED
 //                }
 //                game.players.find { it.userId == "test-user-2" }!!.also { player ->
-//                    player.state shouldBe PlayerState.PLAYING
+//                    player.state shouldBe Player.State.PLAYING
 //                }
 //            }
 //
@@ -486,10 +483,10 @@ class SessionsTest : FreeSpec({
             koin.get<GameQuery>().execute(gameId).also { game ->
                 game.turn shouldBe 0
                 game.players.find { it.user.value == "test-user-1" }!!.also { player ->
-                    player.state shouldBe PlayerState.SUBMITTED
+                    player.state shouldBe Player.State.SUBMITTED
                 }
                 game.players.find { it.user.value == "test-user-2" }!!.also { player ->
-                    player.state shouldBe PlayerState.PLAYING
+                    player.state shouldBe Player.State.PLAYING
                 }
             }
 
@@ -542,10 +539,10 @@ class SessionsTest : FreeSpec({
 //            koin.get<GameQuery>().execute(gameId).also { game ->
 //                game.turn shouldBe 1
 //                game.players.find { it.userId == "test-user-1" }!!.also { player ->
-//                    player.state shouldBe PlayerState.PLAYING
+//                    player.state shouldBe Player.State.PLAYING
 //                }
 //                game.players.find { it.userId == "test-user-2" }!!.also { player ->
-//                    player.state shouldBe PlayerState.PLAYING
+//                    player.state shouldBe Player.State.PLAYING
 //                }
 //            }
 //        }
@@ -580,7 +577,7 @@ class SessionsTest : FreeSpec({
 //            koin.get<GameQuery>().execute(gameId).also { game ->
 //                game.turn shouldBe 0
 //                game.players.find { it.userId == "test-user" }!!.also { player ->
-//                    player.state shouldBe PlayerState.PLAYING
+//                    player.state shouldBe Player.State.PLAYING
 //                }
 //            }
 //
@@ -619,7 +616,7 @@ class SessionsTest : FreeSpec({
 //            koin.get<GameQuery>().execute(gameId).also { game ->
 //                game.turn shouldBe 0
 //                game.players.find { it.userId == "test-user" }!!.also { player ->
-//                    player.state shouldBe PlayerState.PLAYING
+//                    player.state shouldBe Player.State.PLAYING
 //                }
 //            }
 //
@@ -654,17 +651,11 @@ class SessionsTest : FreeSpec({
                             mockk<InitializeWorld>().also {
                                 coEvery { it.perform(any(), any()) } answers {
                                     val game = firstArg<Game>()
-                                    GameExtended(
-                                        meta = GameMeta(
-                                            id = game.id,
-                                            turn = game.turn
-                                        ),
-                                        tiles = TileContainer(emptyList()),
-                                        countries = emptyList<Country>().tracking(),
-                                        settlements = emptyList<Settlement>().tracking(),
-                                        provinces = emptyList<Province>().tracking(),
+                                    GameState(
+                                        game = game,
+                                        tiles = Tile.Container(emptyList()),
+                                        realms = emptyList<Realm>().tracking(),
                                         worldObjects = emptyList<WorldObject>().tracking()
-//                                        routes = emptyList<Route>().tracking()
                                     )
                                 }
                             }
@@ -681,8 +672,8 @@ class SessionsTest : FreeSpec({
                         single<GameStep> {
                             mockk<GameStep>().also {
                                 coEvery { it.perform(any(), any()) } answers {
-                                    val game = firstArg<GameExtended>()
-                                    game.meta.turn += 1
+                                    val gameState = firstArg<GameState>()
+                                    gameState.game.turn += 1
                                 }
                             }
                         }

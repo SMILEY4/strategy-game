@@ -72,28 +72,6 @@ fn build_tile_border(
             tile_bottom_left,
             tile_bottom_right,
         ),
-        countries: build_border(
-            MapMode::COUNTRIES.border_default,
-            MapMode::COUNTRIES.border_check,
-            tile,
-            tile_right,
-            tile_top_right,
-            tile_top_left,
-            tile_left,
-            tile_bottom_left,
-            tile_bottom_right,
-        ),
-        settlements: build_border(
-            MapMode::COUNTRIES.border_default,
-            MapMode::SETTLEMENTS.border_check,
-            tile,
-            tile_right,
-            tile_top_right,
-            tile_top_left,
-            tile_left,
-            tile_bottom_left,
-            tile_bottom_right,
-        ),
     }
 }
 

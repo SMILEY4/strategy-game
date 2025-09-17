@@ -1,13 +1,12 @@
-import {WorldObjectId} from "../../../models/worldobject/worldObjectId";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {MovementTarget} from "../../../models/misc/movementTarget";
-import {TileId} from "../../../models/tile/tileId";
-import {GameClient} from "../client/gameClient";
 import {CommandService} from "./commandService";
-import {MoveCommand} from "../../../models/command/command";
-import {CommandType} from "../../../models/command/commandType";
 import {UID} from "../../../common/uid";
+import {GameClient} from "./gameClient";
+import {WorldObject} from "../../../models/worldobject/worldObject";
+import {Tile} from "../../../models/tile/tile";
+import {Command} from "../../../models/command/command";
 
 export interface MovementService {
 	/**
@@ -17,7 +16,7 @@ export interface MovementService {
 	/**
 	 * Start "move" mode for the given world object
 	 */
-	beginMovement(worldObjectId: WorldObjectId): Promise<void>;
+	beginMovement(worldObjectId: WorldObject.Id): Promise<void>;
 	/**
 	 * End the movement and submit a command
 	 */
@@ -29,7 +28,7 @@ export interface MovementService {
 	/**
 	 * Add the given tile to the current movement path
 	 */
-	addStep(tileId: TileId): Promise<boolean>;
+	addStep(tileId: Tile.Id): Promise<boolean>;
 }
 
 export class MovementServiceImpl implements MovementService {
@@ -50,7 +49,7 @@ export class MovementServiceImpl implements MovementService {
 		return this.localStateAccess.getCurrentMovementState() !== null;
 	}
 
-	beginMovement(worldObjectId: WorldObjectId): Promise<void> {
+	beginMovement(worldObjectId: WorldObject.Id): Promise<void> {
 		const worldObject = this.localStateAccess.getWorldObjectSummary(worldObjectId);
 		if (!worldObject) {
 			return Promise.resolve();
@@ -71,9 +70,9 @@ export class MovementServiceImpl implements MovementService {
 	completeMovement(): void {
 		const currentMovementState = this.localStateAccess.getCurrentMovementState();
 		if (currentMovementState && currentMovementState.path.length > 0) {
-			this.commandService.addCommand<MoveCommand>({
-				id: UID.generate(),
-				type: CommandType.MOVE,
+			this.commandService.addCommand({
+				type: Command.Type.Move,
+				id: Command.genId(),
 				worldObjectId: currentMovementState.worldObjectId,
 				path: currentMovementState.path.map(it => it.tile)
 			})
@@ -85,7 +84,7 @@ export class MovementServiceImpl implements MovementService {
 		this.gameStateWriter.setMovementState(null);
 	}
 
-	addStep(tileId: TileId): Promise<boolean> {
+	addStep(tileId: Tile.Id): Promise<boolean> {
 		const currentMovementState = this.localStateAccess.getCurrentMovementState();
 		if (currentMovementState) {
 			const target = currentMovementState.availableTargets.find(tgt => tgt.tile.id === tileId);
@@ -107,7 +106,7 @@ export class MovementServiceImpl implements MovementService {
 		return Promise.resolve(false);
 	}
 
-	private getAvailableTargets(tileId: TileId, worldObjectId: WorldObjectId, points: number): Promise<MovementTarget[]> {
+	private getAvailableTargets(tileId: Tile.Id, worldObjectId: WorldObject.Id, points: number): Promise<MovementTarget[]> {
 		try {
 			return this.gameClient.getAvailableMovementPositions(worldObjectId, tileId, points);
 		} catch (e) {

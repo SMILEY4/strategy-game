@@ -6,9 +6,8 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.Player
-import io.github.smiley4.strategygame.backend.commondata.PlayerState
 import io.github.smiley4.strategygame.backend.commondata.User
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedQuery
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameUpdate
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
@@ -18,8 +17,8 @@ import io.github.smiley4.strategygame.backend.sessions.ports.required.Initialize
 internal class JoinGameImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
-    private val gameExtendedQuery: GameExtendedQuery,
-    private val gameExtendedUpdate: io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedUpdate,
+    private val gameStateQuery: GameStateQuery,
+    private val gameStateUpdate: io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateUpdate,
     private val initializePlayer: InitializePlayer
 ) : JoinGame, Logging {
 
@@ -67,7 +66,7 @@ internal class JoinGameImpl(
             Player(
                 user = userId,
                 connectionId = null,
-                state = PlayerState.PLAYING,
+                state = Player.State.PLAYING,
             )
         )
         gameUpdate.execute(game)
@@ -78,7 +77,7 @@ internal class JoinGameImpl(
      * Create the necessary data in the game-world
      */
     private suspend fun initializePlayer(game: Game, userId: User.Id) {
-        val gameExtended = gameExtendedQuery.execute(game.id)
+        val gameExtended = gameStateQuery.execute(game.id)
         try {
             initializePlayer.perform(gameExtended, userId)
         } catch (e: InitializePlayer.InitializePlayerError) {
@@ -86,7 +85,7 @@ internal class JoinGameImpl(
                 is InitializePlayer.GameNotFoundError -> throw JoinGame.InitializePlayerError(e)
             }
         }
-        gameExtendedUpdate.execute(gameExtended)
+        gameStateUpdate.execute(gameExtended)
     }
 
 }

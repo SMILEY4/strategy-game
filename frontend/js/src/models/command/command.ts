@@ -1,36 +1,46 @@
-import {WorldObjectId} from "../worldobject/worldObjectId";
 import {TileSummary} from "../tile/tileSummary";
-import {SettlementSummary} from "../settlement/settlementSummary";
-import {ProductionQueueEntryEntity} from "../settlement/settlementEntity";
-import {CommandType} from "./commandType";
-import {CommandId} from "./commandId";
+import {BrandedId} from "../../common/brandedId";
+import {WorldObject} from "../worldobject/worldObject";
+import {UID} from "../../common/uid";
 
-export interface Command {
-	id: CommandId
-	type: CommandType
-}
+/**
+ * A command given by the player in the current turn.
+ */
+export type Command = Command.Move | Command.Disband
 
-export interface MoveCommand extends Command {
-	worldObjectId: WorldObjectId
-	path: TileSummary[],
-}
+export namespace Command {
 
-export interface CreateSettlementCommand extends Command {
-	worldObjectId: WorldObjectId
-	tile: TileSummary,
-	name: string
-}
+	export type Id = BrandedId<string, "CommandId">;
 
-export interface ProductionQueueAddCommand extends Command {
-	settlement: SettlementSummary,
-	entry: ProductionQueueEntryEntity,
-}
+	export function genId(): Id {
+		return UID.generate() as Id
+	}
 
-export interface ProductionQueueCancelCommand extends Command {
-	settlement: SettlementSummary,
-	entry: ProductionQueueEntryEntity,
-}
+	export enum Type {
+		Move = "move",
+		Disband = "disband"
+	}
 
-export interface DisbandWorldObjectCommand extends Command {
-	worldObjectId: WorldObjectId
+	export type Mapping = {
+		[Type.Move]: Move,
+		[Type.Disband]: Disband,
+	}
+
+	interface BaseCommand {
+		type: Type,
+		id: Id,
+	}
+
+	export interface Move extends BaseCommand {
+		type: Type.Move;
+		worldObjectId: WorldObject.Id
+		path: TileSummary[],
+	}
+
+
+	export interface Disband extends BaseCommand {
+		type: Type.Disband;
+		worldObjectId: WorldObject.Id;
+	}
+
 }

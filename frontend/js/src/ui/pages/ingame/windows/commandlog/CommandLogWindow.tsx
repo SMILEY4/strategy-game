@@ -11,14 +11,7 @@ import {DecoratedWindow} from "../../../../components/window/decorated/Decorated
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Else, If, Then} from "react-if";
 import {Txt} from "../../../../components/text/Txt";
-import {
-	Command,
-	CreateSettlementCommand, DisbandWorldObjectCommand,
-	MoveCommand,
-	ProductionQueueAddCommand,
-	ProductionQueueCancelCommand,
-} from "../../../../../models/command/command";
-import {CommandType} from "../../../../../models/command/commandType";
+import {Command} from "../../../../../models/command/command";
 
 export interface CommandLogWindowProps {
 	windowId: string;
@@ -65,7 +58,6 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
 	);
 }
 
-
 /**
  * A single issued and pending command
  */
@@ -74,7 +66,7 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 		<DecoratedPanel blue pattern>
 			<HBox padding_m gap_s>
 				<VBox grow shrink>
-					{renderCommand(props.command)}
+					{commandEntryMapping[props.command.type](props.command as any)}
 				</VBox>
 				<Button
 					warn circle small
@@ -86,113 +78,42 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 			</HBox>
 		</DecoratedPanel>
 	);
-
-	function renderCommand(command: Command): any {
-		if (command.type == CommandType.MOVE) {
-			const cmd = command as MoveCommand;
-			return (
-				<>
-					<Txt.Header4>
-						<Txt.String>Move Unit</Txt.String>
-					</Txt.Header4>
-					<Divider line/>
-					<IndentBox>
-						<Txt.Body>
-							<Txt.String>{"world object " + cmd.worldObjectId}</Txt.String>
-							<br/>
-							<Txt.String>{"from " + cmd.path[0].position.q + "," + cmd.path[0].position.r}</Txt.String>
-							<br/>
-							<Txt.String>{"to " + cmd.path[cmd.path.length - 1].position.q + "," + cmd.path[cmd.path.length - 1].position.r}</Txt.String>
-						</Txt.Body>
-					</IndentBox>
-				</>
-			);
-		}
-		if (command.type == CommandType.CREATE_SETTLEMENT) {
-			const cmd = command as CreateSettlementCommand;
-			return (
-				<>
-					<Txt.Header4>
-						<Txt.String>Found Settlement</Txt.String>
-					</Txt.Header4>
-					<Divider line/>
-					<IndentBox>
-						<Txt.Body>
-							<Txt.String>{"with name " + cmd.name}</Txt.String>
-							<br/>
-							<Txt.String>{"at " + cmd.tile.position.q + "," + cmd.tile.position.r}</Txt.String>
-							<br/>
-							<Txt.String>{"by settler " + cmd.worldObjectId}</Txt.String>
-						</Txt.Body>
-					</IndentBox>
-				</>
-			);
-		}
-		if (command.type == CommandType.PRODUCTION_QUEUE_ADD) {
-			const cmd = command as ProductionQueueAddCommand;
-			return (
-				<>
-					<Txt.Header4>
-						<Txt.String>Add Production Queue</Txt.String>
-					</Txt.Header4>
-					<Divider line/>
-					<IndentBox>
-						<Txt.Body>
-							<Txt.String>{"produce " + cmd.entry.type}</Txt.String>
-							<br/>
-							<Txt.String>{"in settlement " + cmd.settlement.name}</Txt.String>
-						</Txt.Body>
-					</IndentBox>
-				</>
-			);
-		}
-		if (command.type == CommandType.PRODUCTION_QUEUE_CANCEL) {
-			const cmd = command as ProductionQueueCancelCommand;
-			return (
-				<>
-					<Txt.Header4>
-						<Txt.String>Cancel Production Queue</Txt.String>
-					</Txt.Header4>
-					<Divider line/>
-					<IndentBox>
-						<Txt.Body>
-							<Txt.String>{"cancel " + cmd.entry.type}</Txt.String>
-							<br/>
-							<Txt.String>{"in settlement " + cmd.settlement.name}</Txt.String>
-						</Txt.Body>
-					</IndentBox>
-				</>
-			);
-		}
-		if (command.type == CommandType.DISBAND_WORLD_OBJECT) {
-			const cmd = command as DisbandWorldObjectCommand;
-			return (
-				<>
-					<Txt.Header4>
-						<Txt.String>Disband World Object</Txt.String>
-					</Txt.Header4>
-					<Divider line/>
-					<IndentBox>
-						<Txt.Body>
-							<Txt.String>{"world object " + cmd.worldObjectId}</Txt.String>
-						</Txt.Body>
-					</IndentBox>
-				</>
-			);
-		}
-		return (
-			<>
-				<Txt.Header4>
-					<Txt.String>{command.type.id}</Txt.String>
-				</Txt.Header4>
-				<Divider line/>
-				<IndentBox>
-					<Txt.Body>
-						<Txt.String>{command.id}</Txt.String>
-					</Txt.Body>
-				</IndentBox>
-			</>
-		);
-	}
-
 }
+
+/**
+ * Mapping from commands to react components
+ */
+const commandEntryMapping: {
+	[K in Command.Type]: (command: Extract<Command, { type: K }>) => ReactElement
+} = {
+	[Command.Type.Move]: (cmd) => (
+		<>
+			<Txt.Header4>
+				<Txt.String>Move Unit</Txt.String>
+			</Txt.Header4>
+			<Divider line/>
+			<IndentBox>
+				<Txt.Body>
+					<Txt.String>{"world object " + cmd.worldObjectId}</Txt.String>
+					<br/>
+					<Txt.String>{"from " + cmd.path[0].position.q + "," + cmd.path[0].position.r}</Txt.String>
+					<br/>
+					<Txt.String>{"to " + cmd.path[cmd.path.length - 1].position.q + "," + cmd.path[cmd.path.length - 1].position.r}</Txt.String>
+				</Txt.Body>
+			</IndentBox>
+		</>
+	),
+	[Command.Type.Disband]: (cmd) => (
+		<>
+			<Txt.Header4>
+				<Txt.String>Disband Unit</Txt.String>
+			</Txt.Header4>
+			<Divider line/>
+			<IndentBox>
+				<Txt.Body>
+					<Txt.String>{"world object " + cmd.worldObjectId}</Txt.String>
+				</Txt.Body>
+			</IndentBox>
+		</>
+	),
+};

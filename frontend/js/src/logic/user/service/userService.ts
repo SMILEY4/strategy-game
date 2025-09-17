@@ -1,7 +1,7 @@
-import {UserClient} from "../client/userClient";
 import jwt_decode from "jwt-decode";
 import {UserStateAccess} from "../../../state/userStateAccess";
 import {UserStateWriter} from "../../../state/userStateWriter";
+import {UserClient} from "./userClient";
 
 
 export interface UserService {

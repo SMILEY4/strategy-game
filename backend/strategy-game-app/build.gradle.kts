@@ -23,7 +23,6 @@ dependencies {
     implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-common-arangodb"))
     implementation(project(":strategy-game-common-data"))
-    implementation(project(":strategy-game-ecosim"))
     implementation(project(":strategy-game-engine"))
     implementation(project(":strategy-game-gateway"))
     implementation(project(":strategy-game-pathfinding"))
@@ -37,6 +36,10 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$versionKtor")
     implementation("io.ktor:ktor-server-metrics:$versionKtor")
     implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
+    testImplementation("io.ktor:ktor-client-core:${versionKtor}")
+    testImplementation("io.ktor:ktor-client-cio:${versionKtor}")
+    testImplementation("io.ktor:ktor-client-content-negotiation:${versionKtor}")
+    testImplementation("io.ktor:ktor-serialization-jackson:${versionKtor}")
 
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")

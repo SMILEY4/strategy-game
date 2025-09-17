@@ -1,37 +1,32 @@
-import {CameraEntity} from "../models/misc/cameraEntity";
+import {CameraData} from "../models/misc/cameraData";
 import {TileSummary} from "../models/tile/tileSummary";
 import {MapMode} from "../models/misc/mapMode";
 import {MovementState} from "../models/misc/movementState";
-import {GameTurnState} from "../models/misc/gameTurnState";
 import {Command} from "../models/command/command";
-import {CommandId} from "../models/command/commandId";
-import {GameState} from "../models/misc/gameState";
-import {GameSessionState} from "../models/misc/gameSessionState";
+import {GameStateContainer} from "../models/misc/gameStateContainer";
 import {CameraDatabase} from "./database/cameraDatabase";
 import {GameSessionDatabase} from "./database/gameSessionDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
 import {MovementModeState} from "./database/movementModeState";
 import {Transaction} from "../common/db/database/transaction";
 import {TileDatabase} from "./database/tileDatabase";
-import {SettlementDatabase} from "./database/settlementDatabase";
 import {WorldObjectDatabase} from "./database/worldObjectDatabase";
-import {CountryDatabase} from "./database/countryDatabase";
-import {RouteDatabase} from "./database/routeDatabase";
+import {RealmDatabase} from "./database/realmDatabase";
+import {GameSession} from "../models/misc/gameSession";
 
 export interface GameStateWriter {
-	setGameSessionState(state: GameSessionState): void;
-	setTurnState(state: GameTurnState): void;
+	setGameSessionState(state: GameSession.SessionState): void;
+	setTurnState(state: GameSession.TurnState): void;
 	setCurrentTurn(turn: number): void;
 	setSelectedTile(tile: TileSummary | null): void;
 	setHoveredTile(tile: TileSummary | null): void;
-	setCameraData(cameraData: CameraEntity): void;
+	setCameraData(cameraData: CameraData): void;
 	setSelectedMapMode(mapMode: MapMode): void;
 	setMovementState(state: MovementState | null): void;
 	clearCommands(): void;
-	setTurnState(turnState: GameTurnState): void;
 	addCommand(command: Command): void;
-	removeCommand(commandId: CommandId): void;
-	replaceGameState(state: GameState): void;
+	removeCommand(commandId: Command.Id): void;
+	replaceGameState(state: GameStateContainer): void;
 }
 
 
@@ -39,65 +34,51 @@ export class GameStateWriterImpl implements GameStateWriter {
 
 	private readonly commandDatabase: CommandDatabase;
 	private readonly tileDatabase: TileDatabase;
-	private readonly countryDatabase: CountryDatabase;
-	private readonly settlementDatabase: SettlementDatabase;
+	private readonly realmDatabase: RealmDatabase;
 	private readonly worldObjectDatabase: WorldObjectDatabase;
-	private readonly routeDatabase: RouteDatabase;
 	private readonly cameraDatabase: CameraDatabase;
 	private readonly gameSessionDatabase: GameSessionDatabase;
-
 
 	constructor(
 		commandDatabase: CommandDatabase,
 		tileDatabase: TileDatabase,
-		countryDatabase: CountryDatabase,
-		settlementDatabase: SettlementDatabase,
+		realmDatabase: RealmDatabase,
 		worldObjectDatabase: WorldObjectDatabase,
-		routeDatabase: RouteDatabase,
 		cameraDatabase: CameraDatabase,
 		gameSessionDatabase: GameSessionDatabase,
 	) {
 		this.commandDatabase = commandDatabase;
 		this.tileDatabase = tileDatabase;
-		this.countryDatabase = countryDatabase;
-		this.settlementDatabase = settlementDatabase;
+		this.realmDatabase = realmDatabase;
 		this.worldObjectDatabase = worldObjectDatabase;
-		this.routeDatabase = routeDatabase;
 		this.cameraDatabase = cameraDatabase;
 		this.gameSessionDatabase = gameSessionDatabase;
 	}
 
-	addCommand(command: Command): void {
-		this.commandDatabase.insert(command);
-	}
-
-	clearCommands(): void {
-		this.commandDatabase.deleteAll();
-	}
-
-	removeCommand(commandId: CommandId): void {
-		this.commandDatabase.delete(commandId);
-	}
-
-	replaceGameState(state: GameState): void {
-		Transaction.run([this.commandDatabase, this.tileDatabase, this.countryDatabase, this.settlementDatabase, this.worldObjectDatabase, this.routeDatabase], () => {
+	replaceGameState(state: GameStateContainer): void {
+		Transaction.run([this.commandDatabase, this.tileDatabase, this.realmDatabase, this.worldObjectDatabase], () => {
 			this.commandDatabase.deleteAll();
 			this.commandDatabase.insertMany(state.commands);
 			this.tileDatabase.deleteAll();
 			this.tileDatabase.insertMany(state.tiles);
-			this.countryDatabase.deleteAll();
-			this.countryDatabase.insertMany(state.countries);
-			this.settlementDatabase.deleteAll();
-			this.settlementDatabase.insertMany(state.settlements);
+			this.realmDatabase.deleteAll();
+			this.realmDatabase.insertMany(state.realms);
 			this.worldObjectDatabase.deleteAll();
 			this.worldObjectDatabase.insertMany(state.worldObjects);
-			this.routeDatabase.deleteAll();
-			this.routeDatabase.insertMany(state.routes);
 		});
 	}
 
-	setCameraData(camera: CameraEntity): void {
-		this.cameraDatabase.set(camera);
+	setGameSessionState(state: GameSession.SessionState): void {
+		this.gameSessionDatabase.update(() => ({
+			sessionState: state,
+		}));
+	}
+
+
+	setTurnState(state: GameSession.TurnState): void {
+		this.gameSessionDatabase.update(() => ({
+			turnState: state,
+		}));
 	}
 
 	setCurrentTurn(turn: number): void {
@@ -106,15 +87,19 @@ export class GameStateWriterImpl implements GameStateWriter {
 		}));
 	}
 
-	setGameSessionState(state: GameSessionState): void {
-		this.gameSessionDatabase.update(() => ({
-			sessionState: state,
-		}));
+	setCameraData(camera: CameraData): void {
+		this.cameraDatabase.set(camera);
 	}
 
 	setHoveredTile(tile: TileSummary | null): void {
 		this.gameSessionDatabase.update(() => ({
 			hoverTile: tile,
+		}));
+	}
+
+	setSelectedTile(tile: TileSummary | null): void {
+		this.gameSessionDatabase.update(() => ({
+			selectedTile: tile,
 		}));
 	}
 
@@ -132,16 +117,16 @@ export class GameStateWriterImpl implements GameStateWriter {
 		}));
 	}
 
-	setSelectedTile(tile: TileSummary | null): void {
-		this.gameSessionDatabase.update(() => ({
-			selectedTile: tile,
-		}));
+	addCommand(command: Command): void {
+		this.commandDatabase.insert(command);
 	}
 
-	setTurnState(state: GameTurnState): void {
-		this.gameSessionDatabase.update(() => ({
-			turnState: state,
-		}));
+	clearCommands(): void {
+		this.commandDatabase.deleteAll();
+	}
+
+	removeCommand(commandId: Command.Id): void {
+		this.commandDatabase.delete(commandId);
 	}
 
 }

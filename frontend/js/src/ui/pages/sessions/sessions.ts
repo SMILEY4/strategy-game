@@ -2,6 +2,7 @@ import {useNavigate} from "react-router-dom";
 import {UnauthorizedError} from "../../../common/UnauthorizedError";
 import {App} from "../../../appContext";
 import {GotoHooks} from "../goto";
+import {Game} from "../../../models/misc/game";
 
 export namespace SessionHooks {
 
@@ -28,7 +29,7 @@ export namespace SessionHooks {
 
 	export function useJoinGameSession() {
 		const handleUnauthorized = useHandleUnauthorized();
-		return (gameId: string) => {
+		return (gameId: Game.Id) => {
 			return App.gameProxy.joinSession(gameId)
 				.catch(error => UnauthorizedError.handle(error, () => {
 					handleUnauthorized();
@@ -39,7 +40,7 @@ export namespace SessionHooks {
 
 	export function useDeleteGameSession() {
 		const handleUnauthorized = useHandleUnauthorized();
-		return (gameId: string) => {
+		return (gameId: Game.Id) => {
 			return App.gameProxy.deleteSession(gameId)
 				.catch(error => UnauthorizedError.handle(error, () => {
 					handleUnauthorized();
@@ -55,7 +56,7 @@ export namespace SessionHooks {
 
 	export function useConnectGameSession() {
 		const handleUnauthorized = useHandleUnauthorized();
-		return (gameId: string) => {
+		return (gameId: Game.Id) => {
 			App.gameProxy.connectSession(gameId)
 				.catch(error => UnauthorizedError.handle(error, () => {
 					handleUnauthorized();

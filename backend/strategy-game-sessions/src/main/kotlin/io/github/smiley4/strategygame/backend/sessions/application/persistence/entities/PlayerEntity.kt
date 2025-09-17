@@ -1,7 +1,6 @@
 package io.github.smiley4.strategygame.backend.sessions.application.persistence.entities
 
 import io.github.smiley4.strategygame.backend.commondata.Player
-import io.github.smiley4.strategygame.backend.commondata.PlayerState
 import io.github.smiley4.strategygame.backend.commondata.User
 
 internal class PlayerEntity(
@@ -15,8 +14,8 @@ internal class PlayerEntity(
             userId = serviceModel.user.value,
             connectionId = serviceModel.connectionId,
             state = when (serviceModel.state) {
-                PlayerState.PLAYING -> "playing"
-                PlayerState.SUBMITTED -> "submitted"
+                Player.State.PLAYING -> "playing"
+                Player.State.SUBMITTED -> "submitted"
             }
         )
     }
@@ -25,8 +24,8 @@ internal class PlayerEntity(
         user = User.Id(this.userId),
         connectionId = this.connectionId,
         state = when (this.state) {
-            "playing" -> PlayerState.PLAYING
-            "submitted" -> PlayerState.SUBMITTED
+            "playing" -> Player.State.PLAYING
+            "submitted" -> Player.State.SUBMITTED
             else -> throw Exception("Invalid player-state: ${this.state}")
         }
     )

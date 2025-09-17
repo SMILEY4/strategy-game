@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.worldgen.application
 import io.github.smiley4.strategygame.backend.common.utils.WeightedCollection
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenerator
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenSettings
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenTile
@@ -43,7 +43,7 @@ internal class WorldGeneratorImpl : WorldGenerator {
         return tilePositions.map { buildTileAt(it, settings) }
     }
 
-    private fun buildTileAt(position: TilePosition, settings: WorldGenSettings): WorldGenTile {
+    private fun buildTileAt(position: Tile.Position, settings: WorldGenSettings): WorldGenTile {
         val height = noise.GetNoise(position.q.toFloat(), position.r.toFloat())
         val terrainType = settings.singleTileType ?: tileTypeAt(height)
         return WorldGenTile(

@@ -8,6 +8,7 @@ class Command<T : CommandData>(
     val turn: Int,
     val data: T
 ) {
+
     @JvmInline
     value class Id(val value: String)
 
@@ -17,31 +18,11 @@ sealed class CommandData {
 
     class Move(
         val worldObject: WorldObject.Id,
-        val path: List<TileRef>
+        val path: List<Tile.Ref>
     ) : CommandData()
 
-    class CreateSettlement(
-        val name: String,
-        val worldObject: WorldObject.Id
-    ) : CommandData()
-
-    class ProductionQueueRemoveEntry(
-        val entry: ProductionQueueEntry.Id,
-        val settlement: Settlement.Id
-    ) : CommandData()
-
-    sealed class ProductionQueueAddEntry(
-        val settlement: Settlement.Id
-    ) : CommandData() {
-
-        class Settler(settlement: Settlement.Id) : ProductionQueueAddEntry(settlement)
-
-        class Building(settlement: Settlement.Id, val   building: BuildingType) : ProductionQueueAddEntry(settlement)
-
-    }
-
-    class DisbandWorldObject(
-        val worldObject: WorldObject.Id
+    class Disband(
+        val worldObject: WorldObject.Id,
     ) : CommandData()
 
 }

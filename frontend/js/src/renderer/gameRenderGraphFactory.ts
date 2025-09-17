@@ -8,9 +8,7 @@ import {OverlayMeshVertexGenerator} from "./generators/overlayMeshVertexGenerato
 import {MapMode} from "../models/misc/mapMode";
 import {OverlayInstancesVertexGenerator} from "./generators/overlayInstancesVertexGenerator";
 import {MapDetailsVertexGenerator} from "./generators/mapDetailsVertexGenerator";
-import {Settlement} from "../models/settlement/settlement";
 import {WorldObject} from "../models/worldobject/worldObject";
-import {Route} from "../models/route/route";
 import {TextureAtlas, TextureAtlasEntry} from "../common/webgl/textureAtlas";
 import {RenderGraphSorter} from "../common/rendergraph/renderGraphSorter";
 import {RenderGraphCompiler} from "../common/rendergraph/renderGraphCompiler";
@@ -55,8 +53,8 @@ import {
 } from "../common/rendergraph/nodes/intermediateDataGeneratorRenderGraphNode";
 import {FrameIdResourceGenerator} from "../common/rendergraph/resources/frameIdResourceGenerator";
 import {InitNodeCompiler} from "../common/rendergraph/compilers/initNodeCompiler";
-import {WasmApi} from "../wasm/wasmApi";
 import {RelevantWorldAreaGenerator} from "./generators/relevantWorldAreaGenerator";
+import {WasmGameRenderer} from "./wasmGameRenderer";
 
 export class GameRenderGraphFactory {
 
@@ -75,13 +73,14 @@ export class GameRenderGraphFactory {
 		canvasHandle: CanvasHandle,
 		shaderSourceManager: GameShaderSourceManager,
 		textureAtlasManager: GameTextureAtlasDataManager,
+		wasmGameRenderer: WasmGameRenderer,
 	): RenderGraph {
 
 		const graph = this.configureBaseRenderGraph(canvasHandle.getGL());
 
 		const configProps = this.createConfigurationProperties(graph);
 		const textureNodes = this.createTextureNodes(graph, gameAccess);
-		const commonProperties = this.createCommonProperties(graph, gameAccess, changeTracker, canvasHandle);
+		const commonProperties = this.createCommonProperties(graph, gameAccess, changeTracker, canvasHandle, wasmGameRenderer);
 
 		// TEXTURE ATLAS =========================
 
@@ -103,7 +102,7 @@ export class GameRenderGraphFactory {
 
 		const propTextureAtlasWasm = graph
 			.createPropertyWasm<Map<string, TextureAtlasEntry[]>>("textureAtlasGroups-wasm")
-			.withValue(propTextureAtlas, it => WasmApi.Renderer.setTextureAtlasEntries(it))
+			.withValue(propTextureAtlas, it => wasmGameRenderer.setTextureAtlasEntries(it))
 
 		// RELEVANT WORLD AREA ===================
 
@@ -119,7 +118,7 @@ export class GameRenderGraphFactory {
 
 		const propRelevantWorldAreaWasm = graph
 			.createPropertyWasm<Rectangle>("prop-relevant-world-area-wasm")
-			.withValue(propRelevantWorldArea, it => WasmApi.Renderer.setRelevantWorldArea(it));
+			.withValue(propRelevantWorldArea, it => wasmGameRenderer.setRelevantWorldArea(it));
 
 
 		// TILE MAP BASICS =======================
@@ -220,7 +219,7 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 			])
-			.withFunction(TileInstanceVertexGenerator.funcWasm);
+			.withFunction(ctx => TileInstanceVertexGenerator.funcWasm(ctx, wasmGameRenderer));
 
 		// WATER =================================
 
@@ -404,7 +403,7 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 			])
-			.withFunction(OverlayInstancesVertexGenerator.funcWasm);
+			.withFunction(ctx => OverlayInstancesVertexGenerator.funcWasm(ctx, wasmGameRenderer));
 
 		const vertexDescriptorOverlay = graph
 			.createVertexDescriptor("vd-overlay")
@@ -445,9 +444,7 @@ export class GameRenderGraphFactory {
 			.createVertexCreator("gen-mapdetails")
 			.withProperty(propRelevantWorldAreaWasm)
 			.withProperty(commonProperties.tilesWasm)
-			.withProperty(commonProperties.settlementsWasm)
 			.withProperty(commonProperties.worldObjectsWasm)
-			.withProperty(commonProperties.routesWasm)
 			.withProperty(propTextureAtlasWasm)
 			.withOutput(MapDetailsVertexGenerator.OUTPUT_ID, "vertices", [
 				{
@@ -478,7 +475,7 @@ export class GameRenderGraphFactory {
 					amountComponents: 2,
 				},
 			])
-			.withFunction(MapDetailsVertexGenerator.funcWasm)
+			.withFunction(ctx => MapDetailsVertexGenerator.funcWasm(ctx, wasmGameRenderer))
 
 
 		const vertexDescriptorMapDetails = graph
@@ -592,7 +589,6 @@ export class GameRenderGraphFactory {
 
 		const creatorLabels = graph
 			.createRenderElementGenerator("gen-labels")
-			.withProperty(commonProperties.settlements, "settlements")
 			.withProperty(commonProperties.worldObjects, "worldObjects")
 			.withProperty(commonProperties.cameraVPM, "_camera")
 			.withFunction(LabelsElementGenerator.funcCreate)
@@ -829,7 +825,7 @@ export class GameRenderGraphFactory {
 		};
 	}
 
-	private createCommonProperties(graph: RenderGraph, gameAccess: GameStateAccess, changeTracker: GameChangeTracker, canvasHandle: CanvasHandle) {
+	private createCommonProperties(graph: RenderGraph, gameAccess: GameStateAccess, changeTracker: GameChangeTracker, canvasHandle: CanvasHandle, wasmGameRenderer: WasmGameRenderer) {
 		const mapMode = graph
 			.createPropertyDynamic<MapMode>("prop-mapMode")
 			.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
@@ -838,18 +834,10 @@ export class GameRenderGraphFactory {
 			.createPropertyDynamic<TileSummary[]>("prop-moveTargets")
 			.withChangeTest(() => changeTracker.getTrackedChanges().movementTargets)
 			.withValue(() => gameAccess.getMoveTargets());
-		const settlements = graph
-			.createPropertyDynamic<Settlement[]>("prop-settlements")
-			.withChangeTest(() => changeTracker.getTrackedChanges().settlements || changeTracker.getTrackedChanges().commands)
-			.withValue(() => gameAccess.getSettlements());
 		const worldObjects = graph
 			.createPropertyDynamic<WorldObject[]>("prop-worldObjects")
 			.withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
 			.withValue(() => gameAccess.getWorldObjects());
-		const routes = graph
-			.createPropertyDynamic<Route[]>("prop-routes")
-			.withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
-			.withValue(() => gameAccess.getRoutes());
 		const tiles = graph
 			.createPropertyDynamic<Tile[]>("prop-tiles")
 			.withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
@@ -870,25 +858,18 @@ export class GameRenderGraphFactory {
 			tiles: tiles,
 			tilesWasm: graph
 				.createPropertyWasm<Tile[]>("prop-wasm-tiles")
-				.withValue(tiles, it => WasmApi.Renderer.setTiles(it)),
-			settlements: settlements,
-			settlementsWasm: graph
-				.createPropertyWasm<Settlement[]>("prop-wasm-settlements")
-				.withValue(settlements, it => WasmApi.Renderer.setSettlements(it)),
+				.withValue(tiles, it => wasmGameRenderer.setTiles(it)),
 			worldObjects: worldObjects,
 			worldObjectsWasm: graph
 				.createPropertyWasm<WorldObject[]>("prop-wasm-worldObjects")
-				.withValue(worldObjects, it => WasmApi.Renderer.setWorldObjects(it)),
-			routesWasm: graph
-				.createPropertyWasm<Route[]>("prop-wasm-routes")
-				.withValue(routes, it => WasmApi.Renderer.setRoutes(it)),
+				.withValue(worldObjects, it => wasmGameRenderer.setWorldObjects(it)),
 			mapMode: mapMode,
 			mapModeWasm: graph
 				.createPropertyWasm<MapMode>("prop-wasm-mapMode")
-				.withValue(mapMode, it => WasmApi.Renderer.setMapMode(it)),
+				.withValue(mapMode, it => wasmGameRenderer.setMapMode(it)),
 			moveTargetsWasm: graph
 				.createPropertyWasm<TileSummary[]>("prop-wasm-moveTargets")
-				.withValue(moveTargets, it => WasmApi.Renderer.setMoveTargets(it)),
+				.withValue(moveTargets, it => wasmGameRenderer.setMoveTargets(it)),
 			movePaths: graph
 				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("prop-movePaths")
 				.withChangeTest(() => changeTracker.getTrackedChanges().movementPaths)

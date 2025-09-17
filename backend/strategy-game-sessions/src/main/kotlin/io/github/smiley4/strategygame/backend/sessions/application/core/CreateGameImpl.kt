@@ -3,9 +3,9 @@ package io.github.smiley4.strategygame.backend.sessions.application.core
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.PlayerContainer
+import io.github.smiley4.strategygame.backend.commondata.Player
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameInsert
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.CreateGame
 import io.github.smiley4.strategygame.backend.sessions.ports.required.InitializeWorld
@@ -14,7 +14,7 @@ import java.time.Instant
 internal class CreateGameImpl(
     private val gameInsert: GameInsert,
     private val initializeWorld: InitializeWorld,
-    private val gameExtendedUpdate: io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedUpdate,
+    private val gameStateUpdate: io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateUpdate,
 ) : CreateGame, Logging {
 
     private val metricId = MetricId.action(CreateGame::class)
@@ -39,7 +39,7 @@ internal class CreateGameImpl(
             name = name,
             creationTimestamp = Instant.now().toEpochMilli(),
             turn = 0,
-            players = PlayerContainer()
+            players = Player.Container()
         ).let {
             val gameId = gameInsert.execute(it)
             it.copy(id = Game.Id(gameId))
@@ -52,7 +52,7 @@ internal class CreateGameImpl(
      */
     private suspend fun initialize(game: Game, worldSeed: Int?) {
         val gameExtended = initializeWorld.perform(game, worldSeed)
-        gameExtendedUpdate.execute(gameExtended)
+        gameStateUpdate.execute(gameExtended)
     }
 
 }

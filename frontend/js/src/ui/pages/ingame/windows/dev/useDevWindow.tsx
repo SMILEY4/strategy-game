@@ -1,7 +1,7 @@
 import React from "react";
 import {DevWindow} from "./DevWindow";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
-import {CameraEntity} from "../../../../../models/misc/cameraEntity";
+import {CameraData} from "../../../../../models/misc/cameraData";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
@@ -33,7 +33,7 @@ export namespace UseDevWindow {
 		monitoring: {
 			export: () => void,
 		}
-		camera: CameraEntity,
+		camera: CameraData,
 	}
 
 	export function useData(): UseDevWindow.Data {

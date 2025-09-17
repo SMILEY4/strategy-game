@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.sessions.application.persistence.entities
 
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.commondata.Tile
 
 
 internal class TilePositionEntity(
@@ -9,13 +9,13 @@ internal class TilePositionEntity(
 ) {
 
     companion object {
-        fun of(serviceModel: TilePosition) = TilePositionEntity(
+        fun of(serviceModel: Tile.Position) = TilePositionEntity(
             q = serviceModel.q,
             r = serviceModel.r
         )
     }
 
-    fun asServiceModel() = TilePosition(
+    fun asServiceModel() = Tile.Position(
         q = this.q,
         r = this.r
     )

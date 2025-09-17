@@ -1,6 +1,5 @@
 import {TextureAtlasEntry} from "./textureAtlas";
 import {MixedArrayBuffer, MixedArrayBufferType} from "./mixedArrayBuffer";
-import {Color} from "../color";
 
 export class SpriteBuffer {
 
