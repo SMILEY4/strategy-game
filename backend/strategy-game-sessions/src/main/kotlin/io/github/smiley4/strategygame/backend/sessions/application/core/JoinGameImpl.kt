@@ -6,7 +6,6 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.Player
-import io.github.smiley4.strategygame.backend.commondata.PlayerState
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
@@ -67,7 +66,7 @@ internal class JoinGameImpl(
             Player(
                 user = userId,
                 connectionId = null,
-                state = PlayerState.PLAYING,
+                state = Player.State.PLAYING,
             )
         )
         gameUpdate.execute(game)

@@ -17,7 +17,7 @@ export namespace RealmOutline {
 	export function from(realm: Realm): RealmOutline {
 		return {
 			id: realm.id,
-			name: realm.id,
+			name: realm.name,
 			color: Color.BLACK,
 			ownedByUser: realm.ownedByUser,
 			playerName: realm.player.name,

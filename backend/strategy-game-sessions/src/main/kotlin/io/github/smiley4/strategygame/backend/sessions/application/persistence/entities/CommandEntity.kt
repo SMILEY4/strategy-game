@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.CommandData.Disband
 import io.github.smiley4.strategygame.backend.commondata.CommandData.Move
-import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject.Id

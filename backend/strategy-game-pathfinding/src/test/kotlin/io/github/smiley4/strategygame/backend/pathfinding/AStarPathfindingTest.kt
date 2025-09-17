@@ -4,7 +4,6 @@ import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileContainer
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.pathfinding.algorithms.astar.AStarPathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
@@ -142,7 +141,7 @@ class AStarPathfindingTest : StringSpec({
 
     private companion object {
 
-        class TerrainBasedNeighbourProvider(private val tiles: TileContainer) : NeighbourProvider<TestNode> {
+        class TerrainBasedNeighbourProvider(private val tiles: Tile.Container) : NeighbourProvider<TestNode> {
             override fun getNeighbours(current: TestNode, consumer: (neighbour: TestNode) -> Unit) {
                 positionsNeighbours(current.tile.position) { q, r ->
                     val neighbour = tiles.get(q, r)
@@ -197,7 +196,7 @@ class AStarPathfindingTest : StringSpec({
             }
         }
 
-        fun buildTiles(ids: List<List<Int>>): TileContainer {
+        fun buildTiles(ids: List<List<Int>>): Tile.Container {
             val tiles = mutableListOf<Tile>()
             ids.forEachIndexed { r, qIds ->
                 qIds.forEachIndexed { q, id ->
@@ -214,11 +213,12 @@ class AStarPathfindingTest : StringSpec({
                                 resourceType = TileResourceType.NONE,
                                 height = 1f
                             ),
+                            discoveredBy = mutableSetOf(),
                         )
                     )
                 }
             }
-            return TileContainer(tiles)
+            return Tile.Container(tiles)
         }
 
     }

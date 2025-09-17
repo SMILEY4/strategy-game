@@ -4,7 +4,6 @@ import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileContainer
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.pathfinding.algorithms.backtracking.BacktrackingPathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
@@ -292,7 +291,7 @@ class AdvancedPathfindingTest : StringSpec({
 
     companion object {
 
-        class AdvancedNeighbourProvider(private val tiles: TileContainer) : NeighbourProvider<TestNode> {
+        class AdvancedNeighbourProvider(private val tiles: Tile.Container) : NeighbourProvider<TestNode> {
 
             private val rules = mutableListOf<NextNodeRule<TestNode>>()
 
@@ -343,7 +342,7 @@ class AdvancedPathfindingTest : StringSpec({
 
         }
 
-        fun buildTiles(ids: List<List<Int>>, provinceIds: List<List<Int>>? = null): TileContainer {
+        fun buildTiles(ids: List<List<Int>>, provinceIds: List<List<Int>>? = null): Tile.Container {
             val tiles = mutableListOf<Tile>()
             ids.forEachIndexed { r, qIds ->
                 qIds.forEachIndexed { q, id ->
@@ -360,11 +359,12 @@ class AdvancedPathfindingTest : StringSpec({
                                 resourceType = TileResourceType.NONE,
                                 height = 1f
                             ),
+                            discoveredBy = mutableSetOf(),
                         )
                     )
                 }
             }
-            return TileContainer(tiles)
+            return Tile.Container(tiles)
         }
 
     }

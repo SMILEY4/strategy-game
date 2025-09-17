@@ -14,9 +14,10 @@ import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectType
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.Tools
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer
+import io.github.smiley4.strategygame.backend.worldgen.lib.NameGenerator
 
 
-internal class InitializePlayerImpl() : InitializePlayer {
+internal class InitializePlayerImpl(private val nameGenerator: NameGenerator) : InitializePlayer {
 
     private val metricId = MetricId.action(InitializePlayer::class)
 
@@ -55,12 +56,14 @@ internal class InitializePlayerImpl() : InitializePlayer {
         return tile.dataWorld.terrainType == TerrainType.LAND
     }
 
-    private fun initRealm(game: GameState, userId: User.Id): Realm.Id {
+    private fun initRealm(gameState: GameState, userId: User.Id): Realm.Id {
         val realm = Realm(
             id = Realm.Id.gen(),
             user = userId,
+            name = nameGenerator.generateRealmName(),
+            color = Realm.COLORS.random(),
         )
-        game.realms.add(realm)
+        gameState.realms.add(realm)
         return realm.id
     }
 

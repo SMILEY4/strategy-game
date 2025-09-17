@@ -18,7 +18,7 @@ fun Module.dependenciesEngine() {
     single<DisbandCommandExecutor> { DisbandCommandExecutor() }
 
     single<GameStep> { GameStepImpl(get(), get()) }
-    single<InitializePlayer> { InitializePlayerImpl() }
+    single<InitializePlayer> { InitializePlayerImpl(get()) }
     single<InitializeWorld> { InitializeWorldImpl(get()) }
     single<GenericGameService> { GenericGameServiceImpl() }
 

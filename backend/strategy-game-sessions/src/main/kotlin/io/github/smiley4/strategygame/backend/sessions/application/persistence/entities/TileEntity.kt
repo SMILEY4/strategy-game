@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.sessions.application.persistence.entities
 
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
-import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile

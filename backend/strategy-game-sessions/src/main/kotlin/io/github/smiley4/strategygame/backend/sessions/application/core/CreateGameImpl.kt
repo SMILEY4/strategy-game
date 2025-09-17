@@ -3,9 +3,9 @@ package io.github.smiley4.strategygame.backend.sessions.application.core
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.PlayerContainer
+import io.github.smiley4.strategygame.backend.commondata.Player
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameInsert
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.CreateGame
 import io.github.smiley4.strategygame.backend.sessions.ports.required.InitializeWorld
@@ -39,7 +39,7 @@ internal class CreateGameImpl(
             name = name,
             creationTimestamp = Instant.now().toEpochMilli(),
             turn = 0,
-            players = PlayerContainer()
+            players = Player.Container()
         ).let {
             val gameId = gameInsert.execute(it)
             it.copy(id = Game.Id(gameId))

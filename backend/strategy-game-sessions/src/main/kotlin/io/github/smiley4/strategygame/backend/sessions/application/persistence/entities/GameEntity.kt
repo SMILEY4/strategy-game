@@ -1,9 +1,9 @@
 package io.github.smiley4.strategygame.backend.sessions.application.persistence.entities
 
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
-import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.PlayerContainer
+import io.github.smiley4.strategygame.backend.commondata.Player
 
 
 internal class GameEntity(
@@ -31,7 +31,7 @@ internal class GameEntity(
         name = this.name,
         creationTimestamp = this.creationTimestamp,
         turn = this.turn,
-        players = PlayerContainer(this.players.map { it.asServiceModel() })
+        players = Player.Container(this.players.map { it.asServiceModel() })
     )
 
 }

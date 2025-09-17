@@ -6,9 +6,9 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
-import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.PlayerState
+import io.github.smiley4.strategygame.backend.commondata.Player
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsInsert
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
@@ -55,7 +55,7 @@ internal class TurnSubmitImpl(
     private suspend fun updatePlayerState(game: Game, userId: User.Id) {
         val player = game.players.findByUserId(userId)
         if (player != null) {
-            player.state = PlayerState.SUBMITTED
+            player.state = Player.State.SUBMITTED
             gameUpdate.execute(game)
         } else {
             throw TurnSubmit.NotParticipantError()
@@ -84,7 +84,7 @@ internal class TurnSubmitImpl(
      * End turn if all players submitted their commands (none in state "playing")
      */
     private suspend fun maybeEndTurn(game: Game) {
-        val countPlaying = game.players.count { it.state == PlayerState.PLAYING && it.connectionId != null }
+        val countPlaying = game.players.count { it.state == Player.State.PLAYING && it.connectionId != null }
         if (countPlaying == 0) {
             try {
                 actionEndTurn.perform(game.id)

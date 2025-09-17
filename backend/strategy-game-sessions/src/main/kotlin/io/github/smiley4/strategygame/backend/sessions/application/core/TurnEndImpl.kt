@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameState
-import io.github.smiley4.strategygame.backend.commondata.PlayerState
+import io.github.smiley4.strategygame.backend.commondata.Player
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.playerpov.lib.PlayerViewCreator
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsByGameQuery
@@ -82,7 +82,7 @@ internal class TurnEndImpl(
      */
     private suspend fun updateGameInfo(game: Game, gameState: GameState) {
         game.players.forEach { player ->
-            player.state = PlayerState.PLAYING
+            player.state = Player.State.PLAYING
         }
         game.turn = gameState.game.turn
         updateGame.execute(game)

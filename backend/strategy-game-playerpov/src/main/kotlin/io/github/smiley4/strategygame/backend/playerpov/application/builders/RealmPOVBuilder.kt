@@ -6,16 +6,16 @@ import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.User
 
 
-internal class  RealmPOVBuilder {
+internal class RealmPOVBuilder {
 
     fun build(realm: Realm, userId: User.Id): JsonType {
         return obj {
             "id" to realm.id.value
-            "name" to "todo" // todo
-            "color" to obj { // todo
-                "red" to 255
-                "green" to 70
-                "blue" to 90
+            "name" to realm.name
+            "color" to obj {
+                "red" to realm.color.redByte.toInt()
+                "green" to realm.color.greenByte.toInt()
+                "blue" to realm.color.blueByte.toInt()
             }
             "player" to obj {
                 "userId" to realm.user.value

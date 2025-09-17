@@ -12,8 +12,8 @@ interface NameGenerator {
 
 
     /**
-     * Generate a pseudo-random name for a country.
+     * Generate a pseudo-random name for a realm.
      */
-    fun generateCountryName(): String
+    fun generateRealmName(): String
 
 }

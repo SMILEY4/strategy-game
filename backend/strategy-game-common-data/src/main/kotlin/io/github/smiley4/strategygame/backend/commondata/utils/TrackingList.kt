@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.commondata
+package io.github.smiley4.strategygame.backend.commondata.utils
 
 fun <T> trackingListOf() = TrackingList<T>(emptyList())
 

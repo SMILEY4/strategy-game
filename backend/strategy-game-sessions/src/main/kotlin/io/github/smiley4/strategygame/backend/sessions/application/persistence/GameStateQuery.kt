@@ -10,9 +10,8 @@ import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileContainer
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
-import io.github.smiley4.strategygame.backend.commondata.tracking
+import io.github.smiley4.strategygame.backend.commondata.utils.tracking
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.GameEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.RealmEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.TileEntity
@@ -33,7 +32,7 @@ internal class GameStateQuery(private val database: ArangoDatabase) {
                 GameState(
                     game = game,
                     realms = realms.tracking(),
-                    tiles = TileContainer(tiles),
+                    tiles = Tile.Container(tiles),
                     worldObjects = worldObjects.tracking(),
                 )
             }
