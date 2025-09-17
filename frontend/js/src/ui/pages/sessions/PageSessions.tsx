@@ -7,7 +7,7 @@ import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
 import {VSpacer} from "../../components/spacer/Spacer";
 import {AudioType} from "../../../common/audioService";
-import {GameSessionMeta} from "../../../models/misc/gameSessionMeta";
+import {GameSessionData} from "../../../models/misc/gameSessionData";
 import {SessionHooks} from "./sessions";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {ModalWindow} from "../../components/modal/ModalWindow";
@@ -113,7 +113,7 @@ export function PageSessions(): ReactElement {
 }
 
 function GameSessionEntry(props: {
-	session: GameSessionMeta,
+	session: GameSessionData,
 	onConnect: () => void,
 	onDelete: () => void
 }): ReactElement {
@@ -231,13 +231,13 @@ function ModalCreateGame(props: {
 
 
 function useSessionData() {
-	const [sessions, setSessions] = useState<GameSessionMeta[]>([]);
+	const [sessions, setSessions] = useState<GameSessionData[]>([]);
 	const loadGameSessions = SessionHooks.useLoadGameSessions();
 
 	return {
 		sessions: sessions,
 		loadSessions: () => {
-			loadGameSessions().then((list: GameSessionMeta[]) => setSessions(list));
+			loadGameSessions().then((list: GameSessionData[]) => setSessions(list));
 		},
 	};
 }

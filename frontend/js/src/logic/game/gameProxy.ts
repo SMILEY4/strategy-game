@@ -9,7 +9,7 @@ import {TilePosition} from "../../models/tile/tilePosition";
 import {Command, DisbandCommand} from "../../models/command/command";
 import {WorldObjectId} from "../../models/worldobject/worldObjectId";
 import {GameStateWriter} from "../../state/gameStateWriter";
-import {GameSessionMeta} from "../../models/misc/gameSessionMeta";
+import {GameSessionData} from "../../models/misc/gameSessionData";
 import {GameSessionService} from "./service/gameSessionService";
 import {CommandService} from "./service/commandService";
 import {MonitoringService} from "./service/monitoringService";
@@ -25,7 +25,7 @@ export interface GameProxy {
 	/**
 	 * Get all games of the currently logged-in user.
 	 */
-	listSessions(): Promise<GameSessionMeta[]>;
+	listSessions(): Promise<GameSessionData[]>;
 	/**
 	 * Create a new game with the given name and settings.
 	 */
@@ -160,7 +160,7 @@ export class GameProxyImpl implements GameProxy {
 
 	//========== SESSION ========================================================
 
-	listSessions(): Promise<GameSessionMeta[]> {
+	listSessions(): Promise<GameSessionData[]> {
 		return this.gameSessionService.listSessions();
 	}
 

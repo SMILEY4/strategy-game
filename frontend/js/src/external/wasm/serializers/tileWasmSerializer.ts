@@ -1,5 +1,5 @@
-import {Tile} from "../../models/tile/tile";
-import {TileResourceType} from "../../models/tile/TileResourceType";
+import {Tile} from "../../../models/tile/tile";
+import {TileResourceType} from "../../../models/tile/TileResourceType";
 import {WasmDataViewWriter} from "./wasmDataViewWriter";
 
 export namespace TileWasmSerializer {

@@ -1,4 +1,4 @@
-export interface GameSessionMeta {
+export interface GameSessionData {
     id: string,
     name: string,
     creationTimestamp: number,

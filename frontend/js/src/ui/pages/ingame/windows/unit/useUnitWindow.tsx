@@ -92,7 +92,7 @@ export namespace UseUnitWindow {
 		})
 
 		// move
-		if(worldObject.realm.ownedByUser && WorldObjectComponent.has(worldObject, "movement")){
+		if(worldObject.realm.ownedByUser && WorldObjectComponent.has(worldObject, WorldObjectComponent.Type.Move)){
 			actions.push({
 				type: "move",
 				enabled: relevantCommands.length == 0,

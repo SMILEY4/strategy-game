@@ -6,7 +6,7 @@ import {GameChangeTracker} from "./gameChangeTracker";
 import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {Camera} from "../common/webgl/camera";
-import {WasmApi} from "../wasm/wasmApi";
+import {WasmGameRenderer} from "./wasmGameRenderer";
 
 export class GameRenderer {
 
@@ -14,6 +14,7 @@ export class GameRenderer {
 	private readonly changeTracker: GameChangeTracker;
 	private readonly shaderSourceManager: GameShaderSourceManager;
 	private readonly textureAtlasManager: GameTextureAtlasDataManager;
+	private readonly wasmGameRenderer: WasmGameRenderer;
 
 	private gameRenderGraph: RenderGraph | null = null;
 
@@ -22,18 +23,20 @@ export class GameRenderer {
 		changeTracker: GameChangeTracker,
 		shaderSourceManager: GameShaderSourceManager,
 		textureAtlasManager: GameTextureAtlasDataManager,
+		wasmGameRenderer: WasmGameRenderer,
 	) {
 		this.gameStateAccess = gameStateAccess;
 		this.changeTracker = changeTracker;
 		this.shaderSourceManager = shaderSourceManager;
 		this.textureAtlasManager = textureAtlasManager;
+		this.wasmGameRenderer = wasmGameRenderer;
 	}
 
 	/**
 	 * Initialize the renderer for the given canvas
 	 */
 	public initialize(canvasHandle: CanvasHandle): void {
-		WasmApi.Renderer.init();
+		this.wasmGameRenderer.init();
 		const factory = new GameRenderGraphFactory();
 		this.changeTracker.initialize();
 		this.gameRenderGraph = factory.create(
@@ -42,6 +45,7 @@ export class GameRenderer {
 			canvasHandle,
 			this.shaderSourceManager,
 			this.textureAtlasManager,
+			this.wasmGameRenderer,
 		);
 		factory.initialize(this.gameRenderGraph);
 	}
@@ -61,7 +65,7 @@ export class GameRenderer {
 	 * Dispose the renderer and all resources
 	 */
 	public dispose() {
-		WasmApi.Renderer.dispose();
+		this.wasmGameRenderer.dispose();
 		this.gameRenderGraph?.dispose();
 		this.gameRenderGraph = null;
 	}

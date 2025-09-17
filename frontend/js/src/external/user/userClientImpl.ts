@@ -1,10 +1,12 @@
-import {HttpClient} from "../../../common/httpClient";
-import {UserStateAccess} from "../../../state/userStateAccess";
+import {HttpClient} from "../../common/httpClient";
+import {UserStateAccess} from "../../state/userStateAccess";
+import {LoginData} from "./loginData";
+import {UserClient} from "../../logic/user/service/userClient";
 
 /**
  * API-Client for user operations
  */
-export class UserClient {
+export class UserClientImpl implements UserClient {
 
     private readonly userStateAccess: UserStateAccess;
     private readonly httpClient: HttpClient;
@@ -14,9 +16,6 @@ export class UserClient {
         this.userStateAccess = userStateAccess;
     }
 
-    /**
-     * Login with the given credentials
-     */
     public login(email: string, password: string): Promise<LoginData> {
         return this.httpClient.post<LoginData>({
             url: "/api/user/login",
@@ -27,9 +26,6 @@ export class UserClient {
         });
     }
 
-    /**
-     * Sign Up as a new user with the given credentials
-     */
     public signUp(email: string, password: string, username: string): Promise<void> {
         return this.httpClient.post<void>({
             url: "/api/user/signup",
@@ -41,9 +37,6 @@ export class UserClient {
         });
     }
 
-    /**
-     * Delete the user with the given credentials
-     */
     public deleteUser(email: string, password: string): Promise<void> {
         return this.httpClient.delete<void>({
             url: "/api/user/delete",
@@ -56,9 +49,4 @@ export class UserClient {
         });
     }
 
-}
-
-export interface LoginData {
-    idToken: string,
-    refreshToken?: string
 }

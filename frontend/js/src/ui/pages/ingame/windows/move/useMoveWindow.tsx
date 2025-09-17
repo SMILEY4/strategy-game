@@ -46,7 +46,7 @@ export namespace UseMoveWindow {
 		}, []);
 
 		if (worldObject) {
-			const maxMovement = WorldObjectComponent.get<WorldObjectComponent.Move>(worldObject, "movement").maxMovement;
+			const maxMovement = WorldObjectComponent.get(worldObject, WorldObjectComponent.Type.Move).maxMovement;
 			return {
 				remainingPoints: remainingMovement,
 				totalPoints: maxMovement,

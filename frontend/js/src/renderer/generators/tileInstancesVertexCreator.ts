@@ -1,7 +1,7 @@
 import {VertexGeneratorResult} from "../../common/rendergraph/nodes/vertexGeneratorRenderGraphNode";
 import {buildMap} from "../../common/utils";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
-import {WasmApi} from "../../wasm/wasmApi";
+import {WasmGameRenderer} from "../wasmGameRenderer";
 
 export namespace TileInstanceVertexGenerator {
 
@@ -9,12 +9,12 @@ export namespace TileInstanceVertexGenerator {
 	export const OUTPUT_LAND_ID = "tiles.instances.land";
 	export const OUTPUT_FOG_ID = "tiles.instances.fog";
 
-	export function funcWasm(context: RenderGraphNodeContext): Map<string, VertexGeneratorResult> {
+	export function funcWasm(context: RenderGraphNodeContext, wasmGameRenderer: WasmGameRenderer): Map<string, VertexGeneratorResult> {
 
-		WasmApi.Renderer.updateTerrainTileVertices();
-		const [bufferWater, countWater] = WasmApi.Renderer.getVerticesWater();
-		const [bufferLand, countLand] = WasmApi.Renderer.getVerticesLand();
-		const [bufferFog, countFog] = WasmApi.Renderer.getVerticesFog();
+		wasmGameRenderer.updateTerrainTileVertices();
+		const [bufferWater, countWater] = wasmGameRenderer.getVerticesWater();
+		const [bufferLand, countLand] = wasmGameRenderer.getVerticesLand();
+		const [bufferFog, countFog] = wasmGameRenderer.getVerticesFog();
 
 		return buildMap([
 			[

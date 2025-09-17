@@ -1,13 +1,14 @@
-import {HttpClient} from "../../../common/httpClient";
-import {MovementTarget} from "../../../models/misc/movementTarget";
-import {TileId} from "../../../models/tile/tileId";
-import {UserStateAccess} from "../../../state/userStateAccess";
-import {GameStateAccess} from "../../../state/gameStateAccess";
+import {HttpClient} from "../../common/httpClient";
+import {MovementTarget} from "../../models/misc/movementTarget";
+import {TileId} from "../../models/tile/tileId";
+import {UserStateAccess} from "../../state/userStateAccess";
+import {GameStateAccess} from "../../state/gameStateAccess";
+import {GameClient} from "../../logic/game/service/gameClient";
 
 /**
  * API-Client for in-game operations
  */
-export class GameClient {
+export class GameClientImpl implements GameClient {
 
 	private readonly gameStateAccess: GameStateAccess;
 	private readonly userStateAccess: UserStateAccess;
@@ -19,9 +20,6 @@ export class GameClient {
 		this.gameStateAccess = gameStateAccess;
 	}
 
-	/**
-	 * Get all available positions to move to for the given world object id from the given location
-	 */
 	public getAvailableMovementPositions(worldObjectId: string, tileId: TileId, points: number): Promise<MovementTarget[]> {
 		return this.httpClient.get<MovementTargetResponse[]>({
 			url: "/api/game/movement/availablepositions?gameId=" + this.gameStateAccess.getGameIdOrThrow() + "&worldObjectId=" + worldObjectId + "&pos=" + tileId + "&points=" + points,
@@ -39,31 +37,4 @@ export class GameClient {
 		})));
 	}
 
-	/**
-	 * Get a random name for a settlement
-	 */
-	public getRandomSettlementName(): Promise<string> {
-		return this.httpClient.get<SettlementNameResponse>({
-			url: "/api/game/settlement/randomname",
-			requireAuth: true,
-			token: this.userStateAccess.getAuthTokenOrNull(),
-		}).then(it => it.name);
-	}
-
 }
-
-interface MovementTargetResponse {
-	tile: {
-		id: string,
-		position: {
-			q: number,
-			r: number
-		}
-	},
-	cost: number
-}
-
-interface SettlementNameResponse {
-	name: string
-}
-

@@ -3,11 +3,11 @@ import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {MovementTarget} from "../../../models/misc/movementTarget";
 import {TileId} from "../../../models/tile/tileId";
-import {GameClient} from "../client/gameClient";
 import {CommandService} from "./commandService";
 import {MoveCommand} from "../../../models/command/command";
 import {CommandType} from "../../../models/command/commandType";
 import {UID} from "../../../common/uid";
+import {GameClient} from "./gameClient";
 
 export interface MovementService {
 	/**
