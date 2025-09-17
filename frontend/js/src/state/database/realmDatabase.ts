@@ -3,7 +3,7 @@ import {AbstractDatabase} from "../../common/db/database/abstractDatabase";
 import {Query} from "../../common/db/query/query";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../common/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySupportingStorage";
-import {RealmEntity} from "../../models/country/realmEntity";
+import {RealmEntity} from "../../models/realm/realmEntity";
 
 function provideId(e: RealmEntity): string {
     return e.id;
@@ -56,9 +56,9 @@ export namespace RealmDatabase {
 
     export const QUERY_IS_USER_REALM: RealmQuery<void> = {
         run(storage: RealmStorage, args: void): RealmEntity {
-            const country = storage.config.supporting.array.getAll().find(it => it.ownedByUser);
-            if (country) {
-                return country;
+            const realm = storage.config.supporting.array.getAll().find(it => it.ownedByUser);
+            if (realm) {
+                return realm;
             } else {
                 throw new Error("Could not find realm for current user.");
             }

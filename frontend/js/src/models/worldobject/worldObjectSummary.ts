@@ -1,7 +1,7 @@
 import {TileSummary} from "../tile/tileSummary";
 import {WorldObjectId} from "./worldObjectId";
 import {WorldObject} from "./worldObject";
-import {RealmSummary} from "../country/realmSummary";
+import {RealmSummary} from "../realm/realmSummary";
 
 export interface WorldObjectSummary {
 	id: WorldObjectId,

@@ -17,7 +17,7 @@ import {MovementModeState} from "./database/movementModeState";
 import {CommandDatabase} from "./database/commandDatabase";
 import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
 import {DbCache} from "../common/db/dbCache";
-import {RealmSummary} from "../models/country/realmSummary";
+import {RealmSummary} from "../models/realm/realmSummary";
 import {TilePosition} from "../models/tile/tilePosition";
 
 export interface GameStateAccess {
@@ -69,14 +69,14 @@ export class GameStateAccessImpl implements GameStateAccess {
 		cameraDatabase: CameraDatabase,
 		tileDatabase: TileDatabase,
 		gameSessionDatabase: GameSessionDatabase,
-		countryDatabase: RealmDatabase,
+		realmDatabase: RealmDatabase,
 		worldObjectDatabase: WorldObjectDatabase,
 		commandDatabase: CommandDatabase,
 	) {
 		this.cameraDatabase = cameraDatabase;
 		this.tileDatabase = tileDatabase;
 		this.gameSessionDatabase = gameSessionDatabase;
-		this.realmDatabase = countryDatabase;
+		this.realmDatabase = realmDatabase;
 		this.worldObjectDatabase = worldObjectDatabase;
 		this.commandDatabase = commandDatabase;
 		this.tilesCache = new DbCache({

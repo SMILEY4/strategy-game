@@ -123,7 +123,7 @@ export namespace App {
 		tileDatabase: tileDatabase,
 		commandDatabase: commandDatabase,
 		worldObjectDatabase: worldObjectDatabase,
-		countryDatabase: realmDatabase,
+		realmDatabase: realmDatabase,
 		cameraDatabase: cameraDatabase,
 	});
 

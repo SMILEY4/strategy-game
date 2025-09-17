@@ -3,7 +3,7 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Banner} from "../../../../components/banner/Banner";
 import {Txt} from "../../../../components/text/Txt";
-import {RealmId} from "../../../../../models/country/realmId";
+import {RealmId} from "../../../../../models/realm/realmId";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {Divider} from "../../../../components/divider/Divider";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";

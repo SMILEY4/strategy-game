@@ -9,7 +9,7 @@ import {shuffleArray} from "../../../common/utils";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {TileEntity} from "../../../models/tile/tileEntity";
 import {TerrainType} from "../../../models/tile/terrainType";
-import {RealmEntity} from "../../../models/country/realmEntity";
+import {RealmEntity} from "../../../models/realm/realmEntity";
 import {WorldObjectEntity} from "../../../models/worldobject/worldObjectEntity";
 import {Projections} from "../../../common/webgl/projections";
 import {Random} from "../../../common/random";

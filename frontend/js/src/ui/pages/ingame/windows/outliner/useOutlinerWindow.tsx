@@ -5,7 +5,7 @@ import {OutlinerWindow} from "./OutlinerWindow";
 import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
 import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectOutline";
-import {RealmOutline} from "../../../../../models/country/realmOutline";
+import {RealmOutline} from "../../../../../models/realm/realmOutline";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {UseRealmWindow} from "../realm/useRealmWindow";

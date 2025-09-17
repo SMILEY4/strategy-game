@@ -1,6 +1,6 @@
 import {Command} from "../command/command";
 import {TileEntity} from "../tile/tileEntity";
-import {RealmEntity} from "../country/realmEntity";
+import {RealmEntity} from "../realm/realmEntity";
 import {SettlementEntity} from "../settlement/settlementEntity";
 import {WorldObjectEntity} from "../worldobject/worldObjectEntity";
 import {RouteEntity} from "../route/routeEntity";

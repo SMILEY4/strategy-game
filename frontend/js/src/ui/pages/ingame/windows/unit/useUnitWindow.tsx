@@ -13,7 +13,6 @@ import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
 import {Command, DisbandCommand, MoveCommand} from "../../../../../models/command/command";
 import {CommandType} from "../../../../../models/command/commandType";
-import {DisbandWorldObjectCommandMessage} from "../../../../../models/messages/commandMessage";
 
 export namespace UseUnitWindow {
 

@@ -13,7 +13,7 @@ import {WorldObjectDatabase} from "./database/worldObjectDatabase";
 import {MovementModeState} from "./database/movementModeState";
 import {RealmDatabase} from "./database/realmDatabase";
 import {Command} from "../models/command/command";
-import {RealmOutline} from "../models/country/realmOutline";
+import {RealmOutline} from "../models/realm/realmOutline";
 import {WorldObjectOutline} from "../models/worldobject/worldObjectOutline";
 import {TileSummary} from "../models/tile/tileSummary";
 import {Tile} from "../models/tile/tile";
@@ -22,8 +22,8 @@ import {TileId} from "../models/tile/tileId";
 import {WorldObject} from "../models/worldobject/worldObject";
 import {CameraEntity} from "../models/misc/cameraEntity";
 import {CameraDatabase} from "./database/cameraDatabase";
-import {RealmId} from "../models/country/realmId";
-import {Realm} from "../models/country/realm";
+import {RealmId} from "../models/realm/realmId";
+import {Realm} from "../models/realm/realm";
 import {Color} from "../common/color";
 import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
 import {WorldObjectComponent} from "../models/worldobject/worldObjectComponent";
@@ -39,7 +39,7 @@ export namespace GameStateHooks {
 	let tileDatabase: TileDatabase = UNINITIALIZED();
 	let commandDatabase: CommandDatabase = UNINITIALIZED();
 	let worldObjectDatabase: WorldObjectDatabase = UNINITIALIZED();
-	let countryDatabase: RealmDatabase = UNINITIALIZED();
+	let realmDatabase: RealmDatabase = UNINITIALIZED();
 	let cameraDatabase: CameraDatabase = UNINITIALIZED();
 
 	export function initialize(dependencies: {
@@ -47,14 +47,14 @@ export namespace GameStateHooks {
 		tileDatabase: TileDatabase
 		commandDatabase: CommandDatabase
 		worldObjectDatabase: WorldObjectDatabase
-		countryDatabase: RealmDatabase
+		realmDatabase: RealmDatabase
 		cameraDatabase: CameraDatabase
 	}) {
 		gameSessionDatabase = dependencies.gameSessionDatabase;
 		tileDatabase = dependencies.tileDatabase;
 		commandDatabase = dependencies.commandDatabase;
 		worldObjectDatabase = dependencies.worldObjectDatabase;
-		countryDatabase = dependencies.countryDatabase;
+		realmDatabase = dependencies.realmDatabase;
 		cameraDatabase = dependencies.cameraDatabase;
 	}
 
@@ -119,7 +119,7 @@ export namespace GameStateHooks {
 	 * Get the outline information about all countries
 	 */
 	export function useOutlineRealms(): RealmOutline[] {
-		return useQueryMultiple(countryDatabase, RealmDatabase.QUERY_ALL, null)
+		return useQueryMultiple(realmDatabase, RealmDatabase.QUERY_ALL, null)
 			.map(it => RealmOutline.from(it));
 	}
 
@@ -170,10 +170,10 @@ export namespace GameStateHooks {
 	}
 
 	/**
-	 * Get the country with the given id
+	 * Get the realm with the given id
 	 */
 	export function useRealm(id: RealmId | null): Realm | null {
-		const realm = useQuerySingle(countryDatabase, RealmDatabase.QUERY_BY_ID, id);
+		const realm = useQuerySingle(realmDatabase, RealmDatabase.QUERY_BY_ID, id);
 		const worldObjects = useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_REALM_ID, id);
 
 		if (realm) {

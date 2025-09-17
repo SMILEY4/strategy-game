@@ -1,5 +1,5 @@
 import {TileSummary} from "../tile/tileSummary";
-import {RealmSummary} from "../country/realmSummary";
+import {RealmSummary} from "../realm/realmSummary";
 import {WorldObjectId} from "./worldObjectId";
 import {WorldObjectComponent} from "./worldObjectComponent";
 
