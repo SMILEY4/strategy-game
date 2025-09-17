@@ -1,4 +1,4 @@
-import {GameSessionData} from "../../../models/misc/gameSessionData";
+import {Game} from "../../../models/misc/game";
 import {GameMessageHandler} from "./gameMessageHandler";
 import {Command} from "../../../models/command/command";
 
@@ -9,7 +9,7 @@ export interface GameSessionClient {
 	/**
 	 * List the games of the currently logged-in user
 	 */
-	list(): Promise<GameSessionData[]>;
+	list(): Promise<Game[]>;
 	/**
 	 * Create a new game with the given name and settings
 	 */
@@ -17,15 +17,15 @@ export interface GameSessionClient {
 	/**
 	 * Delete a game with the given id
 	 */
-	delete(gameId: string): Promise<void>;
+	delete(game: Game.Id): Promise<void>;
 	/**
 	 * Join a game with the given id as a new player
 	 */
-	join(gameId: string): Promise<void>;
+	join(game: Game.Id): Promise<void>;
 	/**
 	 * Connect to a given game and handle received messages
 	 */
-	connect(gameId: string, handler: GameMessageHandler): Promise<void>;
+	connect(game: Game.Id, handler: GameMessageHandler): Promise<void>;
 	/**
 	 * Disconnect from a currently connected game
 	 */

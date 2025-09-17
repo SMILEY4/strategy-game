@@ -1,10 +1,11 @@
-import {TileId} from "./tileId";
-import {TilePosition} from "./tilePosition";
 import {Tile} from "./tile";
 
+/**
+ * A tile reduced to the minimum amount of information.
+ */
 export interface TileSummary {
-	id: TileId,
-	position: TilePosition,
+	id: Tile.Id,
+	position: Tile.Position,
 }
 
 export namespace TileSummary {

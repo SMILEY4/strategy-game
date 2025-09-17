@@ -1,5 +1,5 @@
-import {GameState} from "../../../models/misc/gameState";
+import {GameStateContainer} from "../../../models/misc/gameStateContainer";
 
 export interface GameMessageHandler {
-	onGameState(gameState: GameState): void
+	onGameState(gameState: GameStateContainer): void
 }

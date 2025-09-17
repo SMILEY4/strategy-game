@@ -1,15 +1,15 @@
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {Projections} from "../../../common/webgl/projections";
-import {TilePosition} from "../../../models/tile/tilePosition";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 import {CanvasHandle} from "../../../common/webgl/canvasHandle";
 import {Camera} from "../../../common/webgl/camera";
+import {Tile} from "../../../models/tile/tile";
 
 export interface CameraService {
 	/**
 	 * Set the camera position to center on the given tile
 	 */
-	centerOnTile(tile: TilePosition, zoom?: number): void;
+	centerOnTile(tile: Tile.Position, zoom?: number): void;
 	/**
 	 * Move the camera by the given x and y distance
 	 */
@@ -39,7 +39,7 @@ export class CameraServiceImpl implements CameraService {
 		this.gameStateWriter = gameStateWriter;
 	}
 
-	centerOnTile(tile: TilePosition, zoom?: number): void {
+	centerOnTile(tile: Tile.Position, zoom?: number): void {
 		const pos = Projections.hexToWorld(tile.q, tile.r);
 		const camera = this.localStateAccess.getCamera();
 		this.gameStateWriter.setCameraData({

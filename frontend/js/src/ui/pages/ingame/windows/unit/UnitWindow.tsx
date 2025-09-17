@@ -5,16 +5,16 @@ import {DecoratedWindow} from "../../../../components/window/decorated/Decorated
 import {Banner} from "../../../../components/banner/Banner";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
-import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 import {UseUnitWindow} from "./useUnitWindow";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import UnitMoveAction = UseUnitWindow.UnitMoveAction;
 import UnitDisbandAction = UseUnitWindow.UnitDisbandAction;
 import UnitCancelCurrentCommandAction = UseUnitWindow.UnitCancelCurrentCommandAction;
 
 export interface UnitWindowProps {
 	windowId: string;
-	identifier: WorldObjectId | null;
+	identifier: WorldObject.Id | null;
 }
 
 export function UnitWindow(props: UnitWindowProps): ReactElement {
@@ -59,7 +59,8 @@ export function UnitWindow(props: UnitWindowProps): ReactElement {
 											if (action.type === "move") {
 												const actionMove = action as UnitMoveAction;
 												return (
-													<Button disabled={!actionMove.enabled} onClick={actionMove.perform} key={action.type}>
+													<Button disabled={!actionMove.enabled} onClick={actionMove.perform}
+															key={action.type}>
 														Move
 													</Button>
 												);
@@ -68,7 +69,8 @@ export function UnitWindow(props: UnitWindowProps): ReactElement {
 											if (action.type === "disband") {
 												const actionDisband = action as UnitDisbandAction;
 												return (
-													<Button disabled={!actionDisband.enabled} onClick={actionDisband.perform} key={action.type}>
+													<Button disabled={!actionDisband.enabled}
+															onClick={actionDisband.perform} key={action.type}>
 														Disband
 													</Button>
 												);
@@ -77,18 +79,17 @@ export function UnitWindow(props: UnitWindowProps): ReactElement {
 											if (action.type === "cancel-current-command") {
 												const actionCancel = action as UnitCancelCurrentCommandAction;
 												return (
-													<Button disabled={!actionCancel.enabled} onClick={actionCancel.perform} key={action.type}>
+													<Button disabled={!actionCancel.enabled}
+															onClick={actionCancel.perform} key={action.type}>
 														Cancel Command
 													</Button>
 												);
 											}
 
-											return (
-												<Button disabled={true} key={action.type}>
-													{"unhandled unit action: " + action.type}
-												</Button>
-											)
-
+											// exhaustiveness check: syntax error in case of unhandled action type
+											// noinspection UnnecessaryLocalVariableJS
+											const _exhaustive: never = action;
+											throw new Error("Unexpected action type: " + _exhaustive);
 										})}
 									</VBox>
 								</InsetPanel>

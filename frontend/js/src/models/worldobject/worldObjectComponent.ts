@@ -1,25 +1,23 @@
 import {WorldObject} from "./worldObject";
 
-export type WorldObjectComponent = WorldObjectComponent.Move | WorldObjectComponent.Vision
+export type WorldObjectComponent = WorldObjectComponent.Movement | WorldObjectComponent.Vision
 
 export namespace WorldObjectComponent {
 
 	export enum Type {
 		Vision = "vision",
-		Move = "movement"
+		Movement = "movement"
 	}
 
 	export type Mapping = {
 		[Type.Vision]: Vision,
-		[Type.Move]: Move,
+		[Type.Movement]: Movement,
 	}
 
-
-	export interface Move {
-		type: Type.Move,
+	export interface Movement {
+		type: Type.Movement,
 		maxMovement: number
 	}
-
 
 	export interface Vision {
 		type: Type.Vision,
@@ -40,7 +38,6 @@ export namespace WorldObjectComponent {
 		}
 		return component;
 	}
-
 
 	export function has<T extends Type>(worldObject: WorldObject, type: T): boolean {
 		return !!getOrNull<T>(worldObject, type);

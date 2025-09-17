@@ -1,1 +1,0 @@
-export type GameSessionState = "none" | "loading" | "error" | "playing" // todo: replace with more typesafe "enum"

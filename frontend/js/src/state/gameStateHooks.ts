@@ -1,5 +1,4 @@
 import {MapMode} from "../models/misc/mapMode";
-import {GameSessionState} from "../models/misc/gameSessionState";
 import {GameSessionDatabase} from "./database/gameSessionDatabase";
 import {
 	usePartialSingletonEntity,
@@ -17,17 +16,12 @@ import {RealmOutline} from "../models/realm/realmOutline";
 import {WorldObjectOutline} from "../models/worldobject/worldObjectOutline";
 import {TileSummary} from "../models/tile/tileSummary";
 import {Tile} from "../models/tile/tile";
-import {WorldObjectId} from "../models/worldobject/worldObjectId";
-import {TileId} from "../models/tile/tileId";
 import {WorldObject} from "../models/worldobject/worldObject";
-import {CameraEntity} from "../models/misc/cameraEntity";
+import {CameraData} from "../models/misc/cameraData";
 import {CameraDatabase} from "./database/cameraDatabase";
-import {RealmId} from "../models/realm/realmId";
 import {Realm} from "../models/realm/realm";
-import {Color} from "../common/color";
-import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
 import {WorldObjectComponent} from "../models/worldobject/worldObjectComponent";
-import {TilePosition} from "../models/tile/tilePosition";
+import {GameSession} from "../models/misc/gameSession";
 
 export namespace GameStateHooks {
 
@@ -61,7 +55,7 @@ export namespace GameStateHooks {
 	/**
 	 * Get the current camera data
 	 */
-	export function useCamera(): CameraEntity {
+	export function useCamera(): CameraData {
 		return useSingletonEntity(cameraDatabase);
 	}
 
@@ -75,7 +69,7 @@ export namespace GameStateHooks {
 	/**
 	 * Get the current game session state (e.g. loading, playing, ...)
 	 */
-	export function useGameSessionState(): GameSessionState {
+	export function useGameSessionState(): GameSession.SessionState {
 		return usePartialSingletonEntity(gameSessionDatabase, e => e.sessionState);
 	}
 
@@ -108,7 +102,7 @@ export namespace GameStateHooks {
 		const path = MovementModeState.useState(state => state.path);
 		const worldObject = useWorldObject(worldObjectId);
 		if (worldObject) {
-			const maxMovement = WorldObjectComponent.get(worldObject, WorldObjectComponent.Type.Move).maxMovement
+			const maxMovement = WorldObjectComponent.get(worldObject, WorldObjectComponent.Type.Movement).maxMovement
 			return maxMovement - path.sum(0, it => it.cost);
 		} else {
 			return 0;
@@ -147,48 +141,37 @@ export namespace GameStateHooks {
 	/**
 	 * Get the tile with the given id
 	 */
-	export function useTile(tileId: TileId | null): Tile | null {
-		const tileEntity = useQuerySingle(tileDatabase, TileDatabase.QUERY_BY_ID, tileId);
-		const worldObjects = useWorldObjectAt(tileEntity ? tileEntity.position : TilePosition.NOWHERE)
-		return tileEntity
-			? Tile.from(tileEntity, worldObjects)
-			: null;
-	}
-
-	/**
-	 * Get the world objects at the given location
-	 */
-	export function useWorldObjectAt(pos: TilePosition): WorldObject[] {
-		return useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_POSITION, [pos.q, pos.r]);
+	export function useTile(tileId: Tile.Id | null): Tile | null {
+		return useQuerySingle(tileDatabase, TileDatabase.QUERY_BY_ID, tileId);
 	}
 
 	/**
 	 * Get the world object with the given id
 	 */
-	export function useWorldObject(id: WorldObjectId | null): WorldObject | null {
+	export function useWorldObject(id: WorldObject.Id | null): WorldObject | null {
 		return useQuerySingle(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_ID, id);
+	}
+
+
+	/**
+	 * Get the world objects at the given location
+	 */
+	export function useWorldObjectAt(pos: Tile.Position | null): WorldObject[] {
+		return useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_POSITION, pos ? [pos.q, pos.r] :  Tile.POSITION_NOWHERE);
+	}
+
+	/**
+	 * Get the world object belonging to the given realm
+	 */
+	export function useWorldObjectsOfRealm(id: Realm.Id | null): WorldObject[] {
+		return useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_REALM_ID, id);
 	}
 
 	/**
 	 * Get the realm with the given id
 	 */
-	export function useRealm(id: RealmId | null): Realm | null {
-		const realm = useQuerySingle(realmDatabase, RealmDatabase.QUERY_BY_ID, id);
-		const worldObjects = useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_BY_REALM_ID, id);
-
-		if (realm) {
-			return {
-				id: realm.id,
-				name: realm.id,
-				color: Color.BLACK,
-				ownedByUser: realm.ownedByUser,
-				player: realm.player,
-				worldObjects: worldObjects.map(it => WorldObjectSummary.from(it)),
-			};
-		} else {
-			return null;
-		}
-
+	export function useRealm(id: Realm.Id | null): Realm | null {
+		return useQuerySingle(realmDatabase, RealmDatabase.QUERY_BY_ID, id);
 	}
 
 }

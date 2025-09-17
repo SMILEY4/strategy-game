@@ -9,16 +9,22 @@ export interface GameStateMessage {
 	worldObjects: WorldObjectMessage[],
 }
 
+export type VisibilityMsg = "UNKNOWN" | "DISCOVERED" | "VISIBLE"
+
+export type TerrainTypeMsg = "LAND" | "WATER"
+
+export type ResourceTypeMsg = "NONE" | "WOOD" | "FISH" | "STONE" | "METAL"
+
 export interface TileMessage {
 	identifier: {
 		id: string,
 		q: number,
 		r: number
 	},
-	visibility: "UNKNOWN" | "DISCOVERED" | "VISIBLE"
+	visibility: VisibilityMsg
 	base: HiddenType<{
-		terrainType: "LAND" | "WATER",
-		resourceType: "NONE" | "WOOD" | "FISH" | "STONE" | "METAL",
+		terrainType: TerrainTypeMsg,
+		resourceType: ResourceTypeMsg,
 		height: number
 	}>,
 }

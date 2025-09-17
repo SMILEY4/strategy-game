@@ -1,9 +1,9 @@
 import {TileSummary} from "../tile/tileSummary";
 import {RealmSummary} from "../realm/realmSummary";
-import {WorldObjectId} from "./worldObjectId";
+import {WorldObject} from "./worldObject";
 
 export interface WorldObjectOutline {
-	id: WorldObjectId,
+	id: WorldObject.Id,
 	type: {
 		group: string,
 		name: string

@@ -1,19 +1,19 @@
 import {handleResponseError} from "../../../common/httpClient";
 import {UnauthorizedError} from "../../../common/UnauthorizedError";
-import {GameSessionData} from "../../../models/misc/gameSessionData";
+import {Game} from "../../../models/misc/game";
 import {Command} from "../../../models/command/command";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {CameraService} from "./cameraService";
 import {GameSessionClient} from "./gameSessionClient";
 import {GameMessageHandler} from "./gameMessageHandler";
-import {GameState} from "../../../models/misc/gameState";
+import {GameStateContainer} from "../../../models/misc/gameStateContainer";
 
 export interface GameSessionService {
 	/**
 	 * Get all games of the currently logged-in user
 	 */
-	listSessions(): Promise<GameSessionData[]>;
+	listSessions(): Promise<Game[]>;
 	/**
 	 * Create a new game with the given name and settings
 	 */
@@ -21,15 +21,15 @@ export interface GameSessionService {
 	/**
 	 * Join a game with the given id as a new player
 	 */
-	joinSession(gameId: string): Promise<void>;
+	joinSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Delete a game with the given id
 	 */
-	deleteSession(gameId: string): Promise<void>;
+	deleteSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Connect to the game with the given id and "start" playing
 	 */
-	connectSession(gameId: string): Promise<void>;
+	connectSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Disconnect from the current session
 	 */
@@ -60,7 +60,7 @@ export class GameSessionServiceImpl implements GameSessionService, GameMessageHa
 	}
 
 
-	listSessions(): Promise<GameSessionData[]> {
+	listSessions(): Promise<Game[]> {
 		return this.client.list()
 			.catch(error => handleResponseError(error, 401, () => {
 				throw new UnauthorizedError();
@@ -74,21 +74,21 @@ export class GameSessionServiceImpl implements GameSessionService, GameMessageHa
 			}));
 	}
 
-	joinSession(gameId: string): Promise<void> {
+	joinSession(gameId: Game.Id): Promise<void> {
 		return this.client.join(gameId)
 			.catch(error => handleResponseError(error, 401, () => {
 				throw new UnauthorizedError();
 			}));
 	}
 
-	deleteSession(gameId: string): Promise<void> {
+	deleteSession(gameId: Game.Id): Promise<void> {
 		return this.client.delete(gameId)
 			.catch(error => handleResponseError(error, 401, () => {
 				throw new UnauthorizedError();
 			}));
 	}
 
-	connectSession(gameId: string): Promise<void> {
+	connectSession(gameId: Game.Id): Promise<void> {
 		return Promise.resolve()
 			.then(() => this.gameStateWriter.setGameSessionState("loading"))
 			.then(() => this.client.connect(gameId, this))
@@ -109,7 +109,7 @@ export class GameSessionServiceImpl implements GameSessionService, GameMessageHa
 		this.client.submitTurn(commands);
 	}
 
-	onGameState(gameState: GameState): void {
+	onGameState(gameState: GameStateContainer): void {
 		this.gameStateWriter.replaceGameState(gameState);
 		this.gameStateWriter.setCurrentTurn(gameState.turn);
 		if (this.localStateAccess.getGameSessionState() === "loading") {

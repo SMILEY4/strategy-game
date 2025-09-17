@@ -1,18 +1,20 @@
 import {Color} from "../../common/color";
-import {RealmId} from "./realmId";
-import {RealmEntity} from "./realmEntity";
+import {Realm} from "./realm";
 
+/**
+ * The outline information of a realm.
+ */
 export interface RealmOutline {
-	id: RealmId,
+	id: Realm.Id,
 	name: string
 	color: Color,
-	ownedByUser: boolean,
 	playerName: string,
+	ownedByUser: boolean,
 }
 
 export namespace RealmOutline {
 
-	export function from(realm: RealmEntity): RealmOutline {
+	export function from(realm: Realm): RealmOutline {
 		return {
 			id: realm.id,
 			name: realm.id,

@@ -4,7 +4,6 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {RealmId} from "../../../../../models/realm/realmId";
 import {Realm} from "../../../../../models/realm/realm";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
@@ -12,7 +11,7 @@ import {UseUnitWindow} from "../unit/useUnitWindow";
 
 export namespace UseRealmWindow {
 
-	export function open(identifier: RealmId | null) {
+	export function open(identifier: Realm.Id | null) {
 		const windowId = UID.generate();
 		openWindow({
 			id: windowId,
@@ -24,18 +23,21 @@ export namespace UseRealmWindow {
 
 	export interface Data {
 		realm: Realm,
+		worldObjects: WorldObjectSummary[],
 		open: {
 			worldObject: (worldObject: WorldObjectSummary) => void,
 		}
 	}
 
-	export function useData(realmId: RealmId | null): UseRealmWindow.Data | null {
+	export function useData(realmId: Realm.Id | null): UseRealmWindow.Data | null {
 
 		const realm = GameStateHooks.useRealm(realmId);
+		const worldObjects = GameStateHooks.useWorldObjectsOfRealm(realmId)
 
 		if (realm) {
 			return {
 				realm: realm,
+				worldObjects: worldObjects.map(WorldObjectSummary.from),
 				open: {
 					worldObject: worldObject => UseUnitWindow.open(worldObject.id),
 				},

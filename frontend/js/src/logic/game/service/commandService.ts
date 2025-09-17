@@ -1,4 +1,3 @@
-import {CommandId} from "../../../models/command/commandId";
 import {Command} from "../../../models/command/command";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 
@@ -10,7 +9,7 @@ export interface CommandService {
 	/**
 	 * Cancel the command with the given id
 	 */
-	cancelCommand(id: CommandId): void;
+	cancelCommand(id: Command.Id): void;
 }
 
 export class CommandServiceImpl implements CommandService {
@@ -25,7 +24,7 @@ export class CommandServiceImpl implements CommandService {
 		this.gameStateWriter.addCommand(command);
 	}
 
-	cancelCommand(id: CommandId): void {
+	cancelCommand(id: Command.Id): void {
 		this.gameStateWriter.removeCommand(id);
 	}
 

@@ -4,8 +4,8 @@ import {Projections} from "../../common/webgl/projections";
 import {Camera} from "../../common/webgl/camera";
 import {Tile} from "../../models/tile/tile";
 import {MapMode} from "../../models/misc/mapMode";
-import {TileResourceType} from "../../models/tile/TileResourceType";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
+import {TileResourceType} from "../../models/misc/tileResourceType";
 
 export namespace ResourceIconsElementGenerator {
 

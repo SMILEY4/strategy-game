@@ -5,8 +5,6 @@ import {mapHiddenOrDefault} from "../../../../../common/hiddenType";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
-import {Case, Switch} from "react-if";
-import {TileResourceType} from "../../../../../models/tile/TileResourceType";
 import {Divider} from "../../../../components/divider/Divider";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Color} from "../../../../../common/color";
@@ -17,12 +15,13 @@ import {Visibility} from "../../../../../models/misc/visibility";
 import {VSpacer} from "../../../../components/spacer/Spacer";
 import {Button} from "../../../../components/button/Button";
 import {Txt} from "../../../../components/text/Txt";
-import {TileId} from "../../../../../models/tile/tileId";
 import {Projections} from "../../../../../common/webgl/projections";
+import {Tile} from "../../../../../models/tile/tile";
+import {TileResourceType} from "../../../../../models/misc/tileResourceType";
 
 export interface TileWindowProps {
 	windowId: string;
-	identifier: TileId | null;
+	identifier: Tile.Id | null;
 }
 
 export function TileWindow(props: TileWindowProps): ReactElement {
@@ -167,16 +166,16 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
 				</Txt.Body>
 			)}
 
-			{(props.tile.visibility === Visibility.VISIBLE && props.tile.worldObjects.length === 0) && (
+			{(props.tile.visibility === Visibility.VISIBLE && props.worldObjects.length === 0) && (
 				<Txt.Body secondary center>
 					<Txt.String>Nothing on this tile.</Txt.String>
 				</Txt.Body>
 			)}
 
-			{props.tile.worldObjects.length > 0 && (
+			{props.worldObjects.length > 0 && (
 				<InsetPanel grow>
 					<VBox padding_s gap_s fullSize>
-						{props.tile.worldObjects.map(worldObject => (
+						{props.worldObjects.map(worldObject => (
 
 							<DecoratedPanel
 								key={worldObject.id}

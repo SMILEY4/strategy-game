@@ -5,17 +5,16 @@ import {MovementService} from "./service/movementService";
 import {AudioService, AudioType} from "../../common/audioService";
 import {TurnEndService} from "./service/turnEndService";
 import {MapMode} from "../../models/misc/mapMode";
-import {TilePosition} from "../../models/tile/tilePosition";
-import {Command, DisbandCommand} from "../../models/command/command";
-import {WorldObjectId} from "../../models/worldobject/worldObjectId";
+import {Command} from "../../models/command/command";
 import {GameStateWriter} from "../../state/gameStateWriter";
-import {GameSessionData} from "../../models/misc/gameSessionData";
+import {Game} from "../../models/misc/game";
 import {GameSessionService} from "./service/gameSessionService";
 import {CommandService} from "./service/commandService";
 import {MonitoringService} from "./service/monitoringService";
 import {GameRenderer} from "../../renderer/gameRenderer";
 import {UID} from "../../common/uid";
-import {CommandType} from "../../models/command/commandType";
+import {Tile} from "../../models/tile/tile";
+import {WorldObject} from "../../models/worldobject/worldObject";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
@@ -25,7 +24,7 @@ export interface GameProxy {
 	/**
 	 * Get all games of the currently logged-in user.
 	 */
-	listSessions(): Promise<GameSessionData[]>;
+	listSessions(): Promise<Game[]>;
 	/**
 	 * Create a new game with the given name and settings.
 	 */
@@ -33,15 +32,15 @@ export interface GameProxy {
 	/**
 	 * Join a game with the given id as a new player.
 	 */
-	joinSession(gameId: string): Promise<void>;
+	joinSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Delete a game with the given id.
 	 */
-	deleteSession(gameId: string): Promise<void>;
+	deleteSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Connect to the game with the given id and "start" playing.
 	 */
-	connectSession(gameId: string): Promise<void>;
+	connectSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Disconnect from the current session.
 	 */
@@ -76,7 +75,7 @@ export interface GameProxy {
 	/**
 	 * Move the camera to focus on the given tile.
 	 */
-	focusCamera(tilePosition: TilePosition): void
+	focusCamera(tilePosition: Tile.Position): void
 	// basic game functionality
 	/**
 	 * End the current turn and send commands to server.
@@ -95,7 +94,7 @@ export interface GameProxy {
 	/**
 	 * Start "move" mode for the given world object.
 	 */
-	beginMovement(worldObjectId: WorldObjectId): void;
+	beginMovement(worldObjectId: WorldObject.Id): void;
 	/**
 	 * End the movement. Submit or discard the move command.
 	 */
@@ -103,7 +102,7 @@ export interface GameProxy {
 	/**
 	 * Disband (i.e. delete) the given world object.
 	 */
-	disbandWorldObject(worldObjectId: WorldObjectId): void;
+	disbandWorldObject(worldObjectId: WorldObject.Id): void;
 	// dev functions
 	/**
 	 * Loose the current webgl context for debug purposes.
@@ -160,7 +159,7 @@ export class GameProxyImpl implements GameProxy {
 
 	//========== SESSION ========================================================
 
-	listSessions(): Promise<GameSessionData[]> {
+	listSessions(): Promise<Game[]> {
 		return this.gameSessionService.listSessions();
 	}
 
@@ -168,15 +167,15 @@ export class GameProxyImpl implements GameProxy {
 		return this.gameSessionService.createSession(name, seed);
 	}
 
-	joinSession(gameId: string): Promise<void> {
+	joinSession(gameId: Game.Id): Promise<void> {
 		return this.gameSessionService.joinSession(gameId);
 	}
 
-	deleteSession(gameId: string): Promise<void> {
+	deleteSession(gameId: Game.Id): Promise<void> {
 		return this.gameSessionService.deleteSession(gameId);
 	}
 
-	connectSession(gameId: string): Promise<void> {
+	connectSession(gameId: Game.Id): Promise<void> {
 		return this.gameSessionService.connectSession(gameId);
 	}
 
@@ -240,7 +239,7 @@ export class GameProxyImpl implements GameProxy {
 
 	//========== CAMERA =======================================================
 
-	focusCamera(tilePosition: TilePosition): void {
+	focusCamera(tilePosition: Tile.Position): void {
 		this.cameraService.centerOnTile(tilePosition);
 	}
 
@@ -264,7 +263,7 @@ export class GameProxyImpl implements GameProxy {
 
 	//========== UNITS / WORLD OBJECTS ========================================
 
-	beginMovement(worldObjectId: WorldObjectId): void {
+	beginMovement(worldObjectId: WorldObject.Id): void {
 		this.movementService.beginMovement(worldObjectId).then();
 		AudioType.CLICK_PRIMARY.play(this.audioService);
 	}
@@ -279,10 +278,10 @@ export class GameProxyImpl implements GameProxy {
 		}
 	}
 
-	disbandWorldObject(worldObjectId: WorldObjectId): void {
-		this.commandService.addCommand<DisbandCommand>({
-			id: UID.generate(),
-			type: CommandType.WORLD_OBJECT_DISBAND,
+	disbandWorldObject(worldObjectId: WorldObject.Id): void {
+		this.commandService.addCommand({
+			type: Command.Type.Disband,
+			id: Command.genId(),
 			worldObjectId: worldObjectId,
 		});
 		AudioType.WRITING_ON_PAPER.play(this.audioService);

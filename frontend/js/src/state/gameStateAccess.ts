@@ -1,16 +1,12 @@
 import {TileSummary} from "../models/tile/tileSummary";
 import {Tile} from "../models/tile/tile";
-import {CameraEntity} from "../models/misc/cameraEntity";
+import {CameraData} from "../models/misc/cameraData";
 import {CameraDatabase} from "./database/cameraDatabase";
 import {TileDatabase} from "./database/tileDatabase";
 import {GameSessionDatabase} from "./database/gameSessionDatabase";
 import {WorldObject} from "../models/worldobject/worldObject";
-import {WorldObjectId} from "../models/worldobject/worldObjectId";
 import {MovementState} from "../models/misc/movementState";
-import {Command, MoveCommand} from "../models/command/command";
-import {CommandType} from "../models/command/commandType";
 import {MapMode} from "../models/misc/mapMode";
-import {GameSessionState} from "../models/misc/gameSessionState";
 import {RealmDatabase} from "./database/realmDatabase";
 import {WorldObjectDatabase} from "./database/worldObjectDatabase";
 import {MovementModeState} from "./database/movementModeState";
@@ -18,17 +14,19 @@ import {CommandDatabase} from "./database/commandDatabase";
 import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
 import {DbCache} from "../common/db/dbCache";
 import {RealmSummary} from "../models/realm/realmSummary";
-import {TilePosition} from "../models/tile/tilePosition";
+import {GameSession} from "../models/misc/gameSession";
+import {Command} from "../models/command/command";
+import Mapping = Command.Mapping;
 
 export interface GameStateAccess {
 	// game
 	getGameIdOrThrow(): string
 	getCurrentTurn(): number;
-	getGameSessionState(): GameSessionState;
+	getGameSessionState(): GameSession.SessionState;
 	// map
 	getMapMode(): MapMode;
 	// camera
-	getCamera(): CameraEntity;
+	getCamera(): CameraData;
 	// tiles
 	getSelectedTile(): TileSummary | null;
 	getHoveredTile(): TileSummary | null;
@@ -40,7 +38,7 @@ export interface GameStateAccess {
 	// realms
 	getPlayerRealmSummary(): RealmSummary;
 	// world objects
-	getWorldObjectSummary(id: WorldObjectId): WorldObjectSummary | null;
+	getWorldObjectSummary(id: WorldObject.Id): WorldObjectSummary | null;
 	getWorldObjectSummariesAt(q: number, r: number): WorldObjectSummary[];
 	getWorldObjects(): WorldObject[];
 	getCurrentMovementState(): MovementState | null;
@@ -49,7 +47,7 @@ export interface GameStateAccess {
 	getWorldObjectsRevId(): string;
 	// commands
 	getCommands(): Command[];
-	getCommandsOfType<T extends Command>(type: CommandType): T[];
+	getCommandsOfType<T extends Command.Type>(type: T): (Command.Mapping[T])[];
 	getCommandRevId(): string;
 }
 
@@ -105,7 +103,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 		return this.gameSessionDatabase.get().turn;
 	}
 
-	getGameSessionState(): GameSessionState {
+	getGameSessionState(): GameSession.SessionState {
 		return this.gameSessionDatabase.get().sessionState;
 	}
 
@@ -118,7 +116,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 	//========== CAMERA ========================================================
 
-	getCamera(): CameraEntity {
+	getCamera(): CameraData {
 		return this.cameraDatabase.get();
 	}
 
@@ -142,13 +140,11 @@ export class GameStateAccessImpl implements GameStateAccess {
 		if (!tile) {
 			return null;
 		}
-		const worldObjects = this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [q, r]);
 		return {
 			id: tile.id,
 			position: tile.position,
 			visibility: tile.visibility,
 			base: tile.base,
-			worldObjects: worldObjects.map(it => WorldObjectSummary.from(it)),
 			metaProperties: tile.metaProperties
 		};
 	}
@@ -220,7 +216,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 		return this.worldObjectDatabase.getRevId();
 	}
 
-	getWorldObjectSummary(id: WorldObjectId): WorldObjectSummary | null {
+	getWorldObjectSummary(id: WorldObject.Id): WorldObjectSummary | null {
 		return this.worldObjectDatabase.querySingle(WorldObjectDatabase.QUERY_BY_ID, id);
 	}
 
@@ -257,7 +253,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 				pending: true,
 			});
 		}
-		this.getCommandsOfType<MoveCommand>(CommandType.WORLD_OBJECT_MOVE).forEach(cmd => {
+		this.getCommandsOfType(Command.Type.Move).forEach(cmd => {
 			results.push({
 				tiles: cmd.path,
 				pending: false,
@@ -284,10 +280,10 @@ export class GameStateAccessImpl implements GameStateAccess {
 		return this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
 	}
 
-	getCommandsOfType<T extends Command>(type: CommandType): T[] {
+	getCommandsOfType<T extends Command.Type>(type: T): (Command.Mapping[T])[] {
 		return this.commandDatabase
 			.queryMany(CommandDatabase.QUERY_ALL, null)
-			.filter(cmd => cmd.type === type) as T[];
+			.filter((it): it is Mapping[T] => it.type === type)
 	}
 
 }

@@ -3,44 +3,44 @@ import {AbstractDatabase} from "../../common/db/database/abstractDatabase";
 import {Query} from "../../common/db/query/query";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../common/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySupportingStorage";
-import {RealmEntity} from "../../models/realm/realmEntity";
+import {Realm} from "../../models/realm/realm";
 
-function provideId(e: RealmEntity): string {
+function provideId(e: Realm): Realm.Id {
     return e.id;
 }
 
-interface RealmStorageConfig extends DatabaseStorageConfig<RealmEntity, string> {
-    primary: MapPrimaryStorage<RealmEntity, string>,
+interface RealmStorageConfig extends DatabaseStorageConfig<Realm, Realm.Id> {
+    primary: MapPrimaryStorage<Realm, Realm.Id>,
     supporting: {
-        array: ArraySupportingStorage<RealmEntity>,
+        array: ArraySupportingStorage<Realm>,
     }
 }
 
-class RealmStorage extends DatabaseStorage<RealmStorageConfig, RealmEntity, string> {
+class RealmStorage extends DatabaseStorage<RealmStorageConfig, Realm, Realm.Id> {
     constructor() {
         super({
-            primary: new MapPrimaryStorage<RealmEntity, string>(provideId),
+            primary: new MapPrimaryStorage<Realm, Realm.Id>(provideId),
             supporting: {
-                array: new ArraySupportingStorage<RealmEntity>(),
+                array: new ArraySupportingStorage<Realm>(),
             },
         });
     }
 }
 
-export class RealmDatabase extends AbstractDatabase<RealmStorage, RealmEntity, string> {
+export class RealmDatabase extends AbstractDatabase<RealmStorage, Realm, Realm.Id> {
     constructor() {
         super(new RealmStorage(), provideId);
     }
 }
 
-interface RealmQuery<ARGS> extends Query<RealmStorage, RealmEntity, string, ARGS> {
+interface RealmQuery<ARGS> extends Query<RealmStorage, Realm, Realm.Id, ARGS> {
 }
 
 
 export namespace RealmDatabase {
 
-    export const QUERY_BY_ID: RealmQuery<string | null> = {
-        run(storage: RealmStorage, args: string): RealmEntity | null {
+    export const QUERY_BY_ID: RealmQuery<Realm.Id | null> = {
+        run(storage: RealmStorage, args: Realm.Id): Realm | null {
             if (args === null) {
                 return null;
             }
@@ -49,13 +49,13 @@ export namespace RealmDatabase {
     };
 
     export const QUERY_ALL: RealmQuery<void> = {
-        run(storage: RealmStorage, args: void): RealmEntity[] {
+        run(storage: RealmStorage, args: void): Realm[] {
             return storage.config.supporting.array.getAll();
         },
     };
 
     export const QUERY_IS_USER_REALM: RealmQuery<void> = {
-        run(storage: RealmStorage, args: void): RealmEntity {
+        run(storage: RealmStorage, args: void): Realm {
             const realm = storage.config.supporting.array.getAll().find(it => it.ownedByUser);
             if (realm) {
                 return realm;

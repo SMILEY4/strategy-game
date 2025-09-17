@@ -1,13 +1,20 @@
-import {Color} from "../../common/color";
 import {Player} from "../misc/player";
-import {RealmId} from "./realmId";
-import {WorldObjectSummary} from "../worldobject/worldObjectSummary";
+import {Color} from "../../common/color";
+import {BrandedId} from "../../common/brandedId";
 
+/**
+ * The realm of a player.
+ */
 export interface Realm {
-	id: RealmId,
+	id: Realm.Id,
 	name: string,
-	color: Color,
-	ownedByUser: boolean,
+	color: Color
 	player: Player,
-	worldObjects: WorldObjectSummary[],
+	ownedByUser: boolean
+}
+
+export namespace Realm {
+
+	export type Id = BrandedId<string, "RealmId">;
+
 }

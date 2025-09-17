@@ -6,17 +6,15 @@ import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
 import {UseMoveWindow} from "../move/useMoveWindow";
 import {UseTileWindow} from "../tile/useTileWindow";
-import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
-import {Command, DisbandCommand, MoveCommand} from "../../../../../models/command/command";
-import {CommandType} from "../../../../../models/command/commandType";
+import {Command} from "../../../../../models/command/command";
 
 export namespace UseUnitWindow {
 
-	export function open(worldObjectId: WorldObjectId | null) {
+	export function open(worldObjectId: WorldObject.Id | null) {
 		const windowId = UID.generate();
 		openWindow({
 			id: windowId,
@@ -35,29 +33,27 @@ export namespace UseUnitWindow {
 		centerCamera: () => void,
 	}
 
-	export interface UnitAction {
-		type: "cancel-current-command" | "move" | "disband"
-	}
+	export type UnitAction = UnitCancelCurrentCommandAction | UnitMoveAction | UnitDisbandAction
 
-	export interface UnitCancelCurrentCommandAction extends UnitAction {
+	export interface UnitCancelCurrentCommandAction {
 		type: "cancel-current-command"
 		enabled: boolean,
 		perform: () => void,
 	}
 
-	export interface UnitMoveAction extends UnitAction {
+	export interface UnitMoveAction {
 		type: "move"
 		enabled: boolean,
 		perform: () => void,
 	}
 
-	export interface UnitDisbandAction extends UnitAction {
+	export interface UnitDisbandAction {
 		type: "disband"
 		enabled: boolean,
 		perform: () => void,
 	}
 
-	export function useData(worldObjectId: WorldObjectId | null): Data | null {
+	export function useData(worldObjectId: WorldObject.Id | null): Data | null {
 
 		const worldObject = GameStateHooks.useWorldObject(worldObjectId);
 		const commands = GameStateHooks.useCommands()
@@ -79,20 +75,18 @@ export namespace UseUnitWindow {
 	function collectActions(worldObject: WorldObject, commands: Command[]): UnitAction[] {
 		const actions: UnitAction[] = [];
 
-		const relevantCommands = commands.filter(it => {
-			if(it.type === CommandType.WORLD_OBJECT_MOVE) {
-				const cmdMove = it as MoveCommand
-				return cmdMove.worldObjectId === worldObject.id
+		const relevantCommands = commands.filter(cmd => {
+			if(cmd.type === Command.Type.Move) {
+				return cmd.worldObjectId === worldObject.id
 			}
-			if(it.type === CommandType.WORLD_OBJECT_DISBAND) {
-				const cmdDisband = it as DisbandCommand
-				return cmdDisband.worldObjectId === worldObject.id
+			if(cmd.type === Command.Type.Disband) {
+				return cmd.worldObjectId === worldObject.id
 			}
 			return false;
 		})
 
 		// move
-		if(worldObject.realm.ownedByUser && WorldObjectComponent.has(worldObject, WorldObjectComponent.Type.Move)){
+		if(worldObject.realm.ownedByUser && WorldObjectComponent.has(worldObject, WorldObjectComponent.Type.Movement)){
 			actions.push({
 				type: "move",
 				enabled: relevantCommands.length == 0,

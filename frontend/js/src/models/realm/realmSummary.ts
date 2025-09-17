@@ -1,10 +1,13 @@
-import {RealmId} from "./realmId";
 import {Color} from "../../common/color";
+import {Realm} from "./realm";
 
+/**
+ * A realm reduced to the minimum amount of information.
+ */
 export interface RealmSummary {
-	id: RealmId,
+	id: Realm.Id,
 	name: string,
 	color: Color
-	ownedByUser: boolean,
 	playerName: string,
+	ownedByUser: boolean,
 }

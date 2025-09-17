@@ -1,5 +1,5 @@
 import {mat3} from "./mat3";
-import {CameraEntity} from "../../models/misc/cameraEntity";
+import {CameraData} from "../../models/misc/cameraData";
 
 export class Camera {
 
@@ -104,7 +104,7 @@ export class Camera {
 
 export namespace Camera {
 
-    export function create(cameraData: CameraEntity, width: number, height: number, clientWidth: number, clientHeight: number): Camera {
+    export function create(cameraData: CameraData, width: number, height: number, clientWidth: number, clientHeight: number): Camera {
         const camera = new Camera();
         camera.setPosition(cameraData.x, cameraData.y);
         camera.setSize(width, height, clientWidth, clientHeight)

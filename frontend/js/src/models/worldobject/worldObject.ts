@@ -1,10 +1,10 @@
-import {TileSummary} from "../tile/tileSummary";
 import {RealmSummary} from "../realm/realmSummary";
-import {WorldObjectId} from "./worldObjectId";
+import {TileSummary} from "../tile/tileSummary";
 import {WorldObjectComponent} from "./worldObjectComponent";
+import {BrandedId} from "../../common/brandedId";
 
 export interface WorldObject {
-	id: WorldObjectId,
+	id: WorldObject.Id,
 	type: {
 		group: string,
 		name: string
@@ -12,4 +12,10 @@ export interface WorldObject {
 	realm: RealmSummary,
 	tile: TileSummary
 	components: WorldObjectComponent[]
+}
+
+export namespace WorldObject {
+
+	export type Id = BrandedId<string, "WorldObjectId">;
+
 }

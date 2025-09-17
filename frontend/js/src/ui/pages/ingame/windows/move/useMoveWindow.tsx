@@ -2,17 +2,17 @@ import React, {useEffect} from "react";
 import {MoveWindow} from "./MoveWindow";
 import {openWindow, useCloseWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {WorldObjectId} from "../../../../../models/worldobject/worldObjectId";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
+import {WorldObject} from "../../../../../models/worldobject/worldObject";
 
 export namespace UseMoveWindow {
 
 	/**
 	 * Opens the move world-object window
 	 */
-	export function open(worldObjectId: WorldObjectId) {
+	export function open(worldObjectId: WorldObject.Id) {
 		const WINDOW_ID = "move-command";
 		openWindow({
 			id: WINDOW_ID,
@@ -35,7 +35,7 @@ export namespace UseMoveWindow {
 	/**
 	 * Provides the data and functions required by the window
 	 */
-	export function useData(windowId: string, worldObjectId: WorldObjectId): UseMoveWindow.Data | null {
+	export function useData(windowId: string, worldObjectId: WorldObject.Id): UseMoveWindow.Data | null {
 
 		const worldObject = GameStateHooks.useWorldObject(worldObjectId)
         const remainingMovement = GameStateHooks.useRemainingMovementPoints()
@@ -46,7 +46,7 @@ export namespace UseMoveWindow {
 		}, []);
 
 		if (worldObject) {
-			const maxMovement = WorldObjectComponent.get(worldObject, WorldObjectComponent.Type.Move).maxMovement;
+			const maxMovement = WorldObjectComponent.get(worldObject, WorldObjectComponent.Type.Movement).maxMovement;
 			return {
 				remainingPoints: remainingMovement,
 				totalPoints: maxMovement,

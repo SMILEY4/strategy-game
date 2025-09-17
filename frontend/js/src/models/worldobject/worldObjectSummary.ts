@@ -1,10 +1,9 @@
 import {TileSummary} from "../tile/tileSummary";
-import {WorldObjectId} from "./worldObjectId";
 import {WorldObject} from "./worldObject";
 import {RealmSummary} from "../realm/realmSummary";
 
 export interface WorldObjectSummary {
-	id: WorldObjectId,
+	id: WorldObject.Id,
 	type: {
 		group: string,
 		name: string
@@ -21,7 +20,7 @@ export namespace WorldObjectSummary {
 			type: worldObject.type,
 			tile: worldObject.tile,
 			realm: worldObject.realm,
-		}
+		};
 	}
 
 }

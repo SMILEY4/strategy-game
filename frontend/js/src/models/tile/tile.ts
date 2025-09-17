@@ -1,28 +1,26 @@
 import {Visibility} from "../misc/visibility";
 import {HiddenType} from "../../common/hiddenType";
-import {TileResourceType} from "./TileResourceType";
-import {TileId} from "./tileId";
-import {TilePosition} from "./tilePosition";
-import {TerrainType} from "./terrainType";
+import {TerrainType} from "../misc/terrainType";
 import {Projections} from "../../common/webgl/projections";
+import {BrandedId} from "../../common/brandedId";
 import Point = Projections.Point;
-import {WorldObjectSummary} from "../worldobject/worldObjectSummary";
-import {TileEntity} from "./tileEntity";
-import {WorldObject} from "../worldobject/worldObject";
+import {TileResourceType} from "../misc/tileResourceType";
 
+/**
+ * A single world tile.
+ */
 export interface Tile {
-	id: TileId,
-	position: TilePosition,
+	id: Tile.Id,
+	position: Tile.Position
 	visibility: Visibility
 	base: HiddenType<{
 		terrainType: TerrainType,
 		resourceType: TileResourceType,
 		height: number
 	}>,
-	worldObjects: WorldObjectSummary[],
 	metaProperties: {
-		worldPosition: Point,
 		randomIndex: number,
+		worldPosition: Point,
 		randomValue0: number,
 		randomValue1: number,
 		randomValue2: number,
@@ -31,15 +29,16 @@ export interface Tile {
 
 export namespace Tile {
 
-	export function from(tile: TileEntity, worldObjects: WorldObject[]): Tile {
-		return {
-			id: tile.id,
-			position: tile.position,
-			visibility: tile.visibility,
-			base: tile.base,
-			worldObjects: worldObjects,
-			metaProperties: tile.metaProperties
-		}
+	export type Id = BrandedId<string, "TileId">;
+
+	/**
+	 * Position of a tile
+	 */
+	export interface Position {
+		q: number,
+		r: number
 	}
+
+	export const POSITION_NOWHERE: Tile.Position = {q: 9999999, r: 9999999};
 
 }

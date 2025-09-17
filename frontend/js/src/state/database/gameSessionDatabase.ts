@@ -6,8 +6,8 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
 
 	constructor() {
 		super({
-			sessionState: "none",
-			turnState: "playing",
+			sessionState: GameSession.SessionState.None,
+			turnState: GameSession.TurnState.Playing,
 			turn: -1,
 			selectedTile: null,
 			hoverTile: null,

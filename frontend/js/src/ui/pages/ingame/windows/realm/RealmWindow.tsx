@@ -3,7 +3,6 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Banner} from "../../../../components/banner/Banner";
 import {Txt} from "../../../../components/text/Txt";
-import {RealmId} from "../../../../../models/realm/realmId";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {Divider} from "../../../../components/divider/Divider";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
@@ -11,10 +10,11 @@ import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedP
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {VSpacer} from "../../../../components/spacer/Spacer";
 import {UseRealmWindow} from "./useRealmWindow";
+import {Realm} from "../../../../../models/realm/realm";
 
 export interface RealmWindowProps {
 	windowId: string;
-	identifier: RealmId | null;
+	identifier: Realm.Id | null;
 }
 
 export function RealmWindow(props: RealmWindowProps): ReactElement {
@@ -88,13 +88,13 @@ function SectionUnits(props: UseRealmWindow.Data): ReactElement {
 		<InsetPanel dontShrink dontGrow>
 			<VBox padding_s gap_s fullSize>
 
-				{props.realm.worldObjects.length === 0 && (
+				{props.worldObjects.length === 0 && (
 					<Txt.Body center secondary>
 						<Txt.String>No units.</Txt.String>
 					</Txt.Body>
 				)}
 
-				{props.realm.worldObjects.map(worldObject => (
+				{props.worldObjects.map(worldObject => (
 					<DecoratedPanel
 						key={worldObject.id}
 						pattern
