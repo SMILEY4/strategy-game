@@ -28,12 +28,12 @@ export namespace WorldObjectWasmSerializer {
 		writer.pushFloat32(tileCenter[0]);
 		writer.pushFloat32(tileCenter[1]);
 
-		// country_color_r: f32,
-		// country_color_g: f32,
-		// country_color_b: f32,
-		writer.pushFloat32(worldObject.realm.color.getRedFloat());
-		writer.pushFloat32(worldObject.realm.color.getGreenFloat());
-		writer.pushFloat32(worldObject.realm.color.getBlueFloat());
+		// realm_color_r: u8,
+		// realm_color_g: u8,
+		// realm_color_b: u8,
+		writer.pushUint8(worldObject.realm.color.getRedByte());
+		writer.pushUint8(worldObject.realm.color.getGreenByte());
+		writer.pushUint8(worldObject.realm.color.getBlueByte());
 	}
 
 }

@@ -45,34 +45,6 @@ export class MapMode {
 		},
 	);
 
-	public static readonly REALMS = new MapMode(
-		1,
-		"Realms",
-		"Focuses on realm borders while hiding unrelated information.",
-		{
-			grayscale: true,
-			context: () => null,
-			fillColor: tile => Color.EMPTY,
-			borderColor: tile => Color.EMPTY,
-			borderCheck: (ta: Tile, tb: Tile) => false,
-			borderDefault: true,
-		},
-	);
-
-	public static readonly SETTLEMENTS = new MapMode(
-		3,
-		"Settlements",
-		"Focuses on individual settlement borders while hiding unrelated information.",
-		{
-			grayscale: true,
-			context: () => null,
-			fillColor: tile => Color.EMPTY,
-			borderColor: tile => Color.EMPTY,
-			borderCheck: (ta: Tile, tb: Tile) => false,
-			borderDefault: true,
-		},
-	);
-
 	public static readonly RESOURCES = new MapMode(
 		5,
 		"Resources",
@@ -104,8 +76,6 @@ export class MapMode {
 	private static readonly values = [
 		MapMode.DEFAULT,
 		MapMode.RESOURCES,
-		MapMode.REALMS,
-		MapMode.SETTLEMENTS,
 		MapMode.TERRAIN,
 	];
 

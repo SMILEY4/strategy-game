@@ -1,6 +1,4 @@
-use crate::js::models::{
-    RouteNode, Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject,
-};
+use crate::js::models::{TextureAtlasEntry, Tile, TilePosition, WorldObject};
 use crate::renderer::app::RenderApp;
 use crate::renderer::models::{
     FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, WaterTileVertex,
@@ -14,29 +12,11 @@ mod js;
 mod renderer;
 mod utils;
 
-/// Handle for a shared buffer for routes.
-/// Allows javascript to write routes directly to wasm memory without additional serialization.
-#[wasm_bindgen]
-pub struct DirectRouteBuffer {
-    pub ptr: *mut RouteNode,
-    pub len: usize,
-    pub item_size: usize,
-}
-
 /// Handle for a shared buffer for tiles.
 /// Allows javascript to write tiles directly to wasm memory without additional serialization.
 #[wasm_bindgen]
 pub struct DirectTileBuffer {
     pub ptr: *mut Tile,
-    pub len: usize,
-    pub item_size: usize,
-}
-
-/// Handle for a shared buffer for settlements.
-/// Allows javascript to write settlements directly to wasm memory without additional serialization.
-#[wasm_bindgen]
-pub struct DirectSettlementBuffer {
-    pub ptr: *mut Settlement,
     pub len: usize,
     pub item_size: usize,
 }
@@ -111,28 +91,6 @@ impl WasmRenderApp {
         }
     }
 
-    /// Reserve memory for holding the given amount of settlements.
-    /// JS can write settlements directly to this memory.
-    /// This memory is not handled by rust and is only read and freed when calling the matching "upload" function.
-    pub fn reserve_settlement_memory(&self, len: usize) -> DirectSettlementBuffer {
-        let mut vec: Vec<Settlement> = Vec::with_capacity(len);
-        let ptr = vec.as_mut_ptr();
-        std::mem::forget(vec);
-        DirectSettlementBuffer {
-            ptr: ptr,
-            len: len,
-            item_size: size_of::<Settlement>(),
-        }
-    }
-
-    /// Read and take control of the shared memory for settlements again.
-    pub fn upload_direct_settlement_memory(&mut self, ptr: *mut Settlement, len: usize) {
-        unsafe {
-            let settlements = Vec::from_raw_parts(ptr, len, len);
-            self.app.set_settlements(settlements);
-        }
-    }
-
     /// Reserve memory for holding the given amount of world objects.
     /// JS can write world objects directly to this memory.
     /// This memory is not handled by rust and is only read and freed when calling the matching "upload" function.
@@ -152,35 +110,6 @@ impl WasmRenderApp {
         unsafe {
             let world_objects = Vec::from_raw_parts(ptr, len, len);
             self.app.set_world_objects(world_objects);
-        }
-    }
-
-    /// Reserve memory for holding the given amount of routes.
-    /// JS can write routes directly to this memory.
-    /// This memory is not handled by rust and is only read and freed when calling the matching "upload" function.
-    pub fn reserve_route_memory(&self, len: usize) -> DirectRouteBuffer {
-        let mut vec: Vec<RouteNode> = Vec::with_capacity(len);
-        let ptr = vec.as_mut_ptr();
-        std::mem::forget(vec);
-        DirectRouteBuffer {
-            ptr: ptr,
-            len: len,
-            item_size: size_of::<RouteNode>(),
-        }
-    }
-
-    /// Read and take control of the shared memory for routes again.
-    pub fn upload_direct_route_memory(&mut self, ptr: *mut RouteNode, len: usize) {
-        unsafe {
-            let route_nodes = Vec::from_raw_parts(ptr, len, len);
-
-            let mut groups: HashMap<i32, Vec<RouteNode>> = HashMap::new();
-            for node in route_nodes {
-                let route_id = node.route_id;
-                groups.entry(route_id).or_insert_with(Vec::new).push(node);
-            }
-
-            self.app.set_routes(groups.into_values().collect());
         }
     }
 

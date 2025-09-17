@@ -11,9 +11,6 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
 
     let map_mode_data: MapMode = match state.map_mode.as_str() {
         "default" => MapMode::DEFAULT,
-        "countries" => MapMode::COUNTRIES,
-        "settlements" => MapMode::SETTLEMENTS,
-        "settlement_locations" => MapMode::SETTLEMENT_LOCATIONS,
         "resources" => MapMode::RESOURCES,
         "terrain" => MapMode::TERRAIN,
         _ => MapMode::DEFAULT,

@@ -1,5 +1,5 @@
 use crate::js::models::{
-    RouteNode, Settlement, TextureAtlasEntry, Tile, TilePosition, WorldObject,
+    TextureAtlasEntry, Tile, TilePosition, WorldObject,
 };
 use crate::renderer::models::{
     FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, RenderState,
@@ -51,23 +51,11 @@ impl RenderApp {
         self.state.map_mode = map_mode;
     }
 
-    /// Set/Update the routes.
-    /// This does not automatically trigger a re-calculation of anything else.
-    pub fn set_routes(&mut self, routes: Vec<Vec<RouteNode>>) {
-        self.state.routes = routes;
-    }
-
     /// Set/Update all tiles.
     /// This does not automatically trigger a re-calculation of anything else.
     pub fn set_tiles(&mut self, tiles: Vec<Tile>) {
         self.state.tiles = tiles;
         self.update_relevant_area();
-    }
-
-    /// Set/Update the settlements.
-    /// This does not automatically trigger a re-calculation of anything else.
-    pub fn set_settlements(&mut self, settlements: Vec<Settlement>) {
-        self.state.settlements = settlements;
     }
 
     /// Set/Update the world objects.

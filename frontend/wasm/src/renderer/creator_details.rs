@@ -1,22 +1,19 @@
 use crate::js::models::TextureAtlasEntry;
 use crate::renderer::line_mesh::{
-    build_line_mesh, cap_butt_end, cap_butt_start, join_miter, LineMeshConfig,
+    cap_butt_end, cap_butt_start, join_miter, LineMeshConfig,
 };
 use crate::renderer::models::{MapDetailVertex, RenderState, RendererConfiguration, VertexData};
-use crate::utils::{interpolate_curve, mix, rgb_f32_to_u8, triangle_wave, Random, Vec2d};
+use crate::utils::{mix, rgb_f32_to_u8, Random};
 
 /// Calculate the map details vertex data from the given render state.
 /// Writes the result to the given vertex data.
 pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: &mut VertexData) {
-
     vertex_data.map_detail.clear();
 
     let atlas_entries_mountain = &state.texture_atlas_entries["terrain_mountain"];
     let atlas_entries_hill = &state.texture_atlas_entries["terrain_hill"];
     let atlas_entries_forest = &state.texture_atlas_entries["terrain_forest"];
     let atlas_entries_terrain_decoration = &state.texture_atlas_entries["terrain_decoration"];
-    let atlas_entries_houses = &state.texture_atlas_entries["settlement_houses_all"];
-    let atlas_entries_settlement_decoration = &state.texture_atlas_entries["settlement_decoration"];
     let atlas_entries_units = &state.texture_atlas_entries["unit"];
     let atlas_entries_road = &state.texture_atlas_entries["road"];
 
@@ -42,78 +39,6 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
         route_v_max = route_v_max.max(texture_coordinate[1]);
     }
 
-    // add routes
-    for route in &state.routes {
-
-        rng.set_seed(route.first().unwrap().route_id as u64);
-
-        let n_tiles: f32 = route.len() as f32;
-
-        let route_points: Vec<Vec2d> = route
-            .iter()
-            .map(|it| Vec2d {
-                x: it.world_x,
-                y: it.world_y,
-            })
-            .collect();
-
-        let mut route_points_smooth: Vec<Vec2d> = Vec::new();
-
-        if route_points.len() <= 2 {
-            route_points_smooth.extend(route_points);
-        } else {
-            route_points_smooth.push(route_points.first().unwrap().copy());
-
-            for point in route_points.windows(3) {
-                let prev = &point[0];
-                let curr = &point[1];
-                let next = &point[2];
-
-                let ah = prev.add(&prev.to(curr).scale(0.5));
-                let b = curr;
-                let bh = curr.add(&curr.to(next).scale(0.5));
-
-                for i in 0..7 {
-                    let t = (i as f32) / 7.0;
-                    let p = interpolate_curve(&ah, &b, &bh, t);
-
-                    let offset = Vec2d {
-                        x: (rng.f32() * 2.0 - 1.0) * config.route_rng_offset,
-                        y: (rng.f32() * 2.0 - 1.0) * config.route_rng_offset,
-                    };
-
-                    let p0 = p.add(&offset);
-
-                    route_points_smooth.push(p0);
-                }
-            }
-
-            route_points_smooth.push(route_points.last().unwrap().copy());
-        }
-
-        let route_mesh = build_line_mesh(&route_points_smooth, &route_mesh_config);
-
-        for triangle in route_mesh.triangles {
-            for vertex_index in triangle {
-                let line_vertex = &route_mesh.vertices[vertex_index];
-
-                let mut u = line_vertex.u;
-                let mut v = line_vertex.v;
-                u = triangle_wave(u, ((n_tiles - 1.0) / 2.0) + 1.0) / 2.0;
-                u = u * (route_u_max - route_u_min) + route_u_min;
-                v = v * (route_v_max - route_v_min) + route_v_min;
-
-                vertex_data.map_detail.push(MapDetailVertex {
-                    position: [line_vertex.x, line_vertex.y, line_vertex.y - 2.0],
-                    texture_coordinates: [u, v],
-                    base_color: [0, 0, 0],
-                    country_color: [0, 0, 0],
-                    _padding: [0, 0],
-                })
-            }
-        }
-    }
-
     // add world objects
     for world_object in &state.world_objects {
         let x = world_object.world_x;
@@ -125,46 +50,13 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
             (x, y),
             (z, z),
             (7.0, 7.0),
-            [0.0, 0.0, 0.0],
+            [0, 0, 0],
             [
-                world_object.country_color_r,
-                world_object.country_color_g,
-                world_object.country_color_b,
+                world_object.realm_color_r,
+                world_object.realm_color_g,
+                world_object.realm_color_b,
             ],
         ));
-    }
-
-    // add settlements
-    for settlement in &state.settlements {
-        rng.set_seed(settlement.rng_seed as u64);
-        for _i in 0..=(settlement.population_size + 1) {
-            let x = settlement.world_x + (rng.f32() * 2.0 - 1.0) * config.tile_width / 2.0;
-            let y = settlement.world_y + (rng.f32() * 2.0 - 1.0) * config.tile_height / 2.0;
-            let z = y - 1.0;
-            vertex_data.map_detail.extend(create_sprite(
-                &atlas_entries_houses[(rng.f32() * atlas_entries_houses.len() as f32) as usize],
-                (x, y),
-                (z, z),
-                (5.0, 5.0),
-                [0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0],
-            ));
-        }
-
-        for _i in 0..(settlement.population_size) {
-            let x = settlement.world_x + (rng.f32() * 2.0 - 1.0) * config.tile_width / 2.0;
-            let y = settlement.world_y + (rng.f32() * 2.0 - 1.0) * config.tile_height / 2.0;
-            let z = y - 1.0;
-            vertex_data.map_detail.extend(create_sprite(
-                &atlas_entries_settlement_decoration
-                    [(rng.f32() * atlas_entries_settlement_decoration.len() as f32) as usize],
-                (x, y),
-                (z, z),
-                (4.0, 4.0),
-                [0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0],
-            ));
-        }
     }
 
     // add terrain
@@ -181,7 +73,11 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
 
         let height_jitter = rng.f32() * 0.1 - 0.5;
         let height = tile.height * 2.0 + height_jitter;
-        let color = mix(&config.land_color_light, &config.land_color_dark, height);
+        let color = rgb_f32_to_u8(&mix(
+            &config.land_color_light,
+            &config.land_color_dark,
+            height,
+        ));
 
         let rng_terrain = rng.f32();
         let mut terrain = "none";
@@ -207,7 +103,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     ),
                     (22.0, 16.0),
                     color,
-                    [0.0, 0.0, 0.0],
+                    [0, 0, 0],
                 ));
             }
             "hill" => {
@@ -221,7 +117,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     ),
                     (22.0, 16.0),
                     color,
-                    [0.0, 0.0, 0.0],
+                    [0, 0, 0],
                 ));
             }
             "forest" => {
@@ -235,7 +131,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     ),
                     (22.0, 16.0),
                     color,
-                    [0.0, 0.0, 0.0],
+                    [0, 0, 0],
                 ));
             }
             "none" | _ => {
@@ -244,15 +140,16 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     let y = tile.world_y + (rng.f32() * 2.0 - 1.0) * (config.tile_height / 2.0);
                     let z = y - 1.0;
 
-                    let texture_index = (rng.f32() * atlas_entries_terrain_decoration.len() as f32) as usize;
+                    let texture_index =
+                        (rng.f32() * atlas_entries_terrain_decoration.len() as f32) as usize;
 
                     vertex_data.map_detail.extend(create_sprite(
                         &atlas_entries_terrain_decoration[texture_index],
                         (x, y),
                         (z, z),
                         (4.0, 4.0),
-                        [0.0, 0.0, 0.0],
-                        [0.0, 0.0, 0.0],
+                        [0, 0, 0],
+                        [0, 0, 0],
                     ));
                 }
             }
@@ -265,8 +162,8 @@ fn create_sprite(
     pos: (f32, f32),
     sprite_z: (f32, f32),
     sprite_scale: (f32, f32),
-    color_base: [f32; 3],
-    color_country: [f32; 3],
+    color_base: [u8; 3],
+    color_realm: [u8; 3],
 ) -> Vec<MapDetailVertex> {
     let mut vertices = Vec::new();
 
@@ -286,8 +183,8 @@ fn create_sprite(
                 atlas_entry.texture_coordinates[index * 2 + 0],
                 atlas_entry.texture_coordinates[index * 2 + 1],
             ],
-            base_color: rgb_f32_to_u8(&color_base),
-            country_color: rgb_f32_to_u8(&color_country),
+            base_color: color_base,
+            country_color: color_realm,
             _padding: [0, 0],
         })
     }
