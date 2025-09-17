@@ -65,9 +65,9 @@ export namespace TileWasmSerializer {
 		// resource_color_b: u8,
 		// resource_color_a: u8,
 		if (tile.base.visible && tile.base.value.resourceType != null && tile.base.value.resourceType != TileResourceType.NONE) {
-			writer.pushUint8(tile.base.value.resourceType.color!.red);
-			writer.pushUint8(tile.base.value.resourceType.color!.green);
-			writer.pushUint8(tile.base.value.resourceType.color!.blue);
+			writer.pushUint8(tile.base.value.resourceType.color!.getRedByte());
+			writer.pushUint8(tile.base.value.resourceType.color!.getGreenByte());
+			writer.pushUint8(tile.base.value.resourceType.color!.getBlueByte());
 			writer.pushUint8(255);
 		} else {
 			writer.pushUint8(0);

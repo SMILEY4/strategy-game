@@ -40,9 +40,8 @@ export class WasmGameRendererImpl implements WasmGameRenderer {
 	setMapMode(mapMode: MapMode): void {
 		let wasmMapMode: string = "default";
 		if (mapMode === MapMode.DEFAULT) wasmMapMode = "default";
-		if (mapMode === MapMode.COUNTRIES) wasmMapMode = "countries";
+		if (mapMode === MapMode.REALMS) wasmMapMode = "countries";
 		if (mapMode === MapMode.SETTLEMENTS) wasmMapMode = "settlements";
-		if (mapMode === MapMode.SETTLEMENT_LOCATIONS) wasmMapMode = "settlement_locations";
 		if (mapMode === MapMode.RESOURCES) wasmMapMode = "resources";
 		if (mapMode === MapMode.TERRAIN) wasmMapMode = "terrain";
 		this.wasmRenderApp.set_map_mode(wasmMapMode);

@@ -1,5 +1,5 @@
-import {Color} from "../../common/color";
 import {Realm} from "./realm";
+import {Color} from "../../common/color/color";
 
 /**
  * The outline information of a realm.

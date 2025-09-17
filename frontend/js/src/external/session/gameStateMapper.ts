@@ -13,6 +13,7 @@ import {Random} from "../../common/random";
 import {User} from "../../models/misc/userId";
 import {TileResourceType} from "../../models/misc/tileResourceType";
 import normalized = Random.normalized;
+import {Color} from "../../common/color/color";
 
 export namespace GameStateMapper {
 
@@ -80,7 +81,11 @@ export namespace GameStateMapper {
 		return gameStateMsg.realms.map(realmMsg => ({
 			id: realmMsg.id as Realm.Id,
 			name: realmMsg.name,
-			color: realmMsg.color,
+			color: Color.rgbByte(
+				realmMsg.color.red,
+				realmMsg.color.green,
+				realmMsg.color.blue,
+			),
 			ownedByUser: realmMsg.ownedByUser,
 			player: {
 				userId: realmMsg.player.userId as User.Id,
@@ -98,7 +103,11 @@ export namespace GameStateMapper {
 				realm: {
 					id: realmMsg.id as Realm.Id,
 					name: realmMsg.name,
-					color: realmMsg.color,
+					color: Color.rgbByte(
+						realmMsg.color.red,
+						realmMsg.color.green,
+						realmMsg.color.blue,
+					),
 					ownedByUser: realmMsg.ownedByUser,
 					playerName: realmMsg.player.name,
 				},

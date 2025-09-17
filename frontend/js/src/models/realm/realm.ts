@@ -1,6 +1,6 @@
 import {Player} from "../misc/player";
-import {Color} from "../../common/color";
 import {BrandedId} from "../../common/brandedId";
+import {Color} from "../../common/color/color";
 
 /**
  * The realm of a player.

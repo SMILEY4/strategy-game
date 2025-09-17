@@ -1,6 +1,5 @@
 import {WorldObject} from "../../../models/worldobject/worldObject";
 import {TilemapUtils} from "../../../common/tilemapUtils";
-import {Color} from "../../../common/color";
 import {WasmDataViewWriter} from "./wasmDataViewWriter";
 
 export namespace WorldObjectWasmSerializer {
@@ -32,10 +31,9 @@ export namespace WorldObjectWasmSerializer {
 		// country_color_r: f32,
 		// country_color_g: f32,
 		// country_color_b: f32,
-		const realmColor = Color.colorToRgbArray(worldObject.realm.color);
-		writer.pushFloat32(realmColor[0]);
-		writer.pushFloat32(realmColor[1]);
-		writer.pushFloat32(realmColor[2]);
+		writer.pushFloat32(worldObject.realm.color.getRedFloat());
+		writer.pushFloat32(worldObject.realm.color.getGreenFloat());
+		writer.pushFloat32(worldObject.realm.color.getBlueFloat());
 	}
 
 }

@@ -7,7 +7,6 @@ import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {Divider} from "../../../../components/divider/Divider";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {Color} from "../../../../../common/color";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Banner} from "../../../../components/banner/Banner";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
@@ -180,7 +179,7 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
 							<DecoratedPanel
 								key={worldObject.id}
 								background={
-									<DecoratedPanel.ColorBackground color={Color.toCss(worldObject.realm.color)}/>
+									<DecoratedPanel.ColorBackground color={worldObject.realm.color.toCss()}/>
 								}
 								blue
 								pattern
