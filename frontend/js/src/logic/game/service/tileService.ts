@@ -38,15 +38,11 @@ export class TileServiceImpl implements TileService {
 		this.gameStateWriter.setSelectedTile(tile)
 
 		const worldObjects: WorldObjectSummary[] = this.localStateAccess.getWorldObjectSummariesAt(tile.position.q, tile.position.r)
-
-		if (worldObjects.length > 1) {
-			UseTileWindow.open(tile.id);
-			return;
-		}
 		if (worldObjects.length === 1) {
 			UseUnitWindow.open(worldObjects[0].id);
 			return;
 		}
+
 		UseTileWindow.open(tile.id);
 	}
 

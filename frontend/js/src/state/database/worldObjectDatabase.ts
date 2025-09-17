@@ -3,7 +3,6 @@ import {AbstractDatabase} from "../../common/db/database/abstractDatabase";
 import {Query} from "../../common/db/query/query";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../common/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySupportingStorage";
-import {MapUniqueSupportingStorage} from "../../common/db/storage/supporting/mapUniqueSupportingStorage";
 import {MapSupportingStorage} from "../../common/db/storage/supporting/mapSupportingStorage";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {Realm} from "../../models/realm/realm";
@@ -16,7 +15,7 @@ interface WorldObjectStorageConfig extends DatabaseStorageConfig<WorldObject, Wo
     primary: MapPrimaryStorage<WorldObject, WorldObject.Id>,
     supporting: {
         array: ArraySupportingStorage<WorldObject>,
-        byPos: MapUniqueSupportingStorage<WorldObject, string>,
+        byPos: MapSupportingStorage<WorldObject, string>,
         byRealm: MapSupportingStorage<WorldObject, Realm.Id>
     }
 }
@@ -32,7 +31,7 @@ class WorldObjectStorage extends DatabaseStorage<WorldObjectStorageConfig, World
             primary: new MapPrimaryStorage<WorldObject, WorldObject.Id>(provideId),
             supporting: {
                 array: new ArraySupportingStorage<WorldObject>(),
-                byPos: new MapUniqueSupportingStorage<WorldObject, string>(e => WorldObjectStorage.toKey(e.tile.position.q, e.tile.position.r)),
+                byPos: new MapSupportingStorage<WorldObject, string>(e => WorldObjectStorage.toKey(e.tile.position.q, e.tile.position.r)),
                 byRealm: new MapSupportingStorage<WorldObject, Realm.Id>(e => e.realm.id)
             },
         });
@@ -67,7 +66,7 @@ export namespace WorldObjectDatabase {
     };
 
     export const QUERY_BY_POSITION: WorldObjectQuery<[number, number]> = {
-        run(storage: WorldObjectStorage, args: [number, number]): WorldObject | null {
+        run(storage: WorldObjectStorage, args: [number, number]): WorldObject[] {
             return storage.config.supporting.byPos.getByKey(WorldObjectStorage.toKey(args[0], args[1]));
         },
     };
