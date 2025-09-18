@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.CommandData.ConstructTileImprovement
 import io.github.smiley4.strategygame.backend.commondata.CommandData.Disband
 import io.github.smiley4.strategygame.backend.commondata.CommandData.Move
-import io.github.smiley4.strategygame.backend.commondata.utils.DbId
+import io.github.smiley4.strategygame.backend.commondata.CommandData.SpawnSettlement
 import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.TileImprovementType
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject.Id
+import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 
 internal class CommandEntity<T : CommandEntityData>(
     val userId: String,
@@ -38,6 +41,15 @@ internal class CommandEntity<T : CommandEntityData>(
                 is Disband -> DisbandCommandEntityData(
                     worldObject = serviceModel.worldObject.value,
                 )
+                is ConstructTileImprovement -> ConstructTileImprovementCommandEntityData(
+                    worldObject = serviceModel.worldObject.value,
+                    improvementType = serviceModel.improvement.name
+                )
+                is SpawnSettlement -> SpawnSettlementCommandEntityData(
+                    worldObject = serviceModel.worldObject.value,
+                    tile = TileRefEntity.of(serviceModel.tile),
+                    settlementName = serviceModel.settlementName
+                )
             }
         }
 
@@ -60,6 +72,15 @@ internal class CommandEntity<T : CommandEntityData>(
             is DisbandCommandEntityData -> Disband(
                 worldObject = Id(entity.worldObject),
             )
+            is ConstructTileImprovementCommandEntityData -> ConstructTileImprovement(
+                worldObject = Id(entity.worldObject),
+                improvement = TileImprovementType.valueOf(entity.improvementType)
+            )
+            is SpawnSettlementCommandEntityData -> SpawnSettlement(
+                worldObject = Id(entity.worldObject),
+                tile = entity.tile.asServiceModel(),
+                settlementName = entity.settlementName
+            )
         }
     }
 
@@ -81,4 +102,16 @@ internal class MoveCommandEntityData(
 
 internal class DisbandCommandEntityData(
     val worldObject: String,
+) : CommandEntityData()
+
+
+internal class ConstructTileImprovementCommandEntityData(
+    val worldObject: String,
+    val improvementType: String,
+) : CommandEntityData()
+
+internal class SpawnSettlementCommandEntityData(
+    val worldObject: String,
+    val tile: TileRefEntity,
+    val settlementName: String,
 ) : CommandEntityData()

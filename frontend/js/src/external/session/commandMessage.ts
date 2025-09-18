@@ -1,6 +1,9 @@
 import {Command} from "../../models/command/command";
+import {WorldObject} from "../../models/worldobject/worldObject";
 
-export type CommandMessage = CommandMessage.Move | CommandMessage.Disband
+export type CommandMessage = CommandMessage.Move
+	| CommandMessage.Disband
+	| CommandMessage.ConstructTileImprovement
 
 export namespace CommandMessage {
 
@@ -21,9 +24,16 @@ export namespace CommandMessage {
 		worldObjectId: string,
 	}
 
+	export interface ConstructTileImprovement {
+		type: "world-object-construct-improvement";
+		worldObjectId: WorldObject.Id;
+		improvementType: string;
+	}
+
 	type CommandMessageMapping = {
 		[Command.Type.Move]: CommandMessage.Move;
 		[Command.Type.Disband]: CommandMessage.Disband;
+		[Command.Type.ConstructTileImprovement]: CommandMessage.ConstructTileImprovement;
 	};
 
 	const mapping: {
@@ -43,6 +53,11 @@ export namespace CommandMessage {
 		[Command.Type.Disband]: (cmd) => ({
 			type: "world-object-disband",
 			worldObjectId: cmd.worldObjectId,
+		}),
+		[Command.Type.ConstructTileImprovement]: (cmd) => ({
+			type: "world-object-construct-improvement",
+			worldObjectId: cmd.worldObjectId,
+			improvementType: cmd.tileImprovementType
 		}),
 	};
 

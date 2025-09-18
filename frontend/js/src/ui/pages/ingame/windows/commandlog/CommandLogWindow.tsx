@@ -116,4 +116,19 @@ const commandEntryMapping: {
 			</IndentBox>
 		</>
 	),
+	[Command.Type.ConstructTileImprovement]: (cmd) => (
+		<>
+			<Txt.Header4>
+				<Txt.String>Construct Tile Improvement</Txt.String>
+			</Txt.Header4>
+			<Divider line/>
+			<IndentBox>
+				<Txt.Body>
+					<Txt.String>{"type " + cmd.tileImprovementType}</Txt.String>
+					<br/>
+					<Txt.String>{"by " + cmd.worldObjectId}</Txt.String>
+				</Txt.Body>
+			</IndentBox>
+		</>
+	),
 };

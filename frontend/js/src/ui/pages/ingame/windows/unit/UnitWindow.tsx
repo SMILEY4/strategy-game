@@ -57,30 +57,40 @@ export function UnitWindow(props: UnitWindowProps): ReactElement {
 										{data.actions.map(action => {
 
 											if (action.type === "move") {
-												const actionMove = action as UnitMoveAction;
 												return (
-													<Button disabled={!actionMove.enabled} onClick={actionMove.perform}
-															key={action.type}>
+													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
 														Move
 													</Button>
 												);
 											}
 
-											if (action.type === "disband") {
-												const actionDisband = action as UnitDisbandAction;
+											if (action.type === "construct-tile-improvement") {
 												return (
-													<Button disabled={!actionDisband.enabled}
-															onClick={actionDisband.perform} key={action.type}>
+													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
+														Construct Tile Improvement
+													</Button>
+												);
+											}
+
+											if (action.type === "spawn-settlement") {
+												return (
+													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
+														Spawn Settlement
+													</Button>
+												);
+											}
+
+											if (action.type === "disband") {
+												return (
+													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
 														Disband
 													</Button>
 												);
 											}
 
 											if (action.type === "cancel-current-command") {
-												const actionCancel = action as UnitCancelCurrentCommandAction;
 												return (
-													<Button disabled={!actionCancel.enabled}
-															onClick={actionCancel.perform} key={action.type}>
+													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
 														Cancel Command
 													</Button>
 												);

@@ -15,7 +15,6 @@ import io.github.smiley4.strategygame.backend.sessions.application.persistence.e
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.RealmEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.TileEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectEntity
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectEntityCollection.Companion.toTypedCollection
 import kotlin.collections.map
 
 internal class GameStateUpdate(private val database: ArangoDatabase) {
@@ -31,7 +30,7 @@ internal class GameStateUpdate(private val database: ArangoDatabase) {
                 { updateRealms(gameState.realms, gameId) },
                 { deleteRealms(gameState.realms.getRemovedElements(), gameId) },
                 { updateWorldObjects(gameState.worldObjects, gameId) },
-                { deleteWorldObjects(gameState.worldObjects.getRemovedElements(), gameId) }
+                { deleteWorldObjects(gameState.worldObjects.getRemovedElements(), gameId) },
             )
         }
     }
@@ -58,7 +57,7 @@ internal class GameStateUpdate(private val database: ArangoDatabase) {
     }
 
     private suspend fun updateWorldObjects(worldObjects: Collection<WorldObject>, gameId: String) {
-        database.insertOrReplaceDocuments(DbCollections.WORLD_OBJECTS, worldObjects.map { WorldObjectEntity.of(it, gameId) }.toTypedCollection())
+        database.insertOrReplaceDocuments(DbCollections.WORLD_OBJECTS, worldObjects.map { WorldObjectEntity.of(it, gameId) })
     }
 
     private suspend fun deleteWorldObjects(worldObjects: Set<WorldObject>, gameId: String) {

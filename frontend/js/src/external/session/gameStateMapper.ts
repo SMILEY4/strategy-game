@@ -1,4 +1,11 @@
-import {GameStateMessage, RealmMessage, ResourceTypeMsg, TerrainTypeMsg, VisibilityMsg} from "./gameStateMessage";
+import {
+	GameStateMessage,
+	RealmMessage,
+	ResourceTypeMsg,
+	TerrainTypeMsg,
+	VisibilityMsg,
+	WorldObjectTypeGroupMsg,
+} from "./gameStateMessage";
 import {GameStateContainer} from "../../models/misc/gameStateContainer";
 import {Tile} from "../../models/tile/tile";
 import {Visibility} from "../../models/misc/visibility";
@@ -43,8 +50,14 @@ export namespace GameStateMapper {
 		"METAL": TileResourceType.METAL,
 	};
 
+	const worldObjectTypeGroupMapping: Record<WorldObjectTypeGroupMsg, WorldObject.TypeGroup> = {
+		"unit": WorldObject.TypeGroup.Unit,
+		"tile-improvement": WorldObject.TypeGroup.TileImprovement,
+		"settlement": WorldObject.TypeGroup.Settlement,
+	};
+
 	function buildTiles(gameStateMsg: GameStateMessage): Tile[] {
-		return gameStateMsg.tiles.map((tileMsg, index) => ({
+		return gameStateMsg.tiles.map(tileMsg => ({
 			id: tileMsg.identifier.id as Tile.Id,
 			position: {
 				q: tileMsg.identifier.q,
@@ -85,7 +98,10 @@ export namespace GameStateMapper {
 			const realmMsg = findRealmById(gameStateMsg, worldObjMsg.realm.id);
 			return {
 				id: worldObjMsg.id as WorldObject.Id,
-				type: worldObjMsg.type,
+				type: {
+					group: worldObjectTypeGroupMapping[worldObjMsg.type.group],
+					name: worldObjMsg.type.name,
+				},
 				realm: {
 					id: realmMsg.id as Realm.Id,
 					name: realmMsg.name,
@@ -117,7 +133,24 @@ export namespace GameStateMapper {
 							radius: componentMsg.radius,
 						} as WorldObjectComponent.Vision;
 					}
-					throw new Error("Unexpected component type");
+					if (componentMsg.type == "builder") {
+						return {
+							type: "builder",
+							maxUses: componentMsg.maxUses,
+							remainingUses: componentMsg.remainingUses,
+							options: componentMsg.options,
+						} as WorldObjectComponent.Builder;
+					}
+					if (componentMsg.type == "settlementSpawner") {
+						return {
+							type: "settlement-spawner",
+						} as WorldObjectComponent.SettlementSpawner;
+					}
+
+					// exhaustiveness check: syntax error in case of unhandled action type
+					// noinspection UnnecessaryLocalVariableJS
+					const _exhaustive: never = componentMsg;
+					throw new Error("Unexpected component type: " + _exhaustive);
 				}),
 			};
 		});

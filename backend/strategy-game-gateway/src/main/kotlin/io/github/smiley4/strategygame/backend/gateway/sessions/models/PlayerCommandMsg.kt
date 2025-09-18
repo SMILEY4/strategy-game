@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.commondata.TileImprovementType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 @JsonTypeInfo(
@@ -34,5 +35,31 @@ internal class DisbandCommandMsg(
 ) : PlayerCommandMsg() {
     override fun asCommandData() = CommandData.Disband(
         worldObject = WorldObject.Id(worldObjectId),
+    )
+}
+
+
+@JsonTypeName("world-object-construct-improvement")
+internal class ConstructTileImprovementCommandMsg(
+    val worldObjectId: String,
+    val improvementType: String
+) : PlayerCommandMsg() {
+    override fun asCommandData() = CommandData.ConstructTileImprovement(
+        worldObject = WorldObject.Id(worldObjectId),
+        improvement = TileImprovementType.valueOf(improvementType),
+    )
+}
+
+
+@JsonTypeName("world-object-spawn-settlement")
+internal class SpawnSettlementCommandMsg(
+    val worldObjectId: String,
+    val tile: Tile.Ref,
+    val settlementName: String
+) : PlayerCommandMsg() {
+    override fun asCommandData() = CommandData.SpawnSettlement(
+        worldObject = WorldObject.Id(worldObjectId),
+        tile = tile,
+        settlementName = settlementName,
     )
 }

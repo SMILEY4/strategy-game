@@ -118,11 +118,25 @@ export namespace GameStateHooks {
 	}
 
 	/**
-	 * Get the outline information about all world objects
+	 * Get the outline information about all units
 	 */
 	export function useOutlineUnits(): WorldObjectOutline[] {
-		return useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_ALL, null)
-			.filter(it => it.type.group === "unit")
+		return useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_ALL, null) // todo: dedicated query
+			.filter(it => it.type.group === WorldObject.TypeGroup.Unit)
+			.map(it => ({
+				id: it.id,
+				type: it.type,
+				tile: it.tile,
+				realm: it.realm,
+			}));
+	}
+
+	/**
+	 * Get the outline information about all tile improvements
+	 */
+	export function useOutlineTileImprovements(): WorldObjectOutline[] {
+		return useQueryMultiple(worldObjectDatabase, WorldObjectDatabase.QUERY_ALL, null) // todo: dedicated query
+			.filter(it => it.type.group === WorldObject.TypeGroup.TileImprovement)
 			.map(it => ({
 				id: it.id,
 				type: it.type,

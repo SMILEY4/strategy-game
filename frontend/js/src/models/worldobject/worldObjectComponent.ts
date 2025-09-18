@@ -1,17 +1,24 @@
 import {WorldObject} from "./worldObject";
 
-export type WorldObjectComponent = WorldObjectComponent.Movement | WorldObjectComponent.Vision
+export type WorldObjectComponent = WorldObjectComponent.Movement
+	| WorldObjectComponent.Vision
+	| WorldObjectComponent.Builder
+	| WorldObjectComponent.SettlementSpawner
 
 export namespace WorldObjectComponent {
 
 	export enum Type {
 		Vision = "vision",
-		Movement = "movement"
+		Movement = "movement",
+		Builder = "builder",
+		SettlementSpawner = "settlement-spawner",
 	}
 
 	export type Mapping = {
 		[Type.Vision]: Vision,
 		[Type.Movement]: Movement,
+		[Type.Builder]: Builder,
+		[Type.SettlementSpawner]: SettlementSpawner,
 	}
 
 	export interface Movement {
@@ -22,6 +29,20 @@ export namespace WorldObjectComponent {
 	export interface Vision {
 		type: Type.Vision,
 		radius: number
+	}
+
+	export interface Builder {
+		type: Type.Builder,
+		maxUses: number;
+		remainingUses: number;
+		options: ({
+			type: string,
+			available: boolean
+		})[]
+	}
+
+	export interface SettlementSpawner {
+		type: Type.SettlementSpawner,
 	}
 
 	export function getOrNull<T extends Type>(worldObject: WorldObject, type: T): Mapping[T] | null {

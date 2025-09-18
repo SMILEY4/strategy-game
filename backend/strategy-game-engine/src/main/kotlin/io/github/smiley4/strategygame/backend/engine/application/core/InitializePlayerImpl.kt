@@ -11,7 +11,6 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
-import io.github.smiley4.strategygame.backend.commondata.WorldObjectType
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.Tools
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer
 import io.github.smiley4.strategygame.backend.worldgen.lib.NameGenerator
@@ -72,9 +71,12 @@ internal class InitializePlayerImpl(private val nameGenerator: NameGenerator) : 
         val scout = WorldObject(
             id = WorldObject.Id.gen(),
             realm = realmId,
-            type = WorldObjectType.SCOUT,
+            type = WorldObject.Type(
+                group = WorldObject.Group.UNIT,
+                name = "scout"
+            ),
             tile = spawnLocation,
-            components = listOf(
+            components = mutableListOf(
                 WorldObjectComponent.Movement(
                     maxMovement = 5,
                 ),
@@ -92,14 +94,21 @@ internal class InitializePlayerImpl(private val nameGenerator: NameGenerator) : 
         val worker = WorldObject(
             id = WorldObject.Id.gen(),
             realm = realmId,
-            type = WorldObjectType.WORKER,
+            type = WorldObject.Type(
+                group = WorldObject.Group.UNIT,
+                name = "worker"
+            ),
             tile = spawnLocation,
-            components = listOf(
+            components = mutableListOf(
                 WorldObjectComponent.Movement(
                     maxMovement = 4,
                 ),
                 WorldObjectComponent.Vision(
                     radius = 1,
+                ),
+                WorldObjectComponent.Builder(
+                    maxUses = 3,
+                    remainingUses = 3
                 )
             )
         )

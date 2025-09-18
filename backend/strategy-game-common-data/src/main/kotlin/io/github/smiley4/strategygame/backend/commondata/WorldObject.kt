@@ -5,15 +5,25 @@ import kotlin.reflect.typeOf
 data class WorldObject(
     val id: Id,
     val realm: Realm.Id,
-    val type: WorldObjectType,
+    val type: Type,
     var tile: Tile.Ref,
-    val components: List<WorldObjectComponent>
+    val components: MutableList<WorldObjectComponent>
 ) {
     @JvmInline
     value class Id(val value: String) {
         companion object
     }
 
+    enum class Group {
+        UNIT,
+        TILE_IMPROVEMENT,
+        SETTLEMENT
+    }
+
+    data class Type(
+        val group: Group,
+        val name: String,
+    )
 
     inline fun <reified T : WorldObjectComponent> hasComponent(): Boolean {
         return components.any { component -> component is T }
@@ -29,18 +39,6 @@ data class WorldObject(
 
 }
 
-data class WorldObjectType(
-    val group: String,
-    val name: String,
-) {
-
-    companion object {
-        val WORKER = WorldObjectType("unit", "worker")
-        val SCOUT = WorldObjectType("unit", "scout")
-    }
-
-}
-
 sealed interface WorldObjectComponent {
 
     data class Movement(
@@ -50,5 +48,12 @@ sealed interface WorldObjectComponent {
     data class Vision(
         val radius: Int
     ) : WorldObjectComponent
+
+    class Builder(
+        val maxUses: Int,
+        var remainingUses: Int,
+    ) : WorldObjectComponent
+
+    class SettlementSpawner : WorldObjectComponent
 
 }
