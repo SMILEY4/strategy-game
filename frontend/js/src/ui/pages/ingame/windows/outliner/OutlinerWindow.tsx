@@ -35,7 +35,8 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
 						<InsetPanel shrink>
 							<VBox scrollable padding_s gap_s fullSize>
 								<SectionRealms {...data}/>
-								<SectionWorldObjects {...data}/>
+								<SectionUnits {...data}/>
+								<SectionTileImprovements {...data}/>
 							</VBox>
 						</InsetPanel>
 					</TabOption>
@@ -51,7 +52,15 @@ export function OutlinerWindow(props: OutlinerWindowProps): ReactElement {
 					<TabOption name="Units">
 						<InsetPanel shrink>
 							<VBox scrollable padding_s gap_s fullSize>
-								<SectionWorldObjects {...data}/>
+								<SectionUnits {...data}/>
+							</VBox>
+						</InsetPanel>
+					</TabOption>
+
+					<TabOption name="Improvements">
+						<InsetPanel shrink>
+							<VBox scrollable padding_s gap_s fullSize>
+								<SectionTileImprovements {...data}/>
 							</VBox>
 						</InsetPanel>
 					</TabOption>
@@ -92,15 +101,15 @@ function SectionRealms(props: UseOutlinerWindow.Data): ReactElement {
 	);
 }
 
-function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
+function SectionUnits(props: UseOutlinerWindow.Data): ReactElement {
 	return (
 		<>
-			{props.unit.entries.length > 0 && (
+			{props.units.entries.length > 0 && (
 				<Txt.Header5>
 					<Txt.String>Units</Txt.String>
 				</Txt.Header5>
 			)}
-			{props.unit.entries.map(worldObject => (
+			{props.units.entries.map(worldObject => (
 				<DecoratedPanel
 					key={worldObject.id}
 					pattern
@@ -108,12 +117,43 @@ function SectionWorldObjects(props: UseOutlinerWindow.Data): ReactElement {
 				>
 					<HBox fullSize gap_s padding_s>
 						<Txt.Body>
-							<Txt.Link onClick={() => props.unit.open(worldObject)}>
+							<Txt.Link onClick={() => props.units.open(worldObject)}>
 								<Txt.String>{worldObject.type.group + "/" + worldObject.type.name}</Txt.String>
 							</Txt.Link>
 						</Txt.Body>
 						<HSpacer grow/>
-						<Button circle small onClick={() => props.unit.focusCamera(worldObject)}>
+						<Button circle small onClick={() => props.units.focusCamera(worldObject)}>
+							<Txt.Icon.Eye/>
+						</Button>
+					</HBox>
+				</DecoratedPanel>
+			))}
+		</>
+	);
+}
+
+function SectionTileImprovements(props: UseOutlinerWindow.Data): ReactElement {
+	return (
+		<>
+			{props.tileImprovements.entries.length > 0 && (
+				<Txt.Header5>
+					<Txt.String>Tile Improvements</Txt.String>
+				</Txt.Header5>
+			)}
+			{props.tileImprovements.entries.map(worldObject => (
+				<DecoratedPanel
+					key={worldObject.id}
+					pattern
+					blue
+				>
+					<HBox fullSize gap_s padding_s>
+						<Txt.Body>
+							<Txt.Link onClick={() => props.tileImprovements.open(worldObject)}>
+								<Txt.String>{worldObject.type.group + "/" + worldObject.type.name}</Txt.String>
+							</Txt.Link>
+						</Txt.Body>
+						<HSpacer grow/>
+						<Button circle small onClick={() => props.tileImprovements.focusCamera(worldObject)}>
 							<Txt.Icon.Eye/>
 						</Button>
 					</HBox>

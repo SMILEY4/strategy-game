@@ -103,6 +103,10 @@ export interface GameProxy {
 	 * Disband (i.e. delete) the given world object.
 	 */
 	disbandWorldObject(worldObjectId: WorldObject.Id): void;
+	/**
+	 * Construct the given tile improvement using the given world object.
+	 */
+	constructTileImprovement(worldObjectId: WorldObject.Id, tileImprovementType: string): void;
 	// dev functions
 	/**
 	 * Loose the current webgl context for debug purposes.
@@ -285,6 +289,18 @@ export class GameProxyImpl implements GameProxy {
 			worldObjectId: worldObjectId,
 		});
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
+	}
+
+
+	constructTileImprovement(worldObjectId: WorldObject.Id, tileImprovementType: string): void {
+		this.commandService.addCommand({
+			type: Command.Type.ConstructTileImprovement,
+			id: Command.genId(),
+			worldObjectId: worldObjectId,
+			tileImprovementType: tileImprovementType
+		});
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
+
 	}
 
 	//========== DEV FUNCTIONALITY ============================================

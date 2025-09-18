@@ -6,7 +6,7 @@ import {BrandedId} from "../../common/brandedId";
 export interface WorldObject {
 	id: WorldObject.Id,
 	type: {
-		group: string,
+		group: WorldObject.TypeGroup,
 		name: string
 	},
 	realm: RealmSummary,
@@ -17,5 +17,11 @@ export interface WorldObject {
 export namespace WorldObject {
 
 	export type Id = BrandedId<string, "WorldObjectId">;
+
+	export enum TypeGroup {
+		Unit = "unit",
+		TileImprovement = "tileImprovement",
+		Settlement = "settlement",
+	}
 
 }

@@ -164,11 +164,11 @@ export class GameStateAccessImpl implements GameStateAccess {
 
 		const playerRealm = this.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
 
-		const scout = this.worldObjectDatabase
+		const unitTile = this.worldObjectDatabase
 			.queryMany(WorldObjectDatabase.QUERY_BY_REALM_ID, playerRealm.id)
-			.find(it => it.type.group == "unit" && it.type.name == "scout")
-		if(scout) {
-			return scout.tile
+			.find(it => it.type.group === WorldObject.TypeGroup.Unit)
+		if(unitTile) {
+			return unitTile.tile
 		}
 
 		const tileCenter =  this.getTileSummaryAt(0, 0);

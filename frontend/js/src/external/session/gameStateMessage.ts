@@ -15,6 +15,8 @@ export type TerrainTypeMsg = "LAND" | "WATER"
 
 export type ResourceTypeMsg = "NONE" | "WOOD" | "FISH" | "STONE" | "METAL"
 
+export type WorldObjectTypeGroupMsg = "unit" | "tile-improvement" | "settlement"
+
 export interface TileMessage {
 	identifier: {
 		id: string,
@@ -50,7 +52,7 @@ export interface RealmMessage {
 export interface WorldObjectMessage {
 	id: string,
 	type: {
-		group: "unit" | "?",
+		group: WorldObjectTypeGroupMsg,
 		name: string,
 	},
 	realm: {
@@ -62,17 +64,31 @@ export interface WorldObjectMessage {
 		q: number,
 		r: number
 	},
-	components: (MoveWorldObjectComponentMessage | VisionWorldObjectComponentMessage)[],
+	components: (MoveWorldObjectComponentMessage | VisionWorldObjectComponentMessage | BuilderWorldObjectComponentMessage | SettlementSpawnerWorldObjectComponentMessage)[],
 }
 
 
 interface MoveWorldObjectComponentMessage {
-	type: "movement"
-	maxMovement: number
+	type: "movement";
+	maxMovement: number;
 }
 
 
 interface VisionWorldObjectComponentMessage {
-	type: "vision"
-	radius: number
+	type: "vision";
+	radius: number;
+}
+
+interface BuilderWorldObjectComponentMessage {
+	type: "builder";
+	maxUses: number;
+	remainingUses: number;
+	options: ({
+		type: string,
+		available: boolean
+	})[]
+}
+
+interface SettlementSpawnerWorldObjectComponentMessage {
+	type: "settlementSpawner";
 }

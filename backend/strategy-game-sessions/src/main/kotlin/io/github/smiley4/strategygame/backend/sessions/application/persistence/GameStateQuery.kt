@@ -16,6 +16,7 @@ import io.github.smiley4.strategygame.backend.sessions.application.persistence.e
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.RealmEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.TileEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectEntity
+import kotlin.jvm.java
 
 internal class GameStateQuery(private val database: ArangoDatabase) {
 

@@ -33,7 +33,7 @@ export namespace LabelsElementGenerator {
 				tileId: worldObject.tile.id,
 				type: "unit",
 				name: worldObject.type.group + "/" + worldObject.type.name,
-				color: `rgb(${worldObject.realm.color.red},${worldObject.realm.color.green},${worldObject.realm.color.blue})`,
+				color: worldObject.realm.color.toCss(),
 				index: 0,
 			});
 		}

@@ -11,6 +11,9 @@ import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
 import {Command} from "../../../../../models/command/command";
+import {
+	UseTileImprovementConstructionWindow
+} from "../tileimprovementconstruction/useTileImprovementConstructionWindow";
 
 export namespace UseUnitWindow {
 
@@ -33,7 +36,11 @@ export namespace UseUnitWindow {
 		centerCamera: () => void,
 	}
 
-	export type UnitAction = UnitCancelCurrentCommandAction | UnitMoveAction | UnitDisbandAction
+	export type UnitAction = UnitCancelCurrentCommandAction
+		| UnitMoveAction
+		| ConstructTileImprovementAction
+		| SpawnSettlementAction
+		| UnitDisbandAction
 
 	export interface UnitCancelCurrentCommandAction {
 		type: "cancel-current-command"
@@ -43,6 +50,18 @@ export namespace UseUnitWindow {
 
 	export interface UnitMoveAction {
 		type: "move"
+		enabled: boolean,
+		perform: () => void,
+	}
+
+	export interface ConstructTileImprovementAction {
+		type: "construct-tile-improvement"
+		enabled: boolean,
+		perform: () => void,
+	}
+
+	export interface SpawnSettlementAction {
+		type: "spawn-settlement"
 		enabled: boolean,
 		perform: () => void,
 	}
@@ -82,6 +101,9 @@ export namespace UseUnitWindow {
 			if(cmd.type === Command.Type.Disband) {
 				return cmd.worldObjectId === worldObject.id
 			}
+			if(cmd.type === Command.Type.ConstructTileImprovement) {
+				return cmd.worldObjectId === worldObject.id
+			}
 			return false;
 		})
 
@@ -103,6 +125,23 @@ export namespace UseUnitWindow {
 			} as UnitDisbandAction)
 		}
 
+		// construct tile improvement
+		if(worldObject.realm.ownedByUser && WorldObjectComponent.has(worldObject, WorldObjectComponent.Type.Builder)) {
+			actions.push({
+				type: "construct-tile-improvement",
+				enabled: relevantCommands.length == 0,
+				perform: () => UseTileImprovementConstructionWindow.open(worldObject.id),
+			} as ConstructTileImprovementAction)
+		}
+
+		// spawn settlement
+		if(worldObject.realm.ownedByUser && WorldObjectComponent.has(worldObject, WorldObjectComponent.Type.SettlementSpawner)) {
+			actions.push({
+				type: "spawn-settlement",
+				enabled: relevantCommands.length == 0,
+				perform: () => undefined,
+			} as SpawnSettlementAction)
+		}
 
 		// cancel current command
 		if(worldObject.realm.ownedByUser) {

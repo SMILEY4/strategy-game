@@ -24,31 +24,42 @@ export namespace UseOutlinerWindow {
 	}
 
 	export interface Data {
-		unit: {
-			entries: WorldObjectOutline[],
-			open: (outline: WorldObjectOutline) => void,
-			focusCamera: (outline: WorldObjectOutline) => void,
-		},
 		realms: {
 			entries: RealmOutline[],
 			open: (outline: RealmOutline) => void,
 		}
+		units: {
+			entries: WorldObjectOutline[],
+			open: (outline: WorldObjectOutline) => void,
+			focusCamera: (outline: WorldObjectOutline) => void,
+		},
+		tileImprovements: {
+			entries: WorldObjectOutline[],
+			open: (outline: WorldObjectOutline) => void,
+			focusCamera: (outline: WorldObjectOutline) => void,
+		},
 	}
 
 	export function useData(): UseOutlinerWindow.Data {
 
 		const realms = GameStateHooks.useOutlineRealms();
 		const units = GameStateHooks.useOutlineUnits();
+		const tileImprovements = GameStateHooks.useOutlineTileImprovements();
 
 		return {
-			unit: {
+			realms: {
+				entries: realms,
+				open: (outline: RealmOutline) => UseRealmWindow.open(outline.id),
+			},
+			units: {
 				entries: units,
 				open: (outline: WorldObjectOutline) => UseUnitWindow.open(outline.id),
 				focusCamera: (outline: WorldObjectOutline) => App.gameProxy.focusCamera(outline.tile.position),
 			},
-			realms: {
-				entries: realms,
-				open: (outline: RealmOutline) => UseRealmWindow.open(outline.id),
+			tileImprovements: {
+				entries: tileImprovements,
+				open: (outline: WorldObjectOutline) => UseUnitWindow.open(outline.id),
+				focusCamera: (outline: WorldObjectOutline) => App.gameProxy.focusCamera(outline.tile.position),
 			},
 		};
 	}

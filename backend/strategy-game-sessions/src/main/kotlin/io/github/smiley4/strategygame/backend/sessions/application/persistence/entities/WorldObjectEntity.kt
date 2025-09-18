@@ -5,7 +5,10 @@ import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
-import io.github.smiley4.strategygame.backend.commondata.WorldObjectType
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Builder
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Movement
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.SettlementSpawner
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Vision
 
 internal class WorldObjectEntity(
     val realmId: String,
@@ -23,18 +26,23 @@ internal class WorldObjectEntity(
                 realmId = serviceModel.realm.value,
                 gameId = gameId,
                 type = WorldObjectTypeEntity(
-                    group = serviceModel.type.group,
+                    group = serviceModel.type.group.name,
                     name = serviceModel.type.name
                 ),
                 tile = TileRefEntity.of(serviceModel.tile),
                 components = serviceModel.components.map {
                     when (it) {
-                        is WorldObjectComponent.Movement -> WorldObjectComponentEntity.Movement(
+                        is WorldObjectComponent.Movement -> Movement(
                             maxMovement = it.maxMovement,
                         )
-                        is WorldObjectComponent.Vision -> WorldObjectComponentEntity.Vision(
+                        is WorldObjectComponent.Vision -> Vision(
                             radius = it.radius
                         )
+                        is WorldObjectComponent.Builder -> Builder(
+                            maxUses = it.maxUses,
+                            remainingUses = it.remainingUses
+                        )
+                        is WorldObjectComponent.SettlementSpawner -> SettlementSpawner()
                     }
                 }
             )
@@ -45,21 +53,26 @@ internal class WorldObjectEntity(
         return WorldObject(
             id = WorldObject.Id(this.getKeyOrThrow()),
             realm = Realm.Id(this.realmId),
-            type = WorldObjectType(
-                group = this.type.group,
+            type = WorldObject.Type(
+                group = WorldObject.Group.valueOf(this.type.group),
                 name = this.type.name
             ),
             tile = this.tile.asServiceModel(),
             components = this.components.map {
                 when (it) {
-                    is WorldObjectComponentEntity.Movement -> WorldObjectComponent.Movement(
+                    is Movement -> WorldObjectComponent.Movement(
                         maxMovement = it.maxMovement,
                     )
-                    is WorldObjectComponentEntity.Vision -> WorldObjectComponent.Vision(
+                    is Vision -> WorldObjectComponent.Vision(
                         radius = it.radius
                     )
+                    is Builder -> WorldObjectComponent.Builder(
+                        maxUses = it.maxUses,
+                        remainingUses = it.remainingUses
+                    )
+                    is SettlementSpawner -> WorldObjectComponent.SettlementSpawner()
                 }
-            }
+            }.toMutableList()
         )
     }
 
@@ -69,6 +82,7 @@ data class WorldObjectTypeEntity(
     val group: String,
     val name: String,
 )
+
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.SIMPLE_NAME,
@@ -85,18 +99,12 @@ internal sealed interface WorldObjectComponentEntity {
         val radius: Int
     ) : WorldObjectComponentEntity
 
-}
+    class Builder(
+        val maxUses: Int,
+        var remainingUses: Int,
+    ) : WorldObjectComponentEntity
+
+    class SettlementSpawner : WorldObjectComponentEntity
 
 
-/**
- * Required to retain type information (i.e. data from JsonTypeInfo) of otherwise generic list during serialization.
- * "type"-field will be missing otherwise if serialized as elements of a generic list.
- * See https://github.com/FasterXML/jackson-databind/pull/1309
- */
-internal class WorldObjectEntityCollection : ArrayList<WorldObjectEntity>() {
-    companion object {
-        fun Collection<WorldObjectEntity>.toTypedCollection(): WorldObjectEntityCollection {
-            return WorldObjectEntityCollection().also { it.addAll(this) }
-        }
-    }
 }
