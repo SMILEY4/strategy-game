@@ -34,6 +34,15 @@ export namespace WorldObjectWasmSerializer {
 		writer.pushUint8(worldObject.realm.color.getRedByte());
 		writer.pushUint8(worldObject.realm.color.getGreenByte());
 		writer.pushUint8(worldObject.realm.color.getBlueByte());
+
+		// type_group: u8,
+		writer.pushUint8(worldObjectTypeGroupMapping[worldObject.type.group]);
 	}
+
+	const worldObjectTypeGroupMapping: Record<WorldObject.TypeGroup, number> = {
+		[WorldObject.TypeGroup.Unit]: 1,
+		[WorldObject.TypeGroup.TileImprovement]: 2,
+		[WorldObject.TypeGroup.Settlement]: 3,
+	};
 
 }
