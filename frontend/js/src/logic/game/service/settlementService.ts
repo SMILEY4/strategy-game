@@ -4,9 +4,19 @@ import {TileSummary} from "../../../models/tile/tileSummary";
 import {GameClient} from "./gameClient";
 import {CommandService} from "./commandService";
 import {Command} from "../../../models/command/command";
-import {AudioType} from "../../../common/audioService";
+import {GameStateAccess} from "../../../state/gameStateAccess";
+import {GameStateWriter} from "../../../state/gameStateWriter";
+import {HexUtils} from "../../../common/hexUtils";
 
 export interface SettlementService {
+	/**
+	 * Start mode for creating a new settlement.
+	 */
+	beginCreateSettlement(worldObjectId: WorldObject.Id): void
+	/**
+	 * Cancel mode for creating a new settlement.
+	 */
+	cancelCreateSettlement(): void
 	/**
 	 * Provides a randomly generated name for a settlement.
 	 */
@@ -26,7 +36,22 @@ export class SettlementServiceImpl implements SettlementService {
 	constructor(
 		private readonly gameClient: GameClient,
 		private readonly commandService: CommandService,
+		private readonly gameStateAccess: GameStateAccess,
+		private readonly gameStateWriter: GameStateWriter
 	) {
+	}
+
+	beginCreateSettlement(worldObjectId: WorldObject.Id): void {
+		const worldObject = this.gameStateAccess.getWorldObjectSummary(worldObjectId);
+		if (!worldObject) {
+			return;
+		}
+		const tiles = this.findValidTiles(worldObject.tile.position);
+		this.gameStateWriter.setHighlightedTiles(tiles)
+	}
+
+	cancelCreateSettlement() {
+		this.gameStateWriter.setHighlightedTiles([])
 	}
 
 	getRandomSettlementName(): Promise<string> {
@@ -49,6 +74,11 @@ export class SettlementServiceImpl implements SettlementService {
 			name: name,
 			tile: tile,
 		});
+		this.gameStateWriter.setHighlightedTiles([])
+	}
+
+	private findValidTiles(tile: Tile.Position): Tile.Position[] {
+		return HexUtils.getPositionsRadius(tile.q, tile.r, 1)
 	}
 
 }

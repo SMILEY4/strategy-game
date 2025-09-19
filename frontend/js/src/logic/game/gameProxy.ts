@@ -110,6 +110,14 @@ export interface GameProxy {
 	 */
 	constructTileImprovement(worldObjectId: WorldObject.Id, tileImprovementType: string): void;
 	/**
+	 * Start mode for creating a new settlement.
+	 */
+	beginCreateSettlement(worldObjectId: WorldObject.Id): void
+	/**
+	 * Cancel mode for creating a new settlement.
+	 */
+	cancelCreateSettlement(): void
+	/**
 	 * Provides a randomly generated name for a settlement.
 	 */
 	getRandomSettlementName(): Promise<string>;
@@ -318,6 +326,14 @@ export class GameProxyImpl implements GameProxy {
 		});
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
 
+	}
+
+	beginCreateSettlement(worldObjectId: WorldObject.Id): void {
+		this.settlementService.beginCreateSettlement(worldObjectId)
+	}
+
+	cancelCreateSettlement(): void {
+		this.settlementService.cancelCreateSettlement();
 	}
 
 	getRandomSettlementName(): Promise<string> {

@@ -48,6 +48,7 @@ export namespace UseSettlementCreateWindow {
 
 		useEffect(() => {
 			App.gameProxy.getRandomSettlementName().then(setName);
+			App.gameProxy.beginCreateSettlement(worldObjectId);
 		}, []);
 
 		useEffect(() => {
@@ -64,7 +65,10 @@ export namespace UseSettlementCreateWindow {
 				},
 			},
 			randomizeName: () => App.gameProxy.getRandomSettlementName().then(setName),
-			cancel: () => closeWindow(windowId),
+			cancel: () => {
+				App.gameProxy.cancelCreateSettlement();
+				closeWindow(windowId)
+			},
 			create: () => {
 				App.gameProxy.createSettlement(tile, worldObjectId, name);
 				closeWindow(windowId);

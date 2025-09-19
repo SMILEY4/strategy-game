@@ -91,7 +91,7 @@ export namespace App {
 	const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
 	const movementService: MovementService = new MovementServiceImpl(gameStateAccess, gameStateWriter, gameClient, commandService);
 	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
-	const settlementService: SettlementService = new SettlementServiceImpl(gameClient, commandService);
+	const settlementService: SettlementService = new SettlementServiceImpl(gameClient, commandService, gameStateAccess, gameStateWriter);
 	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, cameraService, gameStateAccess, gameStateWriter);
 	const turnEndService: TurnEndService = new TurnEndServiceImpl(gameSessionService, movementService, gameStateWriter, gameStateAccess);
 	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
