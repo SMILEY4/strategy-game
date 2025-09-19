@@ -7,6 +7,7 @@ import {Projections} from "../../../common/webgl/projections";
 import {Camera} from "../../../common/webgl/camera";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
 import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/unit/useWorldObjectWindow";
+import {Tile} from "../../../models/tile/tile";
 
 export interface TileService {
 	/**
@@ -21,19 +22,66 @@ export interface TileService {
 	 * Return the tile at the given screen position
 	 */
 	pickTileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): TileSummary | null;
+	/**
+	 * Start tile selection process. The result is later returned in the promise (or null if cancelled).
+	 */
+	selectTile(options: Tile.Position[]): Promise<TileSummary | null>;
+	/**
+	 * Cancels the tile selection process. This resolves the opened promise with null.
+	 */
+	cancelTileSelection(): void;
 }
 
 export class TileServiceImpl implements TileService {
 
-	private readonly localStateAccess: GameStateAccess;
-	private readonly gameStateWriter: GameStateWriter;
+	private tileSelectionState: null | ({
+		options: Tile.Position[];
+		resolve: (value: null | TileSummary | PromiseLike<null | TileSummary>) => void
+		reject: () => void;
+	}) = null
 
-	constructor(localStateAccess: GameStateAccess, gameStateWriter: GameStateWriter) {
-		this.localStateAccess = localStateAccess;
-		this.gameStateWriter = gameStateWriter;
+	constructor(
+		private readonly localStateAccess: GameStateAccess,
+		private readonly gameStateWriter: GameStateWriter
+	) {
 	}
 
+	selectTile(options: Tile.Position[]): Promise<TileSummary | null> {
+        if(this.tileSelectionState) {
+			this.cancelTileSelection()
+		}
+		this.gameStateWriter.setHighlightedTiles(options)
+		return new Promise<TileSummary | null>((resolve, reject) => {
+			this.tileSelectionState = {
+				options: options,
+				resolve: resolve,
+				reject: reject,
+			}
+		})
+    }
+
+	resolveTileSelection(tile: TileSummary) {
+		if(this.tileSelectionState) {
+			this.tileSelectionState.resolve(tile)
+			this.tileSelectionState = null;
+			this.gameStateWriter.setHighlightedTiles([])
+		}
+	}
+
+    cancelTileSelection(): void {
+        if(this.tileSelectionState) {
+			this.tileSelectionState.resolve(null)
+			this.tileSelectionState = null;
+			this.gameStateWriter.setHighlightedTiles([])
+		}
+    }
+
 	clickTile(tile: TileSummary): void {
+
+		if(this.tileSelectionState) {
+			this.resolveTileSelection(tile)
+			return
+		}
 
 		this.gameStateWriter.setSelectedTile(tile)
 

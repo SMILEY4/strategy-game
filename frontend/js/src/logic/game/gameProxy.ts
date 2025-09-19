@@ -12,7 +12,6 @@ import {GameSessionService} from "./service/gameSessionService";
 import {CommandService} from "./service/commandService";
 import {MonitoringService} from "./service/monitoringService";
 import {GameRenderer} from "../../renderer/gameRenderer";
-import {UID} from "../../common/uid";
 import {Tile} from "../../models/tile/tile";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {TileSummary} from "../../models/tile/tileSummary";
@@ -77,7 +76,7 @@ export interface GameProxy {
 	/**
 	 * Move the camera to focus on the given tile.
 	 */
-	focusCamera(tilePosition: Tile.Position): void
+	focusCamera(tilePosition: Tile.Position): void;
 	// basic game functionality
 	/**
 	 * End the current turn and send commands to server.
@@ -86,12 +85,21 @@ export interface GameProxy {
 	/**
 	 * Select the given map mode as the new active map mode.
 	 */
-	selectMapMode(mapMode: MapMode): void
+	selectMapMode(mapMode: MapMode): void;
 	// commands
 	/**
 	 * Cancel the given command.
 	 */
 	commandCancel(command: Command): void;
+	// tiles
+	/**
+	 * Start tile selection process. The result is later returned in the promise.
+	 */
+	selectTile(options: Tile.Position[]): Promise<Tile.Position>;
+	/**
+	 * Cancels the tile selection process. This rejects the opened promise.
+	 */
+	cancelTileSelection(): void;
 	// world objects
 	/**
 	 * Start "move" mode for the given world object.
@@ -112,11 +120,11 @@ export interface GameProxy {
 	/**
 	 * Start mode for creating a new settlement.
 	 */
-	beginCreateSettlement(worldObjectId: WorldObject.Id): void
+	beginCreateSettlement(worldObjectId: WorldObject.Id): void;
 	/**
 	 * Cancel mode for creating a new settlement.
 	 */
-	cancelCreateSettlement(): void
+	cancelCreateSettlement(): void;
 	/**
 	 * Provides a randomly generated name for a settlement.
 	 */
@@ -124,7 +132,7 @@ export interface GameProxy {
 	/**
 	 * Validate before creating a settlement. Return errors as list of strings.
 	 */
-	validateCreateSettlement(tileId: Tile.Id, worldObjectId: WorldObject.Id, name: string): string[]
+	validateCreateSettlement(tileId: Tile.Id, worldObjectId: WorldObject.Id, name: string): string[];
 	/**
 	 * Create a new settlement
 	 */
@@ -141,7 +149,7 @@ export interface GameProxy {
 	/**
 	 * Export the current monitoring data
 	 */
-	exportMonitoringData(): void
+	exportMonitoringData(): void;
 }
 
 export class GameProxyImpl implements GameProxy {
@@ -233,18 +241,18 @@ export class GameProxyImpl implements GameProxy {
 	mouseClicked(clientX: number, clientY: number): void {
 		const clickedTile = this.tileService.pickTileAt(clientX, clientY, this.canvasHandle);
 		if (clickedTile != null) {
-			if (this.movementService.isMovementActive()) {
-				this.movementService.addStep(clickedTile.id).then(added => {
-					if (added) {
-						AudioType.CLICK_PRIMARY.play(this.audioService);
-					} else {
-						AudioType.CLICK_CLOSE.play(this.audioService);
-					}
-				});
-			} else {
-				this.tileService.clickTile(clickedTile);
-				AudioType.CLICK_PRIMARY.play(this.audioService);
-			}
+			// if (this.movementService.isMovementActive()) {
+			// 	this.movementService.addStep(clickedTile.id).then(added => {
+			// 		if (added) {
+			// 			AudioType.CLICK_PRIMARY.play(this.audioService);
+			// 		} else {
+			// 			AudioType.CLICK_CLOSE.play(this.audioService);
+			// 		}
+			// 	});
+			// } else {
+			this.tileService.clickTile(clickedTile);
+			AudioType.CLICK_PRIMARY.play(this.audioService);
+			// }
 		}
 	}
 
@@ -257,7 +265,7 @@ export class GameProxyImpl implements GameProxy {
 	}
 
 	mouseScrolled(d: number, clientX: number, clientY: number): void {
-		this.cameraService.zoomAt(clientX, clientY, d > 0 ? "out" : "in", this.canvasHandle)
+		this.cameraService.zoomAt(clientX, clientY, d > 0 ? "out" : "in", this.canvasHandle);
 		this.updateMouseOver(clientX, clientY);
 	}
 
@@ -290,10 +298,20 @@ export class GameProxyImpl implements GameProxy {
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
+	//========== TILES ========================================================
+
+	selectTile(options: Tile.Position[]): Promise<Tile.Position> {
+		return this.tileService.selectTile(options);
+	}
+
+	cancelTileSelection(): void {
+		this.tileService.cancelTileSelection();
+	}
+
 	//========== UNITS / WORLD OBJECTS ========================================
 
 	beginMovement(worldObjectId: WorldObject.Id): void {
-		this.movementService.beginMovement(worldObjectId).then();
+		this.movementService.beginMovement(worldObjectId);
 		AudioType.CLICK_PRIMARY.play(this.audioService);
 	}
 
@@ -322,14 +340,14 @@ export class GameProxyImpl implements GameProxy {
 			type: Command.Type.ConstructTileImprovement,
 			id: Command.genId(),
 			worldObjectId: worldObjectId,
-			tileImprovementType: tileImprovementType
+			tileImprovementType: tileImprovementType,
 		});
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
 
 	}
 
 	beginCreateSettlement(worldObjectId: WorldObject.Id): void {
-		this.settlementService.beginCreateSettlement(worldObjectId)
+		this.settlementService.beginCreateSettlement(worldObjectId);
 	}
 
 	cancelCreateSettlement(): void {

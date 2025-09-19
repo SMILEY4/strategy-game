@@ -1,24 +1,21 @@
 import create from "zustand";
-import {MovementTarget} from "../../models/misc/movementTarget";
 import {WorldObject} from "../../models/worldobject/worldObject";
+import {TileSummary} from "../../models/tile/tileSummary";
 
 export namespace MovementModeState {
 
 	export interface State {
-		path: MovementTarget[],
-		availableTargets: MovementTarget[],
 		worldObjectId: WorldObject.Id | null,
-		set: (worldObjectId: WorldObject.Id | null, path: MovementTarget[], availableTargets: MovementTarget[]) => void
+		path: TileSummary[],
+		set: (worldObjectId: WorldObject.Id | null, path: TileSummary[]) => void
 	}
 
 	export const useState = create<State>((set) => ({
-		path: [],
-		availableTargets: [],
 		worldObjectId: null,
-		set: (worldObjectId: WorldObject.Id | null, path: MovementTarget[], availableTargets: MovementTarget[]) => set(() => ({
+		path: [],
+		set: (worldObjectId: WorldObject.Id | null, path: TileSummary[]) => set(() => ({
 			worldObjectId: worldObjectId,
 			path: path,
-			availableTargets: availableTargets,
 		})),
 	}));
 

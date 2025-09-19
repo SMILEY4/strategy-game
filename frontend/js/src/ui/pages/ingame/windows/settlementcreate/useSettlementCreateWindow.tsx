@@ -70,7 +70,7 @@ export namespace UseSettlementCreateWindow {
 				closeWindow(windowId)
 			},
 			create: () => {
-				App.gameProxy.createSettlement(tile, worldObjectId, name);
+				// App.gameProxy.createSettlement(tile, worldObjectId, name);
 				closeWindow(windowId);
 			},
 		};

@@ -103,7 +103,7 @@ export namespace GameStateHooks {
 		const worldObject = useWorldObject(worldObjectId);
 		if (worldObject) {
 			const maxMovement = WorldObjectComponent.get(worldObject, WorldObjectComponent.Type.Movement).maxMovement
-			return maxMovement - path.sum(0, it => it.cost);
+			return maxMovement - (path.length - 1)
 		} else {
 			return 0;
 		}

@@ -7,16 +7,17 @@ import {Command} from "../../../models/command/command";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {HexUtils} from "../../../common/hexUtils";
+import {TileService} from "./tileService";
 
 export interface SettlementService {
 	/**
 	 * Start mode for creating a new settlement.
 	 */
-	beginCreateSettlement(worldObjectId: WorldObject.Id): void
+	beginCreateSettlement(worldObjectId: WorldObject.Id): void;
 	/**
 	 * Cancel mode for creating a new settlement.
 	 */
-	cancelCreateSettlement(): void
+	cancelCreateSettlement(): void;
 	/**
 	 * Provides a randomly generated name for a settlement.
 	 */
@@ -37,9 +38,12 @@ export class SettlementServiceImpl implements SettlementService {
 		private readonly gameClient: GameClient,
 		private readonly commandService: CommandService,
 		private readonly gameStateAccess: GameStateAccess,
-		private readonly gameStateWriter: GameStateWriter
+		private readonly gameStateWriter: GameStateWriter,
+		private readonly tileService: TileService,
 	) {
 	}
+
+
 
 	beginCreateSettlement(worldObjectId: WorldObject.Id): void {
 		const worldObject = this.gameStateAccess.getWorldObjectSummary(worldObjectId);
@@ -47,11 +51,15 @@ export class SettlementServiceImpl implements SettlementService {
 			return;
 		}
 		const tiles = this.findValidTiles(worldObject.tile.position);
-		this.gameStateWriter.setHighlightedTiles(tiles)
+		this.tileService.selectTile(tiles).then(tilePosition => {
+			const tile = this.gameStateAccess.getTileAt(tilePosition.q, tilePosition.r);
+			this.createSettlement(TileSummary.from(tile!!), worldObjectId, "testing")
+		});
+		// this.gameStateWriter.setHighlightedTiles(tiles)
 	}
 
 	cancelCreateSettlement() {
-		this.gameStateWriter.setHighlightedTiles([])
+		this.gameStateWriter.setHighlightedTiles([]);
 	}
 
 	getRandomSettlementName(): Promise<string> {
@@ -74,11 +82,11 @@ export class SettlementServiceImpl implements SettlementService {
 			name: name,
 			tile: tile,
 		});
-		this.gameStateWriter.setHighlightedTiles([])
+		this.gameStateWriter.setHighlightedTiles([]);
 	}
 
 	private findValidTiles(tile: Tile.Position): Tile.Position[] {
-		return HexUtils.getPositionsRadius(tile.q, tile.r, 1)
+		return HexUtils.getPositionsRadius(tile.q, tile.r, 1);
 	}
 
 }
