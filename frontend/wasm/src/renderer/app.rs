@@ -65,10 +65,10 @@ impl RenderApp {
         self.state.world_objects = world_objects;
     }
 
-    /// Set/Update the current move targets.
+    /// Set/Update the current highlighted tiles.
     /// This does not automatically trigger a re-calculation of anything else.
-    pub fn set_move_targets(&mut self, targets: Vec<TilePosition>) {
-        self.state.move_targets = HashSet::from_iter(targets);
+    pub fn set_highlighted_tiles(&mut self, highlighted_tiles: Vec<TilePosition>) {
+        self.state.highlighted_tiles = HashSet::from_iter(highlighted_tiles);
     }
 
     /// Set/Update the current relevant world area.

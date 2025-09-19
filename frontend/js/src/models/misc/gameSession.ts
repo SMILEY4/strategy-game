@@ -1,5 +1,6 @@
 import {MapMode} from "./mapMode";
 import {TileSummary} from "../tile/tileSummary";
+import {Tile} from "../tile/tile";
 
 /**
  * Local data for the active game session.
@@ -10,6 +11,7 @@ export interface GameSession {
 	turn: number,
 	selectedTile: TileSummary | null;
 	hoverTile: TileSummary | null;
+	highlightedTiles: Tile.Position[];
 	mapMode: MapMode;
 }
 

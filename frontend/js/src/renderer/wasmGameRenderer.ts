@@ -24,9 +24,9 @@ export interface WasmGameRenderer {
 	 */
 	setMapMode(mapMode: MapMode): void;
 	/**
-	 * Set the active movement targets
+	 * Set the currently highlighted tiles
 	 */
-	setMoveTargets(tiles: TileSummary[]): void;
+	setHighlightedTiles(tiles: Tile.Position[]): void;
 	/**
 	 * Set the bounds of the currently relevant world area
 	 */

@@ -11,6 +11,7 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
 			turn: -1,
 			selectedTile: null,
 			hoverTile: null,
+			highlightedTiles: [],
 			mapMode: MapMode.DEFAULT,
 		});
 	}

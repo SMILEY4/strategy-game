@@ -35,6 +35,7 @@ export interface GameStateAccess {
 	getTiles(): Tile[];
 	getTilesRevId(): string;
 	getSpawnTile(): TileSummary;
+	getHighlightedTiles(): Tile.Position[];
 	// realms
 	getPlayerRealmSummary(): RealmSummary;
 	// world objects
@@ -177,6 +178,10 @@ export class GameStateAccessImpl implements GameStateAccess {
 		}
 
 		throw new Error("Could not find spawn tile.")
+	}
+
+	getHighlightedTiles(): Tile.Position[] {
+		return this.gameSessionDatabase.get().highlightedTiles;
 	}
 
 	getTiles(): Tile[] {

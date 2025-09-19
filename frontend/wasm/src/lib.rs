@@ -113,12 +113,12 @@ impl WasmRenderApp {
         }
     }
 
-    /// Set/Update the current move targets.
+    /// Set/Update the current highlighted tiles.
     /// This does not automatically trigger a re-calculation of anything else.
-    pub fn set_move_targets(&mut self, js_move_targets: JsValue) {
-        let move_targets: Vec<TilePosition> =
-            serde_wasm_bindgen::from_value(js_move_targets).expect("valid js data");
-        self.app.set_move_targets(move_targets)
+    pub fn set_highlighted_tiles(&mut self, js_tile_positions: JsValue) {
+        let tile_positions: Vec<TilePosition> =
+            serde_wasm_bindgen::from_value(js_tile_positions).expect("valid js data");
+        self.app.set_highlighted_tiles(tile_positions)
     }
 
     /// Re-calculate the border data for all relevant tiles.
