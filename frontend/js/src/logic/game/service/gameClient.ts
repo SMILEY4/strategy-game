@@ -7,4 +7,8 @@ export interface GameClient {
 	 * Get all available positions to move to for the given world object id from the given location
 	 */
 	getAvailableMovementPositions(worldObject: WorldObject.Id, tile: Tile.Id, points: number): Promise<MovementTarget[]>;
+	/**
+	 * Provides a randomly generated name for a settlement.
+	 */
+	getRandomSettlementName(): Promise<string>;
 }

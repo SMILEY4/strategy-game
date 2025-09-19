@@ -1,5 +1,4 @@
 import {Command} from "../../models/command/command";
-import {WorldObject} from "../../models/worldobject/worldObject";
 
 export type CommandMessage = CommandMessage.Move
 	| CommandMessage.Disband
@@ -26,14 +25,28 @@ export namespace CommandMessage {
 
 	export interface ConstructTileImprovement {
 		type: "world-object-construct-improvement";
-		worldObjectId: WorldObject.Id;
+		worldObjectId: string;
 		improvementType: string;
+	}
+
+	export interface CreateSettlement {
+		type:  "world-object-spawn-settlement";
+		worldObjectId: string;
+		tile: {
+			id: string,
+			position: {
+				q: number,
+				r: number
+			}
+		};
+		settlementName: string;
 	}
 
 	type CommandMessageMapping = {
 		[Command.Type.Move]: CommandMessage.Move;
 		[Command.Type.Disband]: CommandMessage.Disband;
 		[Command.Type.ConstructTileImprovement]: CommandMessage.ConstructTileImprovement;
+		[Command.Type.CreateSettlement]: CommandMessage.CreateSettlement;
 	};
 
 	const mapping: {
@@ -58,6 +71,12 @@ export namespace CommandMessage {
 			type: "world-object-construct-improvement",
 			worldObjectId: cmd.worldObjectId,
 			improvementType: cmd.tileImprovementType
+		}),
+		[Command.Type.CreateSettlement]: (cmd) => ({
+			type: "world-object-spawn-settlement",
+			worldObjectId: cmd.worldObjectId,
+			settlementName: cmd.name,
+			tile: cmd.tile
 		}),
 	};
 

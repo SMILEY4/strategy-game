@@ -131,4 +131,21 @@ const commandEntryMapping: {
 			</IndentBox>
 		</>
 	),
+	[Command.Type.CreateSettlement]: (cmd) => (
+		<>
+			<Txt.Header4>
+				<Txt.String>Create Settlement</Txt.String>
+			</Txt.Header4>
+			<Divider line/>
+			<IndentBox>
+				<Txt.Body>
+					<Txt.String>{"name " + cmd.name}</Txt.String>
+					<br/>
+					<Txt.String>{"at " + cmd.tile.position.q + "," + cmd.tile.position.r}</Txt.String>
+					<br/>
+					<Txt.String>{"by " + cmd.worldObjectId}</Txt.String>
+				</Txt.Body>
+			</IndentBox>
+		</>
+	),
 };

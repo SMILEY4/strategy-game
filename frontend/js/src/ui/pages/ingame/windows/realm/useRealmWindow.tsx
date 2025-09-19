@@ -7,7 +7,7 @@ import {WindowGroup} from "../windowGroups";
 import {Realm} from "../../../../../models/realm/realm";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
-import {UseUnitWindow} from "../unit/useUnitWindow";
+import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
 
 export namespace UseRealmWindow {
 
@@ -39,7 +39,7 @@ export namespace UseRealmWindow {
 				realm: realm,
 				worldObjects: worldObjects.map(WorldObjectSummary.from),
 				open: {
-					worldObject: worldObject => UseUnitWindow.open(worldObject.id),
+					worldObject: worldObject => UseWorldObjectWindow.open(worldObject.id),
 				},
 			};
 		} else {

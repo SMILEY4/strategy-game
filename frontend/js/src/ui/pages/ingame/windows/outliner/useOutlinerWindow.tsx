@@ -9,7 +9,7 @@ import {RealmOutline} from "../../../../../models/realm/realmOutline";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {UseRealmWindow} from "../realm/useRealmWindow";
-import {UseUnitWindow} from "../unit/useUnitWindow";
+import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
 
 export namespace UseOutlinerWindow {
 
@@ -53,12 +53,12 @@ export namespace UseOutlinerWindow {
 			},
 			units: {
 				entries: units,
-				open: (outline: WorldObjectOutline) => UseUnitWindow.open(outline.id),
+				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.id),
 				focusCamera: (outline: WorldObjectOutline) => App.gameProxy.focusCamera(outline.tile.position),
 			},
 			tileImprovements: {
 				entries: tileImprovements,
-				open: (outline: WorldObjectOutline) => UseUnitWindow.open(outline.id),
+				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.id),
 				focusCamera: (outline: WorldObjectOutline) => App.gameProxy.focusCamera(outline.tile.position),
 			},
 		};

@@ -36,6 +36,7 @@ import {GameClient} from "./logic/game/service/gameClient";
 import {GameSessionClient} from "./logic/game/service/gameSessionClient";
 import {WasmGameRenderer} from "./renderer/wasmGameRenderer";
 import {WasmGameRendererImpl} from "./external/wasm/wasmGameRendererImpl";
+import {SettlementService, SettlementServiceImpl} from "./logic/game/service/settlementService";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -90,6 +91,7 @@ export namespace App {
 	const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
 	const movementService: MovementService = new MovementServiceImpl(gameStateAccess, gameStateWriter, gameClient, commandService);
 	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
+	const settlementService: SettlementService = new SettlementServiceImpl(gameClient, commandService);
 	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, cameraService, gameStateAccess, gameStateWriter);
 	const turnEndService: TurnEndService = new TurnEndServiceImpl(gameSessionService, movementService, gameStateWriter, gameStateAccess);
 	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
@@ -115,6 +117,7 @@ export namespace App {
 		tileService,
 		cameraService,
 		movementService,
+		settlementService,
 		turnEndService,
 		commandService,
 		monitoringService,

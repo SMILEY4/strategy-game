@@ -9,6 +9,7 @@ import {UID} from "../../common/uid";
 export type Command = Command.Move
 	| Command.Disband
 	| Command.ConstructTileImprovement
+	| Command.CreateSettlement
 
 export namespace Command {
 
@@ -21,13 +22,15 @@ export namespace Command {
 	export enum Type {
 		Move = "move",
 		Disband = "disband",
-		ConstructTileImprovement = "construct-tile-improvement"
+		ConstructTileImprovement = "construct-tile-improvement",
+		CreateSettlement = "create-settlement"
 	}
 
 	export type Mapping = {
 		[Type.Move]: Move,
 		[Type.Disband]: Disband,
 		[Type.ConstructTileImprovement]: ConstructTileImprovement
+		[Type.CreateSettlement]: CreateSettlement
 	}
 
 	interface BaseCommand {
@@ -51,6 +54,13 @@ export namespace Command {
 		type: Type.ConstructTileImprovement;
 		worldObjectId: WorldObject.Id;
 		tileImprovementType: string;
+	}
+
+	export interface CreateSettlement extends BaseCommand {
+		type: Type.CreateSettlement;
+		worldObjectId: WorldObject.Id;
+		tile: TileSummary;
+		name: string;
 	}
 
 }

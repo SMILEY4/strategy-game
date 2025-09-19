@@ -1,5 +1,5 @@
 import React from "react";
-import {UnitWindow} from "./UnitWindow";
+import {WorldObjectWindow} from "./WorldObjectWindow";
 import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {WindowGroup} from "../windowGroups";
@@ -14,8 +14,9 @@ import {Command} from "../../../../../models/command/command";
 import {
 	UseTileImprovementConstructionWindow
 } from "../tileimprovementconstruction/useTileImprovementConstructionWindow";
+import {UseSettlementCreateWindow} from "../settlementcreate/useSettlementCreateWindow";
 
-export namespace UseUnitWindow {
+export namespace UseWorldObjectWindow {
 
 	export function open(worldObjectId: WorldObject.Id | null) {
 		const windowId = UID.generate();
@@ -23,32 +24,32 @@ export namespace UseUnitWindow {
 			id: windowId,
 			groupId: WindowGroup.LEFT_SIDEBAR,
 			anchor: WindowStore.ANCHOR_LEFT_SIDE,
-			content: <UnitWindow windowId={windowId} identifier={worldObjectId}/>,
+			content: <WorldObjectWindow windowId={windowId} identifier={worldObjectId}/>,
 		});
 	}
 
 	export interface Data {
 		worldObject: WorldObject;
-		actions: UnitAction[],
+		actions: WorldObjectAction[],
 		open: {
 			tile: () => void
 		}
 		centerCamera: () => void,
 	}
 
-	export type UnitAction = UnitCancelCurrentCommandAction
-		| UnitMoveAction
+	export type WorldObjectAction = CancelCurrentCommandAction
+		| MoveAction
 		| ConstructTileImprovementAction
 		| SpawnSettlementAction
-		| UnitDisbandAction
+		| DisbandAction
 
-	export interface UnitCancelCurrentCommandAction {
+	export interface CancelCurrentCommandAction {
 		type: "cancel-current-command"
 		enabled: boolean,
 		perform: () => void,
 	}
 
-	export interface UnitMoveAction {
+	export interface MoveAction {
 		type: "move"
 		enabled: boolean,
 		perform: () => void,
@@ -66,7 +67,7 @@ export namespace UseUnitWindow {
 		perform: () => void,
 	}
 
-	export interface UnitDisbandAction {
+	export interface DisbandAction {
 		type: "disband"
 		enabled: boolean,
 		perform: () => void,
@@ -91,8 +92,8 @@ export namespace UseUnitWindow {
 		}
 	}
 
-	function collectActions(worldObject: WorldObject, commands: Command[]): UnitAction[] {
-		const actions: UnitAction[] = [];
+	function collectActions(worldObject: WorldObject, commands: Command[]): WorldObjectAction[] {
+		const actions: WorldObjectAction[] = [];
 
 		const relevantCommands = commands.filter(cmd => {
 			if(cmd.type === Command.Type.Move) {
@@ -113,7 +114,7 @@ export namespace UseUnitWindow {
 				type: "move",
 				enabled: relevantCommands.length == 0,
 				perform: () => UseMoveWindow.open(worldObject.id)
-			} as UnitMoveAction)
+			} as MoveAction)
 		}
 
 		// disband
@@ -122,7 +123,7 @@ export namespace UseUnitWindow {
 				type: "disband",
 				enabled: relevantCommands.length == 0,
 				perform: () => App.gameProxy.disbandWorldObject(worldObject.id),
-			} as UnitDisbandAction)
+			} as DisbandAction)
 		}
 
 		// construct tile improvement
@@ -139,7 +140,7 @@ export namespace UseUnitWindow {
 			actions.push({
 				type: "spawn-settlement",
 				enabled: relevantCommands.length == 0,
-				perform: () => undefined,
+				perform: () => UseSettlementCreateWindow.open(worldObject.tile, worldObject.id),
 			} as SpawnSettlementAction)
 		}
 
@@ -149,7 +150,7 @@ export namespace UseUnitWindow {
 				type: "cancel-current-command",
 				enabled: relevantCommands.length > 0,
 				perform: () => relevantCommands.forEach(it => App.gameProxy.commandCancel(it)),
-			} as UnitCancelCurrentCommandAction)
+			} as CancelCurrentCommandAction)
 		}
 
 		return actions
