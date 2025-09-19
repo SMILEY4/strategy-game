@@ -257,7 +257,7 @@ private fun Route.routingGateway() {
                     routeMovementAvailablePositions(gameService)
                 }
                 route("settlement") {
-                    routeSettlementName()
+                    routeSettlementName(gameService)
                 }
             }
         }

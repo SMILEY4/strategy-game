@@ -5,27 +5,27 @@ import {DecoratedWindow} from "../../../../components/window/decorated/Decorated
 import {Banner} from "../../../../components/banner/Banner";
 import {Divider} from "../../../../components/divider/Divider";
 import {Txt} from "../../../../components/text/Txt";
-import {UseUnitWindow} from "./useUnitWindow";
+import {UseWorldObjectWindow} from "./useWorldObjectWindow";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
-import UnitMoveAction = UseUnitWindow.UnitMoveAction;
-import UnitDisbandAction = UseUnitWindow.UnitDisbandAction;
-import UnitCancelCurrentCommandAction = UseUnitWindow.UnitCancelCurrentCommandAction;
+import UnitMoveAction = UseWorldObjectWindow.MoveAction;
+import UnitDisbandAction = UseWorldObjectWindow.DisbandAction;
+import UnitCancelCurrentCommandAction = UseWorldObjectWindow.CancelCurrentCommandAction;
 
-export interface UnitWindowProps {
+export interface WorldObjectWindowProps {
 	windowId: string;
 	identifier: WorldObject.Id | null;
 }
 
-export function UnitWindow(props: UnitWindowProps): ReactElement {
+export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 
-	const data: UseUnitWindow.Data | null = UseUnitWindow.useData(props.identifier);
+	const data: UseWorldObjectWindow.Data | null = UseWorldObjectWindow.useData(props.identifier);
 
 	if (data === null) {
 		return (
 			<DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
 				<Txt.Body center fullSize>
-					<Txt.String>No unit selected</Txt.String>
+					<Txt.String>No world object selected</Txt.String>
 				</Txt.Body>
 			</DecoratedWindow>
 		);
@@ -36,7 +36,7 @@ export function UnitWindow(props: UnitWindowProps): ReactElement {
 
 					<Banner
 						title={data.worldObject.type.group + "/" + data.worldObject.type.name}
-						subtitle={"Unit"}
+						subtitle={"World Object"}
 						color={data.worldObject.realm.color}
 						spaceAbove
 					>

@@ -6,7 +6,7 @@ import {CanvasHandle} from "../../../common/webgl/canvasHandle";
 import {Projections} from "../../../common/webgl/projections";
 import {Camera} from "../../../common/webgl/camera";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
-import {UseUnitWindow} from "../../../ui/pages/ingame/windows/unit/useUnitWindow";
+import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/unit/useWorldObjectWindow";
 
 export interface TileService {
 	/**
@@ -39,7 +39,7 @@ export class TileServiceImpl implements TileService {
 
 		const worldObjects: WorldObjectSummary[] = this.localStateAccess.getWorldObjectSummariesAt(tile.position.q, tile.position.r)
 		if (worldObjects.length === 1) {
-			UseUnitWindow.open(worldObjects[0].id);
+			UseWorldObjectWindow.open(worldObjects[0].id);
 			return;
 		}
 

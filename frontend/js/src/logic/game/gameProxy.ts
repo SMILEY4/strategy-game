@@ -15,6 +15,8 @@ import {GameRenderer} from "../../renderer/gameRenderer";
 import {UID} from "../../common/uid";
 import {Tile} from "../../models/tile/tile";
 import {WorldObject} from "../../models/worldobject/worldObject";
+import {TileSummary} from "../../models/tile/tileSummary";
+import {SettlementService} from "./service/settlementService";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
@@ -90,7 +92,7 @@ export interface GameProxy {
 	 * Cancel the given command.
 	 */
 	commandCancel(command: Command): void;
-	// units / world objects
+	// world objects
 	/**
 	 * Start "move" mode for the given world object.
 	 */
@@ -107,6 +109,18 @@ export interface GameProxy {
 	 * Construct the given tile improvement using the given world object.
 	 */
 	constructTileImprovement(worldObjectId: WorldObject.Id, tileImprovementType: string): void;
+	/**
+	 * Provides a randomly generated name for a settlement.
+	 */
+	getRandomSettlementName(): Promise<string>;
+	/**
+	 * Validate before creating a settlement. Return errors as list of strings.
+	 */
+	validateCreateSettlement(tileId: Tile.Id, worldObjectId: WorldObject.Id, name: string): string[]
+	/**
+	 * Create a new settlement
+	 */
+	createSettlement(tile: TileSummary, worldObjectId: WorldObject.Id, name: string): void;
 	// dev functions
 	/**
 	 * Loose the current webgl context for debug purposes.
@@ -128,6 +142,7 @@ export class GameProxyImpl implements GameProxy {
 	private readonly tileService: TileService;
 	private readonly cameraService: CameraService;
 	private readonly movementService: MovementService;
+	private readonly settlementService: SettlementService;
 	private readonly turnEndService: TurnEndService;
 	private readonly commandService: CommandService;
 	private readonly monitoringService: MonitoringService;
@@ -141,6 +156,7 @@ export class GameProxyImpl implements GameProxy {
 		tileService: TileService,
 		cameraService: CameraService,
 		movementService: MovementService,
+		settlementService: SettlementService,
 		turnEndService: TurnEndService,
 		commandService: CommandService,
 		monitoringService: MonitoringService,
@@ -152,6 +168,7 @@ export class GameProxyImpl implements GameProxy {
 		this.tileService = tileService;
 		this.cameraService = cameraService;
 		this.movementService = movementService;
+		this.settlementService = settlementService;
 		this.turnEndService = turnEndService;
 		this.commandService = commandService;
 		this.monitoringService = monitoringService;
@@ -301,6 +318,19 @@ export class GameProxyImpl implements GameProxy {
 		});
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
 
+	}
+
+	getRandomSettlementName(): Promise<string> {
+		return this.settlementService.getRandomSettlementName();
+	}
+
+	validateCreateSettlement(tileId: Tile.Id, worldObjectId: WorldObject.Id, name: string): string[] {
+		return this.settlementService.validateCreateSettlement(tileId, worldObjectId, name);
+	}
+
+	createSettlement(tile: TileSummary, worldObjectId: WorldObject.Id, name: string): void {
+		this.settlementService.createSettlement(tile, worldObjectId, name);
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
 	//========== DEV FUNCTIONALITY ============================================

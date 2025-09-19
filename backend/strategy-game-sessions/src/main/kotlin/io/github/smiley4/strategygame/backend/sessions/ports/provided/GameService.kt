@@ -19,4 +19,10 @@ interface GameService {
      */
     suspend fun getAvailableMovementPositions(gameId: Game.Id, worldObjectId: WorldObject.Id, tileId: Tile.Id, currentCost: Int): List<MovementTarget>
 
+
+    /**
+     * @throws GameServiceError
+     * @returns a random name for a settlement.
+     */
+    suspend fun getRandomSettlementName(): String
 }

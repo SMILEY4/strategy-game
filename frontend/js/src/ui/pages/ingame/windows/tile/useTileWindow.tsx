@@ -7,7 +7,7 @@ import {WindowGroup} from "../windowGroups";
 import {Tile} from "../../../../../models/tile/tile";
 import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
-import {UseUnitWindow} from "../unit/useUnitWindow";
+import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
 
@@ -43,7 +43,7 @@ export namespace UseTileWindow {
 				tile: tile,
 				worldObjects: worldObjects,
 				open: {
-					worldObject: worldObjectId => UseUnitWindow.open(worldObjectId)
+					worldObject: worldObjectId => UseWorldObjectWindow.open(worldObjectId)
 				},
 				centerCamera: () => App.gameProxy.focusCamera(tile.position),
 			};

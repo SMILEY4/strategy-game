@@ -2,7 +2,6 @@ import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {MovementTarget} from "../../../models/misc/movementTarget";
 import {CommandService} from "./commandService";
-import {UID} from "../../../common/uid";
 import {GameClient} from "./gameClient";
 import {WorldObject} from "../../../models/worldobject/worldObject";
 import {Tile} from "../../../models/tile/tile";

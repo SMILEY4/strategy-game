@@ -21,7 +21,15 @@ export class GameClientImpl implements GameClient {
 		this.gameStateAccess = gameStateAccess;
 	}
 
-	public getAvailableMovementPositions(worldObject: WorldObject.Id, tile: Tile.Id, points: number): Promise<MovementTarget[]> {
+	getRandomSettlementName(): Promise<string> {
+		return this.httpClient.get<{ name: string }>({
+			url: "/api/game/settlement/randomname",
+			requireAuth: true,
+			token: this.userStateAccess.getAuthTokenOrNull(),
+		}).then(it => it.name);
+	}
+
+	getAvailableMovementPositions(worldObject: WorldObject.Id, tile: Tile.Id, points: number): Promise<MovementTarget[]> {
 		return this.httpClient.get<MovementTargetResponse[]>({
 			url: "/api/game/movement/availablepositions?gameId=" + this.gameStateAccess.getGameIdOrThrow() + "&worldObjectId=" + worldObject + "&pos=" + tile + "&points=" + points,
 			requireAuth: true,
