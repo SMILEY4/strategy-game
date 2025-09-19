@@ -33,12 +33,10 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                 )),
                 primary_border_color: rgba_f32_to_u8(&(map_mode_data.border_color)(tile)),
                 primary_fill_color: rgba_f32_to_u8(&(map_mode_data.fill_color)(tile)),
-                highlight_border_mask: 0,
-                highlight_border_color: [0, 0, 0, 0],
-                highlight_fill_color: if state.move_targets.contains(&position) {
-                    rgba_f32_to_u8(&config.move_target_color)
+                is_highlighted: if state.move_targets.contains(&position) {
+                    1
                 } else {
-                    [0, 0, 0, 0]
+                    0
                 },
                 _padding: [0, 0],
             });

@@ -29,7 +29,7 @@ export class GLAttributeType {
     public static U_INT = new GLAttributeType(4, true, WebGL2RenderingContext.UNSIGNED_INT); // unsigned 32-bit integer
     public static FLOAT = new GLAttributeType(4, false, WebGL2RenderingContext.FLOAT); // 32-bit IEEE floating point number
     public static HALF_FLOAT = new GLAttributeType(2, false, WebGL2RenderingContext.HALF_FLOAT); // 16-bit IEEE floating point number
-	public static PADDING = new GLAttributeType(1, false, WebGL2RenderingContext.BYTE); // 8-bit padding (no data)
+	public static PADDING = new GLAttributeType(1, false, WebGL2RenderingContext.BYTE); // 8-bit padding (no data). vertices (not individual attributes) must be byte aligned to the larges data type.
 
     readonly bytes: number;
     readonly isInteger: boolean;

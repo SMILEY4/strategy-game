@@ -377,23 +377,9 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 				{
-					name: "in_highlightBorderMask",
+					name: "in_isHighlighted",
 					type: GLAttributeType.U_BYTE,
 					amountComponents: 1,
-					divisor: 1,
-				},
-				{
-					name: "in_highlightBorderColor",
-					type: GLAttributeType.U_BYTE,
-					normalized: true,
-					amountComponents: 4,
-					divisor: 1,
-				},
-				{
-					name: "in_highlightFillColor",
-					type: GLAttributeType.U_BYTE,
-					normalized: true,
-					amountComponents: 4,
 					divisor: 1,
 				},
 				{
@@ -423,8 +409,12 @@ export class GameRenderGraphFactory {
 			.withProperty(commonProperties.selectedTile, "u_tileSelection.position")
 			.withProperty(configProps.selectedTileThickness, "u_tileSelection.thickness")
 			.withProperty(configProps.selectedTileColor0, "u_tileSelection.color0")
-			.withProperty(configProps.selectedTileColor1, "u_tileSelection.color1");
-
+			.withProperty(configProps.selectedTileColor1, "u_tileSelection.color1")
+			.withProperty(configProps.tileHighlightGap, "u_highlightData.gap")
+			.withProperty(configProps.tileHighlightColorInnerDefault, "u_highlightData.colorInnerDefault")
+			.withProperty(configProps.tileHighlightColorOuterDefault, "u_highlightData.colorOuterDefault")
+			.withProperty(configProps.tileHighlightColorInnerHover, "u_highlightData.colorInnerHover")
+			.withProperty(configProps.tileHighlightColorOuterHover, "u_highlightData.colorOuterHover");
 
 		const drawOverlay = graph
 			.createDraw("draw-overlay")
@@ -821,6 +811,26 @@ export class GameRenderGraphFactory {
 			selectedTileColor1: graph
 				.createPropertyConstant<[number, number, number, number]>("overlay.tileSelection.color1")
 				.withValue([1.0, 1.0, 1.0, 1.0])
+				.withType(GLUniformType.VEC4),
+			tileHighlightGap: graph
+				.createPropertyConstant<number>("overlay.tileHighlight.gap")
+				.withValue(0.05)
+				.withType(GLUniformType.FLOAT),
+			tileHighlightColorOuterDefault: graph
+				.createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorOuterDefault")
+				.withValue([1.0, 1.0, 0.9, 0.6])
+				.withType(GLUniformType.VEC4),
+			tileHighlightColorInnerDefault: graph
+				.createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorInnerDefault")
+				.withValue([1.0, 1.0, 1.0, 0.0])
+				.withType(GLUniformType.VEC4),
+			tileHighlightColorOuterHover: graph
+				.createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorOuterHover")
+				.withValue([1.0, 1.0, 0.7, 0.6])
+				.withType(GLUniformType.VEC4),
+			tileHighlightColorInnerHover: graph
+				.createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorInnerHover")
+				.withValue([1.0, 1.0, 1.0, 0.0])
 				.withType(GLUniformType.VEC4),
 		};
 	}
