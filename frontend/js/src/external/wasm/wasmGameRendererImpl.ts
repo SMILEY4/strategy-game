@@ -45,9 +45,9 @@ export class WasmGameRendererImpl implements WasmGameRenderer {
 		this.wasmRenderApp.set_map_mode(wasmMapMode);
 	}
 
-	setMoveTargets(tiles: TileSummary[]): void {
-		const wasmTilePositions: TilePositionWasm[] = tiles.map(it => it.position);
-		this.wasmRenderApp.set_move_targets(wasmTilePositions);
+	setHighlightedTiles(tiles: Tile.Position[]): void {
+		const wasmTilePositions: TilePositionWasm[] = tiles
+		this.wasmRenderApp.set_highlighted_tiles(wasmTilePositions);
 	}
 
 	setRelevantWorldArea(relevantArea: Rectangle): void {

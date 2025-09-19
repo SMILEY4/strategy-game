@@ -33,7 +33,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                 )),
                 primary_border_color: rgba_f32_to_u8(&(map_mode_data.border_color)(tile)),
                 primary_fill_color: rgba_f32_to_u8(&(map_mode_data.fill_color)(tile)),
-                is_highlighted: if state.move_targets.contains(&position) {
+                is_highlighted: if state.highlighted_tiles.contains(&position) {
                     1
                 } else {
                     0

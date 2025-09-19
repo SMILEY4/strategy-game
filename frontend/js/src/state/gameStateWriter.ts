@@ -13,6 +13,7 @@ import {TileDatabase} from "./database/tileDatabase";
 import {WorldObjectDatabase} from "./database/worldObjectDatabase";
 import {RealmDatabase} from "./database/realmDatabase";
 import {GameSession} from "../models/misc/gameSession";
+import {Tile} from "../models/tile/tile";
 
 export interface GameStateWriter {
 	setGameSessionState(state: GameSession.SessionState): void;
@@ -20,6 +21,7 @@ export interface GameStateWriter {
 	setCurrentTurn(turn: number): void;
 	setSelectedTile(tile: TileSummary | null): void;
 	setHoveredTile(tile: TileSummary | null): void;
+	setHighlightedTiles(tilePositions: Tile.Position[]): void;
 	setCameraData(cameraData: CameraData): void;
 	setSelectedMapMode(mapMode: MapMode): void;
 	setMovementState(state: MovementState | null): void;
@@ -100,6 +102,12 @@ export class GameStateWriterImpl implements GameStateWriter {
 	setSelectedTile(tile: TileSummary | null): void {
 		this.gameSessionDatabase.update(() => ({
 			selectedTile: tile,
+		}));
+	}
+
+	setHighlightedTiles(tilePositions: Tile.Position[]): void {
+		this.gameSessionDatabase.update(() => ({
+			highlightedTiles: tilePositions,
 		}));
 	}
 

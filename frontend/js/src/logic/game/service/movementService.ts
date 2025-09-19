@@ -63,6 +63,7 @@ export class MovementServiceImpl implements MovementService {
 					}],
 					availableTargets: availableTargets,
 				});
+				this.gameStateWriter.setHighlightedTiles(availableTargets.map(it => it.tile.position))
 			});
 	}
 
@@ -77,10 +78,12 @@ export class MovementServiceImpl implements MovementService {
 			})
 		}
 		this.gameStateWriter.setMovementState(null);
+		this.gameStateWriter.setHighlightedTiles([])
 	}
 
 	cancelMovement(): void {
 		this.gameStateWriter.setMovementState(null);
+		this.gameStateWriter.setHighlightedTiles([])
 	}
 
 	addStep(tileId: Tile.Id): Promise<boolean> {
@@ -97,6 +100,7 @@ export class MovementServiceImpl implements MovementService {
 							path: newPath,
 							availableTargets: availableTargets,
 						});
+						this.gameStateWriter.setHighlightedTiles(availableTargets.map(it => it.tile.position))
 					})
 					.then(_ => true)
 					.catch(_ => false)

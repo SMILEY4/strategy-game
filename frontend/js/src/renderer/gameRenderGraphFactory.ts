@@ -341,7 +341,7 @@ export class GameRenderGraphFactory {
 			.createVertexCreator("gen-overlay-instances")
 			.withProperty(commonProperties.tilesWasm)
 			.withProperty(commonProperties.mapModeWasm)
-			.withProperty(commonProperties.moveTargetsWasm)
+			.withProperty(commonProperties.highlightedTilesWasm)
 			.withProperty(propRelevantWorldAreaWasm)
 			.withOutput(OverlayInstancesVertexGenerator.OUTPUT_ID, "instances", [
 				{
@@ -840,10 +840,10 @@ export class GameRenderGraphFactory {
 			.createPropertyDynamic<MapMode>("prop-mapMode")
 			.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
 			.withValue(() => gameAccess.getMapMode());
-		const moveTargets = graph
-			.createPropertyDynamic<TileSummary[]>("prop-moveTargets")
-			.withChangeTest(() => changeTracker.getTrackedChanges().movementTargets)
-			.withValue(() => gameAccess.getMoveTargets());
+		const highlightedTiles = graph
+			.createPropertyDynamic<Tile.Position[]>("prop-highlightedTiles")
+			.withChangeTest(() => changeTracker.getTrackedChanges().highlightedTiles)
+			.withValue(() => gameAccess.getHighlightedTiles());
 		const worldObjects = graph
 			.createPropertyDynamic<WorldObject[]>("prop-worldObjects")
 			.withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
@@ -877,9 +877,9 @@ export class GameRenderGraphFactory {
 			mapModeWasm: graph
 				.createPropertyWasm<MapMode>("prop-wasm-mapMode")
 				.withValue(mapMode, it => wasmGameRenderer.setMapMode(it)),
-			moveTargetsWasm: graph
-				.createPropertyWasm<TileSummary[]>("prop-wasm-moveTargets")
-				.withValue(moveTargets, it => wasmGameRenderer.setMoveTargets(it)),
+			highlightedTilesWasm: graph
+				.createPropertyWasm<Tile.Position[]>("prop-wasm-highlightedTiles")
+				.withValue(highlightedTiles, it => wasmGameRenderer.setHighlightedTiles(it)),
 			movePaths: graph
 				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("prop-movePaths")
 				.withChangeTest(() => changeTracker.getTrackedChanges().movementPaths)
