@@ -14,6 +14,7 @@ import {WorldObjectDatabase} from "./database/worldObjectDatabase";
 import {RealmDatabase} from "./database/realmDatabase";
 import {GameSession} from "../models/misc/gameSession";
 import {Tile} from "../models/tile/tile";
+import {CreateSettlementModeState} from "./database/createSettlementModeState";
 
 export interface GameStateWriter {
 	setGameSessionState(state: GameSession.SessionState): void;
@@ -25,6 +26,7 @@ export interface GameStateWriter {
 	setCameraData(cameraData: CameraData): void;
 	setSelectedMapMode(mapMode: MapMode): void;
 	setMovementState(state: MovementState | null): void;
+	setCreateSettlementState(state: CreateSettlementModeState.State | null): void;
 	clearCommands(): void;
 	addCommand(command: Command): void;
 	removeCommand(commandId: Command.Id): void;
@@ -116,6 +118,18 @@ export class GameStateWriterImpl implements GameStateWriter {
 			MovementModeState.useState.getState().set(state.worldObjectId, state.path);
 		} else {
 			MovementModeState.useState.getState().set(null, []);
+		}
+	}
+
+	setCreateSettlementState(state: CreateSettlementModeState.State | null): void {
+		if (state) {
+			CreateSettlementModeState.useState.getState().set(state);
+		} else {
+			CreateSettlementModeState.useState.getState().set({
+				name: null,
+				tile: null,
+				worldObjectId: null,
+			});
 		}
 	}
 
