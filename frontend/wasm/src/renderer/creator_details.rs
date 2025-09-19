@@ -12,27 +12,50 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
     let atlas_entries_forest = &state.texture_atlas_entries["terrain_forest"];
     let atlas_entries_terrain_decoration = &state.texture_atlas_entries["terrain_decoration"];
     let atlas_entries_units = &state.texture_atlas_entries["unit"];
+    let atlas_entries_houses = &state.texture_atlas_entries["settlement_houses_all"];
+
 
     let mut rng = Random::new(0);
 
     // add world objects
     for world_object in &state.world_objects {
+
         let x = world_object.world_x;
         let y = world_object.world_y - config.tile_height / 2.0;
         let z = y - 1.0;
 
-        vertex_data.map_detail.extend(create_sprite(
-            &atlas_entries_units[0],
-            (x, y),
-            (z, z),
-            (7.0, 7.0),
-            [0, 0, 0],
-            [
-                world_object.realm_color_r,
-                world_object.realm_color_g,
-                world_object.realm_color_b,
-            ],
-        ));
+        // unit
+        if world_object.type_group == 1 {
+            vertex_data.map_detail.extend(create_sprite(
+                &atlas_entries_units[0],
+                (x, y),
+                (z, z),
+                (7.0, 7.0),
+                [0, 0, 0],
+                [
+                    world_object.realm_color_r,
+                    world_object.realm_color_g,
+                    world_object.realm_color_b,
+                ],
+            ));
+        }
+
+        // tile improvement
+        if world_object.type_group == 2 {
+            vertex_data.map_detail.extend(create_sprite(
+                &atlas_entries_houses[(rng.f32() * atlas_entries_houses.len() as f32) as usize],
+                (x, y),
+                (z, z),
+                (7.0, 7.0),
+                [0, 0, 0],
+                [
+                    world_object.realm_color_r,
+                    world_object.realm_color_g,
+                    world_object.realm_color_b,
+                ],
+            ));
+        }
+
     }
 
     // add terrain

@@ -13,6 +13,8 @@ pub struct WorldObject {
     pub realm_color_r: u8,
     pub realm_color_g: u8,
     pub realm_color_b: u8,
+
+    pub type_group: u8,
 }
 
 #[repr(C, packed)]
