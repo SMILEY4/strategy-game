@@ -44,7 +44,6 @@ export interface GameStateAccess {
 	getWorldObjects(): WorldObject[];
 	getCurrentMovementState(): MovementState | null;
 	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[];
-	getMoveTargets(): TileSummary[];
 	getWorldObjectsRevId(): string;
 	// commands
 	getCommands(): Command[];
@@ -243,7 +242,6 @@ export class GameStateAccessImpl implements GameStateAccess {
 			return {
 				worldObjectId: state.worldObjectId!,
 				path: state.path,
-				availableTargets: state.availableTargets,
 			};
 		} else {
 			return null;
@@ -254,7 +252,7 @@ export class GameStateAccessImpl implements GameStateAccess {
 		const results: ({ tiles: TileSummary[], pending: boolean })[] = [];
 		if (MovementModeState.useState.getState().worldObjectId) {
 			results.push({
-				tiles: MovementModeState.useState.getState().path.map(it => it.tile),
+				tiles: MovementModeState.useState.getState().path,
 				pending: true,
 			});
 		}
@@ -265,14 +263,6 @@ export class GameStateAccessImpl implements GameStateAccess {
 			});
 		});
 		return results;
-	}
-
-	getMoveTargets(): TileSummary[] {
-		if (MovementModeState.useState.getState().worldObjectId) {
-			return MovementModeState.useState.getState().availableTargets.map(tgt => tgt.tile);
-		} else {
-			return [];
-		}
 	}
 
 	//========== COMMANDS ======================================================

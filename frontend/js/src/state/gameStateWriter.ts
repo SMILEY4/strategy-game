@@ -113,9 +113,9 @@ export class GameStateWriterImpl implements GameStateWriter {
 
 	setMovementState(state: MovementState | null): void {
 		if (state) {
-			MovementModeState.useState.getState().set(state.worldObjectId, state.path, state.availableTargets);
+			MovementModeState.useState.getState().set(state.worldObjectId, state.path);
 		} else {
-			MovementModeState.useState.getState().set(null, [], []);
+			MovementModeState.useState.getState().set(null, []);
 		}
 	}
 
