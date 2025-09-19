@@ -17,6 +17,7 @@ import {RealmSummary} from "../models/realm/realmSummary";
 import {GameSession} from "../models/misc/gameSession";
 import {Command} from "../models/command/command";
 import Mapping = Command.Mapping;
+import {CreateSettlementModeState} from "./database/createSettlementModeState";
 
 export interface GameStateAccess {
 	// game
@@ -44,6 +45,7 @@ export interface GameStateAccess {
 	getWorldObjects(): WorldObject[];
 	getCurrentMovementState(): MovementState | null;
 	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[];
+	getCurrentCreateSettlementState(): CreateSettlementModeState.State | null;
 	getWorldObjectsRevId(): string;
 	// commands
 	getCommands(): Command[];
@@ -263,6 +265,14 @@ export class GameStateAccessImpl implements GameStateAccess {
 			});
 		});
 		return results;
+	}
+
+	getCurrentCreateSettlementState(): CreateSettlementModeState.State | null {
+		if (CreateSettlementModeState.useState.getState().worldObjectId) {
+			return CreateSettlementModeState.useState.getState();
+		} else {
+			return null;
+		}
 	}
 
 	//========== COMMANDS ======================================================

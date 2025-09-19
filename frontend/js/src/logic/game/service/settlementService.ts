@@ -43,19 +43,32 @@ export class SettlementServiceImpl implements SettlementService {
 	) {
 	}
 
-
+	// TODO: merge old and new system
+	//  old: state (name,worldObject,...) in ui useCreateSettlementWindowHook, just called "service.create" and done
+	//  new: state in persistence (move all state for intermediate "modes" like move & create settlement there); service reads and writes to that; properly use tile selection system
 
 	beginCreateSettlement(worldObjectId: WorldObject.Id): void {
 		const worldObject = this.gameStateAccess.getWorldObjectSummary(worldObjectId);
 		if (!worldObject) {
 			return;
 		}
+
+		this.gameStateWriter.setCreateSettlementState({// todo
+			worldObjectId: worldObjectId,
+			name: null,
+			tile: null,
+		})
+
 		const tiles = this.findValidTiles(worldObject.tile.position);
-		this.tileService.selectTile(tiles).then(tilePosition => {
-			const tile = this.gameStateAccess.getTileAt(tilePosition.q, tilePosition.r);
-			this.createSettlement(TileSummary.from(tile!!), worldObjectId, "testing")
+		this.tileService.selectTile(tiles).then(selectedTile => {
+			if(selectedTile) {
+				const state = this.gameStateAccess.getCurrentCreateSettlementState();// todo
+				this.gameStateWriter.setCreateSettlementState({
+					...state,
+					tile: selectedTile,
+				})
+			}
 		});
-		// this.gameStateWriter.setHighlightedTiles(tiles)
 	}
 
 	cancelCreateSettlement() {
@@ -75,6 +88,7 @@ export class SettlementServiceImpl implements SettlementService {
 	}
 
 	createSettlement(tile: TileSummary, worldObjectId: WorldObject.Id, name: string): void {
+		const state = this.gameStateAccess.getCurrentCreateSettlementState(); // todo
 		this.commandService.addCommand({
 			type: Command.Type.CreateSettlement,
 			id: Command.genId(),

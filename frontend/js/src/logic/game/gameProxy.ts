@@ -91,15 +91,6 @@ export interface GameProxy {
 	 * Cancel the given command.
 	 */
 	commandCancel(command: Command): void;
-	// tiles
-	/**
-	 * Start tile selection process. The result is later returned in the promise.
-	 */
-	selectTile(options: Tile.Position[]): Promise<Tile.Position>;
-	/**
-	 * Cancels the tile selection process. This rejects the opened promise.
-	 */
-	cancelTileSelection(): void;
 	// world objects
 	/**
 	 * Start "move" mode for the given world object.
@@ -296,16 +287,6 @@ export class GameProxyImpl implements GameProxy {
 	commandCancel(command: Command): void {
 		this.commandService.cancelCommand(command.id);
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
-	//========== TILES ========================================================
-
-	selectTile(options: Tile.Position[]): Promise<Tile.Position> {
-		return this.tileService.selectTile(options);
-	}
-
-	cancelTileSelection(): void {
-		this.tileService.cancelTileSelection();
 	}
 
 	//========== UNITS / WORLD OBJECTS ========================================
