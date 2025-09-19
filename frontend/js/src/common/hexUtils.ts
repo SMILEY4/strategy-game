@@ -1,9 +1,9 @@
-import {TilePosition} from "../models/tile/tilePosition";
+import {Tile} from "../models/tile/tile";
 
 export namespace HexUtils {
 
-	export function getPositionsRadius(q: number, r: number, radius: number): TilePosition[] {
-		const positions: TilePosition[] = [];
+	export function getPositionsRadius(q: number, r: number, radius: number): Tile.Position[] {
+		const positions: Tile.Position[] = [];
 		for (let iq = q - radius; iq <= q + radius; iq++) {
 			for (let ir = r - radius; ir <= r + radius; ir++) {
 				if (HexUtils.distance(q, r, iq, ir) <= radius) {
