@@ -201,10 +201,10 @@ float getPaperLayer(PaperLayerData data, vec2 mapPosition) {
 
 vec3 getPaperTexture(float whitepoint) {
     vec2 mapPosition = map_screenToWorld(u_common.invViewProjection, v_textureCoordinates);
-    float large = getPaperLayer(u_paper.large, mapPosition);
-    float medium = getPaperLayer(u_paper.medium, mapPosition);
-    float small = getPaperLayer(u_paper.small, mapPosition);
-    float clouds = getPaperLayer(u_paper.clouds, mapPosition);
+    float large = getPaperLayer(u_paper.large, mapPosition + vec2(12.0, 5.0));
+    float medium = getPaperLayer(u_paper.medium, mapPosition + vec2(6.0, -2.0));
+    float small = getPaperLayer(u_paper.small, mapPosition + vec2(-5.0, -20.0));
+    float clouds = getPaperLayer(u_paper.clouds, mapPosition + vec2(4.0, -1.0));
     float combined = large * medium * small * clouds;
     combined = combined * (1.0 / whitepoint);
     return vec3(combined);
