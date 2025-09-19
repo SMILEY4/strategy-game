@@ -13,9 +13,7 @@ in uint in_borderMask;
 in vec4 in_borderColor;
 in vec4 in_fillColor;
 
-in uint in_highlightBorderMask;
-in vec4 in_highlightBorderColor;
-in vec4 in_highlightFillColor;
+in uint in_isHighlighted;
 
 out vec2 v_textureCoordinates;
 flat out ivec2 v_tilePosition;
@@ -27,9 +25,7 @@ flat out uint v_borderMask;
 out vec4 v_borderColor;
 out vec4 v_fillColor;
 
-flat out uint v_highlightBorderMask;
-out vec4 v_highlightBorderColor;
-out vec4 v_highlightFillColor;
+flat out uint v_isHighlighted;
 
 #include random
 
@@ -41,9 +37,7 @@ void main() {
     v_borderMask = in_borderMask;
     v_borderColor = in_borderColor;
     v_fillColor = in_fillColor;
-    v_highlightBorderMask = in_highlightBorderMask;
-    v_highlightBorderColor = in_highlightBorderColor;
-    v_highlightFillColor = in_highlightFillColor;
+    v_isHighlighted = in_isHighlighted;
     v_tilePosition = in_tilePosition;
 
     vec2 vertexPosition = in_vertexPosition;

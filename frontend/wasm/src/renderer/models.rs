@@ -45,9 +45,7 @@ pub struct OverlayTileVertex {
     pub primary_border_mask: u8,
     pub primary_border_color: [u8; 4],
     pub primary_fill_color: [u8; 4],
-    pub highlight_border_mask: u8,
-    pub highlight_border_color: [u8; 4],
-    pub highlight_fill_color: [u8; 4],
+    pub is_highlighted: u8,
     pub _padding: [u8; 2],
 }
 

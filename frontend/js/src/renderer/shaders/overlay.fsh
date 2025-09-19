@@ -18,6 +18,16 @@ struct TileSelectionData {
 
 uniform TileSelectionData u_tileSelection;
 
+struct HighlightData {
+    float gap;
+    vec4 colorInnerDefault;
+    vec4 colorOuterDefault;
+    vec4 colorInnerHover;
+    vec4 colorOuterHover;
+};
+
+uniform HighlightData u_highlightData;
+
 in vec2 v_textureCoordinates;
 flat in ivec2 v_tilePosition;
 in vec2 v_worldCoordinates;
@@ -28,9 +38,8 @@ flat in uint v_borderMask;
 in vec4 v_borderColor;
 in vec4 v_fillColor;
 
-flat in uint v_highlightBorderMask;
-in vec4 v_highlightBorderColor;
-in vec4 v_highlightFillColor;
+flat in uint v_isHighlighted;
+
 
 uniform sampler2D u_noise;
 uniform float u_time;
@@ -88,7 +97,7 @@ vec4 modulateColor(vec4 color, float alphaShiftFactor, float hueShiftFactor) {
 
 // bounce between the two given colors based on u_time
 vec4 bounceColor(vec4 color0, vec4 color1, float speedFactor) {
-    float t = abs(sin(u_time * speedFactor));
+    float t = (sin(u_time * speedFactor) + 1.0) / 2.0;
     return mix(color1, color0, t);
 }
 
@@ -120,10 +129,18 @@ vec4 getPrimaryFill(vec4 color) {
 //          HIGHLIGHT FILL           //
 // ==================================//
 
-vec4 getHighlightFill(vec4 color) {
+vec4 getHighlightFill() {
     float alphaShiftFactor = 0.3;
     float hueShiftFactor = 0.1;
-    return modulateColor(color, alphaShiftFactor, hueShiftFactor);
+
+    float gap = border_full(v_cornerData, u_highlightData.gap);
+    float gradient = border_full_gradient(v_cornerData);
+
+    vec4 colorInner = modulateColor(u_highlightData.colorInnerDefault, alphaShiftFactor, hueShiftFactor);
+    vec4 colorOuter = modulateColor(u_highlightData.colorOuterDefault, alphaShiftFactor, hueShiftFactor);
+    vec4 color = mix(colorInner, colorOuter, gradient);
+
+    return color * vec4(vec3(1.0), 1.0-gap) * vec4(vec3(1.0), float(v_isHighlighted));
 }
 
 
@@ -165,7 +182,7 @@ void main() {
     vec4 colorPrimaryFill = getPrimaryFill(v_fillColor) * fillMask;
     vec4 colorPrimaryBorder = getPrimaryBorder(v_borderColor, v_cornerData, v_directionData, v_borderMask);
 
-    vec4 colorHighlightFill = getHighlightFill(v_highlightFillColor);
+    vec4 colorHighlightFill = getHighlightFill();
 
     vec4 colorSelection = getSelection();
     vec4 colorTileBorder = getTileBorder();

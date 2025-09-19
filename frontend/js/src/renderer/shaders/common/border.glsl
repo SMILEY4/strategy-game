@@ -106,6 +106,15 @@ float border_variableThickness(vec3 cornerData, uint edgeDirection, uint mask, f
 }
 
 /*
+Return a gradient border from the edge to the center taking the given mask into account.
+*/
+float border_gradient(vec3 cornerData, uint edgeDirection, uint mask) {
+    vec3 maskDirection = border_maskDirection(mask, edgeDirection);
+    vec3 maskEdge = border_maskGradientEdge(cornerData);
+    return border_combineMasksGradient(maskDirection, maskEdge);
+}
+
+/*
 Return whether the current pixel is inside a border area defined only by the given thickness.
 This produces a border full 360 degree border (which is simpler to calculate).
 Thickness is the percentage (from 0 to 1) the border takes up of the tile measured from the outside.
@@ -131,10 +140,8 @@ float border_full_variableThickness(vec3 cornerData, float thicknessFrom, float 
 }
 
 /*
-Return a gradient border from the edge to the center taking the given mask into account.
+Return a gradient border from the edge to the center.
 */
-float border_gradient(vec3 cornerData, uint edgeDirection, uint mask) {
-    vec3 maskDirection = border_maskDirection(mask, edgeDirection);
-    vec3 maskEdge = border_maskGradientEdge(cornerData);
-    return border_combineMasksGradient(maskDirection, maskEdge);
+float border_full_gradient(vec3 cornerData) {
+    return 1.0 - cornerData.x;
 }
