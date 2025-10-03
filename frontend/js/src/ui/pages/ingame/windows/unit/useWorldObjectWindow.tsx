@@ -140,7 +140,7 @@ export namespace UseWorldObjectWindow {
 			actions.push({
 				type: "spawn-settlement",
 				enabled: relevantCommands.length == 0,
-				perform: () => UseSettlementCreateWindow.open(worldObject.tile, worldObject.id),
+				perform: () => UseSettlementCreateWindow.open(worldObject.id),
 			} as SpawnSettlementAction)
 		}
 
