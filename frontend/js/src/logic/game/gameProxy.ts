@@ -3,7 +3,6 @@ import {TileService} from "./service/tileService";
 import {CameraService} from "./service/cameraService";
 import {MovementService} from "./service/movementService";
 import {AudioService, AudioType} from "../../common/audioService";
-import {TurnEndService} from "./service/turnEndService";
 import {MapMode} from "../../models/misc/mapMode";
 import {Command} from "../../models/command/command";
 import {GameStateWriter} from "../../state/gameStateWriter";
@@ -116,18 +115,14 @@ export interface GameProxy {
 	 * Cancel mode for creating a new settlement.
 	 */
 	cancelCreateSettlement(): void;
-	/**
-	 * Provides a randomly generated name for a settlement.
-	 */
-	getRandomSettlementName(): Promise<string>;
-	/**
-	 * Validate before creating a settlement. Return errors as list of strings.
-	 */
-	validateCreateSettlement(tileId: Tile.Id, worldObjectId: WorldObject.Id, name: string): string[];
+    /**
+     * Choose a name for the settlement. Set name to "null" to choose a randomly generated one.
+     */
+    setSettlementName(name: string | null): Promise<void>;
 	/**
 	 * Create a new settlement
 	 */
-	createSettlement(tile: TileSummary, worldObjectId: WorldObject.Id, name: string): void;
+	createSettlement(): void;
 	// dev functions
 	/**
 	 * Loose the current webgl context for debug purposes.
@@ -145,43 +140,20 @@ export interface GameProxy {
 
 export class GameProxyImpl implements GameProxy {
 
-	private readonly gameRenderer: GameRenderer;
-	private readonly tileService: TileService;
-	private readonly cameraService: CameraService;
-	private readonly movementService: MovementService;
-	private readonly settlementService: SettlementService;
-	private readonly turnEndService: TurnEndService;
-	private readonly commandService: CommandService;
-	private readonly monitoringService: MonitoringService;
-	private readonly gameSessionService: GameSessionService;
-	private readonly gameStateWriter: GameStateWriter;
-	private readonly audioService: AudioService;
 	private readonly canvasHandle: CanvasHandle;
 
 	constructor(
-		gameRenderer: GameRenderer,
-		tileService: TileService,
-		cameraService: CameraService,
-		movementService: MovementService,
-		settlementService: SettlementService,
-		turnEndService: TurnEndService,
-		commandService: CommandService,
-		monitoringService: MonitoringService,
-		gameSessionService: GameSessionService,
-		gameStateWriter: GameStateWriter,
-		audioService: AudioService,
+		private readonly gameRenderer: GameRenderer,
+		private readonly tileService: TileService,
+		private readonly cameraService: CameraService,
+		private readonly movementService: MovementService,
+		private readonly settlementService: SettlementService,
+		private readonly commandService: CommandService,
+		private readonly monitoringService: MonitoringService,
+		private readonly gameSessionService: GameSessionService,
+		private readonly gameStateWriter: GameStateWriter,
+		private readonly audioService: AudioService,
 	) {
-		this.gameRenderer = gameRenderer;
-		this.tileService = tileService;
-		this.cameraService = cameraService;
-		this.movementService = movementService;
-		this.settlementService = settlementService;
-		this.turnEndService = turnEndService;
-		this.commandService = commandService;
-		this.monitoringService = monitoringService;
-		this.gameSessionService = gameSessionService;
-		this.gameStateWriter = gameStateWriter;
-		this.audioService = audioService;
 		this.canvasHandle = new CanvasHandle();
 	}
 
@@ -275,7 +247,7 @@ export class GameProxyImpl implements GameProxy {
 	//========== BASIC GAME FUNCTIONALITY =====================================
 
 	endTurn(): void {
-		this.turnEndService.endTurn();
+		this.gameSessionService.endTurn();
 	}
 
 	selectMapMode(mapMode: MapMode): void {
@@ -335,16 +307,12 @@ export class GameProxyImpl implements GameProxy {
 		this.settlementService.cancelCreateSettlement();
 	}
 
-	getRandomSettlementName(): Promise<string> {
-		return this.settlementService.getRandomSettlementName();
+    setSettlementName(name: string | null): Promise<void> {
+		return this.settlementService.setSettlementName(name);
 	}
 
-	validateCreateSettlement(tileId: Tile.Id, worldObjectId: WorldObject.Id, name: string): string[] {
-		return this.settlementService.validateCreateSettlement(tileId, worldObjectId, name);
-	}
-
-	createSettlement(tile: TileSummary, worldObjectId: WorldObject.Id, name: string): void {
-		this.settlementService.createSettlement(tile, worldObjectId, name);
+	createSettlement(): void {
+		this.settlementService.createSettlement();
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 

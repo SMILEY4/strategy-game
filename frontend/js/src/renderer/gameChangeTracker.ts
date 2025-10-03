@@ -1,6 +1,8 @@
 import {GameStateAccess} from "../state/gameStateAccess";
 import {Camera} from "../common/webgl/camera";
 import {ChangeDetector} from "../common/changeDetector";
+import {Interaction} from "../models/misc/interaction";
+import {Command} from "../models/command/command";
 
 export interface TrackedChanges {
 	isInitFrame: boolean;
@@ -17,7 +19,7 @@ export interface TrackedChanges {
 
 export class GameChangeTracker {
 
-	private readonly localStateAccess: GameStateAccess;
+	private readonly gameStateAccess: GameStateAccess;
 
 	private frameCounter: number = 0;
 	private trackedChanges: TrackedChanges = null as any;
@@ -33,8 +35,8 @@ export class GameChangeTracker {
 	private readonly trackerSelectedTile = new ChangeDetector();
 
 
-	constructor(localStateAccess: GameStateAccess) {
-		this.localStateAccess = localStateAccess;
+	constructor(gameStateAccess: GameStateAccess) {
+		this.gameStateAccess = gameStateAccess;
 	}
 
 
@@ -61,11 +63,11 @@ export class GameChangeTracker {
 			this.trackedChanges.isInitFrame = true;
 			this.frameCounter++;
 		}
-		this.trackedChanges.turn = this.trackerTurn.check(this.localStateAccess.getCurrentTurn());
-		this.trackedChanges.tiles = this.trackerTiles.check(this.localStateAccess.getTilesRevId());
-		this.trackedChanges.worldObjects = this.trackerWorldObjects.check(this.localStateAccess.getWorldObjectsRevId());
-		this.trackedChanges.commands = this.trackerCommands.check(this.localStateAccess.getCommandRevId());
-		this.trackedChanges.mapMode = this.trackerMapMode.check(this.localStateAccess.getMapMode());
+		this.trackedChanges.turn = this.trackerTurn.check(this.gameStateAccess.getCurrentTurn());
+		this.trackedChanges.tiles = this.trackerTiles.check(this.gameStateAccess.getTilesRevId());
+		this.trackedChanges.worldObjects = this.trackerWorldObjects.check(this.gameStateAccess.getWorldObjectsRevId());
+		this.trackedChanges.commands = this.trackerCommands.check(this.gameStateAccess.getCommandRevId());
+		this.trackedChanges.mapMode = this.trackerMapMode.check(this.gameStateAccess.getMapMode());
 		this.trackedChanges.camera = this.trackerCamera.check(camera.getHash());
 		this.trackedChanges.movementPaths = this.trackerMovementPaths.check(this.getMovementPathsCheckId());
 		this.trackedChanges.highlightedTiles = this.trackerHighlightedTiles.check(this.getHighlightedTilesCheckId());
@@ -77,24 +79,35 @@ export class GameChangeTracker {
 	}
 
 	private getSelectedTileCheckId(): string {
-		const selectedTile = this.localStateAccess.getSelectedTile();
+		const selectedTile = this.gameStateAccess.getSelectedTile();
 		return selectedTile ? selectedTile.id : "-";
 	}
 
 	private getMovementPathsCheckId(): string {
 		let str = "";
-		this.localStateAccess.getMovePaths().forEach(path => {
-			path.tiles.forEach(tile => {
-				str += tile.position.q + "," + tile.position.r + "/";
-			});
-			str += path.pending + "/";
-		});
+
+        // from pending
+        const interactionState = this.gameStateAccess.getInteractionState()
+        if(interactionState?.type === Interaction.Type.Move) {
+            interactionState.path.forEach(tile => {
+                str += tile.position.q + "," + tile.position.r + "/";
+            });
+            str += "pending/";
+        }
+
+        // from commands
+        this.gameStateAccess.getCommandsOfType(Command.Type.Move).forEach(command => {
+            command.path.forEach(tile => {
+                str += tile.position.q + "," + tile.position.r + "/";
+            });
+        })
+
 		return str;
 	}
 
 	private getHighlightedTilesCheckId(): string {
 		let str = "";
-		this.localStateAccess.getHighlightedTiles().forEach(tilePosition => {
+		this.gameStateAccess.getHighlightedTiles().forEach(tilePosition => {
 			str += tilePosition.q + "," + tilePosition.r + "/";
 		});
 		return str;

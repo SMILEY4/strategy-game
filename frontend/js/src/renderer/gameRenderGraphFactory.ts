@@ -55,6 +55,8 @@ import {FrameIdResourceGenerator} from "../common/rendergraph/resources/frameIdR
 import {InitNodeCompiler} from "../common/rendergraph/compilers/initNodeCompiler";
 import {RelevantWorldAreaGenerator} from "./generators/relevantWorldAreaGenerator";
 import {WasmGameRenderer} from "./wasmGameRenderer";
+import {Interaction} from "../models/misc/interaction";
+import {Command} from "../models/command/command";
 
 export class GameRenderGraphFactory {
 
@@ -883,7 +885,23 @@ export class GameRenderGraphFactory {
 			movePaths: graph
 				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("prop-movePaths")
 				.withChangeTest(() => changeTracker.getTrackedChanges().movementPaths)
-				.withValue(() => gameAccess.getMovePaths()),
+				.withValue(() => {
+                    const paths: ({ tiles: TileSummary[], pending: boolean })[] = [];
+                    gameAccess.getCommandsOfType(Command.Type.Move).forEach(command => {
+                        paths.push({
+                            tiles: command.path,
+                            pending: false,
+                        })
+                    })
+                    const interactionState = gameAccess.getInteractionState()
+                    if(interactionState?.type === Interaction.Type.Move) {
+                        paths.push({
+                            tiles: interactionState.path,
+                            pending: true,
+                        })
+                    }
+                    return paths
+                }),
 			selectedTile: graph
 				.createPropertyDynamic<[number, number]>("prop-selectedTile")
 				.withValue(() => gameAccess.getSelectedTile() ? [gameAccess.getSelectedTile()?.position.q, gameAccess.getSelectedTile()?.position.r] as [number, number] : [99999, 99999])

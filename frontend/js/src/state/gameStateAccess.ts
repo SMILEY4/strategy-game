@@ -5,290 +5,257 @@ import {CameraDatabase} from "./database/cameraDatabase";
 import {TileDatabase} from "./database/tileDatabase";
 import {GameSessionDatabase} from "./database/gameSessionDatabase";
 import {WorldObject} from "../models/worldobject/worldObject";
-import {MovementState} from "../models/misc/movementState";
 import {MapMode} from "../models/misc/mapMode";
 import {RealmDatabase} from "./database/realmDatabase";
 import {WorldObjectDatabase} from "./database/worldObjectDatabase";
-import {MovementModeState} from "./database/movementModeState";
 import {CommandDatabase} from "./database/commandDatabase";
 import {WorldObjectSummary} from "../models/worldobject/worldObjectSummary";
 import {DbCache} from "../common/db/dbCache";
 import {RealmSummary} from "../models/realm/realmSummary";
 import {GameSession} from "../models/misc/gameSession";
 import {Command} from "../models/command/command";
+import {InteractionState} from "../models/misc/interaction";
 import Mapping = Command.Mapping;
-import {CreateSettlementModeState} from "./database/createSettlementModeState";
+import {InteractionStore} from "./database/interactionStore";
 
 export interface GameStateAccess {
-	// game
-	getGameIdOrThrow(): string
-	getCurrentTurn(): number;
-	getGameSessionState(): GameSession.SessionState;
-	// map
-	getMapMode(): MapMode;
-	// camera
-	getCamera(): CameraData;
-	// tiles
-	getSelectedTile(): TileSummary | null;
-	getHoveredTile(): TileSummary | null;
-	getTileAt(q: number, r: number): Tile | null;
-	getTileSummaryAt(q: number, r: number): TileSummary | null;
-	getTiles(): Tile[];
-	getTilesRevId(): string;
-	getSpawnTile(): TileSummary;
-	getHighlightedTiles(): Tile.Position[];
-	// realms
-	getPlayerRealmSummary(): RealmSummary;
-	// world objects
-	getWorldObjectSummary(id: WorldObject.Id): WorldObjectSummary | null;
-	getWorldObjectSummariesAt(q: number, r: number): WorldObjectSummary[];
-	getWorldObjects(): WorldObject[];
-	getCurrentMovementState(): MovementState | null;
-	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[];
-	getCurrentCreateSettlementState(): CreateSettlementModeState.State | null;
-	getWorldObjectsRevId(): string;
-	// commands
-	getCommands(): Command[];
-	getCommandsOfType<T extends Command.Type>(type: T): (Command.Mapping[T])[];
-	getCommandRevId(): string;
+    // game
+    getGameIdOrThrow(): string;
+    getCurrentTurn(): number;
+    getGameSessionState(): GameSession.SessionState;
+    // map
+    getMapMode(): MapMode;
+    // camera
+    getCamera(): CameraData;
+    // tiles
+    getSelectedTile(): TileSummary | null;
+    getHoveredTile(): TileSummary | null;
+    getTileAt(q: number, r: number): Tile | null;
+    getTileSummaryAt(q: number, r: number): TileSummary | null;
+    getTiles(): Tile[];
+    getTilesRevId(): string;
+    getSpawnTile(): TileSummary;
+    getHighlightedTiles(): Tile.Position[];
+    // realms
+    getPlayerRealmSummary(): RealmSummary;
+    // world objects
+    getWorldObjectSummary(id: WorldObject.Id): WorldObjectSummary | null;
+    getWorldObjectSummariesAt(q: number, r: number): WorldObjectSummary[];
+    getWorldObjects(): WorldObject[];
+    getWorldObjectsRevId(): string;
+    // interactions
+    getInteractionState(): InteractionState | null;
+    // commands
+    getCommands(): Command[];
+    getCommandsOfType<T extends Command.Type>(type: T): (Command.Mapping[T])[];
+    getCommandRevId(): string;
 }
 
 export class GameStateAccessImpl implements GameStateAccess {
 
-	private readonly cameraDatabase: CameraDatabase;
-	private readonly tileDatabase: TileDatabase;
-	private readonly gameSessionDatabase: GameSessionDatabase;
-	private readonly realmDatabase: RealmDatabase;
-	private readonly worldObjectDatabase: WorldObjectDatabase;
-	private readonly commandDatabase: CommandDatabase;
+    private readonly cameraDatabase: CameraDatabase;
+    private readonly tileDatabase: TileDatabase;
+    private readonly gameSessionDatabase: GameSessionDatabase;
+    private readonly realmDatabase: RealmDatabase;
+    private readonly worldObjectDatabase: WorldObjectDatabase;
+    private readonly commandDatabase: CommandDatabase;
 
-	private readonly tilesCache: DbCache<Tile[]>;
-	private readonly worldObjectsCache: DbCache<WorldObject[]>;
+    private readonly tilesCache: DbCache<Tile[]>;
+    private readonly worldObjectsCache: DbCache<WorldObject[]>;
 
-	constructor(
-		cameraDatabase: CameraDatabase,
-		tileDatabase: TileDatabase,
-		gameSessionDatabase: GameSessionDatabase,
-		realmDatabase: RealmDatabase,
-		worldObjectDatabase: WorldObjectDatabase,
-		commandDatabase: CommandDatabase,
-	) {
-		this.cameraDatabase = cameraDatabase;
-		this.tileDatabase = tileDatabase;
-		this.gameSessionDatabase = gameSessionDatabase;
-		this.realmDatabase = realmDatabase;
-		this.worldObjectDatabase = worldObjectDatabase;
-		this.commandDatabase = commandDatabase;
-		this.tilesCache = new DbCache({
-			dataProvider: () => this.getTilesUncached(),
-			dependencies: [this.tileDatabase],
-		});
-		this.worldObjectsCache = new DbCache({
-			dataProvider: () => this.getWorldObjectsUncached(),
-			dependencies: [this.worldObjectDatabase],
-		});
-	}
+    constructor(
+        cameraDatabase: CameraDatabase,
+        tileDatabase: TileDatabase,
+        gameSessionDatabase: GameSessionDatabase,
+        realmDatabase: RealmDatabase,
+        worldObjectDatabase: WorldObjectDatabase,
+        commandDatabase: CommandDatabase,
+    ) {
+        this.cameraDatabase = cameraDatabase;
+        this.tileDatabase = tileDatabase;
+        this.gameSessionDatabase = gameSessionDatabase;
+        this.realmDatabase = realmDatabase;
+        this.worldObjectDatabase = worldObjectDatabase;
+        this.commandDatabase = commandDatabase;
+        this.tilesCache = new DbCache({
+            dataProvider: () => this.getTilesUncached(),
+            dependencies: [this.tileDatabase],
+        });
+        this.worldObjectsCache = new DbCache({
+            dataProvider: () => this.getWorldObjectsUncached(),
+            dependencies: [this.worldObjectDatabase],
+        });
+    }
 
-	//========== GAME ==========================================================
+    //========== GAME ==========================================================
 
-	getGameIdOrThrow(): string {
-		const urlParams = new URLSearchParams(window.location.search);
-		const gameId = urlParams.get('id');
-		if(gameId) {
-			return gameId
-		} else {
-			throw new Error("Could not get game-id from url")
-		}
-	}
+    getGameIdOrThrow(): string {
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameId = urlParams.get("id");
+        if (gameId) {
+            return gameId;
+        } else {
+            throw new Error("Could not get game-id from url");
+        }
+    }
 
-	getCurrentTurn(): number {
-		return this.gameSessionDatabase.get().turn;
-	}
+    getCurrentTurn(): number {
+        return this.gameSessionDatabase.get().turn;
+    }
 
-	getGameSessionState(): GameSession.SessionState {
-		return this.gameSessionDatabase.get().sessionState;
-	}
-
-
-	//========== MAP ===========================================================
-
-	getMapMode(): MapMode {
-		return this.gameSessionDatabase.get().mapMode;
-	}
-
-	//========== CAMERA ========================================================
-
-	getCamera(): CameraData {
-		return this.cameraDatabase.get();
-	}
+    getGameSessionState(): GameSession.SessionState {
+        return this.gameSessionDatabase.get().sessionState;
+    }
 
 
-	//========== TILES ========================================================
+    //========== MAP ===========================================================
 
-	getTilesRevId(): string {
-		return this.tileDatabase.getRevId();
-	}
+    getMapMode(): MapMode {
+        return this.gameSessionDatabase.get().mapMode;
+    }
 
-	getSelectedTile(): TileSummary | null {
-		return this.gameSessionDatabase.get().selectedTile;
-	}
+    //========== CAMERA ========================================================
 
-	getHoveredTile(): TileSummary | null {
-		return this.gameSessionDatabase.get().hoverTile;
-	}
+    getCamera(): CameraData {
+        return this.cameraDatabase.get();
+    }
 
-	getTileAt(q: number, r: number): Tile | null {
-		const tile = this.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
-		if (!tile) {
-			return null;
-		}
-		return {
-			id: tile.id,
-			position: tile.position,
-			visibility: tile.visibility,
-			base: tile.base,
-			metaProperties: tile.metaProperties
-		};
-	}
 
-	getTileSummaryAt(q: number, r: number): TileSummary | null {
-		const entity = this.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
-		if (!entity) {
-			return null;
-		}
-		return {
-			id: entity.id,
-			position: entity.position,
-		};
-	}
+    //========== TILES ========================================================
 
-	getSpawnTile(): TileSummary {
+    getTilesRevId(): string {
+        return this.tileDatabase.getRevId();
+    }
 
-		const playerRealm = this.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
+    getSelectedTile(): TileSummary | null {
+        return this.gameSessionDatabase.get().selectedTile;
+    }
 
-		const unitTile = this.worldObjectDatabase
-			.queryMany(WorldObjectDatabase.QUERY_BY_REALM_ID, playerRealm.id)
-			.find(it => it.type.group === WorldObject.TypeGroup.Unit)
-		if(unitTile) {
-			return unitTile.tile
-		}
+    getHoveredTile(): TileSummary | null {
+        return this.gameSessionDatabase.get().hoverTile;
+    }
 
-		const tileCenter =  this.getTileSummaryAt(0, 0);
-		if(tileCenter) {
-			return tileCenter;
-		}
+    getTileAt(q: number, r: number): Tile | null {
+        const tile = this.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
+        if (!tile) {
+            return null;
+        }
+        return {
+            id: tile.id,
+            position: tile.position,
+            visibility: tile.visibility,
+            base: tile.base,
+            metaProperties: tile.metaProperties,
+        };
+    }
 
-		throw new Error("Could not find spawn tile.")
-	}
+    getTileSummaryAt(q: number, r: number): TileSummary | null {
+        const entity = this.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
+        if (!entity) {
+            return null;
+        }
+        return {
+            id: entity.id,
+            position: entity.position,
+        };
+    }
 
-	getHighlightedTiles(): Tile.Position[] {
-		return this.gameSessionDatabase.get().highlightedTiles;
-	}
+    getSpawnTile(): TileSummary {
 
-	getTiles(): Tile[] {
-		return this.tilesCache.get();
-	}
+        const playerRealm = this.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
 
-	private getTilesUncached(): Tile[] {
-		return this.tileDatabase.queryMany(TileDatabase.QUERY_ALL, null)
-			.map(tile => ({
-				id: tile.id,
-				position: tile.position,
-				visibility: tile.visibility,
-				base: tile.base,
-				worldObjects: this.worldObjectDatabase
-					.queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [tile.position.q, tile.position.r])
-					.map(it => WorldObjectSummary.from(it)),
-				metaProperties: tile.metaProperties
-			}));
-	}
+        const unitTile = this.worldObjectDatabase
+            .queryMany(WorldObjectDatabase.QUERY_BY_REALM_ID, playerRealm.id)
+            .find(it => it.type.group === WorldObject.TypeGroup.Unit);
+        if (unitTile) {
+            return unitTile.tile;
+        }
 
-	//========== REALM =========================================================
+        const tileCenter = this.getTileSummaryAt(0, 0);
+        if (tileCenter) {
+            return tileCenter;
+        }
 
-	getPlayerRealmSummary(): RealmSummary {
-		const entity = this.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
-		return {
-			id: entity.id,
-			name: entity.name,
-			color: entity.color,
-			ownedByUser: entity.ownedByUser,
-			playerName: entity.player.name,
-		}
-	}
+        throw new Error("Could not find spawn tile.");
+    }
 
-	//========== WORLD OBJECTS =================================================
+    getHighlightedTiles(): Tile.Position[] {
+        return this.gameSessionDatabase.get().highlightedTiles;
+    }
 
-	getWorldObjectsRevId(): string {
-		return this.worldObjectDatabase.getRevId();
-	}
+    getTiles(): Tile[] {
+        return this.tilesCache.get();
+    }
 
-	getWorldObjectSummary(id: WorldObject.Id): WorldObjectSummary | null {
-		return this.worldObjectDatabase.querySingle(WorldObjectDatabase.QUERY_BY_ID, id);
-	}
+    private getTilesUncached(): Tile[] {
+        return this.tileDatabase.queryMany(TileDatabase.QUERY_ALL, null)
+            .map(tile => ({
+                id: tile.id,
+                position: tile.position,
+                visibility: tile.visibility,
+                base: tile.base,
+                worldObjects: this.worldObjectDatabase
+                    .queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [tile.position.q, tile.position.r])
+                    .map(it => WorldObjectSummary.from(it)),
+                metaProperties: tile.metaProperties,
+            }));
+    }
 
-	getWorldObjectSummariesAt(q: number, r: number): WorldObject[] {
-		return this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [q, r]);
-	}
+    //========== REALM =========================================================
 
-	getWorldObjects(): WorldObject[] {
-		return this.worldObjectsCache.get()
-	}
+    getPlayerRealmSummary(): RealmSummary {
+        const entity = this.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
+        return {
+            id: entity.id,
+            name: entity.name,
+            color: entity.color,
+            ownedByUser: entity.ownedByUser,
+            playerName: entity.player.name,
+        };
+    }
 
-	getWorldObjectsUncached(): WorldObject[] {
-		return this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_ALL, null);
-	}
+    //========== WORLD OBJECTS =================================================
 
-	getCurrentMovementState(): MovementState | null {
-		if (MovementModeState.useState.getState().worldObjectId) {
-			const state = MovementModeState.useState.getState();
-			return {
-				worldObjectId: state.worldObjectId!,
-				path: state.path,
-			};
-		} else {
-			return null;
-		}
-	}
+    getWorldObjectsRevId(): string {
+        return this.worldObjectDatabase.getRevId();
+    }
 
-	getMovePaths(): ({ tiles: TileSummary[], pending: boolean })[] {
-		const results: ({ tiles: TileSummary[], pending: boolean })[] = [];
-		if (MovementModeState.useState.getState().worldObjectId) {
-			results.push({
-				tiles: MovementModeState.useState.getState().path,
-				pending: true,
-			});
-		}
-		this.getCommandsOfType(Command.Type.Move).forEach(cmd => {
-			results.push({
-				tiles: cmd.path,
-				pending: false,
-			});
-		});
-		return results;
-	}
+    getWorldObjectSummary(id: WorldObject.Id): WorldObjectSummary | null {
+        return this.worldObjectDatabase.querySingle(WorldObjectDatabase.QUERY_BY_ID, id);
+    }
 
-	getCurrentCreateSettlementState(): CreateSettlementModeState.State | null {
-		if (CreateSettlementModeState.useState.getState().worldObjectId) {
-			return CreateSettlementModeState.useState.getState();
-		} else {
-			return null;
-		}
-	}
+    getWorldObjectSummariesAt(q: number, r: number): WorldObject[] {
+        return this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [q, r]);
+    }
 
-	//========== COMMANDS ======================================================
+    getWorldObjects(): WorldObject[] {
+        return this.worldObjectsCache.get();
+    }
 
-	getCommandRevId(): string {
-		return this.commandDatabase.getRevId();
-	}
+    getWorldObjectsUncached(): WorldObject[] {
+        return this.worldObjectDatabase.queryMany(WorldObjectDatabase.QUERY_ALL, null);
+    }
 
-	getCommands(): Command[] {
-		return this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
-	}
+    //========== INTERACTIONS ==================================================
 
-	getCommandsOfType<T extends Command.Type>(type: T): (Command.Mapping[T])[] {
-		return this.commandDatabase
-			.queryMany(CommandDatabase.QUERY_ALL, null)
-			.filter((it): it is Mapping[T] => it.type === type)
-	}
+    getInteractionState(): InteractionState | null {
+        return InteractionStore.useState.getState().currentState
+    }
+
+    //========== COMMANDS ======================================================
+
+    getCommandRevId(): string {
+        return this.commandDatabase.getRevId();
+    }
+
+    getCommands(): Command[] {
+        return this.commandDatabase.queryMany(CommandDatabase.QUERY_ALL, null);
+    }
+
+    getCommandsOfType<T extends Command.Type>(type: T): (Command.Mapping[T])[] {
+        return this.commandDatabase
+            .queryMany(CommandDatabase.QUERY_ALL, null)
+            .filter((it): it is Mapping[T] => it.type === type);
+    }
 
 }

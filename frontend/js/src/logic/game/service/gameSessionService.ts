@@ -8,6 +8,8 @@ import {CameraService} from "./cameraService";
 import {GameSessionClient} from "./gameSessionClient";
 import {GameMessageHandler} from "./gameMessageHandler";
 import {GameStateContainer} from "../../../models/misc/gameStateContainer";
+import {GameSession} from "../../../models/misc/gameSession";
+import {InteractionService} from "./interactionService";
 
 export interface GameSessionService {
 	/**
@@ -35,28 +37,20 @@ export interface GameSessionService {
 	 */
 	disconnectSession(): Promise<void>;
 	/**
-	 * Submit the commands for the current turn and end turn
+	 * Submit the current commands for the current turn and end turn
 	 */
-	submitTurn(commands: Command[]): void;
+	endTurn(): void;
 }
 
 export class GameSessionServiceImpl implements GameSessionService, GameMessageHandler {
 
-	private readonly client: GameSessionClient;
-	private readonly cameraService: CameraService;
-	private readonly localStateAccess: GameStateAccess;
-	private readonly gameStateWriter: GameStateWriter;
-
 	constructor(
-		client: GameSessionClient,
-		cameraService: CameraService,
-		localStateAccess: GameStateAccess,
-		gameStateWriter: GameStateWriter,
+		private readonly client: GameSessionClient,
+		private readonly cameraService: CameraService,
+		private readonly gameStateAccess: GameStateAccess,
+		private readonly gameStateWriter: GameStateWriter,
+        private readonly interactionService: InteractionService,
 	) {
-		this.client = client;
-		this.cameraService = cameraService;
-		this.localStateAccess = localStateAccess;
-		this.gameStateWriter = gameStateWriter;
 	}
 
 
@@ -90,33 +84,37 @@ export class GameSessionServiceImpl implements GameSessionService, GameMessageHa
 
 	connectSession(gameId: Game.Id): Promise<void> {
 		return Promise.resolve()
-			.then(() => this.gameStateWriter.setGameSessionState("loading"))
+			.then(() => this.gameStateWriter.setGameSessionState(GameSession.SessionState.Loading))
 			.then(() => this.client.connect(gameId, this))
 			.catch(e => {
 				console.error(e);
-				this.gameStateWriter.setGameSessionState("error");
+				this.gameStateWriter.setGameSessionState(GameSession.SessionState.Error);
 			});
 	}
 
 	disconnectSession(): Promise<void> {
 		return Promise.resolve()
-			.then(() => this.gameStateWriter.setGameSessionState("none"))
+			.then(() => this.gameStateWriter.setGameSessionState(GameSession.SessionState.None))
 			.then(() => this.client.disconnect())
 			.catch(e => console.error(e));
 	}
 
-	submitTurn(commands: Command[]) {
-		this.client.submitTurn(commands);
+	endTurn() {
+        this.interactionService.endInteraction()
+        this.client.submitTurn(this.gameStateAccess.getCommands());
+        this.gameStateWriter.clearCommands();
+        this.gameStateWriter.setTurnState(GameSession.TurnState.Waiting)
 	}
 
 	onGameState(gameState: GameStateContainer): void {
-		this.gameStateWriter.replaceGameState(gameState);
+        this.interactionService.endInteraction()
+        this.gameStateWriter.replaceGameState(gameState);
 		this.gameStateWriter.setCurrentTurn(gameState.turn);
-		if (this.localStateAccess.getGameSessionState() === "loading") {
-			this.gameStateWriter.setGameSessionState("playing");
-			this.cameraService.centerOnTile(this.localStateAccess.getSpawnTile().position, 15);
+		if (this.gameStateAccess.getGameSessionState() === GameSession.SessionState.Loading) {
+			this.gameStateWriter.setGameSessionState(GameSession.SessionState.Playing);
+			this.cameraService.centerOnTile(this.gameStateAccess.getSpawnTile().position, 15);
 		}
-		this.gameStateWriter.setTurnState("playing");
+		this.gameStateWriter.setTurnState(GameSession.TurnState.Playing);
 	}
 
 }

@@ -1,7 +1,6 @@
 import {TileService, TileServiceImpl} from "./logic/game/service/tileService";
 import {CameraService, CameraServiceImpl} from "./logic/game/service/cameraService";
 import {MovementService, MovementServiceImpl} from "./logic/game/service/movementService";
-import {TurnEndService, TurnEndServiceImpl} from "./logic/game/service/turnEndService";
 import {GameStateWriter, GameStateWriterImpl} from "./state/gameStateWriter";
 import {AudioService} from "./common/audioService";
 import {GameStateAccess, GameStateAccessImpl} from "./state/gameStateAccess";
@@ -37,6 +36,7 @@ import {GameSessionClient} from "./logic/game/service/gameSessionClient";
 import {WasmGameRenderer} from "./renderer/wasmGameRenderer";
 import {WasmGameRendererImpl} from "./external/wasm/wasmGameRendererImpl";
 import {SettlementService, SettlementServiceImpl} from "./logic/game/service/settlementService";
+import {InteractionService, InteractionServiceImpl} from "./logic/game/service/interactionService";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -90,11 +90,11 @@ export namespace App {
 	// core services
 	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
 	const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
-	const movementService: MovementService = new MovementServiceImpl(gameStateAccess, gameStateWriter, gameClient, commandService, tileService);
+    const interactionService: InteractionService = new InteractionServiceImpl(gameStateAccess, gameStateWriter);
+	const movementService: MovementService = new MovementServiceImpl(gameStateAccess, gameClient, commandService, interactionService, tileService);
 	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
-	const settlementService: SettlementService = new SettlementServiceImpl(gameClient, commandService, gameStateAccess, gameStateWriter, tileService);
-	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, cameraService, gameStateAccess, gameStateWriter);
-	const turnEndService: TurnEndService = new TurnEndServiceImpl(gameSessionService, movementService, gameStateWriter, gameStateAccess);
+	const settlementService: SettlementService = new SettlementServiceImpl(gameClient, commandService, gameStateAccess, gameStateWriter, tileService, interactionService);
+	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, cameraService, gameStateAccess, gameStateWriter, interactionService);
 	const userService: UserService = new UserServiceImpl(userClient, userStateAccess, userStateWriter);
 	const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor);
 
@@ -118,7 +118,6 @@ export namespace App {
 		cameraService,
 		movementService,
 		settlementService,
-		turnEndService,
 		commandService,
 		monitoringService,
 		gameSessionService,
