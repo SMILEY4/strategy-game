@@ -26,7 +26,7 @@ export interface WasmGameRenderer {
 	/**
 	 * Set the currently highlighted tiles
 	 */
-	setHighlightedTiles(tiles: Tile.Position[]): void;
+	setHighlightedTiles(tiles: ({ tile: Tile.Position, state: "option" | "active" })[]): void;
 	/**
 	 * Set the bounds of the currently relevant world area
 	 */

@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 use crate::js::models::{TextureAtlasEntry, Tile, TilePosition, WorldObject};
 use crate::utils::Rect2d;
 
@@ -45,7 +45,7 @@ pub struct OverlayTileVertex {
     pub primary_border_mask: u8,
     pub primary_border_color: [u8; 4],
     pub primary_fill_color: [u8; 4],
-    pub is_highlighted: u8,
+    pub highlight: u8,
     pub _padding: [u8; 2],
 }
 
@@ -65,7 +65,7 @@ pub struct RenderState {
     pub tiles: Vec<Tile>,
     pub relevant_tile_indices: Vec<usize>,
     pub world_objects: Vec<WorldObject>,
-    pub highlighted_tiles: HashSet<TilePosition>,
+    pub highlighted_tiles: HashMap<TilePosition, String>,
     pub borders: Vec<TileBorderData>,
     pub map_mode: String,
     pub texture_atlas_entries: HashMap<String, Vec<TextureAtlasEntry>>,
