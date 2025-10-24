@@ -18,12 +18,16 @@ struct TileSelectionData {
 
 uniform TileSelectionData u_tileSelection;
 
+uniform ivec2 u_tileHovered;
+
 struct HighlightData {
     float gap;
     vec4 colorInnerDefault;
     vec4 colorOuterDefault;
     vec4 colorInnerHover;
     vec4 colorOuterHover;
+    vec4 colorInnerActive;
+    vec4 colorOuterActive;
 };
 
 uniform HighlightData u_highlightData;
@@ -38,7 +42,7 @@ flat in uint v_borderMask;
 in vec4 v_borderColor;
 in vec4 v_fillColor;
 
-flat in uint v_isHighlighted;
+flat in uint v_highlight; // 0: no highlight, 1: is option, 2: is active
 
 
 uniform sampler2D u_noise;
@@ -136,11 +140,22 @@ vec4 getHighlightFill() {
     float gap = border_full(v_cornerData, u_highlightData.gap);
     float gradient = border_full_gradient(v_cornerData);
 
-    vec4 colorInner = modulateColor(u_highlightData.colorInnerDefault, alphaShiftFactor, hueShiftFactor);
-    vec4 colorOuter = modulateColor(u_highlightData.colorOuterDefault, alphaShiftFactor, hueShiftFactor);
+    vec4 baseColorInner = u_highlightData.colorInnerDefault;
+    vec4 baseColorOuter = u_highlightData.colorOuterDefault;
+    if(u_tileHovered.x == v_tilePosition.x && u_tileHovered.y == v_tilePosition.y) {
+        baseColorInner = u_highlightData.colorInnerHover;
+        baseColorOuter = u_highlightData.colorOuterHover;
+    }
+    if(v_highlight == 2u) {
+        baseColorInner = u_highlightData.colorInnerActive;
+        baseColorOuter = u_highlightData.colorOuterActive;
+    }
+
+    vec4 colorInner = modulateColor(baseColorInner, alphaShiftFactor, hueShiftFactor);
+    vec4 colorOuter = modulateColor(baseColorOuter, alphaShiftFactor, hueShiftFactor);
     vec4 color = mix(colorInner, colorOuter, gradient);
 
-    return color * vec4(vec3(1.0), 1.0-gap) * vec4(vec3(1.0), float(v_isHighlighted));
+    return color * vec4(vec3(1.0), 1.0-gap) * vec4(vec3(1.0), float(v_highlight));
 }
 
 

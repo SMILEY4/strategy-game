@@ -47,6 +47,13 @@ pub struct TilePosition {
     pub r: i32,
 }
 
+#[derive(Deserialize, Clone, Hash, Eq, PartialEq)]
+pub struct TileHighlight {
+    pub q: i32,
+    pub r: i32,
+    pub state: String
+}
+
 #[derive(Deserialize, Clone)]
 pub struct TextureAtlasEntry {
     pub vertices: Vec<f32>,

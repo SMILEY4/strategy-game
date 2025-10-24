@@ -25,6 +25,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                 q: tile.position_q,
                 r: tile.position_r,
             };
+            let highlight_state = state.highlighted_tiles.get(&position).map(|it| it.as_str()).unwrap_or("none");
             vertex_data.overlay.push(OverlayTileVertex {
                 position: [tile.world_x, tile.world_y],
                 tile_position: [tile.position_q, tile.position_r],
@@ -33,10 +34,10 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                 )),
                 primary_border_color: rgba_f32_to_u8(&(map_mode_data.border_color)(tile)),
                 primary_fill_color: rgba_f32_to_u8(&(map_mode_data.fill_color)(tile)),
-                is_highlighted: if state.highlighted_tiles.contains(&position) {
-                    1
-                } else {
-                    0
+                highlight: match highlight_state {
+                    "option" => 1,
+                    "active" => 2,
+                    &_ => 0
                 },
                 _padding: [0, 0],
             });

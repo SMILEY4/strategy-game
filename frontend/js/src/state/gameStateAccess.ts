@@ -15,8 +15,8 @@ import {RealmSummary} from "../models/realm/realmSummary";
 import {GameSession} from "../models/misc/gameSession";
 import {Command} from "../models/command/command";
 import {InteractionState} from "../models/misc/interaction";
-import Mapping = Command.Mapping;
 import {InteractionStore} from "./database/interactionStore";
+import Mapping = Command.Mapping;
 
 export interface GameStateAccess {
     // game
@@ -35,7 +35,7 @@ export interface GameStateAccess {
     getTiles(): Tile[];
     getTilesRevId(): string;
     getSpawnTile(): TileSummary;
-    getHighlightedTiles(): Tile.Position[];
+    getHighlightedTiles(): ({ tile: Tile.Position, state: "option" | "active" })[];
     // realms
     getPlayerRealmSummary(): RealmSummary;
     // world objects
@@ -179,8 +179,8 @@ export class GameStateAccessImpl implements GameStateAccess {
         throw new Error("Could not find spawn tile.");
     }
 
-    getHighlightedTiles(): Tile.Position[] {
-        return this.gameSessionDatabase.get().highlightedTiles;
+    getHighlightedTiles(): ({ tile: Tile.Position, state: "option" | "active" })[] {
+        return this.gameSessionDatabase.get().highlightedTiles.map(it => ({tile: it, state: "option"}))
     }
 
     getTiles(): Tile[] {
@@ -239,7 +239,7 @@ export class GameStateAccessImpl implements GameStateAccess {
     //========== INTERACTIONS ==================================================
 
     getInteractionState(): InteractionState | null {
-        return InteractionStore.useState.getState().currentState
+        return InteractionStore.useState.getState().currentState;
     }
 
     //========== COMMANDS ======================================================

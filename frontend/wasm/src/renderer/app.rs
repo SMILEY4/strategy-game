@@ -1,6 +1,4 @@
-use crate::js::models::{
-    TextureAtlasEntry, Tile, TilePosition, WorldObject,
-};
+use crate::js::models::{TextureAtlasEntry, Tile, TileHighlight, TilePosition, WorldObject};
 use crate::renderer::models::{
     FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, RenderState,
     RendererConfiguration, VertexData, WaterTileVertex,
@@ -9,8 +7,7 @@ use crate::renderer::{
     border_calculator, creator_details, creator_overlay_tile, creator_terrain_tile,
 };
 use crate::utils::Rect2d;
-use std::collections::{HashMap, HashSet};
-use std::iter::FromIterator;
+use std::collections::HashMap;
 
 /// Wasm support for the game renderer.
 /// Keeps its own copy of relevant game state.
@@ -67,8 +64,11 @@ impl RenderApp {
 
     /// Set/Update the current highlighted tiles.
     /// This does not automatically trigger a re-calculation of anything else.
-    pub fn set_highlighted_tiles(&mut self, highlighted_tiles: Vec<TilePosition>) {
-        self.state.highlighted_tiles = HashSet::from_iter(highlighted_tiles);
+    pub fn set_highlighted_tiles(&mut self, highlighted_tiles: Vec<TileHighlight>) {
+        self.state.highlighted_tiles = highlighted_tiles
+            .into_iter()
+            .map(|it| (TilePosition { q: it.q, r: it.r }, it.state))
+            .collect();
     }
 
     /// Set/Update the current relevant world area.

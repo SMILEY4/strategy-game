@@ -1,4 +1,4 @@
-use crate::js::models::{TextureAtlasEntry, Tile, TilePosition, WorldObject};
+use crate::js::models::{TextureAtlasEntry, Tile, TileHighlight, TilePosition, WorldObject};
 use crate::renderer::app::RenderApp;
 use crate::renderer::models::{
     FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, WaterTileVertex,
@@ -116,9 +116,9 @@ impl WasmRenderApp {
     /// Set/Update the current highlighted tiles.
     /// This does not automatically trigger a re-calculation of anything else.
     pub fn set_highlighted_tiles(&mut self, js_tile_positions: JsValue) {
-        let tile_positions: Vec<TilePosition> =
+        let highlighted_tiles: Vec<TileHighlight> =
             serde_wasm_bindgen::from_value(js_tile_positions).expect("valid js data");
-        self.app.set_highlighted_tiles(tile_positions)
+        self.app.set_highlighted_tiles(highlighted_tiles)
     }
 
     /// Re-calculate the border data for all relevant tiles.

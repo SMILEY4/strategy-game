@@ -15,6 +15,7 @@ export interface TrackedChanges {
 	movementPaths: boolean,
 	highlightedTiles: boolean,
 	selectedTile: boolean,
+    hoveredTile: boolean,
 }
 
 export class GameChangeTracker {
@@ -33,6 +34,7 @@ export class GameChangeTracker {
 	private readonly trackerMovementPaths = new ChangeDetector();
 	private readonly trackerHighlightedTiles = new ChangeDetector();
 	private readonly trackerSelectedTile = new ChangeDetector();
+    private readonly trackerHoveredTile = new ChangeDetector();
 
 
 	constructor(gameStateAccess: GameStateAccess) {
@@ -53,6 +55,7 @@ export class GameChangeTracker {
 			movementPaths: true,
 			highlightedTiles: true,
 			selectedTile: true,
+            hoveredTile: true
 		};
 	}
 
@@ -72,16 +75,22 @@ export class GameChangeTracker {
 		this.trackedChanges.movementPaths = this.trackerMovementPaths.check(this.getMovementPathsCheckId());
 		this.trackedChanges.highlightedTiles = this.trackerHighlightedTiles.check(this.getHighlightedTilesCheckId());
 		this.trackedChanges.selectedTile = this.trackerSelectedTile.check(this.getSelectedTileCheckId());
-	}
+        this.trackedChanges.hoveredTile = this.trackerHoveredTile.check(this.getHoveredTileCheckId());
+    }
 
 	public getTrackedChanges(): TrackedChanges {
 		return this.trackedChanges;
 	}
 
 	private getSelectedTileCheckId(): string {
-		const selectedTile = this.gameStateAccess.getSelectedTile();
-		return selectedTile ? selectedTile.id : "-";
+		const tile = this.gameStateAccess.getSelectedTile();
+		return tile ? tile.id : "-";
 	}
+
+    private getHoveredTileCheckId(): string {
+        const tile = this.gameStateAccess.getHoveredTile();
+        return tile ? tile.id : "-";
+    }
 
 	private getMovementPathsCheckId(): string {
 		let str = "";
@@ -107,8 +116,8 @@ export class GameChangeTracker {
 
 	private getHighlightedTilesCheckId(): string {
 		let str = "";
-		this.gameStateAccess.getHighlightedTiles().forEach(tilePosition => {
-			str += tilePosition.q + "," + tilePosition.r + "/";
+		this.gameStateAccess.getHighlightedTiles().forEach(highlight => {
+			str += highlight.tile.q + "," + highlight.tile.r + "/";
 		});
 		return str;
 	}

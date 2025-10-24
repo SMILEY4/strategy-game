@@ -379,7 +379,7 @@ export class GameRenderGraphFactory {
 					divisor: 1,
 				},
 				{
-					name: "in_isHighlighted",
+					name: "in_highlight",
 					type: GLAttributeType.U_BYTE,
 					amountComponents: 1,
 					divisor: 1,
@@ -412,11 +412,14 @@ export class GameRenderGraphFactory {
 			.withProperty(configProps.selectedTileThickness, "u_tileSelection.thickness")
 			.withProperty(configProps.selectedTileColor0, "u_tileSelection.color0")
 			.withProperty(configProps.selectedTileColor1, "u_tileSelection.color1")
-			.withProperty(configProps.tileHighlightGap, "u_highlightData.gap")
+            .withProperty(commonProperties.hoveredTile, "u_tileHovered")
+            .withProperty(configProps.tileHighlightGap, "u_highlightData.gap")
 			.withProperty(configProps.tileHighlightColorInnerDefault, "u_highlightData.colorInnerDefault")
 			.withProperty(configProps.tileHighlightColorOuterDefault, "u_highlightData.colorOuterDefault")
 			.withProperty(configProps.tileHighlightColorInnerHover, "u_highlightData.colorInnerHover")
-			.withProperty(configProps.tileHighlightColorOuterHover, "u_highlightData.colorOuterHover");
+			.withProperty(configProps.tileHighlightColorOuterHover, "u_highlightData.colorOuterHover")
+            .withProperty(configProps.tileHighlightColorInnerActive, "u_highlightData.colorInnerActive")
+            .withProperty(configProps.tileHighlightColorOuterActive, "u_highlightData.colorOuterActive");
 
 		const drawOverlay = graph
 			.createDraw("draw-overlay")
@@ -820,20 +823,28 @@ export class GameRenderGraphFactory {
 				.withType(GLUniformType.FLOAT),
 			tileHighlightColorOuterDefault: graph
 				.createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorOuterDefault")
-				.withValue([1.0, 1.0, 0.9, 0.6])
+                .withValue([1.0, 1.0, 0.7, 0.6])
 				.withType(GLUniformType.VEC4),
 			tileHighlightColorInnerDefault: graph
 				.createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorInnerDefault")
-				.withValue([1.0, 1.0, 1.0, 0.0])
+                .withValue([1.0, 1.0, 1.0, 0.0])
 				.withType(GLUniformType.VEC4),
 			tileHighlightColorOuterHover: graph
 				.createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorOuterHover")
-				.withValue([1.0, 1.0, 0.7, 0.6])
-				.withType(GLUniformType.VEC4),
+                .withValue([1.0, 1.0, 0.9, 0.6])
+                .withType(GLUniformType.VEC4),
 			tileHighlightColorInnerHover: graph
 				.createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorInnerHover")
-				.withValue([1.0, 1.0, 1.0, 0.0])
-				.withType(GLUniformType.VEC4),
+                .withValue([1.0, 1.0, 1.0, 0.0])
+                .withType(GLUniformType.VEC4),
+            tileHighlightColorOuterActive: graph
+                .createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorOuterActive")
+                .withValue([0.4, 0.5, 1.0, 0.6])
+                .withType(GLUniformType.VEC4),
+            tileHighlightColorInnerActive: graph
+                .createPropertyConstant<[number, number, number, number]>("overlay.tileHighlight.colorInnerActive")
+                .withValue([1.0, 1.0, 1.0, 0.0])
+                .withType(GLUniformType.VEC4),
 		};
 	}
 
@@ -843,7 +854,7 @@ export class GameRenderGraphFactory {
 			.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
 			.withValue(() => gameAccess.getMapMode());
 		const highlightedTiles = graph
-			.createPropertyDynamic<Tile.Position[]>("prop-highlightedTiles")
+			.createPropertyDynamic<({ tile: Tile.Position, state: "option" | "active" })[]>("prop-highlightedTiles")
 			.withChangeTest(() => changeTracker.getTrackedChanges().highlightedTiles)
 			.withValue(() => gameAccess.getHighlightedTiles());
 		const worldObjects = graph
@@ -880,7 +891,7 @@ export class GameRenderGraphFactory {
 				.createPropertyWasm<MapMode>("prop-wasm-mapMode")
 				.withValue(mapMode, it => wasmGameRenderer.setMapMode(it)),
 			highlightedTilesWasm: graph
-				.createPropertyWasm<Tile.Position[]>("prop-wasm-highlightedTiles")
+				.createPropertyWasm<({ tile: Tile.Position, state: "option" | "active" })[]>("prop-wasm-highlightedTiles")
 				.withValue(highlightedTiles, it => wasmGameRenderer.setHighlightedTiles(it)),
 			movePaths: graph
 				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("prop-movePaths")
@@ -907,6 +918,11 @@ export class GameRenderGraphFactory {
 				.withValue(() => gameAccess.getSelectedTile() ? [gameAccess.getSelectedTile()?.position.q, gameAccess.getSelectedTile()?.position.r] as [number, number] : [99999, 99999])
 				.withChangeTest(() => changeTracker.getTrackedChanges().selectedTile)
 				.withType(GLUniformType.INT_VEC2),
+            hoveredTile: graph
+                .createPropertyDynamic<[number, number]>("prop-hoveredTile")
+                .withValue(() => gameAccess.getHoveredTile() ? [gameAccess.getHoveredTile()?.position.q, gameAccess.getHoveredTile()?.position.r] as [number, number] : [99999, 99999])
+                .withChangeTest(() => changeTracker.getTrackedChanges().hoveredTile)
+                .withType(GLUniformType.INT_VEC2),
 			camera: camera,
 			cameraVPM: graph
 				.createPropertyDerived<Float32Array>("prop-camera-vpm")
