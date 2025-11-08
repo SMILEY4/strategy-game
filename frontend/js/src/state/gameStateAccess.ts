@@ -35,7 +35,7 @@ export interface GameStateAccess {
     getTiles(): Tile[];
     getTilesRevId(): string;
     getSpawnTile(): TileSummary;
-    getHighlightedTiles(): ({ tile: Tile.Position, state: "option" | "active" })[];
+    getHighlightedTiles(): Tile.Highlight[];
     // realms
     getPlayerRealmSummary(): RealmSummary;
     // world objects
@@ -179,8 +179,8 @@ export class GameStateAccessImpl implements GameStateAccess {
         throw new Error("Could not find spawn tile.");
     }
 
-    getHighlightedTiles(): ({ tile: Tile.Position, state: "option" | "active" })[] {
-        return this.gameSessionDatabase.get().highlightedTiles.map(it => ({tile: it, state: "option"}))
+    getHighlightedTiles(): Tile.Highlight[] {
+        return this.gameSessionDatabase.get().highlightedTiles
     }
 
     getTiles(): Tile[] {

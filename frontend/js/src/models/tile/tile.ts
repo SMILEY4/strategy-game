@@ -38,4 +38,16 @@ export namespace Tile {
 
 	export const POSITION_NOWHERE: Tile.Position = {q: 9999999, r: 9999999};
 
+    export enum HighlightType {
+        Active = "active",
+        Option = "option",
+        OptionSelected = "option-selected",
+    }
+
+    export interface Highlight {
+        type: HighlightType,
+        position: Tile.Position,
+        id: Tile.Id,
+    }
 }
+

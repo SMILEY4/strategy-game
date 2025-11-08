@@ -21,7 +21,9 @@ export interface GameStateWriter {
     setCurrentTurn(turn: number): void;
     setSelectedTile(tile: TileSummary | null): void;
     setHoveredTile(tile: TileSummary | null): void;
-    setHighlightedTiles(tilePositions: Tile.Position[]): void;
+    setHighlightedTiles(highlights: Tile.Highlight[]): void;
+    addHighlightedTiles(highlights: Tile.Highlight[]): void;
+    clearHighlightedTiles(type: Tile.HighlightType): void;
     setCameraData(cameraData: CameraData): void;
     setSelectedMapMode(mapMode: MapMode): void;
     // interactions
@@ -107,9 +109,21 @@ export class GameStateWriterImpl implements GameStateWriter {
         }));
     }
 
-    setHighlightedTiles(tilePositions: Tile.Position[]): void {
+    setHighlightedTiles(highlights: Tile.Highlight[]): void {
         this.gameSessionDatabase.update(() => ({
-            highlightedTiles: tilePositions,
+            highlightedTiles: highlights,
+        }));
+    }
+
+    addHighlightedTiles(highlights: Tile.Highlight[]): void {
+        this.gameSessionDatabase.update(state => ({
+            highlightedTiles: [...state.highlightedTiles, ...highlights],
+        }));
+    }
+
+    clearHighlightedTiles(type: Tile.HighlightType): void {
+        this.gameSessionDatabase.update(state => ({
+            highlightedTiles: state.highlightedTiles.filter(it => it.type !== type),
         }));
     }
 
@@ -120,7 +134,6 @@ export class GameStateWriterImpl implements GameStateWriter {
     }
 
     setInteractionState(state: InteractionState | null): void {
-        console.trace("set interaction state", state);
         InteractionStore.useState.getState().set(state);
     }
 

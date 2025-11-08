@@ -854,7 +854,7 @@ export class GameRenderGraphFactory {
 			.withChangeTest(() => changeTracker.getTrackedChanges().mapMode)
 			.withValue(() => gameAccess.getMapMode());
 		const highlightedTiles = graph
-			.createPropertyDynamic<({ tile: Tile.Position, state: "option" | "active" })[]>("prop-highlightedTiles")
+			.createPropertyDynamic<Tile.Highlight[]>("prop-highlightedTiles")
 			.withChangeTest(() => changeTracker.getTrackedChanges().highlightedTiles)
 			.withValue(() => gameAccess.getHighlightedTiles());
 		const worldObjects = graph
@@ -891,7 +891,7 @@ export class GameRenderGraphFactory {
 				.createPropertyWasm<MapMode>("prop-wasm-mapMode")
 				.withValue(mapMode, it => wasmGameRenderer.setMapMode(it)),
 			highlightedTilesWasm: graph
-				.createPropertyWasm<({ tile: Tile.Position, state: "option" | "active" })[]>("prop-wasm-highlightedTiles")
+				.createPropertyWasm<Tile.Highlight[]>("prop-wasm-highlightedTiles")
 				.withValue(highlightedTiles, it => wasmGameRenderer.setHighlightedTiles(it)),
 			movePaths: graph
 				.createPropertyDynamic<({ tiles: TileSummary[], pending: boolean })[]>("prop-movePaths")
