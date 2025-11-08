@@ -51,7 +51,7 @@ pub struct TilePosition {
 pub struct TileHighlight {
     pub q: i32,
     pub r: i32,
-    pub state: String
+    pub state: u8
 }
 
 #[derive(Deserialize, Clone)]

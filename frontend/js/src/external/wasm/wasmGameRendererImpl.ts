@@ -44,12 +44,37 @@ export class WasmGameRendererImpl implements WasmGameRenderer {
         this.wasmRenderApp.set_map_mode(wasmMapMode);
     }
 
-    setHighlightedTiles(tiles: ({ tile: Tile.Position, state: "option" | "active" })[]): void {
-        const wasmTileHighlights: TileHighlightWasm[] = tiles.map(it => ({
-            q: it.tile.q,
-            r: it.tile.r,
-            state: it.state,
-        }));
+    setHighlightedTiles(tiles: Tile.Highlight[]): void {
+
+        function packHighlightState(highlights: Tile.Highlight[]): number {
+
+            const BIT_IS_ACTIVE = 1 << 0;
+            const BIT_IS_OPTION = 1 << 1;
+            const BIT_IS_OPTION_SELECTED = 1 << 2;
+
+            let state = 0;
+            if(highlights.some(it => it.type === Tile.HighlightType.Active)) {
+                state |= BIT_IS_ACTIVE
+            }
+            if(highlights.some(it => it.type === Tile.HighlightType.Option)) {
+                state |= BIT_IS_OPTION
+            }
+            if(highlights.some(it => it.type === Tile.HighlightType.OptionSelected)) {
+                state |= BIT_IS_OPTION_SELECTED
+            }
+
+            return state;
+        }
+
+        const highlightedTiles = new Set(tiles.map(it => it.id));
+        const wasmTileHighlights: TileHighlightWasm[] = Array.from(highlightedTiles).map(tileId => {
+            const highlights = tiles.filter(it => it.id === tileId);
+            return {
+                q: highlights[0].position.q,
+                r: highlights[0].position.r,
+                state: packHighlightState(highlights)
+            }
+        });
         this.wasmRenderApp.set_highlighted_tiles(wasmTileHighlights);
     }
 

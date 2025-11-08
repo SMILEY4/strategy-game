@@ -42,7 +42,7 @@ flat in uint v_borderMask;
 in vec4 v_borderColor;
 in vec4 v_fillColor;
 
-flat in uint v_highlight; // 0: no highlight, 1: is option, 2: is active
+flat in uint v_highlight;
 
 
 uniform sampler2D u_noise;
@@ -56,6 +56,13 @@ out vec4 outColor;
 // ==================================//
 //          UTILITIES                //
 // ==================================//
+
+/*
+Bit test by 0-based index
+*/
+bool checkBit(uint value, uint bitIndex) {
+    return ((value >> bitIndex) & 1u) != 0u;
+}
 
 // whether the two given ivec2 are equal
 bool isEqual(ivec2 a, ivec2 b) {
@@ -90,9 +97,9 @@ vec4 modulateColor(vec4 color, float alphaShiftFactor, float hueShiftFactor) {
 
     vec3 colorHsv = rgb2hsv(color.rgb);
     vec3 shiftedHsv = vec3(
-        clamp(colorHsv.x + noiseHue, 0.0, 1.0),
-        colorHsv.y,
-        colorHsv.z
+    clamp(colorHsv.x + noiseHue, 0.0, 1.0),
+    colorHsv.y,
+    colorHsv.z
     );
     vec3 colorRgb = hsv2rgb(shiftedHsv);
 
@@ -130,10 +137,27 @@ vec4 getPrimaryFill(vec4 color) {
 
 
 // ==================================//
-//          HIGHLIGHT FILL           //
+//            HIGHLIGHT              //
 // ==================================//
 
-vec4 getHighlightFill() {
+vec4 getHighlightActive() {
+    if(!checkBit(v_highlight, 0u)) {
+        return vec4(0.0);
+    }
+    float randomThicknessFactor = 0.1;
+    float randomScaleFactor = 0.5;
+    vec2 thickness = getVariableThickness(u_tileSelection.thickness, randomScaleFactor, randomThicknessFactor);
+    float border = border_full_variableThickness(v_cornerData, thickness.x, thickness.y);
+    vec4 color = bounceColor(u_tileSelection.color0, u_tileSelection.color1, 1.0);
+    return vec4(color.rgb, color.a * border);
+}
+
+
+vec4 getHighlightOption() {
+    if(!checkBit(v_highlight, 1u)) {
+        return vec4(0.0);
+    }
+
     float alphaShiftFactor = 0.3;
     float hueShiftFactor = 0.1;
 
@@ -142,11 +166,11 @@ vec4 getHighlightFill() {
 
     vec4 baseColorInner = u_highlightData.colorInnerDefault;
     vec4 baseColorOuter = u_highlightData.colorOuterDefault;
-    if(u_tileHovered.x == v_tilePosition.x && u_tileHovered.y == v_tilePosition.y) {
+    if (u_tileHovered.x == v_tilePosition.x && u_tileHovered.y == v_tilePosition.y) {
         baseColorInner = u_highlightData.colorInnerHover;
         baseColorOuter = u_highlightData.colorOuterHover;
     }
-    if(v_highlight == 2u) {
+    if (v_highlight == 2u) {
         baseColorInner = u_highlightData.colorInnerActive;
         baseColorOuter = u_highlightData.colorOuterActive;
     }
@@ -155,25 +179,37 @@ vec4 getHighlightFill() {
     vec4 colorOuter = modulateColor(baseColorOuter, alphaShiftFactor, hueShiftFactor);
     vec4 color = mix(colorInner, colorOuter, gradient);
 
-    return color * vec4(vec3(1.0), 1.0-gap) * vec4(vec3(1.0), float(v_highlight));
+    return color * vec4(vec3(1.0), 1.0-gap);
 }
 
 
-// ==================================//
-//          SELECTED TILE            //
-// ==================================//
-
-vec4 getSelection() {
-    if(isEqual(v_tilePosition, u_tileSelection.position)) {
-        float randomThicknessFactor = 0.1;
-        float randomScaleFactor = 0.5;
-        vec2 thickness = getVariableThickness(u_tileSelection.thickness, randomScaleFactor, randomThicknessFactor);
-        float border = border_full_variableThickness(v_cornerData, thickness.x, thickness.y);
-        vec4 color = bounceColor(u_tileSelection.color0, u_tileSelection.color1, 1.0);
-        return vec4(color.rgb, color.a * border);
-    } else {
+vec4 getHighlightOptionSelected() {
+    if(!checkBit(v_highlight, 2u)) {
         return vec4(0.0);
     }
+
+    float alphaShiftFactor = 0.3;
+    float hueShiftFactor = 0.1;
+
+    float gap = border_full(v_cornerData, u_highlightData.gap);
+    float gradient = border_full_gradient(v_cornerData);
+
+    vec4 baseColorInner = u_highlightData.colorInnerDefault;
+    vec4 baseColorOuter = u_highlightData.colorOuterDefault;
+    if (u_tileHovered.x == v_tilePosition.x && u_tileHovered.y == v_tilePosition.y) {
+        baseColorInner = u_highlightData.colorInnerHover;
+        baseColorOuter = u_highlightData.colorOuterHover;
+    }
+    if (v_highlight == 2u) {
+        baseColorInner = u_highlightData.colorInnerActive;
+        baseColorOuter = u_highlightData.colorOuterActive;
+    }
+
+    vec4 colorInner = modulateColor(baseColorInner, alphaShiftFactor, hueShiftFactor);
+    vec4 colorOuter = modulateColor(baseColorOuter, alphaShiftFactor, hueShiftFactor);
+    vec4 color = mix(colorInner, colorOuter, gradient);
+
+    return color * vec4(vec3(1.0), 1.0-gap);
 }
 
 
@@ -197,17 +233,16 @@ void main() {
     vec4 colorPrimaryFill = getPrimaryFill(v_fillColor) * fillMask;
     vec4 colorPrimaryBorder = getPrimaryBorder(v_borderColor, v_cornerData, v_directionData, v_borderMask);
 
-    vec4 colorHighlightFill = getHighlightFill();
-
-    vec4 colorSelection = getSelection();
-    vec4 colorTileBorder = getTileBorder();
+    vec4 colorHighlightActive = getHighlightActive();
+    vec4 colorHighlightOption = getHighlightOption();
+    vec4 colorHighlightSelectedOption = getHighlightOptionSelected();
 
     vec4 color = vec4(0.0);
     color = clr_blend(colorPrimaryFill, color);
     color = clr_blend(colorPrimaryBorder, color);
-    color = clr_blend(colorHighlightFill, color);
-    color = clr_blend(colorSelection, color);
-    // color = clr_blend(colorTileBorder, color);
+    color = clr_blend(colorHighlightOption, color);
+    color = clr_blend(colorHighlightSelectedOption, color);
+    color = clr_blend(colorHighlightActive, color);
 
     outColor = color;
 }

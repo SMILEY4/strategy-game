@@ -65,7 +65,7 @@ pub struct RenderState {
     pub tiles: Vec<Tile>,
     pub relevant_tile_indices: Vec<usize>,
     pub world_objects: Vec<WorldObject>,
-    pub highlighted_tiles: HashMap<TilePosition, String>,
+    pub highlighted_tiles: HashMap<TilePosition, u8>,
     pub borders: Vec<TileBorderData>,
     pub map_mode: String,
     pub texture_atlas_entries: HashMap<String, Vec<TextureAtlasEntry>>,

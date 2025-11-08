@@ -117,7 +117,7 @@ export class GameChangeTracker {
 	private getHighlightedTilesCheckId(): string {
 		let str = "";
 		this.gameStateAccess.getHighlightedTiles().forEach(highlight => {
-			str += highlight.tile.q + "," + highlight.tile.r + "/";
+			str += highlight.id + "-" + highlight.type + "/";
 		});
 		return str;
 	}

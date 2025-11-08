@@ -11,7 +11,7 @@ export interface GameSession {
 	turn: number,
 	selectedTile: TileSummary | null;
 	hoverTile: TileSummary | null;
-	highlightedTiles: Tile.Position[];
+	highlightedTiles: Tile.Highlight[];
 	mapMode: MapMode;
 }
 
