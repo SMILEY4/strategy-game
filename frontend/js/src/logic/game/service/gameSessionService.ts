@@ -1,7 +1,6 @@
 import {handleResponseError} from "../../../common/httpClient";
 import {UnauthorizedError} from "../../../common/UnauthorizedError";
 import {Game} from "../../../models/misc/game";
-import {Command} from "../../../models/command/command";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
 import {CameraService} from "./cameraService";
