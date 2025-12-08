@@ -14,29 +14,12 @@ import {GameRenderer} from "../../renderer/gameRenderer";
 import {Tile} from "../../models/tile/tile";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {SettlementService} from "./service/settlementService";
-import {GameSessionClient} from "../../app/gamesession/gamesession.client";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
  */
 export interface GameProxy {
     // session
-    /**
-     * Get all games of the currently logged-in user.
-     */
-    listSessions(): Promise<Game[]>;
-    /**
-     * Create a new game with the given name and settings.
-     */
-    createSession(name: string, seed: string | null): Promise<string>;
-    /**
-     * Join a game with the given id as a new player.
-     */
-    joinSession(gameId: Game.Id): Promise<void>;
-    /**
-     * Delete a game with the given id.
-     */
-    deleteSession(gameId: Game.Id): Promise<void>;
     /**
      * Connect to the game with the given id and "start" playing.
      */
@@ -158,22 +141,6 @@ export class GameProxyImpl implements GameProxy {
     }
 
     //========== SESSION ========================================================
-
-    listSessions(): Promise<Game[]> {
-        return GameSessionClient.list();
-    }
-
-    createSession(name: string, seed: string | null): Promise<string> {
-        return GameSessionClient.create(name, seed);
-    }
-
-    joinSession(gameId: Game.Id): Promise<void> {
-        return GameSessionClient.join(gameId);
-    }
-
-    deleteSession(gameId: Game.Id): Promise<void> {
-        return GameSessionClient.delete(gameId);
-    }
 
     connectSession(gameId: Game.Id): Promise<void> {
         return this.gameSessionService.connectSession(gameId);

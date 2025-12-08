@@ -1,15 +1,15 @@
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import React from "react";
 import "./app.css";
-import {PageSignUp} from "./signup/PageSignUp";
 import {PageSignupConfirm} from "./signupconfirm/PageSignupConfirm";
-import {PageLogin} from "./login/PageLogin";
+import {LoginPage} from "./login/Login.page";
 import {PageNotFound} from "./notfound/PageNotFound";
-import {PageSessions} from "./sessions/PageSessions";
 import {PageInGame} from "./ingame/PageInGame";
 import {TextureAtlasEditor} from "../../tools/textureatlaseditor/TextureAtlasEditor";
 import {RequireAuth} from "../../app/authentication/RequireAuth";
 import {AuthProvider} from "../../app/authentication/AuthProvider";
+import {PageGameSessions} from "./sessions/GameSessions.page";
+import {PageSignUp} from "./signup/SignUp.page";
 
 
 export function App() {
@@ -18,12 +18,12 @@ export function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Navigate to="sessions" replace/>}/>
-                    <Route path="login" element={<PageLogin/>}/>
+                    <Route path="login" element={<LoginPage/>}/>
                     <Route path="signup" element={<PageSignUp/>}/>
                     <Route path="signup/confirm" element={<PageSignupConfirm/>}/>
                     <Route path="sessions" element={
                         <RequireAuth loginUrl="/login">
-                            <PageSessions/>
+                            <PageGameSessions/>
                         </RequireAuth>
                     }/>
                     <Route path="game" element={
