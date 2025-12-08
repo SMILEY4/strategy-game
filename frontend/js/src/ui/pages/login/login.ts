@@ -1,12 +1,13 @@
 import {useState} from "react";
 import {GotoHooks} from "../goto";
-import {App} from "../../../appContext";
+import {useAuth} from "../../../app/authentication/AuthContext";
 
 export namespace LoginHooks {
 
 	export function useLogin() {
 
-		const [email, setEmail] = useState("");
+        const auth = useAuth();
+        const [email, setEmail] = useState("");
 		const [password, setPassword] = useState("");
 		const [error, setError] = useState<string | null>(null);
 		const gotoLoginRedirect = GotoHooks.useLoginRedirect("/sessions");
@@ -20,7 +21,7 @@ export namespace LoginHooks {
 				setError("Password is missing!");
 				return;
 			}
-			return App.userProxy.login(email, password)
+			return auth.login(email, password)
 				.then(() => gotoLoginRedirect())
 				.catch(e => setError("Internal Error: " + e));
 		}
