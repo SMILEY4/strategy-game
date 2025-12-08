@@ -8,6 +8,7 @@ import {Camera} from "../../../common/webgl/camera";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
 import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/unit/useWorldObjectWindow";
 import {Tile} from "../../../models/tile/tile";
+import HighlightType = Tile.HighlightType;
 
 export interface TileService {
     /**
@@ -50,7 +51,11 @@ export class TileServiceImpl implements TileService {
         if (this.tileSelectionState) {
             this.cancelTileSelection();
         }
-        this.gameStateWriter.setHighlightedTiles(options);
+        this.gameStateWriter.setHighlightedTiles(options.map(it => ({
+            type: HighlightType.Option,
+            position: it,
+            id: ""
+        })));
         return new Promise<TileSummary | null>((resolve, reject) => {
             this.tileSelectionState = {
                 options: options,

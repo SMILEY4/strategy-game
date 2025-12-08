@@ -1,6 +1,5 @@
 import {HttpClient} from "../../common/httpClient";
 import {WebsocketClient} from "../../common/websocketClient";
-import {UserStateAccess} from "../../state/userStateAccess";
 import {GameResponse} from "../game/gameResponse";
 import {GameSessionClient} from "../../logic/game/service/gameSessionClient";
 import {GameMessageHandler} from "../../logic/game/service/gameMessageHandler";
@@ -9,15 +8,14 @@ import {GameStateMapper} from "./gameStateMapper";
 import {Command} from "../../models/command/command";
 import {CommandMessage} from "./commandMessage";
 import {Game} from "../../models/misc/game";
+import {authService} from "../../app/authentication/auth.service";
 
 export class GameSessionClientImpl implements GameSessionClient {
 
-	private readonly userStateAccess: UserStateAccess;
 	private readonly httpClient: HttpClient;
 	private readonly wsClient: WebsocketClient;
 
-	constructor(httpClient: HttpClient, wsClient: WebsocketClient, userStateAccess: UserStateAccess) {
-		this.userStateAccess = userStateAccess;
+	constructor(httpClient: HttpClient, wsClient: WebsocketClient) {
 		this.httpClient = httpClient;
 		this.wsClient = wsClient;
 	}
@@ -27,7 +25,7 @@ export class GameSessionClientImpl implements GameSessionClient {
 			.get<GameResponse[]>({
 				url: "/api/session/list",
 				requireAuth: true,
-				token: this.userStateAccess.getAuthTokenOrNull(),
+				token: authService.getAuthToken(),
 			})
 			.then(entries => entries.map(it => ({
 				id: it.id as Game.Id,
@@ -41,7 +39,7 @@ export class GameSessionClientImpl implements GameSessionClient {
 		return this.httpClient.post<string>({
 			url: "/api/session/create?name=" + name + (seed ? ("&seed=" + seed) : ""),
 			requireAuth: true,
-			token: this.userStateAccess.getAuthTokenOrNull(),
+			token: authService.getAuthToken(),
 			responseType: "text",
 		});
 	}
@@ -50,7 +48,7 @@ export class GameSessionClientImpl implements GameSessionClient {
 		return this.httpClient.delete<void>({
 			url: "/api/session/delete/" + game,
 			requireAuth: true,
-			token: this.userStateAccess.getAuthTokenOrNull(),
+			token: authService.getAuthToken(),
 		});
 	}
 
@@ -58,7 +56,7 @@ export class GameSessionClientImpl implements GameSessionClient {
 		return this.httpClient.post<void>({
 			url: `/api/session/join/${game}`,
 			requireAuth: true,
-			token: this.userStateAccess.getAuthTokenOrNull(),
+			token: authService.getAuthToken(),
 		});
 	}
 
@@ -101,7 +99,7 @@ export class GameSessionClientImpl implements GameSessionClient {
 		return this.httpClient.get<string>({
 			url: "/api/session/wsticket",
 			requireAuth: true,
-			token: this.userStateAccess.getAuthTokenOrNull(),
+			token: authService.getAuthToken(),
 			responseType: "text",
 		});
 	}

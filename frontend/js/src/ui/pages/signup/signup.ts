@@ -1,12 +1,12 @@
 import {useState} from "react";
 import {GotoHooks} from "../goto";
-import {App} from "../../../appContext";
+import {UserClient} from "../../../app/user/user.client";
 
 export namespace SignupHooks {
 
 	export function useSignup() {
 
-		const [username, setUsername] = useState("");
+        const [username, setUsername] = useState("");
 		const [email, setEmail] = useState("");
 		const [password, setPassword] = useState("");
 		const [error, setError] = useState<string | null>(null);
@@ -25,9 +25,9 @@ export namespace SignupHooks {
 				setError("Username is missing!");
 				return;
 			}
-			return App.userProxy.signup(email, password, username)
-				.then(() => gotoSignupConfirm())
-				.catch(e => setError("Internal Error: " + e));
+            UserClient.signUp(email, password ,username)
+                .then(() => gotoSignupConfirm())
+                .catch(e => setError("Internal Error: " + e));
 		}
 
 		return {

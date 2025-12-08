@@ -16,12 +16,8 @@ import {CommandService, CommandServiceImpl} from "./logic/game/service/commandSe
 import {GameSessionService, GameSessionServiceImpl} from "./logic/game/service/gameSessionService";
 import {GameSessionClientImpl} from "./external/session/gameSessionClientImpl";
 import {WebsocketClient} from "./common/websocketClient";
-import {UserService, UserServiceImpl} from "./logic/user/service/userService";
 import {GameStateHooks} from "./state/gameStateHooks";
-import {UserStateWriter, UserStateWriterImpl} from "./state/userStateWriter";
-import {UserStateAccess, UserStateAccessImpl} from "./state/userStateAccess";
 import {GameProxy, GameProxyImpl} from "./logic/game/gameProxy";
-import {UserProxy, UserProxyImpl} from "./logic/user/userProxy";
 import {WebGLMonitor} from "./common/webgl/monitor/webGLMonitor";
 import {MonitoringService, MonitoringServiceImpl} from "./logic/game/service/monitoringService";
 import {GLError} from "./common/webgl/glError";
@@ -29,14 +25,13 @@ import {GameRenderer} from "./renderer/gameRenderer";
 import {GameChangeTracker} from "./renderer/gameChangeTracker";
 import {GameShaderSourceManager} from "./renderer/gameShaderSourceManager";
 import {GameTextureAtlasDataManager} from "./renderer/gameTextureAtlasDataManager";
-import {UserClient} from "./logic/user/service/userClient";
-import {UserClientImpl} from "./external/user/userClientImpl";
 import {GameClient} from "./logic/game/service/gameClient";
 import {GameSessionClient} from "./logic/game/service/gameSessionClient";
 import {WasmGameRenderer} from "./renderer/wasmGameRenderer";
 import {WasmGameRendererImpl} from "./external/wasm/wasmGameRendererImpl";
 import {SettlementService, SettlementServiceImpl} from "./logic/game/service/settlementService";
 import {InteractionService, InteractionServiceImpl} from "./logic/game/service/interactionService";
+import {HttpClient as NewHttpClient} from "./app/http/http.client";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -45,92 +40,88 @@ const ENABLE_RENDERER_MONITORING: boolean = import.meta.env.PUB_ENABLE_RENDERER_
 
 export namespace App {
 
-	console.log("initializing app dependencies.", API_BASE_URL, API_WS_BASE_URL, ENABLE_WEBGL_ERROR_CHECKING, ENABLE_RENDERER_MONITORING)
+    console.log("initializing app dependencies.", API_BASE_URL, API_WS_BASE_URL, ENABLE_WEBGL_ERROR_CHECKING, ENABLE_RENDERER_MONITORING);
 
-	GLError.enabled = ENABLE_WEBGL_ERROR_CHECKING;
-	WebGLMonitor.enabled = ENABLE_RENDERER_MONITORING;
+    GLError.enabled = ENABLE_WEBGL_ERROR_CHECKING;
+    WebGLMonitor.enabled = ENABLE_RENDERER_MONITORING;
 
-	// database
-	const cameraDatabase: CameraDatabase = new CameraDatabase();
-	const commandDatabase: CommandDatabase = new CommandDatabase();
-	const realmDatabase: RealmDatabase = new RealmDatabase();
-	const gameSessionDatabase: GameSessionDatabase = new GameSessionDatabase();
-	const tileDatabase: TileDatabase = new TileDatabase();
-	const worldObjectDatabase: WorldObjectDatabase = new WorldObjectDatabase();
+    // new
+    export const newHttpClient = new NewHttpClient(API_BASE_URL);
 
-	// state read / write
-	const userStateAccess: UserStateAccess = new UserStateAccessImpl();
-	const userStateWriter: UserStateWriter = new UserStateWriterImpl();
-	const gameStateAccess: GameStateAccess = new GameStateAccessImpl(
-		cameraDatabase,
-		tileDatabase,
-		gameSessionDatabase,
-		realmDatabase,
-		worldObjectDatabase,
-		commandDatabase,
-	);
-	const gameStateWriter: GameStateWriter = new GameStateWriterImpl(
-		commandDatabase,
-		tileDatabase,
-		realmDatabase,
-		worldObjectDatabase,
-		cameraDatabase,
-		gameSessionDatabase,
-	);
+    // database
+    const cameraDatabase: CameraDatabase = new CameraDatabase();
+    const commandDatabase: CommandDatabase = new CommandDatabase();
+    const realmDatabase: RealmDatabase = new RealmDatabase();
+    const gameSessionDatabase: GameSessionDatabase = new GameSessionDatabase();
+    const tileDatabase: TileDatabase = new TileDatabase();
+    const worldObjectDatabase: WorldObjectDatabase = new WorldObjectDatabase();
 
-	// api clients
-	const httpClient: HttpClient = new HttpClient(API_BASE_URL);
-	const userClient: UserClient = new UserClientImpl(httpClient, userStateAccess);
-	const gameClient: GameClient = new GameClientImpl(httpClient, userStateAccess, gameStateAccess);
-	const gameSessionClient: GameSessionClient = new GameSessionClientImpl(httpClient, new WebsocketClient(API_WS_BASE_URL), userStateAccess);
+    // state read / write
+    const gameStateAccess: GameStateAccess = new GameStateAccessImpl(
+        cameraDatabase,
+        tileDatabase,
+        gameSessionDatabase,
+        realmDatabase,
+        worldObjectDatabase,
+        commandDatabase,
+    );
+    const gameStateWriter: GameStateWriter = new GameStateWriterImpl(
+        commandDatabase,
+        tileDatabase,
+        realmDatabase,
+        worldObjectDatabase,
+        cameraDatabase,
+        gameSessionDatabase,
+    );
 
-	// misc services
-	const webglMonitor: WebGLMonitor = new WebGLMonitor();
+    // api clients
+    const httpClient: HttpClient = new HttpClient(API_BASE_URL);
+    const gameClient: GameClient = new GameClientImpl(httpClient, gameStateAccess);
+    const gameSessionClient: GameSessionClient = new GameSessionClientImpl(httpClient, new WebsocketClient(API_WS_BASE_URL));
 
-	// core services
-	const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
-	const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
+    // misc services
+    const webglMonitor: WebGLMonitor = new WebGLMonitor();
+
+    // core services
+    const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
+    const commandService: CommandService = new CommandServiceImpl(gameStateWriter);
     const interactionService: InteractionService = new InteractionServiceImpl(gameStateAccess, gameStateWriter);
-	const movementService: MovementService = new MovementServiceImpl(gameStateAccess, gameClient, commandService, interactionService, tileService);
-	const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
-	const settlementService: SettlementService = new SettlementServiceImpl(gameClient, commandService, gameStateAccess, gameStateWriter, tileService, interactionService);
-	const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, cameraService, gameStateAccess, gameStateWriter, interactionService);
-	const userService: UserService = new UserServiceImpl(userClient, userStateAccess, userStateWriter);
-	const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor);
+    const movementService: MovementService = new MovementServiceImpl(gameStateAccess, gameClient, commandService, interactionService, tileService);
+    const cameraService: CameraService = new CameraServiceImpl(gameStateAccess, gameStateWriter);
+    const settlementService: SettlementService = new SettlementServiceImpl(gameClient, commandService, gameStateAccess, gameStateWriter, tileService, interactionService);
+    const gameSessionService: GameSessionService = new GameSessionServiceImpl(gameSessionClient, cameraService, gameStateAccess, gameStateWriter, interactionService);
+    const monitoringService: MonitoringService = new MonitoringServiceImpl(webglMonitor);
 
-	// rendering
-	const wasmGameRenderer: WasmGameRenderer = new WasmGameRendererImpl();
-	const changeTracker: GameChangeTracker = new GameChangeTracker(gameStateAccess);
-	const shaderSourceManager: GameShaderSourceManager = new GameShaderSourceManager();
-	const textureAtlasDataManager: GameTextureAtlasDataManager = new GameTextureAtlasDataManager();
-	const gameRenderer: GameRenderer = new GameRenderer(gameStateAccess, changeTracker, shaderSourceManager, textureAtlasDataManager, wasmGameRenderer);
+    // rendering
+    const wasmGameRenderer: WasmGameRenderer = new WasmGameRendererImpl();
+    const changeTracker: GameChangeTracker = new GameChangeTracker(gameStateAccess);
+    const shaderSourceManager: GameShaderSourceManager = new GameShaderSourceManager();
+    const textureAtlasDataManager: GameTextureAtlasDataManager = new GameTextureAtlasDataManager();
+    const gameRenderer: GameRenderer = new GameRenderer(gameStateAccess, changeTracker, shaderSourceManager, textureAtlasDataManager, wasmGameRenderer);
 
-	// utility services
-	const audioService: AudioService = new AudioService();
+    // utility services
+    const audioService: AudioService = new AudioService();
 
-	// proxy services
-	export const userProxy: UserProxy = new UserProxyImpl(
-		userService,
-	);
-	export const gameProxy: GameProxy = new GameProxyImpl(
-		gameRenderer,
-		tileService,
-		cameraService,
-		movementService,
-		settlementService,
-		commandService,
-		monitoringService,
-		gameSessionService,
-		gameStateWriter,
-		audioService,
-	);
-	GameStateHooks.initialize({
-		gameSessionDatabase: gameSessionDatabase,
-		tileDatabase: tileDatabase,
-		commandDatabase: commandDatabase,
-		worldObjectDatabase: worldObjectDatabase,
-		realmDatabase: realmDatabase,
-		cameraDatabase: cameraDatabase,
-	});
+    // proxy services
+    export const gameProxy: GameProxy = new GameProxyImpl(
+        gameRenderer,
+        tileService,
+        cameraService,
+        movementService,
+        settlementService,
+        commandService,
+        monitoringService,
+        gameSessionService,
+        gameStateWriter,
+        audioService,
+    );
+    GameStateHooks.initialize({
+        gameSessionDatabase: gameSessionDatabase,
+        tileDatabase: tileDatabase,
+        commandDatabase: commandDatabase,
+        worldObjectDatabase: worldObjectDatabase,
+        realmDatabase: realmDatabase,
+        cameraDatabase: cameraDatabase,
+    });
 
 }
