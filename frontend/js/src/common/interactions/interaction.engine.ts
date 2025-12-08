@@ -72,7 +72,7 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
      * @param interaction the definition of the new interaction to start
      * @param initialContext the (optional) initial context to use instead of the one from the definition
      */
-    public async start<TState extends string, TContext>(interaction: InteractionDefinition<TState, TEvent, TContext>, initialContext?: TContext) {
+    public async start<TState extends string, TContext>(interaction: InteractionDefinition<TState, TEvent, TContext>, initialContext: TContext): Promise<void> {
         // stop a previous interaction
         this.endInteraction("interruption");
         // prepare and start the new interaction
@@ -80,7 +80,7 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
             definition: interaction,
             currentState: interaction.initial,
         };
-        this.contextAdapter.set(initialContext ?? interaction.context);
+        this.contextAdapter.set(initialContext);
         // run the "on start" action of the interaction
         this.activeInteraction.definition.onStart?.({
             getCtx: () => this.contextAdapter.get,
@@ -123,13 +123,13 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
      * Dispatch the given event to be handled by the currently active interaction
      * @param event the event
      */
-    public async dispatch<T extends TEvent>(event: T) {
+    public async dispatch<T extends TEvent>(event: T): Promise<void> {
         if (!this.activeInteraction) return;
         this.eventQueue.push(event);
         await this.processQueue();
     }
 
-    private async processQueue() {
+    private async processQueue(): Promise<void> {
         // already processing the queue, prevent re-entrancy
         if (this.isProcessing) return;
         this.isProcessing = true;
@@ -147,7 +147,7 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
         }
     }
 
-    private async processEvent(event: TEvent) {
+    private async processEvent(event: TEvent): Promise<void> {
         if (!this.activeInteraction) return;
 
         // find definition of current state and transition
