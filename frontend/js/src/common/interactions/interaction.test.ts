@@ -21,7 +21,7 @@ describe("interaction tests", () => {
         const engine = new InteractionEngine<TestEvents>(testInteractionContextAdapter);
 
         // start interaction, expect initial state
-        await engine.start(interactionADefinition);
+        await engine.start(interactionADefinition, {name: "hello test"},);
         expect(engine.getInteractionId()).toBe("test.sample.a");
         expect(engine.getInteractionState()).toBe("IDLE");
         expect(engine.getInteractionContext()).toStrictEqual({name: "hello test"});
@@ -64,7 +64,7 @@ describe("interaction tests", () => {
         const engine = new InteractionEngine<TestEvents>(testInteractionContextAdapter);
 
         // start first interaction, expect initial state
-        await engine.start(interactionADefinition);
+        await engine.start(interactionADefinition, {name: "hello test"},);
         expect(engine.getInteractionId()).toBe("test.sample.a");
         expect(engine.getInteractionState()).toBe("IDLE");
         expect(engine.getInteractionContext()).toStrictEqual({name: "hello test"});
@@ -85,7 +85,7 @@ describe("interaction tests", () => {
         clearLog();
 
         // start another interaction, expect previous to end
-        await engine.start(interactionBDefinition);
+        await engine.start(interactionBDefinition, {counter: 10});
         expect(engine.getInteractionId()).toBe("test.sample.b");
         expect(engine.getInteractionState()).toBe("IDLE");
         expect(engine.getInteractionContext()).toStrictEqual({counter: 10});
@@ -112,7 +112,7 @@ describe("interaction tests", () => {
         const engine = new InteractionEngine<TestEvents>(testInteractionContextAdapter);
 
         // prepare interaction state
-        await engine.start(interactionBDefinition);
+        await engine.start(interactionBDefinition, {counter: 10});
         await engine.dispatch<TestInteractionBEvents>({eventId: "KEY_PRESS"});
         clearLog();
 
@@ -135,7 +135,7 @@ describe("interaction tests", () => {
         const engine = new InteractionEngine<TestEvents>(testInteractionContextAdapter);
 
         // start interaction, transition immediately
-        await engine.start(interactionCDefinition);
+        await engine.start(interactionCDefinition, {});
         expect(actionLog).toStrictEqual([
             "test.sample.c#onStart",
             "test.sample.c#A_onEnter",
@@ -152,7 +152,7 @@ describe("interaction tests", () => {
         const engine = new InteractionEngine<TestEvents>(testInteractionContextAdapter);
 
         // start interaction
-        await engine.start(interactionDDefinition);
+        await engine.start(interactionDDefinition, {});
         expect(engine.getInteractionId()).toBe("test.sample.d");
         expect(engine.getInteractionState()).toBe("A");
         clearLog();
@@ -195,7 +195,6 @@ type TestInteractionAStates = "IDLE" | "FETCHING" | "ERROR"
 
 const interactionADefinition: InteractionDefinition<TestInteractionAStates, TestInteractionAEvents, {}> = {
     id: "test.sample.a",
-    context: {name: "hello test"},
     initial: "IDLE",
     onStart: () => log("test.sample.a", "onStart"),
     onEnd: () => log("test.sample.a", "onEnd"),
@@ -243,7 +242,6 @@ type TestInteractionBStates = "IDLE" | "RUNNING" | "DONE"
 
 const interactionBDefinition: InteractionDefinition<TestInteractionBStates, TestInteractionBEvents, {}> = {
     id: "test.sample.b",
-    context: {counter: 10},
     initial: "IDLE",
     onStart: () => log("test.sample.b", "onStart"),
     onEnd: () => log("test.sample.b", "onEnd"),
@@ -286,7 +284,6 @@ type TestInteractionCStates = "A" | "B"
 
 const interactionCDefinition: InteractionDefinition<TestInteractionCStates, TestInteractionCEvents, {}> = {
     id: "test.sample.c",
-    context: {},
     initial: "A",
     onStart: () => log("test.sample.c", "onStart"),
     onEnd: () => log("test.sample.c", "onEnd"),
@@ -319,7 +316,6 @@ type TestInteractionDStates = "A" | "B" | "C"
 
 const interactionDDefinition: InteractionDefinition<TestInteractionDStates, TestInteractionDEvents, {}> = {
     id: "test.sample.d",
-    context: {},
     initial: "A",
     onStart: () => log("test.sample.d", "onStart"),
     onEnd: () => log("test.sample.d", "onEnd"),
