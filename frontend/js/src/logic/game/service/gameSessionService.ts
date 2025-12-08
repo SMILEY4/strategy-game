@@ -1,5 +1,3 @@
-import {handleResponseError} from "../../../common/httpClient";
-import {UnauthorizedError} from "../../../common/UnauthorizedError";
 import {Game} from "../../../models/misc/game";
 import {GameStateAccess} from "../../../state/gameStateAccess";
 import {GameStateWriter} from "../../../state/gameStateWriter";
@@ -11,22 +9,6 @@ import {GameSession} from "../../../models/misc/gameSession";
 import {InteractionService} from "./interactionService";
 
 export interface GameSessionService {
-	/**
-	 * Get all games of the currently logged-in user
-	 */
-	listSessions(): Promise<Game[]>;
-	/**
-	 * Create a new game with the given name and settings
-	 */
-	createSession(name: string, seed: string | null): Promise<string>;
-	/**
-	 * Join a game with the given id as a new player
-	 */
-	joinSession(gameId: Game.Id): Promise<void>;
-	/**
-	 * Delete a game with the given id
-	 */
-	deleteSession(gameId: Game.Id): Promise<void>;
 	/**
 	 * Connect to the game with the given id and "start" playing
 	 */
@@ -50,35 +32,6 @@ export class GameSessionServiceImpl implements GameSessionService, GameMessageHa
 		private readonly gameStateWriter: GameStateWriter,
         private readonly interactionService: InteractionService,
 	) {
-	}
-
-
-	listSessions(): Promise<Game[]> {
-		return this.client.list()
-			.catch(error => handleResponseError(error, 401, () => {
-				throw new UnauthorizedError();
-			}));
-	}
-
-	createSession(name: string, seed: string | null): Promise<string> {
-		return this.client.create(name, seed)
-			.catch(error => handleResponseError(error, 401, () => {
-				throw new UnauthorizedError();
-			}));
-	}
-
-	joinSession(gameId: Game.Id): Promise<void> {
-		return this.client.join(gameId)
-			.catch(error => handleResponseError(error, 401, () => {
-				throw new UnauthorizedError();
-			}));
-	}
-
-	deleteSession(gameId: Game.Id): Promise<void> {
-		return this.client.delete(gameId)
-			.catch(error => handleResponseError(error, 401, () => {
-				throw new UnauthorizedError();
-			}));
 	}
 
 	connectSession(gameId: Game.Id): Promise<void> {
