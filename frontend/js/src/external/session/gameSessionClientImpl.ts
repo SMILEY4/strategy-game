@@ -20,46 +20,6 @@ export class GameSessionClientImpl implements GameSessionClient {
 		this.wsClient = wsClient;
 	}
 
-	public list(): Promise<Game[]> {
-		return this.httpClient
-			.get<GameResponse[]>({
-				url: "/api/session/list",
-				requireAuth: true,
-				token: authService.getAuthToken(),
-			})
-			.then(entries => entries.map(it => ({
-				id: it.id as Game.Id,
-				name: it.name,
-				creationTimestamp: it.creationTimestamp,
-				currentTurn: it.currentTurn,
-			})));
-	}
-
-	public create(name: string, seed: string | null): Promise<string> {
-		return this.httpClient.post<string>({
-			url: "/api/session/create?name=" + name + (seed ? ("&seed=" + seed) : ""),
-			requireAuth: true,
-			token: authService.getAuthToken(),
-			responseType: "text",
-		});
-	}
-
-	public delete(game: Game.Id): Promise<void> {
-		return this.httpClient.delete<void>({
-			url: "/api/session/delete/" + game,
-			requireAuth: true,
-			token: authService.getAuthToken(),
-		});
-	}
-
-	public join(game: Game.Id): Promise<void> {
-		return this.httpClient.post<void>({
-			url: `/api/session/join/${game}`,
-			requireAuth: true,
-			token: authService.getAuthToken(),
-		});
-	}
-
 	public connect(game: Game.Id, handler: GameMessageHandler): Promise<void> {
 		return this.getWebsocketTicket().then(ticket => {
 			return this.wsClient.open(`/api/session/connect/${game}`, ticket, message => {
