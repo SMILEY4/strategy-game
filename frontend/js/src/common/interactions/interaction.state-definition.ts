@@ -1,6 +1,9 @@
 import {InteractionEvent} from "./interaction.event";
 
-export type InteractionState<TState extends string, TEvent extends InteractionEvent, TContext> = {
+/**
+ * Definition for a single state in an interaction
+ */
+export type InteractionStateDefinition<TState extends string, TEvent extends InteractionEvent, TContext> = {
     onEnter?: (data: {
         getCtx: () => TContext,
         setCtx: (update: (ctx: TContext) => TContext) => void

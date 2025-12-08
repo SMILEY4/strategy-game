@@ -335,7 +335,6 @@ const interactionDDefinition: InteractionDefinition<TestInteractionDStates, Test
         },
         B: {
             onEnter: ({dispatch}) => {
-                console.log("from inside B");
                 log("test.sample.d", "B_onEnter");
                 dispatch({eventId: "NEXT_2"});
             },

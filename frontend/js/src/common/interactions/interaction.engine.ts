@@ -2,11 +2,28 @@ import {InteractionEvent} from "./interaction.event";
 import {InteractionDefinition, InteractionEndReason} from "./interaction.definition";
 import {InteractionContextAdapter} from "./interaction.context-adapter";
 
+/**
+ * Typesafe api for interacting with a specific interaction
+ */
+export interface InteractionApi<TEvent extends InteractionEvent, TState extends string, TContext> {
+    isActive: () => boolean;
+    getState: () => TState;
+    dispatch: (event: TEvent) => void,
+    getContext: () => TContext,
+    setContext: (update: (ctx: TContext) => TContext) => void,
+}
+
+/**
+ * Utility type for the currently active interaction.
+ */
 interface ActiveInteraction<TEvent extends InteractionEvent> {
     definition: InteractionDefinition<any, TEvent, any>,
     currentState: string
 }
 
+/**
+ * Executes and handles interactions, processes events.
+ */
 export class InteractionEngine<TEvent extends InteractionEvent> {
 
     private activeInteraction: ActiveInteraction<TEvent> | null = null;
@@ -14,6 +31,20 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
     private isProcessing = false;
 
     constructor(private readonly contextAdapter: InteractionContextAdapter) {
+    }
+
+    /**
+     * Get a typesafe api handle for any interaction (does not need to be the current interaction).
+     * Warning: before using these api function, check whether the interaction is currently active!
+     */
+    public getInteractionApi<TInteractionEvent extends TEvent, TState extends string, TContext>(interactionId: string): InteractionApi<TInteractionEvent, TState, TContext> | null {
+        return {
+            isActive: () => this.getInteractionId() === interactionId,
+            getState: () => this.getInteractionState() as TState,
+            dispatch: async (event: TInteractionEvent) => await this.dispatch(event),
+            getContext: () => this.contextAdapter.get() as TContext,
+            setContext: update => this.contextAdapter.update(update),
+        };
     }
 
     /**
@@ -93,7 +124,6 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
      * @param event the event
      */
     public async dispatch<T extends TEvent>(event: T) {
-        console.log("dispatch", event, this.activeInteraction);
         if (!this.activeInteraction) return;
         this.eventQueue.push(event);
         await this.processQueue();
@@ -118,8 +148,6 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
     }
 
     private async processEvent(event: TEvent) {
-        console.log("process event", event, this.activeInteraction);
-
         if (!this.activeInteraction) return;
 
         // find definition of current state and transition
