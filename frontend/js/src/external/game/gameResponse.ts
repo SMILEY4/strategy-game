@@ -1,6 +1,0 @@
-export interface GameResponse {
-	id: string,
-	name: string,
-	creationTimestamp: number,
-	currentTurn: number
-}

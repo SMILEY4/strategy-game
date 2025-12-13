@@ -5,9 +5,10 @@ import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
 import {Realm} from "../../../../../models/realm/realm";
-import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
 import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
+import {useWorldObjectByRealm} from "../../../../../app/game/worldobject/game.worldobject.hook.by-realm";
+import {useRealmById} from "../../../../../app/game/realm/game.realm.hook.by-id";
 
 export namespace UseRealmWindow {
 
@@ -31,8 +32,8 @@ export namespace UseRealmWindow {
 
 	export function useData(realmId: Realm.Id | null): UseRealmWindow.Data | null {
 
-		const realm = GameStateHooks.useRealm(realmId);
-		const worldObjects = GameStateHooks.useWorldObjectsOfRealm(realmId)
+		const realm = useRealmById(realmId);
+		const worldObjects = useWorldObjectByRealm(realmId)
 
 		if (realm) {
 			return {

@@ -6,10 +6,13 @@ import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
 import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectOutline";
 import {RealmOutline} from "../../../../../models/realm/realmOutline";
-import {App} from "../../../../../appContext";
 import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {UseRealmWindow} from "../realm/useRealmWindow";
 import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
+import {CameraService} from "../../../../../app/game/camera/game.camera.service";
+import {useOutlinerRealms} from "../../../../../app/game/outliner/game.outliner.hook.realms";
+import {useOutlinerUnits} from "../../../../../app/game/outliner/game.outliner.hook.units";
+import {useOutlinerTileImprovements} from "../../../../../app/game/outliner/game.outliner.hook.tile-improvements";
 
 export namespace UseOutlinerWindow {
 
@@ -42,9 +45,9 @@ export namespace UseOutlinerWindow {
 
 	export function useData(): UseOutlinerWindow.Data {
 
-		const realms = GameStateHooks.useOutlineRealms();
-		const units = GameStateHooks.useOutlineUnits();
-		const tileImprovements = GameStateHooks.useOutlineTileImprovements();
+		const realms = useOutlinerRealms();
+		const units = useOutlinerUnits();
+		const tileImprovements = useOutlinerTileImprovements();
 
 		return {
 			realms: {
@@ -54,12 +57,12 @@ export namespace UseOutlinerWindow {
 			units: {
 				entries: units,
 				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.id),
-				focusCamera: (outline: WorldObjectOutline) => App.gameProxy.focusCamera(outline.tile.position),
+				focusCamera: (outline: WorldObjectOutline) => CameraService.centerOnTile(outline.tile.position),
 			},
 			tileImprovements: {
 				entries: tileImprovements,
 				open: (outline: WorldObjectOutline) => UseWorldObjectWindow.open(outline.id),
-				focusCamera: (outline: WorldObjectOutline) => App.gameProxy.focusCamera(outline.tile.position),
+				focusCamera: (outline: WorldObjectOutline) => CameraService.centerOnTile(outline.tile.position),
 			},
 		};
 	}

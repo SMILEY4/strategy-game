@@ -25,3 +25,7 @@ code {
     max-height: 100vh;
     overflow:   hidden;
 }
+
+.tooltip-content {
+	z-index: 900;
+}

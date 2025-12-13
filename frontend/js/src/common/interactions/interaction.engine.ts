@@ -42,8 +42,8 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
             isActive: () => this.getInteractionId() === interactionId,
             getState: () => this.getInteractionState() as TState,
             dispatch: async (event: TInteractionEvent) => await this.dispatch(event),
-            getContext: () => this.contextAdapter.get() as TContext,
-            setContext: update => this.contextAdapter.update(update),
+            getContext: () => this.contextAdapter.getContext() as TContext,
+            setContext: update => this.contextAdapter.updateContext(update),
         };
     }
 
@@ -63,7 +63,7 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
 
     public getInteractionContext<TContext>(): TContext | null {
         return this.activeInteraction
-            ? this.contextAdapter.get()
+            ? this.contextAdapter.getContext()
             : null;
     }
 
@@ -76,21 +76,22 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
         // stop a previous interaction
         this.endInteraction("interruption");
         // prepare and start the new interaction
+        console.debug("Starting interaction", interaction, "with context", initialContext);
         this.activeInteraction = {
             definition: interaction,
             currentState: interaction.initial,
         };
-        this.contextAdapter.set(initialContext);
+        this.contextAdapter.set(interaction.id, initialContext);
         // run the "on start" action of the interaction
         this.activeInteraction.definition.onStart?.({
-            getCtx: () => this.contextAdapter.get,
-            setCtx: (updater) => this.contextAdapter.update(updater),
+            getCtx: () => this.contextAdapter.getContext(),
+            setCtx: (updater) => this.contextAdapter.updateContext(updater),
         });
         // run the "on-enter" actions of the initial state
         const initialStateDefinition = this.activeInteraction.definition.states[this.activeInteraction.currentState];
         await initialStateDefinition.onEnter?.({
-            getCtx: () => this.contextAdapter.get,
-            setCtx: (updater) => this.contextAdapter.update(updater),
+            getCtx: () => this.contextAdapter.getContext(),
+            setCtx: (updater) => this.contextAdapter.updateContext(updater),
             dispatch: async e => await this.dispatch(e),
         });
     }
@@ -104,12 +105,13 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
 
     private endInteraction(reason: InteractionEndReason) {
         if (this.activeInteraction) {
+            console.debug("End interaction", this.activeInteraction);
             // run the "on-end" action of the current interaction
             this.activeInteraction.definition.onEnd?.({
                 reason: reason,
                 state: this.activeInteraction.currentState,
-                getCtx: () => this.contextAdapter.get,
-                setCtx: (updater) => this.contextAdapter.update(updater),
+                getCtx: () => this.contextAdapter.getContext(),
+                setCtx: (updater) => this.contextAdapter.updateContext(updater),
             });
             // end the interaction and clean up
             this.activeInteraction = null;
@@ -125,6 +127,7 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
      */
     public async dispatch<T extends TEvent>(event: T): Promise<void> {
         if (!this.activeInteraction) return;
+        console.debug("Dispatching interaction event", event, "current interaction:", this.activeInteraction);
         this.eventQueue.push(event);
         await this.processQueue();
     }
@@ -157,19 +160,28 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
             return;
         }
 
+        // check additional transaction condition
+        const isAllowed = await transitionDefinition.condition?.({
+            event: event as any,
+            getCtx: () => this.contextAdapter.getContext(),
+        });
+        if(isAllowed === false) {
+            return;
+        }
+
         // run transition action
         await transitionDefinition.action?.({
             event: event as any,
-            getCtx: () => this.contextAdapter.get,
-            setCtx: (updater) => this.contextAdapter.update(updater),
+            getCtx: () => this.contextAdapter.getContext(),
+            setCtx: (updater) => this.contextAdapter.updateContext(updater),
         });
 
         // run on-enter action
         this.activeInteraction.currentState = transitionDefinition.target;
         const targetStateDefinition = this.activeInteraction.definition.states[transitionDefinition.target];
         await targetStateDefinition.onEnter?.({
-            getCtx: () => this.contextAdapter.get,
-            setCtx: (updater) => this.contextAdapter.update(updater),
+            getCtx: () => this.contextAdapter.getContext(),
+            setCtx: (updater) => this.contextAdapter.updateContext(updater),
             dispatch: async e => await this.dispatch(e),
         });
 

@@ -1,6 +1,5 @@
 import {HttpClient} from "../../common/httpClient";
 import {WebsocketClient} from "../../common/websocketClient";
-import {GameResponse} from "../game/gameResponse";
 import {GameSessionClient} from "../../logic/game/service/gameSessionClient";
 import {GameMessageHandler} from "../../logic/game/service/gameMessageHandler";
 import {GameStateMessage} from "./gameStateMessage";

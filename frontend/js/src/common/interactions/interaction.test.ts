@@ -355,14 +355,15 @@ type TestEvents = TestInteractionAEvents | TestInteractionBEvents | TestInteract
 let context: any = null;
 
 const testInteractionContextAdapter: InteractionContextAdapter = {
+    setActiveInteraction: () => undefined,
     clear: () => {
         context = null;
     },
-    get: () => context,
-    set: (ctx: any) => {
+    getContext: () => context,
+    setContext: (ctx: any) => {
         context = ctx;
     },
-    update: (updater: (ctx: any) => any) => {
+    updateContext: (updater: (ctx: any) => any) => {
         context = updater(context);
         return context;
     },

@@ -5,8 +5,8 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {App} from "../../../../../appContext";
-import {GameStateHooks} from "../../../../../state/gameStateHooks";
+import {GameMapService} from "../../../../../app/game/map/game.map.service";
+import {useMapMode} from "../../../../../app/game/map/game.map.hook.mapmode";
 
 export namespace UseMapWindow {
 
@@ -32,10 +32,10 @@ export namespace UseMapWindow {
 	 * Provides the data and functions required by the window
 	 */
 	export function useData(): UseMapWindow.Data {
-		const mapMode = GameStateHooks.useMapMode();
+		const mapMode = useMapMode();
 		return {
 			selectedMapMode: mapMode,
-			setMapMode: mapMode => App.gameProxy.selectMapMode(mapMode),
+			setMapMode: mapMode => GameMapService.selectMapMode(mapMode),
 		};
 	}
 

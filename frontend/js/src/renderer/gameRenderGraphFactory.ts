@@ -57,6 +57,11 @@ import {RelevantWorldAreaGenerator} from "./generators/relevantWorldAreaGenerato
 import {WasmGameRenderer} from "./wasmGameRenderer";
 import {Interaction} from "../models/misc/interaction";
 import {Command} from "../models/command/command";
+import {gameInteractionEngine} from "../app/game/game.interaction-engine";
+import {
+    WorldObjectMoveInteractionContext,
+    worldObjectMoveInteractionDefinition,
+} from "../app/game/worldobject/game.worldobject.interaction.move";
 
 export class GameRenderGraphFactory {
 
@@ -904,12 +909,14 @@ export class GameRenderGraphFactory {
                             pending: false,
                         })
                     })
-                    const interactionState = gameAccess.getInteractionState()
-                    if(interactionState?.type === Interaction.Type.Move) {
-                        paths.push({
-                            tiles: interactionState.path,
-                            pending: true,
-                        })
+                    if(gameInteractionEngine.getInteractionId() === worldObjectMoveInteractionDefinition.id) {
+                        const context = gameInteractionEngine.getInteractionContext<WorldObjectMoveInteractionContext>()
+                        if(context && context.path.length > 0){
+                            paths.push({
+                                tiles: context.path,
+                                pending: true,
+                            })
+                        }
                     }
                     return paths
                 }),

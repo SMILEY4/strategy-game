@@ -61,8 +61,6 @@ export class HttpClient {
             ? this.baseUrl + path
             : this.baseUrl + "/" + path;
 
-        console.debug("Making http request", method, fullUrl, request, "attempt=" + attempt);
-
         // build headers
         const headers: Record<string, string> = {
             ...(request.body !== undefined ? {"Content-Type": "application/json"} : {}),
@@ -91,8 +89,6 @@ export class HttpClient {
             credentials: credentials,
             body: requestBody,
         };
-
-        console.debug("Making http request", method, fullUrl, JSON.stringify(data), "attempt=" + attempt);
 
         // make http call
         let response: Response = null!

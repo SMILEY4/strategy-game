@@ -3,6 +3,11 @@ import {Camera} from "../common/webgl/camera";
 import {ChangeDetector} from "../common/changeDetector";
 import {Interaction} from "../models/misc/interaction";
 import {Command} from "../models/command/command";
+import {gameInteractionEngine} from "../app/game/game.interaction-engine";
+import {
+    WorldObjectMoveInteractionContext,
+    worldObjectMoveInteractionDefinition,
+} from "../app/game/worldobject/game.worldobject.interaction.move";
 
 export interface TrackedChanges {
 	isInitFrame: boolean;
@@ -96,12 +101,14 @@ export class GameChangeTracker {
 		let str = "";
 
         // from pending
-        const interactionState = this.gameStateAccess.getInteractionState()
-        if(interactionState?.type === Interaction.Type.Move) {
-            interactionState.path.forEach(tile => {
-                str += tile.position.q + "," + tile.position.r + "/";
-            });
-            str += "pending/";
+        if(gameInteractionEngine.getInteractionId() === worldObjectMoveInteractionDefinition.id) {
+            const context = gameInteractionEngine.getInteractionContext<WorldObjectMoveInteractionContext>()
+            if(context && context.path.length > 0){
+                context.path.forEach(tile => {
+                    str += tile.position.q + "," + tile.position.r + "/";
+                });
+                str += "pending/";
+            }
         }
 
         // from commands

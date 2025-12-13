@@ -37,10 +37,6 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 					<Button onClick={data.webgl.restore}>Restore WebGL-Context</Button>
 				</VBox>
 
-				<VBox gap_s>
-					<Button onClick={data.monitoring.export}>Export Monitoring Data</Button>
-				</VBox>
-
 			</VBox>
 		</DecoratedWindow>
 	);

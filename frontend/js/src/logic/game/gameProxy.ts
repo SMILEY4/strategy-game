@@ -1,33 +1,25 @@
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {TileService} from "./service/tileService";
-import {CameraService} from "./service/cameraService";
-import {MovementService} from "./service/movementService";
 import {AudioService, AudioType} from "../../common/audioService";
-import {MapMode} from "../../models/misc/mapMode";
 import {Command} from "../../models/command/command";
-import {GameStateWriter} from "../../state/gameStateWriter";
-import {Game} from "../../models/misc/game";
-import {GameSessionService} from "./service/gameSessionService";
-import {CommandService} from "./service/commandService";
-import {MonitoringService} from "./service/monitoringService";
 import {GameRenderer} from "../../renderer/gameRenderer";
-import {Tile} from "../../models/tile/tile";
 import {WorldObject} from "../../models/worldobject/worldObject";
-import {SettlementService} from "./service/settlementService";
+import {CameraService} from "../../app/game/camera/game.camera.service";
+import {CommandService} from "../../app/game/command/game.command.service";
+import {gameInteractionEngine} from "../../app/game/game.interaction-engine";
+import {
+    worldObjectMoveInteractionDefinition,
+    WorldObjectMoveInteractionEvent,
+} from "../../app/game/worldobject/game.worldobject.interaction.move";
+import {
+    settlementCreateInteractionDefinition,
+    SettlementCreateInteractionEvent,
+} from "../../app/game/settlement/game.settlement.interaction.create";
 
 /**
  * Service providing functionality for user interface and direct user interactions. Acts as a proxy to other services
  */
 export interface GameProxy {
-    // session
-    /**
-     * Connect to the game with the given id and "start" playing.
-     */
-    connectSession(gameId: Game.Id): Promise<void>;
-    /**
-     * Disconnect from the current session.
-     */
-    disconnectSession(): Promise<void>;
     // main game loop
     /**
      * Initialize the main game/rendering loop.
@@ -54,34 +46,7 @@ export interface GameProxy {
      * Handle a mouse scroll event.
      */
     mouseScrolled(d: number, clientX: number, clientY: number): void;
-    // camera
-    /**
-     * Move the camera to focus on the given tile.
-     */
-    focusCamera(tilePosition: Tile.Position): void;
-    // basic game functionality
-    /**
-     * End the current turn and send commands to server.
-     */
-    endTurn(): void;
-    /**
-     * Select the given map mode as the new active map mode.
-     */
-    selectMapMode(mapMode: MapMode): void;
-    // commands
-    /**
-     * Cancel the given command.
-     */
-    commandCancel(command: Command): void;
     // world objects
-    /**
-     * Start "move" mode for the given world object.
-     */
-    beginMovement(worldObjectId: WorldObject.Id): void;
-    /**
-     * End the movement. Submit or discard the move command.
-     */
-    endMovement(commit: boolean): void;
     /**
      * Disband (i.e. delete) the given world object.
      */
@@ -90,64 +55,18 @@ export interface GameProxy {
      * Construct the given tile improvement using the given world object.
      */
     constructTileImprovement(worldObjectId: WorldObject.Id, tileImprovementType: string): void;
-    /**
-     * Start mode for creating a new settlement.
-     */
-    beginCreateSettlement(worldObjectId: WorldObject.Id): void;
-    /**
-     * Cancel mode for creating a new settlement.
-     */
-    cancelCreateSettlement(): void;
-    /**
-     * Choose a name for the settlement. Set name to "null" to choose a randomly generated one.
-     */
-    setSettlementName(name: string | null): Promise<void>;
-    /**
-     * Create a new settlement
-     */
-    createSettlement(): void;
-    // dev functions
-    /**
-     * Loose the current webgl context for debug purposes.
-     */
-    webglContextLoose(): void;
-    /**
-     * Restore the webgl context for debug purposes.
-     */
-    webglContextRestore(): void;
-    /**
-     * Export the current monitoring data
-     */
-    exportMonitoringData(): void;
 }
 
 export class GameProxyImpl implements GameProxy {
 
-    private readonly canvasHandle: CanvasHandle;
+    public readonly canvasHandle: CanvasHandle;
 
     constructor(
         private readonly gameRenderer: GameRenderer,
         private readonly tileService: TileService,
-        private readonly cameraService: CameraService,
-        private readonly movementService: MovementService,
-        private readonly settlementService: SettlementService,
-        private readonly commandService: CommandService,
-        private readonly monitoringService: MonitoringService,
-        private readonly gameSessionService: GameSessionService,
-        private readonly gameStateWriter: GameStateWriter,
         private readonly audioService: AudioService,
     ) {
         this.canvasHandle = new CanvasHandle();
-    }
-
-    //========== SESSION ========================================================
-
-    connectSession(gameId: Game.Id): Promise<void> {
-        return this.gameSessionService.connectSession(gameId);
-    }
-
-    disconnectSession(): Promise<void> {
-        return this.gameSessionService.disconnectSession();
     }
 
     //========== MAIN GAME LOOP ===============================================
@@ -171,31 +90,35 @@ export class GameProxyImpl implements GameProxy {
     mouseClicked(clientX: number, clientY: number): void {
         const clickedTile = this.tileService.pickTileAt(clientX, clientY, this.canvasHandle);
         if (clickedTile != null) {
-            // if (this.movementService.isMovementActive()) {
-            // 	this.movementService.addStep(clickedTile.id).then(added => {
-            // 		if (added) {
-            // 			AudioType.CLICK_PRIMARY.play(this.audioService);
-            // 		} else {
-            // 			AudioType.CLICK_CLOSE.play(this.audioService);
-            // 		}
-            // 	});
-            // } else {
+            if (gameInteractionEngine.getInteractionId() === worldObjectMoveInteractionDefinition.id) {
+                void gameInteractionEngine.dispatch<WorldObjectMoveInteractionEvent>({
+                    eventId: "SELECT_TILE",
+                    tile: clickedTile,
+                });
+                return;
+            }
+            if (gameInteractionEngine.getInteractionId() === settlementCreateInteractionDefinition.id) {
+                void gameInteractionEngine.dispatch<SettlementCreateInteractionEvent>({
+                    eventId: "SELECT_TILE",
+                    tile: clickedTile,
+                });
+                return;
+            }
             this.tileService.clickTile(clickedTile);
             AudioType.CLICK_PRIMARY.play(this.audioService);
-            // }
         }
     }
 
     mouseMoved(dx: number, dy: number, clientX: number, clientY: number, leftBtnDown: boolean): void {
         if (leftBtnDown) {
-            this.cameraService.move(dx, dy, this.canvasHandle);
+            CameraService.move(dx, dy, this.canvasHandle);
         } else {
             this.updateMouseOver(clientX, clientY);
         }
     }
 
     mouseScrolled(d: number, clientX: number, clientY: number): void {
-        this.cameraService.zoomAt(clientX, clientY, d > 0 ? "out" : "in", this.canvasHandle);
+        CameraService.zoomAt(clientX, clientY, d > 0 ? "out" : "in", this.canvasHandle);
         this.updateMouseOver(clientX, clientY);
     }
 
@@ -204,49 +127,10 @@ export class GameProxyImpl implements GameProxy {
         this.tileService.mouseOver(mouseOverTile);
     }
 
-    //========== CAMERA =======================================================
-
-    focusCamera(tilePosition: Tile.Position): void {
-        this.cameraService.centerOnTile(tilePosition);
-    }
-
-
-    //========== BASIC GAME FUNCTIONALITY =====================================
-
-    endTurn(): void {
-        this.gameSessionService.endTurn();
-    }
-
-    selectMapMode(mapMode: MapMode): void {
-        this.gameStateWriter.setSelectedMapMode(mapMode);
-    }
-
-    //========== COMMANDS =====================================================
-
-    commandCancel(command: Command): void {
-        this.commandService.cancelCommand(command.id);
-        AudioType.WRITING_ON_PAPER.play(this.audioService);
-    }
-
     //========== UNITS / WORLD OBJECTS ========================================
 
-    beginMovement(worldObjectId: WorldObject.Id): void {
-        this.movementService.beginMovement(worldObjectId);
-        AudioType.CLICK_PRIMARY.play(this.audioService);
-    }
-
-    endMovement(commit: boolean): void {
-        if (commit) {
-            this.movementService.completeMovement();
-            AudioType.WRITING_ON_PAPER.play(this.audioService);
-        } else {
-            this.movementService.cancelMovement();
-            AudioType.CLICK_CLOSE.play(this.audioService);
-        }
-    }
-
     disbandWorldObject(worldObjectId: WorldObject.Id): void {
-        this.commandService.addCommand({
+        CommandService.addCommand({
             type: Command.Type.Disband,
             id: Command.genId(),
             worldObjectId: worldObjectId,
@@ -254,9 +138,8 @@ export class GameProxyImpl implements GameProxy {
         AudioType.WRITING_ON_PAPER.play(this.audioService);
     }
 
-
     constructTileImprovement(worldObjectId: WorldObject.Id, tileImprovementType: string): void {
-        this.commandService.addCommand({
+        CommandService.addCommand({
             type: Command.Type.ConstructTileImprovement,
             id: Command.genId(),
             worldObjectId: worldObjectId,
@@ -264,36 +147,5 @@ export class GameProxyImpl implements GameProxy {
         });
         AudioType.WRITING_ON_PAPER.play(this.audioService);
 
-    }
-
-    beginCreateSettlement(worldObjectId: WorldObject.Id): void {
-        this.settlementService.beginCreateSettlement(worldObjectId);
-    }
-
-    cancelCreateSettlement(): void {
-        this.settlementService.cancelCreateSettlement();
-    }
-
-    setSettlementName(name: string | null): Promise<void> {
-        return this.settlementService.setSettlementName(name);
-    }
-
-    createSettlement(): void {
-        this.settlementService.createSettlement();
-        AudioType.WRITING_ON_PAPER.play(this.audioService);
-    }
-
-    //========== DEV FUNCTIONALITY ============================================
-
-    webglContextLoose(): void {
-        this.canvasHandle.debugLooseWebglContext();
-    }
-
-    webglContextRestore(): void {
-        this.canvasHandle.debugRestoreWebglContext();
-    }
-
-    exportMonitoringData(): void {
-        this.monitoringService.exportData();
     }
 }
