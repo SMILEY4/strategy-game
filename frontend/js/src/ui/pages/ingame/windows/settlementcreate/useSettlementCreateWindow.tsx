@@ -4,9 +4,16 @@ import {openWindow, useCloseWindow} from "../../../../components/window/windowHo
 import {WindowStore} from "../../../../components/window/windowStore";
 import {SettlementCreateWindow} from "./SettlementCreateWindow";
 import {useEffect} from "react";
-import {App} from "../../../../../appContext";
-import {GameStateHooks} from "../../../../../state/gameStateHooks";
-import {Interaction} from "../../../../../models/misc/interaction";
+import {gameInteractionEngine} from "../../../../../app/game/game.interaction-engine";
+import {
+    SettlementCreateInteractionContext,
+    settlementCreateInteractionDefinition,
+    SettlementCreateInteractionEvent,
+} from "../../../../../app/game/settlement/game.settlement.interaction.create";
+import {
+    useActiveInteractionId,
+    useInteractionContext,
+} from "../../../../../common/interactions/interaction.context-adapter";
 
 export namespace UseSettlementCreateWindow {
 
@@ -24,15 +31,14 @@ export namespace UseSettlementCreateWindow {
      * The data and functions required by the "found settlement" window
      */
     export interface Data {
+        valid: boolean,
+        reasonsInvalid: string[],
         input: {
-            valid: boolean,
-            reasonsInvalid: string[]
             name: {
                 value: string,
                 set: (value: string) => void
             }
         };
-        hasSelectedTile: boolean,
         randomizeName: () => void;
         cancel: () => void;
         create: () => void;
@@ -44,29 +50,58 @@ export namespace UseSettlementCreateWindow {
     export function useData(windowId: string, worldObjectId: WorldObject.Id): UseSettlementCreateWindow.Data {
 
         const closeWindow = useCloseWindow();
-        const interactionState = GameStateHooks.useInteractionStateByType(Interaction.Type.CreateSettlement);
+        const currentInteractionId = useActiveInteractionId();
+        const currentInteractionContext = useInteractionContext();
 
         useEffect(() => {
-            App.gameProxy.beginCreateSettlement(worldObjectId);
+            void gameInteractionEngine.start(settlementCreateInteractionDefinition, {
+                worldObjectId: worldObjectId,
+                validTiles: [],
+                name: null,
+                tile: null,
+            });
         }, []);
 
+        let name = ""
+        let validName = false;
+        let validTile = false;
+        if(currentInteractionId === settlementCreateInteractionDefinition.id) {
+            const context = currentInteractionContext as SettlementCreateInteractionContext;
+            name = context.name ?? ""
+            validName = !!context.name?.trim()
+            validTile = !!context.tile
+        }
+
+        const reasonsInvalid = [
+            ...(validName ? [] : ["invalid_name"]),
+            ...(validTile ? [] : ["invalid_tile"]),
+        ]
+
+        console.log("validName", validName, "validTile", validTile, "->", (validName && validTile), "reasons", reasonsInvalid)
+
         return {
+            valid: validName && validTile,
+            reasonsInvalid: reasonsInvalid,
             input: {
-                valid: (interactionState?.validationErrors ?? []).length === 0,
-                reasonsInvalid: [],
                 name: {
-                    value: interactionState?.name ?? "",
-                    set: name => App.gameProxy.setSettlementName(name),
+                    value: name,
+                    set: name => {
+                        void gameInteractionEngine.dispatch<SettlementCreateInteractionEvent>({
+                            eventId: "SELECT_NAME",
+                            name: name,
+                        });
+                    },
                 },
             },
-            hasSelectedTile: interactionState?.location !== null,
-            randomizeName: () => App.gameProxy.setSettlementName(null),
+            randomizeName: () => {
+                void gameInteractionEngine.dispatch<SettlementCreateInteractionEvent>({eventId: "SELECT_RANDOM_NAME"});
+            },
             cancel: () => {
-                App.gameProxy.cancelCreateSettlement();
+                void gameInteractionEngine.dispatch<SettlementCreateInteractionEvent>({eventId: "CANCEL"});
                 closeWindow(windowId);
             },
             create: () => {
-                App.gameProxy.createSettlement();
+                void gameInteractionEngine.dispatch<SettlementCreateInteractionEvent>({eventId: "CONFIRM"});
                 closeWindow(windowId);
             },
         };

@@ -9,6 +9,10 @@ export type InteractionStateDefinition<TState extends string, TEvent extends Int
     transitions: {
         [E in TEvent["eventId"]]?: {
             target: TState,
+            condition?: (data: {
+                event: EventById<TEvent, E>,
+                getCtx: () => TContext,
+            }) => boolean | PromiseLike<boolean>
             action?: (data: {
                 event: EventById<TEvent, E>,
                 getCtx: () => TContext,
@@ -24,11 +28,6 @@ export type ParametersOnEnterAction<TEvent extends InteractionEvent, TContext> =
     dispatch: (event: TEvent) => void,
 }
 
-export type ParametersOnTransitionAction<TEvent extends InteractionEvent, EventId extends TEvent["eventId"], TContext> = {
-    event: EventById<TEvent, EventId>,
-    getCtx: () => TContext,
-    setCtx: (update: (ctx: TContext) => TContext) => void
-}
 
 type EventById<
     AllEvents extends InteractionEvent,

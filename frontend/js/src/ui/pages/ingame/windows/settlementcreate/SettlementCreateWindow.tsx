@@ -9,6 +9,7 @@ import {TextField} from "../../../../components/textfield/TextField";
 import {Button} from "../../../../components/button/Button";
 import {Tooltip} from "../../../../components/tooltip/Tooltip";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
+import React from "react";
 
 export interface SettlementCreateWindowProps {
     windowId: string;
@@ -35,40 +36,32 @@ export function SettlementCreateWindow(props: SettlementCreateWindowProps) {
 
                     <Divider line/>
 
-                    {!data.hasSelectedTile && (
-                        <Txt.Body>
-                            <Txt.String>Select Location</Txt.String>
-                        </Txt.Body>
-                    )}
-
-                    {data.hasSelectedTile && (
-                        <HBox gap_none>
-                            <TextField
-                                value={data.input.name.value}
-                                placeholder={"Settlement Name"}
-                                type="text"
-                                onChange={data.input.name.set}
-                            />
-                            <Button info onClick={data.randomizeName}>
-                                Random
-                            </Button>
-                        </HBox>
-                    )}
+                    <HBox gap_none>
+                        <TextField
+                            value={data.input.name.value}
+                            placeholder={"Settlement Name"}
+                            type="text"
+                            onChange={data.input.name.set}
+                        />
+                        <Button info onClick={data.randomizeName}>
+                            Random
+                        </Button>
+                    </HBox>
 
                     <HBox right gap_s>
                         <Button warn onClick={data.cancel}>
                             Cancel
                         </Button>
 
-                        <Tooltip.Context enabled={!data.input.valid}>
+                        <Tooltip.Context enabled={!data.valid}>
                             <Tooltip.Trigger>
-                                <Button success disabled={!data.input.valid} onClick={data.create}>
+                                <Button success disabled={!data.valid} onClick={data.create}>
                                     Create
                                 </Button>
                             </Tooltip.Trigger>
                             <Tooltip.Content>
                                 <TooltipPanel>
-                                    {data.input.reasonsInvalid.map(e => (
+                                    {data.reasonsInvalid.map(e => (
                                         <Txt.Body><Txt.String>{e}</Txt.String></Txt.Body>
                                     ))}
                                 </TooltipPanel>

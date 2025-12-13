@@ -8,7 +8,7 @@ import {VSpacer} from "../../components/spacer/Spacer";
 import {GotoHooks} from "../goto";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {Txt} from "../../components/text/Txt";
-import {useLogin} from "./login.page.hooks";
+import {useLogin} from "./login.page.hook.login";
 
 
 export function LoginPage(): ReactElement {

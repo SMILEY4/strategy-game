@@ -7,14 +7,17 @@ import {UID} from "../../../../../common/uid";
 import {UseMoveWindow} from "../move/useMoveWindow";
 import {UseTileWindow} from "../tile/useTileWindow";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
-import {App} from "../../../../../appContext";
-import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
 import {Command} from "../../../../../models/command/command";
 import {
 	UseTileImprovementConstructionWindow
 } from "../tileimprovementconstruction/useTileImprovementConstructionWindow";
 import {UseSettlementCreateWindow} from "../settlementcreate/useSettlementCreateWindow";
+import {CameraService} from "../../../../../app/game/camera/game.camera.service";
+import {CommandService} from "../../../../../app/game/command/game.command.service";
+import {useCommands} from "../../../../../app/game/command/game.command.hook.commands";
+import {useWorldObjectById} from "../../../../../app/game/worldobject/game.worldobject.hook.by-id";
+import {disbandWorldObject} from "../../../../../app/game/worldobject/game.worldobject.disband";
 
 export namespace UseWorldObjectWindow {
 
@@ -75,8 +78,8 @@ export namespace UseWorldObjectWindow {
 
 	export function useData(worldObjectId: WorldObject.Id | null): Data | null {
 
-		const worldObject = GameStateHooks.useWorldObject(worldObjectId);
-		const commands = GameStateHooks.useCommands()
+		const worldObject = useWorldObjectById(worldObjectId);
+		const commands = useCommands()
 
 		if (worldObject) {
 			return {
@@ -85,7 +88,7 @@ export namespace UseWorldObjectWindow {
 				open: {
 					tile: () => UseTileWindow.open(worldObject.tile.id ?? null),
 				},
-				centerCamera: () => App.gameProxy.focusCamera(worldObject.tile.position),
+				centerCamera: () => CameraService.centerOnTile(worldObject.tile.position),
 			};
 		} else {
 			return null;
@@ -122,7 +125,7 @@ export namespace UseWorldObjectWindow {
 			actions.push({
 				type: "disband",
 				enabled: relevantCommands.length == 0,
-				perform: () => App.gameProxy.disbandWorldObject(worldObject.id),
+				perform: () => disbandWorldObject(worldObject.id),
 			} as DisbandAction)
 		}
 
@@ -149,7 +152,7 @@ export namespace UseWorldObjectWindow {
 			actions.push({
 				type: "cancel-current-command",
 				enabled: relevantCommands.length > 0,
-				perform: () => relevantCommands.forEach(it => App.gameProxy.commandCancel(it)),
+				perform: () => relevantCommands.forEach(it => CommandService.cancelCommand(it.id)),
 			} as CancelCurrentCommandAction)
 		}
 

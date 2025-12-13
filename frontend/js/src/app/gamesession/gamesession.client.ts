@@ -3,7 +3,6 @@ import {HttpErrorCodes} from "../http/http.status-codes";
 import {DetailedError, HttpErrorResponseBody} from "../../common/detailedError";
 import {App} from "../../appContext";
 import {authHandlerUserAuthToken} from "../authentication/auth.handler.user-auth-token";
-import {GameResponse} from "../../external/game/gameResponse";
 
 export namespace GameSessionClientTypes {
 
@@ -56,6 +55,13 @@ export const GameSessionClient = {
      * List the games of the currently logged-in user
      */
     list(): Promise<Game[]> {
+
+        interface GameResponse {
+            id: string,
+            name: string,
+            creationTimestamp: number,
+            currentTurn: number
+        }
 
         type Response =
             | { status: 200; body: GameResponse[] }

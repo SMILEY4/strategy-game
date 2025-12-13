@@ -9,34 +9,36 @@ import {UseCommandLogWindow} from "../windows/commandlog/useCommandLogWindow";
 import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
 import {UseOutlinerWindow} from "../windows/outliner/useOutlinerWindow";
 import {Txt} from "../../../components/text/Txt";
-import {App} from "../../../../appContext";
-import {GameStateHooks} from "../../../../state/gameStateHooks";
+import {useGameSessionSubmitTurn} from "../../../../app/gamesession/gamesession.hook.submit-turn";
+import {useTurnState} from "../../../../app/game/turn/game.turn.hook.turn-state";
+import {useCurrentTurn} from "../../../../app/game/turn/game.turn.hook.current-turn";
 
 export function MenuBar(): ReactElement {
 
-	const currentTurn = GameStateHooks.useCurrentTurn();
-	const isWaiting = GameStateHooks.useIsGameWaiting();
-	const isBlocked = useIsBlockingWindowOpen();
+    const submitTurn = useGameSessionSubmitTurn();
+    const currentTurn = useCurrentTurn();
+    const isWaiting = useTurnState() === "waiting";
+    const isBlocked = useIsBlockingWindowOpen();
 
-	return (
-		<div className="menubar">
-			<div className="menubar__inner">
-				<HBox fullSize padding_xs gap_xs className="menubar__content">
+    return (
+        <div className="menubar">
+            <div className="menubar__inner">
+                <HBox fullSize padding_xs gap_xs className="menubar__content">
 
-					<Button circle onClick={UseDevWindow.open} disabled={isBlocked}><Txt.Icon.Debug/></Button>
-					<Button circle onClick={UseMapWindow.open} disabled={isBlocked}><Txt.Icon.Map/></Button>
-					<Button circle onClick={UseCommandLogWindow.open} disabled={isBlocked}><Txt.Icon.Command/></Button>
-					<Button circle onClick={UseOutlinerWindow.open} disabled={isBlocked}><Txt.Icon.List/></Button>
+                    <Button circle onClick={UseDevWindow.open} disabled={isBlocked}><Txt.Icon.Debug/></Button>
+                    <Button circle onClick={UseMapWindow.open} disabled={isBlocked}><Txt.Icon.Map/></Button>
+                    <Button circle onClick={UseCommandLogWindow.open} disabled={isBlocked}><Txt.Icon.Command/></Button>
+                    <Button circle onClick={UseOutlinerWindow.open} disabled={isBlocked}><Txt.Icon.List/></Button>
 
-					<HSpacer fullWidth/>
+                    <HSpacer fullWidth/>
 
-					<Button success disabled={isBlocked || isWaiting} onClick={() => App.gameProxy.endTurn()}>
-						{"End Turn " + currentTurn}
-					</Button>
+                    <Button success disabled={isBlocked || isWaiting} onClick={() => submitTurn()}>
+                        {"End Turn " + currentTurn}
+                    </Button>
 
-				</HBox>
-			</div>
-		</div>
-	);
+                </HBox>
+            </div>
+        </div>
+    );
 
 }

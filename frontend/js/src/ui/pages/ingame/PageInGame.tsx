@@ -8,16 +8,17 @@ import "./pageInGame.scoped.less";
 import {WindowStack} from "../../components/window/WindowStack";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {Txt} from "../../components/text/Txt";
-import {App} from "../../../appContext";
-import {GameStateHooks} from "../../../state/gameStateHooks";
 import {useGameSessionConnect} from "../../../app/gamesession/gamesession.hook.connect";
 import {Game} from "../../../models/misc/game";
+import {useGameSessionDisconnect} from "../../../app/gamesession/gamesession.hook.disconnect";
+import {useGameSessionState} from "../../../app/gamesession/gamesession.hook.state";
 
 const USE_DUMMY_CANVAS = false;
 
 export function PageInGame(): ReactElement {
 
-    const currentState = GameStateHooks.useGameSessionState();
+    const currentState = useGameSessionState();
+
     const loadGame = useLoadGame();
 
     useEffect(() => {
@@ -63,6 +64,9 @@ function GameError(): ReactElement {
 
 
 function GamePlaying(): ReactElement {
+
+    const disconnect = useGameSessionDisconnect();
+
     useEffect(() => {
         window.onbeforeunload = endGamePlaying;
         window.onunload = endGamePlaying;
@@ -74,7 +78,7 @@ function GamePlaying(): ReactElement {
     }, []);
 
     function endGamePlaying() {
-        App.gameProxy.disconnectSession().then(undefined);
+        disconnect();
     }
 
     return (

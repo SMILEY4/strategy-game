@@ -8,9 +8,6 @@ import {Txt} from "../../../../components/text/Txt";
 import {UseWorldObjectWindow} from "./useWorldObjectWindow";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
-import UnitMoveAction = UseWorldObjectWindow.MoveAction;
-import UnitDisbandAction = UseWorldObjectWindow.DisbandAction;
-import UnitCancelCurrentCommandAction = UseWorldObjectWindow.CancelCurrentCommandAction;
 
 export interface WorldObjectWindowProps {
 	windowId: string;

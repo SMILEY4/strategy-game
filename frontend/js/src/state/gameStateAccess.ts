@@ -16,6 +16,15 @@ import {GameSession} from "../models/misc/gameSession";
 import {Command} from "../models/command/command";
 import {InteractionState} from "../models/misc/interaction";
 import {InteractionStore} from "./database/interactionStore";
+import {gameInteractionEngine} from "../app/game/game.interaction-engine";
+import {
+    WorldObjectMoveInteractionContext,
+    worldObjectMoveInteractionDefinition,
+} from "../app/game/worldobject/game.worldobject.interaction.move";
+import {
+    SettlementCreateInteractionContext,
+    settlementCreateInteractionDefinition,
+} from "../app/game/settlement/game.settlement.interaction.create";
 import Mapping = Command.Mapping;
 
 export interface GameStateAccess {
@@ -180,7 +189,44 @@ export class GameStateAccessImpl implements GameStateAccess {
     }
 
     getHighlightedTiles(): Tile.Highlight[] {
-        return this.gameSessionDatabase.get().highlightedTiles
+        let selectedTileHighlight: Tile.Highlight | null = null;
+        const selectedTile = this.getSelectedTile();
+        if (selectedTile) {
+            selectedTileHighlight = {
+                type: Tile.HighlightType.Active,
+                position: selectedTile.position,
+                id: selectedTile.id,
+            };
+        }
+
+        if (gameInteractionEngine.getInteractionId() === worldObjectMoveInteractionDefinition.id) {
+            const context = gameInteractionEngine.getInteractionContext<WorldObjectMoveInteractionContext>();
+            const highlights = context?.targets.map(target => ({
+                type: Tile.HighlightType.Option,
+                position: target.tile.position,
+                id: target.tile.id,
+            })) ?? [];
+            return selectedTileHighlight ? [selectedTileHighlight, ...highlights] : highlights;
+        }
+
+        if (gameInteractionEngine.getInteractionId() === settlementCreateInteractionDefinition.id) {
+            const context = gameInteractionEngine.getInteractionContext<SettlementCreateInteractionContext>();
+            const options = context?.validTiles.map(it => ({
+                type: Tile.HighlightType.Option,
+                position: it.position,
+                id: it.id,
+            })) ?? []
+            const selectedOption = context?.tile
+                ? [{
+                    type: Tile.HighlightType.OptionSelected,
+                    position: context?.tile!.position,
+                    id: context?.tile!.id,
+                }]
+                : [];
+            return selectedTileHighlight ? [selectedTileHighlight, ...options, ...selectedOption] : selectedOption;
+        }
+
+        return selectedTileHighlight ? [selectedTileHighlight] : [];
     }
 
     getTiles(): Tile[] {
