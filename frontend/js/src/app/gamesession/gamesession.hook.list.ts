@@ -7,7 +7,7 @@ export function useGameSessionsList(): [Game[], () => void] {
 
     useEffect(() => {
         load();
-    });
+    }, []);
 
     function load() {
         GameSessionClient

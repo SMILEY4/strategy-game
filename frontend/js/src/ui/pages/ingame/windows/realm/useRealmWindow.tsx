@@ -7,45 +7,45 @@ import {WindowGroup} from "../windowGroups";
 import {Realm} from "../../../../../models/realm/realm";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
 import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
-import {useWorldObjectByRealm} from "../../../../../app/game/worldobject/game.worldobject.hook.by-realm";
-import {useRealmById} from "../../../../../app/game/realm/game.realm.hook.by-id";
+import {RealmStateAccess} from "../../../../../app/game/realm/game.realm.state-access";
+import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/game.worldobject.state-access";
 
 export namespace UseRealmWindow {
 
-	export function open(identifier: Realm.Id | null) {
-		const windowId = UID.generate();
-		openWindow({
-			id: windowId,
-			groupId: WindowGroup.LEFT_SIDEBAR,
-			anchor: WindowStore.ANCHOR_LEFT_SIDE,
-			content: <RealmWindow windowId={windowId} identifier={identifier}/>,
-		});
-	}
+    export function open(identifier: Realm.Id | null) {
+        const windowId = UID.generate();
+        openWindow({
+            id: windowId,
+            groupId: WindowGroup.LEFT_SIDEBAR,
+            anchor: WindowStore.ANCHOR_LEFT_SIDE,
+            content: <RealmWindow windowId={windowId} identifier={identifier}/>,
+        });
+    }
 
-	export interface Data {
-		realm: Realm,
-		worldObjects: WorldObjectSummary[],
-		open: {
-			worldObject: (worldObject: WorldObjectSummary) => void,
-		}
-	}
+    export interface Data {
+        realm: Realm,
+        worldObjects: WorldObjectSummary[],
+        open: {
+            worldObject: (worldObject: WorldObjectSummary) => void,
+        }
+    }
 
-	export function useData(realmId: Realm.Id | null): UseRealmWindow.Data | null {
+    export function useData(realmId: Realm.Id | null): UseRealmWindow.Data | null {
 
-		const realm = useRealmById(realmId);
-		const worldObjects = useWorldObjectByRealm(realmId)
+        const realm = RealmStateAccess.useRealmById(realmId);
+        const worldObjects = WorldObjectStateAccess.useWorldObjectByRealm(realmId);
 
-		if (realm) {
-			return {
-				realm: realm,
-				worldObjects: worldObjects.map(WorldObjectSummary.from),
-				open: {
-					worldObject: worldObject => UseWorldObjectWindow.open(worldObject.id),
-				},
-			};
-		} else {
-			return null;
-		}
-	}
+        if (realm) {
+            return {
+                realm: realm,
+                worldObjects: worldObjects.map(WorldObjectSummary.from),
+                open: {
+                    worldObject: worldObject => UseWorldObjectWindow.open(worldObject.id),
+                },
+            };
+        } else {
+            return null;
+        }
+    }
 
 }

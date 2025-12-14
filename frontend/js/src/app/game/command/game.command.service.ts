@@ -5,12 +5,12 @@ import {AudioType} from "../../../common/audioService";
 export const CommandService = {
 
     addCommand<T extends Command>(command: T): void {
-        App.gameStateWriter.addCommand(command);
+        App.commandDatabase.insert(command);
     },
 
     cancelCommand(id: Command.Id): void {
-        App.gameStateWriter.removeCommand(id);
+        App.commandDatabase.delete(id);
         AudioType.WRITING_ON_PAPER.play(App.audioService);
-    }
+    },
 
-}
+};

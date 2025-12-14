@@ -3,6 +3,7 @@ import {App} from "../../appContext";
 import {gameInteractionEngine} from "../game/game.interaction-engine";
 import {GameSessionConnectionClient} from "./gamesession.client.connection";
 import {CommandMessage} from "../../models/messages/commandMessage";
+import {CommandStateAccess} from "../game/command/game.command.state-access";
 
 export function useGameSessionSubmitTurn(): () => void {
     return () => {
@@ -10,10 +11,21 @@ export function useGameSessionSubmitTurn(): () => void {
         GameSessionConnectionClient.send({
             type: "submit-turn",
             payload: {
-                commands: App.gameStateAccess.getCommands().map(it => CommandMessage.map(it))
-            }
-        })
-        App.gameStateWriter.clearCommands();
-        App.gameStateWriter.setTurnState(GameSession.TurnState.Waiting);
+                commands: CommandStateAccess.getAll().map(it => CommandMessage.map(it)),
+            },
+        });
+        clearCommands();
+        setTurnStateWaiting();
     };
+}
+
+
+function setTurnStateWaiting() {
+    App.gameSessionDatabase.update(() => ({
+        turnState: GameSession.TurnState.Waiting,
+    }));
+}
+
+function clearCommands(): void {
+    App.commandDatabase.deleteAll();
 }

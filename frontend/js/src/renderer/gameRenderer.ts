@@ -1,16 +1,15 @@
 import {CanvasHandle} from "../common/webgl/canvasHandle";
 import {RenderGraph} from "../common/rendergraph/renderGraph";
 import {GameRenderGraphFactory} from "./gameRenderGraphFactory";
-import {GameStateAccess} from "../state/gameStateAccess";
 import {GameChangeTracker} from "./gameChangeTracker";
 import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {Camera} from "../common/webgl/camera";
 import {WasmGameRenderer} from "./wasmGameRenderer";
+import {CameraStateAccess} from "../app/game/camera/game.camera.state-access";
 
 export class GameRenderer {
 
-	private readonly gameStateAccess: GameStateAccess;
 	private readonly changeTracker: GameChangeTracker;
 	private readonly shaderSourceManager: GameShaderSourceManager;
 	private readonly textureAtlasManager: GameTextureAtlasDataManager;
@@ -19,13 +18,11 @@ export class GameRenderer {
 	private gameRenderGraph: RenderGraph | null = null;
 
 	constructor(
-		gameStateAccess: GameStateAccess,
 		changeTracker: GameChangeTracker,
 		shaderSourceManager: GameShaderSourceManager,
 		textureAtlasManager: GameTextureAtlasDataManager,
 		wasmGameRenderer: WasmGameRenderer,
 	) {
-		this.gameStateAccess = gameStateAccess;
 		this.changeTracker = changeTracker;
 		this.shaderSourceManager = shaderSourceManager;
 		this.textureAtlasManager = textureAtlasManager;
@@ -40,7 +37,6 @@ export class GameRenderer {
 		const factory = new GameRenderGraphFactory();
 		this.changeTracker.initialize();
 		this.gameRenderGraph = factory.create(
-			this.gameStateAccess,
 			this.changeTracker,
 			canvasHandle,
 			this.shaderSourceManager,
@@ -71,7 +67,7 @@ export class GameRenderer {
 	}
 
 	private getRenderCamera(canvasHandle: CanvasHandle): Camera {
-		const data = this.gameStateAccess.getCamera();
+		const data = CameraStateAccess.get();
 		return Camera.create(
 			data,
 			canvasHandle.getCanvasWidth(),

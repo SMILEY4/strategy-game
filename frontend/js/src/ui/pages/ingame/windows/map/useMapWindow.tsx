@@ -6,7 +6,7 @@ import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
 import {GameMapService} from "../../../../../app/game/map/game.map.service";
-import {useMapMode} from "../../../../../app/game/map/game.map.hook.mapmode";
+import {MapStateAccess} from "../../../../../app/game/map/game.map.state-access";
 
 export namespace UseMapWindow {
 
@@ -32,7 +32,7 @@ export namespace UseMapWindow {
 	 * Provides the data and functions required by the window
 	 */
 	export function useData(): UseMapWindow.Data {
-		const mapMode = useMapMode();
+		const mapMode = MapStateAccess.useMapMode();
 		return {
 			selectedMapMode: mapMode,
 			setMapMode: mapMode => GameMapService.selectMapMode(mapMode),

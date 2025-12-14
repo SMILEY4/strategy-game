@@ -7,7 +7,7 @@ import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
 import {WebglContextService} from "../../../../../app/webgl/webgl.context.service";
-import {useCamera} from "../../../../../app/game/camera/game.camera.hook.camera";
+import {CameraStateAccess} from "../../../../../app/game/camera/game.camera.state-access";
 
 export namespace UseDevWindow {
 
@@ -34,7 +34,7 @@ export namespace UseDevWindow {
     }
 
     export function useData(): UseDevWindow.Data {
-        const camera = useCamera();
+        const camera = CameraStateAccess.useCamera();
         const [enterFullscreen, exitFullscreen] = useFullscreen("root");
         return {
             fullscreen: {
