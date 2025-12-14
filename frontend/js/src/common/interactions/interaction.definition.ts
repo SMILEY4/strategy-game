@@ -4,7 +4,7 @@ import {InteractionStateDefinition} from "./interaction.state-definition";
 /**
  * Reasons for why an interaction has ended.
  */
-export type InteractionEndReason = "end-state" | "engine-end" | "interruption"
+export type InteractionEndReason = "end-state" | "engine-end" | "interruption" | "error"
 
 /**
  * Complete definition of a single interaction.
