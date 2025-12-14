@@ -5,6 +5,7 @@ import {authHandlerUserAuthToken} from "../authentication/auth.handler.user-auth
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {Tile} from "../../models/tile/tile";
 import {MovementTarget} from "../../models/misc/movementTarget";
+import {getGameIdFromUrl} from "./game.id-from-url";
 
 export namespace GameClientTypes {
 

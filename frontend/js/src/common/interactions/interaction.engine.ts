@@ -82,18 +82,23 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
             currentState: interaction.initial,
         };
         this.contextAdapter.set(interaction.id, initialContext);
-        // run the "on start" action of the interaction
-        this.activeInteraction.definition.onStart?.({
-            getCtx: () => this.contextAdapter.getContext(),
-            setCtx: (updater) => this.contextAdapter.updateContext(updater),
-        });
-        // run the "on-enter" actions of the initial state
-        const initialStateDefinition = this.activeInteraction.definition.states[this.activeInteraction.currentState];
-        await initialStateDefinition.onEnter?.({
-            getCtx: () => this.contextAdapter.getContext(),
-            setCtx: (updater) => this.contextAdapter.updateContext(updater),
-            dispatch: async e => await this.dispatch(e),
-        });
+        try {
+            // run the "on start" action of the interaction
+            this.activeInteraction.definition.onStart?.({
+                getCtx: () => this.contextAdapter.getContext(),
+                setCtx: (updater) => this.contextAdapter.updateContext(updater),
+            });
+            // run the "on-enter" actions of the initial state
+            const initialStateDefinition = this.activeInteraction.definition.states[this.activeInteraction.currentState];
+            await initialStateDefinition.onEnter?.({
+                getCtx: () => this.contextAdapter.getContext(),
+                setCtx: (updater) => this.contextAdapter.updateContext(updater),
+                dispatch: async e => await this.dispatch(e),
+            });
+        } catch (error) {
+            console.error("Encountered error during interaction execution", error);
+            this.endInteraction("error");
+        }
     }
 
     /**
@@ -165,7 +170,7 @@ export class InteractionEngine<TEvent extends InteractionEvent> {
             event: event as any,
             getCtx: () => this.contextAdapter.getContext(),
         });
-        if(isAllowed === false) {
+        if (isAllowed === false) {
             return;
         }
 

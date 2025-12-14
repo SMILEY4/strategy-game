@@ -37,6 +37,11 @@ export const TileService = {
     },
 
     handleClickOnTile(tile: TileSummary) {
+        // set tile as selected
+        App.gameSessionDatabase.update(prev => ({
+            ...prev,
+            selectedTile: tile,
+        }))
         // is there one world object on this tile? -> open world object window instead
         const worldObjects: WorldObjectSummary[] = WorldObjectStateAccess.getSummariesAt(tile.position.q, tile.position.r);
         if (worldObjects.length === 1) {

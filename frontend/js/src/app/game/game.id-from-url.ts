@@ -1,4 +1,4 @@
-function getGameIdFromUrl(): string {
+export function getGameIdFromUrl(): string {
     const urlParams = new URLSearchParams(window.location.search);
     const gameId = urlParams.get("id");
     if (gameId) {
