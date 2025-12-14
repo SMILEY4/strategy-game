@@ -73,7 +73,7 @@ export const GameClient = {
         }
 
         return App.httpClient
-            .get<void, Response>(`/api/game/movement/availablepositions?gameId=${App.gameStateAccess.getGameIdOrThrow()}&worldObjectId=${worldObject}&pos=${tile}&points=${points}`, {
+            .get<void, Response>(`/api/game/movement/availablepositions?gameId=${getGameIdFromUrl()}&worldObjectId=${worldObject}&pos=${tile}&points=${points}`, {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
             })

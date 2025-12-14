@@ -5,8 +5,8 @@ import React from "react";
 import {TileImprovementConstructionWindow} from "./TileImprovementConstructionWindow";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
-import {useWorldObjectById} from "../../../../../app/game/worldobject/game.worldobject.hook.by-id";
 import {TileImprovementService} from "../../../../../app/game/tileimprovement/game.tileimprovement.service";
+import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/game.worldobject.state-access";
 
 export namespace UseTileImprovementConstructionWindow {
 
@@ -32,7 +32,7 @@ export namespace UseTileImprovementConstructionWindow {
 
     export function useData(windowId: string, worldObjectId: WorldObject.Id): Data {
         const closeWindow = useCloseWindow();
-        const worldObject = useWorldObjectById(worldObjectId);
+        const worldObject = WorldObjectStateAccess.useWorldObjectById(worldObjectId);
         if (worldObject) {
             return {
                 options: WorldObjectComponent.get(worldObject, WorldObjectComponent.Type.Builder).options,

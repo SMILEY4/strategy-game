@@ -11,13 +11,13 @@ export function useGameSessionConnect(): (gameId: Game.Id) => void {
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: Game.Id) => {
         return Promise.resolve()
-            .then(() => App.gameStateWriter.setGameSessionState(GameSession.SessionState.Loading))
+            .then(() => setGameSessionState(GameSession.SessionState.Loading))
             .then(() => GameSessionConnectionClient.open(gameId, message => {
                 if (message.type === "game-state") TurnService.handleNewGameState(GameStateMapper.map(message.payload));
             }))
             .catch(e => {
                 console.error(e);
-                App.gameStateWriter.setGameSessionState(GameSession.SessionState.Error);
+                setGameSessionState(GameSession.SessionState.Error);
             })
             .catch(error => UnauthorizedError.handle(error, () => {
                 handleUnauthorized();
@@ -30,4 +30,10 @@ function useHandleUnauthorized() {
     return () => {
         redirect();
     };
+}
+
+function setGameSessionState(state: GameSession.SessionState) {
+    App.gameSessionDatabase.update(() => ({
+        sessionState: state,
+    }));
 }

@@ -3,13 +3,13 @@ import {MoveWindow} from "./MoveWindow";
 import {openWindow, useCloseWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
-import {useWorldObjectById} from "../../../../../app/game/worldobject/game.worldobject.hook.by-id";
 import {gameInteractionEngine} from "../../../../../app/game/game.interaction-engine";
 import {
     worldObjectMoveInteractionDefinition,
     WorldObjectMoveInteractionEvent,
 } from "../../../../../app/game/worldobject/game.worldobject.interaction.move";
 import {useWorldObjectMovement} from "../../../../../app/game/worldobject/game.worldobject.hook.move";
+import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/game.worldobject.state-access";
 
 export namespace UseMoveWindow {
 
@@ -42,7 +42,7 @@ export namespace UseMoveWindow {
     export function useData(windowId: string, worldObjectId: WorldObject.Id): UseMoveWindow.Data | null {
 
         const closeWindow = useCloseWindow();
-        const worldObject = useWorldObjectById(worldObjectId);
+        const worldObject = WorldObjectStateAccess.useWorldObjectById(worldObjectId);
         const movement = useWorldObjectMovement(worldObject);
 
         useEffect(() => {

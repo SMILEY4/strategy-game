@@ -9,9 +9,8 @@ import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
 import {CameraService} from "../../../../../app/game/camera/game.camera.service";
-import {useWorldObjectByPosition} from "../../../../../app/game/worldobject/game.worldobject.hook.by-position";
-import {useTileById} from "../../../../../app/game/tile/game.tile.hook.by-id";
-import {useSelectedTile} from "../../../../../app/game/tile/game.tile.hook.selected";
+import {TileStateAccess} from "../../../../../app/game/tile/game.tile.state.access";
+import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/game.worldobject.state-access";
 
 export namespace UseTileWindow {
 
@@ -36,9 +35,9 @@ export namespace UseTileWindow {
 
     export function useData(overwriteTile: Tile.Id | null): UseTileWindow.Data | null {
 
-        const selectedTile = useSelectedTile();
-        const tile = useTileById(overwriteTile ?? selectedTile?.id);
-        const worldObjects = useWorldObjectByPosition(tile?.position);
+        const selectedTile = TileStateAccess.useSelectedTile();
+        const tile = TileStateAccess.useTileById(overwriteTile ?? selectedTile?.id);
+        const worldObjects = WorldObjectStateAccess.useWorldObjectByPosition(tile?.position);
 
         if (tile) {
             return {

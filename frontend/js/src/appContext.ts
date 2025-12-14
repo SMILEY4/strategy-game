@@ -1,6 +1,4 @@
-import {GameStateWriter, GameStateWriterImpl} from "./state/gameStateWriter";
 import {AudioService} from "./common/audioService";
-import {GameStateAccess, GameStateAccessImpl} from "./state/gameStateAccess";
 import {CameraDatabase} from "./state/database/cameraDatabase";
 import {CommandDatabase} from "./state/database/commandDatabase";
 import {RealmDatabase} from "./state/database/realmDatabase";
@@ -24,7 +22,6 @@ const ENABLE_RENDERER_MONITORING: boolean = import.meta.env.PUB_ENABLE_RENDERER_
 
 export namespace App {
 
-
     console.log("initializing app dependencies.", API_BASE_URL, API_WS_BASE_URL, ENABLE_WEBGL_ERROR_CHECKING, ENABLE_RENDERER_MONITORING);
 
     GLError.enabled = ENABLE_WEBGL_ERROR_CHECKING;
@@ -42,30 +39,12 @@ export namespace App {
     export const tileDatabase: TileDatabase = new TileDatabase();
     export const worldObjectDatabase: WorldObjectDatabase = new WorldObjectDatabase();
 
-    // state read / write
-    export const gameStateAccess: GameStateAccess = new GameStateAccessImpl(
-        cameraDatabase,
-        tileDatabase,
-        gameSessionDatabase,
-        realmDatabase,
-        worldObjectDatabase,
-        commandDatabase,
-    );
-    export const gameStateWriter: GameStateWriter = new GameStateWriterImpl(
-        commandDatabase,
-        tileDatabase,
-        realmDatabase,
-        worldObjectDatabase,
-        cameraDatabase,
-        gameSessionDatabase,
-    );
-
     // rendering
     export const wasmGameRenderer: WasmGameRenderer = new WasmGameRendererImpl();
-    export const changeTracker: GameChangeTracker = new GameChangeTracker(gameStateAccess);
+    export const changeTracker: GameChangeTracker = new GameChangeTracker();
     export const shaderSourceManager: GameShaderSourceManager = new GameShaderSourceManager();
     export const textureAtlasDataManager: GameTextureAtlasDataManager = new GameTextureAtlasDataManager();
-    export const gameRenderer: GameRenderer = new GameRenderer(gameStateAccess, changeTracker, shaderSourceManager, textureAtlasDataManager, wasmGameRenderer);
+    export const gameRenderer: GameRenderer = new GameRenderer(changeTracker, shaderSourceManager, textureAtlasDataManager, wasmGameRenderer);
 
     // utility services
     export const audioService: AudioService = new AudioService();

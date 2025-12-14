@@ -10,14 +10,13 @@ import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
 import {UseOutlinerWindow} from "../windows/outliner/useOutlinerWindow";
 import {Txt} from "../../../components/text/Txt";
 import {useGameSessionSubmitTurn} from "../../../../app/gamesession/gamesession.hook.submit-turn";
-import {useTurnState} from "../../../../app/game/turn/game.turn.hook.turn-state";
-import {useCurrentTurn} from "../../../../app/game/turn/game.turn.hook.current-turn";
+import {TurnStateAccess} from "../../../../app/game/turn/game.turn.state-access";
 
 export function MenuBar(): ReactElement {
 
     const submitTurn = useGameSessionSubmitTurn();
-    const currentTurn = useCurrentTurn();
-    const isWaiting = useTurnState() === "waiting";
+    const currentTurn = TurnStateAccess.useCurrentTurn();
+    const isWaiting = TurnStateAccess.useTurnState() === "waiting";
     const isBlocked = useIsBlockingWindowOpen();
 
     return (

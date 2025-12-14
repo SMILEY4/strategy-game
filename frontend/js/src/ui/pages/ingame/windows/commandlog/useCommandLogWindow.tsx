@@ -6,7 +6,7 @@ import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
 import {Command} from "../../../../../models/command/command";
 import {CommandService} from "../../../../../app/game/command/game.command.service";
-import {useCommands} from "../../../../../app/game/command/game.command.hook.commands";
+import {CommandStateAccess} from "../../../../../app/game/command/game.command.state-access";
 
 export namespace UseCommandLogWindow {
 
@@ -33,7 +33,7 @@ export namespace UseCommandLogWindow {
 	 */
 	export function useData(): UseCommandLogWindow.Data {
 		return {
-			commands: useCommands(),
+			commands: CommandStateAccess.useCommands(),
 			cancel: command => CommandService.cancelCommand(command.id),
 		};
 	}

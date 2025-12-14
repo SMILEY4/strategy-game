@@ -4,7 +4,9 @@ import {App} from "../../../appContext";
 export const GameMapService = {
 
     selectMapMode(mapMode: MapMode) {
-        App.gameStateWriter.setSelectedMapMode(mapMode);
+        App.gameSessionDatabase.update(() => ({
+            mapMode: mapMode,
+        }));
     },
 
 };

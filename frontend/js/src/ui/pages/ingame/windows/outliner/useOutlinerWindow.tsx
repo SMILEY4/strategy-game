@@ -9,9 +9,7 @@ import {RealmOutline} from "../../../../../models/realm/realmOutline";
 import {UseRealmWindow} from "../realm/useRealmWindow";
 import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
 import {CameraService} from "../../../../../app/game/camera/game.camera.service";
-import {useOutlinerRealms} from "../../../../../app/game/outliner/game.outliner.hook.realms";
-import {useOutlinerUnits} from "../../../../../app/game/outliner/game.outliner.hook.units";
-import {useOutlinerTileImprovements} from "../../../../../app/game/outliner/game.outliner.hook.tile-improvements";
+import {OutlinerStateAccess} from "../../../../../app/game/outliner/game.outliner.state-access";
 
 export namespace UseOutlinerWindow {
 
@@ -44,9 +42,9 @@ export namespace UseOutlinerWindow {
 
 	export function useData(): UseOutlinerWindow.Data {
 
-		const realms = useOutlinerRealms();
-		const units = useOutlinerUnits();
-		const tileImprovements = useOutlinerTileImprovements();
+		const realms = OutlinerStateAccess.useOutlinerRealms();
+		const units = OutlinerStateAccess.useOutlinerUnits();
+		const tileImprovements = OutlinerStateAccess.useOutlinerTileImprovements();
 
 		return {
 			realms: {

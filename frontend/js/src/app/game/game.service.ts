@@ -76,7 +76,9 @@ export const GameService = {
 };
 
 function setMouseOverTile(tile: TileSummary | null) {
-    if (App.gameStateAccess.getHoveredTile() !== tile) {
-        App.gameStateWriter.setHoveredTile(tile);
+    if (App.gameSessionDatabase.get().hoverTile !== tile) {
+        App.gameSessionDatabase.update(() => ({
+            hoverTile: tile,
+        }));
     }
 }

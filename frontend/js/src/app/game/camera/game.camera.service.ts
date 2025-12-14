@@ -3,6 +3,7 @@ import {CanvasHandle} from "../../../common/webgl/canvasHandle";
 import {Projections} from "../../../common/webgl/projections";
 import {App} from "../../../appContext";
 import {Camera} from "../../../common/webgl/camera";
+import {CameraData} from "../../../models/misc/cameraData";
 
 const ZOOM_FACTOR = 1.05;
 const ZOOM_MIN = 0.5;
@@ -15,8 +16,8 @@ export const CameraService = {
      */
     centerOnTile(tile: Tile.Position, zoom?: number): void {
         const pos = Projections.hexToWorld(tile.q, tile.r);
-        const camera = App.gameStateAccess.getCamera();
-        App.gameStateWriter.setCameraData({
+        const camera = getCameraData();
+        setCameraData({
             x: -pos.x,
             y: -pos.y,
             zoom: zoom == undefined ? camera.zoom : zoom,
@@ -29,7 +30,7 @@ export const CameraService = {
      */
     move(dx: number, dy: number, canvasHandle: CanvasHandle): void {
         // get current camera & create a camera clone looking at world (0,0)
-        const cameraData = App.gameStateAccess.getCamera();
+        const cameraData = getCameraData();
         const cameraOrigin = Camera.create(
             {
                 ...cameraData,
@@ -48,7 +49,7 @@ export const CameraService = {
             dy + canvasHandle.getClientHeight() / 2,
         );
 
-        App.gameStateWriter.setCameraData({
+        setCameraData({
             x: cameraData.x + dScreen.x,
             y: cameraData.y + dScreen.y,
             zoom: cameraData.zoom,
@@ -60,8 +61,8 @@ export const CameraService = {
      * Zoom the camera by the given direction
      */
     zoom(d: "in" | "out"): void {
-        const cameraData = App.gameStateAccess.getCamera();
-        App.gameStateWriter.setCameraData({
+        const cameraData = getCameraData();
+        setCameraData({
             x: cameraData.x,
             y: cameraData.y,
             zoom: calculateZoom(cameraData.zoom, d),
@@ -74,7 +75,7 @@ export const CameraService = {
      */
     zoomAt(x: number, y: number, d: "in" | "out", canvasHandle: CanvasHandle): void {
         // get current camera
-        const cameraData = App.gameStateAccess.getCamera();
+        const cameraData = getCameraData();
 
         // zoom in (on center)
         const cameraDataZoomed = {
@@ -108,7 +109,7 @@ export const CameraService = {
         cameraDataZoomed.y = cameraDataZoomed.y + (worldPosAfter.y - worldPosBefore.y);
 
         // set new camera
-        App.gameStateWriter.setCameraData(cameraDataZoomed);
+        setCameraData(cameraDataZoomed);
     },
 
 };
@@ -118,4 +119,12 @@ function calculateZoom(currentZoom: number, direction: "in" | "out"): number {
         ? currentZoom * ZOOM_FACTOR
         : currentZoom / ZOOM_FACTOR;
     return Math.max(ZOOM_MIN, Math.min(zoom, ZOOM_MAX));
+}
+
+function setCameraData(cameraData: CameraData) {
+    App.cameraDatabase.set(cameraData);
+}
+
+function getCameraData(): CameraData {
+    return App.cameraDatabase.get();
 }

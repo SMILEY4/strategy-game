@@ -45,10 +45,6 @@ export function PageGameSessions(): ReactElement {
     const deleteSession = useDeleteSession(reloadSessions);
     const connectSession = useStartSession();
 
-    useEffect(() => {
-        reloadSessions();
-    }, []);
-
     return (
         <BackgroundPanel image="/images/image_2.bmp">
 
