@@ -1,4 +1,4 @@
-import {WasmGameRenderer} from "../../renderer/wasmGameRenderer";
+import {WasmGameRenderer} from "../wasmGameRenderer";
 import {MapMode} from "../../models/misc/mapMode";
 import {Rectangle} from "../../common/utils";
 import {TextureAtlasEntry} from "../../common/webgl/textureAtlas";

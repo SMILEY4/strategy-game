@@ -14,7 +14,7 @@ import {GameChangeTracker} from "./renderer/gameChangeTracker";
 import {GameShaderSourceManager} from "./renderer/gameShaderSourceManager";
 import {GameTextureAtlasDataManager} from "./renderer/gameTextureAtlasDataManager";
 import {WasmGameRenderer} from "./renderer/wasmGameRenderer";
-import {WasmGameRendererImpl} from "./external/wasm/wasmGameRendererImpl";
+import {WasmGameRendererImpl} from "./renderer/wasm/wasmGameRendererImpl";
 import {HttpClient as NewHttpClient} from "./app/http/http.client";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
