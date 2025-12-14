@@ -2,14 +2,14 @@ import React, {useEffect} from "react";
 import {MoveWindow} from "./MoveWindow";
 import {openWindow, useCloseWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
-import {GameStateHooks} from "../../../../../state/gameStateHooks";
-import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {useWorldObjectById} from "../../../../../app/game/worldobject/game.worldobject.hook.by-id";
 import {gameInteractionEngine} from "../../../../../app/game/game.interaction-engine";
 import {
-    worldObjectMoveInteractionDefinition, WorldObjectMoveInteractionEvent,
+    worldObjectMoveInteractionDefinition,
+    WorldObjectMoveInteractionEvent,
 } from "../../../../../app/game/worldobject/game.worldobject.interaction.move";
+import {useWorldObjectMovement} from "../../../../../app/game/worldobject/game.worldobject.hook.move";
 
 export namespace UseMoveWindow {
 
@@ -41,9 +41,9 @@ export namespace UseMoveWindow {
      */
     export function useData(windowId: string, worldObjectId: WorldObject.Id): UseMoveWindow.Data | null {
 
-        const worldObject = useWorldObjectById(worldObjectId);
-        const remainingMovement = GameStateHooks.useRemainingMovementPoints();
         const closeWindow = useCloseWindow();
+        const worldObject = useWorldObjectById(worldObjectId);
+        const movement = useWorldObjectMovement(worldObject);
 
         useEffect(() => {
             if (worldObject) {
@@ -51,21 +51,20 @@ export namespace UseMoveWindow {
                     worldObject: worldObject,
                     path: [worldObject.tile],
                     targets: [],
-                })
+                });
             }
         }, []);
 
         if (worldObject) {
-            const maxMovement = WorldObjectComponent.get(worldObject, WorldObjectComponent.Type.Movement).maxMovement;
             return {
-                remainingPoints: remainingMovement,
-                totalPoints: maxMovement,
+                remainingPoints: movement.remainingMovement,
+                totalPoints: movement.totalMovement,
                 cancel: () => {
-                    void gameInteractionEngine.dispatch<WorldObjectMoveInteractionEvent>({eventId: "CANCEL"})
+                    void gameInteractionEngine.dispatch<WorldObjectMoveInteractionEvent>({eventId: "CANCEL"});
                     closeWindow(windowId);
                 },
                 accept: () => {
-                    void gameInteractionEngine.dispatch<WorldObjectMoveInteractionEvent>({eventId: "CONFIRM"})
+                    void gameInteractionEngine.dispatch<WorldObjectMoveInteractionEvent>({eventId: "CONFIRM"});
                     closeWindow(windowId);
                 },
             };

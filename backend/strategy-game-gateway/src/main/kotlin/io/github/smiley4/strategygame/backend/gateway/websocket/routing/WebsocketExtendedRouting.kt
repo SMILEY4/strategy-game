@@ -4,14 +4,19 @@ import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTi
 import io.github.smiley4.strategygame.backend.gateway.websocket.routingconfig.WebsocketExtendedRouteConfig
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebsocketConnectionData
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.PipelineCall
 import io.ktor.server.application.createRouteScopedPlugin
+import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.websocket.webSocket
 import io.ktor.util.AttributeKey
+
+data class TicketResponse(val ticket: String)
+
 
 /**
  * Creates a route providing tickets for authenticating websocket-connections.
@@ -22,7 +27,7 @@ internal fun Route.webSocketTicket(
 ) {
     get {
         val additionalData = ticketDataBuilder(call)
-        call.respondText(ticketManager.generateTicket(additionalData))
+        call.respond(HttpStatusCode.OK, TicketResponse(ticketManager.generateTicket(additionalData)))
     }
 }
 

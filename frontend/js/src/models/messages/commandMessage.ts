@@ -1,6 +1,7 @@
-import {Command} from "../../models/command/command";
+import {Command} from "../command/command";
 
-export type CommandMessage = CommandMessage.Move
+export type CommandMessage =
+	| CommandMessage.Move
 	| CommandMessage.Disband
 	| CommandMessage.ConstructTileImprovement
 

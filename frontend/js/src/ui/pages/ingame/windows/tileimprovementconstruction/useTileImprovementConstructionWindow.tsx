@@ -6,7 +6,7 @@ import {TileImprovementConstructionWindow} from "./TileImprovementConstructionWi
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
 import {useWorldObjectById} from "../../../../../app/game/worldobject/game.worldobject.hook.by-id";
-import {constructTileImprovement} from "../../../../../app/game/tileimprovement/game-tileimprovement.construct";
+import {TileImprovementService} from "../../../../../app/game/tileimprovement/game.tileimprovement.service";
 
 export namespace UseTileImprovementConstructionWindow {
 
@@ -37,7 +37,7 @@ export namespace UseTileImprovementConstructionWindow {
             return {
                 options: WorldObjectComponent.get(worldObject, WorldObjectComponent.Type.Builder).options,
                 construct: (entry: ConstructionOption) => {
-                    constructTileImprovement(worldObjectId, entry.type);
+                    TileImprovementService.construct(worldObjectId, entry.type);
                     closeWindow(windowId);
                 },
             };

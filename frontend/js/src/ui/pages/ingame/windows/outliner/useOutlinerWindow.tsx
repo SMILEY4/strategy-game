@@ -6,7 +6,6 @@ import {WindowGroup} from "../windowGroups";
 import {UID} from "../../../../../common/uid";
 import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectOutline";
 import {RealmOutline} from "../../../../../models/realm/realmOutline";
-import {GameStateHooks} from "../../../../../state/gameStateHooks";
 import {UseRealmWindow} from "../realm/useRealmWindow";
 import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
 import {CameraService} from "../../../../../app/game/camera/game.camera.service";
