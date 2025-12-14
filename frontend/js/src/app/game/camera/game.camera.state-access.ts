@@ -1,15 +1,15 @@
 import {CameraData} from "../../../models/misc/cameraData";
 import {useSingletonEntity} from "../../../common/db/adapters/databaseHooks";
-import {App} from "../../../appContext";
+import {Db} from "../../database";
 
 export const CameraStateAccess = {
 
     useCamera(): CameraData {
-        return useSingletonEntity(App.cameraDatabase);
+        return useSingletonEntity(Db.camera);
     },
 
     get(): CameraData {
-        return App.cameraDatabase.get();
+        return Db.camera.get();
     },
 
 };

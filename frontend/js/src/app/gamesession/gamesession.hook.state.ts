@@ -1,7 +1,7 @@
 import {GameSession} from "../../models/misc/gameSession";
 import {usePartialSingletonEntity} from "../../common/db/adapters/databaseHooks";
-import {App} from "../../appContext";
+import {Db} from "../database";
 
 export function useGameSessionState(): GameSession.SessionState {
-    return usePartialSingletonEntity(App.gameSessionDatabase, e => e.sessionState);
+    return usePartialSingletonEntity(Db.gameSession, e => e.sessionState);
 }

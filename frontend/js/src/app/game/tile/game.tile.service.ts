@@ -7,15 +7,16 @@ import {TileSummary} from "../../../models/tile/tileSummary";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
 import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/unit/useWorldObjectWindow";
 import {UseTileWindow} from "../../../ui/pages/ingame/windows/tile/useTileWindow";
-import {TileDatabase} from "../../../state/database/tileDatabase";
+import {TileDatabase} from "../../database/tileDatabase";
 import {WorldObjectStateAccess} from "../worldobject/game.worldobject.state-access";
+import {Db} from "../../database";
 
 export const TileService = {
 
     pickTile(screenX: number, screenY: number): TileSummary | null {
 
         function buildCamera(canvasHandle: CanvasHandle): Camera {
-            const cameraData = App.cameraDatabase.get();
+            const cameraData = Db.camera.get();
             return Camera.create(
                 cameraData,
                 canvasHandle.getCanvasWidth(), canvasHandle.getCanvasHeight(),
@@ -25,7 +26,7 @@ export const TileService = {
 
         const hexPos = Projections.screenToHex(buildCamera(canvasHandle), screenX, screenY);
 
-        const entity = App.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [hexPos.x, hexPos.y]);
+        const entity = Db.tile.querySingle(TileDatabase.QUERY_BY_POSITION, [hexPos.x, hexPos.y]);
         if (!entity) {
             return null;
         }
@@ -38,7 +39,7 @@ export const TileService = {
 
     handleClickOnTile(tile: TileSummary) {
         // set tile as selected
-        App.gameSessionDatabase.update(prev => ({
+        Db.gameSession.update(prev => ({
             ...prev,
             selectedTile: tile,
         }))

@@ -12,6 +12,7 @@ import {
 } from "./settlement/game.settlement.interaction.create";
 import {TileService} from "./tile/game.tile.service";
 import {TileSummary} from "../../models/tile/tileSummary";
+import {Db} from "../database";
 
 export const canvasHandle: CanvasHandle = new CanvasHandle();
 
@@ -76,8 +77,8 @@ export const GameService = {
 };
 
 function setMouseOverTile(tile: TileSummary | null) {
-    if (App.gameSessionDatabase.get().hoverTile !== tile) {
-        App.gameSessionDatabase.update(() => ({
+    if (Db.gameSession.get().hoverTile !== tile) {
+        Db.gameSession.update(() => ({
             hoverTile: tile,
         }));
     }

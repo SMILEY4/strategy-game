@@ -4,6 +4,7 @@ import {gameInteractionEngine} from "../game/game.interaction-engine";
 import {GameSessionConnectionClient} from "./gamesession.client.connection";
 import {CommandMessage} from "../../models/messages/commandMessage";
 import {CommandStateAccess} from "../game/command/game.command.state-access";
+import {Db} from "../database";
 
 export function useGameSessionSubmitTurn(): () => void {
     return () => {
@@ -21,11 +22,11 @@ export function useGameSessionSubmitTurn(): () => void {
 
 
 function setTurnStateWaiting() {
-    App.gameSessionDatabase.update(() => ({
+    Db.gameSession.update(() => ({
         turnState: GameSession.TurnState.Waiting,
     }));
 }
 
 function clearCommands(): void {
-    App.commandDatabase.deleteAll();
+    Db.command.deleteAll();
 }

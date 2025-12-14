@@ -6,6 +6,7 @@ import {UnauthorizedError} from "../../common/UnauthorizedError";
 import {TurnService} from "../game/turn/game.turn.service";
 import {GameSessionConnectionClient} from "./gamesession.client.connection";
 import {GameStateMapper} from "./gamesession.gamestate-message-mapper";
+import {Db} from "../database";
 
 export function useGameSessionConnect(): (gameId: Game.Id) => void {
     const handleUnauthorized = useHandleUnauthorized();
@@ -33,7 +34,7 @@ function useHandleUnauthorized() {
 }
 
 function setGameSessionState(state: GameSession.SessionState) {
-    App.gameSessionDatabase.update(() => ({
+    Db.gameSession.update(() => ({
         sessionState: state,
     }));
 }

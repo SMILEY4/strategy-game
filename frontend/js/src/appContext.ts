@@ -1,10 +1,4 @@
 import {AudioService} from "./common/audioService";
-import {CameraDatabase} from "./state/database/cameraDatabase";
-import {CommandDatabase} from "./state/database/commandDatabase";
-import {RealmDatabase} from "./state/database/realmDatabase";
-import {GameSessionDatabase} from "./state/database/gameSessionDatabase";
-import {TileDatabase} from "./state/database/tileDatabase";
-import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
 import {WebGLMonitor} from "./common/webgl/monitor/webGLMonitor";
 import {GLError} from "./common/webgl/glError";
 import {GameRenderer} from "./renderer/gameRenderer";
@@ -30,14 +24,6 @@ export namespace App {
     // new
     export const httpClient = new NewHttpClient(API_BASE_URL);
     export const WS_BASE_URL = API_WS_BASE_URL;
-
-    // database
-    export const cameraDatabase: CameraDatabase = new CameraDatabase();
-    export const commandDatabase: CommandDatabase = new CommandDatabase();
-    export const realmDatabase: RealmDatabase = new RealmDatabase();
-    export const gameSessionDatabase: GameSessionDatabase = new GameSessionDatabase();
-    export const tileDatabase: TileDatabase = new TileDatabase();
-    export const worldObjectDatabase: WorldObjectDatabase = new WorldObjectDatabase();
 
     // rendering
     export const wasmGameRenderer: WasmGameRenderer = new WasmGameRendererImpl();

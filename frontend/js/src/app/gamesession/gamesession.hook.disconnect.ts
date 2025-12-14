@@ -1,6 +1,7 @@
 import {App} from "../../appContext";
 import {GameSession} from "../../models/misc/gameSession";
 import {GameSessionConnectionClient} from "./gamesession.client.connection";
+import {Db} from "../database";
 
 export function useGameSessionDisconnect(): () => void {
     return () => {
@@ -13,7 +14,7 @@ export function useGameSessionDisconnect(): () => void {
 
 
 function clearGameSessionState() {
-    App.gameSessionDatabase.update(() => ({
+    Db.gameSession.update(() => ({
         sessionState: GameSession.SessionState.None,
     }));
 }

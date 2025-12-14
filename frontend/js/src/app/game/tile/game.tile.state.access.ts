@@ -2,8 +2,8 @@ import {TileSummary} from "../../../models/tile/tileSummary";
 import {usePartialSingletonEntity, useQuerySingle} from "../../../common/db/adapters/databaseHooks";
 import {App} from "../../../appContext";
 import {Tile} from "../../../models/tile/tile";
-import {TileDatabase} from "../../../state/database/tileDatabase";
-import {WorldObjectDatabase} from "../../../state/database/worldObjectDatabase";
+import {TileDatabase} from "../../database/tileDatabase";
+import {WorldObjectDatabase} from "../../database/worldObjectDatabase";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
 import {gameInteractionEngine} from "../game.interaction-engine";
 import {
@@ -14,6 +14,7 @@ import {
     SettlementCreateInteractionContext,
     settlementCreateInteractionDefinition,
 } from "../settlement/game.settlement.interaction.create";
+import {Db} from "../../database";
 
 // const tilesCache = new DbCache({
 //     dataProvider: () => TileStateAccess.getTilesUncached(),
@@ -23,15 +24,15 @@ import {
 export const TileStateAccess = {
 
     useSelectedTile(): TileSummary | null {
-        return usePartialSingletonEntity(App.gameSessionDatabase, e => e.selectedTile);
+        return usePartialSingletonEntity(Db.gameSession, e => e.selectedTile);
     },
 
     useTileById(id: Tile.Id | null | undefined): Tile | null {
-        return useQuerySingle(App.tileDatabase, TileDatabase.QUERY_BY_ID, id);
+        return useQuerySingle(Db.tile, TileDatabase.QUERY_BY_ID, id);
     },
 
     getTilesRevId(): string {
-        return App.tileDatabase.getRevId()
+        return Db.tile.getRevId()
     },
 
     getAll(): Tile[] {
@@ -40,13 +41,13 @@ export const TileStateAccess = {
     },
 
     getAllUncached(): Tile[] {
-        return App.tileDatabase.queryMany(TileDatabase.QUERY_ALL, null)
+        return Db.tile.queryMany(TileDatabase.QUERY_ALL, null)
             .map(tile => ({
                 id: tile.id,
                 position: tile.position,
                 visibility: tile.visibility,
                 base: tile.base,
-                worldObjects: App.worldObjectDatabase
+                worldObjects: Db.worldObject
                     .queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [tile.position.q, tile.position.r])
                     .map(it => WorldObjectSummary.from(it)),
                 metaProperties: tile.metaProperties,
@@ -54,11 +55,11 @@ export const TileStateAccess = {
     },
 
     getSelected(): TileSummary | null {
-        return App.gameSessionDatabase.get().selectedTile;
+        return Db.gameSession.get().selectedTile;
     },
 
     getHovered(): TileSummary | null {
-        return App.gameSessionDatabase.get().hoverTile;
+        return Db.gameSession.get().hoverTile;
     },
 
     getHighlights(): Tile.Highlight[] {
