@@ -52,7 +52,7 @@ export const UserClient = {
             | { status: 200; body: null }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<UserClientTypes.SignUpErrorCodes> }
 
-        return App.newHttpClient
+        return App.httpClient
             .post<Request, Response>("/api/user/signup", {
                 body: {
                     email: email,
@@ -77,7 +77,7 @@ export const UserClient = {
             | { status: 200; body: { idToken: string, refreshToken: string | undefined } }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<UserClientTypes.LogInErrorCodes> }
 
-        return App.newHttpClient
+        return App.httpClient
             .post<Request, Response>("/api/user/login", {
                 body: {
                     email: email,
@@ -101,7 +101,7 @@ export const UserClient = {
             | { status: 200; body: null }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<UserClientTypes.LogInErrorCodes> }
 
-        return App.newHttpClient
+        return App.httpClient
             .post<Request, Response>("/api/user/delete", {
                 auth: authHandlerUserAuthToken,
                 body: {

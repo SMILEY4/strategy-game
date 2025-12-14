@@ -17,7 +17,7 @@ import {CameraService} from "../../../../../app/game/camera/game.camera.service"
 import {CommandService} from "../../../../../app/game/command/game.command.service";
 import {useCommands} from "../../../../../app/game/command/game.command.hook.commands";
 import {useWorldObjectById} from "../../../../../app/game/worldobject/game.worldobject.hook.by-id";
-import {disbandWorldObject} from "../../../../../app/game/worldobject/game.worldobject.disband";
+import {WorldObjectService} from "../../../../../app/game/worldobject/game.worldobject.service";
 
 export namespace UseWorldObjectWindow {
 
@@ -125,7 +125,7 @@ export namespace UseWorldObjectWindow {
 			actions.push({
 				type: "disband",
 				enabled: relevantCommands.length == 0,
-				perform: () => disbandWorldObject(worldObject.id),
+				perform: () => WorldObjectService.disband(worldObject.id),
 			} as DisbandAction)
 		}
 

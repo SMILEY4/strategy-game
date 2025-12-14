@@ -42,7 +42,7 @@ export const GameClient = {
             | { status: 200; body: { name: string } }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameClientTypes.GetRandomSettlementNameErrorCodes> }
 
-        return App.newHttpClient
+        return App.httpClient
             .get<void, Response>("/api/game/settlement/randomname", {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
@@ -72,7 +72,7 @@ export const GameClient = {
             status: HttpErrorCodes, body: HttpErrorResponseBody<GameClientTypes.GetAvailableMovementPositionsErrorCodes>
         }
 
-        return App.newHttpClient
+        return App.httpClient
             .get<void, Response>(`/api/game/movement/availablepositions?gameId=${App.gameStateAccess.getGameIdOrThrow()}&worldObjectId=${worldObject}&pos=${tile}&points=${points}`, {
                 auth: authHandlerUserAuthToken,
                 body: undefined,

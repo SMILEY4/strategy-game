@@ -1,4 +1,3 @@
-import {TileService, TileServiceImpl} from "./logic/game/service/tileService";
 import {GameStateWriter, GameStateWriterImpl} from "./state/gameStateWriter";
 import {AudioService} from "./common/audioService";
 import {GameStateAccess, GameStateAccessImpl} from "./state/gameStateAccess";
@@ -8,18 +7,12 @@ import {RealmDatabase} from "./state/database/realmDatabase";
 import {GameSessionDatabase} from "./state/database/gameSessionDatabase";
 import {TileDatabase} from "./state/database/tileDatabase";
 import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
-import {HttpClient} from "./common/httpClient";
-import {GameSessionClientImpl} from "./external/session/gameSessionClientImpl";
-import {WebsocketClient} from "./common/websocketClient";
-import {GameStateHooks} from "./state/gameStateHooks";
-import {GameProxy, GameProxyImpl} from "./logic/game/gameProxy";
 import {WebGLMonitor} from "./common/webgl/monitor/webGLMonitor";
 import {GLError} from "./common/webgl/glError";
 import {GameRenderer} from "./renderer/gameRenderer";
 import {GameChangeTracker} from "./renderer/gameChangeTracker";
 import {GameShaderSourceManager} from "./renderer/gameShaderSourceManager";
 import {GameTextureAtlasDataManager} from "./renderer/gameTextureAtlasDataManager";
-import {GameSessionClient} from "./logic/game/service/gameSessionClient";
 import {WasmGameRenderer} from "./renderer/wasmGameRenderer";
 import {WasmGameRendererImpl} from "./external/wasm/wasmGameRendererImpl";
 import {HttpClient as NewHttpClient} from "./app/http/http.client";
@@ -31,13 +24,15 @@ const ENABLE_RENDERER_MONITORING: boolean = import.meta.env.PUB_ENABLE_RENDERER_
 
 export namespace App {
 
+
     console.log("initializing app dependencies.", API_BASE_URL, API_WS_BASE_URL, ENABLE_WEBGL_ERROR_CHECKING, ENABLE_RENDERER_MONITORING);
 
     GLError.enabled = ENABLE_WEBGL_ERROR_CHECKING;
     WebGLMonitor.enabled = ENABLE_RENDERER_MONITORING;
 
     // new
-    export const newHttpClient = new NewHttpClient(API_BASE_URL);
+    export const httpClient = new NewHttpClient(API_BASE_URL);
+    export const WS_BASE_URL = API_WS_BASE_URL;
 
     // database
     export const cameraDatabase: CameraDatabase = new CameraDatabase();
@@ -65,13 +60,6 @@ export namespace App {
         gameSessionDatabase,
     );
 
-    // api clients
-    export const httpClient: HttpClient = new HttpClient(API_BASE_URL);
-    export const gameSessionClient: GameSessionClient = new GameSessionClientImpl(httpClient, new WebsocketClient(API_WS_BASE_URL));
-
-    // core services
-    export const tileService: TileService = new TileServiceImpl(gameStateAccess, gameStateWriter);
-
     // rendering
     export const wasmGameRenderer: WasmGameRenderer = new WasmGameRendererImpl();
     export const changeTracker: GameChangeTracker = new GameChangeTracker(gameStateAccess);
@@ -82,17 +70,5 @@ export namespace App {
     // utility services
     export const audioService: AudioService = new AudioService();
 
-    // proxy services
-    export const gameProxy: GameProxy = new GameProxyImpl(
-        gameRenderer,
-        tileService,
-        audioService,
-    );
-    GameStateHooks.initialize({
-        gameSessionDatabase: gameSessionDatabase,
-        tileDatabase: tileDatabase,
-        worldObjectDatabase: worldObjectDatabase,
-        realmDatabase: realmDatabase,
-    });
 
 }

@@ -5,7 +5,7 @@ import {
 	TerrainTypeMsg,
 	VisibilityMsg,
 	WorldObjectTypeGroupMsg,
-} from "./gameStateMessage";
+} from "../../models/messages/gameStateMessage";
 import {GameStateContainer} from "../../models/misc/gameStateContainer";
 import {Tile} from "../../models/tile/tile";
 import {Visibility} from "../../models/misc/visibility";

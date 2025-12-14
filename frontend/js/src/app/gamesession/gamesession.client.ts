@@ -46,6 +46,16 @@ export namespace GameSessionClientTypes {
         return err instanceof DetailedError && joinGameErrorCodeValues.includes(err.errorCode);
     }
 
+    //==== WEBSOCKET TICKET ========================
+
+    const getWsTicketErrorCodeValues = ["todo"] as const;
+
+    export type GetWsTicketErrorCodes = typeof getWsTicketErrorCodeValues[number];
+
+    export function isGetWsTicketGameError(err: unknown): err is DetailedError<GetWsTicketErrorCodes> {
+        return err instanceof DetailedError && getWsTicketErrorCodeValues.includes(err.errorCode);
+    }
+
 }
 
 
@@ -67,7 +77,7 @@ export const GameSessionClient = {
             | { status: 200; body: GameResponse[] }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.ListGamesErrorCodes> }
 
-        return App.newHttpClient
+        return App.httpClient
             .get<void, Response>("/api/session/list", {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
@@ -92,7 +102,7 @@ export const GameSessionClient = {
             | { status: 200; body: string }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.CreateGameErrorCodes> }
 
-        return App.newHttpClient
+        return App.httpClient
             .post<void, Response>("/api/session/create?name=" + name + (seed ? ("&seed=" + seed) : ""), {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
@@ -112,7 +122,7 @@ export const GameSessionClient = {
             | { status: 200; body: void }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.DeleteGameErrorCodes> }
 
-        return App.newHttpClient
+        return App.httpClient
             .delete<void, Response>(`/api/session/delete/${game}`, {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
@@ -132,7 +142,7 @@ export const GameSessionClient = {
             | { status: 200; body: void }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.JoinGameErrorCodes> }
 
-        return App.newHttpClient
+        return App.httpClient
             .post<void, Response>(`/api/session/join/${game}`, {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
@@ -140,6 +150,26 @@ export const GameSessionClient = {
             .then(response => {
                 if (response.status === 200) return undefined;
                 throw new DetailedError<GameSessionClientTypes.JoinGameErrorCodes>(response.body);
+            });
+    },
+
+    /**
+     * Get a ticket for authenticating a single websocket connection.
+     */
+    getWebsocketTicket(): Promise<string> {
+
+        type Response =
+            | { status: 200; body: { ticket: string } }
+            | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.GetWsTicketErrorCodes> }
+
+        return App.httpClient
+            .get<void, Response>("/api/session/wsticket", {
+                auth: authHandlerUserAuthToken,
+                body: undefined,
+            })
+            .then(response => {
+                if (response.status === 200) return response.body.ticket;
+                throw new DetailedError<GameSessionClientTypes.GetWsTicketErrorCodes>(response.body);
             });
     },
 

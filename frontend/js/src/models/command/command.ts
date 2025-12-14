@@ -6,7 +6,8 @@ import {UID} from "../../common/uid";
 /**
  * A command given by the player in the current turn.
  */
-export type Command = Command.Move
+export type Command =
+	| Command.Move
 	| Command.Disband
 	| Command.ConstructTileImprovement
 	| Command.CreateSettlement

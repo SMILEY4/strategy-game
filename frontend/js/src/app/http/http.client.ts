@@ -1,9 +1,6 @@
 export class HttpClient {
 
-    private readonly baseUrl: string;
-
-    constructor(baseUrl: string) {
-        this.baseUrl = baseUrl;
+    constructor(private readonly baseUrl: string) {
     }
 
     /**
@@ -91,7 +88,7 @@ export class HttpClient {
         };
 
         // make http call
-        let response: Response = null!
+        let response: Response = null!;
         try {
             response = await fetch(fullUrl, data);
         } catch (error) {
@@ -112,7 +109,7 @@ export class HttpClient {
             }
         }
 
-        console.debug("response", method, fullUrl, response.status)
+        console.debug("response", method, fullUrl, response.status);
 
         // handle response
         const text = await response.text();

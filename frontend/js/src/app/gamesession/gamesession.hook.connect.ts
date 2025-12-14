@@ -3,16 +3,17 @@ import {App} from "../../appContext";
 import {GotoHooks} from "../../ui/pages/goto";
 import {GameSession} from "../../models/misc/gameSession";
 import {UnauthorizedError} from "../../common/UnauthorizedError";
-import {GameStateContainer} from "../../models/misc/gameStateContainer";
-import {handleGameState} from "../game/turn/game.turn.handle-game-state";
+import {TurnService} from "../game/turn/game.turn.service";
+import {GameSessionConnectionClient} from "./gamesession.client.connection";
+import {GameStateMapper} from "./gamesession.gamestate-message-mapper";
 
 export function useGameSessionConnect(): (gameId: Game.Id) => void {
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: Game.Id) => {
         return Promise.resolve()
             .then(() => App.gameStateWriter.setGameSessionState(GameSession.SessionState.Loading))
-            .then(() => App.gameSessionClient.connect(gameId, {
-                onGameState: (gameState: GameStateContainer) => handleGameState(gameState),
+            .then(() => GameSessionConnectionClient.open(gameId, message => {
+                if (message.type === "game-state") TurnService.handleNewGameState(GameStateMapper.map(message.payload));
             }))
             .catch(e => {
                 console.error(e);
