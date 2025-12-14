@@ -5,10 +5,11 @@ import {Tile} from "../../../models/tile/tile";
 import {HexUtils} from "../../../common/hexUtils";
 import {GameClient} from "../game.client";
 import {App} from "../../../appContext";
-import {WorldObjectDatabase} from "../../../state/database/worldObjectDatabase";
+import {WorldObjectDatabase} from "../../database/worldObjectDatabase";
 import {CommandService} from "../command/game.command.service";
 import {Command} from "../../../models/command/command";
-import {TileDatabase} from "../../../state/database/tileDatabase";
+import {TileDatabase} from "../../database/tileDatabase";
+import {Db} from "../../database";
 
 export type SettlementCreateInteractionEvent =
     | { eventId: "SELECT_TILE", tile: TileSummary }
@@ -39,7 +40,7 @@ export const settlementCreateInteractionDefinition: InteractionDefinition<
     initial: "AWAIT_SELECTION",
     onStart: async ({getCtx, setCtx}) => {
         const {worldObjectId} = getCtx();
-        const worldObject = App.worldObjectDatabase.querySingle(WorldObjectDatabase.QUERY_BY_ID, worldObjectId);
+        const worldObject = Db.worldObject.querySingle(WorldObjectDatabase.QUERY_BY_ID, worldObjectId);
         if (!worldObject) {
             throw new Error("Could not find world object for given id.");
         }
@@ -124,6 +125,6 @@ function getRandomName(): Promise<string> {
 
 function getValidTiles(tile: Tile.Position): TileSummary[] {
     return HexUtils.getPositionsRadius(tile.q, tile.r, 1)
-        .map(position => App.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [position.q, position.r]))
+        .map(position => Db.tile.querySingle(TileDatabase.QUERY_BY_POSITION, [position.q, position.r]))
         .filter(it => it != null) as TileSummary[];
 }

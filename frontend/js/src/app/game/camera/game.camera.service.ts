@@ -4,6 +4,7 @@ import {Projections} from "../../../common/webgl/projections";
 import {App} from "../../../appContext";
 import {Camera} from "../../../common/webgl/camera";
 import {CameraData} from "../../../models/misc/cameraData";
+import {Db} from "../../database";
 
 const ZOOM_FACTOR = 1.05;
 const ZOOM_MIN = 0.5;
@@ -122,9 +123,9 @@ function calculateZoom(currentZoom: number, direction: "in" | "out"): number {
 }
 
 function setCameraData(cameraData: CameraData) {
-    App.cameraDatabase.set(cameraData);
+    Db.camera.set(cameraData);
 }
 
 function getCameraData(): CameraData {
-    return App.cameraDatabase.get();
+    return Db.camera.get();
 }

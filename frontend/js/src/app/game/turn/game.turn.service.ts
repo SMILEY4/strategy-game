@@ -4,11 +4,12 @@ import {App} from "../../../appContext";
 import {GameSession} from "../../../models/misc/gameSession";
 import {CameraService} from "../camera/game.camera.service";
 import {Transaction} from "../../../common/db/database/transaction";
-import {RealmDatabase} from "../../../state/database/realmDatabase";
-import {WorldObjectDatabase} from "../../../state/database/worldObjectDatabase";
+import {RealmDatabase} from "../../database/realmDatabase";
+import {WorldObjectDatabase} from "../../database/worldObjectDatabase";
 import {WorldObject} from "../../../models/worldobject/worldObject";
-import {TileDatabase} from "../../../state/database/tileDatabase";
+import {TileDatabase} from "../../database/tileDatabase";
 import {Tile} from "../../../models/tile/tile";
+import {Db} from "../../database";
 
 export const TurnService = {
 
@@ -27,45 +28,45 @@ export const TurnService = {
 
 
 function replaceGameState(state: GameStateContainer) {
-    Transaction.run([App.commandDatabase, App.tileDatabase, App.realmDatabase, App.worldObjectDatabase], () => {
-        App.commandDatabase.deleteAll();
-        App.commandDatabase.insertMany(state.commands);
-        App.tileDatabase.deleteAll();
-        App.tileDatabase.insertMany(state.tiles);
-        App.realmDatabase.deleteAll();
-        App.realmDatabase.insertMany(state.realms);
-        App.worldObjectDatabase.deleteAll();
-        App.worldObjectDatabase.insertMany(state.worldObjects);
+    Transaction.run([Db.command, Db.tile, Db.realm, Db.worldObject], () => {
+        Db.command.deleteAll();
+        Db.command.insertMany(state.commands);
+        Db.tile.deleteAll();
+        Db.tile.insertMany(state.tiles);
+        Db.realm.deleteAll();
+        Db.realm.insertMany(state.realms);
+        Db.worldObject.deleteAll();
+        Db.worldObject.insertMany(state.worldObjects);
     });
 }
 
 function setCurrentTurn(turn: number) {
-    App.gameSessionDatabase.update(() => ({
+    Db.gameSession.update(() => ({
         turn: turn,
     }));
 }
 
 function isSessionLoading(): boolean {
-    return App.gameSessionDatabase.get().sessionState === GameSession.SessionState.Loading;
+    return Db.gameSession.get().sessionState === GameSession.SessionState.Loading;
 }
 
 function setSessionPlaying() {
-    App.gameSessionDatabase.update(() => ({
+    Db.gameSession.update(() => ({
         sessionState: GameSession.SessionState.Playing,
     }));
 }
 
 function setTurnPlaying() {
-    App.gameSessionDatabase.update(() => ({
+    Db.gameSession.update(() => ({
         turnState: GameSession.TurnState.Playing,
     }));
 }
 
 function findPlayerSpawnTilePosition(): Tile.Position {
-    const playerRealm = App.realmDatabase.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
+    const playerRealm = Db.realm.querySingleOrThrow(RealmDatabase.QUERY_IS_USER_REALM, null);
 
     // use tile with any unit
-    const unitTile = App.worldObjectDatabase
+    const unitTile = Db.worldObject
         .queryMany(WorldObjectDatabase.QUERY_BY_REALM_ID, playerRealm.id)
         .find(it => it.type.group === WorldObject.TypeGroup.Unit);
     if (unitTile) {
@@ -73,7 +74,7 @@ function findPlayerSpawnTilePosition(): Tile.Position {
     }
 
     // use center tile as fallback
-    const tileCenter = App.tileDatabase.querySingle(TileDatabase.QUERY_BY_POSITION, [0, 0]);
+    const tileCenter = Db.tile.querySingle(TileDatabase.QUERY_BY_POSITION, [0, 0]);
     if (tileCenter) {
         return tileCenter.position;
     }
