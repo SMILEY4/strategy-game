@@ -1,6 +1,5 @@
 import {MapMode} from "../../../models/misc/mapMode";
 import {usePartialSingletonEntity} from "../../../common/db/adapters/databaseHooks";
-import {App} from "../../../appContext";
 import {Db} from "../../database";
 
 export const MapStateAccess = {

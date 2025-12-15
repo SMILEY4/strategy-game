@@ -1,6 +1,5 @@
 import {Realm} from "../../../models/realm/realm";
 import {useQuerySingle} from "../../../common/db/adapters/databaseHooks";
-import {App} from "../../../appContext";
 import {RealmDatabase} from "../../database/realmDatabase";
 import {Db} from "../../database";
 

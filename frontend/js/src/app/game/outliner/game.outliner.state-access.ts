@@ -1,6 +1,5 @@
 import {WorldObjectOutline} from "../../../models/worldobject/worldObjectOutline";
 import {useQueryMultiple} from "../../../common/db/adapters/databaseHooks";
-import {App} from "../../../appContext";
 import {WorldObjectDatabase} from "../../database/worldObjectDatabase";
 import {WorldObject} from "../../../models/worldobject/worldObject";
 import {RealmOutline} from "../../../models/realm/realmOutline";

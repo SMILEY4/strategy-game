@@ -1,6 +1,5 @@
 import {TileSummary} from "../../../models/tile/tileSummary";
 import {usePartialSingletonEntity, useQuerySingle} from "../../../common/db/adapters/databaseHooks";
-import {App} from "../../../appContext";
 import {Tile} from "../../../models/tile/tile";
 import {TileDatabase} from "../../database/tileDatabase";
 import {WorldObjectDatabase} from "../../database/worldObjectDatabase";

@@ -1,8 +1,8 @@
 import {Game} from "../../models/misc/game";
 import {HttpErrorCodes} from "../http/http.status-codes";
 import {DetailedError, HttpErrorResponseBody} from "../../common/detailedError";
-import {App} from "../../appContext";
 import {authHandlerUserAuthToken} from "../authentication/auth.handler.user-auth-token";
+import {httpClient} from "../../main";
 
 export namespace GameSessionClientTypes {
 
@@ -77,7 +77,7 @@ export const GameSessionClient = {
             | { status: 200; body: GameResponse[] }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.ListGamesErrorCodes> }
 
-        return App.httpClient
+        return httpClient
             .get<void, Response>("/api/session/list", {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
@@ -102,7 +102,7 @@ export const GameSessionClient = {
             | { status: 200; body: string }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.CreateGameErrorCodes> }
 
-        return App.httpClient
+        return httpClient
             .post<void, Response>("/api/session/create?name=" + name + (seed ? ("&seed=" + seed) : ""), {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
@@ -122,7 +122,7 @@ export const GameSessionClient = {
             | { status: 200; body: void }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.DeleteGameErrorCodes> }
 
-        return App.httpClient
+        return httpClient
             .delete<void, Response>(`/api/session/delete/${game}`, {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
@@ -142,7 +142,7 @@ export const GameSessionClient = {
             | { status: 200; body: void }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.JoinGameErrorCodes> }
 
-        return App.httpClient
+        return httpClient
             .post<void, Response>(`/api/session/join/${game}`, {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
@@ -162,7 +162,7 @@ export const GameSessionClient = {
             | { status: 200; body: { ticket: string } }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.GetWsTicketErrorCodes> }
 
-        return App.httpClient
+        return httpClient
             .get<void, Response>("/api/session/wsticket", {
                 auth: authHandlerUserAuthToken,
                 body: undefined,

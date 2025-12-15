@@ -4,7 +4,6 @@ import {WorldObject} from "../../../models/worldobject/worldObject";
 import {Tile} from "../../../models/tile/tile";
 import {HexUtils} from "../../../common/hexUtils";
 import {GameClient} from "../game.client";
-import {App} from "../../../appContext";
 import {WorldObjectDatabase} from "../../database/worldObjectDatabase";
 import {CommandService} from "../command/game.command.service";
 import {Command} from "../../../models/command/command";

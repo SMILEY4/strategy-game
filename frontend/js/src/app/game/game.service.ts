@@ -1,4 +1,3 @@
-import {App} from "../../appContext";
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {CameraService} from "./camera/game.camera.service";
 import {gameInteractionEngine} from "./game.interaction-engine";
@@ -13,6 +12,8 @@ import {
 import {TileService} from "./tile/game.tile.service";
 import {TileSummary} from "../../models/tile/tileSummary";
 import {Db} from "../database";
+import {gameRenderer} from "../../renderer";
+import {GameAudio} from "../audio/gameAudio";
 
 export const canvasHandle: CanvasHandle = new CanvasHandle();
 
@@ -20,16 +21,16 @@ export const GameService = {
 
     initialize(canvas: HTMLCanvasElement) {
         canvasHandle.set(canvas);
-        App.gameRenderer.initialize(canvasHandle);
+        gameRenderer.initialize(canvasHandle);
     },
 
     dispose() {
-        App.gameRenderer.dispose();
+        gameRenderer.dispose();
         canvasHandle.set(null);
     },
 
     update() {
-        App.gameRenderer.render(canvasHandle);
+        gameRenderer.render(canvasHandle);
     },
 
     mouseMoved(dx: number, dy: number, clientX: number, clientY: number, leftBtnDown: boolean) {
@@ -50,6 +51,7 @@ export const GameService = {
     mouseClicked(clientX: number, clientY: number) {
         const clickedTile = TileService.pickTile(clientX, clientY);
         if (clickedTile != null) {
+            GameAudio.CLICK_PRIMARY.play()
 
             // notify current interaction: move world object
             if (gameInteractionEngine.getInteractionId() === worldObjectMoveInteractionDefinition.id) {
@@ -72,6 +74,14 @@ export const GameService = {
             // if nothing else intercepted "click", handle by tile service
             TileService.handleClickOnTile(clickedTile);
         }
+    },
+
+    looseWebGlContext() {
+        canvasHandle.debugLooseWebglContext();
+    },
+
+    restoreWebGlContext() {
+        canvasHandle.debugRestoreWebglContext();
     },
 
 };

@@ -1,18 +1,10 @@
+import {GameAudio, AudioId} from "../../../app/audio/gameAudio";
+
 export namespace UIAudio {
 
-    export interface AudioProvider {
-        play: (soundId: string) => void;
-    }
-
-    export const DUMMY_AUDIO_PROVIDER: AudioProvider = {
-        play: () => undefined,
-    };
-
-    export let audioProvider: AudioProvider = DUMMY_AUDIO_PROVIDER;
-
-    export function usePlayAudio(soundId?: string) {
+    export function usePlayAudio(soundId?: AudioId) {
         return () => {
-            soundId && audioProvider.play(soundId);
+            soundId && GameAudio[soundId].play();
         };
     }
 

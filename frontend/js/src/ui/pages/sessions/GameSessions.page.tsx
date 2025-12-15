@@ -1,4 +1,4 @@
-import React, {ReactElement, useEffect} from "react";
+import React, {ReactElement} from "react";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
 import {HBox} from "../../components/layout/hbox/HBox";
@@ -6,7 +6,6 @@ import {Button} from "../../components/button/Button";
 import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
 import {VSpacer} from "../../components/spacer/Spacer";
-import {AudioType} from "../../../common/audioService";
 import {Game} from "../../../models/misc/game";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {ModalWindow} from "../../components/modal/ModalWindow";
@@ -140,7 +139,7 @@ function GameSessionEntry(props: {
                     </HBox>
                 </VBox>
                 <Button info onClick={props.onConnect}>Connect</Button>
-                <Button warn onClick={props.onDelete} soundId={AudioType.CLICK_CLOSE.id}>Delete</Button>
+                <Button warn onClick={props.onDelete} soundId={"CLICK_CLOSE"}>Delete</Button>
             </HBox>
         </DecoratedPanel>
     );
@@ -170,7 +169,7 @@ function ModalJoinGame(props: {
                     />
 
                     <HBox right gap_xs>
-                        <Button warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>Cancel</Button>
+                        <Button warn onClick={props.onCancel} soundId={"CLICK_CLOSE"}>Cancel</Button>
                         <Button success onClick={props.onAccept} disabled={props.acceptDisabled}>Join</Button>
                     </HBox>
 
@@ -216,7 +215,7 @@ function ModalCreateGame(props: {
                     </VBox>
 
                     <HBox right gap_xs>
-                        <Button warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>Cancel</Button>
+                        <Button warn onClick={props.onCancel} soundId={"CLICK_CLOSE"}>Cancel</Button>
                         <Button success onClick={props.onAccept}>Create</Button>
                     </HBox>
 

@@ -1,6 +1,16 @@
 import {Projections} from "./webgl/projections";
 import Point = Projections.Point;
 
+export function toBoolean(value: string | boolean | undefined | null): boolean {
+	if(typeof value === "boolean") {
+		return value
+	}
+	if(typeof value === "string") {
+		return value.trim().toLowerCase() === "true"
+	}
+	return false
+}
+
 export function mapValue<T, R>(value: T, mapping: (value: T) => R): R {
 	return mapping(value);
 }

@@ -6,8 +6,8 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {WebglContextService} from "../../../../../app/webgl/webgl.context.service";
 import {CameraStateAccess} from "../../../../../app/game/camera/game.camera.state-access";
+import {GameService} from "../../../../../app/game/game.service";
 
 export namespace UseDevWindow {
 
@@ -42,8 +42,8 @@ export namespace UseDevWindow {
                 exit: exitFullscreen,
             },
             webgl: {
-                loose: () => WebglContextService.loose(),
-                restore: () => WebglContextService.restore(),
+                loose: () => GameService.looseWebGlContext(),
+                restore: () => GameService.restoreWebGlContext(),
             },
             camera: camera,
         };

@@ -1,4 +1,3 @@
-import {App} from "../../appContext";
 import {GameSession} from "../../models/misc/gameSession";
 import {GameSessionConnectionClient} from "./gamesession.client.connection";
 import {Db} from "../database";

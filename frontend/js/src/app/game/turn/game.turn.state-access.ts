@@ -1,6 +1,5 @@
 import {GameSession} from "../../../models/misc/gameSession";
 import {usePartialSingletonEntity} from "../../../common/db/adapters/databaseHooks";
-import {App} from "../../../appContext";
 import {Db} from "../../database";
 
 export const TurnStateAccess = {

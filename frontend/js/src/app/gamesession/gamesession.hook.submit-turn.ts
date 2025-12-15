@@ -1,5 +1,4 @@
 import {GameSession} from "../../models/misc/gameSession";
-import {App} from "../../appContext";
 import {gameInteractionEngine} from "../game/game.interaction-engine";
 import {GameSessionConnectionClient} from "./gamesession.client.connection";
 import {CommandMessage} from "../../models/messages/commandMessage";
