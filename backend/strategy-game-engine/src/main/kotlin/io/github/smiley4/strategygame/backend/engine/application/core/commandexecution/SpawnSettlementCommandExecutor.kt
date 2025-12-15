@@ -32,7 +32,7 @@ class SpawnSettlementCommandExecutor : Logging {
         }
 
         // validate: no other settlement exists on this tile
-        if(gameState.worldObjects.any { it.tile.id == worldObject.tile.id && it.type.group == WorldObject.Group.SETTLEMENT }) {
+        if (gameState.worldObjects.any { it.tile.id == worldObject.tile.id && it.type.group == WorldObject.Group.SETTLEMENT }) {
             throw Exception("A settlement already exists at that location.")
         }
 
@@ -42,7 +42,7 @@ class SpawnSettlementCommandExecutor : Logging {
         }
 
         // validate: tile position must be valid (same tile or neighbor)
-        if(command.data.tile.position.notContainedIn(positionsCircle(worldObject.tile, 1))) {
+        if (command.data.tile.position.notContainedIn(positionsCircle(worldObject.tile, 1))) {
             throw Exception("Spawn position invalid.")
         }
 
@@ -68,6 +68,10 @@ class SpawnSettlementCommandExecutor : Logging {
                     WorldObjectComponent.Vision(
                         radius = 1,
                     ),
+                    WorldObjectComponent.Districts(
+                        maxAmount = 3,
+                        tileImprovements = mutableSetOf()
+                    )
                 )
             )
         )

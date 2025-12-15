@@ -146,6 +146,13 @@ export namespace GameStateMapper {
 							type: "settlement-spawner",
 						} as WorldObjectComponent.SettlementSpawner;
 					}
+					if (componentMsg.type == "districts") {
+						return {
+							type: "districts",
+							maxAmount: componentMsg.maxAmount,
+							tileImprovements: componentMsg.tileImprovements,
+						} as WorldObjectComponent.Districts;
+					}
 
 					// exhaustiveness check: syntax error in case of unhandled action type
 					// noinspection UnnecessaryLocalVariableJS
