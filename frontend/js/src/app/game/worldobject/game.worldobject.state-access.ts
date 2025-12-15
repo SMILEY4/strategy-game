@@ -1,6 +1,5 @@
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
 import {WorldObjectDatabase} from "../../database/worldObjectDatabase";
-import {App} from "../../../appContext";
 import {WorldObject} from "../../../models/worldobject/worldObject";
 import {useQueryMultiple, useQuerySingle} from "../../../common/db/adapters/databaseHooks";
 import {Tile} from "../../../models/tile/tile";

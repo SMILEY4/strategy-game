@@ -1,7 +1,6 @@
 import {Projections} from "../../../common/webgl/projections";
 import {CanvasHandle} from "../../../common/webgl/canvasHandle";
 import {Camera} from "../../../common/webgl/camera";
-import {App} from "../../../appContext";
 import {canvasHandle} from "../game.service";
 import {TileSummary} from "../../../models/tile/tileSummary";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";

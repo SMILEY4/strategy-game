@@ -1,7 +1,7 @@
 import {HttpErrorCodes} from "../http/http.status-codes";
 import {DetailedError, HttpErrorResponseBody} from "../../common/detailedError";
 import {authHandlerUserAuthToken} from "../authentication/auth.handler.user-auth-token";
-import {App} from "../../appContext";
+import {httpClient} from "../../main";
 
 
 export namespace UserClientTypes {
@@ -52,7 +52,7 @@ export const UserClient = {
             | { status: 200; body: null }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<UserClientTypes.SignUpErrorCodes> }
 
-        return App.httpClient
+        return httpClient
             .post<Request, Response>("/api/user/signup", {
                 body: {
                     email: email,
@@ -77,7 +77,7 @@ export const UserClient = {
             | { status: 200; body: { idToken: string, refreshToken: string | undefined } }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<UserClientTypes.LogInErrorCodes> }
 
-        return App.httpClient
+        return httpClient
             .post<Request, Response>("/api/user/login", {
                 body: {
                     email: email,
@@ -101,7 +101,7 @@ export const UserClient = {
             | { status: 200; body: null }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<UserClientTypes.LogInErrorCodes> }
 
-        return App.httpClient
+        return httpClient
             .post<Request, Response>("/api/user/delete", {
                 auth: authHandlerUserAuthToken,
                 body: {

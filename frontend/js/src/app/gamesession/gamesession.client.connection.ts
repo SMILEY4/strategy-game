@@ -1,11 +1,8 @@
-import {HttpWebsocketClient} from "../http/http.ws.client";
-import {App} from "../../appContext";
 import {Game} from "../../models/misc/game";
 import {GameSessionClient} from "./gamesession.client";
 import {GameStateMessage} from "../../models/messages/gameStateMessage";
 import {CommandMessage} from "../../models/messages/commandMessage";
-
-const websocketClient = new HttpWebsocketClient(App.WS_BASE_URL);
+import {gameSessionWebsocketClient} from "../../main";
 
 export namespace GameSessionClientTypes {
 
@@ -40,7 +37,7 @@ export const GameSessionConnectionClient = {
         return GameSessionClient
             .getWebsocketTicket()
             .then(ticket => {
-                return websocketClient.open(
+                return gameSessionWebsocketClient.open(
                     `/api/session/connect/${game}?ticket=${ticket}`,
                     message => consumer(message as GameSessionClientTypes.ServerMessage),
                 );
@@ -48,11 +45,11 @@ export const GameSessionConnectionClient = {
     },
 
     close() {
-        websocketClient.close();
+        gameSessionWebsocketClient.close();
     },
 
     send(message: GameSessionClientTypes.ClientMessage) {
-        websocketClient.send(message);
+        gameSessionWebsocketClient.send(message);
     },
 
 };

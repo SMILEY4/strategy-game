@@ -1,15 +1,15 @@
 import {UIAudio} from "../window/audio";
-import {AudioType} from "../../../common/audioService";
+import {AudioId} from "../../../app/audio/gameAudio";
 
 export interface UseButtonProps {
     disabled?: boolean,
     onClick?: () => void
-    soundId?: string
+    soundId?: AudioId
 }
 
 export function useButton(props: UseButtonProps) {
 
-    const playSound = UIAudio.usePlayAudio(props.soundId ? props.soundId : AudioType.CLICK_PRIMARY.id);
+    const playSound = UIAudio.usePlayAudio(props.soundId ? props.soundId : "CLICK_PRIMARY");
 
     function handleClick() {
         if (!props.disabled && props.onClick) {

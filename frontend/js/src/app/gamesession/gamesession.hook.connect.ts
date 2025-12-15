@@ -1,5 +1,4 @@
 import {Game} from "../../models/misc/game";
-import {App} from "../../appContext";
 import {GotoHooks} from "../../ui/pages/goto";
 import {GameSession} from "../../models/misc/gameSession";
 import {UnauthorizedError} from "../../common/UnauthorizedError";

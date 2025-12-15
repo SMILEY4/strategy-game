@@ -1,6 +1,5 @@
 import {GameStateContainer} from "../../../models/misc/gameStateContainer";
 import {gameInteractionEngine} from "../game.interaction-engine";
-import {App} from "../../../appContext";
 import {GameSession} from "../../../models/misc/gameSession";
 import {CameraService} from "../camera/game.camera.service";
 import {Transaction} from "../../../common/db/database/transaction";

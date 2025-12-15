@@ -1,7 +1,6 @@
 import {Tile} from "../../../models/tile/tile";
 import {CanvasHandle} from "../../../common/webgl/canvasHandle";
 import {Projections} from "../../../common/webgl/projections";
-import {App} from "../../../appContext";
 import {Camera} from "../../../common/webgl/camera";
 import {CameraData} from "../../../models/misc/cameraData";
 import {Db} from "../../database";

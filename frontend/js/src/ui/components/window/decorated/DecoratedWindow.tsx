@@ -3,7 +3,6 @@ import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
 import {joinClassNames} from "../utils";
 import {Button} from "../../button/Button";
 import "./decoratedWindow.less";
-import {AudioType} from "../../../../common/audioService";
 import {useWindowInteractions} from "../windowHooks";
 import {Txt} from "../../text/Txt";
 
@@ -56,14 +55,14 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
 
 			{props.withPinButton && (
 				<Button warn circle className="decorated-window__pin" disabled={isPinned} onClick={pinWindow}
-						soundId={AudioType.CLICK_PRIMARY.id}>
+						soundId={"CLICK_PRIMARY"}>
 					<Txt.Icon.Pin/>
 				</Button>
 			)}
 
 			{props.withCloseButton && (
 				<Button warn circle className="decorated-window__close" onClick={handleClose}
-						soundId={AudioType.CLICK_CLOSE.id}>
+						soundId={"CLICK_CLOSE"}>
 					<Txt.Icon.Close/>
 				</Button>
 			)}
