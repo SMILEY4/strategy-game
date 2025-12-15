@@ -157,6 +157,9 @@ vec4 getHighlightOption() {
     if(!checkBit(v_highlight, 1u)) {
         return vec4(0.0);
     }
+    if(checkBit(v_highlight, 2u)) {
+        return vec4(0.0);
+    }
 
     float alphaShiftFactor = 0.3;
     float hueShiftFactor = 0.1;
@@ -169,10 +172,6 @@ vec4 getHighlightOption() {
     if (u_tileHovered.x == v_tilePosition.x && u_tileHovered.y == v_tilePosition.y) {
         baseColorInner = u_highlightData.colorInnerHover;
         baseColorOuter = u_highlightData.colorOuterHover;
-    }
-    if (v_highlight == 2u) {
-        baseColorInner = u_highlightData.colorInnerActive;
-        baseColorOuter = u_highlightData.colorOuterActive;
     }
 
     vec4 colorInner = modulateColor(baseColorInner, alphaShiftFactor, hueShiftFactor);
@@ -194,16 +193,8 @@ vec4 getHighlightOptionSelected() {
     float gap = border_full(v_cornerData, u_highlightData.gap);
     float gradient = border_full_gradient(v_cornerData);
 
-    vec4 baseColorInner = u_highlightData.colorInnerDefault;
-    vec4 baseColorOuter = u_highlightData.colorOuterDefault;
-    if (u_tileHovered.x == v_tilePosition.x && u_tileHovered.y == v_tilePosition.y) {
-        baseColorInner = u_highlightData.colorInnerHover;
-        baseColorOuter = u_highlightData.colorOuterHover;
-    }
-    if (v_highlight == 2u) {
-        baseColorInner = u_highlightData.colorInnerActive;
-        baseColorOuter = u_highlightData.colorOuterActive;
-    }
+    vec4 baseColorInner = u_highlightData.colorInnerActive;
+    vec4 baseColorOuter = u_highlightData.colorOuterActive;
 
     vec4 colorInner = modulateColor(baseColorInner, alphaShiftFactor, hueShiftFactor);
     vec4 colorOuter = modulateColor(baseColorOuter, alphaShiftFactor, hueShiftFactor);
