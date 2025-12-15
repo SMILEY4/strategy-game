@@ -8,8 +8,8 @@ import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectO
 import {RealmOutline} from "../../../../../models/realm/realmOutline";
 import {UseRealmWindow} from "../realm/useRealmWindow";
 import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
-import {CameraService} from "../../../../../app/game/camera/game.camera.service";
-import {OutlinerStateAccess} from "../../../../../app/game/outliner/game.outliner.state-access";
+import {CameraService} from "../../../../../app/game/camera/camera.service";
+import {OutlinerStateAccess} from "../../../../../app/game/outliner/outliner.state-access";
 
 export namespace UseOutlinerWindow {
 

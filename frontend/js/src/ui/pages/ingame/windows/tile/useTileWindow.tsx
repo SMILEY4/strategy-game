@@ -8,9 +8,9 @@ import {Tile} from "../../../../../models/tile/tile";
 import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
-import {CameraService} from "../../../../../app/game/camera/game.camera.service";
-import {TileStateAccess} from "../../../../../app/game/tile/game.tile.state.access";
-import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/game.worldobject.state-access";
+import {CameraService} from "../../../../../app/game/camera/camera.service";
+import {TileStateAccess} from "../../../../../app/game/tile/tile.state.access";
+import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/worldobject.state-access";
 
 export namespace UseTileWindow {
 

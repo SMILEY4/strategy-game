@@ -6,7 +6,7 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {CameraStateAccess} from "../../../../../app/game/camera/game.camera.state-access";
+import {CameraStateAccess} from "../../../../../app/game/camera/camera.state-access";
 import {GameService} from "../../../../../app/game/game.service";
 
 export namespace UseDevWindow {

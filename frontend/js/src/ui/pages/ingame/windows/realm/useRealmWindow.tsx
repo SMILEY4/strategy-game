@@ -7,8 +7,8 @@ import {WindowGroup} from "../windowGroups";
 import {Realm} from "../../../../../models/realm/realm";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
 import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
-import {RealmStateAccess} from "../../../../../app/game/realm/game.realm.state-access";
-import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/game.worldobject.state-access";
+import {RealmStateAccess} from "../../../../../app/game/realm/realm.state-access";
+import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/worldobject.state-access";
 
 export namespace UseRealmWindow {
 

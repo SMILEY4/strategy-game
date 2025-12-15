@@ -6,7 +6,7 @@ import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
 import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {Camera} from "../common/webgl/camera";
 import {WasmGameRenderer} from "./wasmGameRenderer";
-import {CameraStateAccess} from "../app/game/camera/game.camera.state-access";
+import {CameraStateAccess} from "../app/game/camera/camera.state-access";
 
 export class GameRenderer {
 

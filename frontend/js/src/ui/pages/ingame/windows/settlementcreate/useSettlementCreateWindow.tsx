@@ -9,7 +9,7 @@ import {
     SettlementCreateInteractionContext,
     settlementCreateInteractionDefinition,
     SettlementCreateInteractionEvent,
-} from "../../../../../app/game/settlement/game.settlement.interaction.create";
+} from "../../../../../app/game/settlement/settlement.interaction.create";
 import {
     useActiveInteractionId,
     useInteractionContext,

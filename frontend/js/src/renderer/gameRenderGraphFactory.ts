@@ -59,12 +59,12 @@ import {gameInteractionEngine} from "../app/game/game.interaction-engine";
 import {
 	WorldObjectMoveInteractionContext,
 	worldObjectMoveInteractionDefinition,
-} from "../app/game/worldobject/game.worldobject.interaction.move";
-import {WorldObjectStateAccess} from "../app/game/worldobject/game.worldobject.state-access";
-import {CameraStateAccess} from "../app/game/camera/game.camera.state-access";
-import {MapStateAccess} from "../app/game/map/game.map.state-access";
-import {TileStateAccess} from "../app/game/tile/game.tile.state.access";
-import {CommandStateAccess} from "../app/game/command/game.command.state-access";
+} from "../app/game/worldobject/worldobject.interaction.move";
+import {WorldObjectStateAccess} from "../app/game/worldobject/worldobject.state-access";
+import {CameraStateAccess} from "../app/game/camera/camera.state-access";
+import {MapStateAccess} from "../app/game/map/map.state-access";
+import {TileStateAccess} from "../app/game/tile/tile.state.access";
+import {CommandStateAccess} from "../app/game/command/command.state-access";
 
 export class GameRenderGraphFactory {
 

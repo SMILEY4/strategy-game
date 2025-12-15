@@ -10,7 +10,7 @@ import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
 import {UseOutlinerWindow} from "../windows/outliner/useOutlinerWindow";
 import {Txt} from "../../../components/text/Txt";
 import {useGameSessionSubmitTurn} from "../../../../app/gamesession/gamesession.hook.submit-turn";
-import {TurnStateAccess} from "../../../../app/game/turn/game.turn.state-access";
+import {TurnStateAccess} from "../../../../app/game/turn/turn.state-access";
 
 export function MenuBar(): ReactElement {
 

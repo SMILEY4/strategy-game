@@ -1,5 +1,5 @@
 import {WorldObject} from "../../../models/worldobject/worldObject";
-import {CommandService} from "../command/game.command.service";
+import {CommandService} from "../command/command.service";
 import {Command} from "../../../models/command/command";
 
 export const TileImprovementService = {

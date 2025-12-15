@@ -5,7 +5,7 @@ import {Tile} from "../../../models/tile/tile";
 import {HexUtils} from "../../../common/hexUtils";
 import {GameClient} from "../game.client";
 import {WorldObjectDatabase} from "../../database/worldObjectDatabase";
-import {CommandService} from "../command/game.command.service";
+import {CommandService} from "../command/command.service";
 import {Command} from "../../../models/command/command";
 import {TileDatabase} from "../../database/tileDatabase";
 import {Db} from "../../database";

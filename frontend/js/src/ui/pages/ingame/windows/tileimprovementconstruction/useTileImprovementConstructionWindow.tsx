@@ -5,8 +5,8 @@ import React from "react";
 import {TileImprovementConstructionWindow} from "./TileImprovementConstructionWindow";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
-import {TileImprovementService} from "../../../../../app/game/tileimprovement/game.tileimprovement.service";
-import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/game.worldobject.state-access";
+import {TileImprovementService} from "../../../../../app/game/tileimprovement/tileimprovement.service";
+import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/worldobject.state-access";
 
 export namespace UseTileImprovementConstructionWindow {
 

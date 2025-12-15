@@ -1,15 +1,15 @@
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
-import {CameraService} from "./camera/game.camera.service";
+import {CameraService} from "./camera/camera.service";
 import {gameInteractionEngine} from "./game.interaction-engine";
 import {
     worldObjectMoveInteractionDefinition,
     WorldObjectMoveInteractionEvent,
-} from "./worldobject/game.worldobject.interaction.move";
+} from "./worldobject/worldobject.interaction.move";
 import {
     settlementCreateInteractionDefinition,
     SettlementCreateInteractionEvent,
-} from "./settlement/game.settlement.interaction.create";
-import {TileService} from "./tile/game.tile.service";
+} from "./settlement/settlement.interaction.create";
+import {TileService} from "./tile/tile.service";
 import {TileSummary} from "../../models/tile/tileSummary";
 import {Db} from "../database";
 import {gameRenderer} from "../../renderer";

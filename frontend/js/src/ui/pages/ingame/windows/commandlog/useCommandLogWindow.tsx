@@ -5,8 +5,8 @@ import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
 import {Command} from "../../../../../models/command/command";
-import {CommandService} from "../../../../../app/game/command/game.command.service";
-import {CommandStateAccess} from "../../../../../app/game/command/game.command.state-access";
+import {CommandService} from "../../../../../app/game/command/command.service";
+import {CommandStateAccess} from "../../../../../app/game/command/command.state-access";
 
 export namespace UseCommandLogWindow {
 
