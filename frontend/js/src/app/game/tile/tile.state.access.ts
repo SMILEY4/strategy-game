@@ -8,17 +8,24 @@ import {gameInteractionEngine} from "../game.interaction-engine";
 import {
     WorldObjectMoveInteractionContext,
     worldObjectMoveInteractionDefinition,
-} from "../worldobject/game.worldobject.interaction.move";
+} from "../worldobject/worldobject.interaction.move";
 import {
     SettlementCreateInteractionContext,
     settlementCreateInteractionDefinition,
-} from "../settlement/game.settlement.interaction.create";
+} from "../settlement/settlement.interaction.create";
 import {Db} from "../../database";
+import {DbCache} from "../../../common/db/dbCache";
 
-// const tilesCache = new DbCache({
-//     dataProvider: () => TileStateAccess.getTilesUncached(),
-//     dependencies: [App.tileDatabase],
-// });
+let tilesCache: DbCache<Tile[]> | null = null;
+
+function getTileCache(): DbCache<Tile[]> {
+    if (tilesCache) return tilesCache;
+    tilesCache = new DbCache({
+        dataProvider: () => TileStateAccess.getAllUncached(),
+        dependencies: [Db.tile],
+    });
+    return tilesCache;
+}
 
 export const TileStateAccess = {
 
@@ -31,12 +38,11 @@ export const TileStateAccess = {
     },
 
     getTilesRevId(): string {
-        return Db.tile.getRevId()
+        return Db.tile.getRevId();
     },
 
     getAll(): Tile[] {
-        // return App.tilesCache.get();
-        return TileStateAccess.getAllUncached();
+        return getTileCache().get()
     },
 
     getAllUncached(): Tile[] {
@@ -100,6 +106,6 @@ export const TileStateAccess = {
         }
 
         return selectedTileHighlight ? [selectedTileHighlight] : [];
-    }
+    },
 
 };

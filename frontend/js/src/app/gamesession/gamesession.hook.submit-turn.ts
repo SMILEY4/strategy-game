@@ -2,7 +2,7 @@ import {GameSession} from "../../models/misc/gameSession";
 import {gameInteractionEngine} from "../game/game.interaction-engine";
 import {GameSessionConnectionClient} from "./gamesession.client.connection";
 import {CommandMessage} from "../../models/messages/commandMessage";
-import {CommandStateAccess} from "../game/command/game.command.state-access";
+import {CommandStateAccess} from "../game/command/command.state-access";
 import {Db} from "../database";
 
 export function useGameSessionSubmitTurn(): () => void {

@@ -7,7 +7,7 @@ import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary
 import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/unit/useWorldObjectWindow";
 import {UseTileWindow} from "../../../ui/pages/ingame/windows/tile/useTileWindow";
 import {TileDatabase} from "../../database/tileDatabase";
-import {WorldObjectStateAccess} from "../worldobject/game.worldobject.state-access";
+import {WorldObjectStateAccess} from "../worldobject/worldobject.state-access";
 import {Db} from "../../database";
 
 export const TileService = {

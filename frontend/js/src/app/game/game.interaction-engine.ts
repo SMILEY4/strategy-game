@@ -1,7 +1,7 @@
 import {InteractionEngine} from "../../common/interactions/interaction.engine";
 import {ZustandInteractionContextAdapter} from "../../common/interactions/interaction.context-adapter";
-import {WorldObjectMoveInteractionEvent} from "./worldobject/game.worldobject.interaction.move";
-import {SettlementCreateInteractionEvent} from "./settlement/game.settlement.interaction.create";
+import {WorldObjectMoveInteractionEvent} from "./worldobject/worldobject.interaction.move";
+import {SettlementCreateInteractionEvent} from "./settlement/settlement.interaction.create";
 
 
 type GameInteractionEvents =

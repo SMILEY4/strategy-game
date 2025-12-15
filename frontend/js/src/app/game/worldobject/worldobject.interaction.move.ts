@@ -3,7 +3,7 @@ import {TileSummary} from "../../../models/tile/tileSummary";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
 import {MovementTarget} from "../../../models/misc/movementTarget";
 import {GameClient} from "../game.client";
-import {CommandService} from "../command/game.command.service";
+import {CommandService} from "../command/command.service";
 import {Command} from "../../../models/command/command";
 
 export type WorldObjectMoveInteractionEvent =

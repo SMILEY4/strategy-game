@@ -5,12 +5,12 @@ import {gameInteractionEngine} from "../app/game/game.interaction-engine";
 import {
 	WorldObjectMoveInteractionContext,
 	worldObjectMoveInteractionDefinition,
-} from "../app/game/worldobject/game.worldobject.interaction.move";
-import {MapStateAccess} from "../app/game/map/game.map.state-access";
-import {TurnStateAccess} from "../app/game/turn/game.turn.state-access";
-import {TileStateAccess} from "../app/game/tile/game.tile.state.access";
-import {WorldObjectStateAccess} from "../app/game/worldobject/game.worldobject.state-access";
-import {CommandStateAccess} from "../app/game/command/game.command.state-access";
+} from "../app/game/worldobject/worldobject.interaction.move";
+import {MapStateAccess} from "../app/game/map/map.state-access";
+import {TurnStateAccess} from "../app/game/turn/turn.state-access";
+import {TileStateAccess} from "../app/game/tile/tile.state.access";
+import {WorldObjectStateAccess} from "../app/game/worldobject/worldobject.state-access";
+import {CommandStateAccess} from "../app/game/command/command.state-access";
 
 export interface TrackedChanges {
     isInitFrame: boolean;

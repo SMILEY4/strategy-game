@@ -2,7 +2,7 @@ import {useActiveInteractionId, useInteractionContext} from "../../../common/int
 import {
     WorldObjectMoveInteractionContext,
     worldObjectMoveInteractionDefinition,
-} from "./game.worldobject.interaction.move";
+} from "./worldobject.interaction.move";
 import {WorldObjectComponent} from "../../../models/worldobject/worldObjectComponent";
 import {WorldObject} from "../../../models/worldobject/worldObject";
 

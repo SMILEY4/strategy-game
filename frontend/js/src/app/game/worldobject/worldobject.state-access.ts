@@ -5,11 +5,19 @@ import {useQueryMultiple, useQuerySingle} from "../../../common/db/adapters/data
 import {Tile} from "../../../models/tile/tile";
 import {Realm} from "../../../models/realm/realm";
 import {Db} from "../../database";
+import {DbCache} from "../../../common/db/dbCache";
 
-// const worldObjectsCache: DbCache<WorldObject[]> = new DbCache({
-//     dataProvider: () => WorldObjectStateAccess.getAllUncached(),
-//     dependencies: [App.worldObjectDatabase],
-// });
+
+let worldObjectCache: DbCache<WorldObject[]> | null = null;
+
+function getWorldObjectCache(): DbCache<WorldObject[]> {
+    if (worldObjectCache) return worldObjectCache;
+    worldObjectCache = new DbCache({
+        dataProvider: () => WorldObjectStateAccess.getAllUncached(),
+        dependencies: [Db.worldObject],
+    });
+    return worldObjectCache;
+}
 
 export const WorldObjectStateAccess = {
 
@@ -35,8 +43,7 @@ export const WorldObjectStateAccess = {
     },
 
     getAll(): WorldObject[] {
-        // return worldObjectsCache.get(); todo
-        return WorldObjectStateAccess.getAllUncached();
+        return getWorldObjectCache().get();
     },
 
     getSummariesAt(q: number, r: number): WorldObjectSummary[] {

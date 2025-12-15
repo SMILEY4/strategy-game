@@ -7,9 +7,9 @@ import {gameInteractionEngine} from "../../../../../app/game/game.interaction-en
 import {
     worldObjectMoveInteractionDefinition,
     WorldObjectMoveInteractionEvent,
-} from "../../../../../app/game/worldobject/game.worldobject.interaction.move";
-import {useWorldObjectMovement} from "../../../../../app/game/worldobject/game.worldobject.hook.move";
-import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/game.worldobject.state-access";
+} from "../../../../../app/game/worldobject/worldobject.interaction.move";
+import {useWorldObjectMovement} from "../../../../../app/game/worldobject/worldobject.hook.move";
+import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/worldobject.state-access";
 
 export namespace UseMoveWindow {
 

@@ -2,7 +2,7 @@ import {Game} from "../../models/misc/game";
 import {GotoHooks} from "../../ui/pages/goto";
 import {GameSession} from "../../models/misc/gameSession";
 import {UnauthorizedError} from "../../common/UnauthorizedError";
-import {TurnService} from "../game/turn/game.turn.service";
+import {TurnService} from "../game/turn/turn.service";
 import {GameSessionConnectionClient} from "./gamesession.client.connection";
 import {GameStateMapper} from "./gamesession.gamestate-message-mapper";
 import {Db} from "../database";

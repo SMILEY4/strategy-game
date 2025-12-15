@@ -5,8 +5,8 @@ import {openWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
-import {GameMapService} from "../../../../../app/game/map/game.map.service";
-import {MapStateAccess} from "../../../../../app/game/map/game.map.state-access";
+import {MapService} from "../../../../../app/game/map/map.service";
+import {MapStateAccess} from "../../../../../app/game/map/map.state-access";
 
 export namespace UseMapWindow {
 
@@ -35,7 +35,7 @@ export namespace UseMapWindow {
 		const mapMode = MapStateAccess.useMapMode();
 		return {
 			selectedMapMode: mapMode,
-			setMapMode: mapMode => GameMapService.selectMapMode(mapMode),
+			setMapMode: mapMode => MapService.selectMapMode(mapMode),
 		};
 	}
 
