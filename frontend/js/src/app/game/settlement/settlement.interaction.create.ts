@@ -9,6 +9,7 @@ import {CommandService} from "../command/command.service";
 import {Command} from "../../../models/command/command";
 import {TileDatabase} from "../../database/tileDatabase";
 import {Db} from "../../database";
+import {GameAudio} from "../../audio/gameAudio";
 
 export type SettlementCreateInteractionEvent =
     | { eventId: "SELECT_TILE", tile: TileSummary }
@@ -60,6 +61,7 @@ export const settlementCreateInteractionDefinition: InteractionDefinition<
                         return context.validTiles.map(it => it.id).includes(event.tile.id);
                     },
                     action: ({event, setCtx}) => {
+                        GameAudio.CLICK_PRIMARY.play()
                         setCtx((prev) => ({
                             ...prev,
                             tile: event.tile,

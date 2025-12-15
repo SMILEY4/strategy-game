@@ -51,7 +51,6 @@ export const GameService = {
     mouseClicked(clientX: number, clientY: number) {
         const clickedTile = TileService.pickTile(clientX, clientY);
         if (clickedTile != null) {
-            GameAudio.CLICK_PRIMARY.play()
 
             // notify current interaction: move world object
             if (gameInteractionEngine.getInteractionId() === worldObjectMoveInteractionDefinition.id) {
