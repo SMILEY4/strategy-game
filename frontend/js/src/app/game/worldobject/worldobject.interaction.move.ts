@@ -5,6 +5,7 @@ import {MovementTarget} from "../../../models/misc/movementTarget";
 import {GameClient} from "../game.client";
 import {CommandService} from "../command/command.service";
 import {Command} from "../../../models/command/command";
+import {GameAudio} from "../../audio/gameAudio";
 
 export type WorldObjectMoveInteractionEvent =
     | { eventId: "SELECT_TILE", tile: TileSummary }
@@ -62,9 +63,13 @@ export const worldObjectMoveInteractionDefinition: InteractionDefinition<
         AWAIT_SELECTION: {
             transitions: {
                 SELECT_TILE: {
-                    // todo: validate selected tile
                     target: "AWAIT_TARGETS",
+                    condition: ({event, getCtx}) => {
+                        const context = getCtx();
+                        return context.targets.map(it => it.tile.id).includes(event.tile.id);
+                    },
                     action: ({event, setCtx}) => {
+                        GameAudio.CLICK_PRIMARY.play()
                         setCtx(prev => ({
                             ...prev,
                             path: [...prev.path, event.tile],
