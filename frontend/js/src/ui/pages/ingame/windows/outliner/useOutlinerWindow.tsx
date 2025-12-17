@@ -7,7 +7,7 @@ import {UID} from "../../../../../common/uid";
 import {WorldObjectOutline} from "../../../../../models/worldobject/worldObjectOutline";
 import {RealmOutline} from "../../../../../models/realm/realmOutline";
 import {UseRealmWindow} from "../realm/useRealmWindow";
-import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
+import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {CameraService} from "../../../../../app/game/camera/camera.service";
 import {OutlinerStateAccess} from "../../../../../app/game/outliner/outliner.state-access";
 

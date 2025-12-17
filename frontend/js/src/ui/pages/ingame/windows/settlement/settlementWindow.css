@@ -1,0 +1,5 @@
+.district-slot--empty,
+.district-slot--filled{
+	width: 50px;
+	height: 50px;
+}

@@ -5,7 +5,7 @@ import {WindowStore} from "../../../../components/window/windowStore";
 import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
 import {Tile} from "../../../../../models/tile/tile";
-import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
+import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
 import {CameraService} from "../../../../../app/game/camera/camera.service";

@@ -18,10 +18,20 @@ import {CommandService} from "../../../../../app/game/command/command.service";
 import {WorldObjectService} from "../../../../../app/game/worldobject/worldobject.service";
 import {CommandStateAccess} from "../../../../../app/game/command/command.state-access";
 import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/worldobject.state-access";
+import {WorldObjectDatabase} from "../../../../../app/database/worldObjectDatabase";
+import {Db} from "../../../../../app/database";
+import {UseSettlementWindow} from "../settlement/useSettlementWindow";
 
 export namespace UseWorldObjectWindow {
 
     export function open(worldObjectId: WorldObject.Id | null) {
+
+        const entity = Db.worldObject.querySingle(WorldObjectDatabase.QUERY_BY_ID, worldObjectId);
+        if(entity && entity.type.group === "settlement") {
+            UseSettlementWindow.open(worldObjectId)
+            return
+        }
+
         const windowId = UID.generate();
         openWindow({
             id: windowId,

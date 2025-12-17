@@ -2,7 +2,9 @@ package io.github.smiley4.strategygame.backend.engine.application.core.commandex
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
+import io.github.smiley4.strategygame.backend.common.utils.getNeighbourPositions
 import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
+import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
@@ -30,7 +32,7 @@ class ConstructTileImprovementCommandExecutor : Logging {
         }
 
         // validate: no other improvement exists on this tile
-        if(gameState.worldObjects.any { it.tile.id == worldObject.tile.id && it.type.group == WorldObject.Group.TILE_IMPROVEMENT }) {
+        if (gameState.worldObjects.any { it.tile.id == worldObject.tile.id && it.type.group == WorldObject.Group.TILE_IMPROVEMENT }) {
             throw Exception("An improvement already exists at that location.")
         }
 
@@ -50,23 +52,22 @@ class ConstructTileImprovementCommandExecutor : Logging {
         }
 
         // create improvement
-        gameState.worldObjects.add(
-            WorldObject(
-                id = WorldObject.Id.gen(),
-                realm = worldObject.realm,
-                type = WorldObject.Type(
-                    group = WorldObject.Group.TILE_IMPROVEMENT,
-                    name = command.data.improvement.name.lowercase()
+        val tileImprovement = WorldObject(
+            id = WorldObject.Id.gen(),
+            realm = worldObject.realm,
+            type = WorldObject.Type(
+                group = WorldObject.Group.TILE_IMPROVEMENT,
+                name = command.data.improvement.name.lowercase()
+            ),
+            tile = worldObject.tile,
+            components = mutableListOf(
+                WorldObjectComponent.Vision(
+                    radius = 1,
                 ),
-                tile = worldObject.tile,
-                components = mutableListOf(
-                    WorldObjectComponent.Vision(
-                        radius = 1,
-                    ),
-                    WorldObjectComponent.SettlementSpawner()
-                )
+                WorldObjectComponent.SettlementSpawner()
             )
         )
+        gameState.worldObjects.add(tileImprovement)
 
         // use (and remove) world object
         worldObject.getComponent<WorldObjectComponent.Builder>().also {
@@ -76,6 +77,26 @@ class ConstructTileImprovementCommandExecutor : Logging {
             }
         }
 
+        // merge tile improvement into nearby settlement (if possible)
+        mergeDistricts(tileImprovement, gameState)
+
+    }
+
+    private fun mergeDistricts(tileImprovement: WorldObject, gameState: GameState) {
+        positionsCircle(tileImprovement.tile, 1).forEach { (q, r) ->
+            gameState.worldObjects
+                .filter { it.type.group == WorldObject.Group.SETTLEMENT }
+                .filter { it.tile.position.q == q && it.tile.position.r == r }
+                .forEach { settlement ->
+                    settlement.getComponentOrNull<WorldObjectComponent.Districts>()?.also { districtData ->
+                        if (districtData.tileImprovements.size < districtData.maxAmount) {
+                            log().debug { "Merging settlement ${settlement.id} with tile improvement ${tileImprovement.id}" }
+                            districtData.tileImprovements.add(tileImprovement.id)
+                            return@forEach
+                        }
+                    }
+                }
+        }
     }
 
 }
