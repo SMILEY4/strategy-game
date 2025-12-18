@@ -7,6 +7,7 @@ import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Builder
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Movement
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.RouteNode
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.SettlementSpawner
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Vision
 
@@ -43,6 +44,7 @@ internal class WorldObjectEntity(
                             remainingUses = it.remainingUses
                         )
                         is WorldObjectComponent.SettlementSpawner -> SettlementSpawner()
+                        is WorldObjectComponent.RouteNote -> RouteNode()
                     }
                 }
             )
@@ -71,6 +73,7 @@ internal class WorldObjectEntity(
                         remainingUses = it.remainingUses
                     )
                     is SettlementSpawner -> WorldObjectComponent.SettlementSpawner()
+                    is RouteNode -> WorldObjectComponent.RouteNote()
                 }
             }.toMutableList()
         )
@@ -105,5 +108,7 @@ internal sealed interface WorldObjectComponentEntity {
     ) : WorldObjectComponentEntity
 
     class SettlementSpawner : WorldObjectComponentEntity
+
+    class RouteNode : WorldObjectComponentEntity
 
 }

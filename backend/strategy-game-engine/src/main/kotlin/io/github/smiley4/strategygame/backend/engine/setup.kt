@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.backend.engine.application.core.GameStepIm
 import io.github.smiley4.strategygame.backend.engine.application.core.GenericGameServiceImpl
 import io.github.smiley4.strategygame.backend.engine.application.core.InitializePlayerImpl
 import io.github.smiley4.strategygame.backend.engine.application.core.InitializeWorldImpl
+import io.github.smiley4.strategygame.backend.engine.application.core.actions.ConstructRouteAction
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.ConstructTileImprovementCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.DisbandCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.MoveCommandExecutor
@@ -16,10 +17,12 @@ import org.koin.core.module.Module
 
 fun Module.dependenciesEngine() {
 
+    single<ConstructRouteAction> { ConstructRouteAction() }
+
     single<MoveCommandExecutor> { MoveCommandExecutor() }
     single<DisbandCommandExecutor> { DisbandCommandExecutor() }
-    single<ConstructTileImprovementCommandExecutor> { ConstructTileImprovementCommandExecutor() }
-    single<SpawnSettlementCommandExecutor> { SpawnSettlementCommandExecutor() }
+    single<ConstructTileImprovementCommandExecutor> { ConstructTileImprovementCommandExecutor(get()) }
+    single<SpawnSettlementCommandExecutor> { SpawnSettlementCommandExecutor(get()) }
 
     single<GameStep> { GameStepImpl(get(), get(), get(), get()) }
     single<InitializePlayer> { InitializePlayerImpl(get()) }

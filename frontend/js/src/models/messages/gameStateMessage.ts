@@ -7,6 +7,7 @@ export interface GameStateMessage {
 	tiles: TileMessage[],
 	realms: RealmMessage[],
 	worldObjects: WorldObjectMessage[],
+	routes: RouteMessage[]
 }
 
 export type VisibilityMsg = "UNKNOWN" | "DISCOVERED" | "VISIBLE"
@@ -47,6 +48,18 @@ export interface RealmMessage {
 		name: string
 	},
 	ownedByUser: boolean
+}
+
+export interface RouteMessage {
+	id: string,
+	cost: number,
+	worldObjectA: HiddenType<string>,
+	worldObjectB: HiddenType<string>,
+	path: ({
+		id: string,
+		q: number,
+		r: number
+	})[]
 }
 
 export interface WorldObjectMessage {

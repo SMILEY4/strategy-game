@@ -10,8 +10,9 @@ import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
+import io.github.smiley4.strategygame.backend.engine.application.core.actions.ConstructRouteAction
 
-class ConstructTileImprovementCommandExecutor : Logging {
+class ConstructTileImprovementCommandExecutor(private val constructRouteAction: ConstructRouteAction) : Logging {
 
     fun execute(gameState: GameState, command: Command<CommandData.ConstructTileImprovement>) {
         log().debug("Executing construct tile improvement command with object ${command.data.worldObject}.")
@@ -69,7 +70,7 @@ class ConstructTileImprovementCommandExecutor : Logging {
         )
         gameState.worldObjects.add(tileImprovement)
 
-        // use (and remove) world object
+        // use (and remove) spawner world object
         worldObject.getComponent<WorldObjectComponent.Builder>().also {
             it.remainingUses -= 1
             if (it.remainingUses <= 0) {
@@ -77,6 +78,8 @@ class ConstructTileImprovementCommandExecutor : Logging {
             }
         }
 
+        // construct routes
+        constructRouteAction.onCreateWorldObject(tileImprovement, gameState)
     }
 
 }
