@@ -56,9 +56,4 @@ sealed interface WorldObjectComponent {
 
     class SettlementSpawner : WorldObjectComponent
 
-    class Districts(
-        var maxAmount: Int,
-        val tileImprovements: MutableSet<WorldObject.Id>
-    ) : WorldObjectComponent
-
 }

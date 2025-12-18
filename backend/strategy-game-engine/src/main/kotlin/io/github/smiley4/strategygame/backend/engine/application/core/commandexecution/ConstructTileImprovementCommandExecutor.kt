@@ -77,26 +77,6 @@ class ConstructTileImprovementCommandExecutor : Logging {
             }
         }
 
-        // merge tile improvement into nearby settlement (if possible)
-        mergeDistricts(tileImprovement, gameState)
-
-    }
-
-    private fun mergeDistricts(tileImprovement: WorldObject, gameState: GameState) {
-        positionsCircle(tileImprovement.tile, 1).forEach { (q, r) ->
-            gameState.worldObjects
-                .filter { it.type.group == WorldObject.Group.SETTLEMENT }
-                .filter { it.tile.position.q == q && it.tile.position.r == r }
-                .forEach { settlement ->
-                    settlement.getComponentOrNull<WorldObjectComponent.Districts>()?.also { districtData ->
-                        if (districtData.tileImprovements.size < districtData.maxAmount) {
-                            log().debug { "Merging settlement ${settlement.id} with tile improvement ${tileImprovement.id}" }
-                            districtData.tileImprovements.add(tileImprovement.id)
-                            return@forEach
-                        }
-                    }
-                }
-        }
     }
 
 }

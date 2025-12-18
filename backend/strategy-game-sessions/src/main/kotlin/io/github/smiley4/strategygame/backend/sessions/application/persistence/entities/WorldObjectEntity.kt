@@ -6,7 +6,6 @@ import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Builder
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Districts
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Movement
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.SettlementSpawner
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Vision
@@ -44,10 +43,6 @@ internal class WorldObjectEntity(
                             remainingUses = it.remainingUses
                         )
                         is WorldObjectComponent.SettlementSpawner -> SettlementSpawner()
-                        is WorldObjectComponent.Districts -> Districts(
-                            maxAmount = it.maxAmount,
-                            tileImprovements = it.tileImprovements.map { id -> id.value }.toSet()
-                        )
                     }
                 }
             )
@@ -76,10 +71,6 @@ internal class WorldObjectEntity(
                         remainingUses = it.remainingUses
                     )
                     is SettlementSpawner -> WorldObjectComponent.SettlementSpawner()
-                    is Districts -> WorldObjectComponent.Districts(
-                        maxAmount = it.maxAmount,
-                        tileImprovements = it.tileImprovements.map { id -> WorldObject.Id(id) }.toMutableSet()
-                    )
                 }
             }.toMutableList()
         )
@@ -114,10 +105,5 @@ internal sealed interface WorldObjectComponentEntity {
     ) : WorldObjectComponentEntity
 
     class SettlementSpawner : WorldObjectComponentEntity
-
-    class Districts(
-        val maxAmount: Int,
-        val tileImprovements: Set<String>
-    ) : WorldObjectComponentEntity
 
 }

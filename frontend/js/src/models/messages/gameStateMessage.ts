@@ -64,7 +64,7 @@ export interface WorldObjectMessage {
 		q: number,
 		r: number
 	},
-	components: (MoveWorldObjectComponentMessage | VisionWorldObjectComponentMessage | BuilderWorldObjectComponentMessage | SettlementSpawnerWorldObjectComponentMessage | DistrictsWorldObjectComponentMessage)[],
+	components: (MoveWorldObjectComponentMessage | VisionWorldObjectComponentMessage | BuilderWorldObjectComponentMessage | SettlementSpawnerWorldObjectComponentMessage)[],
 }
 
 
@@ -91,10 +91,4 @@ interface BuilderWorldObjectComponentMessage {
 
 interface SettlementSpawnerWorldObjectComponentMessage {
 	type: "settlementSpawner";
-}
-
-interface DistrictsWorldObjectComponentMessage {
-	type: "districts";
-	maxAmount: number;
-	tileImprovements: string[]
 }

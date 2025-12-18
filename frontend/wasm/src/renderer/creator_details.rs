@@ -56,6 +56,26 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
             ));
         }
 
+        // settlement
+        if world_object.type_group == 3 {
+            for _ in 0..5 {
+                let offset_x = (rng.f32() * config.tile_width * 2.0) - config.tile_width;
+                let offset_y = (rng.f32() * config.tile_height * 2.0) - config.tile_height;
+                vertex_data.map_detail.extend(create_sprite(
+                    &atlas_entries_houses[(rng.f32() * atlas_entries_houses.len() as f32) as usize],
+                    (x + offset_x, y + offset_y),
+                    (z, z),
+                    (7.0, 7.0),
+                    [0, 0, 0],
+                    [
+                        world_object.realm_color_r,
+                        world_object.realm_color_g,
+                        world_object.realm_color_b,
+                    ],
+                ));
+            }
+        }
+
     }
 
     // add terrain

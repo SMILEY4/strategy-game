@@ -2,7 +2,6 @@ package io.github.smiley4.strategygame.backend.engine.application.core.commandex
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
-import io.github.smiley4.strategygame.backend.common.utils.getNeighbourPositions
 import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
 import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.Command
@@ -68,33 +67,9 @@ class SpawnSettlementCommandExecutor : Logging {
                 WorldObjectComponent.Vision(
                     radius = 1,
                 ),
-                WorldObjectComponent.Districts(
-                    maxAmount = 3,
-                    tileImprovements = mutableSetOf()
-                )
             )
         )
         gameState.worldObjects.add(settlement)
-
-        // merge nearby tile improvements into settlement as districts (if possible)
-        mergeDistricts(settlement, gameState)
-
-    }
-
-    private fun mergeDistricts(settlement: WorldObject, gameState: GameState) {
-        settlement.getComponentOrNull<WorldObjectComponent.Districts>()?.also { districtData ->
-            positionsCircle(settlement.tile, 1).forEach { (q, r) ->
-                gameState.worldObjects
-                    .filter { it.type.group == WorldObject.Group.TILE_IMPROVEMENT }
-                    .filter { it.tile.position.q == q && it.tile.position.r == r }
-                    .forEach { tileImprovement ->
-                        if (districtData.tileImprovements.size < districtData.maxAmount) {
-                            log().debug { "Merging settlement ${settlement.id} with tile improvement ${tileImprovement.id}" }
-                            districtData.tileImprovements.add(tileImprovement.id)
-                        }
-                    }
-            }
-        }
     }
 
 }

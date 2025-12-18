@@ -16,6 +16,7 @@
 - get two starting workers
 - can build improvements on tiles
 
+
 **Improvements**
 
 - can produce (raw) resources
@@ -38,7 +39,6 @@
 - foundation: expand improvement into settlement
 - can have
     - buildings: normal buildings inside settlement, takes building slots
-    - districts: tile improvement connected to a settlement, uses district slots (settlement automatically merges with close improvements if enough free slots)
 - population
     - grows/shrinks based on different factors
         - different factors give a +x or -x to growth progress
@@ -52,9 +52,12 @@
     - does subsistence farming, output depends on pop size
     - available population is automatically assigned to work slots
         - buildings require pop
-        - districts require pop
         - remaining is assigned to subsistence farming
         - if food deficit -> specialist are moved to subsistence farming before starving
+- tile improvement bonus
+    - settlements provide bonuses to nearby tile improvements
+    - bonus based on settlement size, type, buildings, ...
+
 
 **Trading**
 
