@@ -4,7 +4,7 @@ import {Camera} from "../../../common/webgl/camera";
 import {canvasHandle} from "../game.service";
 import {TileSummary} from "../../../models/tile/tileSummary";
 import {WorldObjectSummary} from "../../../models/worldobject/worldObjectSummary";
-import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/unit/useWorldObjectWindow";
+import {UseWorldObjectWindow} from "../../../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
 import {UseTileWindow} from "../../../ui/pages/ingame/windows/tile/useTileWindow";
 import {TileDatabase} from "../../database/tileDatabase";
 import {WorldObjectStateAccess} from "../worldobject/worldobject.state-access";

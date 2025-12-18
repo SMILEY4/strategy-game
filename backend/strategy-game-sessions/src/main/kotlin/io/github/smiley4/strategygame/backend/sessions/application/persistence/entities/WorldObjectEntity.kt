@@ -106,5 +106,4 @@ internal sealed interface WorldObjectComponentEntity {
 
     class SettlementSpawner : WorldObjectComponentEntity
 
-
 }

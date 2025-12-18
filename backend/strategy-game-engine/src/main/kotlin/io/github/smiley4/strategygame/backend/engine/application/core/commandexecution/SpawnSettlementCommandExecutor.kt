@@ -32,7 +32,7 @@ class SpawnSettlementCommandExecutor : Logging {
         }
 
         // validate: no other settlement exists on this tile
-        if(gameState.worldObjects.any { it.tile.id == worldObject.tile.id && it.type.group == WorldObject.Group.SETTLEMENT }) {
+        if (gameState.worldObjects.any { it.tile.id == worldObject.tile.id && it.type.group == WorldObject.Group.SETTLEMENT }) {
             throw Exception("A settlement already exists at that location.")
         }
 
@@ -42,7 +42,7 @@ class SpawnSettlementCommandExecutor : Logging {
         }
 
         // validate: tile position must be valid (same tile or neighbor)
-        if(command.data.tile.position.notContainedIn(positionsCircle(worldObject.tile, 1))) {
+        if (command.data.tile.position.notContainedIn(positionsCircle(worldObject.tile, 1))) {
             throw Exception("Spawn position invalid.")
         }
 
@@ -55,23 +55,21 @@ class SpawnSettlementCommandExecutor : Logging {
         worldObject.components.removeIf { it is WorldObjectComponent.SettlementSpawner }
 
         // create settlement
-        gameState.worldObjects.add(
-            WorldObject(
-                id = WorldObject.Id.gen(),
-                realm = worldObject.realm,
-                type = WorldObject.Type(
-                    group = WorldObject.Group.SETTLEMENT,
-                    name = command.data.settlementName
+        val settlement = WorldObject(
+            id = WorldObject.Id.gen(),
+            realm = worldObject.realm,
+            type = WorldObject.Type(
+                group = WorldObject.Group.SETTLEMENT,
+                name = command.data.settlementName
+            ),
+            tile = command.data.tile,
+            components = mutableListOf(
+                WorldObjectComponent.Vision(
+                    radius = 1,
                 ),
-                tile = worldObject.tile,
-                components = mutableListOf(
-                    WorldObjectComponent.Vision(
-                        radius = 1,
-                    ),
-                )
             )
         )
-
+        gameState.worldObjects.add(settlement)
     }
 
 }

@@ -6,7 +6,7 @@ import {UID} from "../../../../../common/uid";
 import {WindowGroup} from "../windowGroups";
 import {Realm} from "../../../../../models/realm/realm";
 import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
-import {UseWorldObjectWindow} from "../unit/useWorldObjectWindow";
+import {UseWorldObjectWindow} from "../worldobject/useWorldObjectWindow";
 import {RealmStateAccess} from "../../../../../app/game/realm/realm.state-access";
 import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/worldobject.state-access";
 

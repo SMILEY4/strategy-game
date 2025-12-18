@@ -28,6 +28,13 @@ class DisbandCommandExecutor : Logging {
 
         // delete world object
         gameState.worldObjects.remove(worldObject)
+
+        // delete references
+        gameState.worldObjects.forEach { other ->
+            other.getComponentOrNull<WorldObjectComponent.Districts>()?.also { district ->
+                district.tileImprovements.removeIf { it == worldObject.id }
+            }
+        }
     }
 
 }

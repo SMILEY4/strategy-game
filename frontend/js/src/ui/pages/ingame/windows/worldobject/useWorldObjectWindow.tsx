@@ -10,7 +10,7 @@ import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
 import {Command} from "../../../../../models/command/command";
 import {
-	UseTileImprovementConstructionWindow,
+    UseTileImprovementConstructionWindow,
 } from "../tileimprovementconstruction/useTileImprovementConstructionWindow";
 import {UseSettlementCreateWindow} from "../settlementcreate/useSettlementCreateWindow";
 import {CameraService} from "../../../../../app/game/camera/camera.service";
