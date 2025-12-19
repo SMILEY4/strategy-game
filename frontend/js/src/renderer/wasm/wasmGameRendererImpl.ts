@@ -4,10 +4,12 @@ import {Rectangle} from "../../common/utils";
 import {TextureAtlasEntry} from "../../common/webgl/textureAtlas";
 import {Tile} from "../../models/tile/tile";
 import {WorldObject} from "../../models/worldobject/worldObject";
-import {DirectTileBuffer, DirectWorldObjectBuffer, WasmRenderApp} from "../../../../wasm/pkg";
+import {DirectRouteBuffer, DirectTileBuffer, DirectWorldObjectBuffer, WasmRenderApp} from "../../../../wasm/pkg";
 import {memory} from "../../../../wasm/pkg/wasm_bg.wasm";
 import {WorldObjectWasmSerializer} from "./serializers/worldObjectWasmSerializer";
 import {TileWasmSerializer} from "./serializers/tileWasmSerializer";
+import {Route} from "../../models/route/route";
+import {RouteWasmSerializer} from "./serializers/routeWasmSerializer";
 
 export class WasmGameRendererImpl implements WasmGameRenderer {
 
@@ -89,6 +91,14 @@ export class WasmGameRendererImpl implements WasmGameRenderer {
         const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
         WorldObjectWasmSerializer.serialize(worldObjects, reservedMemory.item_size, bytes);
         this.wasmRenderApp.upload_direct_world_object_memory(reservedMemory.ptr, reservedMemory.len);
+    }
+
+    setRoutes(routes: Route[]) {
+        const amountRouteNodes = routes.flatMap(route => route.path).length;
+        const reservedMemory: DirectRouteBuffer = this.wasmRenderApp.reserve_route_memory(amountRouteNodes);
+        const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
+        RouteWasmSerializer.serialize(routes, reservedMemory.item_size, bytes);
+        this.wasmRenderApp.upload_direct_route_memory(reservedMemory.ptr, reservedMemory.len);
     }
 
     setTiles(tiles: Tile[]): void {

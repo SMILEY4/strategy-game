@@ -77,7 +77,7 @@ export interface WorldObjectMessage {
 		q: number,
 		r: number
 	},
-	components: (MoveWorldObjectComponentMessage | VisionWorldObjectComponentMessage | BuilderWorldObjectComponentMessage | SettlementSpawnerWorldObjectComponentMessage)[],
+	components: (MoveWorldObjectComponentMessage | VisionWorldObjectComponentMessage | BuilderWorldObjectComponentMessage | SettlementSpawnerWorldObjectComponentMessage | RouteNodeComponentMessage)[],
 }
 
 
@@ -104,4 +104,8 @@ interface BuilderWorldObjectComponentMessage {
 
 interface SettlementSpawnerWorldObjectComponentMessage {
 	type: "settlementSpawner";
+}
+
+interface RouteNodeComponentMessage {
+	type: "routeNode";
 }

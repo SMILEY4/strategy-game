@@ -4,6 +4,7 @@ import {TileSummary} from "../models/tile/tileSummary";
 import {Rectangle} from "../common/utils";
 import {WorldObject} from "../models/worldobject/worldObject";
 import {Tile} from "../models/tile/tile";
+import {Route} from "../models/route/route";
 
 export interface WasmGameRenderer {
 	/**
@@ -36,10 +37,13 @@ export interface WasmGameRenderer {
 	 */
 	setWorldObjects(worldObjects: WorldObject[]): void;
 	/**
+	 * Sets the routes
+	 */
+	setRoutes(routes: Route[]): void;
+	/**
 	 * Set the tiles
 	 */
 	setTiles(tiles: Tile[]): void;
-
 	/**
 	 * Update/Re-Calculate terrain tile vertices
 	 */

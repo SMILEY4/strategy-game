@@ -148,6 +148,11 @@ export namespace GameStateMapper {
                             type: "settlement-spawner",
                         } as WorldObjectComponent.SettlementSpawner;
                     }
+                    if (componentMsg.type == "routeNode") {
+                        return {
+                            type: "route-node",
+                        } as WorldObjectComponent.RouteNode;
+                    }
 
                     // exhaustiveness check: syntax error in case of unhandled action type
                     // noinspection UnnecessaryLocalVariableJS

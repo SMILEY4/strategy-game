@@ -1,22 +1,116 @@
 use crate::js::models::TextureAtlasEntry;
+use crate::renderer::line_mesh::{build_line_mesh, cap_butt_end, cap_butt_start, join_miter, LineMeshConfig};
 use crate::renderer::models::{MapDetailVertex, RenderState, RendererConfiguration, VertexData};
-use crate::utils::{mix, rgb_f32_to_u8, Random};
+use crate::utils::{interpolate_curve, mix, rgb_f32_to_u8, triangle_wave, Random, Vec2d};
 
 /// Calculate the map details vertex data from the given render state.
 /// Writes the result to the given vertex data.
 pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: &mut VertexData) {
     vertex_data.map_detail.clear();
 
+    let mut rng = Random::new(0);
+
+    // texture atlas entries
     let atlas_entries_mountain = &state.texture_atlas_entries["terrain_mountain"];
     let atlas_entries_hill = &state.texture_atlas_entries["terrain_hill"];
     let atlas_entries_forest = &state.texture_atlas_entries["terrain_forest"];
     let atlas_entries_terrain_decoration = &state.texture_atlas_entries["terrain_decoration"];
     let atlas_entries_units = &state.texture_atlas_entries["unit"];
     let atlas_entries_houses = &state.texture_atlas_entries["settlement_houses_all"];
+    let atlas_entries_road = &state.texture_atlas_entries["road"];
 
+    // routes line mesh config
+    let route_mesh_config = LineMeshConfig {
+        thickness: config.route_line_thickness,
+        cap_start: cap_butt_start,
+        cap_end: cap_butt_end,
+        join: join_miter,
+    };
 
-    let mut rng = Random::new(0);
+    // routes mesh uv
+    let mut route_u_min: f32 = 99999999.9;
+    let mut route_v_min: f32 = 99999999.9;
+    let mut route_u_max: f32 = -99999999.9;
+    let mut route_v_max: f32 = -99999999.9;
+    for texture_coordinate in atlas_entries_road[0].texture_coordinates.chunks_exact(2) {
+        route_u_min = route_u_min.min(texture_coordinate[0]);
+        route_v_min = route_v_min.min(texture_coordinate[1]);
+        route_u_max = route_u_max.max(texture_coordinate[0]);
+        route_v_max = route_v_max.max(texture_coordinate[1]);
+    }
 
+    // add routes
+    for route in &state.routes {
+
+        rng.set_seed(route.first().unwrap().route_id as u64);
+
+        let n_tiles: f32 = route.len() as f32;
+
+        let route_points: Vec<Vec2d> = route
+            .iter()
+            .map(|it| Vec2d {
+                x: it.world_x,
+                y: it.world_y,
+            })
+            .collect();
+
+        let mut route_points_smooth: Vec<Vec2d> = Vec::new();
+
+        if route_points.len() <= 2 {
+            route_points_smooth.extend(route_points);
+        } else {
+            route_points_smooth.push(route_points.first().unwrap().copy());
+
+            for point in route_points.windows(3) {
+                let prev = &point[0];
+                let curr = &point[1];
+                let next = &point[2];
+
+                let ah = prev.add(&prev.to(curr).scale(0.5));
+                let b = curr;
+                let bh = curr.add(&curr.to(next).scale(0.5));
+
+                for i in 0..7 {
+                    let t = (i as f32) / 7.0;
+                    let p = interpolate_curve(&ah, &b, &bh, t);
+
+                    let offset = Vec2d {
+                        x: (rng.f32() * 2.0 - 1.0) * config.route_rng_offset,
+                        y: (rng.f32() * 2.0 - 1.0) * config.route_rng_offset,
+                    };
+
+                    let p0 = p.add(&offset);
+
+                    route_points_smooth.push(p0);
+                }
+            }
+
+            route_points_smooth.push(route_points.last().unwrap().copy());
+        }
+
+        let route_mesh = build_line_mesh(&route_points_smooth, &route_mesh_config);
+
+        for triangle in route_mesh.triangles {
+            for vertex_index in triangle {
+                let line_vertex = &route_mesh.vertices[vertex_index];
+
+                let mut u = line_vertex.u;
+                let mut v = line_vertex.v;
+                u = triangle_wave(u, ((n_tiles - 1.0) / 2.0) + 1.0) / 2.0;
+                u = u * (route_u_max - route_u_min) + route_u_min;
+                v = v * (route_v_max - route_v_min) + route_v_min;
+
+                vertex_data.map_detail.push(MapDetailVertex {
+                    position: [line_vertex.x, line_vertex.y, line_vertex.y - 2.0],
+                    texture_coordinates: [u, v],
+                    base_color: [0, 0, 0],
+                    country_color: [0, 0, 0],
+                    _padding: [0, 0],
+                })
+            }
+        }
+    }
+    
     // add world objects
     for world_object in &state.world_objects {
 

@@ -65,6 +65,8 @@ import {CameraStateAccess} from "../app/game/camera/camera.state-access";
 import {MapStateAccess} from "../app/game/map/map.state-access";
 import {TileStateAccess} from "../app/game/tile/tile.state.access";
 import {CommandStateAccess} from "../app/game/command/command.state-access";
+import {Route} from "../models/route/route";
+import {RouteStateAccess} from "../app/game/route/route.state-access";
 
 export class GameRenderGraphFactory {
 
@@ -447,6 +449,7 @@ export class GameRenderGraphFactory {
             .withProperty(propRelevantWorldAreaWasm)
             .withProperty(commonProperties.tilesWasm)
             .withProperty(commonProperties.worldObjectsWasm)
+            .withProperty(commonProperties.routesWasm)
             .withProperty(propTextureAtlasWasm)
             .withOutput(MapDetailsVertexGenerator.OUTPUT_ID, "vertices", [
                 {
@@ -868,6 +871,10 @@ export class GameRenderGraphFactory {
             .createPropertyDynamic<WorldObject[]>("prop-worldObjects")
             .withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
             .withValue(() => WorldObjectStateAccess.getAll());
+        const routes = graph
+            .createPropertyDynamic<Route[]>("prop-routes")
+            .withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
+            .withValue(() => RouteStateAccess.getAll());
         const tiles = graph
             .createPropertyDynamic<Tile[]>("prop-tiles")
             .withChangeTest(() => changeTracker.getTrackedChanges().tiles || changeTracker.getTrackedChanges().commands)
@@ -893,6 +900,9 @@ export class GameRenderGraphFactory {
             worldObjectsWasm: graph
                 .createPropertyWasm<WorldObject[]>("prop-wasm-worldObjects")
                 .withValue(worldObjects, it => wasmGameRenderer.setWorldObjects(it)),
+            routesWasm: graph
+                .createPropertyWasm<Route[]>("prop-wasm-routes")
+                .withValue(routes, it => wasmGameRenderer.setRoutes(it)),
             mapMode: mapMode,
             mapModeWasm: graph
                 .createPropertyWasm<MapMode>("prop-wasm-mapMode")

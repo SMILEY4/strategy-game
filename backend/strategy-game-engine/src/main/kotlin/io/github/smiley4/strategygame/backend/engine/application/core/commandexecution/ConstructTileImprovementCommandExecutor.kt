@@ -65,7 +65,8 @@ class ConstructTileImprovementCommandExecutor(private val constructRouteAction: 
                 WorldObjectComponent.Vision(
                     radius = 1,
                 ),
-                WorldObjectComponent.SettlementSpawner()
+                WorldObjectComponent.RouteNote(),
+                WorldObjectComponent.SettlementSpawner(),
             )
         )
         gameState.worldObjects.add(tileImprovement)

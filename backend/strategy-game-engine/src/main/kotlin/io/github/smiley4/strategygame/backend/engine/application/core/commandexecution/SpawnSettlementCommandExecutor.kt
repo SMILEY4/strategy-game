@@ -68,6 +68,7 @@ class SpawnSettlementCommandExecutor(private val constructRouteAction: Construct
                 WorldObjectComponent.Vision(
                     radius = 1,
                 ),
+                WorldObjectComponent.RouteNote()
             )
         )
         gameState.worldObjects.add(settlement)

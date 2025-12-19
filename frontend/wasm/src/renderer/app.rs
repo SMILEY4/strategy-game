@@ -1,4 +1,4 @@
-use crate::js::models::{TextureAtlasEntry, Tile, TileHighlight, TilePosition, WorldObject};
+use crate::js::models::{RouteNode, TextureAtlasEntry, Tile, TileHighlight, TilePosition, WorldObject};
 use crate::renderer::models::{
     FogTileVertex, LandTileVertex, MapDetailVertex, OverlayTileVertex, RenderState,
     RendererConfiguration, VertexData, WaterTileVertex,
@@ -60,6 +60,12 @@ impl RenderApp {
     /// This does not automatically trigger a re-calculation of anything else.
     pub fn set_world_objects(&mut self, world_objects: Vec<WorldObject>) {
         self.state.world_objects = world_objects;
+    }
+
+    /// Set/Update the routes.
+    /// This does not automatically trigger a re-calculation of anything else.
+    pub fn set_routes(&mut self, routes: Vec<Vec<RouteNode>>) {
+        self.state.routes = routes;
     }
 
     /// Set/Update the current highlighted tiles.
