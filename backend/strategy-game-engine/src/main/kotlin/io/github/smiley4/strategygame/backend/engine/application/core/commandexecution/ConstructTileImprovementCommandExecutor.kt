@@ -62,7 +62,9 @@ class ConstructTileImprovementCommandExecutor() : Logging {
                 WorldObjectComponent.Vision(
                     radius = 1,
                 ),
-                WorldObjectComponent.RouteNote(),
+                WorldObjectComponent.RouteNote(
+                    maxRouteConnectionDistance = 2
+                ),
                 WorldObjectComponent.SettlementSpawner(),
             )
         )

@@ -44,7 +44,9 @@ internal class WorldObjectEntity(
                             remainingUses = it.remainingUses
                         )
                         is WorldObjectComponent.SettlementSpawner -> SettlementSpawner()
-                        is WorldObjectComponent.RouteNote -> RouteNode()
+                        is WorldObjectComponent.RouteNote -> RouteNode(
+                            maxRouteConnectionDistance = it.maxRouteConnectionDistance
+                        )
                     }
                 }
             )
@@ -73,7 +75,9 @@ internal class WorldObjectEntity(
                         remainingUses = it.remainingUses
                     )
                     is SettlementSpawner -> WorldObjectComponent.SettlementSpawner()
-                    is RouteNode -> WorldObjectComponent.RouteNote()
+                    is RouteNode -> WorldObjectComponent.RouteNote(
+                        maxRouteConnectionDistance = it.maxRouteConnectionDistance
+                    )
                 }
             }.toMutableList()
         )
@@ -109,6 +113,8 @@ internal sealed interface WorldObjectComponentEntity {
 
     class SettlementSpawner : WorldObjectComponentEntity
 
-    class RouteNode : WorldObjectComponentEntity
+    class RouteNode(
+        val maxRouteConnectionDistance: Int
+    ) : WorldObjectComponentEntity
 
 }

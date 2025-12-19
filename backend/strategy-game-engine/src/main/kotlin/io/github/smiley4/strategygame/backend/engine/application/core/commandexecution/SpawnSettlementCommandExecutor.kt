@@ -67,7 +67,9 @@ class SpawnSettlementCommandExecutor() : Logging {
                 WorldObjectComponent.Vision(
                     radius = 1,
                 ),
-                WorldObjectComponent.RouteNote()
+                WorldObjectComponent.RouteNote(
+                    maxRouteConnectionDistance = 10
+                )
             )
         )
         gameState.worldObjects.add(settlement)

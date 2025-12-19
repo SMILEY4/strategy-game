@@ -13,9 +13,9 @@ import io.github.smiley4.strategygame.backend.pathfinding.Node
 import io.github.smiley4.strategygame.backend.pathfinding.Pathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
 import io.github.smiley4.strategygame.backend.pathfinding.score.ScoreCalculator
+import kotlin.math.min
 
-const val MAX_DISTANCE = 10
-const val MAX_PATH_LENGTH = 20
+const val MAX_PATH_LENGTH = 30
 
 class ConstructRouteAction {
 
@@ -45,7 +45,11 @@ class ConstructRouteAction {
             return null
         }
         // both world objects are too far apart -> early out
-        if (from.tile.position.distance(to.tile.position) > MAX_DISTANCE) {
+        val maxConnectionDistance = min(
+            from.getComponent<WorldObjectComponent.RouteNote>().maxRouteConnectionDistance,
+            to.getComponent<WorldObjectComponent.RouteNote>().maxRouteConnectionDistance
+        )
+        if (from.tile.position.distance(to.tile.position) > maxConnectionDistance) {
             return null
         }
         // there is already a route between the two world objects -> early out
