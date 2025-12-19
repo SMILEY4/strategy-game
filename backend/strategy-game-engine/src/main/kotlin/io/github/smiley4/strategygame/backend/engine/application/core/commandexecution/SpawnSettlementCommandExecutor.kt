@@ -10,9 +10,8 @@ import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
-import io.github.smiley4.strategygame.backend.engine.application.core.actions.ConstructRouteAction
 
-class SpawnSettlementCommandExecutor(private val constructRouteAction: ConstructRouteAction) : Logging {
+class SpawnSettlementCommandExecutor() : Logging {
 
     fun execute(gameState: GameState, command: Command<CommandData.SpawnSettlement>) {
         log().debug("Executing spawn settlement command with object ${command.data.worldObject}.")
@@ -72,9 +71,6 @@ class SpawnSettlementCommandExecutor(private val constructRouteAction: Construct
             )
         )
         gameState.worldObjects.add(settlement)
-
-        // construct routes
-        constructRouteAction.onCreateWorldObject(settlement, gameState)
     }
 
 }

@@ -2,17 +2,14 @@ package io.github.smiley4.strategygame.backend.engine.application.core.commandex
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
-import io.github.smiley4.strategygame.backend.common.utils.getNeighbourPositions
 import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
-import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
-import io.github.smiley4.strategygame.backend.engine.application.core.actions.ConstructRouteAction
 
-class ConstructTileImprovementCommandExecutor(private val constructRouteAction: ConstructRouteAction) : Logging {
+class ConstructTileImprovementCommandExecutor() : Logging {
 
     fun execute(gameState: GameState, command: Command<CommandData.ConstructTileImprovement>) {
         log().debug("Executing construct tile improvement command with object ${command.data.worldObject}.")
@@ -78,9 +75,6 @@ class ConstructTileImprovementCommandExecutor(private val constructRouteAction: 
                 gameState.worldObjects.remove(worldObject)
             }
         }
-
-        // construct routes
-        constructRouteAction.onCreateWorldObject(tileImprovement, gameState)
     }
 
 }

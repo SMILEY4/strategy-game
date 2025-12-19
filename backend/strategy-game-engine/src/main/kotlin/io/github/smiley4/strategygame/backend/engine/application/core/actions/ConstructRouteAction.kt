@@ -19,24 +19,31 @@ const val MAX_PATH_LENGTH = 20
 
 class ConstructRouteAction {
 
-    fun onCreateWorldObject(from: WorldObject, gameState: GameState) {
-        if (!from.hasComponent<WorldObjectComponent.RouteNote>()) {
-            return
-        }
+    fun onWorldUpdate(gameState: GameState) {
 
         val pathfinder = Pathfinder.createAStar(TerrainBasedNeighbourProvider(gameState.tiles), BasicScoreCalculator())
 
         gameState.worldObjects
             .filter { it.hasComponent<WorldObjectComponent.RouteNote>() }
-            .filter { it != from }
-            .forEach { to ->
-                constructRoute(from, to, gameState, pathfinder)?.also {
-                    gameState.routes.add(it)
-                }
+            .forEach { from ->
+
+                gameState.worldObjects
+                    .filter { it.hasComponent<WorldObjectComponent.RouteNote>() }
+                    .forEach { to ->
+
+                        constructRoute(from, to, gameState, pathfinder)?.also {
+                            gameState.routes.add(it)
+                        }
+
+                    }
             }
     }
 
     private fun constructRoute(from: WorldObject, to: WorldObject, gameState: GameState, pathfinder: Pathfinder<PathfinderNode>): Route? {
+        // source and destination are the same
+        if (from == to) {
+            return null
+        }
         // both world objects are too far apart -> early out
         if (from.tile.position.distance(to.tile.position) > MAX_DISTANCE) {
             return null
@@ -71,7 +78,7 @@ class ConstructRouteAction {
         )
 
         // path is too short
-        if (path.nodes.size <= 2) {
+        if (path.nodes.size < 2) {
             return null
         }
         // path is too long

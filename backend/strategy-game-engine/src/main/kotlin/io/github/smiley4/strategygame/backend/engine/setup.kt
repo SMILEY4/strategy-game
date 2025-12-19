@@ -21,10 +21,10 @@ fun Module.dependenciesEngine() {
 
     single<MoveCommandExecutor> { MoveCommandExecutor() }
     single<DisbandCommandExecutor> { DisbandCommandExecutor() }
-    single<ConstructTileImprovementCommandExecutor> { ConstructTileImprovementCommandExecutor(get()) }
-    single<SpawnSettlementCommandExecutor> { SpawnSettlementCommandExecutor(get()) }
+    single<ConstructTileImprovementCommandExecutor> { ConstructTileImprovementCommandExecutor() }
+    single<SpawnSettlementCommandExecutor> { SpawnSettlementCommandExecutor() }
 
-    single<GameStep> { GameStepImpl(get(), get(), get(), get()) }
+    single<GameStep> { GameStepImpl(get(), get(), get(), get(), get()) }
     single<InitializePlayer> { InitializePlayerImpl(get()) }
     single<InitializeWorld> { InitializeWorldImpl(get()) }
     single<GenericGameService> { GenericGameServiceImpl() }
