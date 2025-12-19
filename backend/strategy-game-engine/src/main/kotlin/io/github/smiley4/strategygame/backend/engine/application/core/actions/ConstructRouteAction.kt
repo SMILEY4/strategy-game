@@ -28,6 +28,7 @@ class ConstructRouteAction {
 
         gameState.worldObjects
             .filter { it.hasComponent<WorldObjectComponent.RouteNote>() }
+            .filter { it != from }
             .forEach { to ->
                 constructRoute(from, to, gameState, pathfinder)?.also {
                     gameState.routes.add(it)

@@ -19,6 +19,7 @@ import {User} from "../../models/misc/userId";
 import {TileResourceType} from "../../models/misc/tileResourceType";
 import {Color} from "../../common/color/color";
 import {Route} from "../../models/route/route";
+import {WorldObjectSummary} from "../../models/worldobject/worldObjectSummary";
 
 export namespace GameStateMapper {
 
@@ -164,11 +165,38 @@ export namespace GameStateMapper {
     }
 
     function buildRoutes(gameStateMsg: GameStateMessage): Route[] {
+
+        function buildWorldObjectSummary(id: string): WorldObjectSummary {
+            const worldObjectMsg = gameStateMsg.worldObjects.find(it => it.id === id)!
+            const realmMsg = gameStateMsg.realms.find(it => it.id === worldObjectMsg.realm.id)!
+            return {
+                id: id as WorldObject.Id,
+                type: {
+                    group: worldObjectMsg.type.group,
+                    name: worldObjectMsg.type.name
+                },
+                realm: {
+                    id: worldObjectMsg.realm.id as Realm.Id,
+                    name: worldObjectMsg.realm.name,
+                    color: new Color.ColorRgbByte(realmMsg.color.red, realmMsg.color.green, realmMsg.color.blue),
+                    playerName: realmMsg.player.name,
+                    ownedByUser: realmMsg.ownedByUser,
+                },
+                tile: {
+                    id: worldObjectMsg.tile.id as Tile.Id,
+                    position: {
+                        q: worldObjectMsg.tile.q,
+                        r: worldObjectMsg.tile.r
+                    }
+                },
+            }
+        }
+
         return gameStateMsg.routes.map(routeMsg => {
             return {
                 id: routeMsg.id as Route.Id,
-                worldObjectA: mapHidden(routeMsg.worldObjectA, worldObjectId => worldObjectId),
-                worldObjectB: mapHidden(routeMsg.worldObjectB, worldObjectId => worldObjectId),
+                worldObjectA: mapHidden(routeMsg.worldObjectA, worldObjectId => buildWorldObjectSummary(worldObjectId)),
+                worldObjectB: mapHidden(routeMsg.worldObjectB, worldObjectId => buildWorldObjectSummary(worldObjectId)),
                 cost: routeMsg.cost,
                 path: routeMsg.path.map(it => ({
                     id: it.id as Tile.Id,
@@ -177,7 +205,6 @@ export namespace GameStateMapper {
             };
         });
     }
-
     function findRealmById(gameStateMsg: GameStateMessage, id: string): RealmMessage {
         const result = gameStateMsg.realms.find(it => it.id === id);
         if (!result) {

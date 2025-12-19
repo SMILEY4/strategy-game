@@ -13,7 +13,10 @@ export function useGameSessionConnect(): (gameId: Game.Id) => void {
         return Promise.resolve()
             .then(() => setGameSessionState(GameSession.SessionState.Loading))
             .then(() => GameSessionConnectionClient.open(gameId, message => {
-                if (message.type === "game-state") TurnService.handleNewGameState(GameStateMapper.map(message.payload));
+                if (message.type === "game-state") {
+                    console.debug("Received new game state", message.payload)
+                    TurnService.handleNewGameState(GameStateMapper.map(message.payload));
+                }
             }))
             .catch(e => {
                 console.error(e);

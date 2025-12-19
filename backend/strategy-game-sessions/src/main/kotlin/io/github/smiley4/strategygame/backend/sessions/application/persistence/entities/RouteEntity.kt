@@ -28,7 +28,7 @@ internal class RouteEntity(
     fun asServiceModel() = Route(
         id = Route.Id(this.getKeyOrThrow()),
         worldObjectA = WorldObject.Id(this.worldObjectA),
-        worldObjectB = WorldObject.Id(this.worldObjectA),
+        worldObjectB = WorldObject.Id(this.worldObjectB),
         path = this.path.map { it.asServiceModel() },
         cost = this.cost,
     )

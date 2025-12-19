@@ -18,6 +18,8 @@ import {CommandService} from "../../../../../app/game/command/command.service";
 import {WorldObjectService} from "../../../../../app/game/worldobject/worldobject.service";
 import {CommandStateAccess} from "../../../../../app/game/command/command.state-access";
 import {WorldObjectStateAccess} from "../../../../../app/game/worldobject/worldobject.state-access";
+import {WorldObjectSummary} from "../../../../../models/worldobject/worldObjectSummary";
+import {RouteStateAccess} from "../../../../../app/game/route/route.state-access";
 
 export namespace UseWorldObjectWindow {
 
@@ -34,8 +36,10 @@ export namespace UseWorldObjectWindow {
     export interface Data {
         worldObject: WorldObject;
         actions: WorldObjectAction[],
+        routes: WorldObjectSummary[]
         open: {
-            tile: () => void
+            tile: () => void,
+            worldObject: (id: WorldObject.Id) => void,
         }
         centerCamera: () => void,
     }
@@ -80,13 +84,16 @@ export namespace UseWorldObjectWindow {
 
         const worldObject = WorldObjectStateAccess.useWorldObjectById(worldObjectId);
         const commands = CommandStateAccess.useCommands();
+        const connectedWorldObjects = RouteStateAccess.useConnectedWorldObjects(worldObjectId)
 
         if (worldObject) {
             return {
                 worldObject: worldObject,
                 actions: collectActions(worldObject, commands),
+                routes: connectedWorldObjects,
                 open: {
                     tile: () => UseTileWindow.open(worldObject.tile.id ?? null),
+                    worldObject: (id: WorldObject.Id) => UseWorldObjectWindow.open(id)
                 },
                 centerCamera: () => CameraService.centerOnTile(worldObject.tile.position),
             };
