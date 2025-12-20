@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.backend.playerpov.application.builders
 
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
+import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.commondata.TileImprovementType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
@@ -54,6 +55,22 @@ internal class WorldObjectPOVBuilder(private val povCache: POVCache) {
                     }
                     is WorldObjectComponent.RouteNote -> obj {
                         "type" to "routeNode"
+                    }
+                    is WorldObjectComponent.Economy -> obj {
+                        "type" to "economy"
+                        "storage" to obj {
+                            ResourceType.entries.forEach { type ->
+                                type.name to component.storage.getAmount(type)
+                            }
+                        }
+                        "log" to component.log.map {
+                            obj {
+                                "logType" to it.logType
+                                "entryName" to it.entryName
+                                "resourceType" to it.resourceType.name
+                                "amount" to it.amount
+                            }
+                        }
                     }
                 }
             }

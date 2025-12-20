@@ -6,10 +6,11 @@ import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
+import io.github.smiley4.strategygame.backend.commondata.ResourceStorage
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 
-class ConstructTileImprovementCommandExecutor() : Logging {
+class ConstructTileImprovementCommandExecutor : Logging {
 
     fun execute(gameState: GameState, command: Command<CommandData.ConstructTileImprovement>) {
         log().debug("Executing construct tile improvement command with object ${command.data.worldObject}.")
@@ -66,6 +67,17 @@ class ConstructTileImprovementCommandExecutor() : Logging {
                     maxRouteConnectionDistance = 2
                 ),
                 WorldObjectComponent.SettlementSpawner(),
+                WorldObjectComponent.Economy(
+                    storage = ResourceStorage(),
+                    entries = mutableListOf(
+                        WorldObjectComponent.Economy.Entry(
+                            name = command.data.improvement.name.lowercase(),
+                            consumes = mapOf(),
+                            produces = command.data.improvement.produces.toMap(),
+                        )
+                    ),
+                    log = mutableListOf()
+                )
             )
         )
         gameState.worldObjects.add(tileImprovement)

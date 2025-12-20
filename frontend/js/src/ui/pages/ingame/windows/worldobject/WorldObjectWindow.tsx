@@ -11,6 +11,7 @@ import {WorldObject} from "../../../../../models/worldobject/worldObject";
 import {VSpacer} from "../../../../components/spacer/Spacer";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
+import {WorldObjectComponent} from "../../../../../models/worldobject/worldObjectComponent";
 
 export interface WorldObjectWindowProps {
     windowId: string;
@@ -152,6 +153,50 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
                             </VBox>
                         </InsetPanel>
                     </VBox>
+
+
+                    {(WorldObjectComponent.has(data.worldObject, WorldObjectComponent.Type.Economy)) && (
+                        <VBox padding_l gap_s dontGrow dontShrink>
+
+                            <VSpacer size_s/>
+                            <Txt.Header2 center>
+                                <Txt.String>Resources</Txt.String>
+                            </Txt.Header2>
+                            <Divider line/>
+
+                            <Txt.Body center><Txt.String>Storage</Txt.String></Txt.Body>
+                            <InsetPanel dontShrink dontGrow>
+                                <VBox padding_s gap_s fullSize>
+                                    {Object.entries(WorldObjectComponent.get(data.worldObject, WorldObjectComponent.Type.Economy).storage).map(([key, value]) => (
+                                        <Txt.Body>
+                                            <Txt.String>{key}</Txt.String>
+                                            <Txt.String>: </Txt.String>
+                                            <Txt.Number>{value}</Txt.Number>
+                                        </Txt.Body>
+                                    ))}
+                                </VBox>
+                            </InsetPanel>
+
+                            <Txt.Body center><Txt.String>Economy Log</Txt.String></Txt.Body>
+                            <InsetPanel dontShrink dontGrow>
+                                <VBox padding_s gap_s fullSize>
+                                    {WorldObjectComponent.get(data.worldObject, WorldObjectComponent.Type.Economy).log.map(logEntry => (
+                                        <Txt.Body>
+                                            <Txt.String>{logEntry.logType}</Txt.String>
+                                            <Txt.String>: </Txt.String>
+                                            <Txt.String>{logEntry.resourceType}</Txt.String>
+                                            <Txt.String> </Txt.String>
+                                            <Txt.Number>{logEntry.amount}</Txt.Number>
+                                            <Txt.String> (</Txt.String>
+                                            <Txt.String>{logEntry.entryName ?? "-"}</Txt.String>
+                                            <Txt.String>)</Txt.String>
+                                        </Txt.Body>
+                                    ))}
+                                </VBox>
+                            </InsetPanel>
+
+                        </VBox>
+                    )}
 
                 </VBox>
             </DecoratedWindow>

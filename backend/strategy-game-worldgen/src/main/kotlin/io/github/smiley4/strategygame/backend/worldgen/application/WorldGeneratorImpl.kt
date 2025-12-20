@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.worldgen.application
 
 import io.github.smiley4.strategygame.backend.common.utils.WeightedCollection
-import io.github.smiley4.strategygame.backend.commondata.TileResourceType
+import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenerator
@@ -22,15 +22,15 @@ internal class WorldGeneratorImpl : WorldGenerator {
     }
 
     private val resourceConfig = mapOf(
-        TerrainType.LAND to WeightedCollection<TileResourceType>().apply {
-            add(0.6, TileResourceType.NONE)
-            add(0.2, TileResourceType.WOOD)
-            add(0.15, TileResourceType.STONE)
-            add(0.05, TileResourceType.METAL)
+        TerrainType.LAND to WeightedCollection<ResourceType>().apply {
+            add(0.6, ResourceType.NONE)
+            add(0.2, ResourceType.WOOD)
+            add(0.15, ResourceType.STONE)
+            add(0.05, ResourceType.METAL)
         },
-        TerrainType.WATER to WeightedCollection<TileResourceType>().apply {
-            add(0.7, TileResourceType.NONE)
-            add(0.3, TileResourceType.FISH)
+        TerrainType.WATER to WeightedCollection<ResourceType>().apply {
+            add(0.7, ResourceType.NONE)
+            add(0.3, ResourceType.FISH)
         },
     )
 
@@ -63,8 +63,8 @@ internal class WorldGeneratorImpl : WorldGenerator {
         }
     }
 
-    private fun resourceTypeAt(terrain: TerrainType): TileResourceType {
-        return resourceConfig[terrain]?.chooseRandom(random) ?: TileResourceType.NONE
+    private fun resourceTypeAt(terrain: TerrainType): ResourceType {
+        return resourceConfig[terrain]?.chooseRandom(random) ?: ResourceType.NONE
     }
 
 }

@@ -1,10 +1,10 @@
 import {
-	GameStateMessage,
-	RealmMessage,
-	ResourceTypeMsg,
-	TerrainTypeMsg,
-	VisibilityMsg,
-	WorldObjectTypeGroupMsg,
+    GameStateMessage,
+    RealmMessage,
+    ResourceTypeMsg,
+    TerrainTypeMsg,
+    VisibilityMsg,
+    WorldObjectTypeGroupMsg,
 } from "../../models/messages/gameStateMessage";
 import {GameStateContainer} from "../../models/misc/gameStateContainer";
 import {Tile} from "../../models/tile/tile";
@@ -154,6 +154,13 @@ export namespace GameStateMapper {
                             type: "route-node",
                         } as WorldObjectComponent.RouteNode;
                     }
+                    if (componentMsg.type == "economy") {
+                        return {
+                            type: "economy",
+                            storage: componentMsg.storage,
+                            log: componentMsg.log,
+                        } as WorldObjectComponent.Economy;
+                    }
 
                     // exhaustiveness check: syntax error in case of unhandled action type
                     // noinspection UnnecessaryLocalVariableJS
@@ -167,13 +174,13 @@ export namespace GameStateMapper {
     function buildRoutes(gameStateMsg: GameStateMessage): Route[] {
 
         function buildWorldObjectSummary(id: string): WorldObjectSummary {
-            const worldObjectMsg = gameStateMsg.worldObjects.find(it => it.id === id)!
-            const realmMsg = gameStateMsg.realms.find(it => it.id === worldObjectMsg.realm.id)!
+            const worldObjectMsg = gameStateMsg.worldObjects.find(it => it.id === id)!;
+            const realmMsg = gameStateMsg.realms.find(it => it.id === worldObjectMsg.realm.id)!;
             return {
                 id: id as WorldObject.Id,
                 type: {
                     group: worldObjectMsg.type.group,
-                    name: worldObjectMsg.type.name
+                    name: worldObjectMsg.type.name,
                 },
                 realm: {
                     id: worldObjectMsg.realm.id as Realm.Id,
@@ -186,10 +193,10 @@ export namespace GameStateMapper {
                     id: worldObjectMsg.tile.id as Tile.Id,
                     position: {
                         q: worldObjectMsg.tile.q,
-                        r: worldObjectMsg.tile.r
-                    }
+                        r: worldObjectMsg.tile.r,
+                    },
                 },
-            }
+            };
         }
 
         return gameStateMsg.routes.map(routeMsg => {
@@ -205,6 +212,7 @@ export namespace GameStateMapper {
             };
         });
     }
+
     function findRealmById(gameStateMsg: GameStateMessage, id: string): RealmMessage {
         const result = gameStateMsg.realms.find(it => it.id === id);
         if (!result) {
