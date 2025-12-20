@@ -7,4 +7,5 @@ data class GameState(
     val tiles: Tile.Container,
     val realms: TrackingList<Realm>,
     val worldObjects: TrackingList<WorldObject>,
+    val routes: TrackingList<Route>,
 )

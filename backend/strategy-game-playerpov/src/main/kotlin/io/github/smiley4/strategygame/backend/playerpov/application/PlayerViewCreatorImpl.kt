@@ -8,13 +8,13 @@ import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.playerpov.VisibilityCalculator
 import io.github.smiley4.strategygame.backend.playerpov.application.builders.RealmPOVBuilder
+import io.github.smiley4.strategygame.backend.playerpov.application.builders.RoutePovBuilder
 import io.github.smiley4.strategygame.backend.playerpov.application.builders.TilePOVBuilder
 import io.github.smiley4.strategygame.backend.playerpov.application.builders.WorldObjectPOVBuilder
 import io.github.smiley4.strategygame.backend.playerpov.lib.PlayerViewCreator
 
 
 internal class PlayerViewCreatorImpl(private val visibilityCalculator: VisibilityCalculator) : PlayerViewCreator {
-
 
     private val metricId = MetricId.action(PlayerViewCreatorImpl::class)
 
@@ -27,6 +27,7 @@ internal class PlayerViewCreatorImpl(private val visibilityCalculator: Visibilit
             val tileBuilder = TilePOVBuilder(povCache)
             val realmBuilder = RealmPOVBuilder()
             val worldObjectBuilder = WorldObjectPOVBuilder(povCache)
+            val routeBuilder = RoutePovBuilder(povCache)
 
             obj {
                 "game" to obj {
@@ -35,6 +36,7 @@ internal class PlayerViewCreatorImpl(private val visibilityCalculator: Visibilit
                 "tiles" to gameState.tiles.map { tileBuilder.build(it) }
                 "realms" to gameState.realms.map { realmBuilder.build(it, userId) }
                 "worldObjects" to gameState.worldObjects.mapNotNull { worldObjectBuilder.build(it) }
+                "routes" to gameState.routes.mapNotNull { routeBuilder.build(it) }
             }
         }
     }

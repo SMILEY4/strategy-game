@@ -52,10 +52,8 @@ internal class WorldObjectPOVBuilder(private val povCache: POVCache) {
                     is WorldObjectComponent.SettlementSpawner -> obj {
                         "type" to "settlementSpawner"
                     }
-                    is WorldObjectComponent.Districts -> obj {
-                        "type" to "districts"
-                        "maxAmount" to component.maxAmount
-                        "tileImprovements" to component.tileImprovements.map { it.value }
+                    is WorldObjectComponent.RouteNote -> obj {
+                        "type" to "routeNode"
                     }
                 }
             }

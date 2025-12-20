@@ -1,5 +1,5 @@
 use std::collections::{HashMap};
-use crate::js::models::{TextureAtlasEntry, Tile, TilePosition, WorldObject};
+use crate::js::models::{RouteNode, TextureAtlasEntry, Tile, TilePosition, WorldObject};
 use crate::utils::Rect2d;
 
 #[derive(Clone)]
@@ -64,9 +64,10 @@ pub struct RenderState {
     pub relevant_world_area: Rect2d,
     pub tiles: Vec<Tile>,
     pub relevant_tile_indices: Vec<usize>,
-    pub world_objects: Vec<WorldObject>,
     pub highlighted_tiles: HashMap<TilePosition, u8>,
     pub borders: Vec<TileBorderData>,
+    pub world_objects: Vec<WorldObject>,
+    pub routes: Vec<Vec<RouteNode>>,
     pub map_mode: String,
     pub texture_atlas_entries: HashMap<String, Vec<TextureAtlasEntry>>,
 }

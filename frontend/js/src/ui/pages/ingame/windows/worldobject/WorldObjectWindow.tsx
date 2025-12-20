@@ -8,105 +8,154 @@ import {Txt} from "../../../../components/text/Txt";
 import {UseWorldObjectWindow} from "./useWorldObjectWindow";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {WorldObject} from "../../../../../models/worldobject/worldObject";
+import {VSpacer} from "../../../../components/spacer/Spacer";
+import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
+import {HBox} from "../../../../components/layout/hbox/HBox";
 
 export interface WorldObjectWindowProps {
-	windowId: string;
-	identifier: WorldObject.Id | null;
+    windowId: string;
+    identifier: WorldObject.Id | null;
 }
 
 export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 
-	const data: UseWorldObjectWindow.Data | null = UseWorldObjectWindow.useData(props.identifier);
+    const data: UseWorldObjectWindow.Data | null = UseWorldObjectWindow.useData(props.identifier);
 
-	if (data === null) {
-		return (
-			<DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
-				<Txt.Body center fullSize>
-					<Txt.String>No world object selected</Txt.String>
-				</Txt.Body>
-			</DecoratedWindow>
-		);
-	} else {
-		return (
-			<DecoratedWindow windowId={props.windowId} withCloseButton withPinButton noPadding>
-				<VBox fullSize>
+    if (data === null) {
+        return (
+            <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
+                <Txt.Body center fullSize>
+                    <Txt.String>No world object selected</Txt.String>
+                </Txt.Body>
+            </DecoratedWindow>
+        );
+    } else {
+        return (
+            <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton noPadding>
+                <VBox fullSize>
 
-					<Banner
-						title={data.worldObject.type.group + "/" + data.worldObject.type.name}
-						subtitle={"World Object"}
-						color={data.worldObject.realm.color}
-						spaceAbove
-					>
-						<Button circle small onClick={data.open.tile}><Txt.Icon.Tile/></Button>
-						<Button circle small onClick={data.centerCamera}><Txt.Icon.Eye/></Button>
-					</Banner>
+                    <Banner
+                        title={data.worldObject.type.group + "/" + data.worldObject.type.name}
+                        subtitle={"World Object"}
+                        color={data.worldObject.realm.color}
+                        spaceAbove
+                    >
+                        <Button circle small onClick={data.open.tile}><Txt.Icon.Tile/></Button>
+                        <Button circle small onClick={data.centerCamera}><Txt.Icon.Eye/></Button>
+                    </Banner>
 
-					<VBox padding_l gap_m scrollable grow shrink>
-						{data.worldObject.realm.ownedByUser && (
-							<>
-								<Txt.Header2 center>
-									<Txt.String>Actions</Txt.String>
-								</Txt.Header2>
-								<Divider line/>
+                    <VBox padding_l gap_m scrollable shrink>
+                        {data.worldObject.realm.ownedByUser && (
+                            <>
+                                <Txt.Header2 center>
+                                    <Txt.String>Actions</Txt.String>
+                                </Txt.Header2>
+                                <Divider line/>
 
-								<InsetPanel dontShrink dontGrow>
-									<VBox padding_s gap_s fullSize>
-										{data.actions.map(action => {
+                                <InsetPanel dontShrink dontGrow>
+                                    <VBox padding_s gap_s fullSize>
+                                        {data.actions.map(action => {
 
-											if (action.type === "move") {
-												return (
-													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
-														Move
-													</Button>
-												);
-											}
+                                            if (action.type === "move") {
+                                                return (
+                                                    <Button disabled={!action.enabled} onClick={action.perform}
+                                                            key={action.type}>
+                                                        Move
+                                                    </Button>
+                                                );
+                                            }
 
-											if (action.type === "construct-tile-improvement") {
-												return (
-													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
-														Construct Tile Improvement
-													</Button>
-												);
-											}
+                                            if (action.type === "construct-tile-improvement") {
+                                                return (
+                                                    <Button disabled={!action.enabled} onClick={action.perform}
+                                                            key={action.type}>
+                                                        Construct Tile Improvement
+                                                    </Button>
+                                                );
+                                            }
 
-											if (action.type === "spawn-settlement") {
-												return (
-													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
-														Spawn Settlement
-													</Button>
-												);
-											}
+                                            if (action.type === "spawn-settlement") {
+                                                return (
+                                                    <Button disabled={!action.enabled} onClick={action.perform}
+                                                            key={action.type}>
+                                                        Spawn Settlement
+                                                    </Button>
+                                                );
+                                            }
 
-											if (action.type === "disband") {
-												return (
-													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
-														Disband
-													</Button>
-												);
-											}
+                                            if (action.type === "disband") {
+                                                return (
+                                                    <Button disabled={!action.enabled} onClick={action.perform}
+                                                            key={action.type}>
+                                                        Disband
+                                                    </Button>
+                                                );
+                                            }
 
-											if (action.type === "cancel-current-command") {
-												return (
-													<Button disabled={!action.enabled} onClick={action.perform} key={action.type}>
-														Cancel Command
-													</Button>
-												);
-											}
+                                            if (action.type === "cancel-current-command") {
+                                                return (
+                                                    <Button disabled={!action.enabled} onClick={action.perform}
+                                                            key={action.type}>
+                                                        Cancel Command
+                                                    </Button>
+                                                );
+                                            }
 
-											// exhaustiveness check: syntax error in case of unhandled action type
-											// noinspection UnnecessaryLocalVariableJS
-											const _exhaustive: never = action;
-											throw new Error("Unexpected action type: " + _exhaustive);
-										})}
-									</VBox>
-								</InsetPanel>
+                                            // exhaustiveness check: syntax error in case of unhandled action type
+                                            // noinspection UnnecessaryLocalVariableJS
+                                            const _exhaustive: never = action;
+                                            throw new Error("Unexpected action type: " + _exhaustive);
+                                        })}
+                                    </VBox>
+                                </InsetPanel>
 
-							</>
-						)}
-					</VBox>
-				</VBox>
-			</DecoratedWindow>
-		);
-	}
+                            </>
+                        )}
+                    </VBox>
+
+                    <VBox padding_l gap_s dontGrow dontShrink>
+
+                        <VSpacer size_s/>
+                        <Txt.Header2 center>
+                            <Txt.String>Connections</Txt.String>
+                        </Txt.Header2>
+                        <Divider line/>
+
+                        <InsetPanel dontShrink dontGrow>
+                            <VBox padding_s gap_s fullSize>
+
+                                {data.routes.length === 0 && (
+                                    <Txt.Body center secondary>
+                                        <Txt.String>No connected locations.</Txt.String>
+                                    </Txt.Body>
+                                )}
+
+                                {data.routes.map(route => (
+                                    <DecoratedPanel
+                                        key={route.id}
+                                        pattern
+                                        blue
+                                        background={<DecoratedPanel.ColorBackground color={route.realm.color.toCss()}/>}
+                                    >
+                                        <HBox fullSize padding_s gap_s>
+                                            <Txt.Body>
+                                                <Txt.String>to</Txt.String>
+                                                <Txt.Whitespace/>
+                                                <Txt.Link onClick={() => data.open.worldObject(route.id)}>
+                                                    <Txt.String>{`${route.type.group}/${route.type.name}`}</Txt.String>
+                                                </Txt.Link>
+                                            </Txt.Body>
+                                        </HBox>
+                                    </DecoratedPanel>
+                                ))}
+
+                            </VBox>
+                        </InsetPanel>
+                    </VBox>
+
+                </VBox>
+            </DecoratedWindow>
+        );
+    }
 
 }

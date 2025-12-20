@@ -27,7 +27,7 @@ export const TurnService = {
 
 
 function replaceGameState(state: GameStateContainer) {
-    Transaction.run([Db.command, Db.tile, Db.realm, Db.worldObject], () => {
+    Transaction.run([Db.command, Db.tile, Db.realm, Db.worldObject, Db.route], () => {
         Db.command.deleteAll();
         Db.command.insertMany(state.commands);
         Db.tile.deleteAll();
@@ -36,6 +36,8 @@ function replaceGameState(state: GameStateContainer) {
         Db.realm.insertMany(state.realms);
         Db.worldObject.deleteAll();
         Db.worldObject.insertMany(state.worldObjects);
+        Db.route.deleteAll();
+        Db.route.insertMany(state.routes);
     });
 }
 

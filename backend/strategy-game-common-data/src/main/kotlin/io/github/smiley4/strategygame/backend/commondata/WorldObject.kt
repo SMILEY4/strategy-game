@@ -56,4 +56,8 @@ sealed interface WorldObjectComponent {
 
     class SettlementSpawner : WorldObjectComponent
 
+    class RouteNote(
+        val maxRouteConnectionDistance: Int
+    ) : WorldObjectComponent
+
 }

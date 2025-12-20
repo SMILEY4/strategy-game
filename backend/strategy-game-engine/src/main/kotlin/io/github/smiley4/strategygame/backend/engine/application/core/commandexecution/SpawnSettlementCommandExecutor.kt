@@ -11,7 +11,7 @@ import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 
-class SpawnSettlementCommandExecutor : Logging {
+class SpawnSettlementCommandExecutor() : Logging {
 
     fun execute(gameState: GameState, command: Command<CommandData.SpawnSettlement>) {
         log().debug("Executing spawn settlement command with object ${command.data.worldObject}.")
@@ -67,6 +67,9 @@ class SpawnSettlementCommandExecutor : Logging {
                 WorldObjectComponent.Vision(
                     radius = 1,
                 ),
+                WorldObjectComponent.RouteNote(
+                    maxRouteConnectionDistance = 10
+                )
             )
         )
         gameState.worldObjects.add(settlement)

@@ -19,6 +19,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
                 DbCollections.REALMS,
                 DbCollections.TILES,
                 DbCollections.WORLD_OBJECTS,
+                DbCollections.ROUTES
             )
             parallelIO(
                 { deleteGame(game) },
@@ -26,6 +27,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
                 { deleteRealms(game) },
                 { deleteTiles(game) },
                 { deleteWorldObjects(game) },
+                { deleteRoutes(game) },
             )
         }
     }
@@ -65,6 +67,18 @@ internal class GameDelete(private val database: ArangoDatabase) {
 				FOR worldObject IN ${DbCollections.WORLD_OBJECTS}
 					FILTER worldObject.gameId == @gameId
                     REMOVE worldObject in ${DbCollections.WORLD_OBJECTS}
+            """.trimIndent(),
+            mapOf("gameId" to gameId.value)
+        )
+    }
+
+    private suspend fun deleteRoutes(gameId: Game.Id) {
+        database.execute(
+            //language=aql
+            """
+				FOR route IN ${DbCollections.ROUTES}
+					FILTER route.gameId == @gameId
+                    REMOVE route in ${DbCollections.ROUTES}
             """.trimIndent(),
             mapOf("gameId" to gameId.value)
         )

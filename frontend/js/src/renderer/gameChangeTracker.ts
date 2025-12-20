@@ -11,12 +11,14 @@ import {TurnStateAccess} from "../app/game/turn/turn.state-access";
 import {TileStateAccess} from "../app/game/tile/tile.state.access";
 import {WorldObjectStateAccess} from "../app/game/worldobject/worldobject.state-access";
 import {CommandStateAccess} from "../app/game/command/command.state-access";
+import {RouteStateAccess} from "../app/game/route/route.state-access";
 
 export interface TrackedChanges {
     isInitFrame: boolean;
     turn: boolean,
     tiles: boolean,
     worldObjects: boolean,
+    routes: boolean
     commands: boolean,
     mapMode: boolean,
     camera: boolean,
@@ -34,6 +36,7 @@ export class GameChangeTracker {
     private readonly trackerTurn = new ChangeDetector();
     private readonly trackerTiles = new ChangeDetector();
     private readonly trackerWorldObjects = new ChangeDetector();
+    private readonly trackerRoutes = new ChangeDetector();
     private readonly trackerCommands = new ChangeDetector();
     private readonly trackerMapMode = new ChangeDetector();
     private readonly trackerCamera = new ChangeDetector();
@@ -49,6 +52,7 @@ export class GameChangeTracker {
             turn: true,
             tiles: true,
             worldObjects: true,
+            routes: true,
             commands: true,
             mapMode: true,
             camera: true,
@@ -69,6 +73,7 @@ export class GameChangeTracker {
         this.trackedChanges.turn = this.trackerTurn.check(TurnStateAccess.getCurrentTurn());
         this.trackedChanges.tiles = this.trackerTiles.check(TileStateAccess.getTilesRevId());
         this.trackedChanges.worldObjects = this.trackerWorldObjects.check(WorldObjectStateAccess.getWorldObjectsRevId());
+        this.trackedChanges.routes = this.trackerRoutes.check(RouteStateAccess.getRoutesRevId());
         this.trackedChanges.commands = this.trackerCommands.check(CommandStateAccess.getCommandsRevId());
         this.trackedChanges.mapMode = this.trackerMapMode.check(MapStateAccess.getMapMode());
         this.trackedChanges.camera = this.trackerCamera.check(camera.getHash());

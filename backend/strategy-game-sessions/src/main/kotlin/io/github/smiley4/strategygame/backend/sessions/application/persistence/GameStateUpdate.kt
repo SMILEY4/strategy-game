@@ -9,13 +9,14 @@ import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.Realm
+import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.GameEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.RealmEntity
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.RouteEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.TileEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectEntity
-import kotlin.collections.map
 
 internal class GameStateUpdate(private val database: ArangoDatabase) {
 
@@ -31,6 +32,8 @@ internal class GameStateUpdate(private val database: ArangoDatabase) {
                 { deleteRealms(gameState.realms.getRemovedElements(), gameId) },
                 { updateWorldObjects(gameState.worldObjects, gameId) },
                 { deleteWorldObjects(gameState.worldObjects.getRemovedElements(), gameId) },
+                { updateRoutes(gameState.routes, gameId) },
+                { deleteRoutes(gameState.routes.getRemovedElements(), gameId) },
             )
         }
     }
@@ -61,7 +64,17 @@ internal class GameStateUpdate(private val database: ArangoDatabase) {
     }
 
     private suspend fun deleteWorldObjects(worldObjects: Set<WorldObject>, gameId: String) {
-        database.deleteDocuments(DbCollections.WORLD_OBJECTS, worldObjects.map { WorldObjectEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
+        database.deleteDocuments(
+            DbCollections.WORLD_OBJECTS,
+            worldObjects.map { WorldObjectEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
+    }
+
+    private suspend fun updateRoutes(routes: Collection<Route>, gameId: String) {
+        database.insertOrReplaceDocuments(DbCollections.ROUTES, routes.map { RouteEntity.of(it, gameId) })
+    }
+
+    private suspend fun deleteRoutes(routes: Set<Route>, gameId: String) {
+        database.deleteDocuments(DbCollections.ROUTES, routes.map { RouteEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
 }

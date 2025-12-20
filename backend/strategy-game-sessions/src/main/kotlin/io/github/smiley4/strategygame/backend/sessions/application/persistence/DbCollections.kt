@@ -6,4 +6,5 @@ internal object DbCollections {
     const val TILES = "tiles"
     const val COMMANDS = "commands"
     const val WORLD_OBJECTS = "worldobjects"
+    const val ROUTES = "routes"
 }

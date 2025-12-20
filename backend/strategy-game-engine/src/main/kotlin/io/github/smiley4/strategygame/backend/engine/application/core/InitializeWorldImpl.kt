@@ -6,6 +6,7 @@ import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.Realm
+import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.utils.tracking
@@ -50,6 +51,7 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
             tiles = Tile.Container(tiles),
             worldObjects = emptyList<WorldObject>().tracking(),
             realms = emptyList<Realm>().tracking(),
+            routes = emptyList<Route>().tracking()
         )
     }
 

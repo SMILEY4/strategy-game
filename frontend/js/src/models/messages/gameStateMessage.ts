@@ -7,6 +7,7 @@ export interface GameStateMessage {
 	tiles: TileMessage[],
 	realms: RealmMessage[],
 	worldObjects: WorldObjectMessage[],
+	routes: RouteMessage[]
 }
 
 export type VisibilityMsg = "UNKNOWN" | "DISCOVERED" | "VISIBLE"
@@ -49,6 +50,18 @@ export interface RealmMessage {
 	ownedByUser: boolean
 }
 
+export interface RouteMessage {
+	id: string,
+	cost: number,
+	worldObjectA: HiddenType<string>,
+	worldObjectB: HiddenType<string>,
+	path: ({
+		id: string,
+		q: number,
+		r: number
+	})[]
+}
+
 export interface WorldObjectMessage {
 	id: string,
 	type: {
@@ -64,7 +77,7 @@ export interface WorldObjectMessage {
 		q: number,
 		r: number
 	},
-	components: (MoveWorldObjectComponentMessage | VisionWorldObjectComponentMessage | BuilderWorldObjectComponentMessage | SettlementSpawnerWorldObjectComponentMessage)[],
+	components: (MoveWorldObjectComponentMessage | VisionWorldObjectComponentMessage | BuilderWorldObjectComponentMessage | SettlementSpawnerWorldObjectComponentMessage | RouteNodeComponentMessage)[],
 }
 
 
@@ -91,4 +104,8 @@ interface BuilderWorldObjectComponentMessage {
 
 interface SettlementSpawnerWorldObjectComponentMessage {
 	type: "settlementSpawner";
+}
+
+interface RouteNodeComponentMessage {
+	type: "routeNode";
 }

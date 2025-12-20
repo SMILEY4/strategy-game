@@ -2,16 +2,14 @@ package io.github.smiley4.strategygame.backend.engine.application.core.commandex
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
-import io.github.smiley4.strategygame.backend.common.utils.getNeighbourPositions
 import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
-import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 
-class ConstructTileImprovementCommandExecutor : Logging {
+class ConstructTileImprovementCommandExecutor() : Logging {
 
     fun execute(gameState: GameState, command: Command<CommandData.ConstructTileImprovement>) {
         log().debug("Executing construct tile improvement command with object ${command.data.worldObject}.")
@@ -64,19 +62,21 @@ class ConstructTileImprovementCommandExecutor : Logging {
                 WorldObjectComponent.Vision(
                     radius = 1,
                 ),
-                WorldObjectComponent.SettlementSpawner()
+                WorldObjectComponent.RouteNote(
+                    maxRouteConnectionDistance = 2
+                ),
+                WorldObjectComponent.SettlementSpawner(),
             )
         )
         gameState.worldObjects.add(tileImprovement)
 
-        // use (and remove) world object
+        // use (and remove) spawner world object
         worldObject.getComponent<WorldObjectComponent.Builder>().also {
             it.remainingUses -= 1
             if (it.remainingUses <= 0) {
                 gameState.worldObjects.remove(worldObject)
             }
         }
-
     }
 
 }

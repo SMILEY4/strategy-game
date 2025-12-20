@@ -9,14 +9,15 @@ import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.Realm
+import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.utils.tracking
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.GameEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.RealmEntity
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.RouteEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.TileEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectEntity
-import kotlin.jvm.java
 
 internal class GameStateQuery(private val database: ArangoDatabase) {
 
@@ -29,12 +30,14 @@ internal class GameStateQuery(private val database: ArangoDatabase) {
                 { fetchRealms(gameId) },
                 { fetchTiles(gameId) },
                 { fetchWorldObjects(gameId) },
-            ) { realms, tiles, worldObjects ->
+                { fetchRoutes(gameId) },
+            ) { realms, tiles, worldObjects, routes ->
                 GameState(
                     game = game,
                     realms = realms.tracking(),
                     tiles = Tile.Container(tiles),
                     worldObjects = worldObjects.tracking(),
+                    routes = routes.tracking(),
                 )
             }
         }
@@ -88,6 +91,21 @@ internal class GameStateQuery(private val database: ArangoDatabase) {
 			""".trimIndent(),
             mapOf("gameId" to gameId.value),
             WorldObjectEntity::class.java
+        ).map { it.asServiceModel() }
+    }
+
+    private suspend fun fetchRoutes(gameId: Game.Id): List<Route> {
+        database.assertCollections(DbCollections.ROUTES)
+        return database.query(
+            //language=aql
+            """
+				FOR route IN ${DbCollections.ROUTES}
+					FILTER route._documentType != "reservation"
+					FILTER route.gameId == @gameId
+					RETURN route
+			""".trimIndent(),
+            mapOf("gameId" to gameId.value),
+            RouteEntity::class.java
         ).map { it.asServiceModel() }
     }
 

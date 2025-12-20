@@ -6,6 +6,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
+import io.github.smiley4.strategygame.backend.engine.application.core.actions.ConstructRouteAction
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.ConstructTileImprovementCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.DisbandCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.MoveCommandExecutor
@@ -18,6 +19,7 @@ internal class GameStepImpl(
     val disbandCmdExecutor: DisbandCommandExecutor,
     val constructImprovementCmdExecutor: ConstructTileImprovementCommandExecutor,
     val spawnSettlementCmdExecutor: SpawnSettlementCommandExecutor,
+    val constructRouteAction: ConstructRouteAction
 ) : GameStep, Logging {
 
     private val metricId = MetricId.action(GameStep::class)
@@ -26,6 +28,7 @@ internal class GameStepImpl(
         return time(metricId) {
             log().info("Performing game step for game ${game.game.id} and turn ${game.game.turn}")
             executeCommands(game, commands)
+            updateWorld(game)
             prepareNextTurn(game)
         }
     }
@@ -44,6 +47,10 @@ internal class GameStepImpl(
                 log().error("Error when executing command (->ignoring)", e)
             }
         }
+    }
+
+    private fun updateWorld(gameState: GameState) {
+        constructRouteAction.onWorldUpdate(gameState)
     }
 
     private fun prepareNextTurn(game: GameState) {
