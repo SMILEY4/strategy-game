@@ -83,7 +83,8 @@ class SpawnSettlementCommandExecutor() : Logging {
                             produces = mapOf()
                         )
                     ),
-                )
+                    log = mutableListOf()
+                ),
             )
         )
         gameState.worldObjects.add(settlement)

@@ -60,6 +60,14 @@ internal class WorldObjectEntity(
                                     active = e.active,
                                 )
                             },
+                            log = it.log.map { e ->
+                                Economy.Log(
+                                    logType = e.logType,
+                                    entryName = e.entryName,
+                                    resourceType = e.resourceType,
+                                    amount = e.amount,
+                                )
+                            },
                         )
                     }
                 }
@@ -101,7 +109,15 @@ internal class WorldObjectEntity(
                                 produces = e.produces,
                                 active = e.active,
                             )
-                        }.toMutableList()
+                        }.toMutableList(),
+                        log = it.log.map { e ->
+                            WorldObjectComponent.Economy.Log(
+                                logType = e.logType,
+                                entryName = e.entryName,
+                                resourceType = e.resourceType,
+                                amount = e.amount,
+                            )
+                        }.toMutableList(),
                     )
                 }
             }.toMutableList()
@@ -145,6 +161,7 @@ internal sealed interface WorldObjectComponentEntity {
     class Economy(
         val storage: Map<ResourceType, Double>,
         val entries: List<Entry>,
+        val log: List<Log>
     ) : WorldObjectComponentEntity {
 
         data class Entry(
@@ -152,6 +169,13 @@ internal sealed interface WorldObjectComponentEntity {
             val consumes: Map<ResourceType, Double>,
             val produces: Map<ResourceType, Double>,
             var active: Boolean = true,
+        )
+
+        data class Log(
+            val logType: String,
+            val entryName: String,
+            val resourceType: ResourceType,
+            val amount: Double,
         )
 
     }

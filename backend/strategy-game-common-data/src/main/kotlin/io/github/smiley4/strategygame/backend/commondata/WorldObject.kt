@@ -63,6 +63,7 @@ sealed interface WorldObjectComponent {
     class Economy(
         val storage: ResourceStorage,
         val entries: MutableList<Entry>,
+        val log: MutableList<Log>
     ) : WorldObjectComponent {
 
         data class Entry(
@@ -70,6 +71,13 @@ sealed interface WorldObjectComponent {
             val consumes: Map<ResourceType, Double>,
             val produces: Map<ResourceType, Double>,
             var active: Boolean = true,
+        )
+
+        data class Log(
+            val logType: String,
+            val entryName: String,
+            val resourceType: ResourceType,
+            val amount: Double,
         )
 
     }

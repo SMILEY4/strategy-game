@@ -119,4 +119,11 @@ interface RouteNodeComponentMessage {
 
 interface EconomyComponentMessage {
     type: "economy";
+    storage: Record<string, number>,
+    log: ({
+        logType: string,
+        entryName: string,
+        resourceType: string,
+        amount: number,
+    })[]
 }

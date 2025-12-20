@@ -58,6 +58,13 @@ export namespace WorldObjectComponent {
 
     export interface Economy {
         type: Type.Economy,
+        storage: Record<string, number>,
+        log: ({
+            logType: string,
+            entryName: string,
+            resourceType: string,
+            amount: number,
+        })[]
     }
 
     export function getOrNull<T extends Type>(worldObject: WorldObject, type: T): Mapping[T] | null {

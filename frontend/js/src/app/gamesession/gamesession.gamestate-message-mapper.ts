@@ -157,6 +157,8 @@ export namespace GameStateMapper {
                     if (componentMsg.type == "economy") {
                         return {
                             type: "economy",
+                            storage: componentMsg.storage,
+                            log: componentMsg.log,
                         } as WorldObjectComponent.Economy;
                     }
 

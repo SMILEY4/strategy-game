@@ -76,6 +76,7 @@ class ConstructTileImprovementCommandExecutor : Logging {
                             produces = command.data.improvement.produces.toMap(),
                         )
                     ),
+                    log = mutableListOf()
                 )
             )
         )

@@ -13,12 +13,24 @@ class UpdateEconomyAction : Logging {
 
     fun onWorldUpdate(gameState: GameState) {
         log().debug { "Updating economy..." }
+        prepare(gameState)
         updateConsumption(gameState)
         updateProduction(gameState)
         val tradeOffers = collectTradeOffers(gameState)
         resolveTradeOffers(tradeOffers)
-        limitResourceStorage(gameState);
+        limitResourceStorage(gameState)
         log().debug { "...done with economy update" }
+    }
+
+
+    private fun prepare(gameState: GameState) {
+        log().debug { "... prepare" }
+        gameState.worldObjects
+            .filter { it.hasComponent<WorldObjectComponent.Economy>() }
+            .forEach { worldObject ->
+                val economyComponent = worldObject.getComponent<WorldObjectComponent.Economy>()
+                economyComponent.log.clear()
+            }
     }
 
     private fun updateConsumption(gameState: GameState) {
@@ -40,6 +52,12 @@ class UpdateEconomyAction : Logging {
                         entry.consumes.forEach { (type, amount) ->
                             if (!economyComponent.storage.hasAmount(type, amount)) {
                                 entry.active = false
+                                economyComponent.log.add(WorldObjectComponent.Economy.Log(
+                                    logType = "missing_resources",
+                                    entryName = entry.name,
+                                    resourceType = type,
+                                    amount = amount
+                                ))
                                 log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} . ${entry.name} is missing resources" }
                             }
                         }
@@ -48,6 +66,12 @@ class UpdateEconomyAction : Logging {
                         if (entry.active) {
                             entry.consumes.forEach { (type, amount) ->
                                 economyComponent.storage.retrieve(type, amount)
+                                economyComponent.log.add(WorldObjectComponent.Economy.Log(
+                                    logType = "consumed_resources",
+                                    entryName = entry.name,
+                                    resourceType = type,
+                                    amount = amount
+                                ))
                                 log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} . ${entry.name} consumed resources" }
                             }
                         }
@@ -74,6 +98,12 @@ class UpdateEconomyAction : Logging {
                         if (entry.active) {
                             entry.produces.forEach { (type, amount) ->
                                 economyComponent.storage.store(type, amount)
+                                economyComponent.log.add(WorldObjectComponent.Economy.Log(
+                                    logType = "produced_resources",
+                                    entryName = entry.name,
+                                    resourceType = type,
+                                    amount = amount
+                                ))
                                 log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} . ${entry.name} produced resources" }
                             }
                         }
@@ -146,6 +176,18 @@ class UpdateEconomyAction : Logging {
 
             currentImport.worldObject.getComponent<WorldObjectComponent.Economy>().storage.store(matchingExport.type, tradeAmount)
             matchingExport.worldObject.getComponent<WorldObjectComponent.Economy>().storage.retrieve(matchingExport.type, tradeAmount)
+            currentImport.worldObject.getComponent<WorldObjectComponent.Economy>().log.add(WorldObjectComponent.Economy.Log(
+                logType = "imported_resources",
+                entryName = "",
+                resourceType = currentImport.type,
+                amount = currentImport.amount
+            ))
+            matchingExport.worldObject.getComponent<WorldObjectComponent.Economy>().log.add(WorldObjectComponent.Economy.Log(
+                logType = "exported_resources",
+                entryName = "",
+                resourceType = currentImport.type,
+                amount = currentImport.amount
+            ))
             log().debug { "     ... traded $tradeAmount ${currentImport.type}: ${currentImport.worldObject.type.group}/${currentImport.worldObject.type.name} -> ${matchingExport.worldObject.type.group}/${matchingExport.worldObject.type.name}" }
 
             // parts of import offer remaining -> put back partial import offer
@@ -183,7 +225,13 @@ class UpdateEconomyAction : Logging {
                     // limit to max stockpile
                     val maxStockpile = max(10.0, targetStockpile * 3.0)
                     if (maxStockpile < economyComponent.storage.getAmount(resourceType)) {
-                        log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} limiting $resourceType stockpile (${economyComponent.storage.getAmount(resourceType)}) to $maxStockpile" }
+                        log().debug {
+                            "     ... ${worldObject.type.group}/${worldObject.type.name} limiting $resourceType stockpile (${
+                                economyComponent.storage.getAmount(
+                                    resourceType
+                                )
+                            }) to $maxStockpile"
+                        }
                         economyComponent.storage.set(resourceType, maxStockpile)
                     }
                 }
