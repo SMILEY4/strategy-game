@@ -7,6 +7,8 @@ import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
+import io.github.smiley4.strategygame.backend.commondata.ResourceStorage
+import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
@@ -69,6 +71,18 @@ class SpawnSettlementCommandExecutor() : Logging {
                 ),
                 WorldObjectComponent.RouteNote(
                     maxRouteConnectionDistance = 10
+                ),
+                WorldObjectComponent.Economy(
+                    storage = ResourceStorage(),
+                    entries = mutableListOf(
+                        WorldObjectComponent.Economy.Entry(
+                            name = "population",
+                            consumes = mapOf(
+                                ResourceType.FISH to 2.0,
+                            ),
+                            produces = mapOf()
+                        )
+                    ),
                 )
             )
         )

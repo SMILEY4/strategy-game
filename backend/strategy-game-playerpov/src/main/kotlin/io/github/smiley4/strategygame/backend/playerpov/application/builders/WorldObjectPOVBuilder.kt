@@ -55,6 +55,9 @@ internal class WorldObjectPOVBuilder(private val povCache: POVCache) {
                     is WorldObjectComponent.RouteNote -> obj {
                         "type" to "routeNode"
                     }
+                    is WorldObjectComponent.Economy -> obj {
+                        "type" to "economy"
+                    }
                 }
             }
         }

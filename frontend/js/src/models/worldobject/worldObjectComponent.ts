@@ -6,6 +6,7 @@ export type WorldObjectComponent =
     | WorldObjectComponent.Builder
     | WorldObjectComponent.SettlementSpawner
     | WorldObjectComponent.RouteNode
+    | WorldObjectComponent.Economy
 
 export namespace WorldObjectComponent {
 
@@ -15,6 +16,7 @@ export namespace WorldObjectComponent {
         Builder = "builder",
         SettlementSpawner = "settlement-spawner",
         RouteNode = "route-node",
+        Economy = "economy"
     }
 
     export type Mapping = {
@@ -23,6 +25,7 @@ export namespace WorldObjectComponent {
         [Type.Builder]: Builder,
         [Type.SettlementSpawner]: SettlementSpawner,
         [Type.RouteNode]: RouteNode,
+        [Type.Economy]: Economy,
     }
 
     export interface Movement {
@@ -51,6 +54,10 @@ export namespace WorldObjectComponent {
 
     export interface RouteNode {
         type: Type.RouteNode,
+    }
+
+    export interface Economy {
+        type: Type.Economy,
     }
 
     export function getOrNull<T extends Type>(worldObject: WorldObject, type: T): Mapping[T] | null {

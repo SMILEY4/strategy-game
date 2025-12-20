@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileResourceType
+import io.github.smiley4.strategygame.backend.commondata.ResourceType
 
 
 internal class TileEntity(
@@ -42,7 +42,7 @@ internal class TileEntity(
 
 internal class TileWorldDataEntity(
     val terrainType: TerrainType,
-    val resourceType: TileResourceType,
+    val resourceType: ResourceType,
     val height: Float,
 ) {
 

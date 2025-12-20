@@ -60,4 +60,18 @@ sealed interface WorldObjectComponent {
         val maxRouteConnectionDistance: Int
     ) : WorldObjectComponent
 
+    class Economy(
+        val storage: ResourceStorage,
+        val entries: MutableList<Entry>,
+    ) : WorldObjectComponent {
+
+        data class Entry(
+            val name: String,
+            val consumes: Map<ResourceType, Double>,
+            val produces: Map<ResourceType, Double>,
+            var active: Boolean = true,
+        )
+
+    }
+
 }

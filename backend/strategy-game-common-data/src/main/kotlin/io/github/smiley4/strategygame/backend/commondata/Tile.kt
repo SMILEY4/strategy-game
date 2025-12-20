@@ -26,7 +26,7 @@ data class Tile(
 
     data class WorldData(
         var terrainType: TerrainType,
-        var resourceType: TileResourceType,
+        var resourceType: ResourceType,
         var height: Float,
     )
 

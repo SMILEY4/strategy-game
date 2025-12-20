@@ -3,9 +3,12 @@ package io.github.smiley4.strategygame.backend.sessions.application.persistence.
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Realm
+import io.github.smiley4.strategygame.backend.commondata.ResourceStorage
+import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Builder
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Economy
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Movement
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.RouteNode
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.SettlementSpawner
@@ -47,6 +50,17 @@ internal class WorldObjectEntity(
                         is WorldObjectComponent.RouteNote -> RouteNode(
                             maxRouteConnectionDistance = it.maxRouteConnectionDistance
                         )
+                        is WorldObjectComponent.Economy -> Economy(
+                            storage = it.storage.toMap(),
+                            entries = it.entries.map { e ->
+                                Economy.Entry(
+                                    name = e.name,
+                                    consumes = e.consumes,
+                                    produces = e.produces,
+                                    active = e.active,
+                                )
+                            },
+                        )
                     }
                 }
             )
@@ -77,6 +91,17 @@ internal class WorldObjectEntity(
                     is SettlementSpawner -> WorldObjectComponent.SettlementSpawner()
                     is RouteNode -> WorldObjectComponent.RouteNote(
                         maxRouteConnectionDistance = it.maxRouteConnectionDistance
+                    )
+                    is Economy -> WorldObjectComponent.Economy(
+                        storage = ResourceStorage(it.storage),
+                        entries = it.entries.map { e ->
+                            WorldObjectComponent.Economy.Entry(
+                                name = e.name,
+                                consumes = e.consumes,
+                                produces = e.produces,
+                                active = e.active,
+                            )
+                        }.toMutableList()
                     )
                 }
             }.toMutableList()
@@ -116,5 +141,19 @@ internal sealed interface WorldObjectComponentEntity {
     class RouteNode(
         val maxRouteConnectionDistance: Int
     ) : WorldObjectComponentEntity
+
+    class Economy(
+        val storage: Map<ResourceType, Double>,
+        val entries: List<Entry>,
+    ) : WorldObjectComponentEntity {
+
+        data class Entry(
+            val name: String,
+            val consumes: Map<ResourceType, Double>,
+            val produces: Map<ResourceType, Double>,
+            var active: Boolean = true,
+        )
+
+    }
 
 }
