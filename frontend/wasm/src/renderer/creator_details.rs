@@ -114,9 +114,13 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
     // add world objects
     for world_object in &state.world_objects {
 
+        let tile = state.tiles.iter().find(|it| it.position_q == world_object.position_q && it.position_r == world_object.position_r);
+        let tile_seed = tile.map(|it| it.rng_seed).unwrap_or(0);
+        let mut tile_rng = Random::new(tile_seed as u64);
+
         let x = world_object.world_x;
         let y = world_object.world_y - config.tile_height / 2.0;
-        let z = y - 1.0;
+        let z = y - 0.0;
 
         // unit
         if world_object.type_group == 1 {
@@ -134,13 +138,14 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
             ));
         }
 
+
         // tile improvement
         if world_object.type_group == 2 {
             vertex_data.map_detail.extend(create_sprite(
-                &atlas_entries_houses[(rng.f32() * atlas_entries_houses.len() as f32) as usize],
+                &atlas_entries_houses[(tile_rng.f32() * atlas_entries_houses.len() as f32) as usize],
                 (x, y),
                 (z, z),
-                (7.0, 7.0),
+                (6.0, 6.0),
                 [0, 0, 0],
                 [
                     world_object.realm_color_r,
@@ -153,13 +158,13 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
         // settlement
         if world_object.type_group == 3 {
             for _ in 0..5 {
-                let offset_x = (rng.f32() * config.tile_width * 2.0) - config.tile_width;
-                let offset_y = (rng.f32() * config.tile_height * 2.0) - config.tile_height;
+                let offset_x = ((tile_rng.f32() * config.tile_width * 2.0) - config.tile_width) * 0.7;
+                let offset_y = ((tile_rng.f32() * config.tile_height * 2.0) - config.tile_height) * 0.7;
                 vertex_data.map_detail.extend(create_sprite(
-                    &atlas_entries_houses[(rng.f32() * atlas_entries_houses.len() as f32) as usize],
+                    &atlas_entries_houses[(tile_rng.f32() * atlas_entries_houses.len() as f32) as usize],
                     (x + offset_x, y + offset_y),
                     (z, z),
-                    (7.0, 7.0),
+                    (6.0, 6.0),
                     [0, 0, 0],
                     [
                         world_object.realm_color_r,
@@ -211,8 +216,8 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     &atlas_entries_mountain[texture_index],
                     (tile.world_x, tile.world_y - config.tile_height),
                     (
-                        tile.world_y - config.tile_height + rng.f32() * 0.1,
-                        tile.world_y + config.tile_height + rng.f32() * 0.1,
+                        tile.world_y - config.tile_height + rng.f32() * 0.05,
+                        tile.world_y + config.tile_height + rng.f32() * 0.05,
                     ),
                     (22.0, 16.0),
                     color,
@@ -291,7 +296,7 @@ fn create_sprite(
         let z = sprite_z.0 + (sprite_z.1 - sprite_z.0) * vertex[1];
 
         vertices.push(MapDetailVertex {
-            position: [x, y, z],
+            position: [x, y, z + atlas_entry.offset],
             texture_coordinates: [
                 atlas_entry.texture_coordinates[index * 2 + 0],
                 atlas_entry.texture_coordinates[index * 2 + 1],
