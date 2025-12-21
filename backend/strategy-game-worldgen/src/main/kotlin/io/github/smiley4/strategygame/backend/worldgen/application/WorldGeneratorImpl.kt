@@ -1,12 +1,13 @@
 package io.github.smiley4.strategygame.backend.worldgen.application
 
 import io.github.smiley4.strategygame.backend.common.utils.WeightedCollection
+import io.github.smiley4.strategygame.backend.commondata.ResourceNode
 import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenerator
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenSettings
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenTile
+import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenerator
 import kotlin.random.Random
 
 internal class WorldGeneratorImpl : WorldGenerator {
@@ -51,7 +52,7 @@ internal class WorldGeneratorImpl : WorldGenerator {
             r = position.r,
             height = height,
             type = terrainType,
-            resource = resourceTypeAt(terrainType)
+            resources = resourcesAt(terrainType)
         )
     }
 
@@ -60,6 +61,48 @@ internal class WorldGeneratorImpl : WorldGenerator {
             TerrainType.LAND
         } else {
             TerrainType.WATER
+        }
+    }
+
+    private fun resourcesAt(terrain: TerrainType): List<ResourceNode> {
+        return when (resourceTypeAt(terrain)) {
+            ResourceType.NONE -> emptyList()
+            ResourceType.WOOD -> listOf(
+                ResourceNode(
+                    type = ResourceType.WOOD,
+                    amount = 100.0,
+                    maxAmount = 100.0,
+                    changeRate = 1.0,
+                    canDeplete = false
+                )
+            )
+            ResourceType.FISH -> listOf(
+                ResourceNode(
+                    type = ResourceType.FISH,
+                    amount = 100.0,
+                    maxAmount = 100.0,
+                    changeRate = 1.0,
+                    canDeplete = false
+                )
+            )
+            ResourceType.STONE -> listOf(
+                ResourceNode(
+                    type = ResourceType.STONE,
+                    amount = 100.0,
+                    maxAmount = 100.0,
+                    changeRate = 1.0,
+                    canDeplete = false
+                )
+            )
+            ResourceType.METAL -> listOf(
+                ResourceNode(
+                    type = ResourceType.METAL,
+                    amount = 100.0,
+                    maxAmount = 100.0,
+                    changeRate = 1.0,
+                    canDeplete = false
+                )
+            )
         }
     }
 

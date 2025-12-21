@@ -26,8 +26,8 @@ data class Tile(
 
     data class WorldData(
         var terrainType: TerrainType,
-        var resourceType: ResourceType,
         var height: Float,
+        val resources: MutableList<ResourceNode>
     )
 
     data class MetaProperties(

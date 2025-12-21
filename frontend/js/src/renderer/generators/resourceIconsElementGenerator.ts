@@ -23,10 +23,13 @@ export namespace ResourceIconsElementGenerator {
 				if (!tile.base.visible) {
 					continue;
 				}
-				if (tile.base.value.resourceType !== ResourceType.NONE) {
+				if (tile.base.value.resources.length === 0) {
+					continue;
+				}
+				for (const resource of tile.base.value.resources) {
 					data.push({
 						position: tile.position,
-						type: tile.base.value.resourceType,
+						type: resource.type,
 					});
 				}
 			}

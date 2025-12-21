@@ -27,8 +27,14 @@ export interface TileMessage {
     visibility: VisibilityMsg
     base: HiddenType<{
         terrainType: TerrainTypeMsg,
-        resourceType: ResourceTypeMsg,
-        height: number
+        height: number,
+        resources: ({
+            type: ResourceTypeMsg,
+            amount: number,
+            maxAmount: number,
+            changeRate: number,
+            canDeplete: boolean,
+        })[],
     }>,
     metaProperties: {
         seed: number

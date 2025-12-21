@@ -5,6 +5,7 @@ import {Projections} from "../../common/webgl/projections";
 import {BrandedId} from "../../common/brandedId";
 import Point = Projections.Point;
 import {ResourceType} from "../misc/resourceType";
+import {ResourceNode} from "../misc/resourceNode";
 
 /**
  * A single world tile.
@@ -15,8 +16,8 @@ export interface Tile {
 	visibility: Visibility
 	base: HiddenType<{
 		terrainType: TerrainType,
-		resourceType: ResourceType,
-		height: number
+		height: number,
+		resources: ResourceNode[]
 	}>,
 	metaProperties: {
 		worldPosition: Point,

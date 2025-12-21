@@ -19,8 +19,16 @@ internal class TilePOVBuilder(private val povCache: POVCache) {
             "base" to hidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
                 obj {
                     "terrainType" to tile.dataWorld.terrainType
-                    "resourceType" to tile.dataWorld.resourceType
                     "height" to tile.dataWorld.height
+                    "resources" to tile.dataWorld.resources.map { resourceNode ->
+                        obj {
+                            "type" to resourceNode.type.name
+                            "amount" to resourceNode.amount
+                            "maxAmount" to resourceNode.maxAmount
+                            "changeRate" to resourceNode.changeRate
+                            "canDeplete" to resourceNode.canDeplete
+                        }
+                    }
                 }
             }
             "metaProperties" to obj {
