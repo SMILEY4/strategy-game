@@ -52,6 +52,15 @@ class UpdateEconomyAction : Logging {
                         entry.harvests.forEach { (type, amount) ->
                             if (tile.dataWorld.resources.none { it.type == type && it.amount >= amount }) {
                                 entry.active = false
+                                economyComponent.log.add(
+                                    WorldObjectComponent.Economy.Log(
+                                        logType = "missing_resources_harvest",
+                                        entryName = entry.name,
+                                        resourceType = type,
+                                        amount = amount
+                                    )
+                                )
+                                log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} . ${entry.name} is missing tile resources" }
                             }
                         }
                         entry.consumes.forEach { (type, amount) ->
@@ -59,7 +68,7 @@ class UpdateEconomyAction : Logging {
                                 entry.active = false
                                 economyComponent.log.add(
                                     WorldObjectComponent.Economy.Log(
-                                        logType = "missing_resources",
+                                        logType = "missing_resources_consume",
                                         entryName = entry.name,
                                         resourceType = type,
                                         amount = amount

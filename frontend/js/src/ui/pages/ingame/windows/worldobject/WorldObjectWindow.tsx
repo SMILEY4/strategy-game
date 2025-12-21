@@ -177,6 +177,19 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
                                 </VBox>
                             </InsetPanel>
 
+                            <Txt.Body center><Txt.String>Entries</Txt.String></Txt.Body>
+                            <InsetPanel dontShrink dontGrow>
+                                <VBox padding_s gap_s fullSize>
+                                    {WorldObjectComponent.get(data.worldObject, WorldObjectComponent.Type.Economy).entries.map(entry => (
+                                        <Txt.Body>
+                                            <Txt.String>{entry.name}</Txt.String>
+                                            <Txt.String> Active: </Txt.String>
+                                            <Txt.Boolean mode="yes/no">{entry.active}</Txt.Boolean>
+                                        </Txt.Body>
+                                    ))}
+                                </VBox>
+                            </InsetPanel>
+
                             <Txt.Body center><Txt.String>Economy Log</Txt.String></Txt.Body>
                             <InsetPanel dontShrink dontGrow>
                                 <VBox padding_s gap_s fullSize>

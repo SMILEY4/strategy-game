@@ -41,7 +41,7 @@ class ConstructTileImprovementCommandExecutor : Logging {
         }
 
         // validate: location terrain requirements must be met
-        if (command.data.improvement.requiredTerrain.isNotEmpty() && tile.dataWorld.terrainType.notContainedIn(command.data.improvement.requiredTerrain)) {
+        if (command.data.improvement.allowedTerrain.isNotEmpty() && tile.dataWorld.terrainType.notContainedIn(command.data.improvement.allowedTerrain)) {
             throw Exception("location terrain requirements not met.")
         }
 
@@ -71,10 +71,10 @@ class ConstructTileImprovementCommandExecutor : Logging {
                     storage = ResourceStorage(),
                     entries = mutableListOf(
                         WorldObjectComponent.Economy.Entry(
-                            name = command.data.improvement.name.lowercase(),
+                            name = "${WorldObject.Group.TILE_IMPROVEMENT.name}/${command.data.improvement.name}".lowercase(),
                             harvests = command.data.improvement.harvests,
-                            consumes = mapOf(),
-                            produces = command.data.improvement.produces.toMap(),
+                            consumes = command.data.improvement.consumes,
+                            produces = command.data.improvement.produces,
                         )
                     ),
                     log = mutableListOf()

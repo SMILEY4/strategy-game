@@ -63,6 +63,12 @@ internal class WorldObjectPOVBuilder(private val povCache: POVCache) {
                                 type.name to component.storage.getAmount(type)
                             }
                         }
+                        "entries" to component.entries.map { entry ->
+                            obj {
+                                "name" to entry.name
+                                "active" to entry.active
+                            }
+                        }
                         "log" to component.log.map {
                             obj {
                                 "logType" to it.logType

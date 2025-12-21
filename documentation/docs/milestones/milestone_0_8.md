@@ -58,10 +58,16 @@
     - settlements provide bonuses to nearby tile improvements
     - bonus based on settlement size, type, buildings, ...
 
-
 **Trading**
 
 - resources are produces at a specific location but can be consumed somewhere else
 - producers and consumers are connected via a network of routes
 - routes automatically form between nearby settlements and improvements 
 
+
+**Routes**
+
+- routes are created automatically
+- tile improvements generate routes to exactly one settlement
+- tile improvements never connect to other tile improvements
+- settlements connect only to other nearby settlements

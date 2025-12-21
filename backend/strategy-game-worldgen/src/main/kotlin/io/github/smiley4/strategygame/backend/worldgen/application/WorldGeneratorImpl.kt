@@ -30,12 +30,12 @@ internal class WorldGeneratorImpl : WorldGenerator {
 
     private val resourceConfig = mapOf(
         TerrainType.LAND to WeightedCollection<ResourceType>().apply {
-            add(0.5, ResourceType.WOOD)
-            add(0.375, ResourceType.STONE)
-            add(0.125, ResourceType.METAL)
+            add(0.5, ResourceType.RAW_WOOD)
+            add(0.375, ResourceType.RAW_STONE)
+            add(0.125, ResourceType.RAW_METAL)
         },
         TerrainType.WATER to WeightedCollection<ResourceType>().apply {
-            add(1.0, ResourceType.FISH)
+            add(1.0, ResourceType.RAW_FISH)
         },
     )
 
@@ -75,8 +75,8 @@ internal class WorldGeneratorImpl : WorldGenerator {
                 add(
                     ResourceNode(
                         type = resourceTypeAt(terrain),
-                        amount = 100.0,
-                        maxAmount = 100.0,
+                        amount = 10.0,
+                        maxAmount = 10.0,
                         changeRate = 1.0,
                         canDeplete = false
                     )

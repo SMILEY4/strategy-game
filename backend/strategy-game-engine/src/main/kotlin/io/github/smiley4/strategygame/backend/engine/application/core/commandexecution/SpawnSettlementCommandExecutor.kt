@@ -79,7 +79,7 @@ class SpawnSettlementCommandExecutor() : Logging {
                             name = "population",
                             harvests = mapOf(),
                             consumes = mapOf(
-                                ResourceType.FISH to 2.0,
+                                ResourceType.FOOD to 2.0,
                             ),
                             produces = mapOf()
                         )
