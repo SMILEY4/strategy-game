@@ -9,68 +9,75 @@ import {ResourceType} from "../../models/misc/resourceType";
 
 export namespace ResourceIconsElementGenerator {
 
-	export const OUTPUT_ID = "resourceicons.elements";
+    export const OUTPUT_ID = "resourceicons.elements";
 
-	export function funcCreate(context: RenderGraphNodeContext): Map<string, RenderElement[]> {
+    export function funcCreate(context: RenderGraphNodeContext): Map<string, RenderElement[]> {
 
-		const relevantTiles = context.get<Tile[]>("relevantTiles");
-		const mapMode = context.get<MapMode>("mapMode");
+        const relevantTiles = context.get<Tile[]>("relevantTiles");
+        const mapMode = context.get<MapMode>("mapMode");
 
-		const data: ResourceIconHtmlData[] = [];
-		if (mapMode == MapMode.RESOURCES) {
-			for (let i = 0, n = relevantTiles.length; i < n; i++) {
-				const tile = relevantTiles[i];
-				if (!tile.base.visible) {
-					continue;
-				}
-				if (tile.base.value.resources.length === 0) {
-					continue;
-				}
-				for (const resource of tile.base.value.resources) {
-					data.push({
-						position: tile.position,
-						type: resource.type,
-					});
-				}
-			}
-		}
+        const data: ResourceIconHtmlData[] = [];
+        if (mapMode == MapMode.RESOURCES) {
+            for (let i = 0, n = relevantTiles.length; i < n; i++) {
+                const tile = relevantTiles[i];
+                if (!tile.base.visible) {
+                    continue;
+                }
+                if (tile.base.value.resources.length === 0) {
+                    continue;
+                }
+                for (let j = 0; j < tile.base.value.resources.length; j++) {
+                    data.push({
+                        type: tile.base.value.resources[j].type,
+                        position: tile.position,
+                        index: j,
+						amountResources: tile.base.value.resources.length
+                    });
+                }
+            }
+        }
 
-		return buildMap([
-			[
-				OUTPUT_ID,
-				data,
-			],
-		]);
-	}
+        return buildMap([
+            [
+                OUTPUT_ID,
+                data,
+            ],
+        ]);
+    }
 
 
-	export function funcTemplate(): HTMLElement {
-		const html = `	
+    export function funcTemplate(): HTMLElement {
+        const html = `	
 			<div
 				class='resource-icon'
 				style='left:0;top:0;background-image:#ff00ff'
 			>
 			</div>
 		`;
-		const element = document.createElement("div");
-		element.innerHTML = html;
-		return element.children[0] as HTMLElement;
-	}
+        const element = document.createElement("div");
+        element.innerHTML = html;
+        return element.children[0] as HTMLElement;
+    }
 
 
-	export function funcRender(obj: ResourceIconHtmlData, target: HTMLElement, lowQuality: boolean, camera: Camera) {
-		const pos = Projections.hexToScreen(camera, obj.position.q, obj.position.r);
-		pos.y = camera.getClientHeight() - pos.y;
-		target.style.left = pos.x.toString() + "px";
-		target.style.top = pos.y.toString() + "px";
-		target.style.backgroundImage = "url('" + obj.type.getIconPath() + "')";
-		target.className = lowQuality ? "resource-icon low-quality" : "resource-icon";
-
-	}
+    export function funcRender(obj: ResourceIconHtmlData, target: HTMLElement, lowQuality: boolean, camera: Camera) {
+        const pos = Projections.hexToScreen(camera, obj.position.q, obj.position.r);
+        pos.y = camera.getClientHeight() - pos.y;
 
 
-	export interface ResourceIconHtmlData extends RenderElement {
-		type: ResourceType;
-	}
+        target.style.left = pos.x.toString() + "px";
+        target.style.top = pos.y.toString() + "px";
+        target.style.backgroundImage = "url('" + obj.type.getIconPath() + "')";
+		target.style.translate = ((obj.index - ((obj.amountResources - 1) / 2)) * 100) + "% 0";
+        target.className = lowQuality ? "resource-icon low-quality" : "resource-icon";
+
+    }
+
+
+    export interface ResourceIconHtmlData extends RenderElement {
+        type: ResourceType;
+        index: number;
+		amountResources: number;
+    }
 
 }
