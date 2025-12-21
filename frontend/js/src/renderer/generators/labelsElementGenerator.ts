@@ -5,7 +5,7 @@ import {buildMap} from "../../common/utils";
 import {Projections} from "../../common/webgl/projections";
 import {TilemapUtils} from "../../common/tilemapUtils";
 import {Camera} from "../../common/webgl/camera";
-import {WorldObject} from "../../models/worldobject/worldObject";
+import {WorldObject, WorldObjectWithCommand} from "../../models/worldobject/worldObject";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
 
 export namespace LabelsElementGenerator {
@@ -14,7 +14,7 @@ export namespace LabelsElementGenerator {
 
 	export function funcCreate(context: RenderGraphNodeContext): Map<string, RenderElement[]> {
 
-		const worldObjects = context.get<WorldObject[]>("worldObjects");
+		const worldObjects = context.get<WorldObjectWithCommand[]>("worldObjects");
 
 		const elementsByTile = new Map<string, LabelsHtmlData[]>();
 
@@ -28,11 +28,16 @@ export namespace LabelsElementGenerator {
 
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
+
+			let nameAppendix = ""
+			if(worldObject.commandState === "create") nameAppendix = " (+)"
+			if(worldObject.commandState === "destroy") nameAppendix = " (-)"
+
 			addElement({
 				position: worldObject.tile.position,
 				tileId: worldObject.tile.id,
 				type: "unit",
-				name: worldObject.type.group + "/" + worldObject.type.name,
+				name: worldObject.type.group + "/" + worldObject.type.name + nameAppendix,
 				color: worldObject.realm.color.toCss(),
 				index: 0,
 			});

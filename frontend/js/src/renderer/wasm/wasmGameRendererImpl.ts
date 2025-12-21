@@ -3,7 +3,7 @@ import {MapMode} from "../../models/misc/mapMode";
 import {Rectangle} from "../../common/utils";
 import {TextureAtlasEntry} from "../../common/webgl/textureAtlas";
 import {Tile} from "../../models/tile/tile";
-import {WorldObject} from "../../models/worldobject/worldObject";
+import {WorldObject, WorldObjectWithCommand} from "../../models/worldobject/worldObject";
 import {DirectRouteBuffer, DirectTileBuffer, DirectWorldObjectBuffer, WasmRenderApp} from "../../../../wasm/pkg";
 import {memory} from "../../../../wasm/pkg/wasm_bg.wasm";
 import {WorldObjectWasmSerializer} from "./serializers/worldObjectWasmSerializer";
@@ -86,7 +86,7 @@ export class WasmGameRendererImpl implements WasmGameRenderer {
         }
     }
 
-    setWorldObjects(worldObjects: WorldObject[]): void {
+    setWorldObjects(worldObjects: WorldObjectWithCommand[]): void {
         const reservedMemory: DirectWorldObjectBuffer = this.wasmRenderApp.reserve_world_object_memory(worldObjects.length);
         const bytes = new Uint8Array(memory.buffer, reservedMemory.ptr, reservedMemory.len * reservedMemory.item_size);
         WorldObjectWasmSerializer.serialize(worldObjects, reservedMemory.item_size, bytes);

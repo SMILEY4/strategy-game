@@ -1,3 +1,4 @@
+use crate::js::imported::console_log;
 use crate::js::models::TextureAtlasEntry;
 use crate::renderer::line_mesh::{build_line_mesh, cap_butt_end, cap_butt_start, join_miter, LineMeshConfig};
 use crate::renderer::models::{MapDetailVertex, RenderState, RendererConfiguration, VertexData};
@@ -105,7 +106,8 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     texture_coordinates: [u, v],
                     base_color: [0, 0, 0],
                     country_color: [0, 0, 0],
-                    _padding: [0, 0],
+                    command_state: 0,
+                    _padding: [0],
                 })
             }
         }
@@ -135,6 +137,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     world_object.realm_color_g,
                     world_object.realm_color_b,
                 ],
+                world_object.command_state
             ));
         }
 
@@ -152,6 +155,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     world_object.realm_color_g,
                     world_object.realm_color_b,
                 ],
+                world_object.command_state
             ));
         }
 
@@ -171,6 +175,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                         world_object.realm_color_g,
                         world_object.realm_color_b,
                     ],
+                    world_object.command_state
                 ));
             }
         }
@@ -222,6 +227,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     (22.0, 16.0),
                     color,
                     [0, 0, 0],
+                    0
                 ));
             }
             "hill" => {
@@ -236,6 +242,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     (22.0, 16.0),
                     color,
                     [0, 0, 0],
+                    0
                 ));
             }
             "forest" => {
@@ -250,6 +257,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     (22.0, 16.0),
                     color,
                     [0, 0, 0],
+                    0
                 ));
             }
             "none" | _ => {
@@ -268,6 +276,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                         (4.0, 4.0),
                         [0, 0, 0],
                         [0, 0, 0],
+                        0
                     ));
                 }
             }
@@ -282,6 +291,7 @@ fn create_sprite(
     sprite_scale: (f32, f32),
     color_base: [u8; 3],
     color_realm: [u8; 3],
+    command_state: u8
 ) -> Vec<MapDetailVertex> {
     let mut vertices = Vec::new();
 
@@ -303,7 +313,8 @@ fn create_sprite(
             ],
             base_color: color_base,
             country_color: color_realm,
-            _padding: [0, 0],
+            command_state: command_state,
+            _padding: [0],
         })
     }
 
