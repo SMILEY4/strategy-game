@@ -7,7 +7,7 @@ import {OverlayMeshVertexGenerator} from "./generators/overlayMeshVertexGenerato
 import {MapMode} from "../models/misc/mapMode";
 import {OverlayInstancesVertexGenerator} from "./generators/overlayInstancesVertexGenerator";
 import {MapDetailsVertexGenerator} from "./generators/mapDetailsVertexGenerator";
-import {WorldObject} from "../models/worldobject/worldObject";
+import {WorldObject, WorldObjectWithCommand} from "../models/worldobject/worldObject";
 import {TextureAtlas, TextureAtlasEntry} from "../common/webgl/textureAtlas";
 import {RenderGraphSorter} from "../common/rendergraph/renderGraphSorter";
 import {RenderGraphCompiler} from "../common/rendergraph/renderGraphCompiler";
@@ -475,9 +475,14 @@ export class GameRenderGraphFactory {
                     amountComponents: 3,
                 },
                 {
+                    name: "in_commandState",
+                    type: GLAttributeType.U_BYTE,
+                    amountComponents: 1,
+                },
+                {
                     name: "_padding",
                     type: GLAttributeType.PADDING,
-                    amountComponents: 2,
+                    amountComponents: 1,
                 },
             ])
             .withFunction(ctx => MapDetailsVertexGenerator.funcWasm(ctx, wasmGameRenderer));
@@ -868,9 +873,9 @@ export class GameRenderGraphFactory {
             .withChangeTest(() => changeTracker.getTrackedChanges().highlightedTiles)
             .withValue(() => TileStateAccess.getHighlights());
         const worldObjects = graph
-            .createPropertyDynamic<WorldObject[]>("prop-worldObjects")
+            .createPropertyDynamic<WorldObjectWithCommand[]>("prop-worldObjects")
             .withChangeTest(() => changeTracker.getTrackedChanges().worldObjects || changeTracker.getTrackedChanges().commands)
-            .withValue(() => WorldObjectStateAccess.getAll());
+            .withValue(() => WorldObjectStateAccess.getAllWithCommands());
         const routes = graph
             .createPropertyDynamic<Route[]>("prop-routes")
             .withChangeTest(() => changeTracker.getTrackedChanges().routes || changeTracker.getTrackedChanges().commands)
@@ -898,7 +903,7 @@ export class GameRenderGraphFactory {
                 .withValue(tiles, it => wasmGameRenderer.setTiles(it)),
             worldObjects: worldObjects,
             worldObjectsWasm: graph
-                .createPropertyWasm<WorldObject[]>("prop-wasm-worldObjects")
+                .createPropertyWasm<WorldObjectWithCommand[]>("prop-wasm-worldObjects")
                 .withValue(worldObjects, it => wasmGameRenderer.setWorldObjects(it)),
             routesWasm: graph
                 .createPropertyWasm<Route[]>("prop-wasm-routes")

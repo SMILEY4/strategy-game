@@ -14,6 +14,10 @@ export interface WorldObject {
 	components: WorldObjectComponent[]
 }
 
+export interface WorldObjectWithCommand extends WorldObject {
+	commandState?: "create" | "destroy"
+}
+
 export namespace WorldObject {
 
 	export type Id = BrandedId<string, "WorldObjectId">;

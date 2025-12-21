@@ -16,7 +16,7 @@ import {Realm} from "../../models/realm/realm";
 import {WorldObject} from "../../models/worldobject/worldObject";
 import {WorldObjectComponent} from "../../models/worldobject/worldObjectComponent";
 import {User} from "../../models/misc/userId";
-import {TileResourceType} from "../../models/misc/tileResourceType";
+import {ResourceType} from "../../models/misc/resourceType";
 import {Color} from "../../common/color/color";
 import {Route} from "../../models/route/route";
 import {WorldObjectSummary} from "../../models/worldobject/worldObjectSummary";
@@ -45,12 +45,12 @@ export namespace GameStateMapper {
         "WATER": TerrainType.WATER,
     };
 
-    const resourceTypeMapping: Record<ResourceTypeMsg, TileResourceType> = {
-        "NONE": TileResourceType.NONE,
-        "WOOD": TileResourceType.WOOD,
-        "FISH": TileResourceType.FISH,
-        "STONE": TileResourceType.STONE,
-        "METAL": TileResourceType.METAL,
+    const resourceTypeMapping: Record<ResourceTypeMsg, ResourceType> = {
+        "NONE": ResourceType.NONE,
+        "WOOD": ResourceType.WOOD,
+        "FISH": ResourceType.FISH,
+        "STONE": ResourceType.STONE,
+        "METAL": ResourceType.METAL,
     };
 
     const worldObjectTypeGroupMapping: Record<WorldObjectTypeGroupMsg, WorldObject.TypeGroup> = {

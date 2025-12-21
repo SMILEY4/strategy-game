@@ -56,7 +56,8 @@ pub struct MapDetailVertex {
     pub texture_coordinates: [f32; 2],
     pub base_color: [u8; 3],
     pub country_color: [u8; 3],
-    pub _padding: [u8; 2],
+    pub command_state: u8,
+    pub _padding: [u8; 1],
 }
 
 #[derive(Default)]

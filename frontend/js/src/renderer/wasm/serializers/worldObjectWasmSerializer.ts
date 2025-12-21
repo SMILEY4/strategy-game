@@ -1,4 +1,4 @@
-import {WorldObject} from "../../../models/worldobject/worldObject";
+import {WorldObject, WorldObjectWithCommand} from "../../../models/worldobject/worldObject";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {WasmDataViewWriter} from "./wasmDataViewWriter";
 
@@ -6,13 +6,13 @@ export namespace WorldObjectWasmSerializer {
 
 	const writer = new WasmDataViewWriter();
 
-	export function serialize(worldObjects: WorldObject[], bytesPerEntry: number, targetBuffer: Uint8Array) {
+	export function serialize(worldObjects: WorldObjectWithCommand[], bytesPerEntry: number, targetBuffer: Uint8Array) {
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			serializeSingle(worldObjects[i], i, bytesPerEntry, targetBuffer);
 		}
 	}
 
-	function serializeSingle(worldObject: WorldObject, indexEntry: number, bytesPerEntry: number, targetBuffer: Uint8Array) {
+	function serializeSingle(worldObject: WorldObjectWithCommand, indexEntry: number, bytesPerEntry: number, targetBuffer: Uint8Array) {
 		const offset = indexEntry * bytesPerEntry;
 		const view = new DataView(targetBuffer.buffer, targetBuffer.byteOffset + offset, bytesPerEntry);
 		writer.setDataView(view);
@@ -37,6 +37,16 @@ export namespace WorldObjectWasmSerializer {
 
 		// type_group: u8,
 		writer.pushUint8(worldObjectTypeGroupMapping[worldObject.type.group]);
+
+		// command_state: u8
+		if(worldObject.commandState === "destroy") {
+			writer.pushUint8(1);
+		} else if(worldObject.commandState === "create") {
+			writer.pushUint8(2);
+		} else {
+			writer.pushUint8(0);
+		}
+
 	}
 
 	const worldObjectTypeGroupMapping: Record<WorldObject.TypeGroup, number> = {

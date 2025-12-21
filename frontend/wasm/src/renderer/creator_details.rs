@@ -1,3 +1,4 @@
+use crate::js::imported::console_log;
 use crate::js::models::TextureAtlasEntry;
 use crate::renderer::line_mesh::{build_line_mesh, cap_butt_end, cap_butt_start, join_miter, LineMeshConfig};
 use crate::renderer::models::{MapDetailVertex, RenderState, RendererConfiguration, VertexData};
@@ -105,7 +106,8 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     texture_coordinates: [u, v],
                     base_color: [0, 0, 0],
                     country_color: [0, 0, 0],
-                    _padding: [0, 0],
+                    command_state: 0,
+                    _padding: [0],
                 })
             }
         }
@@ -114,9 +116,13 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
     // add world objects
     for world_object in &state.world_objects {
 
+        let tile = state.tiles.iter().find(|it| it.position_q == world_object.position_q && it.position_r == world_object.position_r);
+        let tile_seed = tile.map(|it| it.rng_seed).unwrap_or(0);
+        let mut tile_rng = Random::new(tile_seed as u64);
+
         let x = world_object.world_x;
         let y = world_object.world_y - config.tile_height / 2.0;
-        let z = y - 1.0;
+        let z = y - 0.0;
 
         // unit
         if world_object.type_group == 1 {
@@ -131,41 +137,45 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     world_object.realm_color_g,
                     world_object.realm_color_b,
                 ],
+                world_object.command_state
             ));
         }
+
 
         // tile improvement
         if world_object.type_group == 2 {
             vertex_data.map_detail.extend(create_sprite(
-                &atlas_entries_houses[(rng.f32() * atlas_entries_houses.len() as f32) as usize],
+                &atlas_entries_houses[(tile_rng.f32() * atlas_entries_houses.len() as f32) as usize],
                 (x, y),
                 (z, z),
-                (7.0, 7.0),
+                (6.0, 6.0),
                 [0, 0, 0],
                 [
                     world_object.realm_color_r,
                     world_object.realm_color_g,
                     world_object.realm_color_b,
                 ],
+                world_object.command_state
             ));
         }
 
         // settlement
         if world_object.type_group == 3 {
             for _ in 0..5 {
-                let offset_x = (rng.f32() * config.tile_width * 2.0) - config.tile_width;
-                let offset_y = (rng.f32() * config.tile_height * 2.0) - config.tile_height;
+                let offset_x = ((tile_rng.f32() * config.tile_width * 2.0) - config.tile_width) * 0.7;
+                let offset_y = ((tile_rng.f32() * config.tile_height * 2.0) - config.tile_height) * 0.7;
                 vertex_data.map_detail.extend(create_sprite(
-                    &atlas_entries_houses[(rng.f32() * atlas_entries_houses.len() as f32) as usize],
+                    &atlas_entries_houses[(tile_rng.f32() * atlas_entries_houses.len() as f32) as usize],
                     (x + offset_x, y + offset_y),
                     (z, z),
-                    (7.0, 7.0),
+                    (6.0, 6.0),
                     [0, 0, 0],
                     [
                         world_object.realm_color_r,
                         world_object.realm_color_g,
                         world_object.realm_color_b,
                     ],
+                    world_object.command_state
                 ));
             }
         }
@@ -211,12 +221,13 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     &atlas_entries_mountain[texture_index],
                     (tile.world_x, tile.world_y - config.tile_height),
                     (
-                        tile.world_y - config.tile_height + rng.f32() * 0.1,
-                        tile.world_y + config.tile_height + rng.f32() * 0.1,
+                        tile.world_y - config.tile_height + rng.f32() * 0.05,
+                        tile.world_y + config.tile_height + rng.f32() * 0.05,
                     ),
                     (22.0, 16.0),
                     color,
                     [0, 0, 0],
+                    0
                 ));
             }
             "hill" => {
@@ -231,6 +242,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     (22.0, 16.0),
                     color,
                     [0, 0, 0],
+                    0
                 ));
             }
             "forest" => {
@@ -245,6 +257,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                     (22.0, 16.0),
                     color,
                     [0, 0, 0],
+                    0
                 ));
             }
             "none" | _ => {
@@ -263,6 +276,7 @@ pub fn update(state: &RenderState, config: &RendererConfiguration, vertex_data: 
                         (4.0, 4.0),
                         [0, 0, 0],
                         [0, 0, 0],
+                        0
                     ));
                 }
             }
@@ -277,6 +291,7 @@ fn create_sprite(
     sprite_scale: (f32, f32),
     color_base: [u8; 3],
     color_realm: [u8; 3],
+    command_state: u8
 ) -> Vec<MapDetailVertex> {
     let mut vertices = Vec::new();
 
@@ -291,14 +306,15 @@ fn create_sprite(
         let z = sprite_z.0 + (sprite_z.1 - sprite_z.0) * vertex[1];
 
         vertices.push(MapDetailVertex {
-            position: [x, y, z],
+            position: [x, y, z + atlas_entry.offset],
             texture_coordinates: [
                 atlas_entry.texture_coordinates[index * 2 + 0],
                 atlas_entry.texture_coordinates[index * 2 + 1],
             ],
             base_color: color_base,
             country_color: color_realm,
-            _padding: [0, 0],
+            command_state: command_state,
+            _padding: [0],
         })
     }
 

@@ -2,7 +2,7 @@ import {TextureAtlasEntry} from "../common/webgl/textureAtlas";
 import {MapMode} from "../models/misc/mapMode";
 import {TileSummary} from "../models/tile/tileSummary";
 import {Rectangle} from "../common/utils";
-import {WorldObject} from "../models/worldobject/worldObject";
+import {WorldObject, WorldObjectWithCommand} from "../models/worldobject/worldObject";
 import {Tile} from "../models/tile/tile";
 import {Route} from "../models/route/route";
 
@@ -35,7 +35,7 @@ export interface WasmGameRenderer {
 	/**
 	 * Set the world objects
 	 */
-	setWorldObjects(worldObjects: WorldObject[]): void;
+	setWorldObjects(worldObjects: WorldObjectWithCommand[]): void;
 	/**
 	 * Sets the routes
 	 */

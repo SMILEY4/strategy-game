@@ -15,6 +15,8 @@ pub struct WorldObject {
     pub realm_color_b: u8,
 
     pub type_group: u8,
+
+    pub command_state: u8, // "0" = nothing, "1" = destroy, "2" = create
 }
 
 #[repr(C, packed)]

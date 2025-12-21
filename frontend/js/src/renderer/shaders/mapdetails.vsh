@@ -6,10 +6,14 @@ in vec3 in_worldPosition;
 in vec2 in_textureCoordinates;
 in vec3 in_baseTileColor;
 in vec3 in_countryColor;
+in uint in_commandState;
+
 
 out vec2 v_textureCoordinates;
 out vec3 v_baseTileColor;
 out vec3 v_countryColor;
+flat out uint v_commandState;
+
 
 void main() {
     v_textureCoordinates = in_textureCoordinates;
@@ -27,6 +31,7 @@ void main() {
 
     v_baseTileColor = in_baseTileColor;
     v_countryColor = in_countryColor;
+    v_commandState = in_commandState;
 
     // output sprite screen coordinates with calculated z/depth
     gl_Position = vec4(screenPos, screenZ, 1.0);

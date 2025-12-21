@@ -16,7 +16,7 @@ import {Button} from "../../../../components/button/Button";
 import {Txt} from "../../../../components/text/Txt";
 import {Projections} from "../../../../../common/webgl/projections";
 import {Tile} from "../../../../../models/tile/tile";
-import {TileResourceType} from "../../../../../models/misc/tileResourceType";
+import {ResourceType} from "../../../../../models/misc/resourceType";
 
 export interface TileWindowProps {
 	windowId: string;
@@ -131,10 +131,10 @@ function SectionBaseInformation(props: UseTileWindow.Data): ReactElement {
 			{!props.tile.base.visible && (
 				<Txt.Body><Txt.String>unknown</Txt.String></Txt.Body>
 			)}
-			{(props.tile.base.visible && props.tile.base.value.resourceType === TileResourceType.NONE) && (
+			{(props.tile.base.visible && props.tile.base.value.resourceType === ResourceType.NONE) && (
 				<Txt.Body><Txt.String>{props.tile.base.value.resourceType.id}</Txt.String></Txt.Body>
 			)}
-			{(props.tile.base.visible && props.tile.base.value.resourceType !== TileResourceType.NONE) && (
+			{(props.tile.base.visible && props.tile.base.value.resourceType !== ResourceType.NONE) && (
 				<Txt.Body>
 					<Txt.Icon name={props.tile.base.value.resourceType.id.toLowerCase()}/>
 					<Txt.String>{props.tile.base.value.resourceType.id}</Txt.String>

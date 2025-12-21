@@ -5,7 +5,7 @@ import {Camera} from "../../common/webgl/camera";
 import {Tile} from "../../models/tile/tile";
 import {MapMode} from "../../models/misc/mapMode";
 import {RenderGraphNodeContext} from "../../common/rendergraph/renderGraphNodeContext";
-import {TileResourceType} from "../../models/misc/tileResourceType";
+import {ResourceType} from "../../models/misc/resourceType";
 
 export namespace ResourceIconsElementGenerator {
 
@@ -23,7 +23,7 @@ export namespace ResourceIconsElementGenerator {
 				if (!tile.base.visible) {
 					continue;
 				}
-				if (tile.base.value.resourceType !== TileResourceType.NONE) {
+				if (tile.base.value.resourceType !== ResourceType.NONE) {
 					data.push({
 						position: tile.position,
 						type: tile.base.value.resourceType,
@@ -67,7 +67,7 @@ export namespace ResourceIconsElementGenerator {
 
 
 	export interface ResourceIconHtmlData extends RenderElement {
-		type: TileResourceType;
+		type: ResourceType;
 	}
 
 }
