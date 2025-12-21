@@ -4,7 +4,6 @@ import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.pathfinding.algorithms.backtracking.BacktrackingPathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
 import io.github.smiley4.strategygame.backend.pathfinding.score.ScoreCalculator
@@ -309,7 +308,8 @@ class AdvancedPathfindingTest : StringSpec({
                 positionsNeighbours(current.tile.position) { q, r ->
                     val neighbourTile = tiles.get(q, r)
                     if (neighbourTile != null) {
-                        val neighbourNode = TestNode(neighbourTile,
+                        val neighbourNode = TestNode(
+                            neighbourTile,
                             pathLength = current.pathLength + 1,
                             prevNode = current
                         )
@@ -342,7 +342,7 @@ class AdvancedPathfindingTest : StringSpec({
 
         }
 
-        fun buildTiles(ids: List<List<Int>>, provinceIds: List<List<Int>>? = null): Tile.Container {
+        fun buildTiles(ids: List<List<Int>>): Tile.Container {
             val tiles = mutableListOf<Tile>()
             ids.forEachIndexed { r, qIds ->
                 qIds.forEachIndexed { q, id ->
@@ -356,7 +356,7 @@ class AdvancedPathfindingTest : StringSpec({
                                     2 -> TerrainType.MOUNTAIN
                                     else -> TerrainType.LAND
                                 },
-                                resourceType = ResourceType.NONE,
+                                resources = mutableListOf(),
                                 height = 1f
                             ),
                             discoveredBy = mutableSetOf(),

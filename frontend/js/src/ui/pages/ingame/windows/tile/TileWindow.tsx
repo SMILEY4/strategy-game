@@ -16,190 +16,247 @@ import {Button} from "../../../../components/button/Button";
 import {Txt} from "../../../../components/text/Txt";
 import {Projections} from "../../../../../common/webgl/projections";
 import {Tile} from "../../../../../models/tile/tile";
-import {ResourceType} from "../../../../../models/misc/resourceType";
+import {Color} from "../../../../../common/color/color";
 
 export interface TileWindowProps {
-	windowId: string;
-	identifier: Tile.Id | null;
+    windowId: string;
+    identifier: Tile.Id | null;
 }
 
 export function TileWindow(props: TileWindowProps): ReactElement {
 
-	const data: UseTileWindow.Data | null = UseTileWindow.useData(props.identifier);
+    const data: UseTileWindow.Data | null = UseTileWindow.useData(props.identifier);
 
-	if (data === null) {
-		return (
-			<DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
-				<Txt.Body secondary center fullSize>
-					<Txt.String>No tile selected.</Txt.String>
-				</Txt.Body>
-			</DecoratedWindow>
-		);
-	} else {
+    if (data === null) {
+        return (
+            <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton>
+                <Txt.Body secondary center fullSize>
+                    <Txt.String>No tile selected.</Txt.String>
+                </Txt.Body>
+            </DecoratedWindow>
+        );
+    } else {
 
-		return (
-			<DecoratedWindow windowId={props.windowId} withCloseButton withPinButton noPadding>
-				<VBox fullSize>
+        return (
+            <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton noPadding>
+                <VBox fullSize>
 
-					<Banner
-						title={mapHiddenOrDefault(data.tile.base, "Undiscovered", base => base.terrainType.id)}
-						subtitle={"Tile"}
-						spaceAbove
-					>
-						<Button circle small onClick={data.centerCamera}><Txt.Icon.Eye/></Button>
-					</Banner>
+                    <Banner
+                        title={mapHiddenOrDefault(data.tile.base, "Undiscovered", base => base.terrainType.id)}
+                        subtitle={"Tile"}
+                        spaceAbove
+                    >
+                        <Button circle small onClick={data.centerCamera}><Txt.Icon.Eye/></Button>
+                    </Banner>
 
-					<TabBar initial="Overview">
+                    <TabBar initial="Overview">
 
-						<TabOption name="Overview">
-							<VBox grow shrink scrollable padding_s gap_m>
-								<PanelOverview {...data}/>
-							</VBox>
-						</TabOption>
+                        <TabOption name="Overview">
+                            <VBox grow shrink scrollable padding_s gap_m>
+                                <PanelOverview {...data}/>
+                            </VBox>
+                        </TabOption>
 
-						<TabOption name="Political">
-							<VBox grow shrink scrollable padding_s gap_m>
-								<PanelPolitical {...data}/>
-							</VBox>
-						</TabOption>
+                        <TabOption name="Political">
+                            <VBox grow shrink scrollable padding_s gap_m>
+                                <PanelPolitical {...data}/>
+                            </VBox>
+                        </TabOption>
 
-						<TabOption name="D" circle>
-							<VBox grow shrink scrollable padding_s gap_m>
-								<PanelDebug {...data}/>
-							</VBox>
-						</TabOption>
+                        <TabOption name="D" circle>
+                            <VBox grow shrink scrollable padding_s gap_m>
+                                <PanelDebug {...data}/>
+                            </VBox>
+                        </TabOption>
 
-					</TabBar>
+                    </TabBar>
 
-				</VBox>
-			</DecoratedWindow>
-		);
-	}
+                </VBox>
+            </DecoratedWindow>
+        );
+    }
 
 }
 
 
 function PanelOverview(props: UseTileWindow.Data): ReactElement {
-	return (
-		<>
-			<SectionBaseInformation {...props}/>
-			<SectionContent {...props}/>
-		</>
-	);
+    return (
+        <>
+            <SectionBaseInformation {...props}/>
+            <SectionContent {...props}/>
+            <SectionResources {...props}/>
+        </>
+    );
 }
 
 function PanelPolitical(props: UseTileWindow.Data): ReactElement {
-	return (
-		<></>
-	);
+    return (
+        <></>
+    );
 }
 
 function PanelDebug(props: UseTileWindow.Data): ReactElement {
-	const worldCoords = Projections.hexToWorld(props.tile.position.q, props.tile.position.r);
-	return (
-		<>
-			<InsetKeyValueGrid dontGrow dontShrink>
+    const worldCoords = Projections.hexToWorld(props.tile.position.q, props.tile.position.r);
+    return (
+        <>
+            <InsetKeyValueGrid dontGrow dontShrink>
 
-				<Txt.Body><Txt.String>Tile Id:</Txt.String></Txt.Body>
-				<Txt.Body><Txt.String>{props.tile.id}</Txt.String></Txt.Body>
+                <Txt.Body><Txt.String>Tile Id:</Txt.String></Txt.Body>
+                <Txt.Body><Txt.String>{props.tile.id}</Txt.String></Txt.Body>
 
-				<Txt.Body><Txt.String>Location (hex):</Txt.String></Txt.Body>
-				<Txt.Body><Txt.String>{props.tile.position.q + "," + props.tile.position.r}</Txt.String></Txt.Body>
+                <Txt.Body><Txt.String>Location (hex):</Txt.String></Txt.Body>
+                <Txt.Body><Txt.String>{props.tile.position.q + "," + props.tile.position.r}</Txt.String></Txt.Body>
 
-				<Txt.Body><Txt.String>Location (world):</Txt.String></Txt.Body>
-				<Txt.Body><Txt.String>{worldCoords.x + "," + worldCoords.y}</Txt.String></Txt.Body>
+                <Txt.Body><Txt.String>Location (world):</Txt.String></Txt.Body>
+                <Txt.Body><Txt.String>{worldCoords.x + "," + worldCoords.y}</Txt.String></Txt.Body>
 
 
-			</InsetKeyValueGrid>
-		</>
-	);
+            </InsetKeyValueGrid>
+        </>
+    );
 }
 
 function SectionBaseInformation(props: UseTileWindow.Data): ReactElement {
-	return (
-		<InsetKeyValueGrid dontGrow dontShrink>
+    return (
+        <InsetKeyValueGrid dontGrow dontShrink>
 
-			<Txt.Body><Txt.String>Terrain:</Txt.String></Txt.Body>
-			{!props.tile.base.visible && (
-				<Txt.Body><Txt.String>unknown</Txt.String></Txt.Body>
-			)}
-			{props.tile.base.visible && (
-				<Txt.Body><Txt.String>{props.tile.base.value.terrainType.id}</Txt.String></Txt.Body>
-			)}
+            <Txt.Body><Txt.String>Terrain:</Txt.String></Txt.Body>
+            {!props.tile.base.visible && (
+                <Txt.Body><Txt.String>unknown</Txt.String></Txt.Body>
+            )}
+            {props.tile.base.visible && (
+                <Txt.Body><Txt.String>{props.tile.base.value.terrainType.id}</Txt.String></Txt.Body>
+            )}
 
-			<Txt.Body><Txt.String>Resource:</Txt.String></Txt.Body>
-			{!props.tile.base.visible && (
-				<Txt.Body><Txt.String>unknown</Txt.String></Txt.Body>
-			)}
-			{(props.tile.base.visible && props.tile.base.value.resourceType === ResourceType.NONE) && (
-				<Txt.Body><Txt.String>{props.tile.base.value.resourceType.id}</Txt.String></Txt.Body>
-			)}
-			{(props.tile.base.visible && props.tile.base.value.resourceType !== ResourceType.NONE) && (
-				<Txt.Body>
-					<Txt.Icon name={props.tile.base.value.resourceType.id.toLowerCase()}/>
-					<Txt.String>{props.tile.base.value.resourceType.id}</Txt.String>
-				</Txt.Body>
-			)}
+            <Txt.Body><Txt.String>Resource:</Txt.String></Txt.Body>
+            {!props.tile.base.visible && (
+                <Txt.Body><Txt.String>unknown</Txt.String></Txt.Body>
+            )}
 
-			<Txt.Body><Txt.String>Location:</Txt.String></Txt.Body>
-			<Txt.Body><Txt.String>{props.tile.position.q + "," + props.tile.position.r}</Txt.String></Txt.Body>
+            <Txt.Body><Txt.String>Location:</Txt.String></Txt.Body>
+            <Txt.Body><Txt.String>{props.tile.position.q + "," + props.tile.position.r}</Txt.String></Txt.Body>
 
-		</InsetKeyValueGrid>
-	);
+        </InsetKeyValueGrid>
+    );
 }
 
+function SectionResources(props: UseTileWindow.Data): ReactElement {
+    return (
+        <VBox padding_l dontShrink gap_xs>
+
+            <VSpacer size_s/>
+            <Txt.Header2 center>
+                <Txt.String>Resources</Txt.String>
+            </Txt.Header2>
+            <Divider line/>
+
+            <InsetPanel dontGrow dontShrink>
+
+                {!props.tile.base.visible && (
+                    <Txt.Body secondary center>
+                        <Txt.String>Unknown</Txt.String>
+                    </Txt.Body>
+                )}
+
+                {(props.tile.base.visible && props.tile.base.value.resources.length === 0) && (
+                    <Txt.Body secondary center>
+                        <Txt.String>No resources present.</Txt.String>
+                    </Txt.Body>
+                )}
+
+                {(props.tile.base.visible && props.tile.base.value.resources.length > 0) && (
+                    <VBox padding_s gap_s fullSize>
+                        {props.tile.base.value.resources.map(resource => (
+                            <DecoratedPanel
+                                key={resource.type.id}
+                                background={
+                                    <DecoratedPanel.ColorBackground
+                                        color={resource.type.color?.toCss() ?? Color.GRAY.toCss()}/>
+                                }
+                                blue
+                                pattern
+                                dontGrow
+                                dontShrink
+                            >
+                                <VBox padding_s gap_s top left>
+                                    <Txt.Body><Txt.String>{resource.type.id}</Txt.String></Txt.Body>
+                                    <Txt.Body secondary>
+                                        <Txt.String>Amount: </Txt.String>
+                                        <Txt.Number>{resource.amount}</Txt.Number>
+                                        <Txt.String> (of </Txt.String>
+                                        <Txt.Number>{resource.maxAmount}</Txt.Number>
+                                        <Txt.String>)</Txt.String>
+                                    </Txt.Body>
+                                    <Txt.Body secondary>
+                                        <Txt.String>Rate of Change: </Txt.String>
+                                        <Txt.Number>{resource.changeRate}</Txt.Number>
+                                    </Txt.Body>
+                                    <Txt.Body secondary>
+                                        <Txt.String>Can Deplete: </Txt.String>
+                                        <Txt.Boolean mode="yes/no">{resource.canDeplete}</Txt.Boolean>
+                                    </Txt.Body>
+                                </VBox>
+                            </DecoratedPanel>
+                        ))}
+                    </VBox>
+                )}
+
+            </InsetPanel>
+        </VBox>
+    );
+}
 
 function SectionContent(props: UseTileWindow.Data): ReactElement {
-	return (
-		<VBox dontShrink gap_xs>
+    return (
+        <VBox padding_l dontShrink gap_xs>
 
-			<VSpacer size_s/>
-			<Txt.Header2 center>
-				<Txt.String>Content</Txt.String>
-			</Txt.Header2>
-			<Divider line/>
+            <VSpacer size_s/>
+            <Txt.Header2 center>
+                <Txt.String>Content</Txt.String>
+            </Txt.Header2>
+            <Divider line/>
 
-			{(props.tile.visibility !== Visibility.VISIBLE) && (
-				<Txt.Body secondary center>
-					<Txt.String>Unknown</Txt.String>
-				</Txt.Body>
-			)}
+            {(props.tile.visibility !== Visibility.VISIBLE) && (
+                <Txt.Body secondary center>
+                    <Txt.String>Unknown</Txt.String>
+                </Txt.Body>
+            )}
 
-			{(props.tile.visibility === Visibility.VISIBLE && props.worldObjects.length === 0) && (
-				<Txt.Body secondary center>
-					<Txt.String>Nothing on this tile.</Txt.String>
-				</Txt.Body>
-			)}
+            {(props.tile.visibility === Visibility.VISIBLE && props.worldObjects.length === 0) && (
+                <Txt.Body secondary center>
+                    <Txt.String>Nothing on this tile.</Txt.String>
+                </Txt.Body>
+            )}
 
-			{props.worldObjects.length > 0 && (
-				<InsetPanel grow>
-					<VBox padding_s gap_s fullSize>
-						{props.worldObjects.map(worldObject => (
+            {props.worldObjects.length > 0 && (
+                <InsetPanel grow>
+                    <VBox padding_s gap_s fullSize>
+                        {props.worldObjects.map(worldObject => (
 
-							<DecoratedPanel
-								key={worldObject.id}
-								background={
-									<DecoratedPanel.ColorBackground color={worldObject.realm.color.toCss()}/>
-								}
-								blue
-								pattern
-								dontGrow
-								dontShrink
-							>
-								<HBox padding_s gap_s spaceBetween centerVertical>
-									<Txt.Body>
-										<Txt.Link onClick={() => props.open.worldObject(worldObject.id)}>
-											<Txt.String>{worldObject.type.group + "/" + worldObject.type.name}</Txt.String>
-										</Txt.Link>
-									</Txt.Body>
-									<Txt.Body secondary><Txt.String>Unit</Txt.String></Txt.Body>
-								</HBox>
-							</DecoratedPanel>
+                            <DecoratedPanel
+                                key={worldObject.id}
+                                background={
+                                    <DecoratedPanel.ColorBackground color={worldObject.realm.color.toCss()}/>
+                                }
+                                blue
+                                pattern
+                                dontGrow
+                                dontShrink
+                            >
+                                <HBox padding_s gap_s spaceBetween centerVertical>
+                                    <Txt.Body>
+                                        <Txt.Link onClick={() => props.open.worldObject(worldObject.id)}>
+                                            <Txt.String>{worldObject.type.group + "/" + worldObject.type.name}</Txt.String>
+                                        </Txt.Link>
+                                    </Txt.Body>
+                                    <Txt.Body secondary><Txt.String>Unit</Txt.String></Txt.Body>
+                                </HBox>
+                            </DecoratedPanel>
 
-						))}
-					</VBox>
-				</InsetPanel>
-			)}
-		</VBox>
-	);
+                        ))}
+                    </VBox>
+                </InsetPanel>
+            )}
+        </VBox>
+    );
 }

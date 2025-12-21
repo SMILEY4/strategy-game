@@ -77,6 +77,7 @@ class SpawnSettlementCommandExecutor() : Logging {
                     entries = mutableListOf(
                         WorldObjectComponent.Economy.Entry(
                             name = "population",
+                            harvests = mapOf(),
                             consumes = mapOf(
                                 ResourceType.FISH to 2.0,
                             ),

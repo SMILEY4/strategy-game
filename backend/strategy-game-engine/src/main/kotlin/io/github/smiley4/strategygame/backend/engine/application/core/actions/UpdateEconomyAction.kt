@@ -5,7 +5,6 @@ import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
-import java.util.Map.entry
 import kotlin.math.max
 import kotlin.math.min
 
@@ -40,6 +39,7 @@ class UpdateEconomyAction : Logging {
         gameState.worldObjects
             .filter { it.hasComponent<WorldObjectComponent.Economy>() }
             .forEach { worldObject ->
+                val tile = gameState.tiles.get(worldObject.tile) ?: throw Exception("Could not find tile")
                 val economyComponent = worldObject.getComponent<WorldObjectComponent.Economy>()
 
                 // for each economy entry
@@ -49,29 +49,42 @@ class UpdateEconomyAction : Logging {
 
                         // check: all required resources available?
                         entry.active = true
+                        entry.harvests.forEach { (type, amount) ->
+                            if (tile.dataWorld.resources.none { it.type == type && it.amount >= amount }) {
+                                entry.active = false
+                            }
+                        }
                         entry.consumes.forEach { (type, amount) ->
                             if (!economyComponent.storage.hasAmount(type, amount)) {
                                 entry.active = false
-                                economyComponent.log.add(WorldObjectComponent.Economy.Log(
-                                    logType = "missing_resources",
-                                    entryName = entry.name,
-                                    resourceType = type,
-                                    amount = amount
-                                ))
+                                economyComponent.log.add(
+                                    WorldObjectComponent.Economy.Log(
+                                        logType = "missing_resources",
+                                        entryName = entry.name,
+                                        resourceType = type,
+                                        amount = amount
+                                    )
+                                )
                                 log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} . ${entry.name} is missing resources" }
                             }
                         }
 
                         // consume all required resources
                         if (entry.active) {
+                            entry.harvests.forEach { (type, amount) ->
+                                val resourceNode = tile.dataWorld.resources.find { it.type == type && it.amount >= amount }
+                                resourceNode?.amount -= amount
+                            }
                             entry.consumes.forEach { (type, amount) ->
                                 economyComponent.storage.retrieve(type, amount)
-                                economyComponent.log.add(WorldObjectComponent.Economy.Log(
-                                    logType = "consumed_resources",
-                                    entryName = entry.name,
-                                    resourceType = type,
-                                    amount = amount
-                                ))
+                                economyComponent.log.add(
+                                    WorldObjectComponent.Economy.Log(
+                                        logType = "consumed_resources",
+                                        entryName = entry.name,
+                                        resourceType = type,
+                                        amount = amount
+                                    )
+                                )
                                 log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} . ${entry.name} consumed resources" }
                             }
                         }
@@ -98,12 +111,14 @@ class UpdateEconomyAction : Logging {
                         if (entry.active) {
                             entry.produces.forEach { (type, amount) ->
                                 economyComponent.storage.store(type, amount)
-                                economyComponent.log.add(WorldObjectComponent.Economy.Log(
-                                    logType = "produced_resources",
-                                    entryName = entry.name,
-                                    resourceType = type,
-                                    amount = amount
-                                ))
+                                economyComponent.log.add(
+                                    WorldObjectComponent.Economy.Log(
+                                        logType = "produced_resources",
+                                        entryName = entry.name,
+                                        resourceType = type,
+                                        amount = amount
+                                    )
+                                )
                                 log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} . ${entry.name} produced resources" }
                             }
                         }
@@ -176,18 +191,22 @@ class UpdateEconomyAction : Logging {
 
             currentImport.worldObject.getComponent<WorldObjectComponent.Economy>().storage.store(matchingExport.type, tradeAmount)
             matchingExport.worldObject.getComponent<WorldObjectComponent.Economy>().storage.retrieve(matchingExport.type, tradeAmount)
-            currentImport.worldObject.getComponent<WorldObjectComponent.Economy>().log.add(WorldObjectComponent.Economy.Log(
-                logType = "imported_resources",
-                entryName = "",
-                resourceType = currentImport.type,
-                amount = currentImport.amount
-            ))
-            matchingExport.worldObject.getComponent<WorldObjectComponent.Economy>().log.add(WorldObjectComponent.Economy.Log(
-                logType = "exported_resources",
-                entryName = "",
-                resourceType = currentImport.type,
-                amount = currentImport.amount
-            ))
+            currentImport.worldObject.getComponent<WorldObjectComponent.Economy>().log.add(
+                WorldObjectComponent.Economy.Log(
+                    logType = "imported_resources",
+                    entryName = "",
+                    resourceType = currentImport.type,
+                    amount = currentImport.amount
+                )
+            )
+            matchingExport.worldObject.getComponent<WorldObjectComponent.Economy>().log.add(
+                WorldObjectComponent.Economy.Log(
+                    logType = "exported_resources",
+                    entryName = "",
+                    resourceType = currentImport.type,
+                    amount = currentImport.amount
+                )
+            )
             log().debug { "     ... traded $tradeAmount ${currentImport.type}: ${currentImport.worldObject.type.group}/${currentImport.worldObject.type.name} -> ${matchingExport.worldObject.type.group}/${matchingExport.worldObject.type.name}" }
 
             // parts of import offer remaining -> put back partial import offer

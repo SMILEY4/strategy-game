@@ -1,11 +1,11 @@
 package io.github.smiley4.strategygame.backend.sessions.application.persistence.entities
 
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
-import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 import io.github.smiley4.strategygame.backend.commondata.Realm
+import io.github.smiley4.strategygame.backend.commondata.ResourceNode
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.ResourceType
+import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 
 
 internal class TileEntity(
@@ -42,21 +42,21 @@ internal class TileEntity(
 
 internal class TileWorldDataEntity(
     val terrainType: TerrainType,
-    val resourceType: ResourceType,
+    val resources: List<ResourceNode>,
     val height: Float,
 ) {
 
     companion object {
         fun of(serviceModel: Tile.WorldData) = TileWorldDataEntity(
             terrainType = serviceModel.terrainType,
-            resourceType = serviceModel.resourceType,
+            resources = serviceModel.resources,
             height = serviceModel.height
         )
     }
 
     fun asServiceModel() = Tile.WorldData(
         terrainType = this.terrainType,
-        resourceType = this.resourceType,
+        resources = this.resources.toMutableList(),
         height = this.height
     )
 }

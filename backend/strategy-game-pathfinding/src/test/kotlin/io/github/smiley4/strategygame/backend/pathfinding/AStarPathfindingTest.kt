@@ -4,7 +4,6 @@ import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.pathfinding.algorithms.astar.AStarPathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
 import io.github.smiley4.strategygame.backend.pathfinding.score.ScoreCalculator
@@ -210,7 +209,7 @@ class AStarPathfindingTest : StringSpec({
                                     2 -> TerrainType.MOUNTAIN
                                     else -> TerrainType.LAND
                                 },
-                                resourceType = ResourceType.NONE,
+                                resources = mutableListOf(),
                                 height = 1f
                             ),
                             discoveredBy = mutableSetOf(),

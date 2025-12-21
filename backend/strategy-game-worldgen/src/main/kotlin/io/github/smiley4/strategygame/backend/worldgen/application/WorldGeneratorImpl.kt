@@ -1,12 +1,13 @@
 package io.github.smiley4.strategygame.backend.worldgen.application
 
 import io.github.smiley4.strategygame.backend.common.utils.WeightedCollection
+import io.github.smiley4.strategygame.backend.commondata.ResourceNode
 import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenerator
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenSettings
 import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenTile
+import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenerator
 import kotlin.random.Random
 
 internal class WorldGeneratorImpl : WorldGenerator {
@@ -21,16 +22,20 @@ internal class WorldGeneratorImpl : WorldGenerator {
         this.SetFractalWeightedStrength(0.2f)
     }
 
+    private val resourceAmountsConfig = WeightedCollection<Int>().apply {
+        add(0.6, 0)
+        add(0.3, 1)
+        add(0.1, 2)
+    }
+
     private val resourceConfig = mapOf(
         TerrainType.LAND to WeightedCollection<ResourceType>().apply {
-            add(0.6, ResourceType.NONE)
-            add(0.2, ResourceType.WOOD)
-            add(0.15, ResourceType.STONE)
-            add(0.05, ResourceType.METAL)
+            add(0.5, ResourceType.WOOD)
+            add(0.375, ResourceType.STONE)
+            add(0.125, ResourceType.METAL)
         },
         TerrainType.WATER to WeightedCollection<ResourceType>().apply {
-            add(0.7, ResourceType.NONE)
-            add(0.3, ResourceType.FISH)
+            add(1.0, ResourceType.FISH)
         },
     )
 
@@ -51,7 +56,7 @@ internal class WorldGeneratorImpl : WorldGenerator {
             r = position.r,
             height = height,
             type = terrainType,
-            resource = resourceTypeAt(terrainType)
+            resources = resourcesAt(terrainType)
         )
     }
 
@@ -63,8 +68,25 @@ internal class WorldGeneratorImpl : WorldGenerator {
         }
     }
 
+    private fun resourcesAt(terrain: TerrainType): List<ResourceNode> {
+        val amount = resourceAmountsConfig.chooseRandom(random)
+        return buildList {
+            for (i in 1..amount) {
+                add(
+                    ResourceNode(
+                        type = resourceTypeAt(terrain),
+                        amount = 100.0,
+                        maxAmount = 100.0,
+                        changeRate = 1.0,
+                        canDeplete = false
+                    )
+                )
+            }
+        }
+    }
+
     private fun resourceTypeAt(terrain: TerrainType): ResourceType {
-        return resourceConfig[terrain]?.chooseRandom(random) ?: ResourceType.NONE
+        return resourceConfig[terrain]?.chooseRandom(random) ?: throw Exception("Failed to choose resource type.")
     }
 
 }

@@ -1,6 +1,5 @@
 import {Tile} from "../../../models/tile/tile";
 import {WasmDataViewWriter} from "./wasmDataViewWriter";
-import {ResourceType} from "../../../models/misc/resourceType";
 
 export namespace TileWasmSerializer {
 
@@ -34,16 +33,17 @@ export namespace TileWasmSerializer {
 		writer.pushUint8(tile.base.visible ? tile.base.value.terrainType.renderId : 0);
 
 		// resource_id: u8, // "0" = no resource
-		writer.pushUint8((tile.base.visible && tile.base.value.resourceType != null && tile.base.value.resourceType != ResourceType.NONE) ? 1 : 0);
+		writer.pushUint8((tile.base.visible && tile.base.value.resources.length > 0) ? 1 : 0)
 
 		// resource_color_r: u8,
 		// resource_color_g: u8,
 		// resource_color_b: u8,
 		// resource_color_a: u8,
-		if (tile.base.visible && tile.base.value.resourceType != null && tile.base.value.resourceType != ResourceType.NONE) {
-			writer.pushUint8(tile.base.value.resourceType.color!.getRedByte());
-			writer.pushUint8(tile.base.value.resourceType.color!.getGreenByte());
-			writer.pushUint8(tile.base.value.resourceType.color!.getBlueByte());
+		if (tile.base.visible && tile.base.value.resources.length > 0) {
+			const resource = tile.base.value.resources[0]
+			writer.pushUint8(resource.type.color!.getRedByte());
+			writer.pushUint8(resource.type.color!.getGreenByte());
+			writer.pushUint8(resource.type.color!.getBlueByte());
 			writer.pushUint8(255);
 		} else {
 			writer.pushUint8(0);

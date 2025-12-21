@@ -137,6 +137,23 @@ export namespace Txt {
 		);
 	}
 
+	export interface BooleanProps {
+		mode?: "true/false" | "yes/no"
+		children?: boolean;
+	}
+
+	export function Boolean(props: BooleanProps): ReactElement {
+		const mode = props.mode ?? "true/false"
+		return (
+			<span className={joinClassNames([
+				"txt-boolean",
+			])}>
+				{props.mode === "true/false" && (props.children ? "true" : "false")}
+				{props.mode === "yes/no" && (props.children ? "yes" : "no")}
+			</span>
+		);
+	}
+
 
 	export interface NumberProps {
 		// determines whether value should be classified "neutral", "good" or "bad"

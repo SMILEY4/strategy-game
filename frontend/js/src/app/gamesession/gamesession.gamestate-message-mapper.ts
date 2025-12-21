@@ -69,8 +69,14 @@ export namespace GameStateMapper {
             visibility: visibilityMapping[tileMsg.visibility],
             base: mapHidden(tileMsg.base, baseMsg => ({
                 terrainType: terrainTypeMapping[baseMsg.terrainType],
-                resourceType: resourceTypeMapping[baseMsg.resourceType],
                 height: baseMsg.height,
+                resources: baseMsg.resources.map(res => ({
+                    type: resourceTypeMapping[res.type],
+                    amount: res.amount,
+                    maxAmount: res.maxAmount,
+                    changeRate: res.changeRate,
+                    canDeplete: res.canDeplete,
+                }))
             })),
             metaProperties: {
                 seed: tileMsg.metaProperties.seed,

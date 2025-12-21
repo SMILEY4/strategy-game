@@ -1,12 +1,12 @@
-import {TilePosition} from "../models/tile/tilePosition";
+import {Tile} from "../models/tile/tile";
 
 export namespace TilemapUtils {
 
-    export function hexCoordinateS(pos: TilePosition): number {
+    export function hexCoordinateS(pos: Tile.Position): number {
         return -pos.q - pos.r;
     }
 
-    export function getChunkCoordinate(pos: TilePosition, radius: number): [number, number] {
+    export function getChunkCoordinate(pos: Tile.Position, radius: number): [number, number] {
         // https://observablehq.com/@sanderevers/hexagon-tiling-of-an-hexagonal-grid
 
         const area = 3 * radius * radius + 3 * radius + 1;

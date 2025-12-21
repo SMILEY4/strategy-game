@@ -496,6 +496,7 @@ export namespace Color {
 	}
 
 	export const BLACK = rgbByte(0, 0, 0);
+	export const GRAY = rgbByte(127, 127, 127);
 
 	export const EMPTY = rgbaByte(0, 0, 0, 0);
 
