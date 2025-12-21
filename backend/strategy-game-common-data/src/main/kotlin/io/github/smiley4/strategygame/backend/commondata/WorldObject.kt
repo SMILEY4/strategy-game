@@ -68,6 +68,7 @@ sealed interface WorldObjectComponent {
 
         data class Entry(
             val name: String,
+            val harvests: Map<ResourceType, Double>,
             val consumes: Map<ResourceType, Double>,
             val produces: Map<ResourceType, Double>,
             var active: Boolean = true,

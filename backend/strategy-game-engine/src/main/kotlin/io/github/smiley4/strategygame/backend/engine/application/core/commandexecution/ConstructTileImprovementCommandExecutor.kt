@@ -72,6 +72,7 @@ class ConstructTileImprovementCommandExecutor : Logging {
                     entries = mutableListOf(
                         WorldObjectComponent.Economy.Entry(
                             name = command.data.improvement.name.lowercase(),
+                            harvests = command.data.improvement.harvests,
                             consumes = mapOf(),
                             produces = command.data.improvement.produces.toMap(),
                         )

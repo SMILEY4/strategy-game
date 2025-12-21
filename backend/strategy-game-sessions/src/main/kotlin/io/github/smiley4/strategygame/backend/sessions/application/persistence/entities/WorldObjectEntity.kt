@@ -55,6 +55,7 @@ internal class WorldObjectEntity(
                             entries = it.entries.map { e ->
                                 Economy.Entry(
                                     name = e.name,
+                                    harvests = e.harvests,
                                     consumes = e.consumes,
                                     produces = e.produces,
                                     active = e.active,
@@ -105,6 +106,7 @@ internal class WorldObjectEntity(
                         entries = it.entries.map { e ->
                             WorldObjectComponent.Economy.Entry(
                                 name = e.name,
+                                harvests = e.harvests,
                                 consumes = e.consumes,
                                 produces = e.produces,
                                 active = e.active,
@@ -166,6 +168,7 @@ internal sealed interface WorldObjectComponentEntity {
 
         data class Entry(
             val name: String,
+            val harvests: Map<ResourceType, Double>,
             val consumes: Map<ResourceType, Double>,
             val produces: Map<ResourceType, Double>,
             var active: Boolean = true,
