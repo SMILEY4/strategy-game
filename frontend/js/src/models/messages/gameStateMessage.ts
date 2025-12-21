@@ -14,7 +14,15 @@ export type VisibilityMsg = "UNKNOWN" | "DISCOVERED" | "VISIBLE"
 
 export type TerrainTypeMsg = "LAND" | "WATER"
 
-export type ResourceTypeMsg = "NONE" | "WOOD" | "FISH" | "STONE" | "METAL"
+export type ResourceTypeMsg =
+    | "RAW_WOOD"
+    | "RAW_FISH"
+    | "RAW_STONE"
+    | "RAW_METAL"
+    | "TIMBER"
+    | "FOOD"
+    | "STONE"
+    | "METAL"
 
 export type WorldObjectTypeGroupMsg = "unit" | "tile-improvement" | "settlement"
 
@@ -126,6 +134,10 @@ interface RouteNodeComponentMessage {
 interface EconomyComponentMessage {
     type: "economy";
     storage: Record<string, number>,
+    entries: ({
+        name: string,
+        active: boolean,
+    })[]
     log: ({
         logType: string,
         entryName: string,

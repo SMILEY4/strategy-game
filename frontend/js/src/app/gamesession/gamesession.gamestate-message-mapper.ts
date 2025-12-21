@@ -46,9 +46,12 @@ export namespace GameStateMapper {
     };
 
     const resourceTypeMapping: Record<ResourceTypeMsg, ResourceType> = {
-        "NONE": ResourceType.NONE,
-        "WOOD": ResourceType.WOOD,
-        "FISH": ResourceType.FISH,
+        "RAW_WOOD": ResourceType.RAW_WOOD,
+        "RAW_FISH": ResourceType.RAW_FISH,
+        "RAW_STONE": ResourceType.RAW_STONE,
+        "RAW_METAL": ResourceType.RAW_METAL,
+        "TIMBER": ResourceType.TIMBER,
+        "FOOD": ResourceType.FOOD,
         "STONE": ResourceType.STONE,
         "METAL": ResourceType.METAL,
     };
@@ -164,6 +167,7 @@ export namespace GameStateMapper {
                         return {
                             type: "economy",
                             storage: componentMsg.storage,
+                            entries: componentMsg.entries,
                             log: componentMsg.log,
                         } as WorldObjectComponent.Economy;
                     }

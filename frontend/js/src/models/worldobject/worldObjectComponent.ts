@@ -59,6 +59,10 @@ export namespace WorldObjectComponent {
     export interface Economy {
         type: Type.Economy,
         storage: Record<string, number>,
+        entries: ({
+            name: string,
+            active: boolean
+        })[],
         log: ({
             logType: string,
             entryName: string,

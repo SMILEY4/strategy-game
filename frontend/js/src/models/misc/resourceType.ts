@@ -3,11 +3,15 @@ import {Color} from "../../common/color/color";
 export class ResourceType {
 
 	// predefined instances
-	public static readonly NONE = new ResourceType("NONE", null);
-	public static readonly WOOD = new ResourceType("WOOD", Color.rgbByte(112, 87, 28));
-	public static readonly FISH = new ResourceType("FISH", Color.rgbByte(36, 133, 212));
+	public static readonly RAW_WOOD = new ResourceType("RAW_WOOD", Color.rgbByte(112, 87, 28));
+	public static readonly RAW_FISH = new ResourceType("RAW_FISH", Color.rgbByte(36, 133, 212));
+	public static readonly RAW_STONE = new ResourceType("RAW_STONE", Color.rgbByte(80, 86, 92));
+	public static readonly RAW_METAL = new ResourceType("RAW_METAL", Color.rgbByte(134, 156, 158));
+	public static readonly TIMBER = new ResourceType("TIMBER", Color.rgbByte(112, 87, 28));
+	public static readonly FOOD = new ResourceType("FOOD", Color.rgbByte(36, 133, 212));
 	public static readonly STONE = new ResourceType("STONE", Color.rgbByte(80, 86, 92));
 	public static readonly METAL = new ResourceType("METAL", Color.rgbByte(134, 156, 158));
+
 
 	// collection of all values (dynamically built from static properties)
 	public static readonly ALL: ResourceType[] =
