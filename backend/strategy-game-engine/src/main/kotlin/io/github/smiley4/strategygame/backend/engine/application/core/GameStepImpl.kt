@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.engine.application.core.actions.ConstructRouteAction
 import io.github.smiley4.strategygame.backend.engine.application.core.actions.UpdateEconomyAction
+import io.github.smiley4.strategygame.backend.engine.application.core.actions.UpdateResourceNodesAction
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.ConstructTileImprovementCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.DisbandCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.MoveCommandExecutor
@@ -21,7 +22,8 @@ internal class GameStepImpl(
     val constructImprovementCmdExecutor: ConstructTileImprovementCommandExecutor,
     val spawnSettlementCmdExecutor: SpawnSettlementCommandExecutor,
     val constructRouteAction: ConstructRouteAction,
-    val updateEconomyAction: UpdateEconomyAction
+    val updateEconomyAction: UpdateEconomyAction,
+    val updateResourceNodesAction: UpdateResourceNodesAction
 ) : GameStep, Logging {
 
     private val metricId = MetricId.action(GameStep::class)
@@ -54,6 +56,7 @@ internal class GameStepImpl(
     private fun updateWorld(gameState: GameState) {
         constructRouteAction.onWorldUpdate(gameState)
         updateEconomyAction.onWorldUpdate(gameState)
+        updateResourceNodesAction.onWorldUpdate(gameState)
     }
 
     private fun prepareNextTurn(game: GameState) {
