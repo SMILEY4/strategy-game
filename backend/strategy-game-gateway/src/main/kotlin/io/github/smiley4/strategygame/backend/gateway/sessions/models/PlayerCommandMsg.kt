@@ -6,6 +6,7 @@ import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileImprovementType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
+import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -61,5 +62,21 @@ internal class SpawnSettlementCommandMsg(
         worldObject = WorldObject.Id(worldObjectId),
         tile = tile,
         settlementName = settlementName,
+    )
+}
+
+
+@JsonTypeName("world-object-add-production-queue-item")
+internal class AddProductionQueueItemCommandMsg(
+    val worldObjectId: String,
+    val item: String
+) : PlayerCommandMsg() {
+    override fun asCommandData() = CommandData.AddProductionQueueItem(
+        worldObject = WorldObject.Id(worldObjectId),
+        when (item) {
+            "scout" -> WorldObjectComponent.Production.ProductionQueueEntry.Scout()
+            "worker" -> WorldObjectComponent.Production.ProductionQueueEntry.Worker()
+            else -> throw Exception("Invalid production queue item '$item'.")
+        }
     )
 }

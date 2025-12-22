@@ -33,7 +33,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
     } else {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton withPinButton noPadding>
-                <VBox fullSize>
+                <VBox fullSize scrollable>
 
                     <Banner
                         title={data.worldObject.type.group + "/" + data.worldObject.type.name}
@@ -153,6 +153,33 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
                             </VBox>
                         </InsetPanel>
                     </VBox>
+
+                    {(WorldObjectComponent.has(data.worldObject, WorldObjectComponent.Type.Production)) && (
+                        <VBox padding_l gap_s dontGrow dontShrink>
+
+                            <VSpacer size_s/>
+                            <Txt.Header2 center>
+                                <Txt.String>Production</Txt.String>
+                            </Txt.Header2>
+                            <Divider line/>
+
+                            <HBox>
+                                <Button onClick={() => data.productionQueue.add("worker")}>Add Worker</Button>
+                                <Button onClick={() => data.productionQueue.add("scout")}>Add Scout</Button>
+                            </HBox>
+
+                            <InsetPanel dontShrink dontGrow>
+                                {WorldObjectComponent.get(data.worldObject, WorldObjectComponent.Type.Production).queue.map((queueEntry, index) => (
+                                    <Txt.Body>
+                                        <Txt.String>{(index+1) + ") " + queueEntry.type}</Txt.String>
+                                        <Txt.Whitespace/>
+                                        <Txt.Percentage>{queueEntry.progress}</Txt.Percentage>
+                                    </Txt.Body>
+                                ))}
+                            </InsetPanel>
+
+                        </VBox>
+                    )}
 
 
                     {(WorldObjectComponent.has(data.worldObject, WorldObjectComponent.Type.Economy)) && (

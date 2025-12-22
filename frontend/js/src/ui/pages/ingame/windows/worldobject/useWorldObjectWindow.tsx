@@ -36,7 +36,10 @@ export namespace UseWorldObjectWindow {
     export interface Data {
         worldObject: WorldObject;
         actions: WorldObjectAction[],
-        routes: WorldObjectSummary[]
+        routes: WorldObjectSummary[],
+        productionQueue: {
+            add: (item: "scout" | "worker") => void
+        }
         open: {
             tile: () => void,
             worldObject: (id: WorldObject.Id) => void,
@@ -91,6 +94,14 @@ export namespace UseWorldObjectWindow {
                 worldObject: worldObject,
                 actions: collectActions(worldObject, commands),
                 routes: connectedWorldObjects,
+                productionQueue: {
+                    add: (item: "scout" | "worker") => CommandService.addCommand({
+                        type: Command.Type.AddProductionQueueItem,
+                        id: Command.genId(),
+                        worldObjectId: worldObject.id,
+                        item: item
+                    })
+                },
                 open: {
                     tile: () => UseTileWindow.open(worldObject.tile.id ?? null),
                     worldObject: (id: WorldObject.Id) => UseWorldObjectWindow.open(id)

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.CommandData.AddProductionQueueItem
 import io.github.smiley4.strategygame.backend.commondata.CommandData.ConstructTileImprovement
 import io.github.smiley4.strategygame.backend.commondata.CommandData.Disband
 import io.github.smiley4.strategygame.backend.commondata.CommandData.Move
@@ -12,6 +13,7 @@ import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.TileImprovementType
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject.Id
+import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 import io.github.smiley4.strategygame.backend.commondata.utils.DbId
 
 internal class CommandEntity<T : CommandEntityData>(
@@ -50,6 +52,13 @@ internal class CommandEntity<T : CommandEntityData>(
                     tile = TileRefEntity.of(serviceModel.tile),
                     settlementName = serviceModel.settlementName
                 )
+                is AddProductionQueueItem -> AddProductionQueueItemCommandEntityData(
+                    worldObject = serviceModel.worldObject.value,
+                    item = when (serviceModel.item) {
+                        is WorldObjectComponent.Production.ProductionQueueEntry.Scout -> "scout"
+                        is WorldObjectComponent.Production.ProductionQueueEntry.Worker -> "worker"
+                    }
+                )
             }
         }
 
@@ -80,6 +89,14 @@ internal class CommandEntity<T : CommandEntityData>(
                 worldObject = Id(entity.worldObject),
                 tile = entity.tile.asServiceModel(),
                 settlementName = entity.settlementName
+            )
+            is AddProductionQueueItemCommandEntityData -> AddProductionQueueItem(
+                worldObject = Id(entity.worldObject),
+                item = when (entity.item) {
+                    "scout" -> WorldObjectComponent.Production.ProductionQueueEntry.Scout()
+                    "worker" -> WorldObjectComponent.Production.ProductionQueueEntry.Worker()
+                    else -> throw Exception("Could not convert item to production queue item")
+                }
             )
         }
     }
@@ -114,4 +131,10 @@ internal class SpawnSettlementCommandEntityData(
     val worldObject: String,
     val tile: TileRefEntity,
     val settlementName: String,
+) : CommandEntityData()
+
+
+internal class AddProductionQueueItemCommandEntityData(
+    val worldObject: String,
+    val item: String,
 ) : CommandEntityData()

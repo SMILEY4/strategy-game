@@ -171,6 +171,12 @@ export namespace GameStateMapper {
                             log: componentMsg.log,
                         } as WorldObjectComponent.Economy;
                     }
+                    if (componentMsg.type == "production") {
+                        return {
+                            type: "production",
+                            queue: componentMsg.queue,
+                        } as WorldObjectComponent.Production;
+                    }
 
                     // exhaustiveness check: syntax error in case of unhandled action type
                     // noinspection UnnecessaryLocalVariableJS

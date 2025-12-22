@@ -9,6 +9,7 @@ import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 import io.github.smiley4.strategygame.backend.playerpov.application.POVCache
 import io.github.smiley4.strategygame.backend.playerpov.application.TileVisibilityDTO
 import io.github.smiley4.strategygame.backend.playerpov.application.isLessThan
+import kotlin.math.min
 
 
 internal class WorldObjectPOVBuilder(private val povCache: POVCache) {
@@ -78,8 +79,37 @@ internal class WorldObjectPOVBuilder(private val povCache: POVCache) {
                             }
                         }
                     }
+                    is WorldObjectComponent.Production -> obj {
+                        "type" to "production"
+                        "queue" to component.queue.map { queueEntry ->
+                            obj {
+                                "type" to when (queueEntry) {
+                                    is WorldObjectComponent.Production.ProductionQueueEntry.Scout -> "scout"
+                                    is WorldObjectComponent.Production.ProductionQueueEntry.Worker -> "worker"
+                                }
+                                "progress" to calculateProductionQueueEntryProgress(component, queueEntry)
+                            }
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    private fun calculateProductionQueueEntryProgress(
+        production: WorldObjectComponent.Production,
+        queueEntry: WorldObjectComponent.Production.ProductionQueueEntry
+    ): Double {
+        if (queueEntry == production.queue.firstOrNull()) {
+            val totalRequiredAmount = queueEntry.requiredResources
+                .map { it.value }
+                .sum()
+            val totalCollectedAmount = production.collectedResources
+                .map { min(it.value, queueEntry.requiredResources.getOrDefault(it.key, 0.0)) }
+                .sum()
+            return totalCollectedAmount / totalRequiredAmount
+        } else {
+            return 0.0
         }
     }
 

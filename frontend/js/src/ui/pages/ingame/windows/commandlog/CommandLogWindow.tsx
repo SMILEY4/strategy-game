@@ -148,4 +148,19 @@ const commandEntryMapping: {
 			</IndentBox>
 		</>
 	),
+	[Command.Type.AddProductionQueueItem]: (cmd) => (
+		<>
+			<Txt.Header4>
+				<Txt.String>Add Production Queue Item</Txt.String>
+			</Txt.Header4>
+			<Divider line/>
+			<IndentBox>
+				<Txt.Body>
+					<Txt.String>{"item " + cmd.item}</Txt.String>
+					<br/>
+					<Txt.String>{"in " + cmd.worldObjectId}</Txt.String>
+				</Txt.Body>
+			</IndentBox>
+		</>
+	),
 };

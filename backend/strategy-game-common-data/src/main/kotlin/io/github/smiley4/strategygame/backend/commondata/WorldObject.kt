@@ -68,10 +68,11 @@ sealed interface WorldObjectComponent {
 
         data class Entry(
             val name: String,
+            val priority: Int,
+            var active: Boolean = true,
             val harvests: Map<ResourceType, Double>,
             val consumes: Map<ResourceType, Double>,
             val produces: Map<ResourceType, Double>,
-            var active: Boolean = true,
         )
 
         data class Log(
@@ -80,6 +81,56 @@ sealed interface WorldObjectComponent {
             val resourceType: ResourceType,
             val amount: Double,
         )
+
+    }
+
+    class Production(
+        val queue: MutableList<ProductionQueueEntry>,
+        val collectedResources: MutableMap<ResourceType, Double>
+    ) : WorldObjectComponent {
+
+        sealed class ProductionQueueEntry(
+            val requiredResources: Map<ResourceType, Double>,
+            val resourceBatches: List<Map<ResourceType, Double>>
+        ) {
+            class Worker : ProductionQueueEntry(
+                requiredResources = mapOf(
+                    ResourceType.FOOD to 2.0,
+                    ResourceType.TIMBER to 6.0
+                ),
+                resourceBatches = listOf(
+                    mapOf(
+                        ResourceType.FOOD to 1.0,
+                        ResourceType.TIMBER to 1.0
+                    ),
+                    mapOf(
+                        ResourceType.FOOD to 1.0,
+                        ResourceType.TIMBER to 2.0
+                    ),
+                    mapOf(
+                        ResourceType.FOOD to 1.0,
+                        ResourceType.TIMBER to 2.0
+                    ),
+                )
+            )
+
+            class Scout : ProductionQueueEntry(
+                requiredResources = mapOf(
+                    ResourceType.FOOD to 6.0
+                ),
+                resourceBatches = listOf(
+                    mapOf(
+                        ResourceType.FOOD to 1.0
+                    ),
+                    mapOf(
+                        ResourceType.FOOD to 1.0
+                    ),
+                    mapOf(
+                        ResourceType.FOOD to 1.0
+                    )
+                )
+            )
+        }
 
     }
 
