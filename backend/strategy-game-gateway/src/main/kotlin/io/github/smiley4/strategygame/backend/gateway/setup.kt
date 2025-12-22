@@ -13,10 +13,6 @@ import io.github.smiley4.strategygame.backend.gateway.game.RouteMovementAvailabl
 import io.github.smiley4.strategygame.backend.gateway.game.RouteSettlementName.routeSettlementName
 import io.github.smiley4.strategygame.backend.gateway.operation.routeHealth
 import io.github.smiley4.strategygame.backend.gateway.operation.routeMetrics
-import io.github.smiley4.strategygame.backend.gateway.users.RouteDelete.routeDelete
-import io.github.smiley4.strategygame.backend.gateway.users.RouteLogin.routeLogin
-import io.github.smiley4.strategygame.backend.gateway.users.RouteRefresh.routeRefresh
-import io.github.smiley4.strategygame.backend.gateway.users.RouteSignup.routeSignup
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManagerImpl
 import io.github.smiley4.strategygame.backend.gateway.websocket.messages.MessageProducer
@@ -41,11 +37,8 @@ import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameServic
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.ListGames
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.RequestConnectionToGame
-import io.github.smiley4.strategygame.backend.users.ports.provided.CreateUser
-import io.github.smiley4.strategygame.backend.users.ports.provided.DeleteUser
-import io.github.smiley4.strategygame.backend.users.ports.provided.LoginUser
-import io.github.smiley4.strategygame.backend.users.ports.provided.RefreshUserToken
-import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
+import io.github.smiley4.strategygame.backend.users.authentication.UserIdentityService
+import io.github.smiley4.strategygame.backend.users.routingUser
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -206,22 +199,11 @@ private fun Route.routingGateway() {
 
     route("api") {
 
+        routingUser()
+
         val meterRegistry by inject<PrometheusMeterRegistry>()
         routeHealth()
         routeMetrics(meterRegistry)
-
-        val userCreate by inject<CreateUser>()
-        val userLogin by inject<LoginUser>()
-        val userRefresh by inject<RefreshUserToken>()
-        val userDelete by inject<DeleteUser>()
-        route("user") {
-            routeLogin(userLogin)
-            routeRefresh(userRefresh)
-            routeSignup(userCreate)
-            authenticate("user") {
-                routeDelete(userDelete)
-            }
-        }
 
         val wsTicketManager by inject<WebsocketTicketAuthManager>()
         val wsConnectionHandler by inject<WebSocketConnectionHandler>()

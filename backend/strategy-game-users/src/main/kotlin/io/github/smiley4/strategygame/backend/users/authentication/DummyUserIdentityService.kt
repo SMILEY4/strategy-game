@@ -1,13 +1,12 @@
-package io.github.smiley4.strategygame.backend.users.application.iam
+package io.github.smiley4.strategygame.backend.users.authentication
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
-import io.github.smiley4.strategygame.backend.users.ports.AuthData
-import io.github.smiley4.strategygame.backend.users.ports.AuthDataExtended
+import io.github.smiley4.strategygame.backend.users.AuthData
+import io.github.smiley4.strategygame.backend.users.AuthDataExtended
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal

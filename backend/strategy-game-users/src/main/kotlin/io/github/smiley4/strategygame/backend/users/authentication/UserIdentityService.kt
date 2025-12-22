@@ -1,11 +1,9 @@
-package io.github.smiley4.strategygame.backend.users.ports.required
+package io.github.smiley4.strategygame.backend.users.authentication
 
 import io.github.smiley4.strategygame.backend.common.UserIdentityProvider
 import io.github.smiley4.strategygame.backend.common.UserIdentityServiceConfig
-import io.github.smiley4.strategygame.backend.users.ports.AuthData
-import io.github.smiley4.strategygame.backend.users.ports.AuthDataExtended
-import io.github.smiley4.strategygame.backend.users.application.iam.AwsCognitoService
-import io.github.smiley4.strategygame.backend.users.application.iam.DummyUserIdentityService
+import io.github.smiley4.strategygame.backend.users.AuthData
+import io.github.smiley4.strategygame.backend.users.AuthDataExtended
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {
@@ -28,7 +26,7 @@ interface UserIdentityService {
         fun createFromConfig(config: UserIdentityServiceConfig): UserIdentityService {
             return when (config.identityProvider) {
                 UserIdentityProvider.AWS_COGNITO -> config.aws!!.let { awsCognitoConfig ->
-                    AwsCognitoService.create(
+                    AwsCognitoService.Companion.create(
                         poolId = awsCognitoConfig.poolId,
                         clientId = awsCognitoConfig.clientId,
                         accessKey = awsCognitoConfig.accessKeyId,

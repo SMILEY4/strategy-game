@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.users.ports
+package io.github.smiley4.strategygame.backend.users
 
 data class AuthData(
     val idToken: String,

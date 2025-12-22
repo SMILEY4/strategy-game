@@ -2,26 +2,22 @@ package io.github.smiley4.strategygame.backend.app
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.smiley4.strategygame.backend.gateway.sessions.models.GameSessionDto
-import io.github.smiley4.strategygame.backend.users.ports.AuthData
-import io.github.smiley4.strategygame.backend.users.ports.LoginData
+import io.github.smiley4.strategygame.backend.users.AuthData
+import io.github.smiley4.strategygame.backend.users.LoginData
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.jackson.jackson
-import io.ktor.websocket.Frame
-import io.ktor.websocket.readText
 
 suspend fun main() {
 
