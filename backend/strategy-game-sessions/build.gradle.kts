@@ -20,10 +20,14 @@ dependencies {
     implementation(project(":strategy-game-common-arangodb"))
     implementation(project(":strategy-game-worldgen"))
 
+    val versionKoson: String by project
+    implementation("com.lectra:koson:$versionKoson")
+
     val versionKtor: String by project
     implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
     implementation("io.ktor:ktor-server-websockets:$versionKtor")
     implementation("io.ktor:ktor-server-auth:$versionKtor")
+    implementation("io.ktor:ktor-server-auth-jwt:${versionKtor}")
 
     val versionKtorSwaggerUi: String by project
     implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")

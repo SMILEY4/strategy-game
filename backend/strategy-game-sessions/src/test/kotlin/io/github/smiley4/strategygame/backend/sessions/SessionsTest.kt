@@ -20,16 +20,16 @@ import io.github.smiley4.strategygame.backend.playerpov.lib.PlayerViewCreator
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsByGameQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExistsQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.ConnectToGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.CreateGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.DeleteGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectAllPlayers
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectPlayer
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameMessageProducer
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.ListGames
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.RequestConnectionToGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.TurnSubmit
+import io.github.smiley4.strategygame.backend.sessions._old.ports.provided.ConnectToGame
+import io.github.smiley4.strategygame.backend.sessions._old.ports.provided.CreateGame
+import io.github.smiley4.strategygame.backend.sessions._old.ports.provided.DeleteGame
+import io.github.smiley4.strategygame.backend.sessions._old.ports.provided.DisconnectAllPlayers
+import io.github.smiley4.strategygame.backend.sessions._old.ports.provided.DisconnectPlayer
+import io.github.smiley4.strategygame.backend.sessions._old.ports.provided.JoinGame
+import io.github.smiley4.strategygame.backend.sessions._old.ports.provided.ListGames
+import io.github.smiley4.strategygame.backend.sessions._old.ports.provided.RequestConnectionToGame
+import io.github.smiley4.strategygame.backend.sessions._old.ports.provided.TurnSubmit
+import io.github.smiley4.strategygame.backend.sessions.events.GameEventProducer
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldHaveSize
@@ -256,7 +256,7 @@ class SessionsTest : FreeSpec({
                 }
             }
 
-            coVerify(exactly = 1) { koin.get<GameMessageProducer>().sendGameState(eq(42), any()) }
+            coVerify(exactly = 1) { koin.get<GameEventProducer>().sendGameState(eq(42), any()) }
         }
 
     }
@@ -472,13 +472,13 @@ class SessionsTest : FreeSpec({
             joinGame.perform(User.Id("test-user-2"), gameId)
             connectGame.perform(User.Id("test-user-2"), gameId, 43)
 
-            clearMocks(koin.get<GameMessageProducer>())
+            clearMocks(koin.get<GameEventProducer>())
 
             submitTurn.perform(User.Id("test-user-1"), gameId, emptyList())
 
             coVerify(exactly = 0) { koin.get<GameStep>().perform(any(), any()) }
-            coVerify(exactly = 0) { koin.get<GameMessageProducer>().sendGameState(eq(42), any()) }
-            coVerify(exactly = 0) { koin.get<GameMessageProducer>().sendGameState(eq(43), any()) }
+            coVerify(exactly = 0) { koin.get<GameEventProducer>().sendGameState(eq(42), any()) }
+            coVerify(exactly = 0) { koin.get<GameEventProducer>().sendGameState(eq(43), any()) }
 
             koin.get<GameQuery>().execute(gameId).also { game ->
                 game.turn shouldBe 0
@@ -666,8 +666,8 @@ class SessionsTest : FreeSpec({
                         single<PlayerViewCreator> {
                             mockk<PlayerViewCreator>(relaxed = true)
                         }
-                        single<GameMessageProducer> {
-                            mockk<GameMessageProducer>(relaxed = true)
+                        single<GameEventProducer> {
+                            mockk<GameEventProducer>(relaxed = true)
                         }
                         single<GameStep> {
                             mockk<GameStep>().also {

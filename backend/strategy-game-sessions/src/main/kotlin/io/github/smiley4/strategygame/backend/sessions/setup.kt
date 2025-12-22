@@ -1,68 +1,65 @@
 package io.github.smiley4.strategygame.backend.sessions
 
 import io.github.smiley4.strategygame.backend.common.Config
+import io.github.smiley4.strategygame.backend.common.websocket.auth.WebsocketTicketAuthManager
+import io.github.smiley4.strategygame.backend.common.websocket.auth.WebsocketTicketAuthManagerImpl
+import io.github.smiley4.strategygame.backend.common.websocket.messages.MessageProducer
+import io.github.smiley4.strategygame.backend.common.websocket.messages.WebSocketMessageProducer
+import io.github.smiley4.strategygame.backend.common.websocket.session.WebSocketConnectionHandler
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DatabaseProvider
-import io.github.smiley4.strategygame.backend.sessions.application.core.ConnectToGameImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.CreateGameImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.DeleteGameImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.DisconnectAllPlayersImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.DisconnectPlayerImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.GameServiceImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.JoinGameImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.ListGamesImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.RequestConnectionToGameImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.TurnEndImpl
-import io.github.smiley4.strategygame.backend.sessions.application.core.TurnSubmitImpl
-import io.github.smiley4.strategygame.backend.sessions.application.engine.GameStepAdapter
-import io.github.smiley4.strategygame.backend.sessions.application.engine.GenericGameServiceAdapter
-import io.github.smiley4.strategygame.backend.sessions.application.engine.InitializePlayerAdapter
-import io.github.smiley4.strategygame.backend.sessions.application.engine.InitializeWorldAdapter
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsByGameQuery
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsInsert
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameDelete
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExistsQuery
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateQuery
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameInsert
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameUpdate
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.GamesByUserQuery
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.UsersConnectedToGamesQuery
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.ConnectToGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.CreateGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.DeleteGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectAllPlayers
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectPlayer
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameService
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.ListGames
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.RequestConnectionToGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.TurnEnd
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.TurnSubmit
-import io.github.smiley4.strategygame.backend.sessions.ports.required.GameStep
-import io.github.smiley4.strategygame.backend.sessions.ports.required.GenericGameService
-import io.github.smiley4.strategygame.backend.sessions.ports.required.InitializePlayer
-import io.github.smiley4.strategygame.backend.sessions.ports.required.InitializeWorld
+import io.github.smiley4.strategygame.backend.sessions.connect.GameConnect
+import io.github.smiley4.strategygame.backend.sessions.connect.GameDbQuery
+import io.github.smiley4.strategygame.backend.sessions.connect.GameDbStateQuery
+import io.github.smiley4.strategygame.backend.sessions.connect.GameDbUpdate
+import io.github.smiley4.strategygame.backend.sessions.create.GameCreate
+import io.github.smiley4.strategygame.backend.sessions.create.GameDbInsert
+import io.github.smiley4.strategygame.backend.sessions.create.GameDbStateUpdate
+import io.github.smiley4.strategygame.backend.sessions.create.routeGameCreate
+import io.github.smiley4.strategygame.backend.sessions.delete.GameDbDelete
+import io.github.smiley4.strategygame.backend.sessions.delete.GameDelete
+import io.github.smiley4.strategygame.backend.sessions.delete.routeGameDelete
+import io.github.smiley4.strategygame.backend.sessions.disconnectall.GameDbQueryConnectedUsers
+import io.github.smiley4.strategygame.backend.sessions.disconnectall.GameDisconnectAll
+import io.github.smiley4.strategygame.backend.sessions.disconnectall.routeGameDisconnectAll
+import io.github.smiley4.strategygame.backend.sessions.disconnectplayer.GameDbQueryByUser
+import io.github.smiley4.strategygame.backend.sessions.disconnectplayer.GameDisconnectPlayer
+import io.github.smiley4.strategygame.backend.sessions.events.GameEventHandler
+import io.github.smiley4.strategygame.backend.sessions.events.GameEventProducer
+import io.github.smiley4.strategygame.backend.sessions.events.routeGameEvents
+import io.github.smiley4.strategygame.backend.sessions.events.routeGameEventsTicket
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbCommandsInsertImpl
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbCommandsQueryImpl
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbDeleteImpl
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbInsertImpl
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbQueryByUserImpl
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbQueryConnectedUsersImpl
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbQueryImpl
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbStateQueryImpl
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbStateUpdateImpl
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbUpdateImpl
+import io.github.smiley4.strategygame.backend.sessions.join.GameJoin
+import io.github.smiley4.strategygame.backend.sessions.join.routeGameJoin
+import io.github.smiley4.strategygame.backend.sessions.list.GamesList
+import io.github.smiley4.strategygame.backend.sessions.list.routeGamesList
+import io.github.smiley4.strategygame.backend.sessions.services.GameServices
+import io.github.smiley4.strategygame.backend.sessions.services.routeGameMovementAvailablePositions
+import io.github.smiley4.strategygame.backend.sessions.services.routeGameSettlementName
+import io.github.smiley4.strategygame.backend.sessions.turnend.GameDbCommandsQuery
+import io.github.smiley4.strategygame.backend.sessions.turnend.GameTurnEnd
+import io.github.smiley4.strategygame.backend.sessions.turnsubmit.GameDbCommandsInsert
+import io.github.smiley4.strategygame.backend.sessions.turnsubmit.GameTurnSubmit
+import io.ktor.server.auth.authenticate
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.route
 import kotlinx.coroutines.runBlocking
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
 fun Module.dependenciesSessions() {
-
-    // core
-    single<ConnectToGame> { ConnectToGameImpl(get(), get(), get(), get(), get()) }
-    single<CreateGame> { CreateGameImpl(get(), get(), get()) }
-    single<DeleteGame> { DeleteGameImpl(get()) }
-    single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
-    single<DisconnectPlayer> { DisconnectPlayerImpl(get(), get()) }
-    single<JoinGame> { JoinGameImpl(get(), get(), get(), get(), get()) }
-    single<ListGames> { ListGamesImpl(get()) }
-    single<RequestConnectionToGame> { RequestConnectionToGameImpl(get()) }
-    single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single<TurnSubmit> { TurnSubmitImpl(get(), get(), get(), get()) }
-    single<GameService> { GameServiceImpl(get(), get(), get()) }
 
     // persistence
     single<DatabaseProvider.Config> {
@@ -77,26 +74,94 @@ fun Module.dependenciesSessions() {
         )
     }
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(get()) } } withOptions { createdAtStart() }
-    single<CommandsByGameQuery> { CommandsByGameQuery(get()) }
-    single<CommandsInsert> { CommandsInsert(get()) }
+
+    // websocket
+    single<WebsocketTicketAuthManager> { WebsocketTicketAuthManagerImpl(12.hours) }
+    single<WebSocketConnectionHandler> { WebSocketConnectionHandler() }
+    single<MessageProducer> { WebSocketMessageProducer(get()) }
+
+    // events
+    single<GameEventHandler> { GameEventHandler(get()) }
+    single<GameEventProducer> { GameEventProducer(get()) }
+
+    // connect
+    single<GameConnect> { GameConnect(get(), get(), get(), get(), get()) }
+    single<GameDbQuery> { GameDbQueryImpl(get()) }
+    single<GameDbStateQuery> { GameDbStateQueryImpl(get()) }
+    single<GameDbUpdate> { GameDbUpdateImpl(get()) }
+
+    // create
+    single<GameCreate> { GameCreate(get(), get(), get()) }
+    single<GameDbInsert> { GameDbInsertImpl(get()) }
+    single<GameDbStateUpdate> { GameDbStateUpdateImpl(get()) }
+
+    //  delete
     single<GameDelete> { GameDelete(get()) }
-    single<GameExistsQuery> { GameExistsQuery(get()) }
-    single<GameStateQuery> { GameStateQuery(get()) }
-    single<io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateUpdate> {
-        io.github.smiley4.strategygame.backend.sessions.application.persistence.GameStateUpdate(
-            get()
-        )
+    single<GameDbDelete> { GameDbDeleteImpl(get()) }
+
+    // disconnect all
+    single<GameDisconnectAll> { GameDisconnectAll(get(), get()) }
+    single<GameDbQueryConnectedUsers> { GameDbQueryConnectedUsersImpl(get()) }
+
+    // disconnect player
+    single<GameDisconnectPlayer> { GameDisconnectPlayer(get(), get()) }
+    single<GameDbQueryByUser> { GameDbQueryByUserImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.disconnectplayer.GameDbUpdate> { GameDbUpdateImpl(get()) }
+
+    // join
+    single<GameJoin> { GameJoin(get(), get(), get(), get(), get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.join.GameDbQuery> { GameDbQueryImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.join.GameDbStateQuery> { GameDbStateQueryImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.join.GameDbStateUpdate> { GameDbStateUpdateImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.join.GameDbUpdate> { GameDbUpdateImpl(get()) }
+
+    // list
+    single<GamesList> { GamesList(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.list.GameDbQueryByUser> { GameDbQueryByUserImpl(get()) }
+
+    // services
+    single<GameServices> { GameServices(get(), get(), get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.services.GameDbStateQuery> { GameDbStateQueryImpl(get()) }
+
+    // turn end
+    single<GameTurnEnd> { GameTurnEnd(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single<GameDbCommandsQuery> { GameDbCommandsQueryImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.turnend.GameDbQuery> { GameDbQueryImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.turnend.GameDbStateQuery> { GameDbStateQueryImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.turnend.GameDbStateUpdate> { GameDbStateUpdateImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.turnend.GameDbUpdate> { GameDbUpdateImpl(get()) }
+
+    // turn submit
+    single<GameTurnSubmit> { GameTurnSubmit(get(), get(), get(), get()) }
+    single<GameDbCommandsInsert> { GameDbCommandsInsertImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.turnsubmit.GameDbQuery> { GameDbQueryImpl(get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.turnsubmit.GameDbUpdate> { GameDbUpdateImpl(get()) }
+}
+
+
+fun Route.routingGameSessions() {
+    route("session") {
+        authenticate("user") {
+            routeGameEventsTicket()
+            routeGameEvents()
+            routeGameCreate()
+            routeGameJoin()
+            routeGamesList()
+            routeGameDelete()
+        }
+        authenticate("auth-technical-user") {
+            routeGameDisconnectAll()
+        }
     }
-    single<GameInsert> { GameInsert(get()) }
-    single<GameQuery> { GameQuery(get()) }
-    single<GamesByUserQuery> { GamesByUserQuery(get()) }
-    single<GameUpdate> { GameUpdate(get()) }
-    single<UsersConnectedToGamesQuery> { UsersConnectedToGamesQuery(get()) }
 
-    // engine
-    single<GameStep> { GameStepAdapter(get()) }
-    single<InitializePlayer> { InitializePlayerAdapter(get()) }
-    single<InitializeWorld> { InitializeWorldAdapter(get()) }
-    single<GenericGameService> { GenericGameServiceAdapter(get()) }
-
+    authenticate("user") {
+        route("game") {
+            route("movement") {
+                routeGameMovementAvailablePositions()
+            }
+            route("settlement") {
+                routeGameSettlementName()
+            }
+        }
+    }
 }

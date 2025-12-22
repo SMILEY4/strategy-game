@@ -9,34 +9,18 @@ import io.github.smiley4.ktorswaggerui.data.AuthType
 import io.github.smiley4.ktorswaggerui.routing.openApiSpec
 import io.github.smiley4.ktorswaggerui.routing.swaggerUI
 import io.github.smiley4.strategygame.backend.common.Config
-import io.github.smiley4.strategygame.backend.gateway.game.RouteMovementAvailablePositions.routeMovementAvailablePositions
-import io.github.smiley4.strategygame.backend.gateway.game.RouteSettlementName.routeSettlementName
+import io.github.smiley4.strategygame.backend.common.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.operation.routeHealth
 import io.github.smiley4.strategygame.backend.gateway.operation.routeMetrics
-import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
-import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManagerImpl
-import io.github.smiley4.strategygame.backend.gateway.websocket.messages.MessageProducer
-import io.github.smiley4.strategygame.backend.gateway.websocket.messages.WebSocketMessageProducer
-import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
 import io.github.smiley4.strategygame.backend.gateway.sessions.GatewayGameMessageHandler
 import io.github.smiley4.strategygame.backend.gateway.sessions.GatewayGameMessageProducer
-import io.github.smiley4.strategygame.backend.gateway.sessions.RouteCreate.routeCreate
-import io.github.smiley4.strategygame.backend.gateway.sessions.RouteDelete.routeDelete
-import io.github.smiley4.strategygame.backend.gateway.sessions.RouteDisconnectAll.routeDisconnectAll
-import io.github.smiley4.strategygame.backend.gateway.sessions.RouteJoin.routeJoin
-import io.github.smiley4.strategygame.backend.gateway.sessions.RouteList.routeList
-import io.github.smiley4.strategygame.backend.gateway.sessions.RouteWebsocket.routeWebsocket
-import io.github.smiley4.strategygame.backend.gateway.sessions.RouteWebsocketTicket.routeWebsocketTicket
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.ConnectToGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.CreateGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.DeleteGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectAllPlayers
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectPlayer
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameMessageProducer
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameService
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.ListGames
-import io.github.smiley4.strategygame.backend.sessions.ports.provided.RequestConnectionToGame
+import io.github.smiley4.strategygame.backend.common.websocket.auth.WebsocketTicketAuthManager
+import io.github.smiley4.strategygame.backend.common.websocket.auth.WebsocketTicketAuthManagerImpl
+import io.github.smiley4.strategygame.backend.common.websocket.messages.MessageProducer
+import io.github.smiley4.strategygame.backend.common.websocket.messages.WebSocketMessageProducer
+import io.github.smiley4.strategygame.backend.common.websocket.session.WebSocketConnectionHandler
+import io.github.smiley4.strategygame.backend.sessions.events.GameEventProducer
+import io.github.smiley4.strategygame.backend.sessions.routingGameSessions
 import io.github.smiley4.strategygame.backend.users.authentication.UserIdentityService
 import io.github.smiley4.strategygame.backend.users.routingUser
 import io.ktor.http.HttpHeaders
@@ -47,7 +31,6 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.basic
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.calllogging.CallLogging
@@ -70,16 +53,10 @@ import mu.two.KotlinLogging
 import org.koin.core.module.Module
 import org.koin.ktor.ext.inject
 import org.slf4j.event.Level
-import kotlin.getValue
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
 fun Module.dependenciesGateway() {
-    single<WebsocketTicketAuthManager> { WebsocketTicketAuthManagerImpl(12.hours) }
-    single<WebSocketConnectionHandler> { WebSocketConnectionHandler() }
-    single<MessageProducer> { WebSocketMessageProducer(get()) }
-    single<GameMessageProducer> { GatewayGameMessageProducer(get()) }
-    single<GatewayGameMessageHandler> { GatewayGameMessageHandler(get()) }
 }
 
 fun Application.ktorGateway() {
@@ -175,9 +152,6 @@ fun Application.ktorGateway() {
                 bearerFormat = "jwt"
             }
             defaultSecuritySchemeNames("Auth")
-            defaultUnauthorizedResponse {
-                bodyErrorResponse(ErrorResponse.unauthorized())
-            }
         }
         tags {
             tagGenerator = { url -> listOf(url.getOrNull(1)) }
@@ -196,54 +170,12 @@ fun Application.ktorGateway() {
 }
 
 private fun Route.routingGateway() {
-
+    val meterRegistry by inject<PrometheusMeterRegistry>()
     route("api") {
-
-        routingUser()
-
-        val meterRegistry by inject<PrometheusMeterRegistry>()
         routeHealth()
         routeMetrics(meterRegistry)
-
-        val wsTicketManager by inject<WebsocketTicketAuthManager>()
-        val wsConnectionHandler by inject<WebSocketConnectionHandler>()
-        val createGame by inject<CreateGame>()
-        val joinGame by inject<JoinGame>()
-        val listGames by inject<ListGames>()
-        val deleteGame by inject<DeleteGame>()
-        val messageHandler by inject<GatewayGameMessageHandler>()
-        val disconnectAction by inject<DisconnectPlayer>()
-        val requestConnection by inject<RequestConnectionToGame>()
-        val connectAction by inject<ConnectToGame>()
-        val disconnectAll by inject<DisconnectAllPlayers>()
-        route("session") {
-            authenticate("user") {
-                routeCreate(createGame, joinGame)
-                routeJoin(joinGame)
-                routeList(listGames)
-                routeDelete(deleteGame)
-                routeWebsocketTicket(wsTicketManager)
-            }
-            authenticate("auth-technical-user") {
-                routeDisconnectAll(disconnectAll)
-            }
-            route("connect") {
-                routeWebsocket(wsTicketManager, wsConnectionHandler, messageHandler, disconnectAction, requestConnection, connectAction)
-            }
-        }
-
-        val gameService by inject<GameService>()
-        authenticate("user") {
-            route("game") {
-                route("movement") {
-                    routeMovementAvailablePositions(gameService)
-                }
-                route("settlement") {
-                    routeSettlementName(gameService)
-                }
-            }
-        }
-
+        routingUser()
+        routingGameSessions()
     }
 
 }

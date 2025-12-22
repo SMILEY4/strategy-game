@@ -15,6 +15,10 @@ dependencies {
 
     implementation(project(":strategy-game-common-data"))
 
+    val versionKtor: String by project
+    implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
+    implementation("io.ktor:ktor-server-websockets:$versionKtor")
+
     val versionJacksonModuleKotlin: String by project
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$versionJacksonModuleKotlin")
 
