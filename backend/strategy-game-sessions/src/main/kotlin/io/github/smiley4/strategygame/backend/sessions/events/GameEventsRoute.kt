@@ -48,8 +48,10 @@ private object NotParticipantResponse : ErrorResponse(
 
 fun Route.routeGameEventsTicket() {
     val wsTicketManager by inject<WebsocketTicketAuthManager>()
-    return webSocketTicket(wsTicketManager) {
-        mapOf("userId" to it.principal<JWTPrincipal>()?.subject!!)
+    route("wsticket") {
+        webSocketTicket(wsTicketManager) {
+            mapOf("userId" to it.principal<JWTPrincipal>()?.subject!!)
+        }
     }
 }
 

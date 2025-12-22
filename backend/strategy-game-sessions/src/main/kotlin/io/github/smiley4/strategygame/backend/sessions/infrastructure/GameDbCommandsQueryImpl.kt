@@ -4,15 +4,14 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commondata.Command
+import io.github.smiley4.strategygame.backend.commondata.DbCollections
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.sessions._old.application.persistence.CommandsByGameQuery
-import io.github.smiley4.strategygame.backend.sessions._old.application.persistence.DbCollections
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.CommandEntity
 import io.github.smiley4.strategygame.backend.sessions.turnend.GameDbCommandsQuery
 
 class GameDbCommandsQueryImpl(private val database: ArangoDatabase) : GameDbCommandsQuery {
 
-    private val metricId = MetricId.query(CommandsByGameQuery::class)
+    private val metricId = MetricId.query(GameDbCommandsQueryImpl::class)
 
     override suspend fun query(game: Game.Id, turn: Int): List<Command<*>> {
         database.assertCollections(DbCollections.COMMANDS)

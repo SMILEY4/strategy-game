@@ -4,14 +4,13 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.common.utils.parallelIO
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
+import io.github.smiley4.strategygame.backend.commondata.DbCollections
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.sessions._old.application.persistence.DbCollections
-import io.github.smiley4.strategygame.backend.sessions._old.application.persistence.GameDelete
 import io.github.smiley4.strategygame.backend.sessions.delete.GameDbDelete
 
 class GameDbDeleteImpl(private val database: ArangoDatabase) : GameDbDelete {
 
-    private val metricId = MetricId.query(GameDelete::class)
+    private val metricId = MetricId.query(GameDbDeleteImpl::class)
 
     override suspend fun delete(game: Game.Id) {
         time(metricId) {
@@ -100,5 +99,5 @@ class GameDbDeleteImpl(private val database: ArangoDatabase) : GameDbDelete {
             mapOf("gameId" to gameId.value)
         )
     }
-    
+
 }

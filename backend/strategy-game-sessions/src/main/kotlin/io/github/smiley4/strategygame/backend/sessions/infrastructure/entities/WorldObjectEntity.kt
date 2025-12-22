@@ -8,15 +8,15 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent.RouteNote
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Builder
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Economy
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Economy.Entry
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Economy.Log
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Movement
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Production
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.RouteNode
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.SettlementSpawner
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Vision
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.WorldObjectComponentEntity.Builder
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.WorldObjectComponentEntity.Economy
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.WorldObjectComponentEntity.Economy.Entry
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.WorldObjectComponentEntity.Economy.Log
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.WorldObjectComponentEntity.Movement
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.WorldObjectComponentEntity.Production
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.WorldObjectComponentEntity.RouteNode
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.WorldObjectComponentEntity.SettlementSpawner
+import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.WorldObjectComponentEntity.Vision
 
 internal class WorldObjectEntity(
     val realmId: String,

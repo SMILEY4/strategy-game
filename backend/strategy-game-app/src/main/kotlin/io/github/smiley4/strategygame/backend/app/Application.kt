@@ -1,6 +1,17 @@
 package io.github.smiley4.strategygame.backend.app
 
+import io.github.smiley4.strategygame.backend.app.setup.setupAuthentication
+import io.github.smiley4.strategygame.backend.app.setup.setupCORS
+import io.github.smiley4.strategygame.backend.app.setup.setupCallLogging
+import io.github.smiley4.strategygame.backend.app.setup.setupContentNegotiation
+import io.github.smiley4.strategygame.backend.app.setup.setupDependencyInjection
+import io.github.smiley4.strategygame.backend.app.setup.setupMonitoring
+import io.github.smiley4.strategygame.backend.app.setup.setupRouting
+import io.github.smiley4.strategygame.backend.app.setup.setupStatusPages
+import io.github.smiley4.strategygame.backend.app.setup.setupWebSockets
+import io.github.smiley4.strategygame.backend.common.Config
 import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.ktor.server.application.Application
 import io.ktor.server.netty.EngineMain
 
 object ApplicationMode {
@@ -10,6 +21,7 @@ object ApplicationMode {
 }
 
 var APPLICATION_MODE = ApplicationMode.DEFAULT
+
 
 /**
  * Entry point of the application
@@ -26,6 +38,23 @@ fun main(args: Array<String>) {
             }
             .toTypedArray()
     )
+}
+
+
+/**
+ * The main-module for configuring Ktor. Referenced in "application.conf".
+ */
+fun Application.module() {
+    Config.load(APPLICATION_MODE)
+    setupDependencyInjection()
+    setupAuthentication()
+    setupCallLogging()
+    setupContentNegotiation()
+    setupCORS()
+    setupMonitoring()
+    setupStatusPages()
+    setupWebSockets()
+    setupRouting()
 }
 
 

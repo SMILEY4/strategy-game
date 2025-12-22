@@ -9,7 +9,6 @@ include("strategy-game-pathfinding")
 include("strategy-game-users")
 include("strategy-game-worldgen")
 include("strategy-game-sessions")
-include("strategy-game-gateway")
 include("strategy-game-playerpov")
 
 pluginManagement {

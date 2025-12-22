@@ -6,13 +6,13 @@ import io.github.smiley4.strategygame.backend.common.utils.parallelIO
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DocumentNotFoundError
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
+import io.github.smiley4.strategygame.backend.commondata.DbCollections
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.Realm
 import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
-import io.github.smiley4.strategygame.backend.sessions._old.application.persistence.DbCollections
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.GameEntity
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.RealmEntity
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.RouteEntity

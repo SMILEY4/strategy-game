@@ -3,8 +3,8 @@ package io.github.smiley4.strategygame.backend.sessions.infrastructure
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
+import io.github.smiley4.strategygame.backend.commondata.DbCollections
 import io.github.smiley4.strategygame.backend.commondata.User
-import io.github.smiley4.strategygame.backend.sessions._old.application.persistence.DbCollections
 import io.github.smiley4.strategygame.backend.sessions.disconnectall.GameDbQueryConnectedUsers
 
 class GameDbQueryConnectedUsersImpl(private val database: ArangoDatabase) : GameDbQueryConnectedUsers {

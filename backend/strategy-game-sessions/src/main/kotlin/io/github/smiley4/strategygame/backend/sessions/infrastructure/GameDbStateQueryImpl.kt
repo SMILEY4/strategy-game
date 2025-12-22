@@ -6,6 +6,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DocumentNotFoundError
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
+import io.github.smiley4.strategygame.backend.commondata.DbCollections
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.Realm
@@ -13,8 +14,6 @@ import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.utils.tracking
-import io.github.smiley4.strategygame.backend.sessions._old.application.persistence.DbCollections
-import io.github.smiley4.strategygame.backend.sessions._old.application.persistence.GameStateQuery
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.GameEntity
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.RealmEntity
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.RouteEntity
@@ -27,7 +26,7 @@ class GameDbStateQueryImpl(private val database: ArangoDatabase) :
     io.github.smiley4.strategygame.backend.sessions.services.GameDbStateQuery,
     io.github.smiley4.strategygame.backend.sessions.turnend.GameDbStateQuery {
 
-    private val metricId = MetricId.query(GameStateQuery::class)
+    private val metricId = MetricId.query(GameDbStateQueryImpl::class)
 
     override suspend fun query(gameId: Game.Id): GameState {
         return time(metricId) {

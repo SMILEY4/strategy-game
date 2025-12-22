@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.backend.app
 
+import io.github.smiley4.strategygame.backend.app.setup.applicationDependencies
 import io.github.smiley4.strategygame.backend.common.Config
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.mockk.mockk
