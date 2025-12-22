@@ -13,7 +13,7 @@ import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
 
-class SpawnSettlementCommandExecutor() : Logging {
+class SpawnSettlementCommandExecutor : Logging {
 
     fun execute(gameState: GameState, command: Command<CommandData.SpawnSettlement>) {
         log().debug("Executing spawn settlement command with object ${command.data.worldObject}.")
@@ -77,15 +77,20 @@ class SpawnSettlementCommandExecutor() : Logging {
                     entries = mutableListOf(
                         WorldObjectComponent.Economy.Entry(
                             name = "population",
+                            priority = 100,
                             harvests = mapOf(),
                             consumes = mapOf(
                                 ResourceType.FOOD to 2.0,
                             ),
-                            produces = mapOf()
+                            produces = mapOf(),
                         )
                     ),
                     log = mutableListOf()
                 ),
+                WorldObjectComponent.Production(
+                    queue = mutableListOf(),
+                    collectedResources = mutableMapOf()
+                )
             )
         )
         gameState.worldObjects.add(settlement)

@@ -72,6 +72,7 @@ class ConstructTileImprovementCommandExecutor : Logging {
                     entries = mutableListOf(
                         WorldObjectComponent.Economy.Entry(
                             name = "${WorldObject.Group.TILE_IMPROVEMENT.name}/${command.data.improvement.name}".lowercase(),
+                            priority = 100,
                             harvests = command.data.improvement.harvests,
                             consumes = command.data.improvement.consumes,
                             produces = command.data.improvement.produces,

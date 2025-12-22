@@ -45,6 +45,7 @@ class UpdateEconomyAction : Logging {
                 // for each economy entry
                 economyComponent.entries
                     .sortedBy { it.name }
+                    .sortedBy { it.priority }
                     .forEach { entry ->
 
                         // check: all required resources available?
@@ -112,27 +113,25 @@ class UpdateEconomyAction : Logging {
                 val economyComponent = worldObject.getComponent<WorldObjectComponent.Economy>()
 
                 // for each economy entry
-                economyComponent.entries
-                    .sortedBy { it.name }
-                    .forEach { entry ->
+                economyComponent.entries.forEach { entry ->
 
-                        // produce resources if active
-                        if (entry.active) {
-                            entry.produces.forEach { (type, amount) ->
-                                economyComponent.storage.store(type, amount)
-                                economyComponent.log.add(
-                                    WorldObjectComponent.Economy.Log(
-                                        logType = "produced_resources",
-                                        entryName = entry.name,
-                                        resourceType = type,
-                                        amount = amount
-                                    )
+                    // produce resources if active
+                    if (entry.active) {
+                        entry.produces.forEach { (type, amount) ->
+                            economyComponent.storage.store(type, amount)
+                            economyComponent.log.add(
+                                WorldObjectComponent.Economy.Log(
+                                    logType = "produced_resources",
+                                    entryName = entry.name,
+                                    resourceType = type,
+                                    amount = amount
                                 )
-                                log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} . ${entry.name} produced resources" }
-                            }
+                            )
+                            log().debug { "     ... ${worldObject.type.group}/${worldObject.type.name} . ${entry.name} produced resources" }
                         }
-
                     }
+
+                }
             }
     }
 

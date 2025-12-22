@@ -98,6 +98,7 @@ export interface WorldObjectMessage {
         | SettlementSpawnerWorldObjectComponentMessage
         | RouteNodeComponentMessage
         | EconomyComponentMessage
+        | ProductionComponentMessage
         )[],
 }
 
@@ -143,5 +144,13 @@ interface EconomyComponentMessage {
         entryName: string,
         resourceType: string,
         amount: number,
+    })[]
+}
+
+interface ProductionComponentMessage {
+    type: "production";
+    queue: ({
+        type: "scout" | "worker",
+        progress: number
     })[]
 }

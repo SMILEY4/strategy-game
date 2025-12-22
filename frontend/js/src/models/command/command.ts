@@ -7,61 +7,71 @@ import {UID} from "../../common/uid";
  * A command given by the player in the current turn.
  */
 export type Command =
-	| Command.Move
-	| Command.Disband
-	| Command.ConstructTileImprovement
-	| Command.CreateSettlement
+    | Command.Move
+    | Command.Disband
+    | Command.ConstructTileImprovement
+    | Command.CreateSettlement
+    | Command.AddProductionQueueItem
 
 export namespace Command {
 
-	export type Id = BrandedId<string, "CommandId">;
+    export type Id = BrandedId<string, "CommandId">;
 
-	export function genId(): Id {
-		return UID.generate() as Id;
-	}
+    export function genId(): Id {
+        return UID.generate() as Id;
+    }
 
-	export enum Type {
-		Move = "move",
-		Disband = "disband",
-		ConstructTileImprovement = "construct-tile-improvement",
-		CreateSettlement = "create-settlement"
-	}
+    export enum Type {
+        Move = "move",
+        Disband = "disband",
+        ConstructTileImprovement = "construct-tile-improvement",
+        CreateSettlement = "create-settlement",
+        AddProductionQueueItem = "add-production-queue-item",
+    }
 
-	export type Mapping = {
-		[Type.Move]: Move,
-		[Type.Disband]: Disband,
-		[Type.ConstructTileImprovement]: ConstructTileImprovement
-		[Type.CreateSettlement]: CreateSettlement
-	}
+    export type Mapping = {
+        [Type.Move]: Move,
+        [Type.Disband]: Disband,
+        [Type.ConstructTileImprovement]: ConstructTileImprovement
+        [Type.CreateSettlement]: CreateSettlement
+        [Type.AddProductionQueueItem]: AddProductionQueueItem
+    }
 
-	interface BaseCommand {
-		type: Type,
-		id: Id,
-	}
+    interface BaseCommand {
+        type: Type,
+        id: Id,
+    }
 
-	export interface Move extends BaseCommand {
-		type: Type.Move;
-		worldObjectId: WorldObject.Id
-		path: TileSummary[],
-	}
+    export interface Move extends BaseCommand {
+        type: Type.Move;
+        worldObjectId: WorldObject.Id
+        path: TileSummary[],
+    }
 
 
-	export interface Disband extends BaseCommand {
-		type: Type.Disband;
-		worldObjectId: WorldObject.Id;
-	}
+    export interface Disband extends BaseCommand {
+        type: Type.Disband;
+        worldObjectId: WorldObject.Id;
+    }
 
-	export interface ConstructTileImprovement extends BaseCommand {
-		type: Type.ConstructTileImprovement;
-		worldObjectId: WorldObject.Id;
-		tileImprovementType: string;
-	}
+    export interface ConstructTileImprovement extends BaseCommand {
+        type: Type.ConstructTileImprovement;
+        worldObjectId: WorldObject.Id;
+        tileImprovementType: string;
+    }
 
-	export interface CreateSettlement extends BaseCommand {
-		type: Type.CreateSettlement;
-		worldObjectId: WorldObject.Id;
-		tile: TileSummary;
-		name: string;
-	}
+    export interface CreateSettlement extends BaseCommand {
+        type: Type.CreateSettlement;
+        worldObjectId: WorldObject.Id;
+        tile: TileSummary;
+        name: string;
+    }
+
+
+    export interface AddProductionQueueItem extends BaseCommand {
+        type: Type.AddProductionQueueItem;
+        worldObjectId: WorldObject.Id;
+        item: "scout" | "worker";
+    }
 
 }

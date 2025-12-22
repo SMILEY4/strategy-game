@@ -7,9 +7,13 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceStorage
 import io.github.smiley4.strategygame.backend.commondata.ResourceType
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent
+import io.github.smiley4.strategygame.backend.commondata.WorldObjectComponent.RouteNote
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Builder
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Economy
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Economy.Entry
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Economy.Log
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Movement
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Production
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.RouteNode
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.SettlementSpawner
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.WorldObjectComponentEntity.Vision
@@ -53,22 +57,32 @@ internal class WorldObjectEntity(
                         is WorldObjectComponent.Economy -> Economy(
                             storage = it.storage.toMap(),
                             entries = it.entries.map { e ->
-                                Economy.Entry(
+                                Entry(
                                     name = e.name,
+                                    priority = e.priority,
+                                    active = e.active,
                                     harvests = e.harvests,
                                     consumes = e.consumes,
                                     produces = e.produces,
-                                    active = e.active,
                                 )
                             },
                             log = it.log.map { e ->
-                                Economy.Log(
+                                Log(
                                     logType = e.logType,
                                     entryName = e.entryName,
                                     resourceType = e.resourceType,
                                     amount = e.amount,
                                 )
                             },
+                        )
+                        is WorldObjectComponent.Production -> Production(
+                            queue = it.queue.map { entry ->
+                                when (entry) {
+                                    is WorldObjectComponent.Production.ProductionQueueEntry.Scout -> "scout"
+                                    is WorldObjectComponent.Production.ProductionQueueEntry.Worker -> "worker"
+                                }
+                            },
+                            collectedResources = it.collectedResources,
                         )
                     }
                 }
@@ -98,7 +112,7 @@ internal class WorldObjectEntity(
                         remainingUses = it.remainingUses
                     )
                     is SettlementSpawner -> WorldObjectComponent.SettlementSpawner()
-                    is RouteNode -> WorldObjectComponent.RouteNote(
+                    is RouteNode -> RouteNote(
                         maxRouteConnectionDistance = it.maxRouteConnectionDistance
                     )
                     is Economy -> WorldObjectComponent.Economy(
@@ -106,10 +120,11 @@ internal class WorldObjectEntity(
                         entries = it.entries.map { e ->
                             WorldObjectComponent.Economy.Entry(
                                 name = e.name,
+                                priority = e.priority,
+                                active = e.active,
                                 harvests = e.harvests,
                                 consumes = e.consumes,
                                 produces = e.produces,
-                                active = e.active,
                             )
                         }.toMutableList(),
                         log = it.log.map { e ->
@@ -120,6 +135,16 @@ internal class WorldObjectEntity(
                                 amount = e.amount,
                             )
                         }.toMutableList(),
+                    )
+                    is Production -> WorldObjectComponent.Production(
+                        queue = it.queue.map { entry ->
+                            when (entry) {
+                                "scout" -> WorldObjectComponent.Production.ProductionQueueEntry.Scout()
+                                "worker" -> WorldObjectComponent.Production.ProductionQueueEntry.Worker()
+                                else -> throw Exception("Unexpected queue entry identifier")
+                            }
+                        }.toMutableList(),
+                        collectedResources = it.collectedResources.toMutableMap()
                     )
                 }
             }.toMutableList()
@@ -168,10 +193,11 @@ internal sealed interface WorldObjectComponentEntity {
 
         data class Entry(
             val name: String,
+            val priority: Int,
+            var active: Boolean = true,
             val harvests: Map<ResourceType, Double>,
             val consumes: Map<ResourceType, Double>,
             val produces: Map<ResourceType, Double>,
-            var active: Boolean = true,
         )
 
         data class Log(
@@ -182,5 +208,10 @@ internal sealed interface WorldObjectComponentEntity {
         )
 
     }
+
+    class Production(
+        val queue: List<String>,
+        val collectedResources: Map<ResourceType, Double>
+    ) : WorldObjectComponentEntity
 
 }

@@ -8,7 +8,9 @@ import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.engine.application.core.actions.ConstructRouteAction
 import io.github.smiley4.strategygame.backend.engine.application.core.actions.UpdateEconomyAction
+import io.github.smiley4.strategygame.backend.engine.application.core.actions.UpdateProductionAction
 import io.github.smiley4.strategygame.backend.engine.application.core.actions.UpdateResourceNodesAction
+import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.AddProductionQueueItemCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.ConstructTileImprovementCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.DisbandCommandExecutor
 import io.github.smiley4.strategygame.backend.engine.application.core.commandexecution.MoveCommandExecutor
@@ -21,9 +23,11 @@ internal class GameStepImpl(
     val disbandCmdExecutor: DisbandCommandExecutor,
     val constructImprovementCmdExecutor: ConstructTileImprovementCommandExecutor,
     val spawnSettlementCmdExecutor: SpawnSettlementCommandExecutor,
+    val addProductionQueueItemCommandExecutor: AddProductionQueueItemCommandExecutor,
     val constructRouteAction: ConstructRouteAction,
     val updateEconomyAction: UpdateEconomyAction,
-    val updateResourceNodesAction: UpdateResourceNodesAction
+    val updateResourceNodesAction: UpdateResourceNodesAction,
+    val updateProduction: UpdateProductionAction
 ) : GameStep, Logging {
 
     private val metricId = MetricId.action(GameStep::class)
@@ -46,6 +50,7 @@ internal class GameStepImpl(
                     is CommandData.Disband -> disbandCmdExecutor.execute(game, it as Command<CommandData.Disband>)
                     is CommandData.ConstructTileImprovement -> constructImprovementCmdExecutor.execute(game, it as Command<CommandData.ConstructTileImprovement>)
                     is CommandData.SpawnSettlement -> spawnSettlementCmdExecutor.execute(game, it as Command<CommandData.SpawnSettlement>)
+                    is CommandData.AddProductionQueueItem -> addProductionQueueItemCommandExecutor.execute(game, it as Command<CommandData.AddProductionQueueItem>)
                 }
             } catch (e: Exception) {
                 log().error("Error when executing command (->ignoring)", e)
@@ -55,7 +60,9 @@ internal class GameStepImpl(
 
     private fun updateWorld(gameState: GameState) {
         constructRouteAction.onWorldUpdate(gameState)
+        updateProduction.onWorldUpdatePreEconomy(gameState)
         updateEconomyAction.onWorldUpdate(gameState)
+        updateProduction.onWorldUpdatePostEconomy(gameState)
         updateResourceNodesAction.onWorldUpdate(gameState)
     }
 

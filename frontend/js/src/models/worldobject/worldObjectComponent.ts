@@ -7,6 +7,7 @@ export type WorldObjectComponent =
     | WorldObjectComponent.SettlementSpawner
     | WorldObjectComponent.RouteNode
     | WorldObjectComponent.Economy
+    | WorldObjectComponent.Production
 
 export namespace WorldObjectComponent {
 
@@ -16,7 +17,8 @@ export namespace WorldObjectComponent {
         Builder = "builder",
         SettlementSpawner = "settlement-spawner",
         RouteNode = "route-node",
-        Economy = "economy"
+        Economy = "economy",
+        Production = "production"
     }
 
     export type Mapping = {
@@ -26,6 +28,7 @@ export namespace WorldObjectComponent {
         [Type.SettlementSpawner]: SettlementSpawner,
         [Type.RouteNode]: RouteNode,
         [Type.Economy]: Economy,
+        [Type.Production]: Production,
     }
 
     export interface Movement {
@@ -68,6 +71,14 @@ export namespace WorldObjectComponent {
             entryName: string,
             resourceType: string,
             amount: number,
+        })[]
+    }
+
+    export interface Production {
+        type: Type.Production,
+        queue: ({
+            type: "worker" | "scout"
+            progress: number
         })[]
     }
 

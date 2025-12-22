@@ -50,4 +50,12 @@ sealed class CommandData {
         val settlementName: String
     ) : CommandData()
 
+    /**
+     * Add an item to the production queue of the given world object
+     */
+    class AddProductionQueueItem(
+        val worldObject: WorldObject.Id,
+        val item: WorldObjectComponent.Production.ProductionQueueEntry // todo: proper model
+    ) : CommandData()
+
 }
