@@ -1,6 +1,5 @@
 import {HttpErrorCodes} from "../http/http.status-codes";
 import {DetailedError, HttpErrorResponseBody} from "../../common/detailedError";
-import {authHandlerUserAuthToken} from "../authentication/auth.handler.user-auth-token";
 import {httpClient} from "../../main";
 
 
@@ -89,30 +88,4 @@ export const UserClient = {
                 throw new DetailedError<UserClientTypes.LogInErrorCodes>(response.body);
             });
     },
-
-    delete(email: string, password: string): Promise<void> {
-
-        type Request = {
-            email: string,
-            password: string,
-        }
-
-        type Response =
-            | { status: 200; body: null }
-            | { status: HttpErrorCodes, body: HttpErrorResponseBody<UserClientTypes.LogInErrorCodes> }
-
-        return httpClient
-            .post<Request, Response>("/api/user/delete", {
-                auth: authHandlerUserAuthToken,
-                body: {
-                    email: email,
-                    password: password,
-                },
-            })
-            .then(response => {
-                if (response.status === 200) return undefined;
-                throw new DetailedError<UserClientTypes.LogInErrorCodes>(response.body);
-            });
-    },
-
 };

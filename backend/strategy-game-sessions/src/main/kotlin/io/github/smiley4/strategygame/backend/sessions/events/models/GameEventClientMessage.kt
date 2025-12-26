@@ -12,7 +12,7 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 sealed class GameEventClientMessage {
 
     @Serializable
-    @SerialName("submit")
+    @SerialName("submit-turn")
     class Submit(
         val commands: List<CommandMessage>
     ) : GameEventClientMessage()

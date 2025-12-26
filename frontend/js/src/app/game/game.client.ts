@@ -11,7 +11,7 @@ export namespace GameClientTypes {
 
     //==== RANDOM SETTLEMENT NAME ==================
 
-    const getRandomSettlementNameErrorCodeValues = ["todo"] as const;
+    const getRandomSettlementNameErrorCodeValues = ["GAME_NOT_FOUND", "TILE_NOT_FOUND", "WORLD_OBJECT_NOT_FOUND"] as const;
 
     export type GetRandomSettlementNameErrorCodes = typeof getRandomSettlementNameErrorCodeValues[number];
 
@@ -21,7 +21,7 @@ export namespace GameClientTypes {
 
     //==== MOVEMENT POSITIONS ======================
 
-    const getAvailableMovementPositionsErrorCodeValues = ["todo"] as const;
+    const getAvailableMovementPositionsErrorCodeValues = ["GAME_NOT_FOUND", "TILE_NOT_FOUND", "WORLD_OBJECT_NOT_FOUND"] as const;
 
     export type GetAvailableMovementPositionsErrorCodes = typeof getAvailableMovementPositionsErrorCodeValues[number];
 
@@ -69,8 +69,7 @@ export const GameClient = {
 
         type Response =
             | { status: 200; body: MovementTargetResponse[] }
-            | {
-            status: HttpErrorCodes, body: HttpErrorResponseBody<GameClientTypes.GetAvailableMovementPositionsErrorCodes>
+            | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameClientTypes.GetAvailableMovementPositionsErrorCodes>
         }
 
         return httpClient

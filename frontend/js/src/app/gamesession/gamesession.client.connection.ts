@@ -6,28 +6,15 @@ import {gameSessionWebsocketClient} from "../../main";
 
 export namespace GameSessionClientTypes {
 
-    export interface BaseMessage {
-        type: string;
-        payload: any;
+    export interface ClientMessage {
+        messageType: "submit-turn",
+        commands: (CommandMessage | unknown)[] // todo: remove unknown when possible
     }
 
-    type EnforceBaseMessage<T extends BaseMessage> = T;
-
-    export type ServerMessage = EnforceBaseMessage<
-        {
-            type: "game-state",
-            payload: GameStateMessage
-        }
-    >
-
-    export type ClientMessage = EnforceBaseMessage<
-        {
-            type: "submit-turn",
-            payload: {
-                commands: (CommandMessage | unknown)[] // todo: remove unknown when possible
-            }
-        }
-    >
+    export interface ServerMessage {
+        messageType: "game-state",
+        state: GameStateMessage
+    }
 
 }
 
@@ -35,10 +22,10 @@ export const GameSessionConnectionClient = {
 
     open(game: Game.Id, consumer: (message: GameSessionClientTypes.ServerMessage) => void): Promise<void> {
         return GameSessionClient
-            .getWebsocketTicket()
-            .then(ticket => {
+            .getWebsocketTicket(game)
+            .then(token => {
                 return gameSessionWebsocketClient.open(
-                    `/api/session/connect/${game}?ticket=${ticket}`,
+                    `/api/session/events?token=${token}`,
                     message => consumer(message as GameSessionClientTypes.ServerMessage),
                 );
             });

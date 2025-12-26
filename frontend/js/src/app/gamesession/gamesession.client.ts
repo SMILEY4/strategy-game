@@ -8,7 +8,7 @@ export namespace GameSessionClientTypes {
 
     //==== LIST GAMES ==============================
 
-    const listGamesErrorCodeValues = ["todo"] as const;
+    const listGamesErrorCodeValues = [""] as const;
 
     export type ListGamesErrorCodes = typeof listGamesErrorCodeValues[number];
 
@@ -18,7 +18,7 @@ export namespace GameSessionClientTypes {
 
     //==== CREATE GAME =============================
 
-    const createGameErrorCodeValues = ["todo"] as const;
+    const createGameErrorCodeValues = [""] as const;
 
     export type CreateGameErrorCodes = typeof createGameErrorCodeValues[number];
 
@@ -28,7 +28,7 @@ export namespace GameSessionClientTypes {
 
     //==== DELETE GAME =============================
 
-    const deleteGameErrorCodeValues = ["todo"] as const;
+    const deleteGameErrorCodeValues = [""] as const;
 
     export type DeleteGameErrorCodes = typeof deleteGameErrorCodeValues[number];
 
@@ -38,7 +38,7 @@ export namespace GameSessionClientTypes {
 
     //==== JOIN GAME ===============================
 
-    const joinGameErrorCodeValues = ["todo"] as const;
+    const joinGameErrorCodeValues = ["GAME_NOT_FOUND", "ALREADY_PARTICIPANT"] as const;
 
     export type JoinGameErrorCodes = typeof joinGameErrorCodeValues[number];
 
@@ -48,7 +48,7 @@ export namespace GameSessionClientTypes {
 
     //==== WEBSOCKET TICKET ========================
 
-    const getWsTicketErrorCodeValues = ["todo"] as const;
+    const getWsTicketErrorCodeValues = ["GAME_NOT_FOUND", "NOT_PARTICIPANT"] as const;
 
     export type GetWsTicketErrorCodes = typeof getWsTicketErrorCodeValues[number];
 
@@ -99,7 +99,7 @@ export const GameSessionClient = {
     create(name: string, seed: string | null): Promise<string> {
 
         type Response =
-            | { status: 200; body: string }
+            | { status: 200; body: { gameId: string } }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.CreateGameErrorCodes> }
 
         return httpClient
@@ -108,7 +108,7 @@ export const GameSessionClient = {
                 body: undefined,
             })
             .then(response => {
-                if (response.status === 200) return response.body;
+                if (response.status === 200) return response.body.gameId;
                 throw new DetailedError<GameSessionClientTypes.CreateGameErrorCodes>(response.body);
             });
     },
@@ -156,19 +156,19 @@ export const GameSessionClient = {
     /**
      * Get a ticket for authenticating a single websocket connection.
      */
-    getWebsocketTicket(): Promise<string> {
+    getWebsocketTicket(game: Game.Id): Promise<string> {
 
         type Response =
-            | { status: 200; body: { ticket: string } }
+            | { status: 200; body: { token: string } }
             | { status: HttpErrorCodes, body: HttpErrorResponseBody<GameSessionClientTypes.GetWsTicketErrorCodes> }
 
         return httpClient
-            .get<void, Response>("/api/session/wsticket", {
+            .get<void, Response>(`/api/session/events/token/${game}`, {
                 auth: authHandlerUserAuthToken,
                 body: undefined,
             })
             .then(response => {
-                if (response.status === 200) return response.body.ticket;
+                if (response.status === 200) return response.body.token;
                 throw new DetailedError<GameSessionClientTypes.GetWsTicketErrorCodes>(response.body);
             });
     },

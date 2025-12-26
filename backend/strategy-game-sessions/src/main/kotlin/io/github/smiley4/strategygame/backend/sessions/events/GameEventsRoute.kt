@@ -27,7 +27,7 @@ fun Route.routeGameEvents() {
     val gameConnect by inject<GameConnect>()
     val gameTurnSubmit by inject<GameTurnSubmit>()
 
-    webSocket<GameEventConnection, GameEventClientMessage, GameEventServerMessage>("", gameEventContext) {
+    webSocket<GameEventConnection, GameEventClientMessage, GameEventServerMessage>("events", gameEventContext) {
         onOpen { context, connection ->
             withLoggingContextAsync(
                 mdcTraceId(),

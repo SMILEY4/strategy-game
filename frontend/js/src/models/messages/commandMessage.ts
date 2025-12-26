@@ -8,45 +8,41 @@ export type CommandMessage =
 export namespace CommandMessage {
 
     export interface Move {
-        type: "world-object-move"
-        worldObjectId: string,
+        commandType: "move"
+        worldObject: string,
         path: ({
             id: string,
-            position: {
-                q: number,
-                r: number
-            }
+            q: number,
+            r: number
         })[]
     }
 
     export interface Disband {
-        type: "world-object-disband",
-        worldObjectId: string,
+        commandType: "disband",
+        worldObject: string,
     }
 
     export interface ConstructTileImprovement {
-        type: "world-object-construct-improvement";
-        worldObjectId: string;
-        improvementType: string;
+        commandType: "construct-tile-improvement";
+        worldObject: string;
+        improvement: string;
     }
 
     export interface CreateSettlement {
-        type: "world-object-spawn-settlement";
-        worldObjectId: string;
+        commandType: "construct-settlement";
+        worldObject: string;
         tile: {
             id: string,
-            position: {
-                q: number,
-                r: number
-            }
+            q: number,
+            r: number
         };
         settlementName: string;
     }
 
     export interface AddProductionQueueItem {
-        type: "world-object-add-production-queue-item";
-        worldObjectId: string;
-        item: string;
+        commandType: "add-production-queue-item";
+        worldObject: string;
+        item: "worker" | "scout";
     }
 
     type CommandMessageMapping = {
@@ -61,34 +57,36 @@ export namespace CommandMessage {
         [K in Command.Type]: (command: Extract<Command, { type: K }>) => CommandMessageMapping[K]
     } = {
         [Command.Type.Move]: (cmd) => ({
-            type: "world-object-move",
-            worldObjectId: cmd.worldObjectId,
+            commandType: "move",
+            worldObject: cmd.worldObjectId,
             path: cmd.path.map(it => ({
                 id: it.id,
-                position: {
                     q: it.position.q,
                     r: it.position.r,
-                },
             })),
         }),
         [Command.Type.Disband]: (cmd) => ({
-            type: "world-object-disband",
-            worldObjectId: cmd.worldObjectId,
+            commandType: "disband",
+            worldObject: cmd.worldObjectId,
         }),
         [Command.Type.ConstructTileImprovement]: (cmd) => ({
-            type: "world-object-construct-improvement",
-            worldObjectId: cmd.worldObjectId,
-            improvementType: cmd.tileImprovementType,
+            commandType: "construct-tile-improvement",
+            worldObject: cmd.worldObjectId,
+            improvement: cmd.tileImprovementType,
         }),
         [Command.Type.CreateSettlement]: (cmd) => ({
-            type: "world-object-spawn-settlement",
-            worldObjectId: cmd.worldObjectId,
+            commandType: "construct-settlement",
+            worldObject: cmd.worldObjectId,
             settlementName: cmd.name,
-            tile: cmd.tile,
+            tile: {
+                id: cmd.tile.id,
+                q: cmd.tile.position.q,
+                r: cmd.tile.position.r,
+            },
         }),
         [Command.Type.AddProductionQueueItem]: (cmd) => ({
-            type: "world-object-add-production-queue-item",
-            worldObjectId: cmd.worldObjectId,
+            commandType: "add-production-queue-item",
+            worldObject: cmd.worldObjectId,
             item: cmd.item,
         }),
     };
