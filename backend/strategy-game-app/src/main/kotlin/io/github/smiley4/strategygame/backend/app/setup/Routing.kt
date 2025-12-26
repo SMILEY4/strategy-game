@@ -1,5 +1,7 @@
 package io.github.smiley4.strategygame.backend.app.setup
 
+import io.github.smiley4.ktoropenapi.openApi
+import io.github.smiley4.ktorswaggerui.swaggerUI
 import io.github.smiley4.strategygame.backend.sessions.routingGameSessions
 import io.github.smiley4.strategygame.backend.users.routingUser
 import io.ktor.http.HttpStatusCode
@@ -19,6 +21,12 @@ import org.koin.ktor.ext.inject
 fun Application.setupRouting() {
     routing {
         route("api") {
+            route("api.json") {
+                openApi()
+            }
+            route("swagger") {
+                swaggerUI("/api/api.json")
+            }
             routeHealth()
             routeMetrics()
             routingUser()

@@ -9,7 +9,6 @@ import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.GameEntity
 
 class GameDbQueryByUserImpl(private val database: ArangoDatabase) :
-    io.github.smiley4.strategygame.backend.sessions.disconnectplayer.GameDbQueryByUser,
     io.github.smiley4.strategygame.backend.sessions.list.GameDbQueryByUser {
 
     private val metricId = MetricId.query(GameDbQueryByUserImpl::class)

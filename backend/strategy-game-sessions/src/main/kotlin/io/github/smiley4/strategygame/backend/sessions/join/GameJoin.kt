@@ -61,7 +61,6 @@ internal class GameJoin(
         game.players.add(
             Player(
                 user = userId,
-                connectionId = null,
                 state = Player.State.PLAYING,
             )
         )

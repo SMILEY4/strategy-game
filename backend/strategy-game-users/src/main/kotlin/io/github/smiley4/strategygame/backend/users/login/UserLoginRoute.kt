@@ -1,54 +1,103 @@
 package io.github.smiley4.strategygame.backend.users.login
 
-import io.github.smiley4.ktorswaggerui.dsl.routing.post
+import io.github.smiley4.ktorplus.data.Body
+import io.github.smiley4.ktorplus.data.HttpStatusCode
+import io.github.smiley4.ktorplus.data.Request
+import io.github.smiley4.ktorplus.data.Response
+import io.github.smiley4.ktorplus.post
+import io.github.smiley4.strategygame.backend.common.HttpErrorResponse
+import io.github.smiley4.strategygame.backend.common.internalError
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
-import io.github.smiley4.strategygame.backend.users.ErrorResponse
-import io.github.smiley4.strategygame.backend.users.AuthData
-import io.github.smiley4.strategygame.backend.users.LoginData
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
+import io.github.smiley4.strategygame.backend.common.unauthorized
 import io.ktor.server.routing.Route
+import kotlinx.serialization.Serializable
+import mu.two.KotlinLogging
 import org.koin.ktor.ext.inject
 
-private object UnauthorizedResponse : ErrorResponse(
-    status = 401,
-    title = "Unauthorized",
-    errorCode = "UNAUTHORIZED",
-    detail = "The provided email or password is invalid.",
-)
+private val logger = KotlinLogging.logger("route.user-login")
 
-private object UserNotConfirmedResponse : ErrorResponse(
-    status = 409,
-    title = "User not confirmed",
-    errorCode = "USER_NOT_CONFIRMED",
-    detail = "The user has not confirmed the confirmation code."
-)
-
-private object UserNotFoundResponse : ErrorResponse(
-    status = 404,
-    title = "User not found",
-    errorCode = "USER_NOT_FOUND",
-    detail = "The user does not exist."
-)
-
-fun Route.routeUserLogin(): Route {
+fun Route.routeUserLogin() {
     val userLogin by inject<UserLogin>()
-    return post("login") {
+    post<UserLoginRequest, UserLoginResponse>("login") { request ->
         withLoggingContextAsync(mdcTraceId()) {
-            call.receive<LoginData>().let { requestData ->
-                try {
-                    val auth = userLogin.login(requestData.email, requestData.password)
-                    call.respond(HttpStatusCode.OK, AuthData(auth))
-                } catch (e: UserLoginError) {
-                    when (e) {
-                        is UserLoginError.NotAuthorizedError -> call.respond(UnauthorizedResponse)
-                        is UserLoginError.UserNotConfirmedError -> call.respond(UserNotConfirmedResponse)
-                        is UserLoginError.UserNotFoundError -> call.respond(UserNotFoundResponse)
-                    }
+            try {
+                val auth = userLogin.login(request.body.email, request.body.password)
+                UserLoginResponse.Success(AuthData(auth.idToken, auth.refreshToken))
+            } catch (e: UserLoginError) {
+                logger.warn(e) { "Failed to log in user." }
+                when (e) {
+                    is UserLoginError.UserNotFoundError -> UserLoginResponse.UserNotFound()
+                    is UserLoginError.UserNotConfirmedError -> UserLoginResponse.UserNotConfirmed()
+                    is UserLoginError.NotAuthorizedError -> UserLoginResponse.Unauthorized()
                 }
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to log in user." }
+                UserLoginResponse.InternalError()
             }
         }
     }
 }
+
+
+@Request
+private class UserLoginRequest(
+    @Body val body: LoginData
+)
+
+private sealed class UserLoginResponse {
+
+    @Response(HttpStatusCode.OK, "The user successfully logged in.")
+    class Success(
+        @Body val body: AuthData
+    ) : UserLoginResponse()
+
+
+    @Response(HttpStatusCode.NOT_FOUND, "User not found")
+    class UserNotFound(
+        @Body val body: HttpErrorResponse = HttpErrorResponse(
+            status = HttpStatusCode.NOT_FOUND,
+            errorCode = "USER_NOT_FOUND",
+            title = "User not found",
+            detail = "User could not be found.",
+        )
+    ) : UserLoginResponse()
+
+
+    @Response(HttpStatusCode.CONFLICT, "User not confirmed")
+    class UserNotConfirmed(
+        @Body val body: HttpErrorResponse = HttpErrorResponse(
+            status = HttpStatusCode.CONFLICT,
+            errorCode = "USER_NOT_CONFIRMED",
+            title = "User not confirmed",
+            detail = "User has not confirmed their account.",
+        )
+    ) : UserLoginResponse()
+
+
+    @Response(HttpStatusCode.INTERNAL_SERVER_ERROR, "An internal error occurred.")
+    class InternalError(
+        @Body val body: HttpErrorResponse = HttpErrorResponse.internalError()
+    ) : UserLoginResponse()
+
+
+    @Response(HttpStatusCode.UNAUTHORIZED, "Unauthorized.")
+    class Unauthorized(
+        @Body val body: HttpErrorResponse = HttpErrorResponse.unauthorized()
+    ) : UserLoginResponse()
+
+}
+
+
+@Serializable
+private data class LoginData(
+    val email: String,
+    val password: String,
+)
+
+
+@Serializable
+private data class AuthData(
+    val idToken: String,
+    val refreshToken: String?,
+)

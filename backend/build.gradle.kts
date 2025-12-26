@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21" apply false
-    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.serialization") version "2.2.0" apply false
+    id("com.gradleup.shadow") version "9.3.0"
     id("com.github.ben-manes.versions") version "0.51.0"
 }
 

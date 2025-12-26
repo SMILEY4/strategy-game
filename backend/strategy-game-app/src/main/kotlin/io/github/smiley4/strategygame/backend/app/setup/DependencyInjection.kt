@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.backend.app.setup
 
+import io.github.smiley4.strategygame.backend.common.auth.WebSocketTokenManager
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MicrometerMonitoringService
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring
@@ -27,6 +28,7 @@ val applicationDependencies = module {
     dependenciesUsers()
     dependenciesWorldGen()
     dependenciesSessions()
+    single<WebSocketTokenManager> { WebSocketTokenManager() }
     single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
     single<MonitoringService> { MicrometerMonitoringService(get()).also { Monitoring.service = it } } withOptions { createdAtStart() }
 }

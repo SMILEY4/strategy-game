@@ -5,9 +5,11 @@ version = projectVersion
 
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization")
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -21,8 +23,12 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$versionKtor")
     implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
 
-    val versionKtorSwaggerUi: String by project
-    implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
+    val versionKtorPlus: String by project
+    implementation("io.github.smiley4:ktor-plus:${versionKtorPlus}")
+
+    // OpenAPI
+    val versionOpenApiTools = "5.4.0"
+    implementation("io.github.smiley4:ktor-openapi:${versionOpenApiTools}")
 
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
@@ -48,5 +54,5 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }

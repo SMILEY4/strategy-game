@@ -26,7 +26,7 @@ interface UserIdentityService {
         fun createFromConfig(config: UserIdentityServiceConfig): UserIdentityService {
             return when (config.identityProvider) {
                 UserIdentityProvider.AWS_COGNITO -> config.aws!!.let { awsCognitoConfig ->
-                    AwsCognitoService.Companion.create(
+                    AwsCognitoService.create(
                         poolId = awsCognitoConfig.poolId,
                         clientId = awsCognitoConfig.clientId,
                         accessKey = awsCognitoConfig.accessKeyId,

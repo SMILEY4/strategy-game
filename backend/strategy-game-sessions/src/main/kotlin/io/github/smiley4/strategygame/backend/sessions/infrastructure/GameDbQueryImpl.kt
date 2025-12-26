@@ -13,7 +13,8 @@ class GameDbQueryImpl(private val database: ArangoDatabase) :
     io.github.smiley4.strategygame.backend.sessions.connect.GameDbQuery,
     io.github.smiley4.strategygame.backend.sessions.join.GameDbQuery,
     io.github.smiley4.strategygame.backend.sessions.turnend.GameDbQuery,
-    io.github.smiley4.strategygame.backend.sessions.turnsubmit.GameDbQuery {
+    io.github.smiley4.strategygame.backend.sessions.turnsubmit.GameDbQuery,
+    io.github.smiley4.strategygame.backend.sessions.eventstoken.GameDbQuery {
 
     private val metricId = MetricId.query(GameDbQueryImpl::class)
 

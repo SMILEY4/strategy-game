@@ -80,7 +80,7 @@ internal class GameTurnSubmit(
      * End turn if all players submitted their commands (none in state "playing")
      */
     private suspend fun maybeEndTurn(game: Game) {
-        val countPlaying = game.players.count { it.state == Player.State.PLAYING && it.connectionId != null }
+        val countPlaying = game.players.count { it.state == Player.State.PLAYING }
         if (countPlaying == 0) {
             try {
                 gameTurnEnd.end(game.id)

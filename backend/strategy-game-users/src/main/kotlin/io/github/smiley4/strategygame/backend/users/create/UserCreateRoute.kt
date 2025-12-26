@@ -1,54 +1,100 @@
 package io.github.smiley4.strategygame.backend.users.create
 
+import io.github.smiley4.ktorplus.data.Body
+import io.github.smiley4.ktorplus.data.HttpStatusCode
+import io.github.smiley4.ktorplus.data.Request
+import io.github.smiley4.ktorplus.data.Response
+import io.github.smiley4.ktorplus.post
+import io.github.smiley4.strategygame.backend.common.HttpErrorResponse
+import io.github.smiley4.strategygame.backend.common.internalError
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
-import io.github.smiley4.strategygame.backend.users.ErrorResponse
-import io.github.smiley4.strategygame.backend.users.create.CreateUserData
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.post
+import kotlinx.serialization.Serializable
+import mu.two.KotlinLogging
 import org.koin.ktor.ext.inject
 
+private val logger = KotlinLogging.logger("route.user-create")
 
-private object CodeDeliveryFailedResponse : ErrorResponse(
-    status = 409,
-    title = "Code delivery failed",
-    errorCode = "CODE_DELIVERY_FAILED",
-    detail = "Verification code could not be delivered to provided email.",
-)
-
-private object InvalidEmailOrPasswordResponse : ErrorResponse(
-    status = 409,
-    title = "Invalid email or password",
-    errorCode = "INVALID_EMAIL_OR_PASSWORD",
-    detail = "Provided email or password is invalid.",
-)
-
-private object UserAlreadyExistsResponse : ErrorResponse(
-    status = 409,
-    title = "User already exists",
-    errorCode = "USER_ALREADY_EXISTS",
-    detail = "User with the given email already exists.",
-)
-
-fun Route.routeUserCreate(): Route {
+fun Route.routeUserCreate() {
     val userCreate by inject<UserCreate>()
-    return post("signup") {
+    post<UserCreateRequest, UserCreateResponse>("signup") { request ->
         withLoggingContextAsync(mdcTraceId()) {
-            call.receive<CreateUserData>().let { requestData ->
-                try {
-                    userCreate.create(requestData.email, requestData.password, requestData.username)
-                    call.respond(HttpStatusCode.OK, Unit)
-                } catch (e: UserCreateError) {
-                    when (e) {
-                        is UserCreateError.CodeDeliveryError -> call.respond(CodeDeliveryFailedResponse)
-                        is UserCreateError.InvalidEmailOrPasswordError -> call.respond(InvalidEmailOrPasswordResponse)
-                        is UserCreateError.UserAlreadyExistsError -> call.respond(UserAlreadyExistsResponse)
-                    }
+            try {
+                userCreate.create(request.body.email, request.body.password, request.body.username)
+                UserCreateResponse.Success()
+            } catch (e: UserCreateError) {
+                logger.warn(e) { "Failed to create user" }
+                when (e) {
+                    is UserCreateError.CodeDeliveryError -> UserCreateResponse.CodeDeliveryFailed()
+                    is UserCreateError.InvalidEmailOrPasswordError -> UserCreateResponse.InvalidEmailOrPassword()
+                    is UserCreateError.UserAlreadyExistsError -> UserCreateResponse.UserAlreadyExists()
                 }
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to create user" }
+                UserCreateResponse.InternalError()
             }
         }
     }
 }
+
+
+@Request
+private class UserCreateRequest(
+    @Body val body: CreateUserData
+)
+
+private sealed class UserCreateResponse {
+
+    @Response(HttpStatusCode.OK, "The user successfully logged in.")
+    class Success(
+    ) : UserCreateResponse()
+
+
+    @Response(HttpStatusCode.CONFLICT, "Code delivery failed")
+    class CodeDeliveryFailed(
+        @Body val body: HttpErrorResponse = HttpErrorResponse(
+            status = HttpStatusCode.CONFLICT,
+            errorCode = "CODE_DELIVERY_FAILED",
+            title = "Code delivery failed",
+            detail = "Failed to deliver signup code.",
+        )
+    ) : UserCreateResponse()
+
+
+    @Response(HttpStatusCode.BAD_REQUEST, "Invalid email or password")
+    class InvalidEmailOrPassword(
+        @Body val body: HttpErrorResponse = HttpErrorResponse(
+            status = HttpStatusCode.BAD_REQUEST,
+            errorCode = "INVALID_EMAIL_OR_PASSWORD",
+            title = "Invalid email or password",
+            detail = "Provided email or password are not valid.",
+        )
+    ) : UserCreateResponse()
+
+
+    @Response(HttpStatusCode.CONFLICT, "User already exists")
+    class UserAlreadyExists(
+        @Body val body: HttpErrorResponse = HttpErrorResponse(
+            status = HttpStatusCode.CONFLICT,
+            errorCode = "USER_ALREADY_EXISTS",
+            title = "User already exists",
+            detail = "A user with the provided email already exists.",
+        )
+    ) : UserCreateResponse()
+
+
+    @Response(HttpStatusCode.INTERNAL_SERVER_ERROR, "An internal error occurred.")
+    class InternalError(
+        @Body val body: HttpErrorResponse = HttpErrorResponse.internalError()
+    ) : UserCreateResponse()
+
+}
+
+
+@Serializable
+private data class CreateUserData(
+    val email: String,
+    val password: String,
+    val username: String
+)

@@ -7,7 +7,6 @@ import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameState
 import io.github.smiley4.strategygame.backend.commondata.Player
-import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
 import io.github.smiley4.strategygame.backend.playerpov.lib.PlayerViewCreator
 import io.github.smiley4.strategygame.backend.sessions.events.GameEventProducer
@@ -18,7 +17,6 @@ internal class GameTurnEnd(
     private val gameDbStateQuery: GameDbStateQuery,
     private val gameDbStateUpdate: GameDbStateUpdate,
     private val gameDbUpdate: GameDbUpdate,
-    // todo: check dependencies
     private val gameStepAction: GameStep,
     private val playerViewCreator: PlayerViewCreator,
     private val producer: GameEventProducer
@@ -88,20 +86,9 @@ internal class GameTurnEnd(
      * Send the new game-state to the connected players
      */
     private suspend fun sendPoVGameState(game: Game, gameState: GameState) {
-        game.players
-            .filter { it.connectionId != null }
-            .map { it.user }
-            .forEach { sendPoVGameState(it, game, gameState) }
-    }
-
-
-    /**
-     * Send the new game-state to the given player
-     */
-    private suspend fun sendPoVGameState(userId: User.Id, game: Game, gameState: GameState) {
-        val connectionId = game.players.findByUserId(userId)?.connectionId ?: throw Exception("Player is not connected")
-        val playerView = playerViewCreator.build(userId, gameState)
-        producer.sendGameState(connectionId, playerView)
+        producer.sendGameState(game.id) { userId ->
+            playerViewCreator.build(userId, gameState)
+        }
     }
 
 }

@@ -12,7 +12,6 @@ import io.github.smiley4.strategygame.backend.sessions.infrastructure.entities.G
 class GameDbUpdateImpl(private val database: ArangoDatabase) :
     io.github.smiley4.strategygame.backend.sessions.connect.GameDbUpdate,
     io.github.smiley4.strategygame.backend.sessions.join.GameDbUpdate,
-    io.github.smiley4.strategygame.backend.sessions.disconnectplayer.GameDbUpdate,
     io.github.smiley4.strategygame.backend.sessions.turnend.GameDbUpdate,
     io.github.smiley4.strategygame.backend.sessions.turnsubmit.GameDbUpdate {
 

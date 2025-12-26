@@ -8,6 +8,7 @@ plugins {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -18,6 +19,11 @@ dependencies {
     val versionKtor: String by project
     implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
     implementation("io.ktor:ktor-server-websockets:$versionKtor")
+    implementation("io.ktor:ktor-server-auth:${versionKtor}")
+    implementation("io.ktor:ktor-server-auth-jwt:${versionKtor}")
+
+    val versionKtorPlus: String by project
+    implementation("io.github.smiley4:ktor-plus:${versionKtorPlus}")
 
     val versionJacksonModuleKotlin: String by project
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$versionJacksonModuleKotlin")
@@ -42,5 +48,5 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }

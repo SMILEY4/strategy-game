@@ -14,6 +14,7 @@ include("strategy-game-playerpov")
 pluginManagement {
     repositories {
         mavenCentral()
+        mavenLocal()
         gradlePluginPortal()
     }
 }

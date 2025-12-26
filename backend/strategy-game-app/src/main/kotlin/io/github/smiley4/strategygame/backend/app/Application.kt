@@ -5,7 +5,10 @@ import io.github.smiley4.strategygame.backend.app.setup.setupCORS
 import io.github.smiley4.strategygame.backend.app.setup.setupCallLogging
 import io.github.smiley4.strategygame.backend.app.setup.setupContentNegotiation
 import io.github.smiley4.strategygame.backend.app.setup.setupDependencyInjection
+import io.github.smiley4.strategygame.backend.app.setup.setupJson
+import io.github.smiley4.strategygame.backend.app.setup.setupKtorPlus
 import io.github.smiley4.strategygame.backend.app.setup.setupMonitoring
+import io.github.smiley4.strategygame.backend.app.setup.setupOpenApi
 import io.github.smiley4.strategygame.backend.app.setup.setupRouting
 import io.github.smiley4.strategygame.backend.app.setup.setupStatusPages
 import io.github.smiley4.strategygame.backend.app.setup.setupWebSockets
@@ -46,14 +49,17 @@ fun main(args: Array<String>) {
  */
 fun Application.module() {
     Config.load(APPLICATION_MODE)
+    val json = setupJson()
     setupDependencyInjection()
+    setupKtorPlus(json)
     setupAuthentication()
     setupCallLogging()
-    setupContentNegotiation()
+    setupContentNegotiation(json)
     setupCORS()
     setupMonitoring()
     setupStatusPages()
     setupWebSockets()
+    setupOpenApi(json)
     setupRouting()
 }
 

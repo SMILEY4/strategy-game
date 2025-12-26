@@ -5,16 +5,18 @@ version = projectVersion
 
 application {
     mainClass.set("io.github.smiley4.strategygame.backend.app.ApplicationKt")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${System.getProperty("ev") ?: "false"}")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${System.getProperty("env") ?: "false"}")
 }
 
 plugins {
     application
     kotlin("jvm")
-    id("com.github.johnrengelman.shadow")
+    kotlin("plugin.serialization")
+    id("com.gradleup.shadow")
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -38,7 +40,7 @@ dependencies {
     implementation("io.ktor:ktor-server-metrics:$versionKtor")
     implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
     implementation("io.ktor:ktor-server-content-negotiation:${versionKtor}")
-    implementation("io.ktor:ktor-serialization-jackson:${versionKtor}")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:${versionKtor}")
     implementation("io.ktor:ktor-server-auth:${versionKtor}")
     implementation("io.ktor:ktor-server-auth-jwt:${versionKtor}")
     implementation("io.ktor:ktor-server-cors:${versionKtor}")
@@ -47,6 +49,21 @@ dependencies {
     testImplementation("io.ktor:ktor-client-cio:${versionKtor}")
     testImplementation("io.ktor:ktor-client-content-negotiation:${versionKtor}")
     testImplementation("io.ktor:ktor-serialization-jackson:${versionKtor}")
+
+    val versionKtorPlus: String by project
+    implementation("io.github.smiley4:ktor-plus:${versionKtorPlus}")
+
+    // OpenAPI
+    val versionOpenApiTools = "5.4.0"
+    implementation("io.github.smiley4:ktor-openapi:${versionOpenApiTools}")
+    implementation("io.github.smiley4:ktor-swagger-ui:${versionOpenApiTools}")
+    implementation("io.github.smiley4:ktor-redoc:${versionOpenApiTools}")
+    // schema-kenerator
+    val schemaKeneratorVersion = "2.5.0"
+    implementation("io.github.smiley4:schema-kenerator-core:${schemaKeneratorVersion}")
+    implementation("io.github.smiley4:schema-kenerator-serialization:${schemaKeneratorVersion}")
+    implementation("io.github.smiley4:schema-kenerator-swagger:${schemaKeneratorVersion}")
+
 
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
@@ -84,7 +101,7 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 tasks {

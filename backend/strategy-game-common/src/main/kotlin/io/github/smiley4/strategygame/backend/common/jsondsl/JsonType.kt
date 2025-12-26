@@ -1,9 +1,14 @@
 package io.github.smiley4.strategygame.backend.common.jsondsl
 
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+
 interface JsonType {
 
     companion object {
-
         fun from(value: Any?): JsonType {
             return when (value) {
                 null -> NullType()
@@ -16,8 +21,9 @@ interface JsonType {
                 else -> throw Exception("unknown type for json")//UnknownType(value)
             }
         }
-
     }
+
+    fun toKotlinx(): JsonElement
 
     fun toJsonString(config: JsonStringConfig): String
 
@@ -73,9 +79,11 @@ interface BlockJsonType : JsonType
 
 class ObjectType(val properties: MutableMap<String, JsonType> = mutableMapOf()) : BlockJsonType {
 
+    override fun toKotlinx() = JsonObject(properties.mapValues { (_, v) -> v.toKotlinx() })
+
     override fun toJsonString(config: JsonStringConfig): String {
         val entries = if (config.includeNullProperties) properties.entries else properties.entries.filter { it.value !is NullType }
-        if(entries.isEmpty()) {
+        if (entries.isEmpty()) {
             return "{}"
         }
         return if (config.includeSpaces) {
@@ -87,7 +95,7 @@ class ObjectType(val properties: MutableMap<String, JsonType> = mutableMapOf()) 
 
     override fun toPrettyJsonString(level: Int, config: JsonStringConfig): String {
         val entries = if (config.includeNullProperties) properties.entries else properties.entries.filter { it.value !is NullType }
-        if(entries.isEmpty()) {
+        if (entries.isEmpty()) {
             return "{}"
         }
         if (config.inlineSimpleObjects && entries.size <= 1 && entries.all { it.value is PrimitiveJsonType }) {
@@ -107,9 +115,11 @@ class ObjectType(val properties: MutableMap<String, JsonType> = mutableMapOf()) 
 
 class ArrayType(val items: MutableList<JsonType> = mutableListOf()) : BlockJsonType {
 
+    override fun toKotlinx() = JsonArray(items.map { it.toKotlinx() })
+
     override fun toJsonString(config: JsonStringConfig): String {
         val items = if (config.includeNullItems) this.items else this.items.filter { it !is NullType }
-        if(items.isEmpty()) {
+        if (items.isEmpty()) {
             return "[]"
         }
         return if (config.includeSpaces) {
@@ -121,7 +131,7 @@ class ArrayType(val items: MutableList<JsonType> = mutableListOf()) : BlockJsonT
 
     override fun toPrettyJsonString(level: Int, config: JsonStringConfig): String {
         val items = if (config.includeNullItems) this.items else this.items.filter { it !is NullType }
-        if(items.isEmpty()) {
+        if (items.isEmpty()) {
             return "[]"
         }
         val baseIdent = " ".repeat(level * config.indentSize)
@@ -136,29 +146,34 @@ class ArrayType(val items: MutableList<JsonType> = mutableListOf()) : BlockJsonT
 
 
 class NumberType(val value: Number) : PrimitiveJsonType {
+    override fun toKotlinx() = JsonPrimitive(value)
     override fun toJsonString(config: JsonStringConfig) = value.toString()
     override fun toPrettyJsonString(level: Int, config: JsonStringConfig) = toJsonString(config)
 }
 
 
 class TextType(val value: String) : PrimitiveJsonType {
+    override fun toKotlinx() = JsonPrimitive(value)
     override fun toJsonString(config: JsonStringConfig) = "\"${value.replace("\"", "\\\"")}\""
     override fun toPrettyJsonString(level: Int, config: JsonStringConfig) = toJsonString(config)
 }
 
 
 class BooleanType(val value: Boolean) : PrimitiveJsonType {
+    override fun toKotlinx() = JsonPrimitive(value)
     override fun toJsonString(config: JsonStringConfig) = value.toString()
     override fun toPrettyJsonString(level: Int, config: JsonStringConfig) = toJsonString(config)
 }
 
 class NullType : PrimitiveJsonType {
+    override fun toKotlinx() = JsonNull
     override fun toJsonString(config: JsonStringConfig) = "null"
     override fun toPrettyJsonString(level: Int, config: JsonStringConfig) = toJsonString(config)
 }
 
 
 class UnknownType(val value: Any?) : PrimitiveJsonType {
+    override fun toKotlinx() = throw Exception("Unknown JsonType: ${value?.let { it::class }}")
     override fun toJsonString(config: JsonStringConfig) = throw Exception("Unknown JsonType: ${value?.let { it::class }}")
     override fun toPrettyJsonString(level: Int, config: JsonStringConfig) = toJsonString(config)
 }
