@@ -18,6 +18,7 @@ import io.ktor.server.routing.Route
 import io.ktor.websocket.CloseReason
 import kotlinx.serialization.ExperimentalSerializationApi
 import mu.two.KotlinLogging
+import org.koin.core.qualifier._q
 import org.koin.ktor.ext.inject
 
 private val logger = KotlinLogging.logger("route.game-events")
@@ -63,6 +64,9 @@ fun Route.routeGameEvents() {
                     }
                 }
             }
+        }
+        onClose { _, connection ->
+            logger.info { "User ${connection.principal.userId.value} closed connection to game ${connection.principal.gameId.value}" }
         }
     }
 }

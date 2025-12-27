@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.backend.common.ktorplus
 import io.github.smiley4.ktorplus.core.PropertyAnalyzer
 import io.github.smiley4.ktorplus.request.RequestPropertyHandler
 import io.github.smiley4.ktorplus.typedescriptor.TypeDescriptorEntry
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.routing.RoutingCall
@@ -52,8 +53,9 @@ class UserIdRequestPropertyHandler : RequestPropertyHandler<UserIdDescriptor> {
     override suspend fun handle(descriptor: UserIdDescriptor, call: RoutingCall): Map<String, Any?> {
         val principal = call.authentication.principal<JWTPrincipal>()
             ?: throw IllegalArgumentException("Missing jwt principal for user id.")
+        val userId = principal.payload.subject ?: throw Exception("No subject found in JWT-Principal")
         return mapOf(
-            descriptor.property.name to (principal.payload.subject ?: throw Exception("No subject found in JWT-Principal"))
+            descriptor.property.name to User.Id(userId)
         )
     }
 

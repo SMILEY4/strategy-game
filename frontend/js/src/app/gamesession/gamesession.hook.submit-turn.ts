@@ -9,10 +9,8 @@ export function useGameSessionSubmitTurn(): () => void {
     return () => {
         gameInteractionEngine.end();
         GameSessionConnectionClient.send({
-            type: "submit-turn",
-            payload: {
-                commands: CommandStateAccess.getAll().map(it => CommandMessage.map(it)),
-            },
+            messageType: "submit-turn",
+            commands: CommandStateAccess.getAll().map(it => CommandMessage.map(it)),
         });
         clearCommands();
         setTurnStateWaiting();

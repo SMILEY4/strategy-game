@@ -20,6 +20,7 @@ import io.github.smiley4.strategygame.backend.sessions.events.GameEventProducer
 import io.github.smiley4.strategygame.backend.sessions.events.models.GameEventConnection
 import io.github.smiley4.strategygame.backend.sessions.events.models.GameEventServerMessage
 import io.github.smiley4.strategygame.backend.sessions.events.routeGameEvents
+import io.github.smiley4.strategygame.backend.sessions.eventstoken.EventsTokenGet
 import io.github.smiley4.strategygame.backend.sessions.eventstoken.routeGameEventsToken
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbCommandsInsertImpl
 import io.github.smiley4.strategygame.backend.sessions.infrastructure.GameDbCommandsQueryImpl
@@ -69,6 +70,8 @@ fun Module.dependenciesSessions() {
     single<WebSocketContext<GameEventConnection, GameEventServerMessage>> { WebSocketContext.create<GameEventConnection, GameEventServerMessage>() }
 
     // events
+    single<EventsTokenGet> { EventsTokenGet(get(), get()) }
+    single<io.github.smiley4.strategygame.backend.sessions.eventstoken.GameDbQuery> { GameDbQueryImpl(get()) }
     single<GameEventProducer> { GameEventProducer(get()) }
 
     // connect
