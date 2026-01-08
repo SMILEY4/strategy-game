@@ -16,6 +16,7 @@ export class CanvasHandle {
                 throw new Error("webgl2 not supported");
             }
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+            gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
             this.gl = gl;
             this.extLooseContext = gl.getExtension("WEBGL_lose_context");
         } else {
