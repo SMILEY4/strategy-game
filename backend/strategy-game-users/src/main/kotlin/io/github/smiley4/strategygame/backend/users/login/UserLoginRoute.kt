@@ -17,7 +17,7 @@ import org.koin.ktor.ext.inject
 
 private val logger = KotlinLogging.logger("route.user-login")
 
-fun Route.routeUserLogin() {
+internal fun Route.routeUserLogin() {
     val userLogin by inject<UserLogin>()
     post<UserLoginRequest, UserLoginResponse>("login") { request ->
         withLoggingContextAsync(mdcTraceId()) {

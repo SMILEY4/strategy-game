@@ -18,7 +18,7 @@ import org.koin.ktor.ext.inject
 private val logger = KotlinLogging.logger("route.user-refresh-token")
 
 
-fun Route.routeUserRefreshToken() {
+internal fun Route.routeUserRefreshToken() {
     val userRefreshToken by inject<UserRefreshToken>()
     post<UserRefreshTokenRequest, UserRefreshTokenResponse>("refresh") { request ->
         withLoggingContextAsync(mdcTraceId()) {

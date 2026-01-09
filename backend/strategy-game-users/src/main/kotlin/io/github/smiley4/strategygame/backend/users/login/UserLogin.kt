@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.users.login
 import io.github.smiley4.strategygame.backend.users.AuthDataExtended
 import io.github.smiley4.strategygame.backend.users.authentication.UserIdentityService
 
-class UserLogin(
+internal class UserLogin(
     private val userIdentity: UserIdentityService
 ) {
 

@@ -16,7 +16,7 @@ import org.koin.ktor.ext.inject
 
 private val logger = KotlinLogging.logger("route.user-create")
 
-fun Route.routeUserCreate() {
+internal fun Route.routeUserCreate() {
     val userCreate by inject<UserCreate>()
     post<UserCreateRequest, UserCreateResponse>("signup") { request ->
         withLoggingContextAsync(mdcTraceId()) {

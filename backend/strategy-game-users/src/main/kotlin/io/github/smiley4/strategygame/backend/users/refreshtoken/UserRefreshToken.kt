@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.users.refreshtoken
 import io.github.smiley4.strategygame.backend.users.AuthData
 import io.github.smiley4.strategygame.backend.users.authentication.UserIdentityService
 
-class UserRefreshToken(
+internal class UserRefreshToken(
     private val userIdentity: UserIdentityService
 ) {
 
