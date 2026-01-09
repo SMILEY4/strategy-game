@@ -19,7 +19,7 @@ fun Module.dependenciesUsers() {
 
     single<UserIdentityServiceConfig> { Config.get().identityService }
 
-    single<UserIdentityService> { UserIdentityService.createFromConfig(get()) } withOptions { createdAtStart() }
+    single<UserIdentityService> { UserIdentityService.createFromConfig(get()) }
 
     single<UserCreate> { UserCreate(get()) }
     single<UserLogin> { UserLogin(get()) }
