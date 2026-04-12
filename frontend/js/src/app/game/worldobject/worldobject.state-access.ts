@@ -102,7 +102,7 @@ export const WorldObjectStateAccess = {
                                     name: command.name
                                 },
                                 realm: worldObject.realm,
-                                tile: worldObject.tile,
+                                tile: command.tile,
                                 components: [],
                             }
                         ]
