@@ -1,14 +1,8 @@
-val projectGroupId: String by project
-val projectVersion: String by project
-group = projectGroupId
-version = projectVersion
-
 plugins {
-    kotlin("jvm")
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.dependencycheck)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.detekt)
 }
 
 dependencies {
@@ -17,42 +11,30 @@ dependencies {
     implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-common-data"))
 
-    val versionKtor: String by project
-    implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
-    implementation("io.ktor:ktor-server-netty-jvm:$versionKtor")
-    implementation("io.ktor:ktor-server-websockets:$versionKtor")
-    implementation("io.ktor:ktor-server-call-logging:$versionKtor")
-    implementation("io.ktor:ktor-server-cors:$versionKtor")
-    implementation("io.ktor:ktor-server-content-negotiation:$versionKtor")
-    implementation("io.ktor:ktor-serialization-jackson:$versionKtor")
-    implementation("io.ktor:ktor-server-auth:$versionKtor")
-    implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
-    implementation("io.ktor:ktor-server-status-pages:$versionKtor")
-    implementation("io.ktor:ktor-server-metrics:$versionKtor")
-    implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
-    implementation("io.ktor:ktor-server-html-builder:$versionKtor")
-    testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
-    testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
+    implementation(libs.ktor.server.core.jvm)
+    implementation(libs.ktor.server.netty.jvm)
+    implementation(libs.ktor.server.metrics)
+    implementation(libs.ktor.server.metrics.micrometer)
+    implementation(libs.ktor.server.websockets)
+    implementation(libs.ktor.server.calllogging)
+    implementation(libs.ktor.server.cors)
+    implementation(libs.ktor.server.contentnegotiation)
+    implementation(libs.ktor.server.serialization.jackson)
+    implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.authjwt)
+    implementation(libs.ktor.server.statuspages)
+    implementation(libs.ktor.server.htmlbuilder)
+    implementation(libs.ktor.swagger.ui)
+    testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.ktor.client.contentnegotiation)
 
-    val versionKtorSwaggerUi: String by project
-    implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
+    implementation(libs.koson)
 
-    val versionKoson: String by project
-    implementation("com.lectra:koson:$versionKoson")
+    implementation(libs.micrometer.registry.prometheus)
+    implementation(libs.hdr.histogram)
 
-    val versionMicrometerPrometheus: String by project
-    implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
-    implementation("org.hdrhistogram:HdrHistogram:2.1.12")
+    implementation(libs.kotlin.logging.jvm)
 
-    val versionKotlinLogging: String by project
-    implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
-
-    val versionKoin: String by project
-    implementation("io.insert-koin:koin-core:$versionKoin")
-    implementation("io.insert-koin:koin-ktor3:$versionKoin")
-
-}
-
-kotlin {
-    jvmToolchain(17)
+    implementation(libs.koin.core)
+    implementation(libs.koin.ktor3)
 }

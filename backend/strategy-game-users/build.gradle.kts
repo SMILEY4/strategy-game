@@ -1,14 +1,9 @@
-val projectGroupId: String by project
-val projectVersion: String by project
-group = projectGroupId
-version = projectVersion
 
 plugins {
-    kotlin("jvm")
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.dependencycheck)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.detekt)
 }
 
 dependencies {
@@ -16,37 +11,23 @@ dependencies {
     implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-common-data"))
 
-    val versionKtor: String by project
-    implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
-    implementation("io.ktor:ktor-server-auth:$versionKtor")
-    implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
+    implementation(libs.ktor.server.core.jvm)
+    implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.authjwt)
+    implementation(libs.ktor.swagger.ui)
 
-    val versionKtorSwaggerUi: String by project
-    implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
+    implementation(libs.aws.sdk)
+    implementation(libs.aws.sdk.core)
+    implementation(libs.aws.sdk.cognitoidp)
 
-    val versionAwsSdk: String by project
-    implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
-    implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")
-    implementation("com.amazonaws:aws-java-sdk-cognitoidp:$versionAwsSdk")
+    implementation(libs.kotlin.logging.jvm)
 
-    val versionKotlinLogging: String by project
-    implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
+    implementation(libs.koin.core)
+    implementation(libs.koin.ktor3)
 
-    val versionKoin: String by project
-    implementation("io.insert-koin:koin-core:$versionKoin")
-    implementation("io.insert-koin:koin-ktor3:$versionKoin")
-
-    val versionKotest: String by project
-    val versionKotestExtensionTestContainers: String by project
-    testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
-    testImplementation("io.kotest:kotest-assertions-core:$versionKotest")
-    testImplementation("io.kotest:kotest-property:$versionKotest")
-    testImplementation("io.kotest.extensions:kotest-extensions-testcontainers:$versionKotestExtensionTestContainers")
-
-    val versionMockk: String by project
-    testImplementation("io.mockk:mockk:${versionMockk}")
-}
-
-kotlin {
-    jvmToolchain(17)
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.kotest.extensions.testcontainers)
+    testImplementation(libs.mockk)
 }

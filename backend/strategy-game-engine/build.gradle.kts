@@ -1,14 +1,8 @@
-val projectGroupId: String by project
-val projectVersion: String by project
-group = projectGroupId
-version = projectVersion
-
 plugins {
-    kotlin("jvm")
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.dependencycheck)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.detekt)
 }
 
 dependencies {
@@ -18,24 +12,14 @@ dependencies {
     implementation(project(":strategy-game-worldgen"))
     implementation(project(":strategy-game-pathfinding"))
 
-    val versionKotlinLogging: String by project
-    implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
+    implementation(libs.kotlin.logging.jvm)
 
-    val versionKoin: String by project
-    implementation("io.insert-koin:koin-core:$versionKoin")
+    implementation(libs.koin.core)
 
-    val versionKotest: String by project
-    val versionKotestExtensionTestContainers: String by project
-    testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
-    testImplementation("io.kotest:kotest-assertions-core:$versionKotest")
-    testImplementation("io.kotest:kotest-property:$versionKotest")
+    implementation(libs.dotlin)
 
-    val versionMockk: String by project
-    testImplementation("io.mockk:mockk:${versionMockk}")
-
-    implementation("io.github.rchowell:dotlin:1.0.2")
-}
-
-kotlin {
-    jvmToolchain(17)
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.mockk)
 }

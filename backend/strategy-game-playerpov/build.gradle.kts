@@ -1,14 +1,8 @@
-val projectGroupId: String by project
-val projectVersion: String by project
-group = projectGroupId
-version = projectVersion
-
 plugins {
-    kotlin("jvm")
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.dependencycheck)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.detekt)
 }
 
 dependencies {
@@ -17,13 +11,6 @@ dependencies {
     implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-common-data"))
 
-    val versionKotlinLogging: String by project
-    val versionKoin: String by project
-
-    implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
-    implementation("io.insert-koin:koin-core:$versionKoin")
-}
-
-kotlin {
-    jvmToolchain(17)
+    implementation(libs.kotlin.logging.jvm)
+    implementation(libs.koin.core)
 }
