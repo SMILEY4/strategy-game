@@ -1,47 +1,24 @@
-val projectGroupId: String by project
-val projectVersion: String by project
-group = projectGroupId
-version = projectVersion
-
-
 plugins {
-    kotlin("jvm")
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.dependencycheck)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.detekt)
 }
 
 dependencies {
-    val versionArangoDb: String by project
-    val versionJacksonDataformatVelocypack: String by project
-    implementation("com.arangodb:arangodb-java-driver:$versionArangoDb")
-    implementation("com.arangodb:jackson-dataformat-velocypack:$versionJacksonDataformatVelocypack")
 
-    val versionJacksonModuleKotlin: String by project
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$versionJacksonModuleKotlin")
+    implementation(libs.arangodb.java.driver)
+    implementation(libs.arangodb.jackson.dataformat.velocypack)
 
-    val versionKotlinxCoroutines: String by project
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versionKotlinxCoroutines")
+    implementation(libs.jackson.kotlin)
 
-    val versionKotlinLogging: String by project
-    implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
+    implementation(libs.kotlinx.coroutines.core)
 
-    val versionKotest: String by project
-    val versionKotestExtensionTestContainers: String by project
-    testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
-    testImplementation("io.kotest:kotest-assertions-core:$versionKotest")
-    testImplementation("io.kotest:kotest-property:$versionKotest")
-    testImplementation("io.kotest.extensions:kotest-extensions-testcontainers:$versionKotestExtensionTestContainers")
+    implementation(libs.kotlin.logging.jvm)
 
-    val versionMockk: String by project
-    testImplementation("io.mockk:mockk:${versionMockk}")
-}
-
-kotlin {
-    jvmToolchain(17)
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property)
+    testImplementation(libs.kotest.extensions.testcontainers)
+    testImplementation(libs.mockk)
 }
