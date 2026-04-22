@@ -1,5 +1,6 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
@@ -24,6 +25,15 @@ subprojects {
     }
 
     plugins.withId("org.jetbrains.kotlin.jvm") {
+
+        // kotlin experimental features
+        extensions.configure<KotlinJvmProjectExtension> {
+            compilerOptions {
+                freeCompilerArgs.addAll(
+                    "-opt-in=kotlin.uuid.ExperimentalUuidApi"
+                )
+            }
+        }
 
         val versionJvmCompile = libs.versions.jvm.compile.get().toInt()
         val versionJvmTarget = libs.versions.jvm.target.get()

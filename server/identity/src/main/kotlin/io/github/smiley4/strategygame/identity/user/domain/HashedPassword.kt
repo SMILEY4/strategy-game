@@ -1,0 +1,11 @@
+package io.github.smiley4.strategygame.identity.user.domain
+
+/**
+ * A secure hashed password
+ */
+data class HashedPassword(val hash: String, val salt: String) {
+    init {
+        if (!hash.startsWith("$")) throw IllegalArgumentException("Attempted to store an unhashed password. Hash must start with '$'")
+        if (salt.isBlank()) throw IllegalArgumentException("Salt must not be empty")
+    }
+}

@@ -1,6 +1,6 @@
 rootProject.name = "server"
 
-include("identity-and-access")
+include("identity")
 
 pluginManagement {
     repositories {
