@@ -1,0 +1,76 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+
+plugins {
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.versions) apply false
+    alias(libs.plugins.dependencycheck) apply false
+    alias(libs.plugins.kotest) apply false
+}
+
+subprojects {
+
+    val projectGroupId: String by project
+    val projectVersion: String by project
+    group = projectGroupId
+    version = projectVersion
+
+    repositories {
+        mavenCentral()
+    }
+
+    plugins.withId("org.jetbrains.kotlin.jvm") {
+
+        val versionJvmCompile = libs.versions.jvm.compile.get().toInt()
+        val versionJvmTarget = libs.versions.jvm.target.get()
+
+        // Kotlin Toolchain
+        extensions.configure<KotlinJvmProjectExtension> {
+            jvmToolchain(versionJvmCompile)
+            compilerOptions {
+                jvmTarget.set(JvmTarget.fromTarget(versionJvmTarget))
+            }
+        }
+
+        // Java Toolchain
+        extensions.configure<JavaPluginExtension> {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(versionJvmCompile))
+            }
+        }
+
+        // JVM Compatibility
+        tasks.withType<JavaCompile>().configureEach {
+            sourceCompatibility = versionJvmTarget
+            targetCompatibility = versionJvmTarget
+        }
+    }
+
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
+
+
+    pluginManager.withPlugin("io.gitlab.arturbosch.detekt") {
+        extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+            config.setFrom(rootProject.file("detekt/detekt.yml"))
+            ignoreFailures = false
+            buildUponDefaultConfig = true
+            allRules = false
+        }
+    }
+    tasks.withType<Detekt>().configureEach {
+        reports {
+            html.required.set(true)
+            md.required.set(true)
+            xml.required.set(false)
+            txt.required.set(false)
+            sarif.required.set(false)
+        }
+    }
+
+}

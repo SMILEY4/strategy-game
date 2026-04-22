@@ -1,0 +1,45 @@
+[versions]
+
+# Language & Build
+kotlin = "2.2.21"
+jvm-compile = "21"
+jvm-target = "21"
+
+# Plugins
+detekt = "1.23.8"
+dependencycheck = "12.2.0"
+versions-plugin = "0.53.0"
+
+# Libraries
+kotest = "6.1.10"
+mockk = "1.14.9"
+
+kotlin-logging = "8.0.01"
+janino = "3.1.12"
+logback = "1.5.32"
+logstash-logback-encoder = "9.0"
+slf4j-coroutines = "1.10.2"
+
+[libraries]
+
+# Logging
+janino = { module = "org.codehaus.janino:janino", version.ref = "janino" }
+kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+kotlinx-coroutines-slf4j = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j", version.ref = "slf4j-coroutines" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback-encoder" }
+
+# Testing
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+[bundles]
+logging = ["janino", "kotlin-logging-jvm", "kotlinx-coroutines-slf4j", "logback-classic", "logstash-logback-encoder"]
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+dependencycheck = { id = "org.owasp.dependencycheck", version.ref = "dependencycheck" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions-plugin" }
+kotest = { id = "io.kotest", version.ref = "kotest"}
