@@ -22,7 +22,6 @@ internal class UserServiceImpl(
         val hashedPassword = passwordHasher.hash(password)
 
         val user = User(
-            id = UserId(),
             username = username,
             password = hashedPassword
         )

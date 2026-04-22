@@ -6,11 +6,17 @@ import io.github.smiley4.strategygame.identity.shared.Username
 /**
  * User aggregate
  */
-internal class User(
+internal class User private constructor(
     private val id: UserId,
     private var username: Username,
     private var password: HashedPassword
 ) {
+
+    constructor(username: Username, password: HashedPassword) : this(
+        id = UserId(),
+        username = username,
+        password = password
+    )
 
     constructor(snapshot: UserSnapshot) : this(
         id = snapshot.id,

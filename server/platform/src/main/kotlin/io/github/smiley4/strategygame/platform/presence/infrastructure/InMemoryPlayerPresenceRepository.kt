@@ -1,0 +1,20 @@
+package io.github.smiley4.strategygame.platform.presence.infrastructure
+
+import io.github.smiley4.strategygame.identity.user.domain.UserId
+import io.github.smiley4.strategygame.platform.presence.domain.PlayerPresence
+import io.github.smiley4.strategygame.platform.presence.domain.PlayerPresenceRepository
+import io.github.smiley4.strategygame.platform.presence.domain.PlayerPresenceSnapshot
+
+internal class InMemoryPlayerPresenceRepository : PlayerPresenceRepository {
+
+    private val presences = mutableMapOf<UserId, PlayerPresenceSnapshot>()
+
+    override fun save(presence: PlayerPresence) {
+        presences[presence.player] = presence.toSnapshot()
+    }
+
+    override fun findByPlayer(player: UserId): PlayerPresence? {
+        return presences[player]?.let { PlayerPresence(it) }
+    }
+
+}
