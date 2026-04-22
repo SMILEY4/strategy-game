@@ -1,8 +1,8 @@
 package io.github.smiley4.strategygame.identity.user
 
-import io.github.smiley4.strategygame.identity.user.domain.UnsafePassword
+import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.user.domain.UserId
-import io.github.smiley4.strategygame.identity.user.domain.Username
+import io.github.smiley4.strategygame.identity.shared.Username
 
 /**
  * Service responsible for user operations.

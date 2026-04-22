@@ -30,7 +30,8 @@ subprojects {
         extensions.configure<KotlinJvmProjectExtension> {
             compilerOptions {
                 freeCompilerArgs.addAll(
-                    "-opt-in=kotlin.uuid.ExperimentalUuidApi"
+                    "-opt-in=kotlin.uuid.ExperimentalUuidApi",
+                    "-opt-in=kotlin.time.ExperimentalTime"
                 )
             }
         }

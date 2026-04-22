@@ -1,10 +1,9 @@
 package io.github.smiley4.strategygame.identity.user.domain
 
+import io.github.smiley4.strategygame.identity.shared.UnsafePassword
+import io.github.smiley4.strategygame.identity.shared.Username
 import io.github.smiley4.strategygame.identity.user.UserError
 import io.github.smiley4.strategygame.identity.user.UserService
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Implementation of the [UserService].
@@ -14,12 +13,10 @@ internal class UserServiceImpl(
     private val userRepository: UserRepository
 ) : UserService {
 
-    private val userLocks = ConcurrentHashMap<UserId, Mutex>()
-
     override fun register(username: Username, password: UnsafePassword): UserId {
 
         if (existsUsername(username)) {
-            throw UserError.UsernameNotUnique(username)
+            throw UserError.UsernameNotUnique(username.value)
         }
 
         val hashedPassword = passwordHasher.hash(password)
@@ -36,10 +33,10 @@ internal class UserServiceImpl(
     }
 
 
-    override suspend fun changePassword(userId: UserId, newPassword: UnsafePassword) = locked(userId) {
+    override suspend fun changePassword(userId: UserId, newPassword: UnsafePassword) {
 
-        val user = userRepository.getById(userId)
-            ?: throw UserError.NotFound(userId)
+        val user = userRepository.findById(userId)
+            ?: throw UserError.NotFound(userId.id.toString())
 
         val hashedPassword = passwordHasher.hash(newPassword)
 
@@ -49,13 +46,13 @@ internal class UserServiceImpl(
     }
 
 
-    override suspend fun changeUsername(userId: UserId, newUsername: Username) = locked(userId) {
+    override suspend fun changeUsername(userId: UserId, newUsername: Username) {
 
-        val user = userRepository.getById(userId)
-            ?: throw UserError.NotFound(userId)
+        val user = userRepository.findById(userId)
+            ?: throw UserError.NotFound(userId.id.toString())
 
         if (user.getUsername() != newUsername && existsUsername(newUsername)) {
-            throw UserError.UsernameNotUnique(newUsername)
+            throw UserError.UsernameNotUnique(newUsername.value)
         }
 
         user.changeUsername(newUsername)
@@ -65,14 +62,7 @@ internal class UserServiceImpl(
 
 
     private fun existsUsername(username: Username): Boolean {
-        return userRepository.getByUsername(username) != null
+        return userRepository.findByUsername(username) != null
     }
 
-
-    private suspend fun locked(userId: UserId, block: () -> Unit) {
-        val lock = userLocks.computeIfAbsent(userId) { Mutex() }
-        lock.withLock {
-            block()
-        }
-    }
 }

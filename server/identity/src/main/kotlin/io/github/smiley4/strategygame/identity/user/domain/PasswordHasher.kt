@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.identity.user.domain
 
+import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -7,16 +8,28 @@ import javax.crypto.spec.PBEKeySpec
 /**
  * Creates secure passwords from unsafe ones
  */
-class PasswordHasher {
+internal class PasswordHasher {
 
     /**
      * Generate a safe hashed password from the given raw value
      */
     fun hash(unsafe: UnsafePassword): HashedPassword {
-        val salt = generateSalt()
-        return this.generateHash(unsafe, salt)
+        return this.hash(unsafe, generateSalt())
     }
 
+    /**
+     * Generate a safe hashed password from the given raw value and salt
+     */
+    fun hash(unsafe: UnsafePassword, salt: String): HashedPassword {
+        return this.generateHash(unsafe, salt.chunked(2).map { it.toInt(16).toByte() }.toByteArray())
+    }
+
+    /**
+     * Generate a safe hashed password from the given raw value and salt
+     */
+    fun hash(unsafe: UnsafePassword, salt: ByteArray): HashedPassword {
+        return this.generateHash(unsafe, salt)
+    }
 
     /**
      * Generate a safe hash from the given secret and salt.

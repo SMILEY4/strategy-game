@@ -1,5 +1,8 @@
 package io.github.smiley4.strategygame.identity.user.domain
 
+import io.github.smiley4.strategygame.identity.shared.UnsafePassword
+import io.github.smiley4.strategygame.identity.shared.Username
+
 /**
  * User aggregate
  */
@@ -14,6 +17,16 @@ internal class User(
         username = snapshot.username,
         password = snapshot.password
     )
+
+
+    /**
+     * Check whether the provided password matches the user password
+     */
+    fun isValidPassword(unsafePassword: UnsafePassword, passwordHasher: PasswordHasher): Boolean {
+        val hashedProvidedPassword = passwordHasher.hash(unsafePassword, password.salt)
+        return hashedProvidedPassword.hash == password.hash
+    }
+
 
     /**
      * Change the username to the given new username
@@ -30,13 +43,15 @@ internal class User(
         this.password = newPassword
     }
 
+
     /**
      * @return the user id
      */
     fun getId() = this.id
 
+
     /**
-     * @return the user name
+     * @return the username
      */
     fun getUsername() = this.username
 

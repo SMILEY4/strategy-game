@@ -2,10 +2,10 @@ package io.github.smiley4.strategygame.identity.user
 
 import io.github.smiley4.strategygame.identity.user.domain.HashedPassword
 import io.github.smiley4.strategygame.identity.user.domain.PasswordHasher
-import io.github.smiley4.strategygame.identity.user.domain.UnsafePassword
+import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.user.domain.UserId
 import io.github.smiley4.strategygame.identity.user.domain.UserServiceImpl
-import io.github.smiley4.strategygame.identity.user.domain.Username
+import io.github.smiley4.strategygame.identity.shared.Username
 import io.github.smiley4.strategygame.identity.user.infrastructure.InMemoryUserRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
@@ -84,8 +84,7 @@ class UserTests : FreeSpec({
 
         "registration with valid data is successful" {
             val repository = InMemoryUserRepository()
-            val hasher = PasswordHasher()
-            val service = UserServiceImpl(hasher, repository)
+            val service = UserServiceImpl(PasswordHasher(), repository)
 
             val userId = service.register(Username("tester"), UnsafePassword("password"))
 
@@ -95,8 +94,7 @@ class UserTests : FreeSpec({
 
         "should fail for already taken username" {
             val repository = InMemoryUserRepository()
-            val hasher = PasswordHasher()
-            val service = UserServiceImpl(hasher, repository)
+            val service = UserServiceImpl(PasswordHasher(), repository)
 
             service.register(Username("tester"), UnsafePassword("password1"))
 
@@ -111,8 +109,7 @@ class UserTests : FreeSpec({
 
         "successful for valid value" {
             val repository = InMemoryUserRepository()
-            val hasher = PasswordHasher()
-            val service = UserServiceImpl(hasher, repository)
+            val service = UserServiceImpl(PasswordHasher(), repository)
 
             val userId = service.register(Username("original"), UnsafePassword("password"))
 
@@ -125,8 +122,7 @@ class UserTests : FreeSpec({
 
         "should fail for unknown user" {
             val repository = InMemoryUserRepository()
-            val hasher = PasswordHasher()
-            val service = UserServiceImpl(hasher, repository)
+            val service = UserServiceImpl(PasswordHasher(), repository)
 
             val existingUserId = service.register(Username("tester"), UnsafePassword("password"))
             val unknownUserId = UserId()
@@ -144,8 +140,7 @@ class UserTests : FreeSpec({
 
         "successful for valid value" {
             val repository = InMemoryUserRepository()
-            val hasher = PasswordHasher()
-            val service = UserServiceImpl(hasher, repository)
+            val service = UserServiceImpl(PasswordHasher(), repository)
 
             val userId = service.register(Username("tester"), UnsafePassword("oldpassword"))
             val passwordBefore = repository.getSnapshot(userId)?.password
@@ -159,8 +154,7 @@ class UserTests : FreeSpec({
 
         "should fail for unknown user" {
             val repository = InMemoryUserRepository()
-            val hasher = PasswordHasher()
-            val service = UserServiceImpl(hasher, repository)
+            val service = UserServiceImpl(PasswordHasher(), repository)
 
             service.register(Username("tester"), UnsafePassword("password"))
 

@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.identity.user
 
 import io.github.smiley4.strategygame.identity.user.domain.UserId
-import io.github.smiley4.strategygame.identity.user.domain.Username
+import io.github.smiley4.strategygame.identity.shared.Username
 
 /**
  * Errors for the user domain.
@@ -17,8 +17,8 @@ sealed class UserError(message: String?, cause: Throwable?) : Exception(message,
         class Empty : UsernameError("Username cannot be empty", null)
     }
 
-    class UsernameNotUnique(username: Username) : UsernameError("A user with the name '${username.value}' already exists'", null)
+    class UsernameNotUnique(username: String) : UsernameError("A user with the name '${username}' already exists'", null)
 
-    class NotFound(value: UserId) : UserError("User with id '${value.id}' could not be found", null)
+    class NotFound(value: String) : UserError("User '${value}' could not be found", null)
 
 }
