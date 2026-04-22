@@ -1,8 +1,7 @@
 package io.github.smiley4.strategygame.platform.presence
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
-import io.github.smiley4.strategygame.platform.game.GameError
-import io.github.smiley4.strategygame.platform.game.domain.GameId
+import io.github.smiley4.strategygame.shared.GameId
+import io.github.smiley4.strategygame.shared.UserId
 
 sealed class PlayerPresenceError(message: String?, cause: Throwable?) : Exception(message, cause) {
     class AlreadyConnected(user: UserId) : PlayerPresenceError("The user '${user.id}' is already connected to a game", null)

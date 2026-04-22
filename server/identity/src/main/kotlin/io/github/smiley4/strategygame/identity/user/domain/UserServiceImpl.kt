@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
 import io.github.smiley4.strategygame.identity.user.UserError
 import io.github.smiley4.strategygame.identity.user.UserService
+import io.github.smiley4.strategygame.shared.UserId
 
 /**
  * Implementation of the [UserService].

@@ -1,8 +1,5 @@
 package io.github.smiley4.strategygame.identity.user
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
-import io.github.smiley4.strategygame.identity.shared.Username
-
 /**
  * Errors for the user domain.
  */

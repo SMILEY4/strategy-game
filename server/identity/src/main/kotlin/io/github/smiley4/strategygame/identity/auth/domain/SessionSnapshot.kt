@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.identity.auth.domain
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
+import io.github.smiley4.strategygame.shared.UserId
 import kotlin.time.Instant
 
 internal data class SessionSnapshot(

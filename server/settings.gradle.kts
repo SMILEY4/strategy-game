@@ -14,3 +14,5 @@ plugins {
 }
 
 include("platform")
+include("engine")
+include("shared")

@@ -1,7 +1,8 @@
 package io.github.smiley4.strategygame.platform.game.domain
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
 import io.github.smiley4.strategygame.platform.game.GameError
+import io.github.smiley4.strategygame.shared.GameId
+import io.github.smiley4.strategygame.shared.UserId
 
 internal class Game private constructor(
     private val id: GameId,
@@ -34,7 +35,7 @@ internal class Game private constructor(
     }
 
     fun delete(user: UserId) {
-        val member = members.first { it.user == user }
+        val member = members.firstOrNull { it.user == user }
         if (member == null || member.role != PlayerRole.OWNER) {
             throw GameError.NotAllowed(user, id, "delete")
         }

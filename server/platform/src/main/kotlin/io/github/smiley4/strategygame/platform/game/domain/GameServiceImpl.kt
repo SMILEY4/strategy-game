@@ -1,8 +1,9 @@
 package io.github.smiley4.strategygame.platform.game.domain
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
 import io.github.smiley4.strategygame.platform.game.GameError
 import io.github.smiley4.strategygame.platform.game.GameService
+import io.github.smiley4.strategygame.shared.GameId
+import io.github.smiley4.strategygame.shared.UserId
 
 internal class GameServiceImpl(
     private val gameRepository: GameRepository

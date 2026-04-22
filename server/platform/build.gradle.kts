@@ -9,6 +9,7 @@ plugins {
 dependencies {
     implementation(project(":identity"))
     implementation(libs.bundles.logging)
+    implementation(project(":shared"))
 
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)

@@ -1,7 +1,8 @@
 package io.github.smiley4.strategygame.platform.presence
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
-import io.github.smiley4.strategygame.platform.game.domain.GameId
+import io.github.smiley4.strategygame.shared.GameId
+import io.github.smiley4.strategygame.shared.UserId
+
 
 interface PlayerPresenceService {
     fun connect(player: UserId, gameId: GameId)

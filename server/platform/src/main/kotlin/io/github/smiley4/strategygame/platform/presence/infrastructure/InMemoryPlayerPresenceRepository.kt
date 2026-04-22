@@ -1,9 +1,9 @@
 package io.github.smiley4.strategygame.platform.presence.infrastructure
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
 import io.github.smiley4.strategygame.platform.presence.domain.PlayerPresence
 import io.github.smiley4.strategygame.platform.presence.domain.PlayerPresenceRepository
 import io.github.smiley4.strategygame.platform.presence.domain.PlayerPresenceSnapshot
+import io.github.smiley4.strategygame.shared.UserId
 
 internal class InMemoryPlayerPresenceRepository : PlayerPresenceRepository {
 

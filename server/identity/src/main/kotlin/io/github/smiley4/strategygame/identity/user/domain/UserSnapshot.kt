@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.identity.user.domain
 
 import io.github.smiley4.strategygame.identity.shared.Username
+import io.github.smiley4.strategygame.shared.UserId
 
 internal data class UserSnapshot(
     val id: UserId,

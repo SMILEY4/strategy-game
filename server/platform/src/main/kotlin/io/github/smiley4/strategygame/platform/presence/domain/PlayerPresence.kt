@@ -1,9 +1,9 @@
 package io.github.smiley4.strategygame.platform.presence.domain
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
 import io.github.smiley4.strategygame.platform.game.domain.Game
-import io.github.smiley4.strategygame.platform.game.domain.GameId
 import io.github.smiley4.strategygame.platform.presence.PlayerPresenceError
+import io.github.smiley4.strategygame.shared.GameId
+import io.github.smiley4.strategygame.shared.UserId
 
 internal class PlayerPresence private constructor(
     val player: UserId,

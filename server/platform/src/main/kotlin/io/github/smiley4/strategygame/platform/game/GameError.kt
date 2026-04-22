@@ -1,7 +1,8 @@
 package io.github.smiley4.strategygame.platform.game
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
-import io.github.smiley4.strategygame.platform.game.domain.GameId
+import io.github.smiley4.strategygame.shared.GameId
+import io.github.smiley4.strategygame.shared.UserId
+
 
 sealed class GameError(message: String?, cause: Throwable?) : Exception(message, cause) {
     class NotFound(value: String) : GameError("The game '$value' could not be found", null)

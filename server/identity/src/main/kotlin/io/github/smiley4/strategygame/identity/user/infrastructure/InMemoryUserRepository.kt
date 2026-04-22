@@ -2,9 +2,9 @@ package io.github.smiley4.strategygame.identity.user.infrastructure
 
 import io.github.smiley4.strategygame.identity.shared.Username
 import io.github.smiley4.strategygame.identity.user.domain.User
-import io.github.smiley4.strategygame.identity.user.domain.UserId
 import io.github.smiley4.strategygame.identity.user.domain.UserRepository
 import io.github.smiley4.strategygame.identity.user.domain.UserSnapshot
+import io.github.smiley4.strategygame.shared.UserId
 
 /**
  * "Fake", in-memory implementation of a [UserRepository].
