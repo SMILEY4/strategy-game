@@ -20,7 +20,11 @@ logback = "1.5.32"
 logstash-logback-encoder = "9.0"
 slf4j-coroutines = "1.10.2"
 
+kotlinx-coroutines = "1.10.2"
+
 [libraries]
+
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines"}
 
 # Logging
 janino = { module = "org.codehaus.janino:janino", version.ref = "janino" }

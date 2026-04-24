@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.shared
+package io.github.smiley4.strategygame.shared.domain
 
 import kotlin.uuid.Uuid
 

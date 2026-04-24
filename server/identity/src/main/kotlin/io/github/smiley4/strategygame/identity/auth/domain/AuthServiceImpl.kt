@@ -14,7 +14,6 @@ internal class AuthServiceImpl(
 ) : AuthService {
 
     override fun login(username: Username, password: UnsafePassword): SessionToken {
-
         val user = userRepository.findByUsername(username)
             ?: throw AuthError.InvalidUsernameOrPassword()
 
@@ -28,17 +27,16 @@ internal class AuthServiceImpl(
         return session.getToken()
     }
 
-    override suspend fun logout(token: SessionToken) {
+    override fun logout(token: SessionToken) {
 
         val session = sessionRepository.findByToken(token)
             ?: throw AuthError.InvalidToken()
 
         session.revoke()
-
         sessionRepository.delete(session)
     }
 
-    override suspend fun authenticate(token: SessionToken) {
+    override fun authenticate(token: SessionToken) {
 
         val session = sessionRepository.findByToken(token)
             ?: throw AuthError.InvalidToken()

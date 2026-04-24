@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.platform.game
 
-import io.github.smiley4.strategygame.shared.GameId
-import io.github.smiley4.strategygame.shared.UserId
+import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.domain.UserId
 
 
 sealed class GameError(message: String?, cause: Throwable?) : Exception(message, cause) {

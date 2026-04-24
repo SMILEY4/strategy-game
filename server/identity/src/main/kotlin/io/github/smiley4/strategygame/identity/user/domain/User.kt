@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.identity.user.domain
 
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
-import io.github.smiley4.strategygame.shared.UserId
+import io.github.smiley4.strategygame.shared.domain.UserId
 
 /**
  * User aggregate

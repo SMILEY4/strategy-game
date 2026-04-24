@@ -14,11 +14,11 @@ interface AuthService {
     /**
      * Revokes the given session.
      */
-    suspend fun logout(token: SessionToken)
+    fun logout(token: SessionToken)
 
 
     /**
      * Validates the token
      */
-    suspend fun authenticate(token: SessionToken)
+    fun authenticate(token: SessionToken)
 }

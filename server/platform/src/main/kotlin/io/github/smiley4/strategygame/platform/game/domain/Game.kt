@@ -1,8 +1,8 @@
 package io.github.smiley4.strategygame.platform.game.domain
 
 import io.github.smiley4.strategygame.platform.game.GameError
-import io.github.smiley4.strategygame.shared.GameId
-import io.github.smiley4.strategygame.shared.UserId
+import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.domain.UserId
 
 internal class Game private constructor(
     private val id: GameId,

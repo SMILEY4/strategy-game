@@ -1,6 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
@@ -31,7 +30,8 @@ subprojects {
             compilerOptions {
                 freeCompilerArgs.addAll(
                     "-opt-in=kotlin.uuid.ExperimentalUuidApi",
-                    "-opt-in=kotlin.time.ExperimentalTime"
+                    "-opt-in=kotlin.time.ExperimentalTime",
+                    "-opt-in=kotlin.concurrent.atomics.ExperimentalAtomicApi"
                 )
             }
         }
