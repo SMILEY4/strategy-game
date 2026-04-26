@@ -1,61 +1,65 @@
 package io.github.smiley4.strategygame.platform
 
-import io.github.smiley4.strategygame.identity.user.domain.UserId
-import io.github.smiley4.strategygame.platform.game.GameError
-import io.github.smiley4.strategygame.platform.game.domain.GameId
-import io.github.smiley4.strategygame.platform.game.domain.GameServiceImpl
-import io.github.smiley4.strategygame.platform.game.infrastructure.InMemoryGameRepository
+import io.github.smiley4.strategygame.platform.match.MatchError
+import io.github.smiley4.strategygame.platform.match.domain.GameEngineClient
+import io.github.smiley4.strategygame.platform.match.domain.MatchId
+import io.github.smiley4.strategygame.platform.match.domain.MatchServiceImpl
+import io.github.smiley4.strategygame.platform.match.infrastructure.GameEngineClientImpl
+import io.github.smiley4.strategygame.platform.match.infrastructure.InMemoryMatchRepository
+import io.github.smiley4.strategygame.shared.domain.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.mockk.mockk
+import io.mockk.verify
 
 class GameTests : FreeSpec({
 
-    "creating games is possible" {
-        val service = GameServiceImpl(InMemoryGameRepository())
+    "creating matches is possible" {
+        val service = MatchServiceImpl(GameEngineClientImpl(), InMemoryMatchRepository())
 
         val userId = UserId()
-        val gameId1 = service.create(userId, "Test Game 1")
-        val gameId2 = service.create(userId, "Test Game 2")
+        val matchId1 = service.create(userId, "Test Game 1")
+        val matchId2 = service.create(userId, "Test Game 2")
 
-        service.listGames(userId) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+        service.listMatches(userId) shouldContainExactlyInAnyOrder listOf(matchId1, matchId2)
     }
 
     "joining game" - {
 
         "is successful" {
-            val service = GameServiceImpl(InMemoryGameRepository())
+            val service = MatchServiceImpl(GameEngineClientImpl(), InMemoryMatchRepository())
 
             val owner = UserId()
             val guest = UserId()
             val gameId = service.create(owner, "Test Game")
 
-            service.listGames(owner) shouldContainExactlyInAnyOrder listOf(gameId)
-            service.listGames(guest) shouldContainExactlyInAnyOrder emptyList()
+            service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId)
+            service.listMatches(guest) shouldContainExactlyInAnyOrder emptyList()
 
             service.join(guest, gameId)
 
-            service.listGames(owner) shouldContainExactlyInAnyOrder listOf(gameId)
-            service.listGames(guest) shouldContainExactlyInAnyOrder listOf(gameId)
+            service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId)
+            service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId)
         }
 
         "unknown game should fail" {
-            val service = GameServiceImpl(InMemoryGameRepository())
+            val service = MatchServiceImpl(GameEngineClientImpl(), InMemoryMatchRepository())
 
             val owner = UserId()
             val guest = UserId()
             val gameId = service.create(owner, "Test Game")
 
-            shouldThrow<GameError.NotFound> {
-                service.join(guest, GameId())
+            shouldThrow<MatchError.NotFound> {
+                service.join(guest, MatchId())
             }
 
-            service.listGames(owner) shouldContainExactlyInAnyOrder listOf(gameId)
-            service.listGames(guest) shouldContainExactlyInAnyOrder emptyList()
+            service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId)
+            service.listMatches(guest) shouldContainExactlyInAnyOrder emptyList()
         }
 
         "when already joined should fail" {
-            val service = GameServiceImpl(InMemoryGameRepository())
+            val service = MatchServiceImpl(GameEngineClientImpl(), InMemoryMatchRepository())
 
             val owner = UserId()
             val guest = UserId()
@@ -63,7 +67,7 @@ class GameTests : FreeSpec({
 
             service.join(guest, gameId)
 
-            shouldThrow<GameError.AlreadyMember> {
+            shouldThrow<MatchError.AlreadyMember> {
                 service.join(guest, gameId)
             }
         }
@@ -73,7 +77,8 @@ class GameTests : FreeSpec({
     "delete game" - {
 
         "as owner succeeds" {
-            val service = GameServiceImpl(InMemoryGameRepository())
+            val gameEngineClient = mockk<GameEngineClient>()
+            val service = MatchServiceImpl(gameEngineClient, InMemoryMatchRepository())
 
             val owner = UserId()
             val guest = UserId()
@@ -82,17 +87,19 @@ class GameTests : FreeSpec({
             service.join(guest, gameId1)
             service.join(guest, gameId2)
 
-            service.listGames(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
-            service.listGames(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
 
             service.delete(owner, gameId1)
 
-            service.listGames(owner) shouldContainExactlyInAnyOrder listOf(gameId2)
-            service.listGames(guest) shouldContainExactlyInAnyOrder listOf(gameId2)
+            verify(exactly = 0) { gameEngineClient.deleteGame(any()) }
+
+            service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId2)
+            service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId2)
         }
 
         "as member should fail" {
-            val service = GameServiceImpl(InMemoryGameRepository())
+            val service = MatchServiceImpl(GameEngineClientImpl(), InMemoryMatchRepository())
 
             val owner = UserId()
             val guest = UserId()
@@ -101,19 +108,19 @@ class GameTests : FreeSpec({
             service.join(guest, gameId1)
             service.join(guest, gameId2)
 
-            service.listGames(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
-            service.listGames(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
 
-            shouldThrow<GameError.NotAllowed> {
+            shouldThrow<MatchError.NotAllowed> {
                 service.delete(guest, gameId1)
             }
 
-            service.listGames(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
-            service.listGames(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
         }
 
         "unknown game should fail" {
-            val service = GameServiceImpl(InMemoryGameRepository())
+            val service = MatchServiceImpl(GameEngineClientImpl(), InMemoryMatchRepository())
 
             val owner = UserId()
             val guest = UserId()
@@ -122,15 +129,15 @@ class GameTests : FreeSpec({
             service.join(guest, gameId1)
             service.join(guest, gameId2)
 
-            service.listGames(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
-            service.listGames(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
 
-            shouldThrow<GameError.NotFound> {
-                service.delete(guest, GameId())
+            shouldThrow<MatchError.NotFound> {
+                service.delete(guest, MatchId())
             }
 
-            service.listGames(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
-            service.listGames(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
+            service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
         }
 
     }

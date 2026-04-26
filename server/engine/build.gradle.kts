@@ -1,22 +1,16 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
-}
-
-group = "io.github.smiley4"
-version = "unspecified"
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.dependencycheck)
+    alias(libs.plugins.kotest)
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
-}
 
-kotlin {
-    jvmToolchain(21)
-}
+    implementation(libs.bundles.logging)
+    implementation(project(":shared"))
 
-tasks.test {
-    useJUnitPlatform()
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
 }
