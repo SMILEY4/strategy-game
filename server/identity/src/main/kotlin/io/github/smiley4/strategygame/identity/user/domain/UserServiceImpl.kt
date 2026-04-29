@@ -15,7 +15,9 @@ internal class UserServiceImpl(
     private val userRepository: UserRepository
 ) : UserService {
 
-    val keyedMutex = KeyedMutex()
+    companion object {
+        val keyedMutex = KeyedMutex()
+    }
 
     override suspend fun register(username: Username, password: UnsafePassword): UserId {
         return keyedMutex.withLock(username) {

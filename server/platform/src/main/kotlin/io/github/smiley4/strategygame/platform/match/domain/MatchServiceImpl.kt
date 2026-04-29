@@ -10,7 +10,9 @@ internal class MatchServiceImpl(
     private val matchRepository: MatchRepository
 ) : MatchService {
 
-    val keyedMutex = KeyedMutex()
+    companion object {
+        val keyedMutex = KeyedMutex()
+    }
 
     override fun create(user: UserId, name: String): MatchId {
 

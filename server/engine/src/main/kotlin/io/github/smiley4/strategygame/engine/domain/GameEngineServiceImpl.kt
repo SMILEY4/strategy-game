@@ -12,7 +12,9 @@ internal class GameEngineServiceImpl(
     private val gameRepository: GameRepository
 ) : GameEngineService {
 
-    val keyedMutex = KeyedMutex()
+    companion object {
+        val keyedMutex = KeyedMutex()
+    }
 
     override fun create(players: Collection<UserId>): GameId {
         val game = Game(players)

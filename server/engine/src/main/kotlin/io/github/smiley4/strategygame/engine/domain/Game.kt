@@ -19,6 +19,13 @@ class Game private constructor(
         pendingCommands = mutableMapOf()
     )
 
+    constructor(snapshot: GameSnapshot) : this(
+        id = snapshot.id,
+        players = snapshot.players,
+        currentTurn = snapshot.currentTurn,
+        pendingCommands = snapshot.pendingCommands.toMutableMap()
+    )
+
     fun submitTurn(player: UserId, commands: List<PlayerCommand>) {
         if(!players.contains(player)) {
             throw GameError.NotParticipant(player, id.toString())
@@ -45,5 +52,12 @@ class Game private constructor(
     fun getPendingCommands(): List<PlayerCommand> {
         return pendingCommands.values.flatten()
     }
+
+    fun toSnapshot() = GameSnapshot(
+        id = this.id,
+        players = this.players,
+        currentTurn = this.currentTurn,
+        pendingCommands = this.pendingCommands.toMutableMap()
+    )
 
 }
