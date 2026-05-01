@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.versions) apply false
     alias(libs.plugins.dependencycheck) apply false
     alias(libs.plugins.kotest) apply false
+    alias(libs.plugins.serialization) apply false
 }
 
 subprojects {
@@ -21,6 +22,7 @@ subprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
     }
 
     plugins.withId("org.jetbrains.kotlin.jvm") {

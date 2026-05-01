@@ -6,4 +6,16 @@ import kotlin.uuid.Uuid
  * Id of a user.
  */
 @JvmInline
-value class UserId(val id: Uuid = Uuid.Companion.random())
+value class UserId(val id: Uuid = Uuid.random()) {
+
+    constructor(id: String) : this(
+        try {
+            Uuid.parse(id)
+        } catch (e: Exception) {
+            throw InvalidFormatException(e)
+        }
+    )
+
+    class InvalidFormatException(cause: Throwable?) : Exception("Uuid has invalid format", cause)
+
+}

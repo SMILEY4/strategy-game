@@ -54,5 +54,4 @@ class WebsocketSessionTests : FreeSpec({
         notificationService.isReachable(gameId2, userId) shouldBe false
     }
 
-
 })

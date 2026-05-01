@@ -1,6 +1,6 @@
-package io.github.smiley4.strategygame.identity.user.domain
+package io.github.smiley4.strategygame.identity.shared
 
-import io.github.smiley4.strategygame.identity.shared.UnsafePassword
+import io.github.smiley4.strategygame.identity.shared.HashedPassword
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec

@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.identity.user
 
-import io.github.smiley4.strategygame.identity.user.domain.HashedPassword
-import io.github.smiley4.strategygame.identity.user.domain.PasswordHasher
+import io.github.smiley4.strategygame.identity.shared.HashedPassword
+import io.github.smiley4.strategygame.identity.shared.PasswordHasher
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.user.domain.UserServiceImpl
 import io.github.smiley4.strategygame.identity.shared.Username

@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.identity.user.domain
+package io.github.smiley4.strategygame.identity.shared
 
 /**
  * A secure hashed password

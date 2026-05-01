@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.auth.infrastructure.InMemorySessionRepository
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
-import io.github.smiley4.strategygame.identity.user.domain.PasswordHasher
+import io.github.smiley4.strategygame.identity.shared.PasswordHasher
 import io.github.smiley4.strategygame.identity.user.domain.UserServiceImpl
 import io.github.smiley4.strategygame.identity.user.infrastructure.InMemoryUserRepository
 import io.kotest.assertions.throwables.shouldThrow

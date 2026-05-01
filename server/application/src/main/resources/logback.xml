@@ -1,0 +1,42 @@
+<configuration>
+
+    <import class="ch.qos.logback.core.ConsoleAppender"/>
+    <import class="net.logstash.logback.encoder.LogstashEncoder"/>
+
+    <!-- ignore (unformatted) logback status messages at beginning -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+
+    <!-- define human-readable console logger -->
+    <appender name="STDOUT_HUMAN" class="ConsoleAppender">
+        <encoder>
+            <pattern>
+                %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %highlight(%.-1level) | %green(%-16.16(%X{traceId})) | %gray(%-16.16thread{16}) | %magenta(%-25.25logger{25}) | %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- define json console logger -->
+    <appender name="STDOUT_JSON" class="ConsoleAppender">
+        <encoder class="LogstashEncoder">
+            <customFields>{"application":"server"}</customFields>
+        </encoder>
+    </appender>
+
+
+    <!-- use loggers -->
+    <if condition='p("LOG_AS_JSON").contains("true")'>
+        <then>
+            <!-- use json logger -->
+            <root level="debug">
+                <appender-ref ref="STDOUT_JSON"/>
+            </root>
+        </then>
+        <else>
+            <!-- use human-readable logger -->
+            <root level="debug">
+                <appender-ref ref="STDOUT_HUMAN"/>
+            </root>
+        </else>
+    </if>
+
+</configuration>
