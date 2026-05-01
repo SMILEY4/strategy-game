@@ -8,8 +8,11 @@ plugins {
 
 dependencies {
 
-    implementation(libs.bundles.logging)
     implementation(project(":shared"))
+
+    implementation(libs.bundles.logging)
+
+    implementation(libs.koin.core)
 
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)

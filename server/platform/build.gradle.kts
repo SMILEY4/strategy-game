@@ -10,6 +10,7 @@ plugins {
 dependencies {
     implementation(project(":identity"))
     implementation(project(":shared"))
+
     implementation(libs.bundles.logging)
 
     implementation(libs.ktor.plus)
@@ -19,7 +20,6 @@ dependencies {
     implementation(libs.ktor.server.serialization.kotlinxjson)
 
     implementation(libs.koin.core)
-    implementation(libs.koin.ktor)
 
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)

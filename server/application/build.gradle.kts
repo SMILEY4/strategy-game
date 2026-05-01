@@ -11,6 +11,7 @@ dependencies {
 
     implementation(project(":identity"))
     implementation(project(":platform"))
+    implementation(project(":engine"))
 
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.serialization.json)

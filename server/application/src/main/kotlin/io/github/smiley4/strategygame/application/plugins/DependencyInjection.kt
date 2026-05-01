@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.application.plugins
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.smiley4.strategygame.engine.dependenciesEngine
 import io.github.smiley4.strategygame.identity.dependenciesIdentity
 import io.github.smiley4.strategygame.platform.match.dependenciesPlatform
 import io.ktor.server.application.Application
@@ -32,4 +33,5 @@ fun Application.setupDependencyInjection() {
 fun dependencies() = module {
     dependenciesIdentity()
     dependenciesPlatform()
+    dependenciesEngine()
 }
