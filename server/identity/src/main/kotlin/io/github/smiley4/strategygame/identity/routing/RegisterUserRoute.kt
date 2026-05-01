@@ -19,7 +19,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 internal fun Route.routeRegisterUser() {
-    post<RegisterUserRoute.RouteRequest, RouteResponse>("register", {
+    post<RegisterUserRoute.RouteRequest, RouteResponse>("/user", {
         description = "Register a new user"
     }) { request ->
         RegisterUserRoute.handle(request)

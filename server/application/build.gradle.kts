@@ -10,6 +10,7 @@ plugins {
 dependencies {
 
     implementation(project(":identity"))
+    implementation(project(":platform"))
 
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.serialization.json)
