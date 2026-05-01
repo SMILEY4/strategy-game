@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.application
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.smiley4.strategygame.application.plugins.setupAuthentication
 import io.github.smiley4.strategygame.application.plugins.setupContentNegotiation
 import io.github.smiley4.strategygame.application.plugins.setupDependencyInjection
 import io.github.smiley4.strategygame.application.plugins.setupKtorPlus
@@ -33,6 +34,7 @@ fun Application.module() {
     logger.info { "Starting Server..." }
 
     setupDependencyInjection()
+    setupAuthentication()
     val json = setupContentNegotiation()
     setupKtorPlus()
     setupOpenApi(json)

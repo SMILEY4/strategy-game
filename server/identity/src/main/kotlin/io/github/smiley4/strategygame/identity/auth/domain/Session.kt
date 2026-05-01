@@ -45,6 +45,10 @@ internal class Session private constructor(
         return token
     }
 
+    fun getUserId(): UserId {
+        return userId
+    }
+
     fun toSnapshot() = SessionSnapshot(
         token = token,
         userId = userId,

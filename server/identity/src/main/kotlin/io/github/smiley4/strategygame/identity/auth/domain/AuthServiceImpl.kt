@@ -6,6 +6,7 @@ import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
 import io.github.smiley4.strategygame.identity.shared.PasswordHasher
 import io.github.smiley4.strategygame.identity.user.domain.UserRepository
+import io.github.smiley4.strategygame.shared.domain.UserId
 
 internal class AuthServiceImpl(
     private val passwordHasher: PasswordHasher,
@@ -36,7 +37,7 @@ internal class AuthServiceImpl(
         sessionRepository.delete(session)
     }
 
-    override fun authenticate(token: SessionToken) {
+    override fun authenticate(token: SessionToken): UserId {
 
         val session = sessionRepository.findByToken(token)
             ?: throw AuthError.InvalidToken()
@@ -45,5 +46,7 @@ internal class AuthServiceImpl(
             sessionRepository.delete(session)
             throw AuthError.InvalidToken()
         }
+
+        return session.getUserId()
     }
 }

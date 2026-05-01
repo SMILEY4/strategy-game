@@ -15,7 +15,7 @@ import io.github.smiley4.strategygame.identity.user.UserService
 import io.github.smiley4.strategygame.identity.user.domain.UserRepository
 import io.github.smiley4.strategygame.identity.user.domain.UserServiceImpl
 import io.github.smiley4.strategygame.identity.user.infrastructure.InMemoryUserRepository
-import io.github.smiley4.strategygame.shared.routing.RoutingAuthConstants
+import io.github.smiley4.strategygame.shared.infrastructure.RoutingAuthConstants
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
 import org.koin.core.module.Module
@@ -43,10 +43,10 @@ fun Route.routingIdentity() {
     }) {
         routeRegisterUser()
         routeLogIn()
-//        authenticate(RoutingAuthConstants.AUTH_USER) {
+        authenticate(RoutingAuthConstants.AUTH_USER) {
             routeChangeUsername()
             routeChangePassword()
             routeLogOut()
-//        }
+        }
     }
 }
