@@ -14,6 +14,7 @@ import io.github.smiley4.strategygame.platform.match.routing.routeListMatches
 import io.github.smiley4.strategygame.shared.infrastructure.RoutingAuthConstants
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
 import org.koin.core.module.Module
 
 fun Module.dependenciesPlatform() {
@@ -28,11 +29,11 @@ fun Route.routingPlatform() {
         tags("platform")
     }) {
         authenticate(RoutingAuthConstants.AUTH_USER) {
-            routeCreateMatch() // todo: pull url and Http-operation out of route function and define here
-            routeDeleteMatch()
-            routeGenerateMatch()
-            routeJoinMatch()
-            routeListMatches()
+            route("/match") { routeListMatches() }
+            route("/match") { routeCreateMatch() }
+            route("/match/{matchId}") { routeDeleteMatch() }
+            route("/match/{matchId}") { routeJoinMatch() }
+            route("/match/{matchId}/game") { routeGenerateMatch() }
         }
     }
 }

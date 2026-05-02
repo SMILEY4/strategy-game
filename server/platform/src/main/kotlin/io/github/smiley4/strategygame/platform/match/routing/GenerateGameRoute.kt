@@ -21,7 +21,7 @@ import org.koin.core.component.inject
 import kotlin.uuid.Uuid
 
 internal fun Route.routeGenerateMatch() {
-    post<RouteRequest, RouteResponse>("/match/{matchId}/game", {
+    post<RouteRequest, RouteResponse>("", {
         description = "Generate the actual game for the given match."
     }) { request ->
         GenerateGameRoute.handle(request)

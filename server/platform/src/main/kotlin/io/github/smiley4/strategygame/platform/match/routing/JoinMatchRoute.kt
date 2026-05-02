@@ -21,7 +21,7 @@ import org.koin.core.component.inject
 import kotlin.uuid.Uuid
 
 internal fun Route.routeJoinMatch() {
-    post<RouteRequest, RouteResponse>("/match/{matchId}", {
+    post<RouteRequest, RouteResponse>("", {
         description = "Join an existing match."
     }) { request ->
         JoinMatchRoute.handle(request)

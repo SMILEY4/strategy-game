@@ -41,12 +41,17 @@ fun Route.routingIdentity() {
         description = "User management and authentication"
         tags("identity")
     }) {
-        routeRegisterUser()
-        routeLogIn()
+
+        route("/login") { routeLogIn() }
         authenticate(RoutingAuthConstants.AUTH_USER) {
-            routeChangeUsername()
-            routeChangePassword()
-            routeLogOut()
+            route("/logout") { routeLogOut() }
+        }
+
+        route("/user") { routeRegisterUser() }
+
+        authenticate(RoutingAuthConstants.AUTH_USER) {
+            route("/user/{userId}/username") { routeChangeUsername() }
+            route("/user/{userId}/username") { routeChangePassword() }
         }
     }
 }

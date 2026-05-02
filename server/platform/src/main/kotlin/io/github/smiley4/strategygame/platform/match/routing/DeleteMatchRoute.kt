@@ -21,7 +21,7 @@ import org.koin.core.component.inject
 import kotlin.uuid.Uuid
 
 internal fun Route.routeDeleteMatch() {
-    delete<RouteRequest, RouteResponse>("/match/{matchId}", {
+    delete<RouteRequest, RouteResponse>("", {
         description = "Delete an existing match."
     }) { request ->
         DeleteMatchRoute.handle(request)

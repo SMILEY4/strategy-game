@@ -19,7 +19,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 internal fun Route.routeCreateMatch() {
-    post<RouteRequest, RouteResponse>("/match", {
+    post<RouteRequest, RouteResponse>("", {
         description = "Create a new match."
     }) { request ->
         CreateMatchRoute.handle(request)

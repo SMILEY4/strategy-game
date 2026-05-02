@@ -18,7 +18,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 internal fun Route.routeListMatches() {
-    get<RouteRequest, RouteResponse>("/match", {
+    get<RouteRequest, RouteResponse>("", {
         description = "List the matches of the user."
     }) { request ->
         ListMatchesRoute.handle(request)
