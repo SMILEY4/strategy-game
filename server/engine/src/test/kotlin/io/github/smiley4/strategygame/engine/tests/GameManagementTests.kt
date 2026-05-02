@@ -1,12 +1,10 @@
 package io.github.smiley4.strategygame.engine.tests
 
+import io.github.smiley4.strategygame.engine.DeleteGameError
 import io.github.smiley4.strategygame.engine.GameEngineService
-import io.github.smiley4.strategygame.engine.GameError
-import io.github.smiley4.strategygame.engine.domain.Game
-import io.github.smiley4.strategygame.engine.domain.GameEngineServiceImpl
+import io.github.smiley4.strategygame.engine.SubmitTurnError
 import io.github.smiley4.strategygame.engine.domain.GameRepository
 import io.github.smiley4.strategygame.engine.domain.GameplayEngine
-import io.github.smiley4.strategygame.engine.infrastructure.InMemoryGameRepository
 import io.github.smiley4.strategygame.engine.testScope
 import io.github.smiley4.strategygame.shared.domain.GameId
 import io.github.smiley4.strategygame.shared.domain.UserId
@@ -16,7 +14,6 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.verify
 
 class GameManagementTests : FreeSpec({
@@ -73,7 +70,7 @@ class GameManagementTests : FreeSpec({
             testScope {
                 val service = get<GameEngineService>()
 
-                shouldThrow<GameError.NotFound> {
+                shouldThrow<DeleteGameError.NotFound> {
                     service.delete(GameId())
                 }
             }
@@ -87,7 +84,7 @@ class GameManagementTests : FreeSpec({
             testScope {
                 val service = get<GameEngineService>()
 
-                shouldThrow<GameError.NotFound> {
+                shouldThrow<SubmitTurnError.NotFound> {
                     service.submitTurn(UserId(), GameId(), emptyList())
                 }
             }

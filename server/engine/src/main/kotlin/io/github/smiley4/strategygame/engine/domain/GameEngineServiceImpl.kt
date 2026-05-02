@@ -1,8 +1,9 @@
 package io.github.smiley4.strategygame.engine.domain
 
+import io.github.smiley4.strategygame.engine.DeleteGameError
 import io.github.smiley4.strategygame.engine.GameEngineService
-import io.github.smiley4.strategygame.engine.GameError
 import io.github.smiley4.strategygame.engine.PlayerCommand
+import io.github.smiley4.strategygame.engine.SubmitTurnError
 import io.github.smiley4.strategygame.shared.domain.GameId
 import io.github.smiley4.strategygame.shared.domain.UserId
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
@@ -26,7 +27,7 @@ internal class GameEngineServiceImpl(
         keyedMutex.withLock(gameId) {
 
             val game = gameRepository.findById(gameId)
-                ?: throw GameError.NotFound(gameId.id.toString())
+                ?: throw DeleteGameError.NotFound(gameId.id.toString())
 
             gameRepository.delete(game)
         }
@@ -36,7 +37,7 @@ internal class GameEngineServiceImpl(
         keyedMutex.withLock(gameId) {
 
             val game = gameRepository.findById(gameId)
-                ?: throw GameError.NotFound(gameId.id.toString())
+                ?: throw SubmitTurnError.NotFound(gameId.id.toString())
 
             game.submitTurn(player, commands)
 

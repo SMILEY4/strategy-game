@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.engine.domain
 
-import io.github.smiley4.strategygame.engine.GameError
 import io.github.smiley4.strategygame.engine.PlayerCommand
+import io.github.smiley4.strategygame.engine.SubmitTurnError
 import io.github.smiley4.strategygame.shared.domain.GameId
 import io.github.smiley4.strategygame.shared.domain.UserId
 
@@ -28,10 +28,10 @@ class Game private constructor(
 
     fun submitTurn(player: UserId, commands: List<PlayerCommand>) {
         if(!players.contains(player)) {
-            throw GameError.NotParticipant(player, id.toString())
+            throw SubmitTurnError.NotParticipant()
         }
         if(pendingCommands.containsKey(player)) {
-            throw GameError.AlreadySubmitted(player, id.toString())
+            throw SubmitTurnError.AlreadySubmitted()
         }
         pendingCommands[player] = commands
     }
