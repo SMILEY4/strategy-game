@@ -1,6 +1,8 @@
 package io.github.smiley4.strategygame.platform.match.domain
 
-import io.github.smiley4.strategygame.platform.match.MatchError
+import io.github.smiley4.strategygame.platform.match.DeleteMatchError
+import io.github.smiley4.strategygame.platform.match.GenerateGameError
+import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.shared.domain.GameId
 import io.github.smiley4.strategygame.shared.domain.UserId
 
@@ -35,10 +37,10 @@ internal class Match private constructor(
 
     fun join(user: UserId) {
         if (state != MatchState.CONFIGURING) {
-            throw MatchError.InvalidMatchState(id, state.name, "join")
+            throw JoinMatchError.WrongMatchState()
         }
         if (participants.any { it.user == user }) {
-            throw MatchError.AlreadyMember(user, id)
+            throw JoinMatchError.AlreadyMember()
         }
         participants.add(
             MatchParticipant(
@@ -51,23 +53,19 @@ internal class Match private constructor(
     fun delete(user: UserId) {
         val participant = participants.firstOrNull { it.user == user }
         if (participant == null || participant.role != MatchParticipantRole.OWNER) {
-            throw MatchError.NotAllowed(user, id, "delete")
+            throw DeleteMatchError.NotAllowed()
         }
     }
 
     fun generateGame(user: UserId, gameEngineClient: GameEngineClient) {
         if (state != MatchState.CONFIGURING) {
-            throw MatchError.InvalidMatchState(id, state.name, "generate-game")
+            throw GenerateGameError.WrongMatchState()
         }
         val participant = participants.firstOrNull { it.user == user }
         if (participant == null || participant.role != MatchParticipantRole.OWNER) {
-            throw MatchError.NotAllowed(user, id, "generate-game")
+            throw GenerateGameError.NotAllowed()
         }
-        try {
-            gameId = gameEngineClient.createGame(participants.map { it.user })
-        } catch (e: Exception) {
-            throw MatchError.GenerateGameFailed(id, e)
-        }
+        gameId = gameEngineClient.createGame(participants.map { it.user })
         state = MatchState.ACTIVE
     }
 

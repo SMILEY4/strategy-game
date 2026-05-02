@@ -1,15 +1,14 @@
 package io.github.smiley4.strategygame.platform.tests
 
-import io.github.smiley4.strategygame.platform.match.MatchError
+import io.github.smiley4.strategygame.platform.match.DeleteMatchError
+import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.domain.GameEngineClient
 import io.github.smiley4.strategygame.platform.match.domain.MatchId
 import io.github.smiley4.strategygame.platform.match.domain.MatchParticipantRole
 import io.github.smiley4.strategygame.platform.match.domain.MatchParticipantSnapshot
 import io.github.smiley4.strategygame.platform.match.domain.MatchRepository
-import io.github.smiley4.strategygame.platform.match.domain.MatchServiceImpl
 import io.github.smiley4.strategygame.platform.match.domain.MatchState
-import io.github.smiley4.strategygame.platform.match.infrastructure.InMemoryMatchRepository
 import io.github.smiley4.strategygame.platform.testScope
 import io.github.smiley4.strategygame.shared.domain.GameId
 import io.github.smiley4.strategygame.shared.domain.UserId
@@ -20,7 +19,6 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.verify
 
 class MatchTests : FreeSpec({
@@ -82,7 +80,7 @@ class MatchTests : FreeSpec({
                 val matchId = service.create(ownerId, "Test Match")
                 service.generateGame(ownerId, matchId)
 
-                shouldThrow<MatchError.InvalidMatchState> {
+                shouldThrow<JoinMatchError.WrongMatchState> {
                     service.join(UserId(), matchId)
                 }
 
@@ -96,10 +94,9 @@ class MatchTests : FreeSpec({
 
         "should fail when trying to join a non-existent match" {
             testScope {
-                val repository = get<MatchRepository>()
                 val service = get<MatchService>()
 
-                shouldThrow<MatchError.NotFound> {
+                shouldThrow<JoinMatchError.NotFound> {
                     service.join(UserId(), MatchId())
                 }
             }
@@ -112,7 +109,6 @@ class MatchTests : FreeSpec({
                 val repository = get<MatchRepository>()
                 val service = get<MatchService>()
                 val gameEngineClient = get<GameEngineClient>()
-
 
                 val ownerId = UserId()
                 val matchId = service.create(ownerId, "To Be Deleted")
@@ -154,7 +150,7 @@ class MatchTests : FreeSpec({
                 val otherId = UserId()
                 val matchId = service.create(ownerId, "Protected Match")
 
-                shouldThrow<MatchError.NotAllowed> {
+                shouldThrow<DeleteMatchError.NotAllowed> {
                     service.delete(otherId, matchId)
                 }
                 repository.findById(matchId) shouldNotBe null
@@ -173,7 +169,7 @@ class MatchTests : FreeSpec({
                 val matchId = service.create(ownerId, "Protected Match")
                 service.join(guestId, matchId)
 
-                shouldThrow<MatchError.NotAllowed> {
+                shouldThrow<DeleteMatchError.NotAllowed> {
                     service.delete(guestId, matchId)
                 }
                 repository.findById(matchId) shouldNotBe null
@@ -217,7 +213,7 @@ class MatchTests : FreeSpec({
 
                 every { gameEngine.createGame(any()) } throws RuntimeException("Engine Failure")
 
-                shouldThrow<MatchError.GenerateGameFailed> {
+                shouldThrow<Exception> {
                     service.generateGame(ownerId, matchId)
                 }
                 repository.findById(matchId) shouldNotBe null

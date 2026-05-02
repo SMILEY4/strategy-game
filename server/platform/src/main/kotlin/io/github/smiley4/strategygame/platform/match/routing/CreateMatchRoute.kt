@@ -1,16 +1,15 @@
 package io.github.smiley4.strategygame.platform.match.routing
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
 import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.post
-import io.github.smiley4.strategygame.platform.match.MatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.routing.CreateMatchRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.match.routing.CreateMatchRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.domain.UserIdError
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
@@ -30,23 +29,18 @@ internal fun Route.routeCreateMatch() {
 private object CreateMatchRoute : KoinComponent {
 
     private val service by inject<MatchService>()
-    private val logger = KotlinLogging.logger {}
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
-            service.create(request.userId, request.body.name)
+            service.create(
+                UserId(request.userId),
+                request.body.name
+            )
             return RouteResponse.Success()
-        } catch (e: MatchError) {
-            logger.warn(e) { "Failed to create match" }
-            return when (e) {
-                is MatchError.AlreadyMember -> RouteResponse.InternalError()
-                is MatchError.GenerateGameFailed -> RouteResponse.InternalError()
-                is MatchError.InvalidMatchState -> RouteResponse.InternalError()
-                is MatchError.NotAllowed -> RouteResponse.InternalError()
-                is MatchError.NotFound -> RouteResponse.InternalError()
-            }
-        } catch (e: Exception) {
-            logger.warn(e) { "Failed to create match" }
+        } catch (_: UserIdError) {
+            return RouteResponse.InvalidUserId()
+            //} catch (_: CreateMatchError) {
+        } catch (_: Exception) {
             return RouteResponse.InternalError()
         }
     }
@@ -54,7 +48,7 @@ private object CreateMatchRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: UserId,
+        @AuthenticatedUserId val userId: String,
         @Body val body: RequestBody
     ) {
 
@@ -70,6 +64,18 @@ private object CreateMatchRoute : KoinComponent {
 
         @Response(HttpStatusCode.OK, "The match was successfully created")
         class Success : RouteResponse()
+
+
+        @Response(HttpStatusCode.BAD_REQUEST, "The provided user id is invalid.")
+        class InvalidUserId(
+            @Body val body: HttpErrorResponse = HttpErrorResponse(
+                status = HttpStatusCode.BAD_REQUEST,
+                errorCode = "INVALID_USER_ID",
+                title = "Invalid user id",
+                detail = "The provided user id is invalid.",
+            )
+        ) : RouteResponse()
+
 
         @Response(HttpStatusCode.INTERNAL_SERVER_ERROR, "An internal error occurred.")
         class InternalError(

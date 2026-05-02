@@ -1,18 +1,15 @@
 package io.github.smiley4.strategygame.platform.tests
 
-import io.github.smiley4.strategygame.platform.match.MatchError
+import io.github.smiley4.strategygame.platform.match.DeleteMatchError
+import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.domain.GameEngineClient
 import io.github.smiley4.strategygame.platform.match.domain.MatchId
-import io.github.smiley4.strategygame.platform.match.domain.MatchServiceImpl
-import io.github.smiley4.strategygame.platform.match.infrastructure.GameEngineClientImpl
-import io.github.smiley4.strategygame.platform.match.infrastructure.InMemoryMatchRepository
 import io.github.smiley4.strategygame.platform.testScope
 import io.github.smiley4.strategygame.shared.domain.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.mockk.mockk
 import io.mockk.verify
 
 class GameTests : FreeSpec({
@@ -57,7 +54,7 @@ class GameTests : FreeSpec({
                 val guest = UserId()
                 val gameId = service.create(owner, "Test Game")
 
-                shouldThrow<MatchError.NotFound> {
+                shouldThrow<JoinMatchError.NotFound> {
                     service.join(guest, MatchId())
                 }
 
@@ -76,7 +73,7 @@ class GameTests : FreeSpec({
 
                 service.join(guest, gameId)
 
-                shouldThrow<MatchError.AlreadyMember> {
+                shouldThrow<JoinMatchError.AlreadyMember> {
                     service.join(guest, gameId)
                 }
             }
@@ -124,7 +121,7 @@ class GameTests : FreeSpec({
                 service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
                 service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
 
-                shouldThrow<MatchError.NotAllowed> {
+                shouldThrow<DeleteMatchError.NotAllowed> {
                     service.delete(guest, gameId1)
                 }
 
@@ -147,7 +144,7 @@ class GameTests : FreeSpec({
                 service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
                 service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
 
-                shouldThrow<MatchError.NotFound> {
+                shouldThrow<DeleteMatchError.NotFound> {
                     service.delete(guest, MatchId())
                 }
 

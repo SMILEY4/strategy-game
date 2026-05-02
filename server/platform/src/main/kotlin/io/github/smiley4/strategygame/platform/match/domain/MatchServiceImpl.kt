@@ -1,6 +1,8 @@
 package io.github.smiley4.strategygame.platform.match.domain
 
-import io.github.smiley4.strategygame.platform.match.MatchError
+import io.github.smiley4.strategygame.platform.match.DeleteMatchError
+import io.github.smiley4.strategygame.platform.match.GenerateGameError
+import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.shared.domain.UserId
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
@@ -31,7 +33,7 @@ internal class MatchServiceImpl(
         keyedMutex.withLock(matchId) {
 
             val match = matchRepository.findById(matchId)
-                ?: throw MatchError.NotFound(matchId.value.toString())
+                ?: throw JoinMatchError.NotFound(matchId.value.toString())
 
             match.join(user)
 
@@ -44,7 +46,7 @@ internal class MatchServiceImpl(
         keyedMutex.withLock(matchId) {
 
             val match = matchRepository.findById(matchId)
-                ?: throw MatchError.NotFound(matchId.value.toString())
+                ?: throw DeleteMatchError.NotFound(matchId.value.toString())
 
             match.delete(user)
 
@@ -60,7 +62,7 @@ internal class MatchServiceImpl(
         keyedMutex.withLock(matchId) {
 
             val match = matchRepository.findById(matchId)
-                ?: throw MatchError.NotFound(matchId.value.toString())
+                ?: throw GenerateGameError.NotFound(matchId.value.toString())
 
             match.generateGame(user, gameEngineClient)
 

@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.identity.tests
 import io.github.smiley4.strategygame.identity.auth.AuthService
 import io.github.smiley4.strategygame.identity.auth.AuthenticateUserError
 import io.github.smiley4.strategygame.identity.auth.LogInUserError
+import io.github.smiley4.strategygame.identity.auth.LogOutError
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
@@ -103,7 +104,7 @@ class AuthTest : FreeSpec({
 
                 authService.authenticate(token)
 
-                shouldThrow<AuthenticateUserError.InvalidToken> {
+                shouldThrow<LogOutError.InvalidToken> {
                     authService.logout(SessionToken())
                 }
 

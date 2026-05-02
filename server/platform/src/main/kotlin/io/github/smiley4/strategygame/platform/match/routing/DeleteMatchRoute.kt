@@ -1,25 +1,25 @@
 package io.github.smiley4.strategygame.platform.match.routing
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
 import io.github.smiley4.ktorplus.data.PathParameter
 import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.delete
-import io.github.smiley4.strategygame.platform.match.MatchError
+import io.github.smiley4.strategygame.platform.match.DeleteMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.domain.MatchId
+import io.github.smiley4.strategygame.platform.match.domain.MatchIdError
 import io.github.smiley4.strategygame.platform.match.routing.DeleteMatchRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.match.routing.DeleteMatchRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.domain.UserIdError
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.uuid.Uuid
 
 internal fun Route.routeDeleteMatch() {
     delete<RouteRequest, RouteResponse>("", {
@@ -32,23 +32,24 @@ internal fun Route.routeDeleteMatch() {
 private object DeleteMatchRoute : KoinComponent {
 
     private val service by inject<MatchService>()
-    private val logger = KotlinLogging.logger {}
 
     suspend fun handle(request: RouteRequest): RouteResponse {
         try {
-            service.delete(request.userId, request.matchId)
+            service.delete(
+                UserId(request.userId),
+                MatchId(request.matchId)
+            )
             return RouteResponse.Success()
-        } catch (e: MatchError) {
-            logger.warn(e) { "Failed to delete match" }
+        } catch (_: UserIdError) {
+            return RouteResponse.InvalidUserId()
+        } catch (_: MatchIdError) {
+            return RouteResponse.InvalidMatchId()
+        } catch (e: DeleteMatchError) {
             return when (e) {
-                is MatchError.NotFound -> RouteResponse.NotFound()
-                is MatchError.NotAllowed -> RouteResponse.NotAllowed()
-                is MatchError.InvalidMatchState -> RouteResponse.InternalError()
-                is MatchError.AlreadyMember -> RouteResponse.InternalError()
-                is MatchError.GenerateGameFailed -> RouteResponse.InternalError()
+                is DeleteMatchError.NotAllowed -> RouteResponse.NotAllowed()
+                is DeleteMatchError.NotFound -> RouteResponse.NotFound()
             }
         } catch (e: Exception) {
-            logger.warn(e) { "Failed to delete match" }
             return RouteResponse.InternalError()
         }
     }
@@ -56,14 +57,36 @@ private object DeleteMatchRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: UserId,
-        @PathParameter("matchId") val matchId: MatchId
+        @AuthenticatedUserId val userId: String,
+        @PathParameter("matchId") val matchId: String
     )
 
     sealed class RouteResponse {
 
         @Response(HttpStatusCode.OK, "The match was successfully created")
         class Success : RouteResponse()
+
+
+        @Response(HttpStatusCode.BAD_REQUEST, "The provided user id is invalid.")
+        class InvalidUserId(
+            @Body val body: HttpErrorResponse = HttpErrorResponse(
+                status = HttpStatusCode.BAD_REQUEST,
+                errorCode = "INVALID_USER_ID",
+                title = "Invalid user id",
+                detail = "The provided user id is invalid.",
+            )
+        ) : RouteResponse()
+
+
+        @Response(HttpStatusCode.BAD_REQUEST, "The provided match id is invalid.")
+        class InvalidMatchId(
+            @Body val body: HttpErrorResponse = HttpErrorResponse(
+                status = HttpStatusCode.BAD_REQUEST,
+                errorCode = "INVALID_MATCH_ID",
+                title = "Invalid match id",
+                detail = "The provided match id is invalid.",
+            )
+        ) : RouteResponse()
 
 
         @Response(HttpStatusCode.NOT_FOUND, "The match with the given id could not be found.")

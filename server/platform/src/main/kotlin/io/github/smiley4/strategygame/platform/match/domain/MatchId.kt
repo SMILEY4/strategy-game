@@ -11,10 +11,12 @@ value class MatchId(val value: Uuid = Uuid.random()) {
         try {
             Uuid.parse(id)
         } catch (e: Exception) {
-            throw InvalidFormatException(e)
+            throw MatchIdError.InvalidFormat(id, e)
         }
     )
 
-    class InvalidFormatException(cause: Throwable?) : Exception("Uuid has invalid format", cause)
+}
 
+sealed class MatchIdError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    class InvalidFormat(value: String, cause: Throwable?) : MatchIdError("$value has invalid format.", cause)
 }
