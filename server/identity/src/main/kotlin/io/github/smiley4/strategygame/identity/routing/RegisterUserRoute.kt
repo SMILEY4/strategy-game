@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.identity.routing
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
 import io.github.smiley4.ktorplus.data.Request
@@ -8,8 +7,10 @@ import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.post
 import io.github.smiley4.strategygame.identity.routing.RegisterUserRoute.RouteResponse
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
+import io.github.smiley4.strategygame.identity.shared.UnsafePasswordError
 import io.github.smiley4.strategygame.identity.shared.Username
-import io.github.smiley4.strategygame.identity.user.UserError
+import io.github.smiley4.strategygame.identity.shared.UsernameError
+import io.github.smiley4.strategygame.identity.user.RegisterUserError
 import io.github.smiley4.strategygame.identity.user.UserService
 import io.github.smiley4.strategygame.shared.domain.UserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
@@ -30,26 +31,23 @@ internal fun Route.routeRegisterUser() {
 private object RegisterUserRoute : KoinComponent {
 
     private val service by inject<UserService>()
-    private val logger = KotlinLogging.logger {}
 
     suspend fun handle(request: RouteRequest): RouteResponse {
         try {
             val userId = service.register(
-                request.body.username,
-                request.body.password
+                Username(request.body.username),
+                UnsafePassword(request.body.password)
             )
             return RouteResponse.Success(userId)
-        } catch (e: UserError) {
-            logger.warn(e) { "Failed to register user" }
+        } catch (_: UsernameError) {
+            return RouteResponse.InvalidUsername()
+        } catch (_: UnsafePasswordError) {
+            return RouteResponse.InvalidPassword()
+        } catch (e: RegisterUserError) {
             return when (e) {
-                is UserError.UnsafePasswordError.Empty -> RouteResponse.InvalidPassword()
-                is UserError.UsernameError.Empty -> RouteResponse.InvalidUsername()
-                is UserError.UsernameError.Invalid -> RouteResponse.InvalidUsername()
-                is UserError.UsernameNotUnique -> RouteResponse.UsernameAlreadyTaken()
-                is UserError.NotFound -> RouteResponse.InternalError()
+                is RegisterUserError.AlreadyTaken -> RouteResponse.UsernameAlreadyTaken()
             }
-        } catch (e: Exception) {
-            logger.warn(e) { "Failed to register user" }
+        } catch (_: Exception) {
             return RouteResponse.InternalError()
         }
     }
@@ -62,8 +60,8 @@ private object RegisterUserRoute : KoinComponent {
 
         @Serializable
         data class RequestBody(
-            val username: Username,
-            val password: UnsafePassword
+            val username: String,
+            val password: String
         )
 
     }

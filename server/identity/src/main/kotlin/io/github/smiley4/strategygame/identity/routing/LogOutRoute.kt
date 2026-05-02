@@ -1,14 +1,14 @@
 package io.github.smiley4.strategygame.identity.routing
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
 import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.post
-import io.github.smiley4.strategygame.identity.auth.AuthError
 import io.github.smiley4.strategygame.identity.auth.AuthService
+import io.github.smiley4.strategygame.identity.auth.LogOutError
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
+import io.github.smiley4.strategygame.identity.auth.domain.SessionTokenError
 import io.github.smiley4.strategygame.identity.routing.LogOutRoute.RouteRequest
 import io.github.smiley4.strategygame.identity.routing.LogOutRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
@@ -17,7 +17,6 @@ import io.ktor.server.routing.Route
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.uuid.Uuid
 
 
 internal fun Route.routeLogOut() {
@@ -32,22 +31,20 @@ internal fun Route.routeLogOut() {
 private object LogOutRoute : KoinComponent {
 
     private val service by inject<AuthService>()
-    private val logger = KotlinLogging.logger {}
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
             service.logout(
-                SessionToken(Uuid.parse(request.body.token)),
+                SessionToken(request.body.token),
             )
             return RouteResponse.Success()
-        } catch (e: AuthError) {
-            logger.warn(e) { "Failed to log-out" }
+        } catch (_: SessionTokenError) {
+            return RouteResponse.InvalidToken()
+        } catch (e: LogOutError) {
             return when (e) {
-                is AuthError.InvalidToken -> RouteResponse.InvalidToken()
-                is AuthError.InvalidUsernameOrPassword -> RouteResponse.InternalError()
+                is LogOutError.InvalidToken -> RouteResponse.InvalidToken()
             }
-        } catch (e: Exception) {
-            logger.warn(e) { "Failed to log-out" }
+        } catch (_: Exception) {
             return RouteResponse.InternalError()
         }
     }

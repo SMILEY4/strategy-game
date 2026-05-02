@@ -1,7 +1,8 @@
 package io.github.smiley4.strategygame.identity.tests
 
-import io.github.smiley4.strategygame.identity.auth.AuthError
 import io.github.smiley4.strategygame.identity.auth.AuthService
+import io.github.smiley4.strategygame.identity.auth.AuthenticateUserError
+import io.github.smiley4.strategygame.identity.auth.LogInUserError
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
@@ -35,7 +36,7 @@ class AuthTest : FreeSpec({
                 userService.register(Username("tester1"), UnsafePassword("password_1"))
                 userService.register(Username("tester2"), UnsafePassword("password_2"))
 
-                shouldThrow<AuthError.InvalidUsernameOrPassword> {
+                shouldThrow<LogInUserError.InvalidUsernameOrPassword> {
                     authService.login(Username("unknown"), UnsafePassword("password_1"))
                 }
             }
@@ -49,7 +50,7 @@ class AuthTest : FreeSpec({
                 userService.register(Username("tester1"), UnsafePassword("password_1"))
                 userService.register(Username("tester2"), UnsafePassword("password_2"))
 
-                shouldThrow<AuthError.InvalidUsernameOrPassword> {
+                shouldThrow<LogInUserError.InvalidUsernameOrPassword> {
                     authService.login(Username("tester1"), UnsafePassword("password_2"))
                 }
             }
@@ -86,7 +87,7 @@ class AuthTest : FreeSpec({
 
                 authService.logout(token)
 
-                shouldThrow<AuthError.InvalidToken> {
+                shouldThrow<AuthenticateUserError.InvalidToken> {
                     authService.authenticate(token)
                 }
             }
@@ -102,7 +103,7 @@ class AuthTest : FreeSpec({
 
                 authService.authenticate(token)
 
-                shouldThrow<AuthError.InvalidToken> {
+                shouldThrow<AuthenticateUserError.InvalidToken> {
                     authService.logout(SessionToken())
                 }
 
@@ -134,7 +135,7 @@ class AuthTest : FreeSpec({
 
                 userService.register(Username("tester"), UnsafePassword("password"))
 
-                shouldThrow<AuthError.InvalidToken> {
+                shouldThrow<AuthenticateUserError.InvalidToken> {
                     authService.authenticate(SessionToken())
                 }
             }

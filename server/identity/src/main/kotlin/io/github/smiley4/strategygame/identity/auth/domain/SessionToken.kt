@@ -11,10 +11,12 @@ value class SessionToken(val value: Uuid = Uuid.random()) {
         try {
             Uuid.parse(id)
         } catch (e: Exception) {
-            throw InvalidFormatException(e)
+            throw SessionTokenError.InvalidFormat(e)
         }
     )
 
-    class InvalidFormatException(cause: Throwable?) : Exception("Uuid has invalid format", cause)
+}
 
+sealed class SessionTokenError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    class InvalidFormat(cause: Throwable?) : SessionTokenError("Token has invalid format.", cause)
 }

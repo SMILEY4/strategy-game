@@ -1,10 +1,12 @@
 package io.github.smiley4.strategygame.identity.auth.domain
 
-import io.github.smiley4.strategygame.identity.auth.AuthError
 import io.github.smiley4.strategygame.identity.auth.AuthService
+import io.github.smiley4.strategygame.identity.auth.AuthenticateUserError
+import io.github.smiley4.strategygame.identity.auth.LogInUserError
+import io.github.smiley4.strategygame.identity.auth.LogOutError
+import io.github.smiley4.strategygame.identity.shared.PasswordHasher
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
-import io.github.smiley4.strategygame.identity.shared.PasswordHasher
 import io.github.smiley4.strategygame.identity.user.domain.UserRepository
 import io.github.smiley4.strategygame.shared.domain.UserId
 
@@ -16,10 +18,10 @@ internal class AuthServiceImpl(
 
     override fun login(username: Username, password: UnsafePassword): SessionToken {
         val user = userRepository.findByUsername(username)
-            ?: throw AuthError.InvalidUsernameOrPassword()
+            ?: throw LogInUserError.InvalidUsernameOrPassword()
 
         if (!user.isValidPassword(password, passwordHasher)) {
-            throw AuthError.InvalidUsernameOrPassword()
+            throw LogInUserError.InvalidUsernameOrPassword()
         }
 
         val session = Session(user.getId())
@@ -31,7 +33,7 @@ internal class AuthServiceImpl(
     override fun logout(token: SessionToken) {
 
         val session = sessionRepository.findByToken(token)
-            ?: throw AuthError.InvalidToken()
+            ?: throw LogOutError.InvalidToken()
 
         session.revoke()
         sessionRepository.delete(session)
@@ -40,11 +42,11 @@ internal class AuthServiceImpl(
     override fun authenticate(token: SessionToken): UserId {
 
         val session = sessionRepository.findByToken(token)
-            ?: throw AuthError.InvalidToken()
+            ?: throw AuthenticateUserError.InvalidToken()
 
         if (!session.isValid()) {
             sessionRepository.delete(session)
-            throw AuthError.InvalidToken()
+            throw AuthenticateUserError.InvalidToken()
         }
 
         return session.getUserId()

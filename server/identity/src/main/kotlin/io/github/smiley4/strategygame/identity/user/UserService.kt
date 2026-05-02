@@ -12,3 +12,19 @@ interface UserService {
     fun changePassword(userId: UserId, newPassword: UnsafePassword)
     suspend fun changeUsername(userId: UserId, newUsername: Username)
 }
+
+
+sealed class RegisterUserError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    class AlreadyTaken(username: String) : RegisterUserError("Username $username is not unique")
+}
+
+
+sealed class ChangePasswordError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    class UserNotFound(id: UserId) : ChangePasswordError("User with id ${id.id} could not be found")
+}
+
+
+sealed class ChangeUsernameError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    class UserNotFound(id: UserId) : ChangeUsernameError("User with id ${id.id} could not be found")
+    class AlreadyTaken(username: String) : ChangeUsernameError("Username $username already taken")
+}

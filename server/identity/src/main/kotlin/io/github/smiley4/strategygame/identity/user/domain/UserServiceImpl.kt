@@ -3,7 +3,9 @@ package io.github.smiley4.strategygame.identity.user.domain
 import io.github.smiley4.strategygame.identity.shared.PasswordHasher
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
-import io.github.smiley4.strategygame.identity.user.UserError
+import io.github.smiley4.strategygame.identity.user.ChangePasswordError
+import io.github.smiley4.strategygame.identity.user.ChangeUsernameError
+import io.github.smiley4.strategygame.identity.user.RegisterUserError
 import io.github.smiley4.strategygame.identity.user.UserService
 import io.github.smiley4.strategygame.shared.domain.UserId
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
@@ -24,7 +26,7 @@ internal class UserServiceImpl(
         return keyedMutex.withLock(username) {
 
             if (existsUsername(username)) {
-                throw UserError.UsernameNotUnique(username.value)
+                throw RegisterUserError.AlreadyTaken(username.value)
             }
 
             val hashedPassword = passwordHasher.hash(password)
@@ -44,7 +46,7 @@ internal class UserServiceImpl(
     override fun changePassword(userId: UserId, newPassword: UnsafePassword) {
 
         val user = userRepository.findById(userId)
-            ?: throw UserError.NotFound(userId.id.toString())
+            ?: throw ChangePasswordError.UserNotFound(userId)
 
         val hashedPassword = passwordHasher.hash(newPassword)
 
@@ -58,10 +60,10 @@ internal class UserServiceImpl(
         keyedMutex.withLock(newUsername) {
 
             val user = userRepository.findById(userId)
-                ?: throw UserError.NotFound(userId.id.toString())
+                ?: throw ChangeUsernameError.UserNotFound(userId)
 
             if (user.getUsername() != newUsername && existsUsername(newUsername)) {
-                throw UserError.UsernameNotUnique(newUsername.value)
+                throw ChangeUsernameError.AlreadyTaken(newUsername.value)
             }
 
             user.changeUsername(newUsername)

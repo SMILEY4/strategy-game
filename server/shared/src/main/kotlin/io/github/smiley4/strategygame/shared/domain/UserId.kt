@@ -14,10 +14,12 @@ value class UserId(val id: Uuid = Uuid.random()) {
         try {
             Uuid.parse(id)
         } catch (e: Exception) {
-            throw InvalidFormatException(e)
+            throw UserIdError.InvalidFormat(id, e)
         }
     )
+}
 
-    class InvalidFormatException(cause: Throwable?) : Exception("Uuid has invalid format", cause)
 
+sealed class UserIdError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    class InvalidFormat(value: String, cause: Throwable?) : UserIdError("$value has invalid format.", cause)
 }

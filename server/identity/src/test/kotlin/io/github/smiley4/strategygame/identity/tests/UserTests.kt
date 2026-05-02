@@ -2,12 +2,15 @@ package io.github.smiley4.strategygame.identity.tests
 
 import io.github.smiley4.strategygame.identity.shared.HashedPassword
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
+import io.github.smiley4.strategygame.identity.shared.UnsafePasswordError
 import io.github.smiley4.strategygame.identity.shared.Username
+import io.github.smiley4.strategygame.identity.shared.UsernameError
 import io.github.smiley4.strategygame.identity.testScope
-import io.github.smiley4.strategygame.identity.user.UserError
+import io.github.smiley4.strategygame.identity.user.ChangePasswordError
+import io.github.smiley4.strategygame.identity.user.ChangeUsernameError
+import io.github.smiley4.strategygame.identity.user.RegisterUserError
 import io.github.smiley4.strategygame.identity.user.UserService
 import io.github.smiley4.strategygame.identity.user.domain.UserRepository
-import io.github.smiley4.strategygame.identity.user.infrastructure.InMemoryUserRepository
 import io.github.smiley4.strategygame.shared.domain.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
@@ -23,19 +26,19 @@ class UserTests : FreeSpec({
         }
 
         "should fail with empty string" {
-            shouldThrow<UserError.UsernameError.Empty> {
+            shouldThrow<UsernameError.Empty> {
                 Username("")
             }
         }
 
         "should fail with blank string" {
-            shouldThrow<UserError.UsernameError.Empty> {
+            shouldThrow<UsernameError.Empty> {
                 Username("      ")
             }
         }
 
         "should fail with illegal characters" {
-            shouldThrow<UserError.UsernameError.Invalid> {
+            shouldThrow<UsernameError.InvalidSymbols> {
                 Username("Hello%($/&$(World")
             }
         }
@@ -49,13 +52,13 @@ class UserTests : FreeSpec({
         }
 
         "should fail with empty string" {
-            shouldThrow<UserError.UnsafePasswordError.Empty> {
+            shouldThrow<UnsafePasswordError.Empty> {
                 UnsafePassword("")
             }
         }
 
         "should fail with blank string" {
-            shouldThrow<UserError.UnsafePasswordError.Empty> {
+            shouldThrow<UnsafePasswordError.Empty> {
                 UnsafePassword("     ")
             }
         }
@@ -102,7 +105,7 @@ class UserTests : FreeSpec({
 
                 service.register(Username("tester"), UnsafePassword("password1"))
 
-                shouldThrow<UserError.UsernameNotUnique> {
+                shouldThrow<RegisterUserError.AlreadyTaken> {
                     service.register(Username("tester"), UnsafePassword("password2"))
                 }
             }
@@ -135,11 +138,28 @@ class UserTests : FreeSpec({
                 val existingUserId = service.register(Username("tester"), UnsafePassword("password"))
                 val unknownUserId = UserId()
 
-                shouldThrow<UserError.NotFound> {
+                shouldThrow<ChangeUsernameError.UserNotFound> {
                     service.changeUsername(unknownUserId, Username("renamed"))
                 }
 
                 repository.findById(existingUserId)?.toSnapshot()?.username?.value shouldBe "tester"
+            }
+        }
+
+        "should fail for already taken name" {
+            testScope {
+                val repository = get<UserRepository>()
+                val service = get<UserService>()
+
+                val existingUserId1 = service.register(Username("tester1"), UnsafePassword("password1"))
+                val existingUserId2 = service.register(Username("tester2"), UnsafePassword("password2"))
+
+                shouldThrow<ChangeUsernameError.AlreadyTaken> {
+                    service.changeUsername(existingUserId2, Username("tester1"))
+                }
+
+                repository.findById(existingUserId1)?.toSnapshot()?.username?.value shouldBe "tester1"
+                repository.findById(existingUserId2)?.toSnapshot()?.username?.value shouldBe "tester2"
             }
         }
 
@@ -169,7 +189,7 @@ class UserTests : FreeSpec({
 
                 service.register(Username("tester"), UnsafePassword("password"))
 
-                shouldThrow<UserError.NotFound> {
+                shouldThrow<ChangePasswordError.UserNotFound> {
                     service.changePassword(UserId(), UnsafePassword("newpassword"))
                 }
             }

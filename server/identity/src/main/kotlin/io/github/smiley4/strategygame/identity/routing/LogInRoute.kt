@@ -1,18 +1,19 @@
 package io.github.smiley4.strategygame.identity.routing
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
 import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.post
-import io.github.smiley4.strategygame.identity.auth.AuthError
 import io.github.smiley4.strategygame.identity.auth.AuthService
+import io.github.smiley4.strategygame.identity.auth.LogInUserError
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.routing.LogInRoute.RouteRequest
 import io.github.smiley4.strategygame.identity.routing.LogInRoute.RouteResponse
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
+import io.github.smiley4.strategygame.identity.shared.UnsafePasswordError
 import io.github.smiley4.strategygame.identity.shared.Username
+import io.github.smiley4.strategygame.identity.shared.UsernameError
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
@@ -32,24 +33,24 @@ internal fun Route.routeLogIn() {
 
 private object LogInRoute : KoinComponent {
 
-    private val logger = KotlinLogging.logger {}
     private val service by inject<AuthService>()
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
             val token = service.login(
-                request.body.username,
-                request.body.password
+                Username(request.body.username),
+                UnsafePassword(request.body.password)
             )
             return RouteResponse.Success(token)
-        } catch (e: AuthError) {
-            logger.warn(e) { "Failed to log-in" }
+        } catch (_: UsernameError) {
+            return RouteResponse.IncorrectUsernameOrPassword()
+        } catch (_: UnsafePasswordError) {
+            return RouteResponse.IncorrectUsernameOrPassword()
+        } catch (e: LogInUserError) {
             return when (e) {
-                is AuthError.InvalidUsernameOrPassword -> RouteResponse.IncorrectUsernameOrPassword()
-                is AuthError.InvalidToken -> RouteResponse.InternalError()
+                is LogInUserError.InvalidUsernameOrPassword -> RouteResponse.IncorrectUsernameOrPassword()
             }
-        } catch (e: Exception) {
-            logger.warn(e) { "Failed to log-in" }
+        } catch (_: Exception) {
             return RouteResponse.InternalError()
         }
     }
@@ -62,8 +63,8 @@ private object LogInRoute : KoinComponent {
 
         @Serializable
         data class RequestBody(
-            val password: UnsafePassword,
-            val username: Username
+            val password: String,
+            val username: String
         )
 
     }

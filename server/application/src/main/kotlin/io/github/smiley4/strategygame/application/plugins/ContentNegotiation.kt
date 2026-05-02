@@ -63,7 +63,6 @@ object SessionTokenSerializer : KSerializer<SessionToken> {
     override fun deserialize(decoder: Decoder) = SessionToken(decoder.decodeString())
 }
 
-
 object UnsafePasswordSerializer : KSerializer<UnsafePassword> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("UnsafePassword", PrimitiveKind.STRING)
     override fun serialize(encoder: Encoder, value: UnsafePassword) = encoder.encodeString(value.value)

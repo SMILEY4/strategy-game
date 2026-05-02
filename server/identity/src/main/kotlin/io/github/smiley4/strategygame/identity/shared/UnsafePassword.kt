@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.identity.shared
 
-import io.github.smiley4.strategygame.identity.user.UserError
 import kotlinx.serialization.Serializable
 
 /**
@@ -9,7 +8,13 @@ import kotlinx.serialization.Serializable
 @JvmInline
 @Serializable
 value class UnsafePassword(val value: String) {
+
     init {
-        if (value.isBlank()) throw UserError.UnsafePasswordError.Empty()
+        if (value.isBlank()) throw UnsafePasswordError.Empty()
     }
+
+}
+
+sealed class UnsafePasswordError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    class Empty : UnsafePasswordError("Password cannot be empty")
 }

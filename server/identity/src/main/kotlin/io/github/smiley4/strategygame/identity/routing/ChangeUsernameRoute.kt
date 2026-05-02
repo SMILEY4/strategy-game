@@ -1,18 +1,18 @@
 package io.github.smiley4.strategygame.identity.routing
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
-import io.github.smiley4.ktorplus.data.PathParameter
 import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.post
 import io.github.smiley4.strategygame.identity.routing.ChangeUsernameRoute.RouteRequest
 import io.github.smiley4.strategygame.identity.routing.ChangeUsernameRoute.RouteResponse
 import io.github.smiley4.strategygame.identity.shared.Username
-import io.github.smiley4.strategygame.identity.user.UserError
+import io.github.smiley4.strategygame.identity.shared.UsernameError
+import io.github.smiley4.strategygame.identity.user.ChangeUsernameError
 import io.github.smiley4.strategygame.identity.user.UserService
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.domain.UserIdError
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
@@ -20,7 +20,6 @@ import io.ktor.server.routing.Route
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.uuid.Uuid
 
 internal fun Route.routeChangeUsername() {
     post<RouteRequest, RouteResponse>("/{userId}/username", {
@@ -34,26 +33,24 @@ internal fun Route.routeChangeUsername() {
 private object ChangeUsernameRoute : KoinComponent {
 
     private val service by inject<UserService>()
-    private val logger = KotlinLogging.logger {}
 
     suspend fun handle(request: RouteRequest): RouteResponse {
         try {
             service.changeUsername(
-                request.userId,
-                request.body.newUsername
+                UserId(request.userId),
+                Username(request.body.newUsername)
             )
             return RouteResponse.Success()
-        } catch (e: UserError) {
-            logger.warn(e) { "Failed to change username" }
+        } catch (_: UserIdError) {
+            return RouteResponse.InvalidUserId()
+        } catch (_: UsernameError) {
+            return RouteResponse.InvalidUsername()
+        } catch (e: ChangeUsernameError) {
             return when (e) {
-                is UserError.UsernameError.Empty -> RouteResponse.InvalidUsername()
-                is UserError.UsernameError.Invalid -> RouteResponse.InvalidUsername()
-                is UserError.UsernameNotUnique -> RouteResponse.UsernameAlreadyTaken()
-                is UserError.NotFound -> RouteResponse.NotFound()
-                is UserError.UnsafePasswordError.Empty -> RouteResponse.InternalError()
+                is ChangeUsernameError.UserNotFound -> RouteResponse.NotFound()
+                is ChangeUsernameError.AlreadyTaken -> RouteResponse.UsernameAlreadyTaken()
             }
-        } catch (e: Exception) {
-            logger.warn(e) { "Failed to change username" }
+        } catch (_: Exception) {
             return RouteResponse.InternalError()
         }
     }
@@ -61,13 +58,13 @@ private object ChangeUsernameRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: UserId,
+        @AuthenticatedUserId val userId: String,
         @Body val body: RequestBody
     ) {
 
         @Serializable
         data class RequestBody(
-            val newUsername: Username,
+            val newUsername: String,
         )
 
     }
@@ -96,6 +93,17 @@ private object ChangeUsernameRoute : KoinComponent {
                 errorCode = "USERNAME_ALREADY_TAKEN",
                 title = "Username taken",
                 detail = "The provided username is already taken.",
+            )
+        ) : RouteResponse()
+
+
+        @Response(HttpStatusCode.BAD_REQUEST, "The provided user id is invalid.")
+        class InvalidUserId(
+            @Body val body: HttpErrorResponse = HttpErrorResponse(
+                status = HttpStatusCode.BAD_REQUEST,
+                errorCode = "INVALID_USER_ID",
+                title = "Invalid user id",
+                detail = "The provided user id is invalid.",
             )
         ) : RouteResponse()
 

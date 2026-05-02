@@ -1,18 +1,18 @@
 package io.github.smiley4.strategygame.identity.routing
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
-import io.github.smiley4.ktorplus.data.PathParameter
 import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.post
 import io.github.smiley4.strategygame.identity.routing.ChangePasswordRoute.RouteRequest
 import io.github.smiley4.strategygame.identity.routing.ChangePasswordRoute.RouteResponse
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
-import io.github.smiley4.strategygame.identity.user.UserError
+import io.github.smiley4.strategygame.identity.shared.UnsafePasswordError
+import io.github.smiley4.strategygame.identity.user.ChangePasswordError
 import io.github.smiley4.strategygame.identity.user.UserService
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.domain.UserIdError
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
@@ -20,7 +20,6 @@ import io.ktor.server.routing.Route
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.uuid.Uuid
 
 internal fun Route.routeChangePassword() {
     post<RouteRequest, RouteResponse>("/{userId}/password", {
@@ -34,26 +33,23 @@ internal fun Route.routeChangePassword() {
 private object ChangePasswordRoute : KoinComponent {
 
     private val service by inject<UserService>()
-    private val logger = KotlinLogging.logger {}
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
             service.changePassword(
-                request.userId,
-                request.body.newPassword
+                UserId(request.userId),
+                UnsafePassword(request.body.newPassword)
             )
             return RouteResponse.Success()
-        } catch (e: UserError) {
-            logger.warn(e) { "Failed to change password" }
+        } catch (_: UserIdError) {
+            return RouteResponse.InvalidUserId()
+        } catch (_: UnsafePasswordError) {
+            return RouteResponse.InvalidPassword()
+        } catch (e: ChangePasswordError) {
             return when (e) {
-                is UserError.NotFound -> RouteResponse.NotFound()
-                is UserError.UnsafePasswordError.Empty -> RouteResponse.InvalidPassword()
-                is UserError.UsernameNotUnique -> RouteResponse.InternalError()
-                is UserError.UsernameError.Empty -> RouteResponse.InternalError()
-                is UserError.UsernameError.Invalid -> RouteResponse.InternalError()
+                is ChangePasswordError.UserNotFound -> RouteResponse.NotFound()
             }
-        } catch (e: Exception) {
-            logger.warn(e) { "Failed to change password" }
+        } catch (_: Exception) {
             return RouteResponse.InternalError()
         }
     }
@@ -61,13 +57,13 @@ private object ChangePasswordRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: UserId,
+        @AuthenticatedUserId val userId: String,
         @Body val body: RequestBody
     ) {
 
         @Serializable
         data class RequestBody(
-            val newPassword: UnsafePassword,
+            val newPassword: String,
         )
 
     }
@@ -76,6 +72,17 @@ private object ChangePasswordRoute : KoinComponent {
 
         @Response(HttpStatusCode.OK, "The password was successfully updated")
         class Success : RouteResponse()
+
+
+        @Response(HttpStatusCode.BAD_REQUEST, "The provided user id is invalid.")
+        class InvalidUserId(
+            @Body val body: HttpErrorResponse = HttpErrorResponse(
+                status = HttpStatusCode.BAD_REQUEST,
+                errorCode = "INVALID_USER_ID",
+                title = "Invalid user id",
+                detail = "The provided user id is invalid.",
+            )
+        ) : RouteResponse()
 
 
         @Response(HttpStatusCode.BAD_REQUEST, "The provided password is invalid.")
