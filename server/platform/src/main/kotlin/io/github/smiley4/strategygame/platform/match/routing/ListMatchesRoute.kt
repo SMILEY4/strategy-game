@@ -8,9 +8,11 @@ import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.get
 import io.github.smiley4.strategygame.platform.match.MatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
+import io.github.smiley4.strategygame.platform.match.domain.MatchId
 import io.github.smiley4.strategygame.platform.match.routing.ListMatchesRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.match.routing.ListMatchesRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
@@ -32,8 +34,8 @@ private object ListMatchesRoute : KoinComponent {
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
-            val matches = service.listMatches(UserId())
-            return RouteResponse.Success(matches.map { it.value.toString() })
+            val matches = service.listMatches(request.userId)
+            return RouteResponse.Success(matches)
         } catch (e: MatchError) {
             logger.warn(e) { "Failed to list matches" }
             return when (e) {
@@ -51,13 +53,15 @@ private object ListMatchesRoute : KoinComponent {
 
 
     @Request
-    class RouteRequest
+    class RouteRequest(
+        @AuthenticatedUserId val userId: UserId,
+    )
 
     sealed class RouteResponse {
 
         @Response(HttpStatusCode.OK, "The matches were successfully retrieved")
         class Success(
-            @Body val matches: List<String>
+            @Body val matches: List<MatchId>
         ) : RouteResponse()
 
 

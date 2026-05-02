@@ -13,6 +13,7 @@ import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.user.UserError
 import io.github.smiley4.strategygame.identity.user.UserService
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
@@ -38,8 +39,8 @@ private object ChangePasswordRoute : KoinComponent {
     fun handle(request: RouteRequest): RouteResponse {
         try {
             service.changePassword(
-                UserId(Uuid.parse(request.userId)),
-                UnsafePassword(request.body.newPassword),
+                request.userId,
+                request.body.newPassword
             )
             return RouteResponse.Success()
         } catch (e: UserError) {
@@ -60,13 +61,13 @@ private object ChangePasswordRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @PathParameter("userId") val userId: String,
+        @AuthenticatedUserId val userId: UserId,
         @Body val body: RequestBody
     ) {
 
         @Serializable
         data class RequestBody(
-            val newPassword: String,
+            val newPassword: UnsafePassword,
         )
 
     }

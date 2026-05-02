@@ -36,7 +36,7 @@ fun Application.module() {
     setupDependencyInjection()
     setupAuthentication()
     val json = setupContentNegotiation()
-    setupKtorPlus()
+    setupKtorPlus(json)
     setupOpenApi(json)
     setupRouting()
 }

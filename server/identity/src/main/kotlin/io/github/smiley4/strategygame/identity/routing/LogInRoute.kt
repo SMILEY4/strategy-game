@@ -8,6 +8,7 @@ import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.post
 import io.github.smiley4.strategygame.identity.auth.AuthError
 import io.github.smiley4.strategygame.identity.auth.AuthService
+import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.routing.LogInRoute.RouteRequest
 import io.github.smiley4.strategygame.identity.routing.LogInRoute.RouteResponse
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
@@ -37,10 +38,10 @@ private object LogInRoute : KoinComponent {
     fun handle(request: RouteRequest): RouteResponse {
         try {
             val token = service.login(
-                Username(request.body.username),
-                UnsafePassword(request.body.password),
+                request.body.username,
+                request.body.password
             )
-            return RouteResponse.Success(token.value.toString())
+            return RouteResponse.Success(token)
         } catch (e: AuthError) {
             logger.warn(e) { "Failed to log-in" }
             return when (e) {
@@ -61,8 +62,8 @@ private object LogInRoute : KoinComponent {
 
         @Serializable
         data class RequestBody(
-            val password: String,
-            val username: String
+            val password: UnsafePassword,
+            val username: Username
         )
 
     }
@@ -71,7 +72,7 @@ private object LogInRoute : KoinComponent {
 
         @Response(HttpStatusCode.OK, "The user was successfully logged in")
         class Success(
-            @Body val token: String
+            @Body val token: SessionToken
         ) : RouteResponse()
 
 

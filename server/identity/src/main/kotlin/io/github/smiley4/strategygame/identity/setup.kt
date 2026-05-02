@@ -50,8 +50,8 @@ fun Route.routingIdentity() {
         route("/user") { routeRegisterUser() }
 
         authenticate(RoutingAuthConstants.AUTH_USER) {
-            route("/user/{userId}/username") { routeChangeUsername() }
-            route("/user/{userId}/username") { routeChangePassword() }
+            route("/user/username") { routeChangeUsername() }
+            route("/user/username") { routeChangePassword() }
         }
     }
 }

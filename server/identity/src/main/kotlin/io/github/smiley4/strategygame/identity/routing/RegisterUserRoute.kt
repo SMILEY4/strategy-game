@@ -11,6 +11,7 @@ import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
 import io.github.smiley4.strategygame.identity.user.UserError
 import io.github.smiley4.strategygame.identity.user.UserService
+import io.github.smiley4.strategygame.shared.domain.UserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
@@ -19,7 +20,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 internal fun Route.routeRegisterUser() {
-    post<RegisterUserRoute.RouteRequest, RouteResponse>("/user", {
+    post<RegisterUserRoute.RouteRequest, RouteResponse>("", {
         description = "Register a new user"
     }) { request ->
         RegisterUserRoute.handle(request)
@@ -34,10 +35,10 @@ private object RegisterUserRoute : KoinComponent {
     suspend fun handle(request: RouteRequest): RouteResponse {
         try {
             val userId = service.register(
-                Username(request.body.username),
-                UnsafePassword(request.body.password)
+                request.body.username,
+                request.body.password
             )
-            return RouteResponse.Success()
+            return RouteResponse.Success(userId)
         } catch (e: UserError) {
             logger.warn(e) { "Failed to register user" }
             return when (e) {
@@ -61,8 +62,8 @@ private object RegisterUserRoute : KoinComponent {
 
         @Serializable
         data class RequestBody(
-            val username: String,
-            val password: String
+            val username: Username,
+            val password: UnsafePassword
         )
 
     }
@@ -70,7 +71,9 @@ private object RegisterUserRoute : KoinComponent {
     sealed class RouteResponse {
 
         @Response(HttpStatusCode.OK, "The user was successfully registered.")
-        class Success : RouteResponse()
+        class Success(
+            @Body val userId: UserId
+        ) : RouteResponse()
 
 
         @Response(HttpStatusCode.BAD_REQUEST, "The provided password is invalid.")

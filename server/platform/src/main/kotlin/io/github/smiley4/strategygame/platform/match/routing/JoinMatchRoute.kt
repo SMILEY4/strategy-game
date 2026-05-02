@@ -13,6 +13,7 @@ import io.github.smiley4.strategygame.platform.match.domain.MatchId
 import io.github.smiley4.strategygame.platform.match.routing.JoinMatchRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.match.routing.JoinMatchRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
@@ -35,7 +36,7 @@ private object JoinMatchRoute : KoinComponent {
 
     suspend fun handle(request: RouteRequest): RouteResponse {
         try {
-            service.join(UserId(), MatchId(Uuid.parse(request.matchId)))
+            service.join(request.userId, request.matchId)
             return RouteResponse.Success()
         } catch (e: MatchError) {
             logger.warn(e) { "Failed to join match" }
@@ -55,7 +56,8 @@ private object JoinMatchRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @PathParameter("matchId") val matchId: String
+        @AuthenticatedUserId val userId: UserId,
+        @PathParameter("matchId") val matchId: MatchId
     )
 
     sealed class RouteResponse {

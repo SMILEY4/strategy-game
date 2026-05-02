@@ -11,6 +11,7 @@ import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.routing.CreateMatchRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.match.routing.CreateMatchRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
@@ -33,7 +34,7 @@ private object CreateMatchRoute : KoinComponent {
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
-            service.create(UserId(), request.body.name)
+            service.create(request.userId, request.body.name)
             return RouteResponse.Success()
         } catch (e: MatchError) {
             logger.warn(e) { "Failed to create match" }
@@ -53,6 +54,7 @@ private object CreateMatchRoute : KoinComponent {
 
     @Request
     class RouteRequest(
+        @AuthenticatedUserId val userId: UserId,
         @Body val body: RequestBody
     ) {
 

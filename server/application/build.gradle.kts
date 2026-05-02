@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.ktor.server.serialization.kotlinxjson)
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.sessions)
+    implementation(libs.ktor.plus)
     implementation(libs.ktor.openapitools.openapi)
     implementation(libs.ktor.openapitools.swagger)
     implementation(libs.schemakenerator.core)

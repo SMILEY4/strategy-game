@@ -1,6 +1,20 @@
 package io.github.smiley4.strategygame.platform.match.domain
 
+import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @JvmInline
-value class MatchId(val value: Uuid = Uuid.random())
+@Serializable
+value class MatchId(val value: Uuid = Uuid.random()) {
+
+    constructor(id: String) : this(
+        try {
+            Uuid.parse(id)
+        } catch (e: Exception) {
+            throw InvalidFormatException(e)
+        }
+    )
+
+    class InvalidFormatException(cause: Throwable?) : Exception("Uuid has invalid format", cause)
+
+}

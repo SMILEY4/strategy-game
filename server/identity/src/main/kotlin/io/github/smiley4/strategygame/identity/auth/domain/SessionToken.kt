@@ -1,9 +1,10 @@
 package io.github.smiley4.strategygame.identity.auth.domain
 
-import io.github.smiley4.strategygame.shared.domain.GameId
+import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @JvmInline
+@Serializable
 value class SessionToken(val value: Uuid = Uuid.random()) {
 
     constructor(id: String) : this(
