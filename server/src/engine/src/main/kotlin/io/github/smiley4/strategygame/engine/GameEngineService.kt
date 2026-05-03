@@ -11,6 +11,7 @@ interface GameEngineService {
 
 
 sealed class CreateGameError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    // ...
 }
 
 sealed class DeleteGameError(message: String?, cause: Throwable? = null) : Exception(message, cause) {

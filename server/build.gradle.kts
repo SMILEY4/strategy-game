@@ -70,6 +70,7 @@ subprojects {
 
     pluginManager.withPlugin("io.gitlab.arturbosch.detekt") {
         extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+            autoCorrect = true
             config.setFrom(rootProject.file("detekt/detekt.yml"))
             ignoreFailures = false
             buildUponDefaultConfig = true
