@@ -11,8 +11,9 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
-include("identity")
-include("application")
-include("platform")
-include("engine")
-include("shared")
+include("src")
+include("src:identity")
+include("src:application")
+include("src:platform")
+include("src:engine")
+include("src:shared")

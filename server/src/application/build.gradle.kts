@@ -9,10 +9,10 @@ plugins {
 
 dependencies {
 
-    implementation(project(":shared"))
-    implementation(project(":identity"))
-    implementation(project(":platform"))
-    implementation(project(":engine"))
+    implementation(project(":src:shared"))
+    implementation(project(":src:identity"))
+    implementation(project(":src:platform"))
+    implementation(project(":src:engine"))
 
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.serialization.json)

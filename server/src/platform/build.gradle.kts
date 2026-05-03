@@ -8,8 +8,8 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":identity"))
-    implementation(project(":shared"))
+    implementation(project(":src:identity"))
+    implementation(project(":src:shared"))
 
     implementation(libs.bundles.logging)
 
