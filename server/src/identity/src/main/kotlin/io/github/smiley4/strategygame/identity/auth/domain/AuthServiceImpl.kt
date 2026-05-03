@@ -10,6 +10,9 @@ import io.github.smiley4.strategygame.identity.shared.Username
 import io.github.smiley4.strategygame.identity.user.domain.UserRepository
 import io.github.smiley4.strategygame.shared.domain.UserId
 
+/**
+ * Implementation of an [AuthService]
+ */
 internal class AuthServiceImpl(
     private val passwordHasher: PasswordHasher,
     private val sessionRepository: SessionRepository,

@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.identity.user.domain.UserSnapshot
 import io.github.smiley4.strategygame.shared.domain.UserId
 
 /**
- * "Fake", in-memory implementation of a [UserRepository].
+ * In-memory implementation of a [UserRepository].
  */
 internal class InMemoryUserRepository : UserRepository {
 

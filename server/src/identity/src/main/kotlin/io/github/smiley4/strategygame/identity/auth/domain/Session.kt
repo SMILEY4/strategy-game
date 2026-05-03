@@ -6,7 +6,7 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
 /**
- * Session aggregate
+ * (Authenticated) Session aggregate
  */
 internal class Session private constructor(
     private val token: SessionToken,
@@ -31,24 +31,43 @@ internal class Session private constructor(
         status = snapshot.status
     )
 
+    /**
+     * Revoke the session. No longer valid and can no longer be used to authenticate.
+     */
     fun revoke() {
         this.status = Status.REVOKED
     }
 
+
+    /**
+     * @return whether the session is valid and can be used to authenticate (revoked, expired, ...)
+     */
     fun isValid(): Boolean {
         if (status == Status.REVOKED) return false
         if (Clock.System.now() > expiresAt) return false
         return true
     }
 
+
+    /**
+     * @return the token associated with this session
+     */
     fun getToken(): SessionToken {
         return token
     }
 
+
+    /**
+     * @return the [UserId] associated with this session
+     */
     fun getUserId(): UserId {
         return userId
     }
 
+
+    /**
+     * @return a snapshot of the current state of this aggregate
+     */
     fun toSnapshot() = SessionSnapshot(
         token = token,
         userId = userId,

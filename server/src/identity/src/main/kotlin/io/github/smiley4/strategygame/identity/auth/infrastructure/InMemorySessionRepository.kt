@@ -5,6 +5,9 @@ import io.github.smiley4.strategygame.identity.auth.domain.SessionRepository
 import io.github.smiley4.strategygame.identity.auth.domain.SessionSnapshot
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 
+/**
+ * Implementation of a [SessionRepository]
+ */
 internal class InMemorySessionRepository : SessionRepository {
 
     private val sessions = mutableListOf<SessionSnapshot>()
