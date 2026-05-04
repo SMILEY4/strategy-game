@@ -1,9 +1,9 @@
 package io.github.smiley4.strategygame.engine.gameplay
 
-import io.github.smiley4.strategygame.engine.domain.GameplayEngine
-import io.github.smiley4.strategygame.engine.PlayerCommand
 import io.github.smiley4.strategygame.engine.domain.GameNotificationService
+import io.github.smiley4.strategygame.engine.domain.GameplayEngine
 import io.github.smiley4.strategygame.engine.domain.ProcessTurnError
+import io.github.smiley4.strategygame.engine.gameplay.data.PlayerCommand
 import io.github.smiley4.strategygame.shared.domain.GameId
 
 internal class GameplayEngineImpl(
@@ -13,18 +13,34 @@ internal class GameplayEngineImpl(
 
     override fun processTurn(gameId: GameId, commands: Collection<PlayerCommand>) {
 
+        // load game state
         val gameState = gameStateRepository.load(gameId)
             ?: throw ProcessTurnError.NotFound(gameId.id.toString())
 
-        // todo: implement gameplay logic, apply commands to game state
+        // apply commands
+        commands.forEach { command ->
+            when (command) {
+                is PlayerCommand.Increment -> gameState.getCounter().increment()
+                is PlayerCommand.Decrement -> gameState.getCounter().decrement()
+            }
+        }
 
-        gameStateRepository.save(gameState)
+        // persist updated game state
+        gameStateRepository.save(gameId, gameState)
 
-        // todo: send game states to all players connected to game "gameId"
-        //   if(gameNotificationService.isReachable(...)) {
-        //      build povState
-        //      gameNotificationService.send(povState)
-        //   }
+        // send new game state to players
+        gameState.getPlayers()
+            .filter { gameNotificationService.isReachable(gameId, it) }
+            .forEach { userId ->
+                val povGameState = """
+                    {
+                        "player": "$userId",
+                        "counter": ${gameState.getCounter()}
+                    }
+                """.trimIndent()
+                gameNotificationService.send(gameId, userId, povGameState)
+
+            }
     }
 
 }

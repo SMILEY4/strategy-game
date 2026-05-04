@@ -10,6 +10,7 @@ import io.github.smiley4.strategygame.shared.domain.GameId
 class InMemoryGameRepository : GameRepository, GameStateRepository {
 
     val games = mutableListOf<GameSnapshot>()
+    val gameContexts = mutableMapOf<GameId, GameStateContext>()
 
     override fun save(game: Game) {
         games.removeIf { it.id == game.getId() }
@@ -26,12 +27,12 @@ class InMemoryGameRepository : GameRepository, GameStateRepository {
             ?.let { Game(it) }
     }
 
-    override fun load(gameId: GameId): GameStateContext {
-        TODO("Not yet implemented")
+    override fun load(gameId: GameId): GameStateContext? {
+        return gameContexts[gameId]
     }
 
-    override fun save(game: GameStateContext) {
-        TODO("Not yet implemented")
+    override fun save(gameId: GameId, game: GameStateContext) {
+        gameContexts[gameId] = game
     }
 
 }
