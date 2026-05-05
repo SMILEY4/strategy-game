@@ -42,8 +42,8 @@ export class SingletonDatabaseImpl<ENTITY> implements SingletonDatabase<ENTITY> 
 
     public registerPartialRevId<T>(name: string, selector: (entity: ENTITY) => T) {
         this.partialRevIds.set(name, {
-            revId: SingletonDatabaseImpl.generateRevId(),
             name: name,
+            revId: SingletonDatabaseImpl.generateRevId(),
             selector: selector,
             lastValue: selector(this.entity),
         });
@@ -52,7 +52,7 @@ export class SingletonDatabaseImpl<ENTITY> implements SingletonDatabase<ENTITY> 
     public getPartialRevId(name: string): string {
         const partialRevId = this.partialRevIds.get(name);
         if (partialRevId) {
-            // todo: can be optimized with dirty check
+            // todo: can be optimized with dirty check (or update rev-id on set/update operations)
             //  1. store "dirty" flag for each partial rev id
             //  2. set dirty = true on modifications
             //  3. on get partial: is dirty: compare and return new revid, else: return current revid

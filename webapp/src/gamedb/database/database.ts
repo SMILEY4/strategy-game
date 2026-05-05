@@ -14,6 +14,22 @@ export interface Database<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
     getRevId(): string;
 
     /**
+     * Register a new partial revision id with the given name.
+     * @param name the unique name of the partial revision id
+     * @param filter the function deciding whether a given entity is relevant for the revision id
+     */
+    registerPartialRevId(name: string, filter: (entity: ENTITY) => boolean): void;
+
+    /**
+     * Get the current revision id for a part of the entities.
+     * The revision id get updated every time an associated entity changes or is added
+     * The partial revision id must be registered first.
+     * @param name the name of the partial revision id
+     * @return the current revision id
+     */
+    getPartialRevId(name: string): string;
+
+    /**
      * Subscribe to all changes
      * @param callback the event callback
      * @return the id of the subscriber

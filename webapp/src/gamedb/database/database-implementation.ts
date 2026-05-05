@@ -7,6 +7,12 @@ import {DatabaseOperation} from "@gamedb/database/database-operation.ts";
 import type {Query} from "@gamedb/database/query.ts";
 import {DatabaseStorage, type DatabaseStorageUnitMapping} from "@gamedb/storage/database-storage.ts";
 
+interface PartialRevId<ENTITY> {
+    name: string,
+    revId: string,
+    filter: (entity: ENTITY) => boolean
+}
+
 /**
  * Base implementation of a database
  */
@@ -19,10 +25,12 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
     private readonly subscribers = {
         db: new Map<string, DatabaseSubscriber<ENTITY>>,
         entity: new Map<string, EntitySubscriber<ENTITY, ID>>,
-        query: new Map<string, QuerySubscriber<STORAGE, ENTITY, ID, never>>,
+        query: new Map<string, QuerySubscriber<STORAGE, ENTITY, ID, unknown>>,
     };
 
     private revId: string = DatabaseImpl.generateRevId()
+
+    private partialRevIds: Map<string, PartialRevId<ENTITY>> = new Map()
 
     private batchContext: null | {
         changed: boolean,
@@ -43,7 +51,6 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
         this.idProvider = idProvider;
     }
 
-
     public getStorage(): DatabaseStorage<STORAGE, ENTITY, ID> {
         return this.storage;
     }
@@ -56,6 +63,42 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
 
     private updateRevId() {
         this.revId = DatabaseImpl.generateRevId()
+    }
+
+    public registerPartialRevId(name: string, filter: (entity: ENTITY) => boolean): void {
+        this.partialRevIds.set(name, {
+            name: name,
+            revId: DatabaseImpl.generateRevId(),
+            filter: filter
+        })
+    }
+
+    public getPartialRevId(name: string): string {
+        const partialRevId = this.partialRevIds.get(name);
+        if(partialRevId) {
+            return partialRevId.revId
+        } else {
+            throw new Error("No partial revId with name " + name + " registered.");
+        }
+    }
+
+    private checkPartialRevIds(entities: ENTITY | ENTITY[]): void {
+        for (const partialRevId of this.partialRevIds.values()) {
+            let isRelevant = false
+            if(Array.isArray(entities)) {
+                for (const entity of entities) {
+                    if(partialRevId.filter(entity)) {
+                        isRelevant = true
+                        break
+                    }
+                }
+            } else {
+                isRelevant = partialRevId.filter(entities)
+            }
+            if(isRelevant) {
+                partialRevId.revId = DatabaseImpl.generateRevId()
+            }
+        }
     }
 
     private static generateRevId(): string {
@@ -127,7 +170,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
         const queryResult = this.queryMany(query, args);
         this.subscribers.query.set(subscriberId, {
             query: query,
-            args: args as never,
+            args: args,
             callback: callback,
             lastIds: IdProviderUtils.toIds(this.idProvider, queryResult),
         });
@@ -139,7 +182,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
         const queryResult = this.querySingle(query, args);
         this.subscribers.query.set(subscriberId, {
             query: query,
-            args: args as never,
+            args: args,
             callback: entities => entities.length > 0 ? callback(entities[0]) : callback(null),
             lastIds: queryResult === null ? [] : IdProviderUtils.toIds(this.idProvider, [queryResult]),
         });
@@ -197,7 +240,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
         }
     }
 
-    private checkSubscriberQuery(subscriber: QuerySubscriber<STORAGE, ENTITY, ID, never>, force: boolean) {
+    private checkSubscriberQuery(subscriber: QuerySubscriber<STORAGE, ENTITY, ID, unknown>, force: boolean) {
         const result: ENTITY[] = this.queryMany(subscriber.query, subscriber.args);
         const resultIds = result.map(this.idProvider).sort();
         if (force || !this.arrEquals(subscriber.lastIds, resultIds)) {
@@ -246,6 +289,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
     public insert(entity: ENTITY): ID | null {
         const result = this.storage.insert(entity);
         if (result) {
+            this.checkPartialRevIds(result.entity)
             this.notify([result.entity], [result.id], DatabaseOperation.INSERT);
             return result.id;
         } else {
@@ -255,6 +299,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
 
     public insertMany(entities: ENTITY[]): ID[] {
         const result = this.storage.insertMany(entities);
+        this.checkPartialRevIds(result.entities)
         this.notify(result.entities, result.ids, DatabaseOperation.INSERT);
         return result.ids;
     }
@@ -264,6 +309,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
     public delete(id: ID): ENTITY | null {
         const result = this.storage.delete(id);
         if (result) {
+            this.checkPartialRevIds(result.entity)
             this.notify([result.entity], [result.id], DatabaseOperation.DELETE);
             return result.entity;
         } else {
@@ -273,6 +319,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
 
     public deleteMany(ids: ID[]): ENTITY[] {
         const result = this.storage.deleteMany(ids);
+        this.checkPartialRevIds(result.entities)
         this.notify(result.entities, result.ids, DatabaseOperation.DELETE);
         return result.entities;
     }
@@ -280,12 +327,14 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
     public deleteByQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY[] {
         const queryIds = IdProviderUtils.toIds(this.idProvider, this.queryMany(query, args));
         const result = this.storage.deleteMany(queryIds);
+        this.checkPartialRevIds(result.entities)
         this.notify(result.entities, result.ids, DatabaseOperation.DELETE);
         return result.entities;
     }
 
     public deleteAll(): ENTITY[] {
         const result = this.storage.deleteAll();
+        this.checkPartialRevIds(result.entities)
         this.notify(result.entities, result.ids, DatabaseOperation.DELETE);
         return result.entities;
     }
@@ -298,7 +347,8 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
         if (entity !== null) {
             const modified = {...entity, ...action(entity)};
             this.storage.replace(id, modified);
-            this.notify([entity], [id], DatabaseOperation.MODIFY);
+            this.checkPartialRevIds([entity, modified])
+            this.notify([modified], [id], DatabaseOperation.MODIFY);
             return modified;
         } else {
             return null;
@@ -306,17 +356,20 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
     }
 
     public updateMany(ids: ID[], action: (entity: ENTITY) => Partial<ENTITY>): ENTITY[] {
+        const originalEntities: ENTITY[] = [];
         const modifiedEntities: ENTITY[] = [];
         const modifiedIds: ID[] = [];
         for (const id of ids) {
             const entity = this.storage.get(id);
             if (entity !== null) {
+                modifiedEntities.push(entity);
                 const modified = {...entity, ...action(entity)};
                 this.storage.replace(id, modified);
                 modifiedEntities.push(modified);
                 modifiedIds.push(id);
             }
         }
+        this.checkPartialRevIds([...originalEntities, ...modifiedEntities,])
         this.notify(modifiedEntities, modifiedIds, DatabaseOperation.MODIFY);
         return modifiedEntities;
     }
@@ -337,6 +390,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
                 modifiedEntities.push(modified);
                 modifiedIds.push(id);
             }
+            this.checkPartialRevIds([...queryResult, ...modifiedEntities]);
             this.notify(modifiedEntities, modifiedIds, DatabaseOperation.MODIFY);
             return modifiedEntities;
 
@@ -345,6 +399,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
             const id = this.idProvider(entity);
             const modified = {...entity, ...action(entity)};
             this.storage.replace(id, modified);
+            this.checkPartialRevIds([entity, modified]);
             this.notify([modified], [id], DatabaseOperation.MODIFY);
             return [modified];
         }
@@ -358,7 +413,8 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
         if (entity !== null) {
             const modified = action(entity);
             this.storage.replace(id, modified);
-            this.notify([entity], [id], DatabaseOperation.MODIFY);
+            this.checkPartialRevIds([entity, modified]);
+            this.notify([modified], [id], DatabaseOperation.MODIFY);
             return modified;
         } else {
             return null;
@@ -366,17 +422,20 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
     }
 
     public replaceMany(ids: ID[], action: (entity: ENTITY) => ENTITY): ENTITY[] {
+        const originalEntities: ENTITY[] = [];
         const modifiedEntities: ENTITY[] = [];
         const modifiedIds: ID[] = [];
         for (const id of ids) {
             const entity = this.storage.get(id);
             if (entity !== null) {
+                originalEntities.push(entity);
                 const modified = action(entity);
                 this.storage.replace(id, modified);
                 modifiedEntities.push(modified);
                 modifiedIds.push(id);
             }
         }
+        this.checkPartialRevIds([...originalEntities, ...modifiedEntities]);
         this.notify(modifiedEntities, modifiedIds, DatabaseOperation.MODIFY);
         return modifiedEntities;
     }
@@ -398,6 +457,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
                 modifiedEntities.push(modified);
                 modifiedIds.push(id);
             }
+            this.checkPartialRevIds([...queryResult, ...modifiedEntities]);
             this.notify(modifiedEntities, modifiedIds, DatabaseOperation.MODIFY);
             return modifiedEntities;
 
@@ -406,6 +466,7 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
             const modified = action(entity);
             const id = this.idProvider(entity);
             this.storage.replace(id, modified);
+            this.checkPartialRevIds([entity, modified]);
             this.notify([modified], [id], DatabaseOperation.MODIFY);
             return [modified];
         }
