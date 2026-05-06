@@ -4,6 +4,7 @@ import {DatabaseBuilder} from "@gamedb/database-builder.ts";
 import {MapPrimaryDatabaseStorageUnit} from "@gamedb/storage/implementations/database-storage-unit.primary.map.ts";
 import {useQuerySingle} from "@gamedb/adapters/use-database.ts";
 import type {Query} from "@gamedb/database/query.ts";
+import {ArraySupportingStorage} from "@gamedb/storage/implementations/database-storage-unit.supporting.flat-array.ts";
 
 interface Person {
     name: string,
@@ -18,6 +19,8 @@ interface Person {
 type PersonStorageMapping = {
     primary: MapPrimaryDatabaseStorageUnit<Person, string>
 }
+
+new ArraySupportingStorage<Person>()
 
 const db = DatabaseBuilder
     .create<Person, string, PersonStorageMapping>()
@@ -50,6 +53,16 @@ db.insertMany([
 
 type PersonQuery<ARGS> = Query<PersonStorageMapping, Person, string, ARGS>
 
+db.insert(    {
+    name: "Mr Example",
+    age: 42,
+    address: {
+        country: "DE",
+        city: "Exampletown",
+        street: "Examplestreet. ",
+    },
+})
+
 const QUERY_PERSON_BY_ID: PersonQuery<string> = {
     run(storage: PersonStorageMapping, args: string): Person | null {
         return storage.primary.get(args);
@@ -58,10 +71,13 @@ const QUERY_PERSON_BY_ID: PersonQuery<string> = {
 
 function incrementAge(id: string) {
     db.update(id, e => ({
-        ...e,
         age: e.age + 1,
     }));
 }
+
+db.batch(() => {
+
+})
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
