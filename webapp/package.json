@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "classnames": "^2.5.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },
@@ -24,6 +25,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "less": "^4.6.4",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10",
