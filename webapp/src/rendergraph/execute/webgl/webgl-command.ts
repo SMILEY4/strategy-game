@@ -1,7 +1,8 @@
-import type {ResourceKey, WebglExecutionContext} from "@rendergraph/execute/webgl/webgl-execution-context.ts";
+import type {WebglExecutionContext} from "@rendergraph/execute/webgl/webgl-execution-context.ts";
 import {GlFramebuffer} from "@rendergraph/webgl/gl-framebuffer.ts";
 import type {VertexDataResult} from "@rendergraph/nodes/rg-node.transform-vertex-out.ts";
 import {GlProgram, type GLProgramUniform, GLUniformType, type GLUniformValueType} from "@rendergraph/webgl/gl-program.ts";
+import type {ResourceKey} from "@rendergraph/execute/resource-key.ts";
 
 export type WebGlCommand =
     | WebGlBindFramebufferCommand
@@ -11,6 +12,7 @@ export type WebGlCommand =
     | WebGlBindVertexArrayCommand
     | WebGlLoadExternalDataCommand
     | WebGlLoadTransformedDataCommand
+    | WebGlLockTextureCommand
     | WebGlSetUniformValuesCommand
     | WebGlTransformCommand
     | WebGlTransformMultiOutCommand
@@ -23,6 +25,19 @@ export interface WebGlBaseCommand {
     execute: (context: WebglExecutionContext) => void;
 }
 
+
+export class WebGlLockTextureCommand implements WebGlBaseCommand {
+
+    readonly resourceKeys: ResourceKey[];
+
+    constructor(options: { resourceKeys: ResourceKey[] }) {
+        this.resourceKeys = options.resourceKeys;
+    }
+
+    public execute(context: WebglExecutionContext): void {
+        context.lockTextures(this.resourceKeys)
+    }
+}
 
 export class WebGlBindTextureCommand implements WebGlBaseCommand {
 

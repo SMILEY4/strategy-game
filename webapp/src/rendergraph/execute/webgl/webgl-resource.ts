@@ -3,13 +3,13 @@ import type {GlFramebuffer} from "@rendergraph/webgl/gl-framebuffer.ts";
 import {type GlAttributeComponentAmount, GlAttributeType, type GlProgram} from "@rendergraph/webgl/gl-program.ts";
 import type {GlVertexBuffer} from "@rendergraph/webgl/gl-vertexbuffer.ts";
 import type {GlVertexArray} from "@rendergraph/webgl/gl-vertexarray.ts";
-import type {ResourceKey} from "@rendergraph/execute/webgl/webgl-execution-context.ts";
+import type {ResourceKey} from "@rendergraph/execute/resource-key.ts";
 
 export type WebGlResource =
     | WebGlDataResource
     | WebGlTextureResource
     | WebGlFramebufferResource
-    | WebGlShaderProgramResource
+    | WebGlProgramResource
     | WebGlVertexBufferResource
     | WebGlVertexArrayResource
 
@@ -39,7 +39,7 @@ export interface WebGlFramebufferResource extends WebglResourceBase<"framebuffer
     resource: GlFramebuffer | null;
 }
 
-export interface WebGlShaderProgramResource extends WebglResourceBase<"program"> {
+export interface WebGlProgramResource extends WebglResourceBase<"program"> {
     readonly srcVertex: string,
     readonly srcFragment: string,
     resource: GlProgram | null
@@ -49,6 +49,10 @@ export interface WebGlVertexBufferResource extends WebglResourceBase<"vertexbuff
     resource: GlVertexBuffer | null;
 }
 
+/**
+ * NOTE: vertex arrays have a 1:1 relation to a shader program (with "location")
+ * -> geometry nodes can not be shared with webgl (maybe: detect and split/duplicate geo-nodes)
+ */
 export interface WebGlVertexArrayResource extends WebglResourceBase<"vertexarray"> {
     readonly attributes: ({
         bufferResourceKey: ResourceKey,
@@ -60,5 +64,6 @@ export interface WebGlVertexArrayResource extends WebglResourceBase<"vertexarray
         offset: number | undefined
         divisor: number | undefined
     })[]
+    readonly programResourceKey: ResourceKey
     resource: GlVertexArray | null;
 }

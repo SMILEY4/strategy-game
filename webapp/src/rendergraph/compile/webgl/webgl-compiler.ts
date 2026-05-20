@@ -9,7 +9,7 @@ import {
     type WebGlCommand,
     WebGlDrawCommand,
     WebGlLoadExternalDataCommand,
-    WebGlLoadTransformedDataCommand,
+    WebGlLoadTransformedDataCommand, WebGlLockTextureCommand,
     WebGlSetUniformValuesCommand,
     WebGlTransformCommand,
     WebGlTransformMultiOutCommand,
@@ -17,7 +17,6 @@ import {
     WebGlUnbindFramebufferCommand,
     WebGlUseProgramCommand,
 } from "@rendergraph/execute/webgl/webgl-command.ts";
-import type {ResourceKey} from "@rendergraph/execute/webgl/webgl-execution-context.ts";
 import type {RendertargetRenderGraphNode} from "@rendergraph/nodes/rg-node.rendertarget.ts";
 import type {CanvasRenderGraphNode} from "@rendergraph/nodes/rg-node.canvas.ts";
 import type {DrawRenderGraphNode} from "@rendergraph/nodes/rg-node.draw.ts";
@@ -26,12 +25,14 @@ import type {ShaderRenderGraphNode} from "@rendergraph/nodes/rg-node.shader.ts";
 import type {
     WebGlFramebufferResource,
     WebGlResource,
-    WebGlShaderProgramResource,
+    WebGlProgramResource,
     WebGlTextureResource,
     WebGlVertexArrayResource,
     WebGlVertexBufferResource,
 } from "@rendergraph/execute/webgl/webgl-resource.ts";
 import {type GlAttributeComponentAmount, GlAttributeType} from "@rendergraph/webgl/gl-program.ts";
+import type {ResourceKey} from "@rendergraph/execute/resource-key.ts";
+import {checkExhaustive} from "@/common/common.ts";
 
 interface CompileContext {
     nodes: RenderGraphNode[];
@@ -40,19 +41,36 @@ interface CompileContext {
     resources: WebGlResource[];
 }
 
-export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDrawCallNode[]) {
+export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDrawCallNode[]): { commands: WebGlCommand[], resources: WebGlResource[] } {
 
-    const context = {
+    const context: CompileContext = {
         nodes: nodes,
         compiledNodes: new Set(),
         commands: [],
         resources: [],
-    } satisfies CompileContext;
+    };
 
     sortedDrawCalls.forEach(drawCall => {
+        context.commands.push(new WebGlLockTextureCommand({
+            resourceKeys: [
+                ...drawCall.requiresResources.textures.map(node => {
+                    if(node.type === "texture") {
+                        return keyTextureConfig(node)
+                    }
+                    if(node.type === "rendertarget") {
+                        return node.name
+                    }
+                    checkExhaustive(node)
+                }),
+                ...drawCall.requiresResources.texturesSelect.flatMap(node => {
+                    return Object.values(node.options).map(it => keyTextureConfig(it))
+                })
+            ]
+        }))
         compileNode(drawCall.node, context, true);
     });
 
+    return { commands: context.commands, resources: context.resources };
 }
 
 export function compileNode(node: RenderGraphNode, context: CompileContext, compileDrawNode: boolean) {
@@ -141,7 +159,7 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
             srcVertex: node.srcVertex,
             srcFragment: node.srcFragment,
             resource: null,
-        } satisfies WebGlShaderProgramResource);
+        } satisfies WebGlProgramResource);
         context.commands.push(new WebGlUseProgramCommand({
             resourceKey: keyProgram(node),
         }));
@@ -214,10 +232,12 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
                 });
             });
         });
+        const drawNode = context.nodes.find(it => it.type === "draw" && it.geometry === node) as DrawRenderGraphNode
         context.resources.push({
             type: "vertexarray",
             key: node.name,
             attributes: attributes,
+            programResourceKey: keyProgram(drawNode.shader),
             resource: null,
         } satisfies WebGlVertexArrayResource);
         context.commands.push(new WebGlBindVertexArrayCommand({
