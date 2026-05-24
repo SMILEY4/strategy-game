@@ -6,7 +6,7 @@ import type {WebGlCommand} from "@rendergraph/execute/webgl/webgl-command.ts";
 import {WebglExecutionContext, type WebglExecutionContextFactory} from "@rendergraph/execute/webgl/webgl-execution-context.ts";
 
 export interface RenderGraph {
-    setCanvas(canvas: HTMLCanvasElement | null): void;
+    initializeCanvas(canvas: HTMLCanvasElement | null): void;
     execute(): void;
 }
 
@@ -31,12 +31,15 @@ export class WebGlRenderGraph implements RenderGraph {
         this.executionContextFactory = executionContextFactory;
     }
 
-    public setCanvas(canvas: HTMLCanvasElement | null) {
+    public initializeCanvas(canvas: HTMLCanvasElement | null) {
         if (canvas) {
             this.executionContext = this.executionContextFactory(canvas);
         } else {
             this.executionContext = null;
         }
+    }
+
+    public onResizeCanvas(canvas: HTMLCanvasElement | null) {
     }
 
     public execute() {

@@ -8,21 +8,21 @@ import type {GlIndexBuffer} from "@rendergraph/webgl/gl-indexbuffer.ts";
  * Configuration of a single attribute of a vertex
  */
 export interface AttributeConfig {
-    /** the source buffer containing the attribute */
+    /** The source buffer containing the attribute */
     buffer: GlVertexBuffer;
-    /** the location in the shader */
+    /** The location in the shader */
     location: GLuint,
-    /** the data type of the attribute */
+    /** The data type of the attribute */
     type: GlAttributeType,
-    /** the amount of components */
+    /** The amount of components */
     amountComponents: GlAttributeComponentAmount,
-    /** todo */
+    /** Whether integer data should be automatically scaled to a floating-point range (e.g., 0 to 255 mapping to 0.0 to 1.0). */
     normalized?: boolean,
-    /** todo */
+    /** The number of bytes from the start of one vertex to the start of the next. */
     stride?: number,
-    /** todo */
+    /** The byte offset from the beginning of the buffer to the first element of this attribute. */
     offset?: number,
-    /** todo */
+    /** The rate at which the attribute advances during instanced rendering (0 for per-vertex, 1+ for per-instance). */
     divisor?: number,
     /** a readable name of the attribute for logging and debugging */
     debugName?: string

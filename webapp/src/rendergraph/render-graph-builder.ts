@@ -8,12 +8,13 @@ import type {TransformRenderGraphNode} from "@rendergraph/nodes/rg-node.transfor
 import type {TransformMultiOutRenderGraphNode} from "@rendergraph/nodes/rg-node.transform-multi-out.ts";
 import type {
     TransformVertexOutRenderGraphNode,
-    VertexDataLayout,
+    VertexDataOutput,
     VertexDataResult,
 } from "@rendergraph/nodes/rg-node.transform-vertex-out.ts";
-import type {GeometryConstrain, GeometryRenderGraphNode, GeometrySource} from "@rendergraph/nodes/rg-node.geometry.ts";
+import type {GeometryRenderGraphNode, GeometrySource} from "@rendergraph/nodes/rg-node.geometry.ts";
 import type {SelectTextureRenderGraphNode} from "@rendergraph/nodes/rg-node.select-texture.ts";
 import type {RenderGraphNode} from "@rendergraph/nodes/rg-node.ts";
+import type {CameraRenderGraphNode} from "@rendergraph/nodes/rg-node.camera.ts";
 
 export class RenderGraphBuilder {
 
@@ -27,7 +28,7 @@ export class RenderGraphBuilder {
             type: "canvas",
             name: options.name ?? RenderGraphBuilder.generateNodeName(),
             renderPasses: options.renderPasses,
-        }
+        };
         this.nodes.push(node);
         return node;
     }
@@ -40,7 +41,7 @@ export class RenderGraphBuilder {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             | { type: "transform", transformer: TransformRenderGraphNode<any, TData> }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            | { type: "transform-multi-out", key: string, transformer: TransformMultiOutRenderGraphNode<any, Record<string, any|null>> }
+            | { type: "transform-multi-out", key: string, transformer: TransformMultiOutRenderGraphNode<any, Record<string, any | null>> }
     }): DataRenderGraphNode<TData> {
         const node: DataRenderGraphNode<TData> = {
             type: "data",
@@ -54,8 +55,7 @@ export class RenderGraphBuilder {
     public draw(options: {
         name?: string,
         shader: ShaderRenderGraphNode,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        geometry: GeometryRenderGraphNode<any>
+        geometry: GeometryRenderGraphNode
         inputs?: Record<string, DrawRenderGraphNodeInput>
     }): DrawRenderGraphNode {
         const node: DrawRenderGraphNode = {
@@ -69,18 +69,28 @@ export class RenderGraphBuilder {
         return node;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public geometry<T extends GeometrySource<any>[]>(options: {
+    public geometry(options: {
         name?: string,
-        sources: [...GeometryConstrain<T>]
-    }): GeometryRenderGraphNode<T> {
-        const node: GeometryRenderGraphNode<T> = {
+        sources: GeometrySource<string>[];
+    }): GeometryRenderGraphNode {
+        const node: GeometryRenderGraphNode = {
             type: "geometry",
             name: options.name ?? RenderGraphBuilder.generateNodeName(),
-            sources: options.sources as T,
+            sources: options.sources,
         };
         this.nodes.push(node);
         return node;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public geometrySource<T extends TransformVertexOutRenderGraphNode<any[], any>>(options: {
+        source: T,
+        output: keyof T["outputs"],
+    }): GeometrySource<string> {
+        return {
+            source: options.source,
+            output: options.output as string,
+        };
     }
 
     public rendertarget(options: {
@@ -118,7 +128,7 @@ export class RenderGraphBuilder {
         srcVertex: string,
         srcFragment: string
     }): ShaderRenderGraphNode {
-        const node: ShaderRenderGraphNode =  {
+        const node: ShaderRenderGraphNode = {
             type: "shader",
             srcVertex: options.srcVertex,
             srcFragment: options.srcFragment,
@@ -145,7 +155,7 @@ export class RenderGraphBuilder {
             filterMag: options.filterMag ?? "linear",
         };
         this.nodes.push(node);
-        return node
+        return node;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -170,7 +180,7 @@ export class RenderGraphBuilder {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         func: (...args: TIn) => TOut
     }): TransformMultiOutRenderGraphNode<TIn, TOut> {
-        const node: TransformMultiOutRenderGraphNode<TIn, TOut> =  {
+        const node: TransformMultiOutRenderGraphNode<TIn, TOut> = {
             type: "transform-multi-out",
             name: options.name ?? RenderGraphBuilder.generateNodeName(),
             inputs: options.inputs,
@@ -184,15 +194,84 @@ export class RenderGraphBuilder {
     public transformVertexOut<TIn extends any[], TKeys extends string>(options: {
         name?: string,
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
-        outputs: Record<TKeys, VertexDataLayout[]>
+        outputs: Record<TKeys, VertexDataOutput>
         func: (...args: TIn) => Record<TKeys, VertexDataResult | null>
     }): TransformVertexOutRenderGraphNode<TIn, TKeys> {
-        const node: TransformVertexOutRenderGraphNode<TIn, TKeys> =  {
+        const node: TransformVertexOutRenderGraphNode<TIn, TKeys> = {
             type: "transform-vertex-out",
             name: options.name ?? RenderGraphBuilder.generateNodeName(),
             inputs: options.inputs,
             outputs: options.outputs,
             func: options.func,
+        };
+        this.nodes.push(node);
+        return node;
+    }
+
+    public cameraPerspective(options: {
+        name?: string,
+        up: DataRenderGraphNode<[number, number, number]>;
+        position: DataRenderGraphNode<[number, number, number]>;
+        direction: DataRenderGraphNode<[number, number, number]>;
+        fov: DataRenderGraphNode<number>;
+        near: DataRenderGraphNode<number>;
+        far: DataRenderGraphNode<number>;
+    }): CameraRenderGraphNode {
+        const node: CameraRenderGraphNode = {
+            type: "camera",
+            name: options.name ?? RenderGraphBuilder.generateNodeName(),
+            data: {
+                type: "perspective",
+                up: options.up,
+                position: options.position,
+                direction: options.direction,
+                fov: options.fov,
+                near: options.near,
+                far: options.far,
+            },
+        };
+        this.nodes.push(node);
+        return node;
+    }
+
+    public cameraOrthographic(options: {
+        name?: string,
+        up: DataRenderGraphNode<[number, number, number]>;
+        position: DataRenderGraphNode<[number, number, number]>;
+        direction: DataRenderGraphNode<[number, number, number]>;
+        fov: DataRenderGraphNode<number>;
+        near: DataRenderGraphNode<number>;
+        far: DataRenderGraphNode<number>;
+    }): CameraRenderGraphNode {
+        const node: CameraRenderGraphNode = {
+            type: "camera",
+            name: options.name ?? RenderGraphBuilder.generateNodeName(),
+            data: {
+                type: "orthographic",
+                up: options.up,
+                position: options.position,
+                direction: options.direction,
+                near: options.near,
+                far: options.far,
+            },
+        };
+        this.nodes.push(node);
+        return node;
+    }
+
+    public camera2d(options: {
+        name?: string,
+        position: DataRenderGraphNode<[number, number]>;
+        zoom: DataRenderGraphNode<number>;
+    }): CameraRenderGraphNode {
+        const node: CameraRenderGraphNode = {
+            type: "camera",
+            name: options.name ?? RenderGraphBuilder.generateNodeName(),
+            data: {
+                type: "2d",
+                position: options.position,
+                zoom: options.zoom,
+            },
         };
         this.nodes.push(node);
         return node;

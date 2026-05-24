@@ -9,12 +9,14 @@ import {
     type WebGlCommand,
     WebGlDrawCommand,
     WebGlLoadExternalDataCommand,
-    WebGlLoadTransformedDataCommand, WebGlLockTextureCommand,
+    WebGlLoadTransformedDataCommand,
+    WebGlLockTextureCommand,
     WebGlSetUniformValuesCommand,
     WebGlTransformCommand,
     WebGlTransformMultiOutCommand,
     WebGlTransformVertexOutCommand,
     WebGlUnbindFramebufferCommand,
+    WebGlUpdatePerspectiveCameraCommand,
     WebGlUseProgramCommand,
 } from "@rendergraph/execute/webgl/webgl-command.ts";
 import type {RendertargetRenderGraphNode} from "@rendergraph/nodes/rg-node.rendertarget.ts";
@@ -23,9 +25,10 @@ import type {DrawRenderGraphNode} from "@rendergraph/nodes/rg-node.draw.ts";
 import type {GeometrySource} from "@rendergraph/nodes/rg-node.geometry.ts";
 import type {ShaderRenderGraphNode} from "@rendergraph/nodes/rg-node.shader.ts";
 import type {
+    WebGlDataResource,
     WebGlFramebufferResource,
-    WebGlResource,
     WebGlProgramResource,
+    WebGlResource,
     WebGlTextureResource,
     WebGlVertexArrayResource,
     WebGlVertexBufferResource,
@@ -33,6 +36,7 @@ import type {
 import {type GlAttributeComponentAmount, GlAttributeType} from "@rendergraph/webgl/gl-program.ts";
 import type {ResourceKey} from "@rendergraph/execute/resource-key.ts";
 import {checkExhaustive} from "@/common/common.ts";
+import { vec3} from "gl-matrix";
 
 interface CompileContext {
     nodes: RenderGraphNode[];
@@ -41,7 +45,10 @@ interface CompileContext {
     resources: WebGlResource[];
 }
 
-export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDrawCallNode[]): { commands: WebGlCommand[], resources: WebGlResource[] } {
+export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDrawCallNode[]): {
+    commands: WebGlCommand[],
+    resources: WebGlResource[]
+} {
 
     const context: CompileContext = {
         nodes: nodes,
@@ -54,23 +61,23 @@ export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDra
         context.commands.push(new WebGlLockTextureCommand({
             resourceKeys: [
                 ...drawCall.requiresResources.textures.map(node => {
-                    if(node.type === "texture") {
-                        return keyTextureConfig(node)
+                    if (node.type === "texture") {
+                        return keyTextureConfig(node);
                     }
-                    if(node.type === "rendertarget") {
-                        return node.name
+                    if (node.type === "rendertarget") {
+                        return node.name;
                     }
-                    checkExhaustive(node)
+                    checkExhaustive(node);
                 }),
                 ...drawCall.requiresResources.texturesSelect.flatMap(node => {
-                    return Object.values(node.options).map(it => keyTextureConfig(it))
-                })
-            ]
-        }))
+                    return Object.values(node.options).map(it => keyTextureConfig(it));
+                }),
+            ],
+        }));
         compileNode(drawCall.node, context, true);
     });
 
-    return { commands: context.commands, resources: context.resources };
+    return {commands: context.commands, resources: context.resources};
 }
 
 export function compileNode(node: RenderGraphNode, context: CompileContext, compileDrawNode: boolean) {
@@ -79,30 +86,43 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
         return;
     }
 
-    if (node.type === "draw" && compileDrawNode) {
+    if (node.type === "draw") {
+        if (!compileDrawNode) return;
         context.compiledNodes.add(node.name);
+
         compileNode(node.geometry, context, false);
+
         Object.values(node.inputs).forEach(inputNode => {
+            if (inputNode.type === "data" && inputNode.source.type === "constant") return; // skip constants -> value is inlined
             compileNode(inputNode, context, false);
         });
+
         compileNode(node.shader, context, false);
+
         context.commands.push(new WebGlSetUniformValuesCommand({
             programResourceKey: keyProgram(node.shader),
             inputs: Object.entries(node.inputs).map(([key, value]) => {
                 if (value.type === "data") {
-                    return {name: key, source: "data", resourceKey: value.name};
+                    if (value.source.type === "constant") {
+                        return {name: node.shader.prefixUniforms + key, source: "data-const", value: value.source.value};
+                    } else {
+                        return {name: node.shader.prefixUniforms + key, source: "data", resourceKey: value.name};
+                    }
                 }
                 if (value.type === "texture") {
-                    return {name: key, source: "texture", resourceKey: keyTextureConfig(value)};
+                    return {name: node.shader.prefixUniforms + key, source: "texture", resourceKey: keyTextureConfig(value)};
 
                 }
                 if (value.type === "select-texture") {
-                    return {name: key, source: "select-texture", resourceKey: "todo"};
+                    return {name: node.shader.prefixUniforms + key, source: "select-texture", resourceKey: "todo"}; // todo
                 }
                 if (value.type === "rendertarget") {
-                    return {name: key, source: "framebuffer", resourceKey: value.name};
+                    return {name: node.shader.prefixUniforms + key, source: "framebuffer", resourceKey: value.name};
                 }
-                throw new Error("Invalid draw call input: " + value);
+                if (value.type === "camera") { // todo
+                    return {name: node.shader.prefixUniforms + key, source: "data", resourceKey: value.name + "#viewproj"};
+                }
+                checkExhaustive(value);
             }),
         }));
 
@@ -117,7 +137,24 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
                 resourceKey: requiredRendertarget.name,
             }));
         }
-        context.commands.push(new WebGlDrawCommand());
+
+        const vertexBufferResourceKeys: ResourceKey[] = [];
+        const instanceBufferResourceKeys: ResourceKey[] = [];
+        (node.geometry.sources as GeometrySource<string>[]).forEach(source => {
+            const contentType = source.source.outputs[source.source.name].content;
+            if (contentType === "vertices") {
+                vertexBufferResourceKeys.push(keyGeometrySource(source));
+            }
+            if (contentType === "instances") {
+                instanceBufferResourceKeys.push(keyGeometrySource(source));
+            }
+        });
+
+        context.commands.push(new WebGlDrawCommand({
+            vertexBufferResourceKeys: vertexBufferResourceKeys,
+            instanceBufferResourceKeys: instanceBufferResourceKeys,
+        }));
+        return;
     }
 
     if (node.type === "texture") {
@@ -134,6 +171,7 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
         context.commands.push(new WebGlBindTextureCommand({
             resourceKey: keyTextureConfig(node),
         }));
+        return;
     }
 
     if (node.type === "rendertarget") {
@@ -149,6 +187,7 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
         context.commands.push(new WebGlBindFramebufferTextureCommand({
             resourceKey: node.name,
         }));
+        return;
     }
 
     if (node.type === "shader") {
@@ -158,46 +197,63 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
             key: keyProgram(node),
             srcVertex: node.srcVertex,
             srcFragment: node.srcFragment,
+            prefixVertexAttributes: node.prefixVertexAttributes ?? "",
+            prefixUniforms: node.prefixUniforms ?? "",
             resource: null,
         } satisfies WebGlProgramResource);
         context.commands.push(new WebGlUseProgramCommand({
             resourceKey: keyProgram(node),
         }));
-    }
-
-    if (node.type === "data" && node.source.type === "constant") {
-        context.compiledNodes.add(node.name);
         return;
     }
 
-    if (node.type === "data" && node.source.type === "external") {
-        if (context.compiledNodes.has(node.name)) return;
-        context.compiledNodes.add(node.name);
-        context.commands.push(new WebGlLoadExternalDataCommand({
-            resourceKey: node.name,
-            fetchFunc: node.source.fetch,
-            hasChangedFunc: undefined,
-        }));
-    }
+    if (node.type === "data") {
 
-    if (node.type === "data" && node.source.type === "transform") {
-        if (context.compiledNodes.has(node.name)) return;
-        context.compiledNodes.add(node.name);
-        compileNode(node.source.transformer, context, false);
-        context.commands.push(new WebGlLoadTransformedDataCommand({
-            resourceKey: node.name,
-            transformerResourceKey: node.source.transformer.name,
-        }));
-    }
+        context.resources.push({
+            type: "data",
+            key: node.name,
+            resource: undefined,
+        } satisfies WebGlDataResource);
 
-    if (node.type === "data" && node.source.type === "transform-multi-out") {
-        if (context.compiledNodes.has(node.name)) return;
-        context.compiledNodes.add(node.name);
-        compileNode(node.source.transformer, context, false);
-        context.commands.push(new WebGlLoadTransformedDataCommand({
-            resourceKey: node.name,
-            transformerResourceKey: node.source.transformer.name + "#" + node.source.key,
-        }));
+        if (node.source.type === "constant") {
+            context.compiledNodes.add(node.name);
+            return;
+        }
+
+        if (node.source.type === "external") {
+            if (context.compiledNodes.has(node.name)) return;
+            context.compiledNodes.add(node.name);
+            context.commands.push(new WebGlLoadExternalDataCommand({
+                resourceKey: node.name,
+                fetchFunc: node.source.fetch,
+                hasChangedFunc: undefined,
+            }));
+            return;
+        }
+
+        if (node.source.type === "transform") {
+            if (context.compiledNodes.has(node.name)) return;
+            context.compiledNodes.add(node.name);
+            compileNode(node.source.transformer, context, false);
+            context.commands.push(new WebGlLoadTransformedDataCommand({
+                resourceKey: node.name,
+                transformerResourceKey: node.source.transformer.name,
+            }));
+            return;
+        }
+
+        if (node.source.type === "transform-multi-out") {
+            if (context.compiledNodes.has(node.name)) return;
+            context.compiledNodes.add(node.name);
+            compileNode(node.source.transformer, context, false);
+            context.commands.push(new WebGlLoadTransformedDataCommand({
+                resourceKey: node.name,
+                transformerResourceKey: node.source.transformer.name + "#" + node.source.key,
+            }));
+            return;
+        }
+
+        checkExhaustive(node.source);
     }
 
     if (node.type === "geometry") {
@@ -211,28 +267,25 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
             name: string,
             type: GlAttributeType
             amountComponents: GlAttributeComponentAmount
-            normalized: boolean | undefined
-            stride: number | undefined
-            offset: number | undefined
-            divisor: number | undefined
+            normalized: boolean | undefined,
+            divisor: number
         })[] = [];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (node.sources as GeometrySource<any>[]).forEach(source => {
-            const bufferLayout = source.source.outputs[source.output];
+            const bufferContent = source.source.outputs[source.output].content;
+            const bufferLayout = source.source.outputs[source.output].layout;
             bufferLayout.forEach(entry => {
                 attributes.push({
-                    bufferResourceKey: source.source.name + "#" + source.output,
+                    bufferResourceKey: keyGeometrySource(source),
                     name: entry.name,
                     type: entry.type,
                     amountComponents: entry.amountComponents,
                     normalized: entry.normalized,
-                    stride: entry.stride,
-                    offset: entry.offset,
-                    divisor: entry.divisor,
+                    divisor: bufferContent === "vertices" ? 0 : 1,
                 });
             });
         });
-        const drawNode = context.nodes.find(it => it.type === "draw" && it.geometry === node) as DrawRenderGraphNode
+        const drawNode = context.nodes.find(it => it.type === "draw" && it.geometry === node) as DrawRenderGraphNode;
         context.resources.push({
             type: "vertexarray",
             key: node.name,
@@ -243,6 +296,7 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
         context.commands.push(new WebGlBindVertexArrayCommand({
             resourceKey: node.name,
         }));
+        return;
     }
 
     if (node.type === "select-texture") {
@@ -256,6 +310,7 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
                 {} as Record<string, string>,
             ),
         }));
+        return;
     }
 
     if (node.type === "transform") {
@@ -269,6 +324,7 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
             inputs: node.inputs.map(it => it.name),
             transformFunc: node.func,
         }));
+        return;
     }
 
     if (node.type === "transform-multi-out") {
@@ -279,6 +335,7 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
             inputs: node.inputs.map(it => it.name),
             transformFunc: node.func,
         }));
+        return;
     }
 
     if (node.type === "transform-vertex-out") {
@@ -296,7 +353,63 @@ export function compileNode(node: RenderGraphNode, context: CompileContext, comp
             inputs: node.inputs.map(it => it.name),
             transformFunc: node.func,
         }));
+        return;
     }
+
+    if (node.type === "camera") {
+        if (context.compiledNodes.has(node.name)) return;
+        context.compiledNodes.add(node.name);
+
+        if (node.data.type === "perspective") {
+
+            if(node.data.up.source.type !== "constant") compileNode(node.data.up, context, false)
+            if(node.data.position.source.type !== "constant") compileNode(node.data.position, context, false)
+            if(node.data.direction.source.type !== "constant") compileNode(node.data.direction, context, false)
+            if(node.data.fov.source.type !== "constant") compileNode(node.data.fov, context, false)
+            if(node.data.near.source.type !== "constant") compileNode(node.data.near, context, false)
+            if(node.data.far.source.type !== "constant") compileNode(node.data.far, context, false)
+
+            context.resources.push({type: "data", key: node.name + "#proj", resource: undefined} satisfies WebGlDataResource);
+            context.resources.push({type: "data", key: node.name + "#view", resource: undefined} satisfies WebGlDataResource);
+            context.resources.push({type: "data", key: node.name + "#viewproj", resource: undefined} satisfies WebGlDataResource);
+
+            context.commands.push(new WebGlUpdatePerspectiveCameraCommand({
+                resourceKey: node.name,
+                up: {type: "ref", key: node.data.up.name},
+                position: node.data.position.source.type === "constant"
+                    ? {type: "const", value: vec3.fromValues(node.data.position.source.value[0], node.data.position.source.value[1], node.data.position.source.value[2])}
+                    : {type: "ref", key: node.data.position.name},
+                direction: node.data.direction.source.type === "constant"
+                    ? {type: "const", value: vec3.fromValues(node.data.direction.source.value[0], node.data.direction.source.value[1], node.data.direction.source.value[2])}
+                    : {type: "ref", key: node.data.direction.name},
+                aspect: null, // todo
+                fov: node.data.fov.source.type === "constant"
+                    ? {type: "const", value: node.data.fov.source.value }
+                    : {type: "ref", key: node.data.fov.name},
+                near: node.data.near.source.type === "constant"
+                    ? {type: "const", value: node.data.near.source.value }
+                    : {type: "ref", key: node.data.near.name},
+                far: node.data.far.source.type === "constant"
+                    ? {type: "const", value: node.data.far.source.value }
+                    : {type: "ref", key: node.data.far.name},
+            }));
+            return;
+        }
+
+        if (node.data.type === "orthographic") {
+            // todo
+            return;
+        }
+
+        if (node.data.type === "2d") {
+            // todo
+            return;
+        }
+
+        checkExhaustive(node.data);
+    }
+
+    checkExhaustive(node);
 }
 
 
@@ -346,6 +459,10 @@ function keyProgram(node: ShaderRenderGraphNode): ResourceKey {
     return keyString(node.srcVertex + "|" + node.srcFragment);
 }
 
+function keyGeometrySource(source: GeometrySource<string>): ResourceKey {
+    return source.source.name + "#" + source.output;
+}
+
 function keyString(str: string): ResourceKey {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -353,5 +470,6 @@ function keyString(str: string): ResourceKey {
         hash = ((hash << 5) - hash) + char;
         hash = hash & hash;
     }
+    hash = Math.abs(hash);
     return hash.toString(16);
 }

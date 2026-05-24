@@ -3,7 +3,6 @@ import type {RenderGraphNode} from "@rendergraph/nodes/rg-node.ts";
 import {RenderGraphBuilder} from "@rendergraph/render-graph-builder.ts";
 import {buildWebglDrawCallGraph} from "@rendergraph/compile/webgl/webgl-draw-call-graph.builder.ts";
 import {sortWebGlDrawCallNodes} from "@rendergraph/compile/webgl/webgl-draw-call-graph.sorter.ts";
-import {webglCompile} from "@rendergraph/compile/webgl/webgl-compiler.ts";
 
 declare global {
     var WebGL2RenderingContext: typeof WebGL2RenderingContext;
@@ -81,33 +80,6 @@ describe("webgl draw call graph", () => {
         expect(sorted.map(it => it.node.name)).toEqual(["draw-a", "draw-b", "draw-c", "draw-d", "draw-e", "draw-f"]);
 
     });
-
-    test("compile", () => {
-
-        Object.defineProperty(globalThis, 'WebGL2RenderingContext', {
-            writable: true,
-            value: {
-                REPEAT: -1,
-                MIRRORED_REPEAT: -1,
-                CLAMP_TO_EDGE: -1,
-                LINEAR: -1,
-                NEAREST: -1,
-                NEAREST_MIPMAP_NEAREST: -1,
-                LINEAR_MIPMAP_NEAREST: -1,
-                NEAREST_MIPMAP_LINEAR: -1,
-                LINEAR_MIPMAP_LINEAR: -1,
-            }
-        });
-
-        const nodes = buildGraph();
-        const drawCallNodes = buildWebglDrawCallGraph(nodes);
-        const sorted = sortWebGlDrawCallNodes(drawCallNodes, 32);
-        const {commands, resources} = webglCompile(nodes, sorted);
-
-        console.log(commands, resources)
-
-    })
-
 });
 
 function buildGraph(): RenderGraphNode[] {

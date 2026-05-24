@@ -63,20 +63,26 @@ export function foo() {
     const tileVertexTransformer = g.transformVertexOut<[Tile[], number[]], "instancesWater" | "instancesLand">({
         inputs: [tiles, visibleChunks],
         outputs: {
-            instancesWater: [
-                {
-                    name: "in_position",
-                    type: GlAttributeType.FLOAT,
-                    amountComponents: 2,
-                }
-            ],
-            instancesLand: [
-                {
-                    name: "in_position",
-                    type: GlAttributeType.FLOAT,
-                    amountComponents: 2,
-                }
-            ],
+            instancesWater: {
+                content: "instances",
+                layout: [
+                    {
+                        name: "in_position",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    }
+                ]
+            },
+            instancesLand: {
+                content: "instances",
+                layout: [
+                    {
+                        name: "in_position",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    }
+                ]
+            },
         },
         func: (tiles: Tile[], visibleChunks: number[]) => {
             console.log(tiles, visibleChunks);

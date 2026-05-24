@@ -16,9 +16,7 @@ import {checkExhaustive} from "@/common/common.ts";
 
 export type WebglExecutionContextFactory = (canvas: HTMLCanvasElement) => WebglExecutionContext
 
-
 export class WebglExecutionContext {
-
 
     public static build(canvas: HTMLCanvasElement, resources: WebGlResource[]): WebglExecutionContext {
         const gl = canvas.getContext("webgl2", {alpha: false, premultipliedAlpha: true});
@@ -104,7 +102,10 @@ export class WebglExecutionContext {
         }
 
         function loadVertexBuffer(gl: WebGL2RenderingContext, resource: WebGlVertexBufferResource) {
-            resource.resource = GlVertexBuffer.createEmpty(gl);
+            resource.resource = {
+                buffer: GlVertexBuffer.createEmpty(gl),
+                elementCount: 0
+            };
         }
 
         function loadVertexArray(gl: WebGL2RenderingContext, resource: WebGlVertexArrayResource, resources: Map<ResourceKey, WebGlResource>) {
@@ -118,20 +119,21 @@ export class WebglExecutionContext {
                 if (!buffer || !buffer.resource) {
                     throw new Error("Could not find vertex buffer with key '" + attribute.bufferResourceKey + "'");
                 }
-                const programAttributeInfo = program.getInformation().attributes.find(it => it.name === attribute.name);
-                if (!programAttributeInfo) {
+                const programAttributeInfo = program.getInformation().attributes
+                    .find(it => it.name === programResource.prefixVertexAttributes + attribute.name);
+                if (!programAttributeInfo && attribute.type !== GlAttributeType.PADDING) {
                     throw new Error("Could not find attribute info '" + attribute.name + "' in program '" + resource.programResourceKey + "'");
                 }
                 return {
-                    buffer: buffer.resource,
-                    location: attribute.type === GlAttributeType.PADDING ? -1 : programAttributeInfo.location,
+                    buffer: buffer.resource.buffer,
+                    location: attribute.type === GlAttributeType.PADDING ? -1 : (programAttributeInfo?.location ?? -1),
                     type: attribute.type,
                     amountComponents: attribute.amountComponents,
                     normalized: attribute.normalized,
-                    stride: attribute.stride,
-                    offset: attribute.offset,
+                    stride: undefined,
+                    offset: undefined,
                     divisor: attribute.divisor,
-                    debugName: attribute.name,
+                    debugName: programResource.prefixVertexAttributes + attribute.name,
                 };
             });
             resource.resource = GlVertexArray.create(gl, attributes, undefined);
@@ -215,7 +217,23 @@ export class WebglExecutionContext {
         if (!resource || resource.type !== "vertexbuffer" || !resource.resource) {
             throw new Error("Resource (vertex buffer) with key '" + resourceKey + "' is not known.");
         }
-        return resource.resource;
+        return resource.resource.buffer;
+    }
+
+    getVertexBufferElementCount(resourceKey: ResourceKey): number {
+        const resource = this.resources.get(resourceKey);
+        if (!resource || resource.type !== "vertexbuffer" || !resource.resource) {
+            throw new Error("Resource (vertex buffer) with key '" + resourceKey + "' is not known.");
+        }
+        return resource.resource.elementCount;
+    }
+
+    setVertexBufferElementCount(resourceKey: ResourceKey, count: number) {
+        const resource = this.resources.get(resourceKey);
+        if (!resource || resource.type !== "vertexbuffer" || !resource.resource) {
+            throw new Error("Resource (vertex buffer) with key '" + resourceKey + "' is not known.");
+        }
+        resource.resource.elementCount = count;
     }
 
     getVertexArray(resourceKey: ResourceKey): GlVertexArray {
@@ -228,7 +246,7 @@ export class WebglExecutionContext {
 
     setData(resourceKey: ResourceKey, data: unknown): void {
         const resource = this.resources.get(resourceKey);
-        if (!resource || resource.type !== "data" || !resource.resource) {
+        if (!resource || resource.type !== "data") {
             throw new Error("Resource (data) with key '" + resourceKey + "' is not known.");
         }
         resource.resource = data;
@@ -236,7 +254,7 @@ export class WebglExecutionContext {
 
     getData(resourceKey: ResourceKey): unknown {
         const resource = this.resources.get(resourceKey);
-        if (!resource || resource.type !== "data" || !resource.resource) {
+        if (!resource || resource.type !== "data") {
             throw new Error("Resource (data) with key '" + resourceKey + "' is not known.");
         }
         return resource.resource;

@@ -9,14 +9,14 @@ import type {TransformRenderGraphNode} from "@rendergraph/nodes/rg-node.transfor
 import type {TransformMultiOutRenderGraphNode} from "@rendergraph/nodes/rg-node.transform-multi-out.ts";
 import type {TransformVertexOutRenderGraphNode} from "@rendergraph/nodes/rg-node.transform-vertex-out.ts";
 import type {SelectTextureRenderGraphNode} from "@rendergraph/nodes/rg-node.select-texture.ts";
+import type {CameraRenderGraphNode} from "@rendergraph/nodes/rg-node.camera.ts";
 
 export type RenderGraphNode =
     | CanvasRenderGraphNode
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | DataRenderGraphNode<any>
     | DrawRenderGraphNode
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    | GeometryRenderGraphNode<any>
+    | GeometryRenderGraphNode
     | RendertargetRenderGraphNode
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | SelectTextureRenderGraphNode<any, any>
@@ -28,6 +28,7 @@ export type RenderGraphNode =
     | TransformMultiOutRenderGraphNode<any, any>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | TransformVertexOutRenderGraphNode<any, any>
+    | CameraRenderGraphNode
 
 export interface RenderGraphNodeBase<TypeIdentifier extends string> {
     readonly type: TypeIdentifier,

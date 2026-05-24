@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "classnames": "^2.5.1",
+    "gl-matrix": "^3.4.4",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

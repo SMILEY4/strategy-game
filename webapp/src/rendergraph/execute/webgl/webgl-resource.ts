@@ -42,11 +42,13 @@ export interface WebGlFramebufferResource extends WebglResourceBase<"framebuffer
 export interface WebGlProgramResource extends WebglResourceBase<"program"> {
     readonly srcVertex: string,
     readonly srcFragment: string,
+    readonly prefixVertexAttributes: string,
+    readonly prefixUniforms: string,
     resource: GlProgram | null
 }
 
 export interface WebGlVertexBufferResource extends WebglResourceBase<"vertexbuffer"> {
-    resource: GlVertexBuffer | null;
+    resource: { buffer: GlVertexBuffer, elementCount: number } | null;
 }
 
 /**
@@ -60,9 +62,7 @@ export interface WebGlVertexArrayResource extends WebglResourceBase<"vertexarray
         type: GlAttributeType
         amountComponents: GlAttributeComponentAmount
         normalized: boolean | undefined
-        stride: number | undefined
-        offset: number | undefined
-        divisor: number | undefined
+        divisor: number
     })[]
     readonly programResourceKey: ResourceKey
     resource: GlVertexArray | null;
