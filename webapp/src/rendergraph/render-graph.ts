@@ -1,9 +1,9 @@
 import type {RenderGraphNode} from "@rendergraph/nodes/rg-node.ts";
 import {sortWebGlDrawCallNodes} from "@rendergraph/compile/webgl/webgl-draw-call-graph.sorter.ts";
 import {buildWebglDrawCallGraph} from "@rendergraph/compile/webgl/webgl-draw-call-graph.builder.ts";
-import {webglCompile} from "@rendergraph/compile/webgl/webgl-compiler.ts";
-import type {WebGlCommand} from "@rendergraph/execute/webgl/webgl-command.ts";
-import {WebglExecutionContext, type WebglExecutionContextFactory} from "@rendergraph/execute/webgl/webgl-execution-context.ts";
+import {type WebGlCommand, webglCompile} from "@rendergraph/compile/webgl/webgl-compiler.ts";
+import {WebGlExecutionContext, type WebglExecutionContextFactory} from "@rendergraph/execute/webgl/webgl-execution-context.ts";
+import {executeWebGlCommands} from "@rendergraph/execute/webgl/webg-command-executor.ts";
 
 export interface RenderGraph {
     initializeCanvas(canvas: HTMLCanvasElement | null): void;
@@ -15,15 +15,15 @@ export class WebGlRenderGraph implements RenderGraph {
     public static build(nodes: RenderGraphNode[]) {
         const drawCalls = buildWebglDrawCallGraph(nodes);
         const sortedDrawCalls = sortWebGlDrawCallNodes(drawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-        const {commands, resources} = webglCompile(nodes, sortedDrawCalls);
-        return new WebGlRenderGraph(commands, canvas => WebglExecutionContext.build(canvas, resources));
+        const {commands, resources} = webglCompile(nodes, sortedDrawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+        return new WebGlRenderGraph(commands, canvas => WebGlExecutionContext.build(canvas, resources));
     }
 
 
     private readonly commands: WebGlCommand[];
     private readonly executionContextFactory: WebglExecutionContextFactory;
 
-    private executionContext: WebglExecutionContext | null = null;
+    private executionContext: WebGlExecutionContext | null = null;
 
 
     private constructor(commands: WebGlCommand[], executionContextFactory: WebglExecutionContextFactory) {
@@ -40,18 +40,17 @@ export class WebGlRenderGraph implements RenderGraph {
     }
 
     public onResizeCanvas(canvas: HTMLCanvasElement | null) {
+        if(this.executionContext && canvas) {
+            this.executionContext.setData("rg-internal:canvas-size", [canvas.width, canvas.height])
+        }
     }
 
     public execute() {
         if (!this.executionContext) {
             return;
         }
+        executeWebGlCommands(this.commands, this.executionContext);
         this.executionContext.clearAllDirty();
-        const commandsLocal = this.commands;
-        for (let i = 0, n = commandsLocal.length; i < n; i++) {
-            const command = commandsLocal[i];
-            command.execute(this.executionContext);
-        }
     }
 
 }

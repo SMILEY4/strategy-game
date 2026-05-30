@@ -71,41 +71,94 @@ export type GLUniformValueType = boolean | number | number[] | Float32Array | Gl
  * Available webgl data types for uniform values.
  */
 export class GLUniformType {
-    public static FLOAT = new GLUniformType("FLOAT");
-    public static FLOAT_ARRAY = new GLUniformType("FLOAT_ARRAY");
-    public static VEC2 = new GLUniformType("VEC2");
-    public static VEC2_ARRAY = new GLUniformType("VEC2_ARRAY");
-    public static VEC3 = new GLUniformType("VEC3");
-    public static VEC3_ARRAY = new GLUniformType("VEC3_ARRAY");
-    public static VEC4 = new GLUniformType("VEC4");
-    public static VEC4_ARRAY = new GLUniformType("VEC4_ARRAY");
-    public static INT = new GLUniformType("INT");
-    public static INT_ARRAY = new GLUniformType("INT_ARRAY");
-    public static INT_VEC2 = new GLUniformType("INT_VEC2");
-    public static INT_VEC2_ARRAY = new GLUniformType("INT_VEC2_ARRAY");
-    public static INT_VEC3 = new GLUniformType("INT_VEC3");
-    public static INT_VEC3_ARRAY = new GLUniformType("INT_VEC3_ARRAY");
-    public static INT_VEC4 = new GLUniformType("INT_VEC4");
-    public static INT_VEC4_ARRAY = new GLUniformType("INT_VEC4_ARRAY");
-    public static SAMPLER_2D = new GLUniformType("SAMPLER_2D");
-    public static SAMPLER_2D_ARRAY = new GLUniformType("SAMPLER_2D_ARRAY");
-    public static SAMPLER_CUBE = new GLUniformType("SAMPLER_CUBE");
-    public static SAMPLER_CUBE_ARRAY = new GLUniformType("SAMPLER_CUBE_ARRAY");
-    public static MAT2 = new GLUniformType("MAT2");
-    public static MAT2_ARRAY = new GLUniformType("MAT2_ARRAY");
-    public static MAT3 = new GLUniformType("MAT3");
-    public static MAT3_ARRAY = new GLUniformType("MAT3_ARRAY");
-    public static MAT4 = new GLUniformType("MAT4");
-    public static MAT4_ARRAY = new GLUniformType("MAT4_ARRAY");
-    public static BOOL = new GLUniformType("BOOL");
-    public static BOOL_VEC2 = new GLUniformType("BOOL_VEC2");
-    public static BOOL_VEC3 = new GLUniformType("BOOL_VEC3");
-    public static BOOL_VEC4 = new GLUniformType("BOOL_VEC4");
+    public static readonly FLOAT = new GLUniformType("FLOAT", WebGL2RenderingContext.FLOAT, false);
+    public static readonly VEC2 = new GLUniformType("VEC2", WebGL2RenderingContext.FLOAT_VEC2, false);
+    public static readonly VEC3 = new GLUniformType("VEC3", WebGL2RenderingContext.FLOAT_VEC3, false);
+    public static readonly VEC4 = new GLUniformType("VEC4", WebGL2RenderingContext.FLOAT_VEC4, false);
+    public static readonly FLOAT_ARRAY = new GLUniformType("FLOAT_ARRAY", WebGL2RenderingContext.FLOAT, true);
+    public static readonly VEC2_ARRAY = new GLUniformType("VEC2_ARRAY", WebGL2RenderingContext.FLOAT_VEC2, true);
+    public static readonly VEC3_ARRAY = new GLUniformType("VEC3_ARRAY", WebGL2RenderingContext.FLOAT_VEC3, true);
+    public static readonly VEC4_ARRAY = new GLUniformType("VEC4_ARRAY", WebGL2RenderingContext.FLOAT_VEC4, true);
+    public static readonly INT = new GLUniformType("INT", WebGL2RenderingContext.INT, false);
+    public static readonly INT_VEC2 = new GLUniformType("INT_VEC2", WebGL2RenderingContext.INT_VEC2, false);
+    public static readonly INT_VEC3 = new GLUniformType("INT_VEC3", WebGL2RenderingContext.INT_VEC3, false);
+    public static readonly INT_VEC4 = new GLUniformType("INT_VEC4", WebGL2RenderingContext.INT_VEC4, false);
+    public static readonly INT_ARRAY = new GLUniformType("INT_ARRAY", WebGL2RenderingContext.INT, true);
+    public static readonly INT_VEC2_ARRAY = new GLUniformType("INT_VEC2_ARRAY", WebGL2RenderingContext.INT_VEC2, true);
+    public static readonly INT_VEC3_ARRAY = new GLUniformType("INT_VEC3_ARRAY", WebGL2RenderingContext.INT_VEC3, true);
+    public static readonly INT_VEC4_ARRAY = new GLUniformType("INT_VEC4_ARRAY", WebGL2RenderingContext.INT_VEC4, true);
+    public static readonly BOOL = new GLUniformType("BOOL", WebGL2RenderingContext.BOOL, false);
+    public static readonly BOOL_VEC2 = new GLUniformType("BOOL_VEC2", WebGL2RenderingContext.BOOL_VEC2, false);
+    public static readonly BOOL_VEC3 = new GLUniformType("BOOL_VEC3", WebGL2RenderingContext.BOOL_VEC3, false);
+    public static readonly BOOL_VEC4 = new GLUniformType("BOOL_VEC4", WebGL2RenderingContext.BOOL_VEC4, false);
+    public static readonly MAT2 = new GLUniformType("MAT2", WebGL2RenderingContext.FLOAT_MAT2, false);
+    public static readonly MAT3 = new GLUniformType("MAT3", WebGL2RenderingContext.FLOAT_MAT3, false);
+    public static readonly MAT4 = new GLUniformType("MAT4", WebGL2RenderingContext.FLOAT_MAT4, false);
+    public static readonly MAT2_ARRAY = new GLUniformType("MAT2_ARRAY", WebGL2RenderingContext.FLOAT_MAT2, true);
+    public static readonly MAT3_ARRAY = new GLUniformType("MAT3_ARRAY", WebGL2RenderingContext.FLOAT_MAT3, true);
+    public static readonly MAT4_ARRAY = new GLUniformType("MAT4_ARRAY", WebGL2RenderingContext.FLOAT_MAT4, true);
+    public static readonly SAMPLER_2D = new GLUniformType("SAMPLER_2D", WebGL2RenderingContext.SAMPLER_2D, false);
+    public static readonly SAMPLER_CUBE = new GLUniformType("SAMPLER_CUBE", WebGL2RenderingContext.SAMPLER_CUBE, false);
+    public static readonly SAMPLER_2D_ARRAY = new GLUniformType("SAMPLER_2D_ARRAY", WebGL2RenderingContext.SAMPLER_2D, true);
+    public static readonly SAMPLER_CUBE_ARRAY = new GLUniformType("SAMPLER_CUBE_ARRAY", WebGL2RenderingContext.SAMPLER_CUBE, true);
+    public static readonly UNSIGNED_INT = new GLUniformType("UNSIGNED_INT", WebGL2RenderingContext.UNSIGNED_INT, false);
+    public static readonly UNSIGNED_INT_VEC2 = new GLUniformType("UNSIGNED_INT_VEC2", WebGL2RenderingContext.UNSIGNED_INT_VEC2, false);
+    public static readonly UNSIGNED_INT_VEC3 = new GLUniformType("UNSIGNED_INT_VEC3", WebGL2RenderingContext.UNSIGNED_INT_VEC3, false);
+    public static readonly UNSIGNED_INT_VEC4 = new GLUniformType("UNSIGNED_INT_VEC4", WebGL2RenderingContext.UNSIGNED_INT_VEC4, false);
+    public static readonly UNSIGNED_INT_ARRAY = new GLUniformType("UNSIGNED_INT_ARRAY", WebGL2RenderingContext.UNSIGNED_INT, true);
+    public static readonly UNSIGNED_INT_VEC2_ARRAY = new GLUniformType("UNSIGNED_INT_VEC2_ARRAY", WebGL2RenderingContext.UNSIGNED_INT_VEC2, true);
+    public static readonly UNSIGNED_INT_VEC3_ARRAY = new GLUniformType("UNSIGNED_INT_VEC3_ARRAY", WebGL2RenderingContext.UNSIGNED_INT_VEC3, true);
+    public static readonly UNSIGNED_INT_VEC4_ARRAY = new GLUniformType("UNSIGNED_INT_VEC4_ARRAY", WebGL2RenderingContext.UNSIGNED_INT_VEC4, true);
+
+    public static readonly allEntries = [
+        GLUniformType.FLOAT,
+        GLUniformType.VEC2,
+        GLUniformType.VEC3,
+        GLUniformType.VEC4,
+        GLUniformType.FLOAT_ARRAY,
+        GLUniformType.VEC2_ARRAY,
+        GLUniformType.VEC3_ARRAY,
+        GLUniformType.VEC4_ARRAY,
+        GLUniformType.INT,
+        GLUniformType.INT_VEC2,
+        GLUniformType.INT_VEC3,
+        GLUniformType.INT_VEC4,
+        GLUniformType.INT_ARRAY,
+        GLUniformType.INT_VEC2_ARRAY,
+        GLUniformType.INT_VEC3_ARRAY,
+        GLUniformType.INT_VEC4_ARRAY,
+        GLUniformType.BOOL,
+        GLUniformType.BOOL_VEC2,
+        GLUniformType.BOOL_VEC3,
+        GLUniformType.BOOL_VEC4,
+        GLUniformType.MAT2,
+        GLUniformType.MAT3,
+        GLUniformType.MAT4,
+        GLUniformType.MAT2_ARRAY,
+        GLUniformType.MAT3_ARRAY,
+        GLUniformType.MAT4_ARRAY,
+        GLUniformType.SAMPLER_2D,
+        GLUniformType.SAMPLER_CUBE,
+        GLUniformType.SAMPLER_2D_ARRAY,
+        GLUniformType.SAMPLER_CUBE_ARRAY,
+        GLUniformType.UNSIGNED_INT,
+        GLUniformType.UNSIGNED_INT_VEC2,
+        GLUniformType.UNSIGNED_INT_VEC3,
+        GLUniformType.UNSIGNED_INT_VEC4,
+        GLUniformType.UNSIGNED_INT_ARRAY,
+        GLUniformType.UNSIGNED_INT_VEC2_ARRAY,
+        GLUniformType.UNSIGNED_INT_VEC3_ARRAY,
+        GLUniformType.UNSIGNED_INT_VEC4_ARRAY,
+    ]
 
     readonly name: string;
+    readonly glEnum: GLenum;
+    readonly isArray: boolean;
 
-    private constructor(name: string) {
+    private constructor(name: string, glEnum: GLenum, isArray: boolean) {
         this.name = name;
+        this.glEnum = glEnum;
+        this.isArray = isArray;
     }
 
 }
@@ -137,7 +190,9 @@ export interface GLProgramUniform {
     /** the name of the uniform in the shader code */
     name: string,
     /** the webgl handle for the uniform */
-    location: WebGLUniformLocation
+    location: WebGLUniformLocation,
+    /** the webgl data type of the uniform */
+    type: GLUniformType,
 }
 
 /**
@@ -265,14 +320,22 @@ export class GlProgram implements GlDisposable {
             GlError.check(gl, "getActiveUniform", "get information about (active) uniform");
 
             if (uniform) {
+
                 const location = gl.getUniformLocation(program, uniform.name);
                 GlError.check(gl, "getUniformLocation", "getting program uniform location");
                 if (location === null) {
                     throw new Error("Could not get location for uniform " + uniform.name);
                 }
+
+                const dataType = GLUniformType.allEntries.find(it => it.glEnum === uniform.type && it.isArray === uniform.size > 1)
+                if(!dataType) {
+                    throw new Error("could not determine data type for uniform " + uniform.name)
+                }
+
                 uniforms.push({
                     name: uniform.name,
                     location: location,
+                    type: dataType
                 });
             }
 
@@ -383,13 +446,14 @@ export class GlProgram implements GlDisposable {
     /**
      * Set the uniform parameter with the given name to the given value
      * @param name the name of the uniform in the shader code
-     * @param type the type of the uniform
      * @param value the value to set it to
+     * @param type the type of the uniform (set undefined to determine automatically)
      */
-    public setUniform(name: string, type: GLUniformType, value: GLUniformValueType) {
+    public setUniform(name: string, value: GLUniformValueType, type?: GLUniformType) {
         const information = this.information.uniforms.find(u => u.name === name);
         if (information) {
-            this.setUniformValue(name, information.location, type, value);
+            const datatype = type ? type : information.type
+            this.setUniformValue(name, information.location, datatype, value);
         }
     }
 
@@ -397,86 +461,110 @@ export class GlProgram implements GlDisposable {
      * Set the given uniform to the given value
      */
     private setUniformValue(name: string, location: WebGLUniformLocation, type: GLUniformType, values: GLUniformValueType) {
-        const valuesArray: number[] | Float32Array = this.uniformValueAsArray(values);
+        const valuesFormatted: number[] | Float32Array = this.formatUniformValues(values);
         switch (type) {
             case GLUniformType.FLOAT:
-                this.gl.uniform1f(location, valuesArray[0]);
-                break;
-            case GLUniformType.FLOAT_ARRAY:
-                this.gl.uniform1fv(location, valuesArray);
+                this.gl.uniform1f(location, valuesFormatted[0]);
                 break;
             case GLUniformType.VEC2:
-                this.gl.uniform2f(location, valuesArray[0], valuesArray[1]);
-                break;
-            case GLUniformType.VEC2_ARRAY:
-                this.gl.uniform2fv(location, valuesArray);
+                this.gl.uniform2f(location, valuesFormatted[0], valuesFormatted[1]);
                 break;
             case GLUniformType.VEC3:
-                this.gl.uniform3f(location, valuesArray[0], valuesArray[1], valuesArray[2]);
-                break;
-            case GLUniformType.VEC3_ARRAY:
-                this.gl.uniform3fv(location, valuesArray);
+                this.gl.uniform3f(location, valuesFormatted[0], valuesFormatted[1], valuesFormatted[2]);
                 break;
             case GLUniformType.VEC4:
-                this.gl.uniform4f(location, valuesArray[0], valuesArray[1], valuesArray[2], valuesArray[3]);
+                this.gl.uniform4f(location, valuesFormatted[0], valuesFormatted[1], valuesFormatted[2], valuesFormatted[3]);
+                break;
+            case GLUniformType.FLOAT_ARRAY:
+                this.gl.uniform1fv(location, valuesFormatted);
+                break;
+            case GLUniformType.VEC2_ARRAY:
+                this.gl.uniform2fv(location, valuesFormatted);
+                break;
+            case GLUniformType.VEC3_ARRAY:
+                this.gl.uniform3fv(location, valuesFormatted);
                 break;
             case GLUniformType.VEC4_ARRAY:
-                this.gl.uniform4fv(location, valuesArray);
+                this.gl.uniform4fv(location, valuesFormatted);
                 break;
             case GLUniformType.BOOL:
             case GLUniformType.SAMPLER_2D:
             case GLUniformType.SAMPLER_CUBE:
             case GLUniformType.INT:
-                this.gl.uniform1i(location, valuesArray[0]);
+                this.gl.uniform1i(location, valuesFormatted[0]);
                 break;
             case GLUniformType.SAMPLER_2D_ARRAY:
             case GLUniformType.SAMPLER_CUBE_ARRAY:
             case GLUniformType.INT_ARRAY:
-                this.gl.uniform1iv(location, valuesArray);
+                this.gl.uniform1iv(location, valuesFormatted);
                 break;
             case GLUniformType.BOOL_VEC2:
             case GLUniformType.INT_VEC2:
-                this.gl.uniform2i(location, valuesArray[0], valuesArray[1]);
+                this.gl.uniform2i(location, valuesFormatted[0], valuesFormatted[1]);
                 break;
             case GLUniformType.INT_VEC2_ARRAY:
-                this.gl.uniform2iv(location, valuesArray);
+                this.gl.uniform2iv(location, valuesFormatted);
                 break;
             case GLUniformType.BOOL_VEC3:
             case GLUniformType.INT_VEC3:
-                this.gl.uniform3i(location, valuesArray[0], valuesArray[1], valuesArray[2]);
+                this.gl.uniform3i(location, valuesFormatted[0], valuesFormatted[1], valuesFormatted[2]);
                 break;
             case GLUniformType.INT_VEC3_ARRAY:
-                this.gl.uniform3iv(location, valuesArray);
+                this.gl.uniform3iv(location, valuesFormatted);
                 break;
             case GLUniformType.BOOL_VEC4:
             case GLUniformType.INT_VEC4:
-                this.gl.uniform4i(location, valuesArray[0], valuesArray[1], valuesArray[2], valuesArray[3]);
+                this.gl.uniform4i(location, valuesFormatted[0], valuesFormatted[1], valuesFormatted[2], valuesFormatted[3]);
                 break;
             case GLUniformType.INT_VEC4_ARRAY:
-                this.gl.uniform4iv(location, valuesArray);
+                this.gl.uniform4iv(location, valuesFormatted);
                 break;
             case GLUniformType.MAT2:
             case GLUniformType.MAT2_ARRAY:
-                this.gl.uniformMatrix2fv(location, false, valuesArray);
+                this.gl.uniformMatrix2fv(location, false, valuesFormatted);
                 break;
             case GLUniformType.MAT3:
             case GLUniformType.MAT3_ARRAY:
-                this.gl.uniformMatrix3fv(location, false, valuesArray);
+                this.gl.uniformMatrix3fv(location, false, valuesFormatted);
                 break;
             case GLUniformType.MAT4:
             case GLUniformType.MAT4_ARRAY:
-                this.gl.uniformMatrix4fv(location, false, valuesArray);
+                this.gl.uniformMatrix4fv(location, false, valuesFormatted);
                 break;
+            case GLUniformType.UNSIGNED_INT:
+                this.gl.uniform1ui(location, valuesFormatted[0]);
+                break
+            case GLUniformType.UNSIGNED_INT_VEC2:
+                this.gl.uniform2ui(location, valuesFormatted[0], valuesFormatted[1]);
+                break
+            case GLUniformType.UNSIGNED_INT_VEC3:
+                this.gl.uniform3ui(location, valuesFormatted[0], valuesFormatted[1], valuesFormatted[2]);
+                break
+            case GLUniformType.UNSIGNED_INT_VEC4:
+                this.gl.uniform4ui(location, valuesFormatted[0], valuesFormatted[1], valuesFormatted[2], valuesFormatted[3]);
+                break
+            case GLUniformType.UNSIGNED_INT_ARRAY:
+                this.gl.uniform1uiv(location, valuesFormatted);
+                break
+            case GLUniformType.UNSIGNED_INT_VEC2_ARRAY:
+                this.gl.uniform2uiv(location, valuesFormatted);
+                break
+            case GLUniformType.UNSIGNED_INT_VEC3_ARRAY:
+                this.gl.uniform3uiv(location, valuesFormatted);
+                break
+            case GLUniformType.UNSIGNED_INT_VEC4_ARRAY:
+                this.gl.uniform4uiv(location, valuesFormatted);
+                break
         }
         GlError.check(this.gl, "uniform[...]", "setting program uniform value '" + name + "'");
     }
 
     /**
      * Converts the given uniform value into a more convenient format
-     * @param values the value to set an uniform to
+     * @param values the value to set a uniform to
      * @private
      */
-    private uniformValueAsArray(values: GLUniformValueType): number[] | Float32Array {
+    private formatUniformValues(values: GLUniformValueType): number[] | Float32Array {
         if (Array.isArray(values)) {
             return values;
         } else if (values instanceof Float32Array) {

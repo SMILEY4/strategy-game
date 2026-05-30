@@ -1,3 +1,3 @@
-export function checkExhaustive(variable: never): never {
-    throw new Error("Reached exhaustiveness check for '" + variable + "'");
+export function assertExhaustive(variable: never): never {
+    throw new Error("Failed exhaustiveness check for '" + variable + "'");
 }

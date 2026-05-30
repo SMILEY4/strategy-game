@@ -16,29 +16,26 @@ export class GlVertexBuffer implements GlDisposable {
         if (vbo === null) {
             throw new Error("Could not create buffer");
         }
-        return new GlVertexBuffer(gl, vbo, 0);
+        return new GlVertexBuffer(gl, vbo);
     }
 
     /**
      * Create a new vertex buffer with the given data
      * @param gl the webgl context
      * @param data the data to load into the buffer
-     * @param size the amount of elements in the buffer
      */
-    public static create(gl: WebGL2RenderingContext, data: ArrayBuffer, size: number) {
+    public static create(gl: WebGL2RenderingContext, data: ArrayBuffer) {
         const buffer = GlVertexBuffer.createEmpty(gl);
-        buffer.setData(data, size, true);
+        buffer.setData(data, true);
         return buffer;
     }
 
     private readonly gl: WebGL2RenderingContext;
     private readonly handle: WebGLBuffer;
-    private size: number;
 
-    private constructor(gl: WebGL2RenderingContext, handle: WebGLBuffer, size: number) {
+    private constructor(gl: WebGL2RenderingContext, handle: WebGLBuffer) {
         this.gl = gl;
         this.handle = handle;
-        this.size = size;
     }
 
     /**
@@ -52,23 +49,14 @@ export class GlVertexBuffer implements GlDisposable {
     /**
      * Replace the data in this buffer with the new given data
      * @param data the new data to load into this buffer
-     * @param size the amount of elements in the buffer
      * @param bind to bind the framebuffer. Leave or set false when already bound before calling this function.
      */
-    public setData(data: ArrayBuffer, size: number, bind?: boolean) {
+    public setData(data: ArrayBuffer, bind?: boolean) {
         if (bind) {
             this.bind();
         }
-        this.size = size;
         this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
         GlError.check(this.gl, "bufferData", "uploading vertex buffer data");
-    }
-
-    /**
-     * @return the size of this buffer, i.e. the amount of elements in this buffer
-     */
-    public getSize(): number {
-        return this.size
     }
 
     public dispose() {

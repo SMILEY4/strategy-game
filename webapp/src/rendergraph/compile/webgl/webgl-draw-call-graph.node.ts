@@ -1,12 +1,12 @@
-import type {RenderGraphNode} from "@rendergraph/nodes/rg-node.ts";
 import type {TextureRenderGraphNode} from "@rendergraph/nodes/rg-node.texture.ts";
 import type {RendertargetRenderGraphNode} from "@rendergraph/nodes/rg-node.rendertarget.ts";
 import type {GeometryRenderGraphNode} from "@rendergraph/nodes/rg-node.geometry.ts";
 import type {ShaderRenderGraphNode} from "@rendergraph/nodes/rg-node.shader.ts";
 import type {SelectTextureRenderGraphNode} from "@rendergraph/nodes/rg-node.select-texture.ts";
+import type {DrawRenderGraphNode} from "@rendergraph/nodes/rg-node.draw.ts";
 
 export interface WebGlDrawCallNode {
-    node: RenderGraphNode,
+    node: DrawRenderGraphNode,
     rendertarget: RendertargetRenderGraphNode | null,
     dependsOn: WebGlDrawCallNode[],
     requiresResources: {

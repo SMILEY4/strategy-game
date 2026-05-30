@@ -1,8 +1,8 @@
-import {GlTexture, GLTextureMagFilter, GLTextureMinFilter, GLTextureWrap} from "@rendergraph/webgl/gl-texture.ts";
-import {GlFramebuffer} from "@rendergraph/webgl/gl-framebuffer.ts";
 import {GlAttributeType, GlProgram} from "@rendergraph/webgl/gl-program.ts";
+import {GlFramebuffer} from "@rendergraph/webgl/gl-framebuffer.ts";
 import {GlVertexBuffer} from "@rendergraph/webgl/gl-vertexbuffer.ts";
 import {type AttributeConfig, GlVertexArray} from "@rendergraph/webgl/gl-vertexarray.ts";
+import {GlTexture, GLTextureMagFilter, GLTextureMinFilter, GLTextureWrap} from "@rendergraph/webgl/gl-texture.ts";
 import type {
     WebGlFramebufferResource,
     WebGlProgramResource,
@@ -11,36 +11,31 @@ import type {
     WebGlVertexArrayResource,
     WebGlVertexBufferResource,
 } from "@rendergraph/execute/webgl/webgl-resource.ts";
-import type {ResourceKey} from "@rendergraph/execute/resource-key.ts";
-import {checkExhaustive} from "@/common/common.ts";
+import {assertExhaustive} from "@/common/common.ts";
 
-export type WebglExecutionContextFactory = (canvas: HTMLCanvasElement) => WebglExecutionContext
+export type WebglExecutionContextFactory = (canvas: HTMLCanvasElement) => WebGlExecutionContext
 
-export class WebglExecutionContext {
 
-    public static build(canvas: HTMLCanvasElement, resources: WebGlResource[]): WebglExecutionContext {
+export class WebGlExecutionContext {
+
+    public static build(canvas: HTMLCanvasElement, resources: WebGlResource[]): WebGlExecutionContext {
         const gl = canvas.getContext("webgl2", {alpha: false, premultipliedAlpha: true});
         if (!gl) {
             throw new Error("webgl2 is not supported!");
         }
-        return new WebglExecutionContext(resources, gl);
+        return new WebGlExecutionContext(resources, gl);
     }
 
     private readonly gl: WebGL2RenderingContext;
+    private readonly resources = new Map<string, WebGlResource>;
+    private readonly dirtyResources = new Set<string>();
 
-    private readonly dirtyResources = new Set<ResourceKey>();
-    private readonly resources = new Map<ResourceKey, WebGlResource>();
-
-    private readonly textureSlots: (ResourceKey | null)[];
-    private readonly texturesLocked = new Set<ResourceKey>();
-
-    private constructor(resources: WebGlResource[], gl: WebGL2RenderingContext) {
+    constructor(resources: WebGlResource[], gl: WebGL2RenderingContext) {
         this.gl = gl;
         resources.forEach(resource => {
             this.resources.set(resource.key, resource);
         });
         this.loadAllResources();
-        this.textureSlots = Array(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS).map(_ => null);
     }
 
     private loadAllResources() {
@@ -68,7 +63,7 @@ export class WebglExecutionContext {
                 loadVertexBuffer(this.gl, resource);
                 return;
             }
-            checkExhaustive(resource);
+            assertExhaustive(resource);
         });
 
         this.resources.forEach(resource => {
@@ -104,11 +99,11 @@ export class WebglExecutionContext {
         function loadVertexBuffer(gl: WebGL2RenderingContext, resource: WebGlVertexBufferResource) {
             resource.resource = {
                 buffer: GlVertexBuffer.createEmpty(gl),
-                elementCount: 0
+                elementCount: 0,
             };
         }
 
-        function loadVertexArray(gl: WebGL2RenderingContext, resource: WebGlVertexArrayResource, resources: Map<ResourceKey, WebGlResource>) {
+        function loadVertexArray(gl: WebGL2RenderingContext, resource: WebGlVertexArrayResource, resources: Map<string, WebGlResource>) {
             const programResource = resources.get(resource.programResourceKey) as (WebGlProgramResource | undefined);
             const program = programResource?.resource;
             if (!program) {
@@ -120,7 +115,7 @@ export class WebglExecutionContext {
                     throw new Error("Could not find vertex buffer with key '" + attribute.bufferResourceKey + "'");
                 }
                 const programAttributeInfo = program.getInformation().attributes
-                    .find(it => it.name === programResource.prefixVertexAttributes + attribute.name);
+                    .find(it => it.name === attribute.name);
                 if (!programAttributeInfo && attribute.type !== GlAttributeType.PADDING) {
                     throw new Error("Could not find attribute info '" + attribute.name + "' in program '" + resource.programResourceKey + "'");
                 }
@@ -133,7 +128,7 @@ export class WebglExecutionContext {
                     stride: undefined,
                     offset: undefined,
                     divisor: attribute.divisor,
-                    debugName: programResource.prefixVertexAttributes + attribute.name,
+                    debugName: attribute.name,
                 };
             });
             resource.resource = GlVertexArray.create(gl, attributes, undefined);
@@ -148,7 +143,7 @@ export class WebglExecutionContext {
                 case "mirrored-repeat":
                     return GLTextureWrap.MIRRORED_REPEAT;
                 default:
-                    checkExhaustive(wrap);
+                    assertExhaustive(wrap);
             }
         }
 
@@ -167,7 +162,7 @@ export class WebglExecutionContext {
                 case "linear-mipmap-linear":
                     return GLTextureMinFilter.LINEAR_MIPMAP_LINEAR;
                 default:
-                    checkExhaustive(filter);
+                    assertExhaustive(filter);
             }
         }
 
@@ -178,129 +173,98 @@ export class WebglExecutionContext {
                 case "nearest":
                     return GLTextureMagFilter.NEAREST;
                 default:
-                    checkExhaustive(filter);
+                    assertExhaustive(filter);
             }
         }
 
     }
 
-    getGlContext(): WebGL2RenderingContext {
+    getRenderingContext(): WebGL2RenderingContext {
         return this.gl;
     }
 
-    getTexture(resourceKey: ResourceKey): GlTexture {
-        const resource = this.resources.get(resourceKey);
-        if (!resource || resource.type !== "texture" || !resource.resource) {
-            throw new Error("Resource (texture) with key '" + resourceKey + "' is not known.");
-        }
-        return resource.resource;
-    }
-
-    getProgram(resourceKey: ResourceKey): GlProgram {
-        const resource = this.resources.get(resourceKey);
+    getProgram(id: string): GlProgram {
+        const resource = this.resources.get(id);
         if (!resource || resource.type !== "program" || !resource.resource) {
-            throw new Error("Resource (program) with key '" + resourceKey + "' is not known.");
+            throw new Error("Resource (program) with key '" + id + "' is not known.");
         }
         return resource.resource;
     }
 
-    getFramebuffer(resourceKey: ResourceKey): GlFramebuffer {
-        const resource = this.resources.get(resourceKey);
+    getFramebuffer(id: string): GlFramebuffer {
+        const resource = this.resources.get(id);
         if (!resource || resource.type !== "framebuffer" || !resource.resource) {
-            throw new Error("Resource (framebuffer) with key '" + resourceKey + "' is not known.");
+            throw new Error("Resource (framebuffer) with key '" + id + "' is not known.");
         }
         return resource.resource;
     }
 
-    getVertexBuffer(resourceKey: ResourceKey): GlVertexBuffer {
-        const resource = this.resources.get(resourceKey);
+    getVertexBuffer(id: string): GlVertexBuffer {
+        const resource = this.resources.get(id);
         if (!resource || resource.type !== "vertexbuffer" || !resource.resource) {
-            throw new Error("Resource (vertex buffer) with key '" + resourceKey + "' is not known.");
+            throw new Error("Resource (vertex buffer) with key '" + id + "' is not known.");
         }
         return resource.resource.buffer;
     }
 
-    getVertexBufferElementCount(resourceKey: ResourceKey): number {
-        const resource = this.resources.get(resourceKey);
+    getVertexBufferElementCount(id: string): number {
+        const resource = this.resources.get(id);
         if (!resource || resource.type !== "vertexbuffer" || !resource.resource) {
-            throw new Error("Resource (vertex buffer) with key '" + resourceKey + "' is not known.");
+            throw new Error("Resource (vertex buffer) with key '" + id + "' is not known.");
         }
         return resource.resource.elementCount;
     }
 
-    setVertexBufferElementCount(resourceKey: ResourceKey, count: number) {
-        const resource = this.resources.get(resourceKey);
+    setVertexBufferElementCount(id: string, count: number): void {
+        const resource = this.resources.get(id);
         if (!resource || resource.type !== "vertexbuffer" || !resource.resource) {
-            throw new Error("Resource (vertex buffer) with key '" + resourceKey + "' is not known.");
+            throw new Error("Resource (vertex buffer) with key '" + id + "' is not known.");
         }
         resource.resource.elementCount = count;
     }
 
-    getVertexArray(resourceKey: ResourceKey): GlVertexArray {
-        const resource = this.resources.get(resourceKey);
+    getVertexArray(id: string): GlVertexArray {
+        const resource = this.resources.get(id);
         if (!resource || resource.type !== "vertexarray" || !resource.resource) {
-            throw new Error("Resource (vertex array) with key '" + resourceKey + "' is not known.");
+            throw new Error("Resource (vertex array) with key '" + id + "' is not known.");
         }
         return resource.resource;
     }
 
-    setData(resourceKey: ResourceKey, data: unknown): void {
-        const resource = this.resources.get(resourceKey);
-        if (!resource || resource.type !== "data") {
-            throw new Error("Resource (data) with key '" + resourceKey + "' is not known.");
-        }
-        resource.resource = data;
-    }
-
-    getData(resourceKey: ResourceKey): unknown {
-        const resource = this.resources.get(resourceKey);
-        if (!resource || resource.type !== "data") {
-            throw new Error("Resource (data) with key '" + resourceKey + "' is not known.");
+    getTexture(id: string): GlTexture {
+        const resource = this.resources.get(id);
+        if (!resource || resource.type !== "texture" || !resource.resource) {
+            throw new Error("Resource (texture) with key '" + id + "' is not known.");
         }
         return resource.resource;
+    }
+
+    getData<T>(id: string): T {
+        const resource = this.resources.get(id);
+        if (!resource || resource.type !== "data") {
+            throw new Error("Resource (data) with key '" + id + "' is not known.");
+        }
+        return resource.resource as T;
+    }
+
+    setData(id: string, value: unknown): void {
+        const resource = this.resources.get(id);
+        if (!resource || resource.type !== "data") {
+            throw new Error("Resource (data) with key '" + id + "' is not known.");
+        }
+        resource.resource = value;
+    }
+
+    isDirty(id: string): boolean {
+        return this.dirtyResources.has(id);
+    }
+
+    setDirty(id: string): void {
+        this.dirtyResources.add(id);
     }
 
     clearAllDirty(): void {
         this.dirtyResources.clear();
-    }
-
-    isDirty(resourceKey: ResourceKey): boolean {
-        return this.dirtyResources.has(resourceKey);
-    }
-
-    setDirty(resourceKey: ResourceKey): void {
-        this.dirtyResources.add(resourceKey);
-    }
-
-    lockTextures(resourceKeys: ResourceKey[]): void {
-        this.texturesLocked.clear();
-        resourceKeys.forEach(it => this.texturesLocked.add(it));
-    }
-
-    reserveTextureUnit(resourceKey: ResourceKey): number {
-
-        // find unit if already used
-        for (let i = 0; i < this.textureSlots.length; i++) {
-            if (this.textureSlots[i] === resourceKey) {
-                return i;
-            }
-        }
-        // find empty unit
-        for (let i = 0; i < this.textureSlots.length; i++) {
-            if (this.textureSlots[i] === null) {
-                return i;
-            }
-        }
-
-        // find slot to overwrite
-        for (let i = 0; i < this.textureSlots.length; i++) {
-            const key = this.textureSlots[i];
-            if (key && !this.texturesLocked.has(key)) {
-                return i;
-            }
-        }
-
-        throw new Error("Could not find free texture unit for '" + resourceKey + "'"); // todo
     }
 
 }

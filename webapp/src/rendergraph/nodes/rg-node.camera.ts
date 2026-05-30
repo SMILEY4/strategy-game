@@ -1,11 +1,12 @@
 import type {RenderGraphNodeBase} from "@rendergraph/nodes/rg-node.ts";
 import type {DataRenderGraphNode} from "@rendergraph/nodes/rg-node.data.ts";
+import type {CanvasSizeRenderGraphNode} from "@rendergraph/nodes/rg-node.canvas-size.ts";
 
 export interface CameraRenderGraphNode extends RenderGraphNodeBase<"camera"> {
+    readonly renderTargetSize: DataRenderGraphNode<[number, number]> | CanvasSizeRenderGraphNode;
     readonly data:
         | PerspectiveCameraData
         | OrthographicCameraData
-        | Camera2dData;
 }
 
 export interface PerspectiveCameraData {
@@ -25,10 +26,4 @@ export interface OrthographicCameraData {
     readonly direction: DataRenderGraphNode<[number, number, number]>;
     readonly near: DataRenderGraphNode<number>;
     readonly far: DataRenderGraphNode<number>;
-}
-
-export interface Camera2dData {
-    readonly type: "2d";
-    readonly position: DataRenderGraphNode<[number, number]>;
-    readonly zoom: DataRenderGraphNode<number>;
 }

@@ -6,6 +6,7 @@ import type {ShaderRenderGraphNode} from "@rendergraph/nodes/rg-node.shader.ts";
 import type {GeometryRenderGraphNode} from "@rendergraph/nodes/rg-node.geometry.ts";
 import type {SelectTextureRenderGraphNode} from "@rendergraph/nodes/rg-node.select-texture.ts";
 import type {CameraRenderGraphNode} from "@rendergraph/nodes/rg-node.camera.ts";
+import type {CanvasSizeRenderGraphNode} from "@rendergraph/nodes/rg-node.canvas-size.ts";
 
 export interface DrawRenderGraphNode extends RenderGraphNodeBase<"draw"> {
     readonly shader: ShaderRenderGraphNode;
@@ -14,9 +15,10 @@ export interface DrawRenderGraphNode extends RenderGraphNodeBase<"draw"> {
 }
 
 export type DrawRenderGraphNodeInput =
-    | DataRenderGraphNode<unknown>
     | TextureRenderGraphNode
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | SelectTextureRenderGraphNode<any, any>
     | RendertargetRenderGraphNode
+    | DataRenderGraphNode<unknown>
+    | CanvasSizeRenderGraphNode
     | CameraRenderGraphNode

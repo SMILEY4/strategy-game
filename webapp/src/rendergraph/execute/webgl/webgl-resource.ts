@@ -3,7 +3,6 @@ import type {GlFramebuffer} from "@rendergraph/webgl/gl-framebuffer.ts";
 import {type GlAttributeComponentAmount, GlAttributeType, type GlProgram} from "@rendergraph/webgl/gl-program.ts";
 import type {GlVertexBuffer} from "@rendergraph/webgl/gl-vertexbuffer.ts";
 import type {GlVertexArray} from "@rendergraph/webgl/gl-vertexarray.ts";
-import type {ResourceKey} from "@rendergraph/execute/resource-key.ts";
 
 export type WebGlResource =
     | WebGlDataResource
@@ -16,12 +15,11 @@ export type WebGlResource =
 
 export interface WebglResourceBase<TypeIdentifier extends string> {
     readonly type: TypeIdentifier,
-    readonly key: ResourceKey,
+    readonly key: string,
 }
 
 export interface WebGlDataResource extends WebglResourceBase<"data"> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resource: any
+    resource: unknown
 }
 
 export interface WebGlTextureResource extends WebglResourceBase<"texture"> {
@@ -33,7 +31,7 @@ export interface WebGlTextureResource extends WebglResourceBase<"texture"> {
 }
 
 export interface WebGlFramebufferResource extends WebglResourceBase<"framebuffer"> {
-    readonly size: { width: number, height: number } | "auto"
+    readonly initialSize: [number, number]
     readonly color: boolean
     readonly depth: boolean
     resource: GlFramebuffer | null;
@@ -42,8 +40,6 @@ export interface WebGlFramebufferResource extends WebglResourceBase<"framebuffer
 export interface WebGlProgramResource extends WebglResourceBase<"program"> {
     readonly srcVertex: string,
     readonly srcFragment: string,
-    readonly prefixVertexAttributes: string,
-    readonly prefixUniforms: string,
     resource: GlProgram | null
 }
 
@@ -56,14 +52,16 @@ export interface WebGlVertexBufferResource extends WebglResourceBase<"vertexbuff
  * -> geometry nodes can not be shared with webgl (maybe: detect and split/duplicate geo-nodes)
  */
 export interface WebGlVertexArrayResource extends WebglResourceBase<"vertexarray"> {
-    readonly attributes: ({
-        bufferResourceKey: ResourceKey,
-        name: string,
-        type: GlAttributeType
-        amountComponents: GlAttributeComponentAmount
-        normalized: boolean | undefined
-        divisor: number
-    })[]
-    readonly programResourceKey: ResourceKey
+    readonly attributes: WebGlVertexArrayAttributeResource[]
+    readonly programResourceKey: string
     resource: GlVertexArray | null;
+}
+
+export  interface WebGlVertexArrayAttributeResource {
+    bufferResourceKey: string,
+    name: string,
+    type: GlAttributeType
+    amountComponents: GlAttributeComponentAmount
+    normalized: boolean | undefined
+    divisor: number
 }
