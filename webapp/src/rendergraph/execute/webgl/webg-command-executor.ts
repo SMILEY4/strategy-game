@@ -68,10 +68,10 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
     if (command.type === "SET_UNIFORM") {
         const program = context.getProgram(command.programId);
-        if(command.value.type === "const") {
+        if (command.value.type === "const") {
             program.setUniform(command.name, command.value.value as GLUniformValueType);
         }
-        if(command.value.type === "ref") {
+        if (command.value.type === "ref") {
             const data = context.getData(command.value.ref);
             program.setUniform(command.name, data as GLUniformValueType);
         }
@@ -101,7 +101,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     }
 
     if (command.type === "TRANSFORM_DATA") {
-        if (isAnyDirty(...command.args)) {
+        if (isAnyDirty(...command.args) || !context.isInitialized(command.refOut)) {
             const args = command.args.map(arg => {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
@@ -113,7 +113,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     }
 
     if (command.type === "TRANSFORM_DATA_MULTI_OUT") {
-        if (isAnyDirty(...command.args)) {
+        if (isAnyDirty(...command.args) || !context.isInitialized(command.refOut)) {
             const args = command.args.map(arg => {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
@@ -129,7 +129,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     }
 
     if (command.type === "TRANSFORM_DATA_VERTEX_OUT") {
-        if (isAnyDirty(...command.args)) {
+        if (isAnyDirty(...command.args) || !context.isInitialized(command.refOut)) {
             const args = command.args.map(arg => {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
@@ -137,17 +137,17 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
             const result = command.func(args);
             Object.entries(result).forEach(([key, value]) => {
                 if (value != null) {
-                    const buffer = context.getVertexBuffer(command.refOut + "#" + key)
-                    buffer.setData(value.data, true)
-                    context.setVertexBufferElementCount(command.refOut + "#" + key, value.count)
+                    const buffer = context.getVertexBuffer(command.refOut + "#" + key);
+                    buffer.setData(value.data, true);
+                    context.setVertexBufferElementCount(command.refOut + "#" + key, value.count);
                 }
-            })
+            });
         }
         return;
     }
 
     if (command.type === "SELECT_TEXTURE") {
-        if (isAnyDirty(...command.args)) {
+        if (isAnyDirty(...command.args) || !context.isInitialized(command.refOut)) {
             const args = command.args.map(arg => {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
@@ -159,8 +159,12 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     }
 
     if (command.type === "CALCULATE_PERSPECTIVE_PROJECTION") {
-        if (isAnyDirty(command.fov, command.size, command.near, command.far)) {
-            const matrix = context.getData<mat4>(command.ref);
+        if (isAnyDirty(command.fov, command.size, command.near, command.far) || !context.isInitialized(command.ref)) {
+            let matrix = context.getData<mat4>(command.ref);
+            if (!matrix) {
+                matrix = mat4.create();
+                context.setData(command.ref, matrix);
+            }
             const fov = command.fov.type === "const"
                 ? command.fov.value
                 : context.getData<number>(command.fov.ref);
@@ -181,8 +185,12 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     }
 
     if (command.type === "CALCULATE_ORTHOGRAPHIC_PROJECTION") {
-        if (isAnyDirty(command.size, command.near, command.far)) {
-            const matrix = context.getData<mat4>(command.ref);
+        if (isAnyDirty(command.size, command.near, command.far) || !context.isInitialized(command.ref)) {
+            let matrix = context.getData<mat4>(command.ref);
+            if (!matrix) {
+                matrix = mat4.create();
+                context.setData(command.ref, matrix);
+            }
             const near = command.near.type === "const"
                 ? command.near.value
                 : context.getData<number>(command.near.ref);
@@ -201,8 +209,12 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     }
 
     if (command.type === "CALCULATE_3D_VIEW") {
-        if (isAnyDirty(command.position, command.direction, command.up)) {
-            const matrix = context.getData<mat4>(command.ref);
+        if (isAnyDirty(command.position, command.direction, command.up) || !context.isInitialized(command.ref)) {
+            let matrix = context.getData<mat4>(command.ref);
+            if (!matrix) {
+                matrix = mat4.create();
+                context.setData(command.ref, matrix);
+            }
             const position = command.position.type === "const"
                 ? command.position.value
                 : context.getData<vec3>(command.position.ref);
@@ -224,8 +236,12 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     }
 
     if (command.type === "CALCULATE_VIEW_PROJECTION") {
-        if (context.isDirty(command.refView) || context.isDirty(command.refProjection)) {
-            const matrixViewProjection = context.getData<mat4>(command.ref);
+        if (context.isDirty(command.refView) || context.isDirty(command.refProjection) || !context.isInitialized(command.ref)) {
+            let matrixViewProjection = context.getData<mat4>(command.ref);
+            if (!matrixViewProjection) {
+                matrixViewProjection = mat4.create();
+                context.setData(command.ref, matrixViewProjection);
+            }
             const matrixView = context.getData<mat4>(command.refView);
             const matrixProjection = context.getData<mat4>(command.refProjection);
             mat4.multiply(matrixViewProjection, matrixProjection, matrixView);

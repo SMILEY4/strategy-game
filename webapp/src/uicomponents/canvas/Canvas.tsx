@@ -6,12 +6,21 @@ import classNames from "classnames";
 interface CanvasProps {
     className?: string;
     children?: ReactNode;
+
+    onInitialize?: (canvas: HTMLCanvasElement) => void,
+    onUpdate?: () => void,
+    onDispose?: () => void,
+    onResize?: (canvas: HTMLCanvasElement) => void
+
+    onMouseMove?: (mx: number, my: number, x: number, y: number, buttons: number) => void
+    onMouseScroll?: (scroll: number, x: number, y: number) => void
+    onMouseClick?: (x: number, y: number) => void
 }
 
 export function Canvas(props: CanvasProps): ReactElement {
 
-    const interactions = useCanvasInteractions({});
-    const lifecycle = useCanvasLifecycle({});
+    const interactions = useCanvasInteractions({...props});
+    const lifecycle = useCanvasLifecycle({...props});
 
     return (
         <div

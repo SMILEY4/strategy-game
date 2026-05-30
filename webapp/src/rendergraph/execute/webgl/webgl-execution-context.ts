@@ -29,9 +29,13 @@ export class WebGlExecutionContext {
     private readonly gl: WebGL2RenderingContext;
     private readonly resources = new Map<string, WebGlResource>;
     private readonly dirtyResources = new Set<string>();
+    private readonly initializedResources = new Set<string>();
 
     constructor(resources: WebGlResource[], gl: WebGL2RenderingContext) {
         this.gl = gl;
+
+        console.log("Creating webgl execution context with resources: ", resources.map(it => ({type: it.type, id: it.key})));
+
         resources.forEach(resource => {
             this.resources.set(resource.key, resource);
         });
@@ -117,7 +121,7 @@ export class WebGlExecutionContext {
                 const programAttributeInfo = program.getInformation().attributes
                     .find(it => it.name === attribute.name);
                 if (!programAttributeInfo && attribute.type !== GlAttributeType.PADDING) {
-                    throw new Error("Could not find attribute info '" + attribute.name + "' in program '" + resource.programResourceKey + "'");
+                    console.warn("Could not find attribute info '" + attribute.name + "' in program '" + resource.programResourceKey + "'")
                 }
                 return {
                     buffer: buffer.resource.buffer,
@@ -179,6 +183,40 @@ export class WebGlExecutionContext {
 
     }
 
+    dispose() {
+        this.resources.forEach(resource => {
+            if (resource.type === "data") {
+                return; // nothing to do
+            }
+            if (resource.type === "vertexarray") {
+                resource.resource?.dispose();
+                resource.resource = null;
+                return;
+            }
+            if (resource.type === "texture") {
+                resource.resource?.dispose();
+                resource.resource = null;
+                return;
+            }
+            if (resource.type === "framebuffer") {
+                resource.resource?.dispose();
+                resource.resource = null;
+                return;
+            }
+            if (resource.type === "program") {
+                resource.resource?.dispose();
+                resource.resource = null;
+                return;
+            }
+            if (resource.type === "vertexbuffer") {
+                resource.resource?.buffer.dispose();
+                resource.resource = null;
+                return;
+            }
+            assertExhaustive(resource);
+        });
+    }
+
     getRenderingContext(): WebGL2RenderingContext {
         return this.gl;
     }
@@ -220,6 +258,7 @@ export class WebGlExecutionContext {
         if (!resource || resource.type !== "vertexbuffer" || !resource.resource) {
             throw new Error("Resource (vertex buffer) with key '" + id + "' is not known.");
         }
+        this.initializedResources.add(id)
         resource.resource.elementCount = count;
     }
 
@@ -252,6 +291,7 @@ export class WebGlExecutionContext {
         if (!resource || resource.type !== "data") {
             throw new Error("Resource (data) with key '" + id + "' is not known.");
         }
+        this.initializedResources.add(id)
         resource.resource = value;
     }
 
@@ -263,8 +303,20 @@ export class WebGlExecutionContext {
         this.dirtyResources.add(id);
     }
 
-    clearAllDirty(): void {
-        this.dirtyResources.clear();
+    setAllDirty(dirty: boolean): void {
+        if (dirty) {
+            this.resources.forEach(resource => this.dirtyResources.add(resource.key));
+        } else {
+            this.dirtyResources.clear();
+        }
+    }
+
+    isInitialized(id: string): boolean {
+        return this.initializedResources.has(id);
+    }
+
+    getResources(): WebGlResource[] {
+        return Array.from(this.resources.values())
     }
 
 }

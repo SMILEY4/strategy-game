@@ -32,8 +32,11 @@ export class WebGlRenderGraph implements RenderGraph {
     }
 
     public initializeCanvas(canvas: HTMLCanvasElement | null) {
+        this.dispose()
         if (canvas) {
             this.executionContext = this.executionContextFactory(canvas);
+            this.executionContext.setData("rg-internal:canvas-size", [canvas.width, canvas.height])
+            this.executionContext.setAllDirty(true)
         } else {
             this.executionContext = null;
         }
@@ -50,7 +53,19 @@ export class WebGlRenderGraph implements RenderGraph {
             return;
         }
         executeWebGlCommands(this.commands, this.executionContext);
-        this.executionContext.clearAllDirty();
+        this.executionContext.setAllDirty(false);
+    }
+
+    public dispose() {
+        if (!this.executionContext) {
+            return;
+        }
+        this.executionContext.dispose();
+        this.executionContext = null;
+    }
+
+    public getExecutionContext(): WebGlExecutionContext | null {
+        return this.executionContext
     }
 
 }

@@ -97,6 +97,8 @@ export class GlVertexArray implements GlDisposable {
                 console.warn("Invalid stride for attribute " + attribute.debugName + ": stride must be a multiple of " + bytesLargestType.get(attribute.buffer)!, "Consider a different layout or add padding.");
             }
 
+            console.log("attribute", attribute, attributeOffset, attributeStride)
+
             // set attrib pointers
             if (attribute.type.isInteger && attribute.normalized != true) {
                 gl.vertexAttribIPointer(

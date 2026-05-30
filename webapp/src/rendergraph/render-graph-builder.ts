@@ -43,7 +43,7 @@ export class RenderGraphBuilder {
         return node;
     }
 
-    public data<TData>(options: {
+    public data<TData>(options: { // todo: shortcuts for different data source types
         source:
             | { type: "constant", value: TData }
             | { type: "external", fetch: () => TData }
@@ -59,6 +59,15 @@ export class RenderGraphBuilder {
         };
         this.nodes.push(node);
         return node;
+    }
+
+    public dataConst<TData>(value: TData): DataRenderGraphNode<TData> {
+        return this.data<TData>({
+            source: {
+                type: "constant",
+                value: value,
+            }
+        })
     }
 
     public draw(options: {
@@ -139,13 +148,17 @@ export class RenderGraphBuilder {
 
     public shader(options: {
         srcVertex: string,
-        srcFragment: string
+        srcFragment: string,
+        prefixVertexAttributes?: string,
+        prefixUniforms?: string,
     }): ShaderRenderGraphNode {
         const node: ShaderRenderGraphNode = {
             type: "shader",
             id: RenderGraphBuilder.generateNodeId(),
             srcVertex: options.srcVertex,
             srcFragment: options.srcFragment,
+            prefixVertexAttributes: options.prefixVertexAttributes ?? null,
+            prefixUniforms: options.prefixUniforms ?? null,
         };
         this.nodes.push(node);
         return node;

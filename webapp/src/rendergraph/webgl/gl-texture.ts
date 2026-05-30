@@ -111,9 +111,8 @@ export class GlTexture implements GlDisposable {
         // load real image
         const image = new Image();
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        image.addEventListener("error", _ => {
-            console.warn("error loading image", path);
+        image.addEventListener("error", e => {
+            console.warn("error loading image", path, e);
         });
 
         image.addEventListener("load", () => {

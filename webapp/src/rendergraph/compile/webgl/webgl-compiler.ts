@@ -89,10 +89,17 @@ export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDra
         return collectDrawCallInfo(drawNode, nodes);
     });
 
+    context.resources.push({
+        type: "data",
+        key: "rg-internal:canvas-size",
+        resource: null,
+    });
 
     drawCallInfos.forEach(drawCallInfo => {
         compileDrawCallInfo(drawCallInfo, context);
     });
+
+    console.log("compiled render graph:", context.commands.length, "commands and", context.resources.length, "resources")
 
     return {
         commands: context.commands,
@@ -165,6 +172,9 @@ function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext
 
 function switchToCanvasRenderTarget(_: CanvasRenderGraphNode, context: CompileContext) {
     context.commands.push({type: "UNBIND_FRAMEBUFFER"});
+    context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: "rg-internal:canvas-size"}}); // todo: is this always available? should be!!!
+    context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: [0, 1, 0, 0]}}); // todo: make customizable
+    // todo: enable depth?
 }
 
 
@@ -300,7 +310,7 @@ function setUniformCamera(node: CameraRenderGraphNode, bindAs: string, context: 
         type: "SET_UNIFORM",
         programId: context.activeShader!.id,
         name: (context.activeShader?.prefixUniforms ?? "") + bindAs,
-        value: { type: "ref", ref: refData }
+        value: { type: "ref", ref: refData + "#viewproj" }
     });
 }
 
@@ -387,14 +397,7 @@ function resolveDataNodeTransformMultiOut(node: DataRenderGraphNode<unknown>, co
         : {type: "ref", ref: transformerResult.ref + "#" + node.source.key};
 }
 
-function resolveCanvasSize(node: CanvasSizeRenderGraphNode, context: CompileContext): ValueEntry<[number, number]> {
-    ifNotYetVisited(node, context, () => {
-        context.resources.push({
-            type: "data",
-            key: "rg-internal:canvas-size",
-            resource: null,
-        });
-    })
+function resolveCanvasSize(_node: CanvasSizeRenderGraphNode, _context: CompileContext): ValueEntry<[number, number]> {
     return {type: "ref", ref: "rg-internal:canvas-size"};
 }
 
@@ -566,7 +569,7 @@ function findTextureUnit(textureId: string, reservedTextures: string[], context:
 
     // 2) find empty unit
     for (let i = 0; i < context.textureUnits.length; i++) {
-        if (context.textureUnits[i] === null) {
+        if (context.textureUnits[i] === null || context.textureUnits[i] === undefined) {
             context.textureUnits[i] = textureId;
             return {unit: i, alreadyBound: false};
         }
@@ -654,7 +657,7 @@ function collectDrawCallInfo(drawNode: DrawRenderGraphNode, nodes: RenderGraphNo
 
 
 function ifNotYetVisited(node: RenderGraphNode, context: CompileContext, action: () => void) {
-    if (context.relevantVisitedNodeIds.has(node.id)) {
+    if (!context.relevantVisitedNodeIds.has(node.id)) {
         context.relevantVisitedNodeIds.add(node.id);
         action();
     }

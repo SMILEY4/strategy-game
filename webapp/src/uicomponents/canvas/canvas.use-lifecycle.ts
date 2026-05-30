@@ -4,6 +4,7 @@ export function useCanvasLifecycle(options: {
     onInitialize?: (canvas: HTMLCanvasElement) => void,
     onUpdate?: () => void,
     onDispose?: () => void,
+    onResize?: (canvas: HTMLCanvasElement) => void
 }) {
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -14,25 +15,26 @@ export function useCanvasLifecycle(options: {
         const dpr = window.devicePixelRatio; // independent of e.g. "page zoom level"
         const displayWidth = Math.round(canvas.clientWidth * dpr);
         const displayHeight = Math.round(canvas.clientHeight * dpr);
-        if (canvas.width != displayWidth || canvas.height != displayHeight) {
+        if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
             canvas.width = displayWidth;
             canvas.height = displayHeight;
+            options.onResize?.(canvas)
         }
-    }, []);
+    }, [options]);
 
     const onInitialize = useCallback((canvas: HTMLCanvasElement) => {
         options.onInitialize?.(canvas);
-    }, []);
+    }, [options]);
 
     const onRender = useCallback(() => {
         options.onUpdate?.();
-    }, []);
+    }, [options]);
 
     const onResize = useCallback(() => {
         if (canvasRef.current) {
             resizeCanvas(canvasRef.current);
         }
-    }, []);
+    }, [resizeCanvas]);
 
     const onContextLoss = useCallback((e: Event) => {
         console.log("Detected webgl-context loss");
@@ -55,7 +57,7 @@ export function useCanvasLifecycle(options: {
                 }
             }
         }
-    }, []);
+    }, [onInitialize, onRender]);
 
     const onContextRestored = useCallback(() => {
         console.log("Detected webgl-context restore");
@@ -63,14 +65,14 @@ export function useCanvasLifecycle(options: {
         if (canvasRef.current) {
             initialize(canvasRef.current);
         }
-    }, []);
+    }, [initialize]);
 
     const onDispose = useCallback(() => {
         if (animationId.current) {
             cancelAnimationFrame(animationId.current);
         }
         options.onDispose?.();
-    }, []);
+    }, [options]);
 
 
     useEffect(() => {
