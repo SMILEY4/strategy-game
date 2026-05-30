@@ -45,6 +45,7 @@ export class WebGlRenderGraph implements RenderGraph {
     public onResizeCanvas(canvas: HTMLCanvasElement | null) {
         if(this.executionContext && canvas) {
             this.executionContext.setData("rg-internal:canvas-size", [canvas.width, canvas.height])
+            this.executionContext.setDirty("rg-internal:canvas-size")
         }
     }
 

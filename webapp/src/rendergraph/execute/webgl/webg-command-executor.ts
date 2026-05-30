@@ -81,6 +81,9 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     if (command.type === "DRAW") {
         const gl = context.getRenderingContext();
         const vertexCount = context.getVertexBufferElementCount(command.refVertexCount);
+
+        gl.enable(gl.DEPTH_TEST); // todo
+
         gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
         GlError.check(gl, "drawArrays", "drawing");
         return;
@@ -114,6 +117,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
     if (command.type === "TRANSFORM_DATA_MULTI_OUT") {
         if (isAnyDirty(...command.args) || !context.isInitialized(command.refOut)) {
+            context.setInitialized(command.refOut);
             const args = command.args.map(arg => {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
@@ -130,6 +134,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
     if (command.type === "TRANSFORM_DATA_VERTEX_OUT") {
         if (isAnyDirty(...command.args) || !context.isInitialized(command.refOut)) {
+            context.setInitialized(command.refOut);
             const args = command.args.map(arg => {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);

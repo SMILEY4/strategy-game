@@ -258,7 +258,7 @@ export class WebGlExecutionContext {
         if (!resource || resource.type !== "vertexbuffer" || !resource.resource) {
             throw new Error("Resource (vertex buffer) with key '" + id + "' is not known.");
         }
-        this.initializedResources.add(id)
+        this.setInitialized(id)
         resource.resource.elementCount = count;
     }
 
@@ -291,7 +291,7 @@ export class WebGlExecutionContext {
         if (!resource || resource.type !== "data") {
             throw new Error("Resource (data) with key '" + id + "' is not known.");
         }
-        this.initializedResources.add(id)
+        this.setInitialized(id)
         resource.resource = value;
     }
 
@@ -313,6 +313,10 @@ export class WebGlExecutionContext {
 
     isInitialized(id: string): boolean {
         return this.initializedResources.has(id);
+    }
+
+    setInitialized(id: string): void {
+        this.initializedResources.add(id);
     }
 
     getResources(): WebGlResource[] {
