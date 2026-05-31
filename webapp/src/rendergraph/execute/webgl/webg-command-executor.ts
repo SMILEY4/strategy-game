@@ -81,9 +81,6 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     if (command.type === "DRAW") {
         const gl = context.getRenderingContext();
         const vertexCount = context.getVertexBufferElementCount(command.refVertexCount);
-
-        gl.enable(gl.DEPTH_TEST); // todo
-
         gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
         GlError.check(gl, "drawArrays", "drawing");
         return;
@@ -99,7 +96,9 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     }
 
     if (command.type === "LOAD_EXTERNAL_DATA") {
-        context.setData(command.ref, command.func());
+        if(command.check()) {
+            context.setData(command.ref, command.func());
+        }
         return;
     }
 
@@ -271,6 +270,16 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
             : context.getData<[number, number, number, number]>(command.clearColor.ref);
         gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        return;
+    }
+
+    if (command.type === "SET_DEPTH_TESTING") {
+        const gl = context.getRenderingContext();
+        if (command.enabled) {
+            gl.enable(gl.DEPTH_TEST);
+        } else {
+            gl.disable(gl.DEPTH_TEST);
+        }
         return;
     }
 

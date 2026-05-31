@@ -23,11 +23,15 @@ export class RenderGraphBuilder {
 
     public canvas(options: {
         renderPasses: DrawRenderGraphNode[],
+        depthTesting?: boolean,
+        clearColor?: [number, number, number, number]
     }): CanvasRenderGraphNode {
         const node: CanvasRenderGraphNode = {
             type: "canvas",
             id: RenderGraphBuilder.generateNodeId(),
             renderPasses: options.renderPasses,
+            depthTesting: options.depthTesting ?? false,
+            clearColor: options.clearColor ?? null,
         };
         this.nodes.push(node);
         return node;
@@ -46,7 +50,7 @@ export class RenderGraphBuilder {
     public data<TData>(options: { // todo: shortcuts for different data source types
         source:
             | { type: "constant", value: TData }
-            | { type: "external", fetch: () => TData }
+            | { type: "external", fetch: () => TData, checkIsNew: () => boolean }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             | { type: "transform", transformer: TransformRenderGraphNode<any, TData> }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,18 +116,20 @@ export class RenderGraphBuilder {
     public rendertarget(options: {
         size: DataRenderGraphNode<[number, number]> | CanvasSizeRenderGraphNode
         renderPasses: DrawRenderGraphNode[],
-        enableColor: boolean,
-        enableDepth: boolean,
-        clearColor: [number, number, number, number]
+        colorBuffer?: boolean,
+        depthBuffer?: boolean,
+        depthTesting?: boolean,
+        clearColor?: [number, number, number, number]
     }): RendertargetRenderGraphNode {
         const node: RendertargetRenderGraphNode = {
             type: "rendertarget",
             id: RenderGraphBuilder.generateNodeId(),
             size: options.size,
             renderPasses: options.renderPasses,
-            enableColor: options.enableColor,
-            enableDepth: options.enableDepth,
-            clearColor: options.clearColor,
+            colorBuffer: options.colorBuffer ?? true,
+            depthBuffer: options.depthBuffer ?? false,
+            depthTesting: options.depthTesting ?? false,
+            clearColor: options.clearColor ?? null,
         };
         this.nodes.push(node);
         return node;

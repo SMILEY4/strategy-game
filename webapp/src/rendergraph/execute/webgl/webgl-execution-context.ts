@@ -259,6 +259,7 @@ export class WebGlExecutionContext {
             throw new Error("Resource (vertex buffer) with key '" + id + "' is not known.");
         }
         this.setInitialized(id)
+        this.setDirty(id)
         resource.resource.elementCount = count;
     }
 
@@ -292,6 +293,7 @@ export class WebGlExecutionContext {
             throw new Error("Resource (data) with key '" + id + "' is not known.");
         }
         this.setInitialized(id)
+        this.setDirty(id)
         resource.resource = value;
     }
 

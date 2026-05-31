@@ -6,7 +6,8 @@ import type {CanvasSizeRenderGraphNode} from "@rendergraph/nodes/rg-node.canvas-
 export interface RendertargetRenderGraphNode extends RenderGraphNodeBase<"rendertarget"> {
     readonly size: DataRenderGraphNode<[number, number]> | CanvasSizeRenderGraphNode;
     readonly renderPasses: DrawRenderGraphNode[],
-    readonly enableColor: boolean,
-    readonly enableDepth: boolean,
-    readonly clearColor: [number, number, number, number]
+    readonly colorBuffer: boolean,
+    readonly depthBuffer: boolean,
+    readonly depthTesting: boolean
+    readonly clearColor: [number, number, number, number] | null
 }

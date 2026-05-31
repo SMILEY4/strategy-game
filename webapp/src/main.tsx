@@ -16,6 +16,7 @@ const canvasSize = g.canvasSize()
 const rotation = g.data({
     source: {
         type: "external",
+        checkIsNew: () => true,
         fetch: () => valueRotation
     }
 })
@@ -40,45 +41,26 @@ const meshTransformer = g.transformVertexOut({
         }
     },
     func: () => {
-
         const vertices = new Float32Array([
-
-            // ── Side faces ──────────────────────────────────────────────────
-            // Each face maps U from left-base-corner→right-base-corner,
-            // V from base (0) up to apex (1).
-
-            // +Z  front  (B → C → A)
             -1.0, -1.0,  1.0,  0.0, 0.0,
             1.0, -1.0,  1.0,  1.0, 0.0,
             0.0,  1.0,  0.0,  0.5, 1.0,
-
-            // +X  right  (C → D → A)
             1.0, -1.0,  1.0,  0.0, 0.0,
             1.0, -1.0, -1.0,  1.0, 0.0,
             0.0,  1.0,  0.0,  0.5, 1.0,
-
-            // -Z  back   (D → E → A)
             1.0, -1.0, -1.0,  0.0, 0.0,
             -1.0, -1.0, -1.0,  1.0, 0.0,
             0.0,  1.0,  0.0,  0.5, 1.0,
-
-            // -X  left   (E → B → A)
             -1.0, -1.0, -1.0,  0.0, 0.0,
             -1.0, -1.0,  1.0,  1.0, 0.0,
             0.0,  1.0,  0.0,  0.5, 1.0,
-
-            // ── Base (two CCW triangles when viewed from below) ─────────────
-            // Triangle 1: E → C → B  (E back-left, C front-right, B front-left)
             -1.0, -1.0, -1.0,  0.0, 1.0,
             1.0, -1.0,  1.0,  1.0, 0.0,
             -1.0, -1.0,  1.0,  0.0, 0.0,
-
-            // Triangle 2: E → D → C  (E back-left, D back-right, C front-right)
             -1.0, -1.0, -1.0,  0.0, 1.0,
             1.0, -1.0, -1.0,  1.0, 1.0,
             1.0, -1.0,  1.0,  1.0, 0.0,
         ]);
-
         return {
             "mesh": {
                 data: vertices.buffer,
@@ -129,7 +111,9 @@ const draw = g.draw({
 })
 
 g.canvas({
-    renderPasses: [draw]
+    renderPasses: [draw],
+    depthTesting: true,
+    clearColor: [0,0,0,0]
 })
 
 const renderGraph = WebGlRenderGraph.build(g.getNodes())
@@ -155,6 +139,6 @@ createRoot(document.getElementById("root") || document.createElement("div")).ren
 function dumpContext() {
     const resources = renderGraph.getExecutionContext()?.getResources() ?? []
     for (const resource of resources) {
-        console.log(resource)
+        console.log({...resource, dirty: renderGraph.getExecutionContext()?.isDirty(resource.key)})
     }
 }

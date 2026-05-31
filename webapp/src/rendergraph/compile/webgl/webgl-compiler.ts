@@ -27,9 +27,10 @@ export type WebGlCommand =
     | { type: "BIND_TEXTURE_REF", idRef: string, unit: number }
     | { type: "BIND_TEXTURE_FRAMEBUFFER", id: string, unit: number }
     | { type: "SET_UNIFORM", programId: string, name: string, value: ValueEntry }
+    | { type: "SET_DEPTH_TESTING", enabled: boolean }
     | { type: "DRAW", refVertexCount: string }
     | { type: "DRAW_INSTANCED", refVertexCount: string, refInstanceCount: string }
-    | { type: "LOAD_EXTERNAL_DATA", ref: string, func: (...args: unknown[]) => unknown }
+    | { type: "LOAD_EXTERNAL_DATA", ref: string, func: () => unknown, check: () => boolean }
     | { type: "TRANSFORM_DATA", args: ValueEntry[], refOut: string, func: (args: unknown[]) => unknown | null }
     | { type: "TRANSFORM_DATA_MULTI_OUT", args: ValueEntry[], refOut: string, func: (args: unknown[]) => Record<string, unknown | null> } // todo: better "no result" type
     | {
@@ -170,11 +171,13 @@ function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext
     generateDrawCall(drawCallInfo.geometry, context);
 }
 
-function switchToCanvasRenderTarget(_: CanvasRenderGraphNode, context: CompileContext) {
+function switchToCanvasRenderTarget(canvas: CanvasRenderGraphNode, context: CompileContext) {
     context.commands.push({type: "UNBIND_FRAMEBUFFER"});
-    context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: "rg-internal:canvas-size"}}); // todo: is this always available? should be!!!
-    context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: [0, 1, 0, 0]}}); // todo: make customizable
-    // todo: enable depth?
+    context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: "rg-internal:canvas-size"}});
+    if(canvas.clearColor) {
+        context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: canvas.clearColor}});
+    }
+    context.commands.push({type: "SET_DEPTH_TESTING", enabled: canvas.depthTesting })
 }
 
 
@@ -187,8 +190,8 @@ function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode, contex
             initialSize: (node.size.type === "data" && node.size.source.type === "constant")
                 ? node.size.source.value
                 : [1, 1],
-            color: node.enableColor,
-            depth: node.enableDepth,
+            color: node.colorBuffer,
+            depth: node.depthBuffer,
             resource: null,
         });
     });
@@ -207,7 +210,11 @@ function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode, contex
         context.commands.push({type: "SET_VIEWPORT", size: dataResult});
     }
 
-    context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: node.clearColor}});
+    if(node.clearColor) {
+        context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: node.clearColor}});
+    }
+    context.commands.push({type: "SET_DEPTH_TESTING", enabled: node.depthTesting })
+
 }
 
 
@@ -367,7 +374,7 @@ function resolveDataNodeExternal(node: DataRenderGraphNode<unknown>, context: Co
             key: node.id,
             resource: null,
         });
-        context.commands.push({type: "LOAD_EXTERNAL_DATA", ref: node.id, func: node.source.fetch});
+        context.commands.push({type: "LOAD_EXTERNAL_DATA", ref: node.id, func: node.source.fetch, check: node.source.checkIsNew});
     });
     return {type: "ref", ref: node.id};
 }
