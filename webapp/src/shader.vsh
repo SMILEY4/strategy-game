@@ -1,26 +1,28 @@
 #version 300 es
 
-in vec3 in_position;
-in vec2 in_textureCoords;
+in vec3 in_vertexPosition;
+in vec2 in_tilePosition;
+in vec2 in_chunkPosition;
 
-uniform float u_rotation;
 uniform mat4 u_camera;
 
-out vec2 v_textureCoords;
+flat out vec2 v_tilePosition;
+flat out vec2 v_chunkPosition;
 
+const float SQRT_3 = 1.732050;
 
 void main() {
-    v_textureCoords = in_textureCoords;
+    v_tilePosition = in_tilePosition;
+    v_chunkPosition = in_chunkPosition;
 
-    float cosR = cos(u_rotation);
-    float sinR = sin(u_rotation);
+    float q = in_tilePosition.x;
+    float r = in_tilePosition.y;
 
-    mat4 rotationY = mat4(
-        cosR, 0.0, sinR, 0.0,
-        0.0, 1.0,  0.0, 0.0,
-        -sinR, 0.0, cosR, 0.0,
-        0.0, 0.0,  0.0, 1.0
-    );
+    float worldX = (SQRT_3 * q + SQRT_3 / 2.0 * r);
+    float worldY = (0.0 * q + 3.0 / 2.0 * r);
+    vec2 tileWorldCenter = vec2(worldX, worldY);
 
-    gl_Position = u_camera * rotationY * vec4(in_position, 1.0) * vec4(1.0, -1.0, 1.0, 1.0);
+    vec2 finalWorldPos = tileWorldCenter + in_vertexPosition.xy;
+
+    gl_Position = u_camera * vec4(finalWorldPos, in_vertexPosition.z, 1.0);
 }
