@@ -70,8 +70,8 @@ export class RenderGraphBuilder {
             source: {
                 type: "constant",
                 value: value,
-            }
-        })
+            },
+        });
     }
 
     public dataExternal<TData>(fetch: () => TData, checkChanged?: (prev: TData) => boolean): DataRenderGraphNode<TData> {
@@ -80,8 +80,8 @@ export class RenderGraphBuilder {
                 type: "external",
                 fetch: fetch,
                 checkChanged: checkChanged ?? (() => true),
-            }
-        })
+            },
+        });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,8 +90,8 @@ export class RenderGraphBuilder {
             source: {
                 type: "transform",
                 transformer: transformer,
-            }
-        })
+            },
+        });
     }
 
     public draw(options: {
@@ -212,13 +212,15 @@ export class RenderGraphBuilder {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public transform<TIn extends any[], TOut>(options: {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
-        func: (...args: TIn) => TOut | null
+        func: (...args: TIn) => TOut | null,
+        checkChanged?: (prev: TOut, next: TOut) => boolean
     }): TransformRenderGraphNode<TIn, TOut> {
         const node: TransformRenderGraphNode<TIn, TOut> = {
             type: "transform",
             id: RenderGraphBuilder.generateNodeId(),
             inputs: options.inputs,
             func: options.func,
+            checkChanged: options.checkChanged ?? ((prev, next) => prev !== next),
         };
         this.nodes.push(node);
         return node;

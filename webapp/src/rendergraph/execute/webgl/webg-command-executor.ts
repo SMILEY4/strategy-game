@@ -110,7 +110,9 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 if (arg.type === "ref") return context.getData(arg.ref);
             });
             const result = command.func(...(args as Parameters<typeof command.func>));
-            context.setData(command.refOut, result);
+            if(command.checkChanged(context.getData(command.refOut), result)) {
+                context.setData(command.refOut, result);
+            }
         }
         return;
     }

@@ -5,4 +5,5 @@ import type {DataRenderGraphNode} from "@rendergraph/nodes/rg-node.data.ts";
 export interface TransformRenderGraphNode<TIn extends any[], TOut> extends RenderGraphNodeBase<"transform"> {
     readonly inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
     readonly func: (...args: TIn) => TOut | null
+    readonly checkChanged: (prev: TOut, next: TOut) => boolean
 }

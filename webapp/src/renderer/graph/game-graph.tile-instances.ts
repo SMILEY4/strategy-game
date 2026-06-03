@@ -31,6 +31,7 @@ export function gameGraphTileInstances(
             },
         },
         func: (chunks: RenderChunk[], tiles: RenderTile[]) => {
+            console.log("update tile instances", chunks.length)
 
             let tileCount = 0
             for (let i = 0, n=chunks.length; i < n; i++) {

@@ -31,7 +31,7 @@ export type WebGlCommand =
     | { type: "DRAW", refVertexCount: string }
     | { type: "DRAW_INSTANCED", refVertexCount: string, refInstanceCount: string }
     | { type: "LOAD_EXTERNAL_DATA", ref: string, func: () => unknown, checkChanged: (prev: unknown) => boolean }
-    | { type: "TRANSFORM_DATA", args: ValueEntry[], refOut: string, func: (args: unknown[]) => unknown | null }
+    | { type: "TRANSFORM_DATA", args: ValueEntry[], refOut: string, func: (args: unknown[]) => unknown | null, checkChanged: (prev: unknown, next: unknown) => boolean }
     | { type: "TRANSFORM_DATA_MULTI_OUT", args: ValueEntry[], refOut: string, func: (args: unknown[]) => Record<string, unknown | null> } // todo: better "no result" type
     | {
     type: "TRANSFORM_DATA_VERTEX_OUT",
@@ -420,7 +420,7 @@ function resolveTransformer(node: TransformRenderGraphNode<unknown[], unknown>, 
             resource: null,
         });
         const args = node.inputs.map(inputNode => resolveDataNode(inputNode, context));
-        context.commands.push({type: "TRANSFORM_DATA", args: args, refOut: node.id, func: node.func});
+        context.commands.push({type: "TRANSFORM_DATA", args: args, refOut: node.id, func: node.func, checkChanged: node.checkChanged});
     });
     return {type: "ref", ref: node.id};
 }

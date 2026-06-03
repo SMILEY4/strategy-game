@@ -13,7 +13,7 @@ export class GameRenderer {
     private readonly renderGraph;
 
     constructor() {
-        this.dataProvider = new GameRendererDataProvider(50);
+        this.dataProvider = new GameRendererDataProvider(80);
         this.keyboardTracker = new KeyboardTracker();
         this.cameraController = new CameraController(this.dataProvider)
         this.renderGraph = WebGlRenderGraph.build(gameGraph(this.dataProvider));

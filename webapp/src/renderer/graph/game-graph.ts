@@ -24,9 +24,8 @@ export function gameGraph(dataProvider: GameRendererDataProvider): RenderGraphNo
 
     const dataMapRadius = g.dataExternal<number>(() => dataProvider.getMapRadius(), (prev) => prev !== dataProvider.getMapRadius());
     const dataChunkRadius = g.dataExternal<number>(() => dataProvider.getChunkRadius(), (prev) => prev !== dataProvider.getChunkRadius());
-    const dataTileRadius = g.dataExternal<number>(() => dataProvider.getTileRadius(), (prev) => prev !== dataProvider.getTileRadius());
 
-    const {dataVisibleChunks} = gameGraphChunkCulling(g, {dataCamera, dataMapRadius, dataChunkRadius, dataTileRadius, dataTilemap});
+    const {dataVisibleChunks} = gameGraphChunkCulling(g, {dataCamera, dataMapRadius, dataChunkRadius, dataTilemap});
     const {tileMeshTransformer} = gameGraphTileMesh(g);
     const {tileInstanceTransformer} = gameGraphTileInstances(g, {dataTiles, dataChunks: dataVisibleChunks});
 

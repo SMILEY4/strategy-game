@@ -7,7 +7,7 @@ export class CameraController {
     private readonly dataProvider: GameRendererDataProvider;
 
     private readonly  moveSpeed = 0.5;
-    private readonly mouseSensitivity = 0.005;
+    private readonly mouseSensitivity = 0.002;
 
 
     constructor(dataProvider: GameRendererDataProvider) {
@@ -68,7 +68,7 @@ export class CameraController {
             }
 
             const yawRotation = quat.create();
-            quat.setAxisAngle(yawRotation, cameraData.up, -mx * this.mouseSensitivity);
+            quat.setAxisAngle(yawRotation, cameraData.up, mx * this.mouseSensitivity);
 
             const pitchRotation = quat.create();
             quat.setAxisAngle(pitchRotation, localRight, pitchAngle);

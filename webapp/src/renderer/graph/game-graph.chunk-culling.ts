@@ -2,7 +2,7 @@ import type {RenderGraphBuilder} from "@rendergraph/render-graph-builder.ts";
 import type {RenderCameraData, RenderChunk, RenderTile} from "@/renderer/data/models.ts";
 import type {DataRenderGraphNode} from "@rendergraph/nodes/rg-node.data.ts";
 import {HexUtils} from "@/common/hexUtils.ts";
-import {vec3} from "gl-matrix";
+import {mat4, vec3, vec4} from "gl-matrix";
 
 
 export function gameGraphChunkCulling(
@@ -12,7 +12,6 @@ export function gameGraphChunkCulling(
         dataCamera: DataRenderGraphNode<RenderCameraData>,
         dataMapRadius: DataRenderGraphNode<number>,
         dataChunkRadius: DataRenderGraphNode<number>,
-        dataTileRadius: DataRenderGraphNode<number>,
     },
 ) {
 
@@ -20,9 +19,9 @@ export function gameGraphChunkCulling(
      * Generate a list of all chunks (and their tiles)
      */
     const dataAllChunks = g.dataTransformer<RenderChunk[]>(
-        g.transform<[number, number, number, RenderTile[]], RenderChunk[]>({
-            inputs: [nodes.dataMapRadius, nodes.dataChunkRadius, nodes.dataTileRadius, nodes.dataTilemap],
-            func: (mapRadius: number, chunkRadius: number, tileRadius: number, tiles: RenderTile[]) => calculateChunks(tiles, mapRadius, chunkRadius, tileRadius),
+        g.transform<[number, number, RenderTile[]], RenderChunk[]>({
+            inputs: [nodes.dataMapRadius, nodes.dataChunkRadius, nodes.dataTilemap],
+            func: (mapRadius: number, chunkRadius: number, tiles: RenderTile[]) => calculateChunks(tiles, mapRadius, chunkRadius),
         }),
     );
 
@@ -30,9 +29,10 @@ export function gameGraphChunkCulling(
      * Take the list of all chunks and return only the visible chunks
      */
     const dataVisibleChunks = g.dataTransformer<RenderChunk[]>(
-        g.transform<[RenderChunk[], RenderCameraData, number], RenderChunk[]>({
-            inputs: [dataAllChunks, nodes.dataCamera, nodes.dataTileRadius],
-            func: (allChunks, camera, tileRadius) => calculateVisibleChunks(allChunks, camera, tileRadius),
+        g.transform<[RenderChunk[], RenderCameraData], RenderChunk[]>({
+            inputs: [dataAllChunks, nodes.dataCamera],
+            func: (allChunks, camera) => calculateVisibleChunks(allChunks, camera),
+            checkChanged: (prev: RenderChunk[], next: RenderChunk[]) => checkChanges(prev, next)
         }),
     );
 
@@ -44,10 +44,8 @@ export function gameGraphChunkCulling(
 }
 
 
-function calculateChunks(tiles: RenderTile[], mapRadius: number, chunkRadius: number, tileWorldRadius: number): RenderChunk[] {
+function calculateChunks(tiles: RenderTile[], mapRadius: number, chunkRadius: number): RenderChunk[] {
     const chunks: RenderChunk[] = [];
-
-    console.log("map radius", mapRadius, chunkRadius, tileWorldRadius);
 
     const chunkGridRadius = Math.ceil(mapRadius / chunkRadius);
 
@@ -63,9 +61,9 @@ function calculateChunks(tiles: RenderTile[], mapRadius: number, chunkRadius: nu
                 centerQ: centerQ,
                 centerR: centerR,
                 radius: chunkRadius,
-                centerWorldPos: hexToWorld(centerQ, centerR, tileWorldRadius),
-                minY: -tileWorldRadius,
-                maxY: +tileWorldRadius * 2,
+                centerWorldPos: hexToWorld(centerQ, centerR),
+                minY: -0.1,
+                maxY: +0.1,
                 tileIndices: [],
             });
         }
@@ -89,110 +87,118 @@ function calculateChunks(tiles: RenderTile[], mapRadius: number, chunkRadius: nu
         }
     }
 
-    console.log("totalChunks", chunks.length)
+    console.log("totalChunks", chunks.length);
 
     return Array.from(chunks.values());
 }
 
 
-function hexToWorld(q: number, r: number, radius: number): vec3 {
-    const x = radius * (Math.sqrt(3) * q + (Math.sqrt(3) / 2) * r);
-    const z = radius * (1.5 * r);
-    return vec3.fromValues(x, 0, z);
+function hexToWorld(q: number, r: number): vec3 {
+    return vec3.fromValues(
+        Math.sqrt(3) * q + Math.sqrt(3) / 2 * r,
+        0,
+        3 / 2 * r,
+    );
+
 }
 
 function calculateVisibleChunks(
     chunks: RenderChunk[],
     camera: RenderCameraData,
-    tileWorldRadius: number,
 ): RenderChunk[] {
-    const right = vec3.normalize(vec3.create(), vec3.cross(vec3.create(), camera.direction, camera.up));
-    const up = vec3.normalize(vec3.create(), vec3.cross(vec3.create(), right, camera.direction));
 
-    const halfVFov = camera.fov / 2;
-    const halfHFov = Math.atan(Math.tan(halfVFov) * camera.aspect);
-
-    const planes = buildFrustumPlanes(camera, right, up, halfVFov, halfHFov);
+    const planes = calculateFrustrumPlanes(camera)
 
     const visibleChunks: RenderChunk[] = [];
 
     for (const chunk of chunks) {
-        if (isCylinderInFrustum(chunk, tileWorldRadius, planes)) {
+        if (isDiskVisible(chunk.centerWorldPos, chunk.radius, 1, planes)) {
             visibleChunks.push(chunk);
         }
-        visibleChunks.push(chunk);
     }
-
-    console.log("visibleChunks", visibleChunks.length);
 
     return visibleChunks;
 }
 
-interface FrustumPlane {
-    normal: vec3;
-    d: number;
-}
 
-function buildFrustumPlanes(
-    camera: RenderCameraData,
-    right: vec3,
-    up: vec3,
-    halfVFov: number,
-    halfHFov: number,
-): FrustumPlane[] {
-    const planes: FrustumPlane[] = [];
+function calculateFrustrumPlanes(cam: RenderCameraData): vec4[] {
 
-    planes.push(makePlane(camera.direction, camera.position, camera.near));
-    planes.push(makePlane(vec3.negate(vec3.create(), camera.direction), camera.position, -camera.far));
+    const planes: vec4[] = Array.from({length: 6}, () => vec4.create());
+    const viewMatrix = mat4.create();
+    const projMatrix = mat4.create();
+    const vpMatrix = mat4.create();
+    const target = vec3.create();
 
-    const leftNormal = rotateVec(camera.direction, up, halfHFov);
-    const rightNormal = rotateVec(camera.direction, up, -halfHFov);
-    planes.push(makePlaneFromNormal(leftNormal, camera.position));
-    planes.push(makePlaneFromNormal(rightNormal, camera.position));
+    // 1. Calculate Target Point for View Matrix
+    vec3.add(target, cam.position, cam.direction);
+    mat4.lookAt(viewMatrix, cam.position, target, cam.up);
 
-    const topNormal = rotateVec(camera.direction, right, -halfVFov);
-    const bottomNormal = rotateVec(camera.direction, right, halfVFov);
-    planes.push(makePlaneFromNormal(topNormal, camera.position));
-    planes.push(makePlaneFromNormal(bottomNormal, camera.position));
+    // 2. Calculate Projection Matrix
+    mat4.perspective(projMatrix, cam.fov, cam.aspect, cam.near, cam.far);
 
-    return planes;
-}
+    // 3. Combine into View-Projection Matrix
+    mat4.multiply(vpMatrix, projMatrix, viewMatrix);
 
-function makePlane(normal: vec3, origin: vec3, offset: number): FrustumPlane {
-    const pointOnPlane = vec3.scaleAndAdd(vec3.create(), origin, normal, offset);
-    return makePlaneFromNormal(normal, pointOnPlane);
-}
+    const m = vpMatrix;
 
-function makePlaneFromNormal(normal: vec3, point: vec3): FrustumPlane {
-    return {
-        normal: normal,
-        d: -vec3.dot(normal, point),
-    };
-}
+    // 4. Extract the 6 planes from the VP matrix (Gribb-Hartmann method)
+    // Left Plane
+    vec4.set(planes[0], m[3] + m[0], m[7] + m[4], m[11] + m[8], m[15] + m[12]);
+    // Right Plane
+    vec4.set(planes[1], m[3] - m[0], m[7] - m[4], m[11] - m[8], m[15] - m[12]);
+    // Bottom Plane
+    vec4.set(planes[2], m[3] + m[1], m[7] + m[5], m[11] + m[9], m[15] + m[13]);
+    // Top Plane
+    vec4.set(planes[3], m[3] - m[1], m[7] - m[5], m[11] - m[9], m[15] - m[13]);
+    // Near Plane
+    vec4.set(planes[4], m[3] + m[2], m[7] + m[6], m[11] + m[10], m[15] + m[14]);
+    // Far Plane
+    vec4.set(planes[5], m[3] - m[2], m[7] - m[6], m[11] - m[10], m[15] - m[14]);
 
-function isCylinderInFrustum(chunk: RenderChunk, tileWorldRadius: number, planes: FrustumPlane[]): boolean {
-    const chunkRadius = chunk.radius * tileWorldRadius;
-
-    for (const plane of planes) {
-        const nx = plane.normal[0];
-        const nz = plane.normal[2];
-        const horizontalNormalLength = Math.sqrt(nx * nx + nz * nz);
-
-        let furthestX = chunk.centerWorldPos[0];
-        let furthestZ = chunk.centerWorldPos[2];
-
-        if (horizontalNormalLength > 0.000001) {
-            furthestX += (nx / horizontalNormalLength) * chunkRadius;
-            furthestZ += (nz / horizontalNormalLength) * chunkRadius;
+    // Normalize the planes so that distance calculations are accurate
+    for (let i = 0; i < 6; i++) {
+        const p = planes[i];
+        const length = Math.sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
+        if (length > 0) {
+            p[0] /= length;
+            p[1] /= length;
+            p[2] /= length;
+            p[3] /= length;
         }
+    }
 
-        const furthestY = plane.normal[1] >= 0 ? chunk.maxY : chunk.minY;
+    return planes
+}
 
-        const dotProduct = (plane.normal[0] * furthestX) +
-            (plane.normal[1] * furthestY) +
-            (plane.normal[2] * furthestZ);
 
-        if (dotProduct + plane.d < 0) {
+function isDiskVisible(center: vec3, radius: number, height: number, planes: vec4[]): boolean {
+    // Set the true center of the cylinder volume
+    const diskCenter: vec3 = vec3.create();
+    vec3.set(diskCenter, center[0], center[1] + height / 2, center[2]);
+
+    for (let i = 0; i < 6; i++) {
+        const plane = planes[i];
+        const nx = plane[0];
+        const ny = plane[1];
+        const nz = plane[2];
+        const d = plane[3];
+
+        // 1. Projected horizontal disk radius along the plane normal XZ
+        const normalXZLen = Math.sqrt(nx * nx + nz * nz);
+        const projectedRadius = normalXZLen > 0 ? radius * normalXZLen : 0;
+
+        // 2. Projected vertical half-height along the plane normal Y
+        const projectedHeight = (height / 2) * Math.abs(ny);
+
+        // Total maximum extension of the disk toward the plane
+        const effectiveRadius = projectedRadius + projectedHeight;
+
+        // 3. Dot product (distance to plane)
+        // Ax + By + Cz + D
+        const distance = nx * diskCenter[0] + ny * diskCenter[1] + nz * diskCenter[2] + d;
+
+        // If the center is further behind the plane than its footprint radius, it's outside
+        if (distance < -effectiveRadius) {
             return false;
         }
     }
@@ -200,14 +206,35 @@ function isCylinderInFrustum(chunk: RenderChunk, tileWorldRadius: number, planes
     return true;
 }
 
-function rotateVec(v: vec3, axis: vec3, angle: number): vec3 {
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-    const dot = vec3.dot(axis, v);
-    const cross = vec3.cross(vec3.create(), axis, v);
-    const result = vec3.create();
-    vec3.scale(result, v, cos);
-    vec3.scaleAndAdd(result, result, cross, sin);
-    vec3.scaleAndAdd(result, result, axis, dot * (1 - cos));
-    return vec3.normalize(result, result);
+
+
+function checkChanges(prev: RenderChunk[], next: RenderChunk[]): boolean {
+
+    if(prev === next) {
+        return false
+    }
+
+    if(prev === null || next === null) {
+        return true;
+    }
+    if(prev === undefined || next === undefined) {
+        return true;
+    }
+
+    if(prev.length !== next.length) {
+        return true;
+    }
+
+    const seenItems = new Set<string>();
+    for (const chunk of prev) {
+        seenItems.add(`${chunk.centerQ},${chunk.centerR}`)
+    }
+
+    for (const chunk of next) {
+        if(!seenItems.has(`${chunk.centerQ},${chunk.centerR}`)) {
+            return true
+        }
+    }
+
+    return false
 }
