@@ -5,7 +5,7 @@ import type {TransformMultiOutRenderGraphNode} from "@rendergraph/nodes/rg-node.
 export interface DataRenderGraphNode<TData> extends RenderGraphNodeBase<"data"> {
     readonly source:
         | { type: "constant", value: TData }
-        | { type: "external", fetch: () => TData, checkIsNew: () => boolean }
+        | { type: "external", fetch: () => TData, checkChanged: (prev: TData) => boolean }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         | { type: "transform", transformer: TransformRenderGraphNode<any, TData> }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

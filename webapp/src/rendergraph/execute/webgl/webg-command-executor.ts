@@ -96,7 +96,8 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     }
 
     if (command.type === "LOAD_EXTERNAL_DATA") {
-        if(command.check()) {
+        const prev = context.getData(command.ref)
+        if(command.checkChanged(prev) || !context.isInitialized(command.ref)) {
             context.setData(command.ref, command.func());
         }
         return;
@@ -108,7 +109,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
             });
-            const result = command.func(args);
+            const result = command.func(...(args as Parameters<typeof command.func>));
             context.setData(command.refOut, result);
         }
         return;
@@ -121,7 +122,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
             });
-            const result = command.func(args);
+            const result = command.func(...(args as Parameters<typeof command.func>));
             Object.entries(result).forEach(([key, value]) => {
                 if (value != null) {
                     context.setData(command.refOut + "#" + key, value);
@@ -138,7 +139,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
             });
-            const result = command.func(args);
+            const result = command.func(...(args as Parameters<typeof command.func>));
             Object.entries(result).forEach(([key, value]) => {
                 if (value != null) {
                     const buffer = context.getVertexBuffer(command.refOut + "#" + key);
@@ -156,7 +157,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
             });
-            const result = command.func(args);
+            const result = command.func(...(args as Parameters<typeof command.func>));
             context.setData(command.refOut, result);
         }
         return;

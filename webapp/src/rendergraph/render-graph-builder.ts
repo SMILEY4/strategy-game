@@ -47,10 +47,10 @@ export class RenderGraphBuilder {
         return node;
     }
 
-    public data<TData>(options: { // todo: shortcuts for different data source types
+    public data<TData>(options: {
         source:
             | { type: "constant", value: TData }
-            | { type: "external", fetch: () => TData, checkIsNew: () => boolean }
+            | { type: "external", fetch: () => TData, checkChanged: (prev: TData) => boolean }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             | { type: "transform", transformer: TransformRenderGraphNode<any, TData> }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,6 +70,26 @@ export class RenderGraphBuilder {
             source: {
                 type: "constant",
                 value: value,
+            }
+        })
+    }
+
+    public dataExternal<TData>(fetch: () => TData, checkChanged?: (prev: TData) => boolean): DataRenderGraphNode<TData> {
+        return this.data<TData>({
+            source: {
+                type: "external",
+                fetch: fetch,
+                checkChanged: checkChanged ?? (() => true),
+            }
+        })
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public dataTransformer<TData>(transformer: TransformRenderGraphNode<any[], TData>): DataRenderGraphNode<TData> {
+        return this.data<TData>({
+            source: {
+                type: "transform",
+                transformer: transformer,
             }
         })
     }

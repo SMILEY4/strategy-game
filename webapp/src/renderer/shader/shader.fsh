@@ -17,7 +17,6 @@ void main() {
 //    float g = hash(v_tilePosition + vec2(1.0, 2.0));
 //    float b = hash(v_tilePosition + vec2(3.0, 4.0));
 
-
     // chunk position
     float r = hash(v_chunkPosition + vec2(0.0, 0.0));
     float g = hash(v_chunkPosition + vec2(1.0, 2.0));

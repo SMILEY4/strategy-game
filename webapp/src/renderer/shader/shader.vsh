@@ -19,10 +19,10 @@ void main() {
     float r = in_tilePosition.y;
 
     float worldX = (SQRT_3 * q + SQRT_3 / 2.0 * r);
-    float worldY = (0.0 * q + 3.0 / 2.0 * r);
-    vec2 tileWorldCenter = vec2(worldX, worldY);
+    float worldZ = (0.0 * q + 3.0 / 2.0 * r);
+    vec3 tileWorldCenter = vec3(worldX, 0.0, worldZ);
 
-    vec2 finalWorldPos = tileWorldCenter + in_vertexPosition.xy;
+    vec3 finalWorldPos = tileWorldCenter + in_vertexPosition;
 
-    gl_Position = u_camera * vec4(finalWorldPos, in_vertexPosition.z, 1.0);
+    gl_Position = u_camera * vec4(finalWorldPos, 1.0);
 }

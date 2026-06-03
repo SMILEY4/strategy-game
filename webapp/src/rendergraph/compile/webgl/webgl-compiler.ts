@@ -30,7 +30,7 @@ export type WebGlCommand =
     | { type: "SET_DEPTH_TESTING", enabled: boolean }
     | { type: "DRAW", refVertexCount: string }
     | { type: "DRAW_INSTANCED", refVertexCount: string, refInstanceCount: string }
-    | { type: "LOAD_EXTERNAL_DATA", ref: string, func: () => unknown, check: () => boolean }
+    | { type: "LOAD_EXTERNAL_DATA", ref: string, func: () => unknown, checkChanged: (prev: unknown) => boolean }
     | { type: "TRANSFORM_DATA", args: ValueEntry[], refOut: string, func: (args: unknown[]) => unknown | null }
     | { type: "TRANSFORM_DATA_MULTI_OUT", args: ValueEntry[], refOut: string, func: (args: unknown[]) => Record<string, unknown | null> } // todo: better "no result" type
     | {
@@ -345,7 +345,8 @@ function generateDrawCall(geometry: GeometryRenderGraphNode, context: CompileCon
 /**
  * @return the "ref" to the resource holding the actual value
  */
-function resolveDataNode(node: DataRenderGraphNode<unknown>, context: CompileContext): ValueEntry {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function resolveDataNode(node: DataRenderGraphNode<any>, context: CompileContext): ValueEntry {
     if (node.source.type === "constant") {
         return {type: "const", value: node.source.value};
     }
@@ -374,7 +375,7 @@ function resolveDataNodeExternal(node: DataRenderGraphNode<unknown>, context: Co
             key: node.id,
             resource: null,
         });
-        context.commands.push({type: "LOAD_EXTERNAL_DATA", ref: node.id, func: node.source.fetch, check: node.source.checkIsNew});
+        context.commands.push({type: "LOAD_EXTERNAL_DATA", ref: node.id, func: node.source.fetch, checkChanged: node.source.checkChanged});
     });
     return {type: "ref", ref: node.id};
 }
