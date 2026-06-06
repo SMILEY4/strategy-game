@@ -1,5 +1,5 @@
-import type {RenderGraphBuilder} from "@rendergraph/render-graph-builder.ts";
-import {GlAttributeType} from "@rendergraph/webgl/gl-program.ts";
+import type {RenderGraphBuilder} from "@/modules/rendergraph/render-graph-builder.ts";
+import {GlAttributeType} from "@/modules/rendergraph/webgl/gl-program.ts";
 import {vec2} from "gl-matrix";
 
 export function gameGraphTileMesh(g: RenderGraphBuilder) {

@@ -1,8 +1,8 @@
-import {RenderGraphBuilder} from "@rendergraph/render-graph-builder.ts";
+import {RenderGraphBuilder} from "@/modules/rendergraph/render-graph-builder.ts";
 import type {GameRendererDataProvider} from "@/renderer/data/game-renderer-data-provider.ts";
 import type {RenderCameraData, RenderTile} from "@/renderer/data/models.ts";
 import {gameGraphChunkCulling} from "@/renderer/graph/game-graph.chunk-culling.ts";
-import type {RenderGraphNode} from "@rendergraph/nodes/rg-node.ts";
+import type {RenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.ts";
 import {gameGraphTileMesh} from "@/renderer/graph/game-graph.tile-mesh.ts";
 
 import SHADER_TILEMAP_VERT from "./../shader/tilemap.vsh?raw";

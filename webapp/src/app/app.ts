@@ -1,4 +1,4 @@
-import {createDI, type FactoryMap} from "@/common/di.ts";
+import {createDI, type FactoryMap} from "@/modules/utilities/di.ts";
 
 
 interface EnvShape {

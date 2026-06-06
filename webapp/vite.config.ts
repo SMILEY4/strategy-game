@@ -7,9 +7,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": "/src",
-      "@gamedb": "/src/gamedb",
-      "@rendergraph": "/src/rendergraph",
-      "@uicomponents": "/src/uicomponents"
     }
   }
 })

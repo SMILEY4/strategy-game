@@ -1,9 +1,12 @@
 import {createRoot} from "react-dom/client";
-import {Canvas} from "@uicomponents/canvas/Canvas.tsx";
+import {Canvas} from "@/modules/uicomponents/canvas/Canvas.tsx";
 import "./main.less";
 import {GameRenderer} from "@/renderer/game-renderer.ts";
+import {RenderGraphBuilder} from "@/modules/rendergraph/render-graph-builder.ts";
 
-const renderer = new GameRenderer()
+const renderer = new GameRenderer();
+
+const _x = new RenderGraphBuilder();
 
 createRoot(document.getElementById("root") || document.createElement("div")).render(
     <>
