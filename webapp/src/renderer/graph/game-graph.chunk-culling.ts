@@ -3,7 +3,9 @@ import type {RenderCameraData, RenderChunk, RenderTile} from "@/renderer/data/mo
 import type {DataRenderGraphNode} from "@rendergraph/nodes/rg-node.data.ts";
 import {HexUtils} from "@/common/hexUtils.ts";
 import {mat4, vec3, vec4} from "gl-matrix";
-
+// import SHADER_CHUNK_BOUNDS_VERT from "./../shader/chunkBounds.vsh?raw";
+// import SHADER_CHUNK_BOUNDS_FRAG from "./../shader/chunkBounds.fsh?raw";
+import type {CameraRenderGraphNode} from "@rendergraph/nodes/rg-node.camera.ts";
 
 export function gameGraphChunkCulling(
     g: RenderGraphBuilder,
@@ -12,6 +14,7 @@ export function gameGraphChunkCulling(
         dataCamera: DataRenderGraphNode<RenderCameraData>,
         dataMapRadius: DataRenderGraphNode<number>,
         dataChunkRadius: DataRenderGraphNode<number>,
+        camera: CameraRenderGraphNode,
     },
 ) {
 
@@ -36,10 +39,159 @@ export function gameGraphChunkCulling(
         }),
     );
 
+    // const chunkCylinderMeshTransformer = g.transformVertexOut({
+    //     inputs: [],
+    //     outputs: {
+    //         mesh: {
+    //             content: "vertices",
+    //             layout: [
+    //                 {
+    //                     name: "vertexPosition",
+    //                     type: GlAttributeType.FLOAT,
+    //                     amountComponents: 3
+    //                 }
+    //             ]
+    //         }
+    //     },
+    //     func: () => {
+    //
+    //         const nPoints = 50;
+    //         const minY = -0.5;
+    //         const maxY = 0.5
+    //
+    //         const buffer = new ArrayBuffer(nPoints * 6 * 3 * GlAttributeType.FLOAT.bytes);
+    //         const view = new DataView(buffer);
+    //         let viewCounter = 0;
+    //
+    //         function pushFloat32(value: number) {
+    //             view.setFloat32(viewCounter, value, true);
+    //             viewCounter += GlAttributeType.FLOAT.bytes;
+    //         }
+    //
+    //         function pushFloat32Vec3(x: number, y: number, z: number) {
+    //             pushFloat32(x);
+    //             pushFloat32(y);
+    //             pushFloat32(z);
+    //         }
+    //
+    //         const center = vec2.fromValues(0, 0);
+    //         const pointer = vec2.fromValues(0, 1);
+    //
+    //         const pointsCircle: vec2[] = [];
+    //         for(let i=0; i<nPoints; i++) {
+    //             pointsCircle.push(vec2.fromValues(pointer[0], pointer[1]))
+    //             vec2.rotate(pointer, pointer, center, deg2rad(360/nPoints))
+    //         }
+    //
+    //         for (let i = 1; i < pointsCircle.length+1; i++) {
+    //             const a = pointsCircle[i-1]
+    //             const b = pointsCircle[i%pointsCircle.length]
+    //             pushFloat32Vec3(a[0], minY, a[1])
+    //             pushFloat32Vec3(b[0], minY, b[1])
+    //         }
+    //
+    //         for (let i = 1; i < pointsCircle.length+1; i++) {
+    //             const a = pointsCircle[i-1]
+    //             const b = pointsCircle[i%pointsCircle.length]
+    //             pushFloat32Vec3(a[0], maxY, a[1])
+    //             pushFloat32Vec3(b[0], maxY, b[1])
+    //         }
+    //
+    //         for (let i = 0; i < pointsCircle.length; i++) {
+    //             const p = pointsCircle[i]
+    //             pushFloat32Vec3(p[0], minY, p[1])
+    //             pushFloat32Vec3(p[0], maxY, p[1])
+    //         }
+    //
+    //         return {
+    //             "mesh": {
+    //                 data: buffer,
+    //                 count: nPoints * 6,
+    //             },
+    //         };
+    //     }
+    // })
+    //
+    // const chunkCylinderInstancesTransformer = g.transformVertexOut({
+    //     inputs: [dataAllChunks],
+    //     outputs: {
+    //         instances: {
+    //             content: "instances",
+    //             layout: [
+    //                 {
+    //                     name: "worldPosition",
+    //                     type: GlAttributeType.FLOAT,
+    //                     amountComponents: 3
+    //                 },
+    //                 {
+    //                     name: "radius",
+    //                     type: GlAttributeType.FLOAT,
+    //                     amountComponents: 1
+    //                 }
+    //             ]
+    //         }
+    //     },
+    //     func: (chunks: RenderChunk[]) => {
+    //
+    //         const buffer = new ArrayBuffer(chunks.length * 4 * GlAttributeType.FLOAT.bytes);
+    //         const view = new DataView(buffer);
+    //         let viewCounter = 0;
+    //
+    //         function pushFloat32(value: number) {
+    //             view.setFloat32(viewCounter, value, true);
+    //             viewCounter += GlAttributeType.FLOAT.bytes;
+    //         }
+    //
+    //         for (const chunk of chunks) {
+    //             pushFloat32(chunk.centerWorldPos[0])
+    //             pushFloat32(chunk.centerWorldPos[1])
+    //             pushFloat32(chunk.centerWorldPos[2])
+    //             pushFloat32(chunk.radius)
+    //         }
+    //
+    //         return {
+    //             "instances": {
+    //                 data: buffer,
+    //                 count: chunks.length,
+    //             },
+    //         };
+    //     }
+    // })
+    //
+    // const geometryChunkDebug = g.geometry({
+    //     primitives: "lines",
+    //     sources: [
+    //         g.geometrySource({
+    //             source: chunkCylinderMeshTransformer,
+    //             output: "mesh",
+    //         }),
+    //         g.geometrySource({
+    //             source: chunkCylinderInstancesTransformer,
+    //             output: "instances",
+    //         }),
+    //     ],
+    // });
+    //
+    // const shader = g.shader({
+    //     srcVertex: SHADER_CHUNK_BOUNDS_VERT,
+    //     srcFragment: SHADER_CHUNK_BOUNDS_FRAG,
+    //     prefixUniforms: "u_",
+    //     prefixVertexAttributes: "in_",
+    // });
+
+    // const drawChunkBounds = g.draw({
+    //     shader: shader,
+    //     geometry: geometryChunkDebug,
+    //     inputs: {
+    //         "camera": nodes.camera,
+    //     },
+    // });
+
 
     return {
         dataAllChunks,
         dataVisibleChunks,
+        // drawChunkBounds,
     };
 }
 
@@ -86,8 +238,6 @@ function calculateChunks(tiles: RenderTile[], mapRadius: number, chunkRadius: nu
             nearestChunk.tileIndices.push(i);
         }
     }
-
-    console.log("totalChunks", chunks.length);
 
     return Array.from(chunks.values());
 }
@@ -205,8 +355,6 @@ function isDiskVisible(center: vec3, radius: number, height: number, planes: vec
 
     return true;
 }
-
-
 
 function checkChanges(prev: RenderChunk[], next: RenderChunk[]): boolean {
 

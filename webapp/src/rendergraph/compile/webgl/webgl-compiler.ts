@@ -28,8 +28,8 @@ export type WebGlCommand =
     | { type: "BIND_TEXTURE_FRAMEBUFFER", id: string, unit: number }
     | { type: "SET_UNIFORM", programId: string, name: string, value: ValueEntry }
     | { type: "SET_DEPTH_TESTING", enabled: boolean }
-    | { type: "DRAW", refVertexCount: string }
-    | { type: "DRAW_INSTANCED", refVertexCount: string, refInstanceCount: string }
+    | { type: "DRAW", refVertexCount: string, mode: GLenum }
+    | { type: "DRAW_INSTANCED", refVertexCount: string, refInstanceCount: string, mode: GLenum }
     | { type: "LOAD_EXTERNAL_DATA", ref: string, func: () => unknown, checkChanged: (prev: unknown) => boolean }
     | { type: "TRANSFORM_DATA", args: ValueEntry[], refOut: string, func: (args: unknown[]) => unknown | null, checkChanged: (prev: unknown, next: unknown) => boolean }
     | { type: "TRANSFORM_DATA_MULTI_OUT", args: ValueEntry[], refOut: string, func: (args: unknown[]) => Record<string, unknown | null> } // todo: better "no result" type
@@ -334,11 +334,19 @@ function generateDrawCall(geometry: GeometryRenderGraphNode, context: CompileCon
             instanceCountRef = transformer.id + "#" + source.output;
         }
     });
+    let mode: GLenum = null!
+    if(geometry.primitiveTypes === "triangles") {
+        mode = WebGL2RenderingContext.TRIANGLES
+    }
+    if(geometry.primitiveTypes === "lines") {
+        mode = WebGL2RenderingContext.LINES
+    }
+
     if (vertexCountRef !== null && instanceCountRef === null) {
-        context.commands.push({type: "DRAW", refVertexCount: vertexCountRef});
+        context.commands.push({type: "DRAW", refVertexCount: vertexCountRef, mode: mode });
     }
     if (vertexCountRef !== null && instanceCountRef !== null) {
-        context.commands.push({type: "DRAW_INSTANCED", refVertexCount: vertexCountRef, refInstanceCount: instanceCountRef});
+        context.commands.push({type: "DRAW_INSTANCED", refVertexCount: vertexCountRef, refInstanceCount: instanceCountRef, mode: mode});
     }
 }
 

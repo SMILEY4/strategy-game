@@ -5,8 +5,8 @@ import {gameGraphChunkCulling} from "@/renderer/graph/game-graph.chunk-culling.t
 import type {RenderGraphNode} from "@rendergraph/nodes/rg-node.ts";
 import {gameGraphTileMesh} from "@/renderer/graph/game-graph.tile-mesh.ts";
 
-import SHADER_VERT from "./../shader/shader.vsh?raw";
-import SHADER_FRAG from "./../shader/shader.fsh?raw";
+import SHADER_TILEMAP_VERT from "./../shader/tilemap.vsh?raw";
+import SHADER_TILEMAP_FRAG from "./../shader/tilemap.fsh?raw";
 import {gameGraphTileInstances} from "@/renderer/graph/game-graph.tile-instances.ts";
 
 export function gameGraph(dataProvider: GameRendererDataProvider): RenderGraphNode[] {
@@ -24,10 +24,6 @@ export function gameGraph(dataProvider: GameRendererDataProvider): RenderGraphNo
 
     const dataMapRadius = g.dataExternal<number>(() => dataProvider.getMapRadius(), (prev) => prev !== dataProvider.getMapRadius());
     const dataChunkRadius = g.dataExternal<number>(() => dataProvider.getChunkRadius(), (prev) => prev !== dataProvider.getChunkRadius());
-
-    const {dataVisibleChunks} = gameGraphChunkCulling(g, {dataCamera, dataMapRadius, dataChunkRadius, dataTilemap});
-    const {tileMeshTransformer} = gameGraphTileMesh(g);
-    const {tileInstanceTransformer} = gameGraphTileInstances(g, {dataTiles, dataChunks: dataVisibleChunks});
 
     const camera = g.cameraPerspective({
         renderTargetSize: canvasSize,
@@ -69,6 +65,10 @@ export function gameGraph(dataProvider: GameRendererDataProvider): RenderGraphNo
         ),
     });
 
+    const {dataVisibleChunks} = gameGraphChunkCulling(g, {dataCamera, dataMapRadius, dataChunkRadius, dataTilemap, camera});
+    const {tileMeshTransformer} = gameGraphTileMesh(g);
+    const {tileInstanceTransformer} = gameGraphTileInstances(g, {dataTiles, dataChunks: dataVisibleChunks});
+
     const geometry = g.geometry({
         sources: [
             g.geometrySource({
@@ -83,8 +83,8 @@ export function gameGraph(dataProvider: GameRendererDataProvider): RenderGraphNo
     });
 
     const shader = g.shader({
-        srcVertex: SHADER_VERT,
-        srcFragment: SHADER_FRAG,
+        srcVertex: SHADER_TILEMAP_VERT,
+        srcFragment: SHADER_TILEMAP_FRAG,
         prefixUniforms: "u_",
         prefixVertexAttributes: "in_",
     });

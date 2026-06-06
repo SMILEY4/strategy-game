@@ -112,10 +112,12 @@ export class RenderGraphBuilder {
 
     public geometry(options: {
         sources: GeometrySource<string>[];
+        primitives?: "triangles" | "lines"
     }): GeometryRenderGraphNode {
         const node: GeometryRenderGraphNode = {
             type: "geometry",
             id: RenderGraphBuilder.generateNodeId(),
+            primitiveTypes: options.primitives ?? "triangles",
             sources: options.sources,
         };
         this.nodes.push(node);

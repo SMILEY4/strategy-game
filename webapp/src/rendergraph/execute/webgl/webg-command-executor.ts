@@ -81,7 +81,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     if (command.type === "DRAW") {
         const gl = context.getRenderingContext();
         const vertexCount = context.getVertexBufferElementCount(command.refVertexCount);
-        gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
+        gl.drawArrays(command.mode, 0, vertexCount);
         GlError.check(gl, "drawArrays", "drawing");
         return;
     }
@@ -90,7 +90,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         const gl = context.getRenderingContext();
         const vertexCount = context.getVertexBufferElementCount(command.refVertexCount);
         const instanceCount = context.getVertexBufferElementCount(command.refInstanceCount);
-        gl.drawArraysInstanced(gl.TRIANGLES, 0, vertexCount, instanceCount);
+        gl.drawArraysInstanced(command.mode, 0, vertexCount, instanceCount);
         GlError.check(gl, "drawArraysInstanced", "drawing instanced");
         return;
     }

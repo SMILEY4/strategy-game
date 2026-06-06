@@ -13,7 +13,7 @@ export class GameRendererDataProvider {
         position: vec3.fromValues(-50, 40, 0),
         direction: vec3.fromValues(2, -1, 0),
         fov: 50,
-        near: 0.001,
+        near: 0.01,
         far: 1000,
         aspect: 1,
     };

@@ -2,6 +2,7 @@ import type {RenderGraphNodeBase} from "@rendergraph/nodes/rg-node.ts";
 import type {TransformVertexOutRenderGraphNode} from "@rendergraph/nodes/rg-node.transform-vertex-out.ts";
 
 export interface GeometryRenderGraphNode extends RenderGraphNodeBase<"geometry"> {
+    readonly primitiveTypes: "triangles" | "lines"
     readonly sources: GeometrySource<string>[];
 }
 
