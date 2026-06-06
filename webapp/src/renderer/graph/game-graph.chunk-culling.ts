@@ -1,11 +1,11 @@
-import type {RenderGraphBuilder} from "@/modules/rendergraph/render-graph-builder.ts";
-import type {RenderCameraData, RenderChunk, RenderTile} from "@/renderer/data/models.ts";
-import type {DataRenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.data.ts";
-import {HexUtils} from "@/modules/utilities/hexUtils.ts";
+import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
+import type {RenderCameraData, RenderChunk, RenderTile} from "@renderer/data/models.ts";
+import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
+import {HexUtils} from "@modules/utilities/hexUtils.ts";
 import {mat4, vec3, vec4} from "gl-matrix";
 // import SHADER_CHUNK_BOUNDS_VERT from "./../shader/chunkBounds.vsh?raw";
 // import SHADER_CHUNK_BOUNDS_FRAG from "./../shader/chunkBounds.fsh?raw";
-import type {CameraRenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.camera.ts";
+import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 
 export function gameGraphChunkCulling(
     g: RenderGraphBuilder,

@@ -1,5 +1,5 @@
-import type {RenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.ts";
-import type {WebGlDrawCallNode} from "@/modules/rendergraph/compile/webgl/webgl-draw-call-graph.node.ts";
+import type {RenderGraphNode} from "@modules/rendergraph/nodes/rg-node.ts";
+import type {WebGlDrawCallNode} from "@modules/rendergraph/compile/webgl/webgl-draw-call-graph.node.ts";
 
 
 export function buildWebglDrawCallGraph(renderGraphNodes: RenderGraphNode[]): WebGlDrawCallNode[] {

@@ -1,8 +1,8 @@
-import type {Database} from "@/modules/gamedb/database/database.ts";
-import type {DatabaseStorageUnitMapping} from "@/modules/gamedb/storage/database-storage.ts";
+import type {Database} from "@modules/gamedb/database/database.ts";
+import type {DatabaseStorageUnitMapping} from "@modules/gamedb/storage/database-storage.ts";
 import {useEffect, useState} from "react";
-import {DatabaseOperation} from "@/modules/gamedb/database/database-operation.ts";
-import type {Query} from "@/modules/gamedb/database/query.ts";
+import {DatabaseOperation} from "@modules/gamedb/database/database-operation.ts";
+import type {Query} from "@modules/gamedb/database/query.ts";
 
 /**
  * Access (and watch) an entity in the given database by its id

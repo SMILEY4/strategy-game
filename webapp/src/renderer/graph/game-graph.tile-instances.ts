@@ -1,7 +1,7 @@
-import type {RenderGraphBuilder} from "@/modules/rendergraph/render-graph-builder.ts";
-import {GlAttributeType} from "@/modules/rendergraph/webgl/gl-program.ts";
-import type {DataRenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.data.ts";
-import type {RenderChunk, RenderTile} from "@/renderer/data/models.ts";
+import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
+import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
+import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
+import type {RenderChunk, RenderTile} from "@renderer/data/models.ts";
 
 export function gameGraphTileInstances(
     g: RenderGraphBuilder,

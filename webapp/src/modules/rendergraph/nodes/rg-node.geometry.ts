@@ -1,5 +1,5 @@
-import type {RenderGraphNodeBase} from "@/modules/rendergraph/nodes/rg-node.ts";
-import type {TransformVertexOutRenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
+import type {RenderGraphNodeBase} from "@modules/rendergraph/nodes/rg-node.ts";
+import type {TransformVertexOutRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
 
 export interface GeometryRenderGraphNode extends RenderGraphNodeBase<"geometry"> {
     readonly primitiveTypes: "triangles" | "lines"

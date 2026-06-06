@@ -1,4 +1,4 @@
-import type {DatabaseStorageUnitMapping} from "@/modules/gamedb/storage/database-storage.ts";
+import type {DatabaseStorageUnitMapping} from "@modules/gamedb/storage/database-storage.ts";
 
 /**
  * A database query taking some dynamic argument and returning some entities from the given storage

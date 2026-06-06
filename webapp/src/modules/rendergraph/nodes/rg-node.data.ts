@@ -1,6 +1,6 @@
-import type {RenderGraphNodeBase} from "@/modules/rendergraph/nodes/rg-node.ts";
-import type {TransformRenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.transform.ts";
-import type {TransformMultiOutRenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.transform-multi-out.ts";
+import type {RenderGraphNodeBase} from "@modules/rendergraph/nodes/rg-node.ts";
+import type {TransformRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.transform.ts";
+import type {TransformMultiOutRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.transform-multi-out.ts";
 
 export interface DataRenderGraphNode<TData> extends RenderGraphNodeBase<"data"> {
     readonly source:

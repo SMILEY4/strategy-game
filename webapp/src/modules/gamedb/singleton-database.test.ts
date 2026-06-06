@@ -1,5 +1,5 @@
 import {describe, expect, test, vi} from "vitest";
-import {DatabaseBuilder} from "@/modules/gamedb/database-builder.ts";
+import {DatabaseBuilder} from "@modules/gamedb/database-builder.ts";
 
 interface TestEntity {
     id: string,

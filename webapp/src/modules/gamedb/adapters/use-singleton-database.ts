@@ -1,4 +1,4 @@
-import type {SingletonDatabase} from "@/modules/gamedb/singleton/singleton-database.ts";
+import type {SingletonDatabase} from "@modules/gamedb/singleton/singleton-database.ts";
 import {useEffect, useRef, useState} from "react";
 
 /**

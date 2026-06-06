@@ -1,7 +1,7 @@
-import type {Query} from "@/modules/gamedb/database/query.ts";
-import type {BatchSupportingObject} from "@/modules/gamedb/subscribers/batch-supporting-object.ts";
-import type {DatabaseOperation} from "@/modules/gamedb/database/database-operation.ts";
-import type {DatabaseStorageUnitMapping} from "@/modules/gamedb/storage/database-storage.ts";
+import type {Query} from "@modules/gamedb/database/query.ts";
+import type {BatchSupportingObject} from "@modules/gamedb/subscribers/batch-supporting-object.ts";
+import type {DatabaseOperation} from "@modules/gamedb/database/database-operation.ts";
+import type {DatabaseStorageUnitMapping} from "@modules/gamedb/storage/database-storage.ts";
 
 /**
  * A database storing entities of a given type with unique ids of a given type.

@@ -1,10 +1,10 @@
-import {assertExhaustive} from "@/modules/utilities/common.ts";
-import {type GLUniformValueType} from "@/modules/rendergraph/webgl/gl-program.ts";
-import {GlFramebuffer} from "@/modules/rendergraph/webgl/gl-framebuffer.ts";
+import {assertExhaustive} from "@modules/utilities/common.ts";
+import {type GLUniformValueType} from "@modules/rendergraph/webgl/gl-program.ts";
+import {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {mat4, vec3} from "gl-matrix";
-import {GlError} from "@/modules/rendergraph/webgl/gl-error.ts";
-import type {ValueEntry, WebGlCommand} from "@/modules/rendergraph/compile/webgl/webgl-compiler.ts";
-import {WebGlExecutionContext} from "@/modules/rendergraph/execute/webgl/webgl-execution-context.ts";
+import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
+import type {ValueEntry, WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-compiler.ts";
+import {WebGlExecutionContext} from "@modules/rendergraph/execute/webgl/webgl-execution-context.ts";
 
 
 export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExecutionContext) {

@@ -1,4 +1,4 @@
-import type {RenderGraphNodeBase} from "@/modules/rendergraph/nodes/rg-node.ts";
+import type {RenderGraphNodeBase} from "@modules/rendergraph/nodes/rg-node.ts";
 
 export interface TextureRenderGraphNode extends RenderGraphNodeBase<"texture"> {
     readonly url: string,

@@ -1,8 +1,8 @@
-import {GlAttributeType, GlProgram} from "@/modules/rendergraph/webgl/gl-program.ts";
-import {GlFramebuffer} from "@/modules/rendergraph/webgl/gl-framebuffer.ts";
-import {GlVertexBuffer} from "@/modules/rendergraph/webgl/gl-vertexbuffer.ts";
-import {type AttributeConfig, GlVertexArray} from "@/modules/rendergraph/webgl/gl-vertexarray.ts";
-import {GlTexture, GLTextureMagFilter, GLTextureMinFilter, GLTextureWrap} from "@/modules/rendergraph/webgl/gl-texture.ts";
+import {GlAttributeType, GlProgram} from "@modules/rendergraph/webgl/gl-program.ts";
+import {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import {GlVertexBuffer} from "@modules/rendergraph/webgl/gl-vertexbuffer.ts";
+import {type AttributeConfig, GlVertexArray} from "@modules/rendergraph/webgl/gl-vertexarray.ts";
+import {GlTexture, GLTextureMagFilter, GLTextureMinFilter, GLTextureWrap} from "@modules/rendergraph/webgl/gl-texture.ts";
 import type {
     WebGlFramebufferResource,
     WebGlProgramResource,
@@ -10,8 +10,8 @@ import type {
     WebGlTextureResource,
     WebGlVertexArrayResource,
     WebGlVertexBufferResource,
-} from "@/modules/rendergraph/execute/webgl/webgl-resource.ts";
-import {assertExhaustive} from "@/modules/utilities/common.ts";
+} from "@modules/rendergraph/execute/webgl/webgl-resource.ts";
+import {assertExhaustive} from "@modules/utilities/common.ts";
 
 export type WebglExecutionContextFactory = (canvas: HTMLCanvasElement) => WebGlExecutionContext
 

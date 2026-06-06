@@ -1,13 +1,13 @@
-import {RenderGraphBuilder} from "@/modules/rendergraph/render-graph-builder.ts";
-import type {GameRendererDataProvider} from "@/renderer/data/game-renderer-data-provider.ts";
-import type {RenderCameraData, RenderTile} from "@/renderer/data/models.ts";
-import {gameGraphChunkCulling} from "@/renderer/graph/game-graph.chunk-culling.ts";
-import type {RenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.ts";
-import {gameGraphTileMesh} from "@/renderer/graph/game-graph.tile-mesh.ts";
+import {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
+import type {GameRendererDataProvider} from "@renderer/data/game-renderer-data-provider.ts";
+import type {RenderCameraData, RenderTile} from "@renderer/data/models.ts";
+import {gameGraphChunkCulling} from "@renderer/graph/game-graph.chunk-culling.ts";
+import type {RenderGraphNode} from "@modules/rendergraph/nodes/rg-node.ts";
+import {gameGraphTileMesh} from "@renderer/graph/game-graph.tile-mesh.ts";
 
 import SHADER_TILEMAP_VERT from "./../shader/tilemap.vsh?raw";
 import SHADER_TILEMAP_FRAG from "./../shader/tilemap.fsh?raw";
-import {gameGraphTileInstances} from "@/renderer/graph/game-graph.tile-instances.ts";
+import {gameGraphTileInstances} from "@renderer/graph/game-graph.tile-instances.ts";
 
 export function gameGraph(dataProvider: GameRendererDataProvider): RenderGraphNode[] {
 

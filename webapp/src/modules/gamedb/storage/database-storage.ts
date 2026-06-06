@@ -1,8 +1,8 @@
-import type {SupportingDatabaseStorageUnit} from "@/modules/gamedb/storage/database-storage-unit.supporting.ts";
-import type {PrimaryDatabaseStorageUnit} from "@/modules/gamedb/storage/database-storage-unit.primary.ts";
-import type {SingleDatabaseStorageResult} from "@/modules/gamedb/storage/database-storage-result.single.ts";
-import type {ManyDatabaseStorageResult} from "@/modules/gamedb/storage/database-storage-result.many.ts";
-import type {ModifyDatabaseStorageResult} from "@/modules/gamedb/storage/database-storage-result.modify.ts";
+import type {SupportingDatabaseStorageUnit} from "@modules/gamedb/storage/database-storage-unit.supporting.ts";
+import type {PrimaryDatabaseStorageUnit} from "@modules/gamedb/storage/database-storage-unit.primary.ts";
+import type {SingleDatabaseStorageResult} from "@modules/gamedb/storage/database-storage-result.single.ts";
+import type {ManyDatabaseStorageResult} from "@modules/gamedb/storage/database-storage-result.many.ts";
+import type {ModifyDatabaseStorageResult} from "@modules/gamedb/storage/database-storage-result.modify.ts";
 
 
 export type DatabaseStorageUnitMapping<ENTITY, ID> =

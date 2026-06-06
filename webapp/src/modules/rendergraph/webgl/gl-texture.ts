@@ -1,5 +1,5 @@
-import type {GlDisposable} from "@/modules/rendergraph/webgl/gl-disposable.ts";
-import {GlError} from "@/modules/rendergraph/webgl/gl-error.ts";
+import type {GlDisposable} from "@modules/rendergraph/webgl/gl-disposable.ts";
+import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
 
 /**
  * Options for texture wrapping behavior (for texture coordinates outside the [0,1] range.

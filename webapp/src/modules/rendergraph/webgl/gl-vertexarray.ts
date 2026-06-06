@@ -1,8 +1,8 @@
-import type {GlDisposable} from "@/modules/rendergraph/webgl/gl-disposable.ts";
-import {GlError} from "@/modules/rendergraph/webgl/gl-error.ts";
-import {type GlAttributeComponentAmount, GlAttributeType} from "@/modules/rendergraph/webgl/gl-program.ts";
-import type {GlVertexBuffer} from "@/modules/rendergraph/webgl/gl-vertexbuffer.ts";
-import type {GlIndexBuffer} from "@/modules/rendergraph/webgl/gl-indexbuffer.ts";
+import type {GlDisposable} from "@modules/rendergraph/webgl/gl-disposable.ts";
+import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
+import {type GlAttributeComponentAmount, GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
+import type {GlVertexBuffer} from "@modules/rendergraph/webgl/gl-vertexbuffer.ts";
+import type {GlIndexBuffer} from "@modules/rendergraph/webgl/gl-indexbuffer.ts";
 
 /**
  * Configuration of a single attribute of a vertex

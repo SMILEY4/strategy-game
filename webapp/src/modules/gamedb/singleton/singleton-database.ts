@@ -1,4 +1,4 @@
-import type {BatchSupportingObject} from "@/modules/gamedb/subscribers/batch-supporting-object.ts";
+import type {BatchSupportingObject} from "@modules/gamedb/subscribers/batch-supporting-object.ts";
 
 /**
  * A database storing a single entity

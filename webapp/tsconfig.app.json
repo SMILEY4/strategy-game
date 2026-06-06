@@ -25,6 +25,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+      "@app/*": ["src/app/*"],
+      "@renderer/*": ["src/renderer/*"],
+      "@ui/*": ["src/ui/*"],
+      "@modules/*": ["src/modules/*"]
     }
   },
   "include": ["src"]

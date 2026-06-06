@@ -1,4 +1,4 @@
-import type {SupportingDatabaseStorageUnit} from "@/modules/gamedb/storage/database-storage-unit.supporting.ts";
+import type {SupportingDatabaseStorageUnit} from "@modules/gamedb/storage/database-storage-unit.supporting.ts";
 
 /**
  * Stores all entities in a single array.

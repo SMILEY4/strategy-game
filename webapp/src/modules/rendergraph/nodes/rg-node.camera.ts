@@ -1,6 +1,6 @@
-import type {RenderGraphNodeBase} from "@/modules/rendergraph/nodes/rg-node.ts";
-import type {DataRenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.data.ts";
-import type {CanvasSizeRenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.canvas-size.ts";
+import type {RenderGraphNodeBase} from "@modules/rendergraph/nodes/rg-node.ts";
+import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
+import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas-size.ts";
 
 export interface CameraRenderGraphNode extends RenderGraphNodeBase<"camera"> {
     readonly renderTargetSize: DataRenderGraphNode<[number, number]> | CanvasSizeRenderGraphNode;

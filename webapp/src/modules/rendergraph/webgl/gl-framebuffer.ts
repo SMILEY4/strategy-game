@@ -1,5 +1,5 @@
 import {GlError} from "./gl-error.ts";
-import type {GlDisposable} from "@/modules/rendergraph/webgl/gl-disposable.ts";
+import type {GlDisposable} from "@modules/rendergraph/webgl/gl-disposable.ts";
 
 /**
  * A webgl framebuffer handle to render to

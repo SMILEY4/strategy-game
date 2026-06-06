@@ -1,5 +1,5 @@
-import type {RenderGraphNodeBase} from "@/modules/rendergraph/nodes/rg-node.ts";
-import type {DataRenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.data.ts";
+import type {RenderGraphNodeBase} from "@modules/rendergraph/nodes/rg-node.ts";
+import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface TransformRenderGraphNode<TIn extends any[], TOut> extends RenderGraphNodeBase<"transform"> {

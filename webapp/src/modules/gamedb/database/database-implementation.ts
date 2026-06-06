@@ -1,11 +1,11 @@
-import type {Database} from "@/modules/gamedb/database/database.ts";
-import {type IdProvider, IdProviderUtils} from "@/modules/gamedb/storage/id-provider.ts";
-import type {EntitySubscriber} from "@/modules/gamedb/subscribers/subscriber-entity.ts";
-import type {QuerySubscriber} from "@/modules/gamedb/subscribers/subscriber-query.ts";
-import type {DatabaseSubscriber} from "@/modules/gamedb/subscribers/subscriber-database.ts";
-import {DatabaseOperation} from "@/modules/gamedb/database/database-operation.ts";
-import type {Query} from "@/modules/gamedb/database/query.ts";
-import {DatabaseStorage, type DatabaseStorageUnitMapping} from "@/modules/gamedb/storage/database-storage.ts";
+import type {Database} from "@modules/gamedb/database/database.ts";
+import {type IdProvider, IdProviderUtils} from "@modules/gamedb/storage/id-provider.ts";
+import type {EntitySubscriber} from "@modules/gamedb/subscribers/subscriber-entity.ts";
+import type {QuerySubscriber} from "@modules/gamedb/subscribers/subscriber-query.ts";
+import type {DatabaseSubscriber} from "@modules/gamedb/subscribers/subscriber-database.ts";
+import {DatabaseOperation} from "@modules/gamedb/database/database-operation.ts";
+import type {Query} from "@modules/gamedb/database/query.ts";
+import {DatabaseStorage, type DatabaseStorageUnitMapping} from "@modules/gamedb/storage/database-storage.ts";
 
 interface PartialRevId<ENTITY> {
     name: string,

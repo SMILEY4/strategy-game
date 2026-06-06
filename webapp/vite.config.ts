@@ -7,6 +7,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": "/src",
+      "@app": "/src/app",
+      "@ui": "/src/ui",
+      "@renderer": "/src/renderer",
+      "@modules": "/src/modules",
     }
   }
 })

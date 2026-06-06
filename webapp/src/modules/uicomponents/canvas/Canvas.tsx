@@ -1,5 +1,5 @@
 import {useCanvasInteractions} from "./canvas.use-interactions.ts";
-import {useCanvasLifecycle} from "@/modules/uicomponents/canvas/canvas.use-lifecycle.ts";
+import {useCanvasLifecycle} from "@modules/uicomponents/canvas/canvas.use-lifecycle.ts";
 import type {ReactElement, ReactNode} from "react";
 import classNames from "classnames";
 

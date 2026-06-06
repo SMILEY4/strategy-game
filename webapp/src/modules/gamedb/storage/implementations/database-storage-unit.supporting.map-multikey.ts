@@ -1,4 +1,4 @@
-import type {SupportingDatabaseStorageUnit} from "@/modules/gamedb/storage/database-storage-unit.supporting.ts";
+import type {SupportingDatabaseStorageUnit} from "@modules/gamedb/storage/database-storage-unit.supporting.ts";
 
 /**
  * Maps arbitrary keys to entities in an n-m key-entity-relation:

@@ -1,8 +1,8 @@
 import {describe, expect, test} from "vitest";
-import type {RenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.ts";
-import {RenderGraphBuilder} from "@/modules/rendergraph/render-graph-builder.ts";
-import {buildWebglDrawCallGraph} from "@/modules/rendergraph/compile/webgl/webgl-draw-call-graph.builder.ts";
-import {sortWebGlDrawCallNodes} from "@/modules/rendergraph/compile/webgl/webgl-draw-call-graph.sorter.ts";
+import type {RenderGraphNode} from "@modules/rendergraph/nodes/rg-node.ts";
+import {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
+import {buildWebglDrawCallGraph} from "@modules/rendergraph/compile/webgl/webgl-draw-call-graph.builder.ts";
+import {sortWebGlDrawCallNodes} from "@modules/rendergraph/compile/webgl/webgl-draw-call-graph.sorter.ts";
 
 declare global {
     var WebGL2RenderingContext: typeof WebGL2RenderingContext;

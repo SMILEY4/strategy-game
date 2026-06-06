@@ -1,9 +1,9 @@
-import {GameRendererDataProvider} from "@/renderer/data/game-renderer-data-provider.ts";
-import {KeyboardTracker} from "@/renderer/data/keyboard-tracker.ts";
-import {CameraController} from "@/renderer/data/camera-controller.ts";
-import {WebGlRenderGraph} from "@/modules/rendergraph/render-graph.ts";
-import {gameGraph} from "@/renderer/graph/game-graph.ts";
-import type {RenderCameraData} from "@/renderer/data/models.ts";
+import {GameRendererDataProvider} from "@renderer/data/game-renderer-data-provider.ts";
+import {KeyboardTracker} from "@renderer/data/keyboard-tracker.ts";
+import {CameraController} from "@renderer/data/camera-controller.ts";
+import {WebGlRenderGraph} from "@modules/rendergraph/render-graph.ts";
+import {gameGraph} from "@renderer/graph/game-graph.ts";
+import type {RenderCameraData} from "@renderer/data/models.ts";
 
 export class GameRenderer {
 

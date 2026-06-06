@@ -1,9 +1,9 @@
-import type {RenderGraphNode} from "@/modules/rendergraph/nodes/rg-node.ts";
-import {sortWebGlDrawCallNodes} from "@/modules/rendergraph/compile/webgl/webgl-draw-call-graph.sorter.ts";
-import {buildWebglDrawCallGraph} from "@/modules/rendergraph/compile/webgl/webgl-draw-call-graph.builder.ts";
-import {type WebGlCommand, webglCompile} from "@/modules/rendergraph/compile/webgl/webgl-compiler.ts";
-import {WebGlExecutionContext, type WebglExecutionContextFactory} from "@/modules/rendergraph/execute/webgl/webgl-execution-context.ts";
-import {executeWebGlCommands} from "@/modules/rendergraph/execute/webgl/webg-command-executor.ts";
+import type {RenderGraphNode} from "@modules/rendergraph/nodes/rg-node.ts";
+import {sortWebGlDrawCallNodes} from "@modules/rendergraph/compile/webgl/webgl-draw-call-graph.sorter.ts";
+import {buildWebglDrawCallGraph} from "@modules/rendergraph/compile/webgl/webgl-draw-call-graph.builder.ts";
+import {type WebGlCommand, webglCompile} from "@modules/rendergraph/compile/webgl/webgl-compiler.ts";
+import {WebGlExecutionContext, type WebglExecutionContextFactory} from "@modules/rendergraph/execute/webgl/webgl-execution-context.ts";
+import {executeWebGlCommands} from "@modules/rendergraph/execute/webgl/webg-command-executor.ts";
 
 export interface RenderGraph {
     initializeCanvas(canvas: HTMLCanvasElement | null): void;

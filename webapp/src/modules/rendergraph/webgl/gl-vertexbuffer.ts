@@ -1,5 +1,5 @@
-import type {GlDisposable} from "@/modules/rendergraph/webgl/gl-disposable.ts";
-import {GlError} from "@/modules/rendergraph/webgl/gl-error.ts";
+import type {GlDisposable} from "@modules/rendergraph/webgl/gl-disposable.ts";
+import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
 
 /**
  * A webgl data buffer holding vertex data

@@ -1,4 +1,5 @@
-import {createDI, type FactoryMap} from "@/modules/utilities/di.ts";
+import {createDI, type FactoryMap} from "@modules/utilities/di.ts";
+import {httpClient, type HttpClient} from "@app/api/http-client.ts";
 
 
 interface EnvShape {
@@ -14,12 +15,21 @@ export const Env: EnvShape = {
 
 
 interface DIShape {
-    //... define dependency types here
+    httpClient: HttpClient;
 }
 
 
 export const DIConfig = {
-    //... dependency factories here
+    httpClient: {
+        scope: "singleton",
+        create: () => httpClient({
+            baseUrl: Env.serverUrl,
+            authHandler: {
+                getToken: () => "todo", // todo
+                handleUnauthorized: () => undefined // todo
+            }
+        })
+    },
 } satisfies FactoryMap<DIShape>;
 
 

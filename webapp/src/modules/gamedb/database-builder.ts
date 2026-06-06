@@ -1,9 +1,9 @@
-import {DatabaseStorage, type DatabaseStorageUnitMapping} from "@/modules/gamedb/storage/database-storage.ts";
-import type {IdProvider} from "@/modules/gamedb/storage/id-provider.ts";
-import type {Database} from "@/modules/gamedb/database/database.ts";
-import {DatabaseImpl} from "@/modules/gamedb/database/database-implementation.ts";
-import {SingletonDatabaseImpl} from "@/modules/gamedb/singleton/singleton-database-implementation.ts";
-import type {SingletonDatabase} from "@/modules/gamedb/singleton/singleton-database.ts";
+import {DatabaseStorage, type DatabaseStorageUnitMapping} from "@modules/gamedb/storage/database-storage.ts";
+import type {IdProvider} from "@modules/gamedb/storage/id-provider.ts";
+import type {Database} from "@modules/gamedb/database/database.ts";
+import {DatabaseImpl} from "@modules/gamedb/database/database-implementation.ts";
+import {SingletonDatabaseImpl} from "@modules/gamedb/singleton/singleton-database-implementation.ts";
+import type {SingletonDatabase} from "@modules/gamedb/singleton/singleton-database.ts";
 
 
 export const DatabaseBuilder = {

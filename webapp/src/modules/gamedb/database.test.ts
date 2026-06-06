@@ -1,9 +1,9 @@
 import {describe, expect, test, vi} from "vitest";
-import {DatabaseBuilder} from "@/modules/gamedb/database-builder.ts";
-import type {Query} from "@/modules/gamedb/database/query.ts";
-import {MapPrimaryDatabaseStorageUnit} from "@/modules/gamedb/storage/implementations/database-storage-unit.primary.map.ts";
-import type {Database} from "@/modules/gamedb/database/database.ts";
-import {DatabaseOperation} from "@/modules/gamedb/database/database-operation.ts";
+import {DatabaseBuilder} from "@modules/gamedb/database-builder.ts";
+import type {Query} from "@modules/gamedb/database/query.ts";
+import {MapPrimaryDatabaseStorageUnit} from "@modules/gamedb/storage/implementations/database-storage-unit.primary.map.ts";
+import type {Database} from "@modules/gamedb/database/database.ts";
+import {DatabaseOperation} from "@modules/gamedb/database/database-operation.ts";
 
 interface TestEntity {
     id: string,

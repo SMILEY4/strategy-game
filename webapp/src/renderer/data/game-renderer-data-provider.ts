@@ -1,5 +1,5 @@
-import type {RenderCameraData, RenderTile} from "@/renderer/data/models.ts";
-import {HexUtils} from "@/modules/utilities/hexUtils.ts";
+import type {RenderCameraData, RenderTile} from "@renderer/data/models.ts";
+import {HexUtils} from "@modules/utilities/hexUtils.ts";
 import {vec3} from "gl-matrix";
 
 export class GameRendererDataProvider {

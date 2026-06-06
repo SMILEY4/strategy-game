@@ -1,6 +1,6 @@
-import type {SingletonDatabase} from "@/modules/gamedb/singleton/singleton-database.ts";
-import type {PartialSingletonSubscriber} from "@/modules/gamedb/subscribers/subscriber-singleton-partial.ts";
-import type {SingletonSubscriber} from "@/modules/gamedb/subscribers/subscriber-singleton.ts";
+import type {SingletonDatabase} from "@modules/gamedb/singleton/singleton-database.ts";
+import type {PartialSingletonSubscriber} from "@modules/gamedb/subscribers/subscriber-singleton-partial.ts";
+import type {SingletonSubscriber} from "@modules/gamedb/subscribers/subscriber-singleton.ts";
 
 interface PartialRevId<ENTITY, T> {
     name: string,

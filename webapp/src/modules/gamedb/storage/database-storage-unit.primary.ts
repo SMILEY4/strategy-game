@@ -1,6 +1,6 @@
-import type {SingleDatabaseStorageResult} from "@/modules/gamedb/storage/database-storage-result.single.ts";
-import type {ManyDatabaseStorageResult} from "@/modules/gamedb/storage/database-storage-result.many.ts";
-import type {ModifyDatabaseStorageResult} from "@/modules/gamedb/storage/database-storage-result.modify.ts";
+import type {SingleDatabaseStorageResult} from "@modules/gamedb/storage/database-storage-result.single.ts";
+import type {ManyDatabaseStorageResult} from "@modules/gamedb/storage/database-storage-result.many.ts";
+import type {ModifyDatabaseStorageResult} from "@modules/gamedb/storage/database-storage-result.modify.ts";
 
 /**
  * Primary storage unit for a database.

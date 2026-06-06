@@ -1,5 +1,5 @@
-import type {Query} from "@/modules/gamedb/database/query.ts";
-import type {DatabaseStorageUnitMapping} from "@/modules/gamedb/storage/database-storage.ts";
+import type {Query} from "@modules/gamedb/database/query.ts";
+import type {DatabaseStorageUnitMapping} from "@modules/gamedb/storage/database-storage.ts";
 
 /**
  * A subscriber listening to changes of a given query

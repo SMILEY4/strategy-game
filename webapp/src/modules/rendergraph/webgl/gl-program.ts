@@ -1,7 +1,7 @@
 import type { GlDisposable } from "./gl-disposable.ts";
-import {GlError} from "@/modules/rendergraph/webgl/gl-error.ts";
-import {GlTexture} from "@/modules/rendergraph/webgl/gl-texture.ts";
-import {GlFramebuffer} from "@/modules/rendergraph/webgl/gl-framebuffer.ts";
+import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
+import {GlTexture} from "@modules/rendergraph/webgl/gl-texture.ts";
+import {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 
 /**
  * The type of individual webgl shader program

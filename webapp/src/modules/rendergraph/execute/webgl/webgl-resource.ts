@@ -1,8 +1,8 @@
-import type {GlTexture} from "@/modules/rendergraph/webgl/gl-texture.ts";
-import type {GlFramebuffer} from "@/modules/rendergraph/webgl/gl-framebuffer.ts";
-import {type GlAttributeComponentAmount, GlAttributeType, type GlProgram} from "@/modules/rendergraph/webgl/gl-program.ts";
-import type {GlVertexBuffer} from "@/modules/rendergraph/webgl/gl-vertexbuffer.ts";
-import type {GlVertexArray} from "@/modules/rendergraph/webgl/gl-vertexarray.ts";
+import type {GlTexture} from "@modules/rendergraph/webgl/gl-texture.ts";
+import type {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import {type GlAttributeComponentAmount, GlAttributeType, type GlProgram} from "@modules/rendergraph/webgl/gl-program.ts";
+import type {GlVertexBuffer} from "@modules/rendergraph/webgl/gl-vertexbuffer.ts";
+import type {GlVertexArray} from "@modules/rendergraph/webgl/gl-vertexarray.ts";
 
 export type WebGlResource =
     | WebGlDataResource

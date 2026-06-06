@@ -1,8 +1,8 @@
-import type {SingleDatabaseStorageResult} from "@/modules/gamedb/storage/database-storage-result.single.ts";
-import type {ManyDatabaseStorageResult} from "@/modules/gamedb/storage/database-storage-result.many.ts";
-import type {ModifyDatabaseStorageResult} from "@/modules/gamedb/storage/database-storage-result.modify.ts";
-import {type IdProvider, IdProviderUtils} from "@/modules/gamedb/storage/id-provider.ts";
-import type {PrimaryDatabaseStorageUnit} from "@/modules/gamedb/storage/database-storage-unit.primary.ts";
+import type {SingleDatabaseStorageResult} from "@modules/gamedb/storage/database-storage-result.single.ts";
+import type {ManyDatabaseStorageResult} from "@modules/gamedb/storage/database-storage-result.many.ts";
+import type {ModifyDatabaseStorageResult} from "@modules/gamedb/storage/database-storage-result.modify.ts";
+import {type IdProvider, IdProviderUtils} from "@modules/gamedb/storage/id-provider.ts";
+import type {PrimaryDatabaseStorageUnit} from "@modules/gamedb/storage/database-storage-unit.primary.ts";
 
 /**
  * Maps a unique id to a unique entity
