@@ -2,7 +2,7 @@ export interface AppErrorData {
     /**
      * The associated http status code.
      */
-    status: number;
+    status?: number;
     /**
      * A machine-readable (enum-like) code for the general error type.
      */
@@ -23,7 +23,7 @@ export interface AppErrorData {
 
 
 export class AppError extends Error implements AppErrorData {
-    public readonly status: number;
+    public readonly status: number | undefined;
     public readonly errorCode: string;
     public readonly title: string;
     public readonly detail: string;

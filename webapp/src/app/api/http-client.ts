@@ -1,14 +1,20 @@
 import {AppError, type AppErrorData} from "@app/api/app-error.ts";
 
-interface BaseRequestConfig {
+interface RequestConfig {
+    url: string
     authenticated?: boolean;
+    headers?: Record<string, string>;
+}
+
+interface RequestConfigWithContent<TContent> extends RequestConfig{
+    content: TContent
 }
 
 export interface HttpClient {
-    get: <TResponse = never>(url: string, config?: BaseRequestConfig) => Promise<TResponse>;
-    post: <TRequest = never, TResponse = never>(url: string, data?: TRequest, config?: BaseRequestConfig) => Promise<TResponse>;
-    put: <TRequest = never, TResponse = never>(url: string, data?: TRequest, config?: BaseRequestConfig) => Promise<TResponse>;
-    delete: <TRequest = never, TResponse = never>(url: string, data?: TRequest, config?: BaseRequestConfig) => Promise<TResponse>;
+    get: <TResponse = never>(config: RequestConfig) => Promise<TResponse>;
+    post: <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
+    put: <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
+    delete: <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
 }
 
 interface HttpClientAuthHandler {
@@ -21,11 +27,37 @@ interface Dependencies {
     authHandler: HttpClientAuthHandler;
 }
 
+
+/*
+ USAGE:
+
+    const users = await client.get<User[]>({
+        url: "/api/users",
+        authenticated: true,
+        headers: {
+            "X-Client-Id": "12345"
+        }
+    })
+
+    const user = await client.post<CreateUser, User>({
+        url: "/api/user",
+        authenticated: true,
+        content: {
+            name: "Example User",
+            email: "user@example.com"
+        },
+        headers: {
+            "X-Client-Id": "12345"
+        }
+    })
+
+ */
 export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => {
 
-    async function buildHeaders(config: BaseRequestConfig | undefined, withBody: boolean): Promise<Headers> {
+    async function buildHeaders(config: RequestConfig | undefined, withBody: boolean): Promise<Headers> {
         const headers = new Headers({
             "Accept": "application/json",
+            ...(config?.headers ?? {})
         });
 
         if (config?.authenticated) {
@@ -71,7 +103,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
         url: string,
         withBody: boolean,
         requestBody?: TRequest,
-        config?: BaseRequestConfig
+        config?: RequestConfig
     }): Promise<TResponse> {
 
         let serializedRequestBody: string | undefined = undefined;
@@ -108,42 +140,42 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
 
     return {
 
-        get: async <TResponse = never>(url: string, config?: BaseRequestConfig): Promise<TResponse> => {
+        get: async <TResponse = never>(config: RequestConfig): Promise<TResponse> => {
             return makeRequest<never, TResponse>({
                 method: "GET",
-                url: url,
+                url: config.url,
                 withBody: false,
                 requestBody: undefined as never,
                 config: config,
             });
         },
 
-        post: async <TRequest = never, TResponse = never>(url: string, data?: TRequest, config?: BaseRequestConfig): Promise<TResponse> => {
+        post: async <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>): Promise<TResponse> => {
             return makeRequest<TRequest, TResponse>({
                 method: "POST",
-                url: url,
+                url: config.url,
                 withBody: true,
-                requestBody: data,
+                requestBody: config.content,
                 config: config,
             });
         },
 
-        put: async <TRequest = never, TResponse = never>(url: string, data?: TRequest, config?: BaseRequestConfig): Promise<TResponse> => {
+        put: async <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>): Promise<TResponse> => {
             return makeRequest<TRequest, TResponse>({
                 method: "PUT",
-                url: url,
+                url: config.url,
                 withBody: true,
-                requestBody: data,
+                requestBody: config.content,
                 config: config,
             });
         },
 
-        delete: async <TRequest = never, TResponse = never>(url: string, data?: TRequest, config?: BaseRequestConfig): Promise<TResponse> => {
+        delete: async <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>): Promise<TResponse> => {
             return makeRequest<TRequest, TResponse>({
                 method: "DELETE",
-                url: url,
+                url: config.url,
                 withBody: true,
-                requestBody: data,
+                requestBody: config.content,
                 config: config,
             });
         },
