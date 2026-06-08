@@ -39,7 +39,6 @@ private object CreateMatchRoute : KoinComponent {
             return RouteResponse.Success()
         } catch (_: UserIdError) {
             return RouteResponse.InvalidUserId()
-            //} catch (_: CreateMatchError) {
         } catch (_: Exception) {
             return RouteResponse.InternalError()
         }

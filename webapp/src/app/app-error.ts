@@ -1,12 +1,12 @@
 export interface AppErrorData {
     /**
-     * The associated http status code.
-     */
-    status?: number;
-    /**
      * A machine-readable (enum-like) code for the general error type.
      */
     errorCode: string,
+    /**
+     * An associated http status code (if available).
+     */
+    status?: number;
     /**
      * A short, human-readable title for the general error type.
      */

@@ -3,13 +3,16 @@ package io.github.smiley4.strategygame.identity
 import io.github.smiley4.ktoropenapi.route
 import io.github.smiley4.strategygame.identity.auth.AuthService
 import io.github.smiley4.strategygame.identity.auth.domain.AuthServiceImpl
+import io.github.smiley4.strategygame.identity.auth.domain.OneTimeGrantRepository
 import io.github.smiley4.strategygame.identity.auth.domain.SessionRepository
+import io.github.smiley4.strategygame.identity.auth.infrastructure.InMemoryOneTimeGrantRepository
 import io.github.smiley4.strategygame.identity.auth.infrastructure.InMemorySessionRepository
 import io.github.smiley4.strategygame.identity.routing.routeChangePassword
 import io.github.smiley4.strategygame.identity.routing.routeChangeUsername
 import io.github.smiley4.strategygame.identity.routing.routeLogIn
 import io.github.smiley4.strategygame.identity.routing.routeLogOut
 import io.github.smiley4.strategygame.identity.routing.routeRegisterUser
+import io.github.smiley4.strategygame.identity.routing.routeRequestOneTimeGrant
 import io.github.smiley4.strategygame.identity.shared.PasswordHasher
 import io.github.smiley4.strategygame.identity.user.UserService
 import io.github.smiley4.strategygame.identity.user.domain.UserRepository
@@ -32,8 +35,8 @@ fun Module.dependenciesIdentity() {
 
     // Auth
     single<SessionRepository> { InMemorySessionRepository() }
-    single<AuthService> { AuthServiceImpl(get(), get(), get()) }
-
+    single<OneTimeGrantRepository> { InMemoryOneTimeGrantRepository() }
+    single<AuthService> { AuthServiceImpl(get(), get(), get(), get()) }
 }
 
 fun Route.routingIdentity() {
@@ -42,16 +45,16 @@ fun Route.routingIdentity() {
         tags("identity")
     }) {
 
-        route("/login") { routeLogIn() }
-        authenticate(RoutingAuthConstants.AUTH_USER) {
-            route("/logout") { routeLogOut() }
-        }
-
         route("/user") { routeRegisterUser() }
 
+        route("/login") { routeLogIn() }
+
         authenticate(RoutingAuthConstants.AUTH_USER) {
+            route("/logout") { routeLogOut() }
+            route("/onetimegrant") { routeRequestOneTimeGrant() }
             route("/user/username") { routeChangeUsername() }
-            route("/user/username") { routeChangePassword() }
+            route("/user/password") { routeChangePassword() }
         }
+
     }
 }

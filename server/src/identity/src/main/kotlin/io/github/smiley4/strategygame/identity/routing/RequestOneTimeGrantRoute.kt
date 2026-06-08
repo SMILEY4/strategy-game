@@ -4,45 +4,40 @@ import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
 import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
-import io.github.smiley4.ktorplus.post
+import io.github.smiley4.ktorplus.get
 import io.github.smiley4.strategygame.identity.auth.AuthService
-import io.github.smiley4.strategygame.identity.auth.LogOutError
-import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
-import io.github.smiley4.strategygame.identity.auth.domain.SessionTokenError
-import io.github.smiley4.strategygame.identity.routing.LogOutRoute.RouteRequest
-import io.github.smiley4.strategygame.identity.routing.LogOutRoute.RouteResponse
+import io.github.smiley4.strategygame.identity.auth.GenerateOneTimeGrantError
+import io.github.smiley4.strategygame.identity.auth.domain.OneTimeToken
+import io.github.smiley4.strategygame.identity.routing.RequestOneTimeGrantRoute.RouteRequest
+import io.github.smiley4.strategygame.identity.routing.RequestOneTimeGrantRoute.RouteResponse
+import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
-import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-
-internal fun Route.routeLogOut() {
-    post<RouteRequest, RouteResponse>("", {
-        description = "Log-Out the given session."
+internal fun Route.routeRequestOneTimeGrant() {
+    get<RouteRequest, RouteResponse>("", {
+        description = "Request a one time token as registered user."
     }) { request ->
-        LogOutRoute.handle(request)
+        RequestOneTimeGrantRoute.handle(request)
     }
 }
 
 
-private object LogOutRoute : KoinComponent {
+private object RequestOneTimeGrantRoute : KoinComponent {
 
     private val service by inject<AuthService>()
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
-            service.logout(
-                SessionToken(request.body.token),
-            )
-            return RouteResponse.Success()
-        } catch (_: SessionTokenError) {
-            return RouteResponse.InvalidToken()
-        } catch (e: LogOutError) {
+            val token = service.generateOneTimeGrant(UserId(request.userId))
+            return RouteResponse.Success(token)
+        } catch (e: GenerateOneTimeGrantError) {
             return when (e) {
-                is LogOutError.InvalidToken -> RouteResponse.InvalidToken()
+                is GenerateOneTimeGrantError.InvalidToken -> RouteResponse.InvalidToken()
             }
         } catch (_: Exception) {
             return RouteResponse.InternalError()
@@ -52,20 +47,15 @@ private object LogOutRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @Body val body: RequestBody
-    ) {
-
-        @Serializable
-        data class RequestBody(
-            val token: String,
-        )
-
-    }
+        @AuthenticatedUserId val userId: String,
+    )
 
     sealed class RouteResponse {
 
-        @Response(HttpStatusCode.OK, "The user was successfully logged out")
-        class Success : RouteResponse()
+        @Response(HttpStatusCode.OK, "The one time token was successfully granted.")
+        class Success(
+            @Body val token: OneTimeToken
+        ) : RouteResponse()
 
 
         @Response(HttpStatusCode.BAD_REQUEST, "The provided token invalid.")
@@ -83,7 +73,6 @@ private object LogOutRoute : KoinComponent {
         class InternalError(
             @Body val body: HttpErrorResponse = HttpErrorResponse.internalError()
         ) : RouteResponse()
-
 
     }
 

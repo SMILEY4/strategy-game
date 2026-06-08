@@ -1,4 +1,4 @@
-import { AppError } from "@app/api/app-error.ts";
+import { AppError } from "@app/app-error.ts";
 
 interface WebsocketConnectionConfig<TServerMessage, TClientMessage> {
     url: string;
@@ -37,7 +37,6 @@ USAGE:
     type ServerMessage =
         | { type: "PING" }
         | { type: "PONG" }
-
 
     type ClientMessage =
         | { type: "PING" }

@@ -22,7 +22,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 internal fun Route.routeChangePassword() {
-    post<RouteRequest, RouteResponse>("/{userId}/password", {
+    post<RouteRequest, RouteResponse>("", {
         description = "Change the password of a registered user."
     }) { request ->
         ChangePasswordRoute.handle(request)

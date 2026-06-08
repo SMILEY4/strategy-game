@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.application.plugins
 
+import io.github.smiley4.strategygame.identity.auth.domain.OneTimeToken
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
@@ -27,6 +28,7 @@ fun Application.setupContentNegotiation(): Json {
             contextual(MatchIdSerializer)
             contextual(GameIdSerializer)
             contextual(SessionTokenSerializer)
+            contextual(OneTimeTokenSerializer)
             contextual(UnsafePasswordSerializer)
             contextual(UsernameSerializer)
         }
@@ -61,6 +63,12 @@ object SessionTokenSerializer : KSerializer<SessionToken> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("SessionToken", PrimitiveKind.STRING)
     override fun serialize(encoder: Encoder, value: SessionToken) = encoder.encodeString(value.value.toString())
     override fun deserialize(decoder: Decoder) = SessionToken(decoder.decodeString())
+}
+
+object OneTimeTokenSerializer : KSerializer<OneTimeToken> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("OneTimeToken", PrimitiveKind.STRING)
+    override fun serialize(encoder: Encoder, value: OneTimeToken) = encoder.encodeString(value.value.toString())
+    override fun deserialize(decoder: Decoder) = OneTimeToken(decoder.decodeString())
 }
 
 object UnsafePasswordSerializer : KSerializer<UnsafePassword> {

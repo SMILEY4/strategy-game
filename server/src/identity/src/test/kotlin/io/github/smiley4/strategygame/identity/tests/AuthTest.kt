@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.identity.auth.AuthService
 import io.github.smiley4.strategygame.identity.auth.AuthenticateUserError
 import io.github.smiley4.strategygame.identity.auth.LogInUserError
 import io.github.smiley4.strategygame.identity.auth.LogOutError
+import io.github.smiley4.strategygame.identity.auth.domain.OneTimeToken
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
@@ -12,6 +13,12 @@ import io.github.smiley4.strategygame.identity.user.UserService
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldNotBe
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 class AuthTest : FreeSpec({
 
@@ -115,9 +122,9 @@ class AuthTest : FreeSpec({
     }
 
 
-    "authenticate" - {
+    "authenticate session" - {
 
-        " with valid token should succeed" {
+        "with valid token should succeed" {
             testScope {
                 val authService = get<AuthService>()
                 val userService = get<UserService>()
@@ -142,6 +149,97 @@ class AuthTest : FreeSpec({
             }
         }
 
+        "with expired token should fail" {
+            testScope {
+                val timestampA = Clock.System.now()
+                val timestampB = Clock.System.now() + 30.days
+                mockkObject(Clock.System)
+                every { Clock.System.now() } returns timestampA
+
+                val authService = get<AuthService>()
+                val userService = get<UserService>()
+
+                userService.register(Username("tester"), UnsafePassword("password"))
+                val token = authService.login(Username("tester"), UnsafePassword("password"))
+
+                every { Clock.System.now() } returns timestampB
+
+                shouldThrow<AuthenticateUserError.InvalidToken> {
+                    authService.authenticate(token)
+                }
+
+                unmockkObject(Clock.System)
+
+            }
+        }
+
+    }
+
+    "one time grants" - {
+
+        "authenticate with valid ott should succeed" {
+            testScope {
+                val authService = get<AuthService>()
+                val userService = get<UserService>()
+
+                val userId = userService.register(Username("tester"), UnsafePassword("password"))
+                val oneTimeToken = authService.generateOneTimeGrant(userId)
+
+                authService.authenticate(oneTimeToken)
+            }
+        }
+
+        "authenticate with invalid ott should fail" {
+            testScope {
+                val authService = get<AuthService>()
+                val userService = get<UserService>()
+
+                userService.register(Username("tester"), UnsafePassword("password"))
+
+                shouldThrow<AuthenticateUserError.InvalidToken> {
+                    authService.authenticate(OneTimeToken())
+                }
+            }
+        }
+
+        "authenticate with expired ott should fail" {
+            testScope {
+                val timestampA = Clock.System.now()
+                val timestampB = Clock.System.now() + 1.hours
+                mockkObject(Clock.System)
+                every { Clock.System.now() } returns timestampA
+
+                val authService = get<AuthService>()
+                val userService = get<UserService>()
+
+                val userId = userService.register(Username("tester"), UnsafePassword("password"))
+                val oneTimeToken = authService.generateOneTimeGrant(userId)
+
+                every { Clock.System.now() } returns timestampB
+
+                shouldThrow<AuthenticateUserError.InvalidToken> {
+                    authService.authenticate(oneTimeToken)
+                }
+
+                unmockkObject(Clock.System)
+            }
+        }
+
+        "authenticate with consumed ott should fail" {
+            testScope {
+                val authService = get<AuthService>()
+                val userService = get<UserService>()
+
+                val userId = userService.register(Username("tester"), UnsafePassword("password"))
+                val oneTimeToken = authService.generateOneTimeGrant(userId)
+
+                authService.authenticate(oneTimeToken)
+
+                shouldThrow<AuthenticateUserError.InvalidToken> {
+                    authService.authenticate(oneTimeToken)
+                }
+            }
+        }
     }
 
 })

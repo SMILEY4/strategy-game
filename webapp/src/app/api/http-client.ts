@@ -1,4 +1,4 @@
-import {AppError, type AppErrorData} from "@app/api/app-error.ts";
+import {AppError, type AppErrorData} from "@app/app-error.ts";
 
 interface RequestConfig {
     url: string
@@ -76,7 +76,6 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
 
     function parseNetworkError(error: unknown): AppErrorData {
         return {
-            status: 0,
             errorCode: "NETWORK_ERROR",
             title: "Network Error",
             detail: error instanceof Error ? error.message : "Network request failed",

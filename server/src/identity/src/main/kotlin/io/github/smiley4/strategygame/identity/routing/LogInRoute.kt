@@ -23,7 +23,7 @@ import org.koin.core.component.inject
 
 
 internal fun Route.routeLogIn() {
-    post<RouteRequest, RouteResponse>("/login", {
+    post<RouteRequest, RouteResponse>("", {
         description = "Log-In with the given credentials."
     }) { request ->
         LogInRoute.handle(request)

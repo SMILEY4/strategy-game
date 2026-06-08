@@ -22,7 +22,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 internal fun Route.routeChangeUsername() {
-    post<RouteRequest, RouteResponse>("/{userId}/username", {
+    post<RouteRequest, RouteResponse>("", {
         description = "Change the username of a registered user."
     }) { request ->
         ChangeUsernameRoute.handle(request)

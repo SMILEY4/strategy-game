@@ -16,7 +16,7 @@ fun Application.setupAuthentication() {
         bearer(RoutingAuthConstants.AUTH_USER) {
             authenticate { tokenCredentials ->
                 try {
-                    val userId = service.authenticate(SessionToken(tokenCredentials.token))
+                    val userId = service.authenticate(SessionToken(tokenCredentials.token))// todo: catch+handle session token exceptions
                     UserPrincipal(userId)
                 } catch (_: Exception) {
                     null
