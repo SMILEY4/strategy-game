@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.application.plugins
 
+import io.github.smiley4.strategygame.engine.routingEngine
 import io.github.smiley4.strategygame.identity.routingIdentity
 import io.github.smiley4.strategygame.platform.match.routingPlatform
 import io.ktor.server.application.Application
@@ -11,6 +12,7 @@ fun Application.setupRouting() {
         route("api") {
             routingIdentity()
             routingPlatform()
+            routingEngine()
             routingOpenApi()
         }
     }

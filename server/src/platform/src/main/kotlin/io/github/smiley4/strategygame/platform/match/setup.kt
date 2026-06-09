@@ -14,7 +14,6 @@ import io.github.smiley4.strategygame.platform.match.routing.routeListMatches
 import io.github.smiley4.strategygame.shared.infrastructure.RoutingAuthConstants
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
 import org.koin.core.module.Module
 
 fun Module.dependenciesPlatform() {
@@ -28,7 +27,7 @@ fun Route.routingPlatform() {
         description = "Match handling"
         tags("platform")
     }) {
-        authenticate(RoutingAuthConstants.AUTH_USER) {
+        authenticate(RoutingAuthConstants.AUTHKEY_USER_SESSION) {
             route("/match") { routeListMatches() }
             route("/match") { routeCreateMatch() }
             route("/match/{matchId}") { routeDeleteMatch() }

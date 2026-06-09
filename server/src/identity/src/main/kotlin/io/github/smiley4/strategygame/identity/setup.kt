@@ -49,7 +49,7 @@ fun Route.routingIdentity() {
 
         route("/login") { routeLogIn() }
 
-        authenticate(RoutingAuthConstants.AUTH_USER) {
+        authenticate(RoutingAuthConstants.AUTHKEY_USER_SESSION) {
             route("/logout") { routeLogOut() }
             route("/onetimegrant") { routeRequestOneTimeGrant() }
             route("/user/username") { routeChangeUsername() }

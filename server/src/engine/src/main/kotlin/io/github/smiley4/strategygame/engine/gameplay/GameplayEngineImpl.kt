@@ -5,11 +5,24 @@ import io.github.smiley4.strategygame.engine.domain.GameplayEngine
 import io.github.smiley4.strategygame.engine.domain.ProcessTurnError
 import io.github.smiley4.strategygame.engine.gameplay.data.PlayerCommand
 import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.domain.UserId
 
 internal class GameplayEngineImpl(
     private val gameStateRepository: GameStateRepository,
-    private val gameNotificationService: GameNotificationService
+    private val gameNotificationService: GameNotificationService,
 ) : GameplayEngine {
+
+    override fun connect(gameId: GameId, userId: UserId) {
+        gameNotificationService.connect(gameId, userId)
+    }
+
+    override fun disconnect(gameId: GameId, userId: UserId) {
+        gameNotificationService.disconnect(gameId, userId)
+    }
+
+    override fun submitTurn(gameId: GameId, userId: UserId) {
+        TODO("Not yet implemented")
+    }
 
     override fun processTurn(gameId: GameId, commands: Collection<PlayerCommand>) {
 
