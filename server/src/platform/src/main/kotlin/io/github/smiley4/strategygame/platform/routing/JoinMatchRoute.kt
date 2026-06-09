@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.platform.match.routing
+package io.github.smiley4.strategygame.platform.routing
 
 import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
@@ -6,12 +6,12 @@ import io.github.smiley4.ktorplus.data.PathParameter
 import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.post
-import io.github.smiley4.strategygame.platform.match.GenerateGameError
+import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.domain.MatchId
 import io.github.smiley4.strategygame.platform.match.domain.MatchIdError
-import io.github.smiley4.strategygame.platform.match.routing.GenerateGameRoute.RouteRequest
-import io.github.smiley4.strategygame.platform.match.routing.GenerateGameRoute.RouteResponse
+import io.github.smiley4.strategygame.platform.routing.JoinMatchRoute.RouteRequest
+import io.github.smiley4.strategygame.platform.routing.JoinMatchRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.domain.UserId
 import io.github.smiley4.strategygame.shared.domain.UserIdError
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
@@ -21,21 +21,21 @@ import io.ktor.server.routing.Route
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-internal fun Route.routeGenerateMatch() {
+internal fun Route.routeJoinMatch() {
     post<RouteRequest, RouteResponse>("", {
-        description = "Generate the actual game for the given match."
+        description = "Join an existing match."
     }) { request ->
-        GenerateGameRoute.handle(request)
+        JoinMatchRoute.handle(request)
     }
 }
 
-private object GenerateGameRoute : KoinComponent {
+private object JoinMatchRoute : KoinComponent {
 
     private val service by inject<MatchService>()
 
     suspend fun handle(request: RouteRequest): RouteResponse {
         try {
-            service.generateGame(
+            service.join(
                 UserId(request.userId),
                 MatchId(request.matchId)
             )
@@ -44,13 +44,13 @@ private object GenerateGameRoute : KoinComponent {
             return RouteResponse.InvalidUserId()
         } catch (_: MatchIdError) {
             return RouteResponse.InvalidMatchId()
-        } catch (e: GenerateGameError) {
-            return when(e) {
-                is GenerateGameError.NotAllowed -> RouteResponse.NotAllowed()
-                is GenerateGameError.NotFound -> RouteResponse.NotFound()
-                is GenerateGameError.WrongMatchState -> RouteResponse.WrongMatchState()
+        } catch (e: JoinMatchError) {
+            return when (e) {
+                is JoinMatchError.AlreadyMember -> RouteResponse.AlreadyMember()
+                is JoinMatchError.NotFound -> RouteResponse.NotFound()
+                is JoinMatchError.WrongMatchState -> RouteResponse.WrongMatchState()
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return RouteResponse.InternalError()
         }
     }
@@ -66,6 +66,7 @@ private object GenerateGameRoute : KoinComponent {
 
         @Response(HttpStatusCode.OK, "The match was successfully created")
         class Success : RouteResponse()
+
 
         @Response(HttpStatusCode.BAD_REQUEST, "The provided user id is invalid.")
         class InvalidUserId(
@@ -88,6 +89,7 @@ private object GenerateGameRoute : KoinComponent {
             )
         ) : RouteResponse()
 
+
         @Response(HttpStatusCode.NOT_FOUND, "The match with the given id could not be found.")
         class NotFound(
             @Body val body: HttpErrorResponse = HttpErrorResponse(
@@ -105,18 +107,18 @@ private object GenerateGameRoute : KoinComponent {
                 status = HttpStatusCode.CONFLICT,
                 errorCode = "WRONG_MATCH_STATE",
                 title = "Wrong match state",
-                detail = "The match is in an state in which a game can not be generated anymore.",
+                detail = "The match is in an state in which no user can join anymore.",
             )
         ) : RouteResponse()
 
 
-        @Response(HttpStatusCode.BAD_REQUEST, "The user is not allowed to generate the game.")
-        class NotAllowed(
+        @Response(HttpStatusCode.CONFLICT, "The user is already a member of the match.")
+        class AlreadyMember(
             @Body val body: HttpErrorResponse = HttpErrorResponse(
-                status = HttpStatusCode.BAD_REQUEST,
-                errorCode = "NOT_ALLOWED",
-                title = "Not Allowed",
-                detail = "The user is not allowed to generate the game.",
+                status = HttpStatusCode.CONFLICT,
+                errorCode = "ALREADY_MEMBER",
+                title = "Already member",
+                detail = "The user is already a member of the match.",
             )
         ) : RouteResponse()
 

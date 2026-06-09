@@ -1,16 +1,17 @@
-package io.github.smiley4.strategygame.platform.match
+package io.github.smiley4.strategygame.platform
 
 import io.github.smiley4.ktoropenapi.route
+import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.domain.GameEngineClient
 import io.github.smiley4.strategygame.platform.match.domain.MatchRepository
 import io.github.smiley4.strategygame.platform.match.domain.MatchServiceImpl
 import io.github.smiley4.strategygame.platform.match.infrastructure.GameEngineClientImpl
 import io.github.smiley4.strategygame.platform.match.infrastructure.InMemoryMatchRepository
-import io.github.smiley4.strategygame.platform.match.routing.routeCreateMatch
-import io.github.smiley4.strategygame.platform.match.routing.routeDeleteMatch
-import io.github.smiley4.strategygame.platform.match.routing.routeGenerateMatch
-import io.github.smiley4.strategygame.platform.match.routing.routeJoinMatch
-import io.github.smiley4.strategygame.platform.match.routing.routeListMatches
+import io.github.smiley4.strategygame.platform.routing.routeCreateMatch
+import io.github.smiley4.strategygame.platform.routing.routeDeleteMatch
+import io.github.smiley4.strategygame.platform.routing.routeGenerateMatch
+import io.github.smiley4.strategygame.platform.routing.routeJoinMatch
+import io.github.smiley4.strategygame.platform.routing.routeListMatches
 import io.github.smiley4.strategygame.shared.infrastructure.RoutingAuthConstants
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route

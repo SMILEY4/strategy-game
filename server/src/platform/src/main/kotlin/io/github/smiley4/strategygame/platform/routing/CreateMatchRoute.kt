@@ -1,44 +1,44 @@
-package io.github.smiley4.strategygame.platform.match.routing
+package io.github.smiley4.strategygame.platform.routing
 
 import io.github.smiley4.ktorplus.data.Body
 import io.github.smiley4.ktorplus.data.HttpStatusCode
 import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
-import io.github.smiley4.ktorplus.get
+import io.github.smiley4.ktorplus.post
 import io.github.smiley4.strategygame.platform.match.MatchService
-import io.github.smiley4.strategygame.platform.match.domain.MatchId
-import io.github.smiley4.strategygame.platform.match.routing.ListMatchesRoute.RouteRequest
-import io.github.smiley4.strategygame.platform.match.routing.ListMatchesRoute.RouteResponse
+import io.github.smiley4.strategygame.platform.routing.CreateMatchRoute.RouteRequest
+import io.github.smiley4.strategygame.platform.routing.CreateMatchRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.domain.UserId
 import io.github.smiley4.strategygame.shared.domain.UserIdError
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
+import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-internal fun Route.routeListMatches() {
-    get<RouteRequest, RouteResponse>("", {
-        description = "List the matches of the user."
+internal fun Route.routeCreateMatch() {
+    post<RouteRequest, RouteResponse>("", {
+        description = "Create a new match."
     }) { request ->
-        ListMatchesRoute.handle(request)
+        CreateMatchRoute.handle(request)
     }
 }
 
-private object ListMatchesRoute : KoinComponent {
+private object CreateMatchRoute : KoinComponent {
 
     private val service by inject<MatchService>()
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
-            val matches = service.listMatches(
-                UserId(request.userId)
+            service.create(
+                UserId(request.userId),
+                request.body.name
             )
-            return RouteResponse.Success(matches)
+            return RouteResponse.Success()
         } catch (_: UserIdError) {
             return RouteResponse.InvalidUserId()
-//      } catch (e: ListMatchesError) {
         } catch (_: Exception) {
             return RouteResponse.InternalError()
         }
@@ -48,14 +48,21 @@ private object ListMatchesRoute : KoinComponent {
     @Request
     class RouteRequest(
         @AuthenticatedUserId val userId: String,
-    )
+        @Body val body: RequestBody
+    ) {
+
+        @Serializable
+        data class RequestBody(
+            val name: String,
+        )
+
+    }
+
 
     sealed class RouteResponse {
 
-        @Response(HttpStatusCode.OK, "The matches were successfully retrieved")
-        class Success(
-            @Body val matches: List<MatchId>
-        ) : RouteResponse()
+        @Response(HttpStatusCode.OK, "The match was successfully created")
+        class Success : RouteResponse()
 
 
         @Response(HttpStatusCode.BAD_REQUEST, "The provided user id is invalid.")
