@@ -4,7 +4,7 @@ import io.github.smiley4.ktorplus.WebSocketContext
 import io.github.smiley4.ktorplus.data.Connection
 import io.github.smiley4.ktorplus.data.PathParameter
 import io.github.smiley4.ktorplus.webSocket
-import io.github.smiley4.strategygame.engine.domain.GameplayEngine
+import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ClientGameMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.GameConnection
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage

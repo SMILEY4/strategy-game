@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.engine
 
-import io.github.smiley4.strategygame.engine.domain.GameplayEngine
+import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.mockk.mockk
 import org.koin.core.Koin
 import org.koin.dsl.koinApplication

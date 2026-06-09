@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.engine.gameplay.data
+package io.github.smiley4.strategygame.engine.shared
 
 sealed class PlayerCommand {
     class Increment : PlayerCommand()

@@ -1,10 +1,10 @@
 package io.github.smiley4.strategygame.engine.tests
 
-import io.github.smiley4.strategygame.engine.DeleteGameError
-import io.github.smiley4.strategygame.engine.GameEngineService
-import io.github.smiley4.strategygame.engine.SubmitTurnError
-import io.github.smiley4.strategygame.engine.domain.GameRepository
-import io.github.smiley4.strategygame.engine.domain.GameplayEngine
+import io.github.smiley4.strategygame.engine.game.DeleteGameError
+import io.github.smiley4.strategygame.engine.game.GameEngineService
+import io.github.smiley4.strategygame.engine.game.SubmitTurnError
+import io.github.smiley4.strategygame.engine.game.domain.GameRepository
+import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.testScope
 import io.github.smiley4.strategygame.shared.domain.GameId
 import io.github.smiley4.strategygame.shared.domain.UserId

@@ -1,7 +1,7 @@
-package io.github.smiley4.strategygame.engine.domain
+package io.github.smiley4.strategygame.engine.game.domain
 
-import io.github.smiley4.strategygame.engine.gameplay.data.PlayerCommand
-import io.github.smiley4.strategygame.engine.SubmitTurnError
+import io.github.smiley4.strategygame.engine.shared.PlayerCommand
+import io.github.smiley4.strategygame.engine.game.SubmitTurnError
 import io.github.smiley4.strategygame.shared.domain.GameId
 import io.github.smiley4.strategygame.shared.domain.UserId
 

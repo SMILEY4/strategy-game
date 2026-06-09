@@ -2,15 +2,16 @@ package io.github.smiley4.strategygame.engine
 
 import io.github.smiley4.ktoropenapi.route
 import io.github.smiley4.ktorplus.WebSocketContext
-import io.github.smiley4.strategygame.engine.domain.GameEngineServiceImpl
-import io.github.smiley4.strategygame.engine.domain.GameNotificationService
-import io.github.smiley4.strategygame.engine.domain.GameRepository
-import io.github.smiley4.strategygame.engine.domain.GameplayEngine
+import io.github.smiley4.strategygame.engine.game.GameEngineService
+import io.github.smiley4.strategygame.engine.game.domain.GameEngineServiceImpl
+import io.github.smiley4.strategygame.engine.game.domain.GameNotificationService
+import io.github.smiley4.strategygame.engine.game.domain.GameRepository
+import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.gameplay.GameStateRepository
 import io.github.smiley4.strategygame.engine.gameplay.GameplayEngineImpl
-import io.github.smiley4.strategygame.engine.infrastructure.InMemoryGameRepository
-import io.github.smiley4.strategygame.engine.infrastructure.WebsocketNotificationService
-import io.github.smiley4.strategygame.engine.infrastructure.WebsocketSessionManager
+import io.github.smiley4.strategygame.engine.game.infrastructure.InMemoryGameRepository
+import io.github.smiley4.strategygame.engine.game.infrastructure.WebsocketNotificationService
+import io.github.smiley4.strategygame.engine.game.infrastructure.WebsocketSessionManager
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.GameConnection
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage
 import io.github.smiley4.strategygame.engine.routing.routeGameWebsocket
