@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.application.plugins
 
 import io.github.smiley4.strategygame.engine.routingEngine
 import io.github.smiley4.strategygame.identity.routingIdentity
-import io.github.smiley4.strategygame.platform.match.routingPlatform
+import io.github.smiley4.strategygame.platform.routingPlatform
 import io.ktor.server.application.Application
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing

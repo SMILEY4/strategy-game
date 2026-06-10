@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.platform.match.infrastructure
 import io.github.smiley4.strategygame.platform.match.domain.Match
 import io.github.smiley4.strategygame.platform.match.domain.MatchRepository
 import io.github.smiley4.strategygame.platform.match.domain.MatchSnapshot
-import io.github.smiley4.strategygame.platform.match.domain.MatchId
+import io.github.smiley4.strategygame.shared.domain.MatchId
 import io.github.smiley4.strategygame.shared.domain.UserId
 
 internal class InMemoryMatchRepository : MatchRepository {

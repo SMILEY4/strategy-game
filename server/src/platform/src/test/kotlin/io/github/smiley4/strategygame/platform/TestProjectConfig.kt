@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.platform
 
-import io.github.smiley4.strategygame.platform.match.dependenciesPlatform
 import io.github.smiley4.strategygame.platform.match.domain.GameEngineClient
 import io.mockk.mockk
 import org.koin.core.Koin

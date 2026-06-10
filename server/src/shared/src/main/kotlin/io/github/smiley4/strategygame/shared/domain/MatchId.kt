@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.platform.match.domain
+package io.github.smiley4.strategygame.shared.domain
 
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid

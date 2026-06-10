@@ -7,7 +7,7 @@ import io.github.smiley4.ktorplus.core.PropertyAnalyzer
 import io.github.smiley4.ktorplus.request.RequestPropertyHandler
 import io.github.smiley4.ktorplus.typedescriptor.TypeDescriptorEntry
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
-import io.github.smiley4.strategygame.platform.match.domain.MatchId
+import io.github.smiley4.strategygame.shared.domain.MatchId
 import io.github.smiley4.strategygame.shared.domain.GameId
 import io.github.smiley4.strategygame.shared.domain.UserId
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId

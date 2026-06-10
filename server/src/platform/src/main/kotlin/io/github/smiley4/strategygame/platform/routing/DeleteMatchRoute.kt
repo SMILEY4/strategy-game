@@ -8,8 +8,8 @@ import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.delete
 import io.github.smiley4.strategygame.platform.match.DeleteMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
-import io.github.smiley4.strategygame.platform.match.domain.MatchId
-import io.github.smiley4.strategygame.platform.match.domain.MatchIdError
+import io.github.smiley4.strategygame.shared.domain.MatchId
+import io.github.smiley4.strategygame.shared.domain.MatchIdError
 import io.github.smiley4.strategygame.platform.routing.DeleteMatchRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.routing.DeleteMatchRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.domain.UserId

@@ -4,12 +4,15 @@ import io.github.smiley4.strategygame.platform.match.DeleteMatchError
 import io.github.smiley4.strategygame.platform.match.GenerateGameError
 import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
+import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.domain.MatchId
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 
 internal class MatchServiceImpl(
-    private val gameEngineClient: GameEngineClient,
-    private val matchRepository: MatchRepository
+    private val matchRepository: MatchRepository,
+    private val eventBus: WritableEventBus
 ) : MatchService {
 
     companion object {
@@ -48,13 +51,9 @@ internal class MatchServiceImpl(
             val match = matchRepository.findById(matchId)
                 ?: throw DeleteMatchError.NotFound(matchId.value.toString())
 
-            match.delete(user)
+            match.delete(user, eventBus)
 
             matchRepository.delete(match)
-
-            match.getGameId()?.also {
-                gameEngineClient.deleteGame(it)
-            }
         }
     }
 
@@ -64,7 +63,19 @@ internal class MatchServiceImpl(
             val match = matchRepository.findById(matchId)
                 ?: throw GenerateGameError.NotFound(matchId.value.toString())
 
-            match.generateGame(user, gameEngineClient)
+            match.requestGameGeneration(user, eventBus)
+
+            matchRepository.save(match)
+        }
+    }
+
+    override suspend fun attachGame(matchId: MatchId, gameId: GameId) {
+        keyedMutex.withLock(matchId) {
+
+            val match = matchRepository.findById(matchId)
+                ?: throw GenerateGameError.NotFound(matchId.value.toString())
+
+            match.attachGeneratedGame(gameId)
 
             matchRepository.save(match)
         }

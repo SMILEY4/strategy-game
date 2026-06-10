@@ -4,7 +4,11 @@ import io.github.smiley4.strategygame.platform.match.DeleteMatchError
 import io.github.smiley4.strategygame.platform.match.GenerateGameError
 import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.domain.MatchId
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.domain.events.GameGenerationRequestedEvent
+import io.github.smiley4.strategygame.shared.domain.events.MatchDeletedEvent
+import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 
 internal enum class MatchState {
     CONFIGURING,
@@ -50,14 +54,19 @@ internal class Match private constructor(
         )
     }
 
-    fun delete(user: UserId) {
+    suspend fun delete(user: UserId, eventBus: WritableEventBus) {
         val participant = participants.firstOrNull { it.user == user }
         if (participant == null || participant.role != MatchParticipantRole.OWNER) {
             throw DeleteMatchError.NotAllowed()
         }
+        eventBus.emit(
+            MatchDeletedEvent(
+                gameId = this.gameId
+            )
+        )
     }
 
-    fun generateGame(user: UserId, gameEngineClient: GameEngineClient) {
+    suspend fun requestGameGeneration(user: UserId, eventBus: WritableEventBus) {
         if (state != MatchState.CONFIGURING) {
             throw GenerateGameError.WrongMatchState()
         }
@@ -65,15 +74,25 @@ internal class Match private constructor(
         if (participant == null || participant.role != MatchParticipantRole.OWNER) {
             throw GenerateGameError.NotAllowed()
         }
-        gameId = gameEngineClient.createGame(participants.map { it.user })
+        eventBus.emit(
+            GameGenerationRequestedEvent(
+                matchId = this.id,
+                players = this.participants.map { it.user },
+            )
+        )
+    }
+
+    fun attachGeneratedGame(gameId: GameId) {
+        if (state != MatchState.CONFIGURING) {
+            throw GenerateGameError.WrongMatchState()
+        }
+        this.gameId = gameId
         state = MatchState.ACTIVE
     }
 
     fun isParticipant(user: UserId): Boolean {
         return participants.any { it.user == user }
     }
-
-    fun getGameId() = gameId
 
     fun getId() = id
 

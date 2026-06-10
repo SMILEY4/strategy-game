@@ -1,9 +1,12 @@
 package io.github.smiley4.strategygame.application.plugins
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.smiley4.strategygame.application.infrastructure.DomainEventBusImpl
 import io.github.smiley4.strategygame.engine.dependenciesEngine
 import io.github.smiley4.strategygame.identity.dependenciesIdentity
-import io.github.smiley4.strategygame.platform.match.dependenciesPlatform
+import io.github.smiley4.strategygame.platform.dependenciesPlatform
+import io.github.smiley4.strategygame.shared.eventbus.ReadableEventBus
+import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import org.koin.core.logger.Level
@@ -34,4 +37,8 @@ fun dependencies() = module {
     dependenciesIdentity()
     dependenciesPlatform()
     dependenciesEngine()
+
+    val eventBus = DomainEventBusImpl()
+    single<WritableEventBus> { eventBus }
+    single<ReadableEventBus> { eventBus }
 }

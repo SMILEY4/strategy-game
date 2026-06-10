@@ -18,9 +18,11 @@ class KeyedMutex(private val stripes: Int = 1024) {
      * Different keys will likely run in parallel, while the same key
      * (by hashCode/equals) will be synchronized.
      */
-    suspend fun <T> withLock(key: Any?, action: () -> T): T {
+    suspend fun <T> withLock(key: Any?, action: suspend () -> T): T {
         val index = if (key == null) 0 else abs(key.hashCode() % stripes)
-        return locks[index].withLock(action = action)
+        return locks[index].withLock {
+            action()
+        }
     }
 
 }

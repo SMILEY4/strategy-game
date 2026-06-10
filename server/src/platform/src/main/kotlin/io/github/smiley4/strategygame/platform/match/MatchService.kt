@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.platform.match
 
-import io.github.smiley4.strategygame.platform.match.domain.MatchId
+import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.domain.MatchId
 import io.github.smiley4.strategygame.shared.domain.UserId
 
 
@@ -9,6 +10,7 @@ interface MatchService {
     suspend fun join(user: UserId, matchId: MatchId)
     suspend fun delete(user: UserId, matchId: MatchId)
     suspend fun generateGame(user: UserId, matchId: MatchId)
+    suspend fun attachGame(matchId: MatchId, gameId: GameId)
     fun listMatches(user: UserId): List<MatchId>
 }
 

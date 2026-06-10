@@ -3,9 +3,6 @@ package io.github.smiley4.strategygame.shared.domain
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-/**
- * Id of a user.
- */
 @JvmInline
 @Serializable
 value class UserId(val id: Uuid = Uuid.random()) {

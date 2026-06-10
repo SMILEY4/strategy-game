@@ -6,7 +6,7 @@ import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.get
 import io.github.smiley4.strategygame.platform.match.MatchService
-import io.github.smiley4.strategygame.platform.match.domain.MatchId
+import io.github.smiley4.strategygame.shared.domain.MatchId
 import io.github.smiley4.strategygame.platform.routing.ListMatchesRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.routing.ListMatchesRoute.RouteResponse
 import io.github.smiley4.strategygame.shared.domain.UserId
@@ -38,7 +38,6 @@ private object ListMatchesRoute : KoinComponent {
             return RouteResponse.Success(matches)
         } catch (_: UserIdError) {
             return RouteResponse.InvalidUserId()
-//      } catch (e: ListMatchesError) {
         } catch (_: Exception) {
             return RouteResponse.InternalError()
         }

@@ -2,25 +2,35 @@ package io.github.smiley4.strategygame.engine.game.domain
 
 import io.github.smiley4.strategygame.engine.game.DeleteGameError
 import io.github.smiley4.strategygame.engine.game.GameEngineService
-import io.github.smiley4.strategygame.engine.shared.PlayerCommand
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
 import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
+import io.github.smiley4.strategygame.engine.shared.PlayerCommand
 import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.domain.MatchId
 import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.domain.events.GameCreatedEvent
+import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 
 internal class GameEngineServiceImpl(
     private val gameplayEngine: GameplayEngine,
-    private val gameRepository: GameRepository
+    private val gameRepository: GameRepository,
+    private val eventBus: WritableEventBus
 ) : GameEngineService {
 
     companion object {
         val keyedMutex = KeyedMutex()
     }
 
-    override fun create(players: Collection<UserId>): GameId {
+    override suspend fun create(matchId: MatchId, players: Collection<UserId>): GameId {
         val game = Game(players)
         gameRepository.save(game)
+        eventBus.emit(
+            GameCreatedEvent(
+                matchId = matchId,
+                gameId = game.getId()
+            )
+        )
         return game.getId()
     }
 
@@ -43,7 +53,6 @@ internal class GameEngineServiceImpl(
             game.submitTurn(player, commands)
 
             if (game.isTurnFinished()) {
-                gameplayEngine.processTurn(game.getId(), game.getPendingCommands())
                 game.nextTurn()
             }
 

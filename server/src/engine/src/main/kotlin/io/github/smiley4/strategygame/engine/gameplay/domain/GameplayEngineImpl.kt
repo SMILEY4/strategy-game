@@ -1,28 +1,18 @@
-package io.github.smiley4.strategygame.engine.gameplay
+package io.github.smiley4.strategygame.engine.gameplay.domain
 
-import io.github.smiley4.strategygame.engine.game.domain.GameNotificationService
+import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
+import io.github.smiley4.strategygame.engine.gameplay.ProcessTurnError
+import io.github.smiley4.strategygame.engine.gameplay.events.PlayerGameStateEvent
 import io.github.smiley4.strategygame.engine.shared.PlayerCommand
 import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 
 internal class GameplayEngineImpl(
     private val gameStateRepository: GameStateRepository,
-    private val gameNotificationService: GameNotificationService,
+    private val eventBus: WritableEventBus
 ) : GameplayEngine {
 
-    override fun connect(gameId: GameId, userId: UserId) {
-        gameNotificationService.connect(gameId, userId)
-    }
-
-    override fun disconnect(gameId: GameId, userId: UserId) {
-        gameNotificationService.disconnect(gameId, userId)
-    }
-
-    override fun submitTurn(gameId: GameId, userId: UserId) {
-        TODO("Not yet implemented")
-    }
-
-    override fun processTurn(gameId: GameId, commands: Collection<PlayerCommand>) {
+    override suspend fun processTurn(gameId: GameId, commands: Collection<PlayerCommand>) {
 
         // load game state
         val gameState = gameStateRepository.load(gameId)
@@ -41,7 +31,7 @@ internal class GameplayEngineImpl(
 
         // send new game state to players
         gameState.getPlayers()
-            .filter { gameNotificationService.isReachable(gameId, it) }
+//            .filter { gameNotificationService.isReachable(gameId, it) }  todo??
             .forEach { userId ->
                 val povGameState = """
                     {
@@ -49,8 +39,13 @@ internal class GameplayEngineImpl(
                         "counter": ${gameState.getCounter()}
                     }
                 """.trimIndent()
-                gameNotificationService.send(gameId, userId, povGameState)
-
+                eventBus.emit(
+                    PlayerGameStateEvent(
+                        gameId = gameId,
+                        player = userId,
+                        state = povGameState,
+                    )
+                )
             }
     }
 

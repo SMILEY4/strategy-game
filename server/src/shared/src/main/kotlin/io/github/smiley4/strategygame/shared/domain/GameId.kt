@@ -3,9 +3,6 @@ package io.github.smiley4.strategygame.shared.domain
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-/**
- * Id of a game.
- */
 @JvmInline
 @Serializable
 value class GameId(val id: Uuid = Uuid.random()) {
@@ -14,10 +11,12 @@ value class GameId(val id: Uuid = Uuid.random()) {
         try {
             Uuid.parse(id)
         } catch (e: Exception) {
-            throw InvalidFormatException(e)
+            throw GameIdError.InvalidFormat(id, e)
         }
     )
 
-    class InvalidFormatException(cause: Throwable?) : Exception("Uuid has invalid format", cause)
+}
 
+sealed class GameIdError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    class InvalidFormat(value: String, cause: Throwable?) : GameIdError("$value has invalid format.", cause)
 }

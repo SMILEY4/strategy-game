@@ -4,7 +4,7 @@ import io.github.smiley4.strategygame.platform.match.DeleteMatchError
 import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.domain.GameEngineClient
-import io.github.smiley4.strategygame.platform.match.domain.MatchId
+import io.github.smiley4.strategygame.shared.domain.MatchId
 import io.github.smiley4.strategygame.platform.match.domain.MatchParticipantRole
 import io.github.smiley4.strategygame.platform.match.domain.MatchParticipantSnapshot
 import io.github.smiley4.strategygame.platform.match.domain.MatchRepository

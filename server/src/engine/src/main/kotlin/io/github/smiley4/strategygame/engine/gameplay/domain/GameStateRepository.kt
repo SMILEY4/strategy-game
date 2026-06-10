@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.engine.gameplay
+package io.github.smiley4.strategygame.engine.gameplay.domain
 
 import io.github.smiley4.strategygame.shared.domain.GameId
 
