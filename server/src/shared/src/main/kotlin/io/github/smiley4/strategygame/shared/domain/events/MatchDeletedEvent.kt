@@ -1,8 +1,8 @@
 package io.github.smiley4.strategygame.shared.domain.events
 
 import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.eventbus.DomainEvent
+import io.github.smiley4.strategygame.shared.eventbus.Event
 
 data class MatchDeletedEvent(
     val gameId: GameId?
-) : DomainEvent
+) : Event

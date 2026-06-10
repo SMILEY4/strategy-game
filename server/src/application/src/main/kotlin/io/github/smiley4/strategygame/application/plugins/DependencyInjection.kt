@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.application.plugins
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.github.smiley4.strategygame.application.infrastructure.DomainEventBusImpl
+import io.github.smiley4.strategygame.application.infrastructure.EventBusImpl
 import io.github.smiley4.strategygame.engine.dependenciesEngine
 import io.github.smiley4.strategygame.identity.dependenciesIdentity
 import io.github.smiley4.strategygame.platform.dependenciesPlatform
@@ -38,7 +38,7 @@ fun dependencies() = module {
     dependenciesPlatform()
     dependenciesEngine()
 
-    val eventBus = DomainEventBusImpl()
+    val eventBus = EventBusImpl()
     single<WritableEventBus> { eventBus }
     single<ReadableEventBus> { eventBus }
 }

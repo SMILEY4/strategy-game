@@ -2,12 +2,12 @@ package io.github.smiley4.strategygame.shared.eventbus
 
 import kotlinx.coroutines.flow.SharedFlow
 
-interface DomainEvent
+interface Event
 
 interface ReadableEventBus {
-    val events: SharedFlow<DomainEvent>
+    val events: SharedFlow<Event>
 }
 
 interface WritableEventBus {
-    suspend fun emit(event: DomainEvent)
+    suspend fun emit(event: Event)
 }

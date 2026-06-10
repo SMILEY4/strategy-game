@@ -3,7 +3,6 @@ package io.github.smiley4.strategygame.engine.game.domain
 import io.github.smiley4.strategygame.engine.game.DeleteGameError
 import io.github.smiley4.strategygame.engine.game.GameEngineService
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
-import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.shared.PlayerCommand
 import io.github.smiley4.strategygame.shared.domain.GameId
 import io.github.smiley4.strategygame.shared.domain.MatchId
@@ -13,8 +12,8 @@ import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 
 internal class GameEngineServiceImpl(
-    private val gameplayEngine: GameplayEngine,
     private val gameRepository: GameRepository,
+    private val notificationService: GameNotificationService,
     private val eventBus: WritableEventBus
 ) : GameEngineService {
 
@@ -44,6 +43,14 @@ internal class GameEngineServiceImpl(
         }
     }
 
+    override fun connect(gameId: GameId, player: UserId) {
+        notificationService.connect(gameId, player)
+    }
+
+    override fun disconnect(gameId: GameId, player: UserId) {
+        notificationService.disconnect(gameId, player)
+    }
+
     override suspend fun submitTurn(player: UserId, gameId: GameId, commands: List<PlayerCommand>) {
         keyedMutex.withLock(gameId) {
 
@@ -53,7 +60,7 @@ internal class GameEngineServiceImpl(
             game.submitTurn(player, commands)
 
             if (game.isTurnFinished()) {
-                game.nextTurn()
+                game.nextTurn(eventBus)
             }
 
             gameRepository.save(game)

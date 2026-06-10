@@ -8,6 +8,8 @@ import io.github.smiley4.strategygame.shared.domain.UserId
 interface GameEngineService {
     suspend fun create(matchId: MatchId, players: Collection<UserId>): GameId
     suspend fun delete(gameId: GameId)
+    fun connect(gameId: GameId, player: UserId)
+    fun disconnect(gameId: GameId, player: UserId)
     suspend fun submitTurn(player: UserId, gameId: GameId, commands: List<PlayerCommand>)
 }
 

@@ -4,6 +4,7 @@ import io.github.smiley4.ktorplus.WebSocketContext
 import io.github.smiley4.ktorplus.data.Connection
 import io.github.smiley4.ktorplus.data.PathParameter
 import io.github.smiley4.ktorplus.webSocket
+import io.github.smiley4.strategygame.engine.game.GameEngineService
 import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ClientGameMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.GameConnection
@@ -30,7 +31,7 @@ internal fun Route.routeGameWebsocket(context: WebSocketContext<GameConnection, 
 
 object GameWebsocketRoute : KoinComponent {
 
-    private val service by inject<GameplayEngine>()
+    private val service by inject<GameEngineService>()
 
     suspend fun handleOpen(context: WebSocketContext<GameConnection, ServerGameMessage>, connection: GameConnection) {
         try {
@@ -44,12 +45,12 @@ object GameWebsocketRoute : KoinComponent {
         service.disconnect(GameId(connection.gameId), UserId(connection.userId))
     }
 
-    fun handleMessage(
+    suspend fun handleMessage(
         connection: GameConnection,
         message: ClientGameMessage
     ) {
         when(message) {
-            is ClientGameMessage.SubmitTurn -> service.submitTurn(GameId(connection.gameId), UserId(connection.userId))
+            is ClientGameMessage.SubmitTurn -> service.submitTurn(UserId(connection.userId), GameId(connection.gameId), listOf())
         }
     }
 
