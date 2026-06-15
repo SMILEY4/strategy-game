@@ -7,6 +7,7 @@ import io.github.smiley4.strategygame.application.plugins.setupDependencyInjecti
 import io.github.smiley4.strategygame.application.plugins.setupKtorPlus
 import io.github.smiley4.strategygame.application.plugins.setupOpenApi
 import io.github.smiley4.strategygame.application.plugins.setupRouting
+import io.github.smiley4.strategygame.application.plugins.setupWebSockets
 import io.ktor.server.application.Application
 import io.ktor.server.netty.EngineMain
 
@@ -38,5 +39,6 @@ fun Application.module() {
     val json = setupContentNegotiation()
     setupKtorPlus(json)
     setupOpenApi(json)
+    setupWebSockets()
     setupRouting()
 }
