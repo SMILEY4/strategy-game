@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.commonarangodb
+package io.github.smiley4.strategygame.shared.arangodb
 
 import com.arangodb.serde.jackson.Key
 import com.fasterxml.jackson.annotation.JsonIgnore

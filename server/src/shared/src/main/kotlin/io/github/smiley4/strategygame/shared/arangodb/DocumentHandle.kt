@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.commonarangodb
+package io.github.smiley4.strategygame.shared.arangodb
 
 data class DocumentHandle(
 	val key: String,

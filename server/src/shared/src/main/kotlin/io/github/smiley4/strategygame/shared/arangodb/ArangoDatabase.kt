@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.commonarangodb
+package io.github.smiley4.strategygame.shared.arangodb
 
 import com.arangodb.ArangoCollectionAsync
 import com.arangodb.ArangoDB
@@ -95,7 +95,7 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
 
     /**
      * Insert the given document into the given collection.
-     * @return the [DocumentHandle]
+     * @return the [io.github.smiley4.strategygame.backend.commonarangodb.DocumentHandle]
      * @throws UniqueConstraintViolationError if a document with the same key already exists
      */
     suspend fun <T> insertDocument(collection: String, value: T): DocumentHandle {
@@ -273,7 +273,6 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
         return getCollection(collection).deleteDocuments(keys).await().documents
             .map { DocumentHandle(key = it.key, id = it.id, rev = it.rev) }
     }
-
 
     /**
      * @return whether the document with the given key collection exists in the given

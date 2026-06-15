@@ -12,6 +12,8 @@ versions-plugin = "0.53.0"
 serialization-plugin = "2.3.21"
 
 # Libraries
+arangodb = "7.25.0"
+arangodb-jackson-dataformat-velocypack = "4.6.0"
 janino = "3.1.12"
 koin = "4.2.1"
 kotest = "6.1.10"
@@ -26,6 +28,7 @@ logstash-logback-encoder = "9.0"
 mockk = "1.14.9"
 schema-kenerator = "2.7.0"
 slf4j-coroutines = "1.10.2"
+jackson-kotlin = "2.18.1"
 
 [libraries]
 
@@ -47,6 +50,11 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 koin-logger = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
 
+# ArangoDB
+arangodb-javadriver = { module = "com.arangodb:arangodb-java-driver", version.ref = "arangodb" }
+arangodb-jacksondataformatvelocypack = { module = "com.arangodb:jackson-dataformat-velocypack", version.ref = "arangodb-jackson-dataformat-velocypack" }
+
+
 # Logging
 janino = { module = "org.codehaus.janino:janino", version.ref = "janino" }
 kotlin-logging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
@@ -60,6 +68,7 @@ kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",
 schemakenerator-core = { module = "io.github.smiley4:schema-kenerator-core", version.ref = "schema-kenerator" }
 schemakenerator-serialization = { module = "io.github.smiley4:schema-kenerator-serialization", version.ref = "schema-kenerator" }
 schemakenerator-swagger = { module = "io.github.smiley4:schema-kenerator-swagger", version.ref = "schema-kenerator" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin" }
 
 # Testing
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
