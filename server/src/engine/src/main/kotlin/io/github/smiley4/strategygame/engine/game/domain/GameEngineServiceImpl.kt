@@ -44,7 +44,9 @@ internal class GameEngineServiceImpl(
     }
 
     override fun connect(gameId: GameId, player: UserId) {
-        // todo: disconnect from other open connections
+        notificationService.connectedTo(player).forEach { gameId ->
+            disconnect(gameId, player)
+        }
         notificationService.connect(gameId, player)
     }
 

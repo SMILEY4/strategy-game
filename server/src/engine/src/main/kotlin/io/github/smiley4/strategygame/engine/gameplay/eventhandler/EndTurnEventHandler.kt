@@ -14,7 +14,7 @@ class EndTurnEventHandler(
     override suspend fun start() {
         eventBus.events
             .filterIsInstance<EndTurnEvent>()
-            .collect { gameplayService.processTurn(it.gameId, it.commands) }
+            .collect { gameplayService.processTurn(it.gameId, it.commands, it.connectedPlayers) }
     }
 
 }

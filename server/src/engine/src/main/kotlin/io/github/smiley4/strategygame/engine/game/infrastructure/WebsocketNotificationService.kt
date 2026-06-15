@@ -8,8 +8,16 @@ internal class WebsocketNotificationService(
     private val sessionManager: WebsocketSessionManager,
 ) : GameNotificationService {
 
-    override fun isReachable(gameId: GameId, userId: UserId): Boolean {
-        return sessionManager.getSessionHandle(userId, gameId) != null
+    override fun connect(gameId: GameId, userId: UserId) {
+        sessionManager.connect(userId, gameId)
+    }
+
+    override fun disconnect(gameId: GameId, userId: UserId) {
+        sessionManager.disconnect(userId, gameId)
+    }
+
+    override fun connectedTo(userId: UserId): List<GameId> {
+        return sessionManager.getSessionHandles(userId).map { it.gameId }
     }
 
     override fun send(gameId: GameId, userId: UserId, message: Any) {

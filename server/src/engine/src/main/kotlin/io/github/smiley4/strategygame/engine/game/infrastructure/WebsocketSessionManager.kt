@@ -32,4 +32,8 @@ class WebsocketSessionManager {
     fun getSessionHandle(userId: UserId, gameId: GameId): SessionHandle? {
         return sessionHandles.find { it.userId == userId && it.gameId == gameId }
     }
+
+    fun getSessionHandles(userId: UserId): List<SessionHandle> {
+        return sessionHandles.filter { it.userId == userId }
+    }
 }

@@ -6,13 +6,14 @@ import io.github.smiley4.strategygame.engine.gameplay.events.PlayerGameStateEven
 import io.github.smiley4.strategygame.engine.shared.PlayerCommand
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
+import io.github.smiley4.strategygame.shared.values.UserId
 
 internal class GameplayEngineImpl(
     private val gameStateRepository: GameStateRepository,
     private val eventBus: WritableEventBus
 ) : GameplayEngine {
 
-    override suspend fun processTurn(gameId: GameId, commands: Collection<PlayerCommand>) {
+    override suspend fun processTurn(gameId: GameId, commands: Collection<PlayerCommand>, connectedPlayers: Collection<UserId>) {
 
         // load game state
         val gameState = gameStateRepository.load(gameId)
@@ -30,8 +31,7 @@ internal class GameplayEngineImpl(
         gameStateRepository.save(gameId, gameState)
 
         // send new game state to players
-        gameState.getPlayers()
-//            .filter { gameNotificationService.isReachable(gameId, it) }  todo??
+        connectedPlayers
             .forEach { userId ->
                 val povGameState = """
                     {

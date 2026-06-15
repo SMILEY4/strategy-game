@@ -46,7 +46,8 @@ class Game private constructor(
             EndTurnEvent(
                 gameId = this.id,
                 turn = this.currentTurn,
-                commands = commands
+                connectedPlayers = this.players,
+                commands = commands,
             )
         )
     }
