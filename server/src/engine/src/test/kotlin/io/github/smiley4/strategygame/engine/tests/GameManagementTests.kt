@@ -4,17 +4,15 @@ import io.github.smiley4.strategygame.engine.game.DeleteGameError
 import io.github.smiley4.strategygame.engine.game.GameEngineService
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
 import io.github.smiley4.strategygame.engine.game.domain.GameRepository
-import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.testScope
 import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.mockk.every
-import io.mockk.verify
 
 class GameManagementTests : FreeSpec({
 
@@ -29,8 +27,8 @@ class GameManagementTests : FreeSpec({
                 val user2 = UserId()
                 val user3 = UserId()
 
-                val gameId1 = service.create(listOf(user1, user2))
-                val gameId2 = service.create(listOf(user2, user3))
+                val gameId1 = service.create(MatchId(), listOf(user1, user2))
+                val gameId2 = service.create(MatchId(), listOf(user2, user3))
 
                 repository.findById(gameId1) shouldNotBe null
                 repository.findById(gameId1)?.toSnapshot()?.also {
@@ -52,11 +50,10 @@ class GameManagementTests : FreeSpec({
             testScope {
                 val service = get<GameEngineService>()
                 val repository = get<GameRepository>()
-                val engine = get<GameplayEngine>()
 
                 val user1 = UserId()
                 val user2 = UserId()
-                val gameId = service.create(listOf(user1, user2))
+                val gameId = service.create(MatchId(), listOf(user1, user2))
 
                 repository.findById(gameId) shouldNotBe null
 
@@ -90,17 +87,50 @@ class GameManagementTests : FreeSpec({
             }
         }
 
+        "by non-participant should fail" {
+            testScope {
+                val service = get<GameEngineService>()
+
+                val player = UserId()
+                val outsider = UserId()
+                val gameId = service.create(MatchId(), listOf(player))
+
+                shouldThrow<SubmitTurnError.NotParticipant> {
+                    service.submitTurn(outsider, gameId, emptyList())
+                }
+            }
+        }
+
+        "when already submitted should fail" {
+            testScope {
+                val service = get<GameEngineService>()
+                val repository = get<GameRepository>()
+
+                val user1 = UserId()
+                val user2 = UserId()
+                val gameId = service.create(MatchId(), listOf(user1, user2))
+
+                service.submitTurn(user1, gameId, emptyList())
+
+                shouldThrow<SubmitTurnError.AlreadySubmitted> {
+                    service.submitTurn(user1, gameId, emptyList())
+                }
+
+                repository.findById(gameId)?.toSnapshot()?.also {
+                    it.pendingCommands.keys shouldContainExactlyInAnyOrder listOf(user1)
+                    it.currentTurn shouldBe 0
+                }
+            }
+        }
+
         "should end turn only when last player submitted their turn" {
             testScope {
                 val service = get<GameEngineService>()
                 val repository = get<GameRepository>()
-                val engine = get<GameplayEngine>()
-
-                every { engine.processTurn(any(), any()) } returns Unit
 
                 val user1 = UserId()
                 val user2 = UserId()
-                val gameId = service.create(listOf(user1, user2))
+                val gameId = service.create(MatchId(), listOf(user1, user2))
 
                 val turnBefore = repository.findById(gameId)!!.toSnapshot().currentTurn
                 repository.findById(gameId)?.toSnapshot()?.also {
@@ -123,8 +153,6 @@ class GameManagementTests : FreeSpec({
 
                 turnAfter1 shouldBe turnBefore
                 turnAfter2 shouldBe (turnBefore + 1)
-
-                verify(exactly = 1) { engine.processTurn(gameId, any()) }
             }
         }
 

@@ -15,6 +15,6 @@ value class Username(val value: String) {
 }
 
 sealed class UsernameError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
-    class Empty : UnsafePasswordError("Username cannot be empty")
-    class InvalidSymbols(username: String) : UnsafePasswordError("Username $username contains invalid symbols")
+    class Empty : UsernameError("Username cannot be empty")
+    class InvalidSymbols(username: String) : UsernameError("Username $username contains invalid symbols")
 }

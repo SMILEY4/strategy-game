@@ -1,16 +1,16 @@
 package io.github.smiley4.strategygame.platform.tests
 
 import io.github.smiley4.strategygame.platform.match.DeleteMatchError
+import io.github.smiley4.strategygame.platform.match.GenerateGameError
 import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
-import io.github.smiley4.strategygame.platform.match.domain.GameEngineClient
-import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.platform.match.domain.MatchParticipantRole
 import io.github.smiley4.strategygame.platform.match.domain.MatchParticipantSnapshot
 import io.github.smiley4.strategygame.platform.match.domain.MatchRepository
 import io.github.smiley4.strategygame.platform.match.domain.MatchState
 import io.github.smiley4.strategygame.platform.testScope
 import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
@@ -18,8 +18,6 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.mockk.every
-import io.mockk.verify
 
 class MatchTests : FreeSpec({
 
@@ -71,14 +69,10 @@ class MatchTests : FreeSpec({
             testScope {
                 val repository = get<MatchRepository>()
                 val service = get<MatchService>()
-                val gameEngineClient = get<GameEngineClient>()
-
-                val gameId = GameId()
-                every { gameEngineClient.createGame(any()) } returns gameId
 
                 val ownerId = UserId()
                 val matchId = service.create(ownerId, "Test Match")
-                service.generateGame(ownerId, matchId)
+                service.attachGame(matchId, GameId())
 
                 shouldThrow<JoinMatchError.WrongMatchState> {
                     service.join(UserId(), matchId)
@@ -108,35 +102,26 @@ class MatchTests : FreeSpec({
             testScope {
                 val repository = get<MatchRepository>()
                 val service = get<MatchService>()
-                val gameEngineClient = get<GameEngineClient>()
 
                 val ownerId = UserId()
                 val matchId = service.create(ownerId, "To Be Deleted")
                 service.delete(ownerId, matchId)
 
                 repository.findById(matchId) shouldBe null
-                verify(exactly = 0) { gameEngineClient.deleteGame(any()) }
             }
         }
 
-        "should delete engine game if already generated" {
+        "should delete match after game already attached" {
             testScope {
                 val repository = get<MatchRepository>()
                 val service = get<MatchService>()
-                val gameEngineClient = get<GameEngineClient>()
-
-                val gameId = GameId()
-                every { gameEngineClient.createGame(any()) } returns gameId
-                every { gameEngineClient.deleteGame(any()) } returns Unit
 
                 val ownerId = UserId()
                 val matchId = service.create(ownerId, "To Be Deleted")
-                service.generateGame(ownerId, matchId)
-
+                service.attachGame(matchId, GameId())
                 service.delete(ownerId, matchId)
 
                 repository.findById(matchId) shouldBe null
-                verify(exactly = 1) { gameEngineClient.deleteGame(gameId) }
             }
         }
 
@@ -144,7 +129,6 @@ class MatchTests : FreeSpec({
             testScope {
                 val repository = get<MatchRepository>()
                 val service = get<MatchService>()
-                val gameEngineClient = get<GameEngineClient>()
 
                 val ownerId = UserId()
                 val otherId = UserId()
@@ -154,7 +138,6 @@ class MatchTests : FreeSpec({
                     service.delete(otherId, matchId)
                 }
                 repository.findById(matchId) shouldNotBe null
-                verify(exactly = 0) { gameEngineClient.deleteGame(any()) }
             }
         }
 
@@ -162,7 +145,6 @@ class MatchTests : FreeSpec({
             testScope {
                 val repository = get<MatchRepository>()
                 val service = get<MatchService>()
-                val gameEngineClient = get<GameEngineClient>()
 
                 val ownerId = UserId()
                 val guestId = UserId()
@@ -173,28 +155,69 @@ class MatchTests : FreeSpec({
                     service.delete(guestId, matchId)
                 }
                 repository.findById(matchId) shouldNotBe null
-                verify(exactly = 0) { gameEngineClient.deleteGame(any()) }
             }
         }
     }
 
     "generateGame" - {
-        "should create a game through the engine" {
+        "should emit event and keep match in configuring state" {
             testScope {
                 val repository = get<MatchRepository>()
                 val service = get<MatchService>()
-                val gameEngineClient = get<GameEngineClient>()
 
                 val ownerId = UserId()
                 val matchId = service.create(ownerId, "Ready Match")
 
-                val gameId = GameId()
-                every { gameEngineClient.createGame(any()) } returns gameId
-
                 service.generateGame(ownerId, matchId)
 
-                verify(exactly = 1) { gameEngineClient.createGame(any()) }
-                repository.findById(matchId) shouldNotBe null
+                repository.findById(matchId)?.toSnapshot()?.also {
+                    it.gameId shouldBe null
+                    it.state shouldBe MatchState.CONFIGURING
+                }
+            }
+        }
+
+        "should fail when called by non-owner" {
+            testScope {
+                val service = get<MatchService>()
+
+                val ownerId = UserId()
+                val otherId = UserId()
+                val matchId = service.create(ownerId, "Protected Match")
+
+                shouldThrow<GenerateGameError.NotAllowed> {
+                    service.generateGame(otherId, matchId)
+                }
+            }
+        }
+
+        "should fail when match is already active" {
+            testScope {
+                val service = get<MatchService>()
+
+                val ownerId = UserId()
+                val matchId = service.create(ownerId, "Active Match")
+                service.attachGame(matchId, GameId())
+
+                shouldThrow<GenerateGameError.WrongMatchState> {
+                    service.generateGame(ownerId, matchId)
+                }
+            }
+        }
+    }
+
+    "attachGame" - {
+        "should update match to active with game id" {
+            testScope {
+                val repository = get<MatchRepository>()
+                val service = get<MatchService>()
+
+                val ownerId = UserId()
+                val matchId = service.create(ownerId, "Ready Match")
+                val gameId = GameId()
+
+                service.attachGame(matchId, gameId)
+
                 repository.findById(matchId)?.toSnapshot()?.also {
                     it.gameId shouldBe gameId
                     it.state shouldBe MatchState.ACTIVE
@@ -202,24 +225,26 @@ class MatchTests : FreeSpec({
             }
         }
 
-        "should fail if game generation fails" {
+        "should fail when match is already active" {
             testScope {
-                val repository = get<MatchRepository>()
                 val service = get<MatchService>()
-                val gameEngine = get<GameEngineClient>()
 
                 val ownerId = UserId()
-                val matchId = service.create(ownerId, "Failing Match")
+                val matchId = service.create(ownerId, "Active Match")
+                service.attachGame(matchId, GameId())
 
-                every { gameEngine.createGame(any()) } throws RuntimeException("Engine Failure")
-
-                shouldThrow<Exception> {
-                    service.generateGame(ownerId, matchId)
+                shouldThrow<GenerateGameError.WrongMatchState> {
+                    service.attachGame(matchId, GameId())
                 }
-                repository.findById(matchId) shouldNotBe null
-                repository.findById(matchId)?.toSnapshot()?.also {
-                    it.gameId shouldBe null
-                    it.state shouldBe MatchState.CONFIGURING
+            }
+        }
+
+        "should fail for non-existent match" {
+            testScope {
+                val service = get<MatchService>()
+
+                shouldThrow<GenerateGameError.NotFound> {
+                    service.attachGame(MatchId(), GameId())
                 }
             }
         }

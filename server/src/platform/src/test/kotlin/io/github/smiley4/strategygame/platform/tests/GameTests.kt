@@ -3,14 +3,12 @@ package io.github.smiley4.strategygame.platform.tests
 import io.github.smiley4.strategygame.platform.match.DeleteMatchError
 import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
-import io.github.smiley4.strategygame.platform.match.domain.GameEngineClient
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.platform.testScope
 import io.github.smiley4.strategygame.shared.values.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.mockk.verify
 
 class GameTests : FreeSpec({
 
@@ -86,7 +84,6 @@ class GameTests : FreeSpec({
         "as owner succeeds" {
             testScope {
                 val service = get<MatchService>()
-                val gameEngineClient = get<GameEngineClient>()
 
                 val owner = UserId()
                 val guest = UserId()
@@ -99,8 +96,6 @@ class GameTests : FreeSpec({
                 service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId1, gameId2)
 
                 service.delete(owner, gameId1)
-
-                verify(exactly = 0) { gameEngineClient.deleteGame(any()) }
 
                 service.listMatches(owner) shouldContainExactlyInAnyOrder listOf(gameId2)
                 service.listMatches(guest) shouldContainExactlyInAnyOrder listOf(gameId2)

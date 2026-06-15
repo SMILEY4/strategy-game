@@ -21,5 +21,5 @@ value class OneTimeToken(val value: Uuid = Uuid.random()) {
 }
 
 sealed class OneTimeTokenError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
-    class InvalidFormat(cause: Throwable?) : SessionTokenError("Token has invalid format.", cause)
+    class InvalidFormat(cause: Throwable?) : OneTimeTokenError("Token has invalid format.", cause)
 }
