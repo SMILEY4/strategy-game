@@ -1,8 +1,8 @@
 package io.github.smiley4.strategygame.platform.match
 
-import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.domain.MatchId
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.MatchId
+import io.github.smiley4.strategygame.shared.values.UserId
 
 
 interface MatchService {

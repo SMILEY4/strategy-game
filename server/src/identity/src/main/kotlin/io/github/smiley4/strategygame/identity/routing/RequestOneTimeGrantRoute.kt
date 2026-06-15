@@ -10,7 +10,7 @@ import io.github.smiley4.strategygame.identity.auth.GenerateOneTimeGrantError
 import io.github.smiley4.strategygame.identity.auth.domain.OneTimeToken
 import io.github.smiley4.strategygame.identity.routing.RequestOneTimeGrantRoute.RouteRequest
 import io.github.smiley4.strategygame.identity.routing.RequestOneTimeGrantRoute.RouteResponse
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError

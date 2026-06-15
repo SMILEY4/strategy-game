@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.engine.gameplay.domain
+package io.github.smiley4.strategygame.engine.gameplay.eventhandler
 
 import io.github.smiley4.strategygame.engine.game.events.EndTurnEvent
 import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine

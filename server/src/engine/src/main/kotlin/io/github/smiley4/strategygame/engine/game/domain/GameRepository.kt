@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.engine.game.domain
 
-import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.values.GameId
 
 interface GameRepository {
     fun save(game: Game)

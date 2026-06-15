@@ -11,7 +11,7 @@ import io.github.smiley4.strategygame.identity.user.ChangeUsernameError
 import io.github.smiley4.strategygame.identity.user.RegisterUserError
 import io.github.smiley4.strategygame.identity.user.UserService
 import io.github.smiley4.strategygame.identity.user.domain.UserRepository
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe

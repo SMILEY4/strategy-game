@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.identity.auth.domain
 
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.UserId
 import kotlin.time.Instant
 
 /**

@@ -4,7 +4,7 @@ import io.github.smiley4.strategygame.identity.auth.domain.OneTimeToken
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.Username
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.UserId
 
 /**
  * Handles (user) authentication.

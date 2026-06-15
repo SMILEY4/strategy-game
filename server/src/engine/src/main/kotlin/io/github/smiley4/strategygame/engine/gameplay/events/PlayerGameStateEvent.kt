@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.engine.gameplay.events
 
-import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.github.smiley4.strategygame.shared.eventbus.Event
 
 data class PlayerGameStateEvent(

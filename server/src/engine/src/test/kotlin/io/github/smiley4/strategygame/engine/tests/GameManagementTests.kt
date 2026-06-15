@@ -6,8 +6,8 @@ import io.github.smiley4.strategygame.engine.game.SubmitTurnError
 import io.github.smiley4.strategygame.engine.game.domain.GameRepository
 import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.testScope
-import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder

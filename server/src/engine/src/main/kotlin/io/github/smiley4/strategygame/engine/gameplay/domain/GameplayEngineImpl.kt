@@ -4,7 +4,7 @@ import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.gameplay.ProcessTurnError
 import io.github.smiley4.strategygame.engine.gameplay.events.PlayerGameStateEvent
 import io.github.smiley4.strategygame.engine.shared.PlayerCommand
-import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 
 internal class GameplayEngineImpl(

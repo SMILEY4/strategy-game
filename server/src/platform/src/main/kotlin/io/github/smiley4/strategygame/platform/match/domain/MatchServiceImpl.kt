@@ -4,9 +4,9 @@ import io.github.smiley4.strategygame.platform.match.DeleteMatchError
 import io.github.smiley4.strategygame.platform.match.GenerateGameError
 import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
-import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.domain.MatchId
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.MatchId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 

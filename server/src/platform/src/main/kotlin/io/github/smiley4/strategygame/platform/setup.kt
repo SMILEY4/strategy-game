@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.platform
 
 import io.github.smiley4.ktoropenapi.route
-import io.github.smiley4.strategygame.platform.match.domain.GameCreatedEventHandler
+import io.github.smiley4.strategygame.platform.match.eventhandler.GameCreatedEventHandler
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.domain.MatchRepository
 import io.github.smiley4.strategygame.platform.match.domain.MatchServiceImpl

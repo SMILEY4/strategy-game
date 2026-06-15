@@ -3,8 +3,8 @@ package io.github.smiley4.strategygame.engine.tests
 import io.github.smiley4.strategygame.engine.game.domain.GameNotificationService
 import io.github.smiley4.strategygame.engine.game.infrastructure.WebsocketSessionManager
 import io.github.smiley4.strategygame.engine.testScope
-import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 

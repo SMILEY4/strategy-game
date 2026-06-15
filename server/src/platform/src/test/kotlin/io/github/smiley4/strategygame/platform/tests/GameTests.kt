@@ -4,9 +4,9 @@ import io.github.smiley4.strategygame.platform.match.DeleteMatchError
 import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.match.domain.GameEngineClient
-import io.github.smiley4.strategygame.shared.domain.MatchId
+import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.platform.testScope
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder

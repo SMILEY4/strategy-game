@@ -1,6 +1,6 @@
-package io.github.smiley4.strategygame.shared.domain.events
+package io.github.smiley4.strategygame.shared.events
 
-import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.eventbus.Event
 
 data class MatchDeletedEvent(

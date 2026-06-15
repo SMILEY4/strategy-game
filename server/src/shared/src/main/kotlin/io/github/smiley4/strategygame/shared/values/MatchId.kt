@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.shared.domain
+package io.github.smiley4.strategygame.shared.values
 
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid

@@ -1,5 +1,6 @@
-package io.github.smiley4.strategygame.engine.game.domain
+package io.github.smiley4.strategygame.engine.game.eventhandler
 
+import io.github.smiley4.strategygame.engine.game.domain.GameNotificationService
 import io.github.smiley4.strategygame.engine.gameplay.events.PlayerGameStateEvent
 import io.github.smiley4.strategygame.shared.eventbus.DomainEventHandler
 import io.github.smiley4.strategygame.shared.eventbus.ReadableEventBus

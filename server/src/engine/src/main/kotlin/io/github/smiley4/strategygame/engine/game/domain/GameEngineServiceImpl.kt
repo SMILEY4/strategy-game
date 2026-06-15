@@ -4,10 +4,10 @@ import io.github.smiley4.strategygame.engine.game.DeleteGameError
 import io.github.smiley4.strategygame.engine.game.GameEngineService
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
 import io.github.smiley4.strategygame.engine.shared.PlayerCommand
-import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.domain.MatchId
-import io.github.smiley4.strategygame.shared.domain.UserId
-import io.github.smiley4.strategygame.shared.domain.events.GameCreatedEvent
+import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.MatchId
+import io.github.smiley4.strategygame.shared.values.UserId
+import io.github.smiley4.strategygame.shared.events.GameCreatedEvent
 import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 
@@ -44,6 +44,7 @@ internal class GameEngineServiceImpl(
     }
 
     override fun connect(gameId: GameId, player: UserId) {
+        // todo: disconnect from other open connections
         notificationService.connect(gameId, player)
     }
 

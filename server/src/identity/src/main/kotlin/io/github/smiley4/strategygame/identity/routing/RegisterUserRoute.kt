@@ -12,7 +12,7 @@ import io.github.smiley4.strategygame.identity.shared.Username
 import io.github.smiley4.strategygame.identity.shared.UsernameError
 import io.github.smiley4.strategygame.identity.user.RegisterUserError
 import io.github.smiley4.strategygame.identity.user.UserService
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route

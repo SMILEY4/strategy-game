@@ -2,8 +2,8 @@ package io.github.smiley4.strategygame.engine.game.domain
 
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
 import io.github.smiley4.strategygame.engine.shared.PlayerCommand
-import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.github.smiley4.strategygame.engine.game.events.EndTurnEvent
 import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 
@@ -39,14 +39,16 @@ class Game private constructor(
     }
 
     suspend fun nextTurn(eventBus: WritableEventBus) {
+        val commands = this.pendingCommands.flatMap { it.value }
         currentTurn += 1
+        pendingCommands.clear()
         eventBus.emit(
-            EndTurnEvent( // todo: order of operations is weird with publishing in general: 1. load aggregate 2. call aggregate, 2a. modify aggregate, 2b, publish event, 3. persist modified aggregate => at time of event still old aggregate in db
+            EndTurnEvent(
                 gameId = this.id,
-                commands = this.pendingCommands.flatMap { it.value }
+                turn = this.currentTurn,
+                commands = commands
             )
         )
-        pendingCommands.clear()
     }
 
     fun isTurnFinished(): Boolean {
@@ -55,10 +57,6 @@ class Game private constructor(
 
     fun getId(): GameId {
         return id
-    }
-
-    fun getPendingCommands(): List<PlayerCommand> {
-        return pendingCommands.values.flatten()
     }
 
     fun toSnapshot() = GameSnapshot(

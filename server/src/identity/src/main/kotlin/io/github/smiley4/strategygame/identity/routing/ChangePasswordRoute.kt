@@ -11,8 +11,8 @@ import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.UnsafePasswordError
 import io.github.smiley4.strategygame.identity.user.ChangePasswordError
 import io.github.smiley4.strategygame.identity.user.UserService
-import io.github.smiley4.strategygame.shared.domain.UserId
-import io.github.smiley4.strategygame.shared.domain.UserIdError
+import io.github.smiley4.strategygame.shared.values.UserId
+import io.github.smiley4.strategygame.shared.values.UserIdError
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError

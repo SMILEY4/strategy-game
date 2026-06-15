@@ -6,11 +6,11 @@ import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.get
 import io.github.smiley4.strategygame.platform.match.MatchService
-import io.github.smiley4.strategygame.shared.domain.MatchId
+import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.platform.routing.ListMatchesRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.routing.ListMatchesRoute.RouteResponse
-import io.github.smiley4.strategygame.shared.domain.UserId
-import io.github.smiley4.strategygame.shared.domain.UserIdError
+import io.github.smiley4.strategygame.shared.values.UserId
+import io.github.smiley4.strategygame.shared.values.UserIdError
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError

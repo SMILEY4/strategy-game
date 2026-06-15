@@ -1,20 +1,22 @@
-package io.github.smiley4.strategygame.engine.game.domain
+package io.github.smiley4.strategygame.engine.game.eventhandler
 
 import io.github.smiley4.strategygame.engine.game.GameEngineService
-import io.github.smiley4.strategygame.shared.domain.events.GameGenerationRequestedEvent
+import io.github.smiley4.strategygame.shared.events.MatchDeletedEvent
 import io.github.smiley4.strategygame.shared.eventbus.DomainEventHandler
 import io.github.smiley4.strategygame.shared.eventbus.ReadableEventBus
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.mapNotNull
 
-class GameGenerationRequestedEventHandler(
+class MatchDeletedEventHandler(
     private val gameEngineService: GameEngineService,
     private val eventBus: ReadableEventBus
 ) : DomainEventHandler() {
 
     override suspend fun start() {
         eventBus.events
-            .filterIsInstance<GameGenerationRequestedEvent>()
-            .collect { gameEngineService.create(it.matchId, it.players) }
+            .filterIsInstance<MatchDeletedEvent>()
+            .mapNotNull { it.gameId }
+            .collect { gameEngineService.delete(it) }
     }
 
 }

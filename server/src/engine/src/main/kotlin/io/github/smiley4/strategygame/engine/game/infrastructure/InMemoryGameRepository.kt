@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.engine.game.infrastructure
 import io.github.smiley4.strategygame.engine.game.domain.Game
 import io.github.smiley4.strategygame.engine.game.domain.GameRepository
 import io.github.smiley4.strategygame.engine.game.domain.GameSnapshot
-import io.github.smiley4.strategygame.shared.domain.GameId
+import io.github.smiley4.strategygame.shared.values.GameId
 
 class InMemoryGameRepository : GameRepository {
 

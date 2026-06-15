@@ -5,15 +5,14 @@ import io.github.smiley4.ktorplus.data.Connection
 import io.github.smiley4.ktorplus.data.PathParameter
 import io.github.smiley4.ktorplus.webSocket
 import io.github.smiley4.strategygame.engine.game.GameEngineService
-import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ClientGameMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.GameConnection
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleClose
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleOpen
-import io.github.smiley4.strategygame.shared.domain.GameId
-import io.github.smiley4.strategygame.shared.domain.UserId
+import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.ktor.server.routing.Route
 import io.ktor.websocket.CloseReason
@@ -45,10 +44,7 @@ object GameWebsocketRoute : KoinComponent {
         service.disconnect(GameId(connection.gameId), UserId(connection.userId))
     }
 
-    suspend fun handleMessage(
-        connection: GameConnection,
-        message: ClientGameMessage
-    ) {
+    suspend fun handleMessage(connection: GameConnection, message: ClientGameMessage) {
         when(message) {
             is ClientGameMessage.SubmitTurn -> service.submitTurn(UserId(connection.userId), GameId(connection.gameId), listOf())
         }
@@ -64,12 +60,14 @@ object GameWebsocketRoute : KoinComponent {
 
     @Serializable
     sealed interface ClientGameMessage {
+        @Serializable
         class SubmitTurn : ClientGameMessage
     }
 
 
     @Serializable
     sealed interface ServerGameMessage {
+        @Serializable
         class SetGameState : ServerGameMessage
     }
 

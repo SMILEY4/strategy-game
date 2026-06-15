@@ -1,7 +1,7 @@
-package io.github.smiley4.strategygame.platform.match.domain
+package io.github.smiley4.strategygame.platform.match.eventhandler
 
 import io.github.smiley4.strategygame.platform.match.MatchService
-import io.github.smiley4.strategygame.shared.domain.events.GameCreatedEvent
+import io.github.smiley4.strategygame.shared.events.GameCreatedEvent
 import io.github.smiley4.strategygame.shared.eventbus.DomainEventHandler
 import io.github.smiley4.strategygame.shared.eventbus.ReadableEventBus
 import kotlinx.coroutines.flow.filterIsInstance

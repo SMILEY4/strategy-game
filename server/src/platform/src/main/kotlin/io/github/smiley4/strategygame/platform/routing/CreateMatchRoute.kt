@@ -8,8 +8,8 @@ import io.github.smiley4.ktorplus.post
 import io.github.smiley4.strategygame.platform.match.MatchService
 import io.github.smiley4.strategygame.platform.routing.CreateMatchRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.routing.CreateMatchRoute.RouteResponse
-import io.github.smiley4.strategygame.shared.domain.UserId
-import io.github.smiley4.strategygame.shared.domain.UserIdError
+import io.github.smiley4.strategygame.shared.values.UserId
+import io.github.smiley4.strategygame.shared.values.UserIdError
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
