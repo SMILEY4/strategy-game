@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.engine.gameplay.infrastructure
 
-import io.github.smiley4.strategygame.engine.gameplay.domain.GameStateContext
+import io.github.smiley4.strategygame.engine.gameplay.domain.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.gameplay.domain.GameStateRepository
 import io.github.smiley4.strategygame.shared.values.GameId
 

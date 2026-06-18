@@ -2,7 +2,9 @@ package io.github.smiley4.strategygame.shared.arangodb
 
 import com.arangodb.serde.jackson.Key
 import com.fasterxml.jackson.annotation.JsonIgnore
+import kotlinx.serialization.Serializable
 
+@Serializable
 open class DbEntity(
 	@field:Key val key: String? = null,
 ) {

@@ -5,6 +5,7 @@ import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
 
 interface GameplayEngine {
+    fun createGameState(gameId: GameId)
     suspend fun processTurn(gameId: GameId, commands: Collection<PlayerCommand>, connectedPlayers: Collection<UserId>)
 }
 

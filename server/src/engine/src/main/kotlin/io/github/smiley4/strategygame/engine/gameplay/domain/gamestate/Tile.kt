@@ -1,0 +1,63 @@
+package io.github.smiley4.strategygame.engine.gameplay.domain.gamestate
+
+import kotlin.uuid.Uuid
+
+data class Tile(
+    val id: Id,
+    val position: Position,
+    val world: WorldData,
+    val meta: Metadata,
+) {
+
+    @JvmInline
+    value class Id(val id: Uuid = Uuid.random())
+
+    data class Ref(
+        val id: Id,
+        val position: Position,
+    )
+
+    data class Position(
+        val q: Int,
+        val r: Int,
+    ) {
+        val s: Int get() = -q - r
+    }
+
+    data class WorldData(
+        val biome: Biome,
+        val elevation: Elevation,
+        val feature: Feature?,
+        val resources: List<ResourceDeposit>,
+    )
+
+    enum class Biome {
+        OCEAN, COAST, GRASSLAND, PLAINS, DESERT, TUNDRA, SNOW
+    }
+
+    enum class Elevation {
+        FLAT, HILLS, MOUNTAINS
+    }
+
+    enum class Feature {
+        FOREST, JUNGLE, MARSH
+    }
+
+    data class ResourceDeposit(
+        val type: Resource,
+        val amount: Float,
+        val maxAmount: Float,
+        val changeRate: Float,
+        val removeOnDeplete: Boolean,
+    )
+
+    enum class Resource {
+        STONE, WOOD, METAL, FISH
+    }
+
+    data class Metadata(
+        val seed: Int,
+        val chunkQ: Int,
+        val chunkR: Int,
+    )
+}

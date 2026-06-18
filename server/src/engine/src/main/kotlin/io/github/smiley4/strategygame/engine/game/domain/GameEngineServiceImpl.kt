@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.engine.game.domain
 import io.github.smiley4.strategygame.engine.game.DeleteGameError
 import io.github.smiley4.strategygame.engine.game.GameEngineService
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
+import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.shared.PlayerCommand
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.MatchId
@@ -12,6 +13,7 @@ import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 
 internal class GameEngineServiceImpl(
+    private val gameplayEngine: GameplayEngine,
     private val gameRepository: GameRepository,
     private val notificationService: GameNotificationService,
     private val eventBus: WritableEventBus
@@ -24,6 +26,7 @@ internal class GameEngineServiceImpl(
     override suspend fun create(matchId: MatchId, players: Collection<UserId>): GameId {
         val game = Game(players)
         gameRepository.save(game)
+        gameplayEngine.createGameState(game.getId())
         eventBus.emit(
             GameCreatedEvent(
                 matchId = matchId,
@@ -35,10 +38,8 @@ internal class GameEngineServiceImpl(
 
     override suspend fun delete(gameId: GameId) {
         keyedMutex.withLock(gameId) {
-
             val game = gameRepository.findById(gameId)
                 ?: throw DeleteGameError.NotFound(gameId.id.toString())
-
             gameRepository.delete(game)
         }
     }

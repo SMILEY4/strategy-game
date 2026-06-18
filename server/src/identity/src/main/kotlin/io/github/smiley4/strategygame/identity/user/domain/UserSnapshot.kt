@@ -6,6 +6,6 @@ import io.github.smiley4.strategygame.shared.values.UserId
 
 internal data class UserSnapshot(
     val id: UserId,
-    var username: Username,
-    var password: HashedPassword
+    val username: Username,
+    val password: HashedPassword
 )

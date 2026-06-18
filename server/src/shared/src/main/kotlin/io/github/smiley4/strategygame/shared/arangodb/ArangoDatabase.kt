@@ -6,11 +6,13 @@ import com.arangodb.ArangoDBAsync
 import com.arangodb.ArangoDBException
 import com.arangodb.ArangoDatabaseAsync
 import com.arangodb.ContentType
+import com.arangodb.Protocol
 import com.arangodb.model.DocumentCreateOptions
 import com.arangodb.model.OverwriteMode
 import com.arangodb.serde.jackson.JacksonSerde
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.future.await
+import kotlinx.serialization.json.Json
 
 class ArangoDatabase(val database: ArangoDatabaseAsync) {
 
