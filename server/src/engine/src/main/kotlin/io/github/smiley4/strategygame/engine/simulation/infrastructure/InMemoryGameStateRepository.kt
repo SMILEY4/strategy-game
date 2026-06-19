@@ -1,7 +1,7 @@
-package io.github.smiley4.strategygame.engine.gameplay.infrastructure
+package io.github.smiley4.strategygame.engine.simulation.infrastructure
 
-import io.github.smiley4.strategygame.engine.gameplay.domain.gamestate.GameStateContext
-import io.github.smiley4.strategygame.engine.gameplay.domain.GameStateRepository
+import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
+import io.github.smiley4.strategygame.engine.simulation.GameStateRepository
 import io.github.smiley4.strategygame.shared.values.GameId
 
 class InMemoryGameStateRepository : GameStateRepository {
@@ -14,6 +14,10 @@ class InMemoryGameStateRepository : GameStateRepository {
 
     override fun save(gameId: GameId, game: GameStateContext) {
         gameContexts[gameId] = game
+    }
+
+    override fun delete(gameId: GameId) {
+        gameContexts.remove(gameId)
     }
 
 }

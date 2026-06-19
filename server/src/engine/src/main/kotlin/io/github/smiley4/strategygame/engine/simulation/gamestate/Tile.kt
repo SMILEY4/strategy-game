@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.engine.gameplay.domain.gamestate
+package io.github.smiley4.strategygame.engine.simulation.gamestate
 
 import kotlin.uuid.Uuid
 

@@ -1,20 +1,20 @@
 package io.github.smiley4.strategygame.engine.game.eventhandler
 
-import io.github.smiley4.strategygame.engine.game.GameEngineService
+import io.github.smiley4.strategygame.engine.game.GameService
 import io.github.smiley4.strategygame.shared.events.GameGenerationRequestedEvent
 import io.github.smiley4.strategygame.shared.eventbus.DomainEventHandler
 import io.github.smiley4.strategygame.shared.eventbus.ReadableEventBus
 import kotlinx.coroutines.flow.filterIsInstance
 
 class GameGenerationRequestedEventHandler(
-    private val gameEngineService: GameEngineService,
+    private val gameService: GameService,
     private val eventBus: ReadableEventBus
 ) : DomainEventHandler() {
 
     override suspend fun start() {
         eventBus.events
             .filterIsInstance<GameGenerationRequestedEvent>()
-            .collect { gameEngineService.create(it.matchId, it.players) }
+            .collect { gameService.create(it.matchId, it.players) }
     }
 
 }

@@ -21,6 +21,8 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.ktor)
 
+    implementation(libs.koson)
+
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.mockk)

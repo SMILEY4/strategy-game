@@ -29,6 +29,7 @@ mockk = "1.14.9"
 schema-kenerator = "2.7.0"
 slf4j-coroutines = "1.10.2"
 jackson-kotlin = "2.18.1"
+koson = "1.2.9"
 
 [libraries]
 
@@ -69,6 +70,7 @@ schemakenerator-core = { module = "io.github.smiley4:schema-kenerator-core", ver
 schemakenerator-serialization = { module = "io.github.smiley4:schema-kenerator-serialization", version.ref = "schema-kenerator" }
 schemakenerator-swagger = { module = "io.github.smiley4:schema-kenerator-swagger", version.ref = "schema-kenerator" }
 jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin" }
+koson = { module = "com.lectra:koson", version.ref = "koson" }
 
 # Testing
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }

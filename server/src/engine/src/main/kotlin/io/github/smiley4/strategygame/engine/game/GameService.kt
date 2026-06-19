@@ -5,9 +5,8 @@ import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
 
-interface GameEngineService {
-    fun connect(gameId: GameId, player: UserId)
-    fun disconnect(gameId: GameId, player: UserId)
+interface GameService {
+    suspend fun connect(gameId: GameId, player: UserId)
     suspend fun create(matchId: MatchId, players: Collection<UserId>): GameId
     suspend fun delete(gameId: GameId)
     suspend fun submitTurn(player: UserId, gameId: GameId, commands: List<PlayerCommand>)

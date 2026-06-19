@@ -1,10 +1,10 @@
 package io.github.smiley4.strategygame.engine.game.domain
 
 import io.github.smiley4.strategygame.engine.game.DeleteGameError
-import io.github.smiley4.strategygame.engine.game.GameEngineService
+import io.github.smiley4.strategygame.engine.game.GameService
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
-import io.github.smiley4.strategygame.engine.gameplay.GameplayEngine
 import io.github.smiley4.strategygame.engine.shared.PlayerCommand
+import io.github.smiley4.strategygame.engine.simulation.SimulationService
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
@@ -12,12 +12,12 @@ import io.github.smiley4.strategygame.shared.events.GameCreatedEvent
 import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 
-internal class GameEngineServiceImpl(
-    private val gameplayEngine: GameplayEngine,
+internal class GameServiceImpl(
+    private val simulationService: SimulationService,
     private val gameRepository: GameRepository,
     private val notificationService: GameNotificationService,
     private val eventBus: WritableEventBus
-) : GameEngineService {
+) : GameService {
 
     companion object {
         val keyedMutex = KeyedMutex()
@@ -26,7 +26,7 @@ internal class GameEngineServiceImpl(
     override suspend fun create(matchId: MatchId, players: Collection<UserId>): GameId {
         val game = Game(players)
         gameRepository.save(game)
-        gameplayEngine.createGameState(game.getId())
+        simulationService.generateGame(game.getId())
         eventBus.emit(
             GameCreatedEvent(
                 matchId = matchId,
@@ -41,18 +41,14 @@ internal class GameEngineServiceImpl(
             val game = gameRepository.findById(gameId)
                 ?: throw DeleteGameError.NotFound(gameId.id.toString())
             gameRepository.delete(game)
+            simulationService.deleteGame(gameId)
         }
     }
 
-    override fun connect(gameId: GameId, player: UserId) {
-        notificationService.connectedTo(player).forEach { gameId ->
-            disconnect(gameId, player)
+    override suspend fun connect(gameId: GameId, player: UserId) {
+        notificationService.getConnectedGames(player).forEach { gameId ->
+            notificationService.disconnect(gameId, player)
         }
-        notificationService.connect(gameId, player)
-    }
-
-    override fun disconnect(gameId: GameId, player: UserId) {
-        notificationService.disconnect(gameId, player)
     }
 
     override suspend fun submitTurn(player: UserId, gameId: GameId, commands: List<PlayerCommand>) {
@@ -64,7 +60,12 @@ internal class GameEngineServiceImpl(
             game.submitTurn(player, commands)
 
             if (game.isTurnFinished()) {
-                game.nextTurn(eventBus)
+                val commands = game.getPendingCommands()
+                game.nextTurn()
+                val playerStates = simulationService.processTurn(game.getId(), commands, notificationService.getConnectedUsers(game.getId()))
+                playerStates.forEach { (userId, state) ->
+                    notificationService.sendGameState(game.getId(), userId, state)
+                }
             }
 
             gameRepository.save(game)

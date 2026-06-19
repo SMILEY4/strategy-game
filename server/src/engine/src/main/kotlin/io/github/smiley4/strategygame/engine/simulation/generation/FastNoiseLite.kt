@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.engine.gameplay.domain.generation
+package io.github.smiley4.strategygame.engine.simulation.domain.generation
 
 import kotlin.math.sqrt
 

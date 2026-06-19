@@ -1,6 +1,6 @@
-package io.github.smiley4.strategygame.engine.gameplay.domain.generation
+package io.github.smiley4.strategygame.engine.simulation.domain.generation
 
-import io.github.smiley4.strategygame.engine.gameplay.domain.gamestate.Tile
+import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import java.lang.Integer.min
 import kotlin.math.floor
 import kotlin.math.max
