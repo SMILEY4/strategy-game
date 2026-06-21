@@ -39,4 +39,6 @@
         </else>
     </if>
 
+    <logger name="io.netty" level="INFO"/>
+
 </configuration>

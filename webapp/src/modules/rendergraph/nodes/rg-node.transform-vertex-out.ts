@@ -2,7 +2,6 @@ import type {RenderGraphNodeBase} from "@modules/rendergraph/nodes/rg-node.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {GlAttributeComponentAmount, GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface TransformVertexOutRenderGraphNode<TIn extends any[], TKeys extends string> extends RenderGraphNodeBase<"transform-vertex-out"> {
     readonly inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
     readonly outputs: Record<TKeys, VertexDataOutput>

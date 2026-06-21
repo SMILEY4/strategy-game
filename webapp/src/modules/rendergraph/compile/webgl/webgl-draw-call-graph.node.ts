@@ -13,7 +13,6 @@ export interface WebGlDrawCallNode {
         shader: ShaderRenderGraphNode | null,
         geometry: GeometryRenderGraphNode | null,
         textures: (TextureRenderGraphNode | RendertargetRenderGraphNode)[],
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         texturesSelect: SelectTextureRenderGraphNode<any, any>[],
         rendertargets: RendertargetRenderGraphNode[],
     }

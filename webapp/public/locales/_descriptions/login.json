@@ -1,0 +1,28 @@
+{
+  "username": {
+    "label": "The label of the username input",
+    "placeholder": "The placeholder text in the empty username input",
+    "error": {
+      "empty": "username validation error: is empty",
+      "wrongCredentials": "validation error: username or password is incorrect"
+    }
+  },
+  "password": {
+    "label": "The label of the password input",
+    "placeholder": "The placeholder text in the empty password input",
+    "error": {
+      "empty": "password validation error: is empty",
+      "wrongCredentials": "validation error: username or password is incorrect"
+    }
+  },
+  "submit": "The form submit button text",
+  "error": {
+    "UNAUTHORIZED": "general error response: provided username or password is incorrect",
+    "INTERNAL_ERROR": "general error response: unexpected server side error",
+    "unknown": "general error response: unexpected error"
+  },
+  "infoRegister": {
+    "question": "Question whether the user does not have an account and wants to register instead.",
+    "action": "Link to the register page."
+  }
+}

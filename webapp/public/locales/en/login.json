@@ -1,0 +1,28 @@
+{
+  "username": {
+    "label": "Username",
+    "placeholder": "Enter your username",
+    "error": {
+      "empty": "Please enter your username.",
+      "wrongCredentials": "Username or password invalid."
+    }
+  },
+  "password": {
+    "label": "Password",
+    "placeholder": "Enter your password",
+    "error": {
+      "empty": "Please enter your password.",
+      "wrongCredentials": "Username or password invalid."
+    }
+  },
+  "submit": "Log in",
+  "error": {
+    "UNAUTHORIZED": "Username or password doesn't match.",
+    "INTERNAL_ERROR": "Oops, something went wrong. Please try again later.",
+    "unknown": "An unknown error occurred."
+  },
+  "infoRegister": {
+    "question": "Don't have an account yet?",
+    "action": "Sign up"
+  }
+}

@@ -353,7 +353,6 @@ function generateDrawCall(geometry: GeometryRenderGraphNode, context: CompileCon
 /**
  * @return the "ref" to the resource holding the actual value
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function resolveDataNode(node: DataRenderGraphNode<any>, context: CompileContext): ValueEntry {
     if (node.source.type === "constant") {
         return {type: "const", value: node.source.value};
@@ -436,7 +435,6 @@ function resolveTransformer(node: TransformRenderGraphNode<unknown[], unknown>, 
 /**
  * @return the "ref" to the resource holding the actual value. ref must be appended with "#<key>" to select the specific output
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function resolveTransformerMultiOut(node: TransformMultiOutRenderGraphNode<unknown[], any>, context: CompileContext): ValueEntry {
     ifNotYetVisited(node, context, () => {
         node.outputs.forEach(outputKey => {
@@ -452,7 +450,6 @@ function resolveTransformerMultiOut(node: TransformMultiOutRenderGraphNode<unkno
     return {type: "ref", ref: node.id};
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function resolveTransformerVertexOut(node: TransformVertexOutRenderGraphNode<unknown[], any>, context: CompileContext): ValueEntry {
     ifNotYetVisited(node, context, () => {
         Object.keys(node.outputs).forEach(outputKey => {
@@ -473,7 +470,6 @@ function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNo
     ifNotYetVisited(node, context, () => {
 
         const attributes: WebGlVertexArrayAttributeResource[] = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (node.sources as GeometrySource<any>[]).forEach(source => {
             const bufferContent = source.source.outputs[source.output].content;
             const bufferLayout = source.source.outputs[source.output].layout;

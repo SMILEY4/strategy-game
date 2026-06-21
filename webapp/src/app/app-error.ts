@@ -38,4 +38,14 @@ export class AppError extends Error implements AppErrorData {
         this.context = error.context;
     }
 
+    toData(): AppErrorData {
+        return {
+            status: this.status,
+            errorCode: this.errorCode,
+            title: this.title,
+            detail: this.detail,
+            context: this.context,
+        }
+    }
+
 }

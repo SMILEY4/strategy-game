@@ -51,9 +51,7 @@ export class RenderGraphBuilder {
         source:
             | { type: "constant", value: TData }
             | { type: "external", fetch: () => TData, checkChanged: (prev: TData) => boolean }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             | { type: "transform", transformer: TransformRenderGraphNode<any, TData> }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             | { type: "transform-multi-out", key: string, transformer: TransformMultiOutRenderGraphNode<any, Record<string, any | null>> }
     }): DataRenderGraphNode<TData> {
         const node: DataRenderGraphNode<TData> = {
@@ -84,7 +82,6 @@ export class RenderGraphBuilder {
         });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public dataTransformer<TData>(transformer: TransformRenderGraphNode<any[], TData>): DataRenderGraphNode<TData> {
         return this.data<TData>({
             source: {
@@ -124,7 +121,6 @@ export class RenderGraphBuilder {
         return node;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public geometrySource<T extends TransformVertexOutRenderGraphNode<any[], any>>(options: {
         source: T,
         output: keyof T["outputs"],
@@ -157,7 +153,6 @@ export class RenderGraphBuilder {
         return node;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public selectTexture<TIn extends any[], TKeys extends string>(options: {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         options: Record<TKeys, TextureRenderGraphNode>,
@@ -211,7 +206,6 @@ export class RenderGraphBuilder {
         return node;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public transform<TIn extends any[], TOut>(options: {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         func: (...args: TIn) => TOut | null,
@@ -228,7 +222,6 @@ export class RenderGraphBuilder {
         return node;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public transformMultiOut<TIn extends any[], TOut extends Record<string, any | null>>(options: {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         outputs: (keyof TOut)[]
@@ -245,7 +238,6 @@ export class RenderGraphBuilder {
         return node;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public transformVertexOut<TIn extends any[], TKeys extends string>(options: {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         outputs: Record<TKeys, VertexDataOutput>

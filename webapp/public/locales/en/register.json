@@ -1,0 +1,48 @@
+{
+  "username": {
+    "label": "Username",
+    "placeholder": "Enter your username",
+    "error": {
+      "empty": "Please enter a username.",
+      "INVALID_USERNAME": "This username doesn't meet the requirements.",
+      "USERNAME_TAKEN": "This username is already taken."
+    }
+  },
+  "password": {
+    "label": "Password",
+    "placeholder": "Enter your password",
+    "error": {
+      "empty": "Please enter a password.",
+      "INVALID_PASSWORD": "This password doesn't meet the requirements."
+    }
+  },
+  "passwordConfirmation": {
+    "label": "Confirm password",
+    "placeholder": "Re-enter your password",
+    "error": {
+      "empty": "Please confirm your password.",
+      "mismatch": "Passwords don't match."
+    }
+  },
+  "registrationCode": {
+    "label": "Registration code",
+    "placeholder": "Enter your registration code",
+    "error": {
+      "empty": "Please enter a registration code.",
+      "INVALID_REGISTRATION_CODE": "The registration code is incorrect."
+    }
+  },
+  "submit": "Create account",
+  "error": {
+    "INVALID_USERNAME": "This username doesn't meet the requirements.",
+    "INVALID_PASSWORD": "This password doesn't meet the requirements.",
+    "USERNAME_TAKEN": "This username is already taken",
+    "INTERNAL_ERROR": "Oops, something went wrong. Please try again later.",
+    "INVALID_REGISTRATION_CODE": "The registration code is missing or incorrect.",
+    "unknown": "An unknown error occurred"
+  },
+  "infoLogIn": {
+    "question": "Already have an account?",
+    "action": "Log in"
+  }
+}

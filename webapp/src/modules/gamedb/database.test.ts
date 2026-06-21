@@ -532,7 +532,6 @@ describe("database", () => {
 
 });
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 function expectDbCallback(call: any, ids: string[], op: DatabaseOperation) {
     expect(call[0].length).toBe(ids.length);
     for (let i = 0; i < ids.length; i++) {
@@ -541,14 +540,12 @@ function expectDbCallback(call: any, ids: string[], op: DatabaseOperation) {
     expect(call[1]).toBe(op);
 }
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 function expectEntityCallback(call: any, id: string, op: DatabaseOperation) {
     expect(call[0].id).toBe(id);
     expect(call[1]).toBe(op);
 }
 
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 function expectQueryCallback(call: any, ids: string[]) {
     expect(call[0].length).toBe(ids.length);
     for (let i = 0; i < ids.length; i++) {

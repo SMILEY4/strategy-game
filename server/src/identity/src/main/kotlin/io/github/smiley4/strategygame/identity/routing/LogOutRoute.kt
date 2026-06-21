@@ -11,6 +11,8 @@ import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.auth.domain.SessionTokenError
 import io.github.smiley4.strategygame.identity.routing.LogOutRoute.RouteRequest
 import io.github.smiley4.strategygame.identity.routing.LogOutRoute.RouteResponse
+import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedToken
+import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
@@ -34,9 +36,7 @@ private object LogOutRoute : KoinComponent {
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
-            service.logout(
-                SessionToken(request.body.token),
-            )
+            service.logout(SessionToken(request.token))
             return RouteResponse.Success()
         } catch (_: SessionTokenError) {
             return RouteResponse.InvalidToken()
@@ -52,15 +52,8 @@ private object LogOutRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @Body val body: RequestBody
-    ) {
-
-        @Serializable
-        data class RequestBody(
-            val token: String,
-        )
-
-    }
+        @AuthenticatedToken val token: String,
+    )
 
     sealed class RouteResponse {
 

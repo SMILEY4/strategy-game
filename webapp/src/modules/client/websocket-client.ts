@@ -69,6 +69,7 @@ USAGE:
 
  */
 export const websocketClient = ({ baseUrl }: Dependencies): WebsocketClient => {
+
     const connections = new Map<string, ActiveConnection>();
 
     function closeConnection(key: string) {

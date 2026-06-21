@@ -1,0 +1,48 @@
+{
+  "username": {
+    "label": "The label of the username input",
+    "placeholder": "The placeholder text in the empty username input",
+    "error": {
+      "empty": "username validation error: is empty",
+      "INVALID_USERNAME": "username validation error: is invalid",
+      "USERNAME_TAKEN": "username validation error: is already taken"
+    }
+  },
+  "password": {
+    "label": "The label of the password input",
+    "placeholder": "The placeholder text in the empty password input",
+    "error": {
+      "empty": "password validation error: is empty",
+      "INVALID_PASSWORD": "password validation error: is invalid"
+    }
+  },
+  "passwordConfirmation": {
+    "label": "The label of the password confirmation input",
+    "placeholder": "The placeholder text in the empty password confirmation input",
+    "error": {
+      "empty": "password confirmation error: is empty",
+      "mismatch": "password confirmation error: does not match password"
+    }
+  },
+  "registrationCode": {
+    "label": "The label of the registration code input",
+    "placeholder": "The placeholder text in the empty registration code input",
+    "error": {
+      "empty": "registration code validation error: is empty",
+      "INVALID_REGISTRATION_CODE": "registration code validation error: is invalid or missing"
+    }
+  },
+  "submit": "The form submit button text",
+  "error": {
+    "INVALID_USERNAME": "general error response: provided username is invalid",
+    "INVALID_PASSWORD": "general error response: provided password is invalid",
+    "USERNAME_TAKEN": "general error response: username is already taken",
+    "INTERNAL_ERROR": "general error response: unexpected server side error",
+    "INVALID_REGISTRATION_CODE": "general error response: registration code is invalid or missing",
+    "unknown": "general error response: unexpected error"
+  },
+  "infoLogIn": {
+    "question": "Question whether the user already has an account and wants to log-in instead.",
+    "action": "Link to the log-in page."
+  }
+}

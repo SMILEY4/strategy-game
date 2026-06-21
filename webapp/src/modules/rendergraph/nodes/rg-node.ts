@@ -14,20 +14,15 @@ import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node
 
 export type RenderGraphNode =
     | CanvasRenderGraphNode
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | DataRenderGraphNode<any>
     | DrawRenderGraphNode
     | GeometryRenderGraphNode
     | RendertargetRenderGraphNode
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | SelectTextureRenderGraphNode<any, any>
     | ShaderRenderGraphNode
     | TextureRenderGraphNode
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | TransformRenderGraphNode<any, any>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | TransformMultiOutRenderGraphNode<any, any>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | TransformVertexOutRenderGraphNode<any, any>
     | CameraRenderGraphNode
     | CanvasSizeRenderGraphNode

@@ -1,0 +1,28 @@
+{
+  "username": {
+    "label": "Benutzername",
+    "placeholder": "Benutzernamen eingeben",
+    "error": {
+      "empty": "Bitte gib deinen Benutzernamen ein.",
+      "wrongCredentials": "Benutzername oder Passwort stimmt nicht."
+    }
+  },
+  "password": {
+    "label": "Passwort",
+    "placeholder": "Passwort eingeben",
+    "error": {
+      "empty": "Bitte gib dein Passwort ein.",
+      "wrongCredentials": "Benutzername oder Passwort stimmt nicht."
+    }
+  },
+  "submit": "Einloggen",
+  "error": {
+    "UNAUTHORIZED": "Benutzername oder Passwort stimmt nicht.",
+    "INTERNAL_ERROR": "Ups, da ist etwas schiefgelaufen. Bitte versuch es später nochmal.",
+    "unknown": "Ein unbekannter Fehler ist aufgetreten."
+  },
+  "infoRegister": {
+    "question": "Du hast noch kein Nutzerprofil?",
+    "action": "Registrieren"
+  }
+}

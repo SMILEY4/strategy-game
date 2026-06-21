@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.application
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.strategygame.application.plugins.setupAuthentication
+import io.github.smiley4.strategygame.application.plugins.setupCORS
 import io.github.smiley4.strategygame.application.plugins.setupContentNegotiation
 import io.github.smiley4.strategygame.application.plugins.setupDependencyInjection
 import io.github.smiley4.strategygame.application.plugins.setupKtorPlus
@@ -34,6 +35,7 @@ fun Application.module() {
     val logger = KotlinLogging.logger(this.javaClass.name)
     logger.info { "Starting Server..." }
 
+    setupCORS()
     setupDependencyInjection()
     setupAuthentication()
     val json = setupContentNegotiation()

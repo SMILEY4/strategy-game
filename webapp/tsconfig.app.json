@@ -27,7 +27,7 @@
       "@/*": ["src/*"],
       "@app/*": ["src/app/*"],
       "@renderer/*": ["src/renderer/*"],
-      "@ui/*": ["src/ui/*"],
+      "@pages/*": ["src/pages/*"],
       "@modules/*": ["src/modules/*"]
     }
   },

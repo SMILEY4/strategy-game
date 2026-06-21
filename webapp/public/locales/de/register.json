@@ -1,0 +1,48 @@
+{
+  "username": {
+    "label": "Benutzername",
+    "placeholder": "Benutzernamen eingeben",
+    "error": {
+      "empty": "Bitte gib einen Benutzernamen ein.",
+      "INVALID_USERNAME": "Dieser Benutzername ist ungültig.",
+      "USERNAME_TAKEN": "Dieser Benutzername ist schon vergeben."
+    }
+  },
+  "password": {
+    "label": "Passwort",
+    "placeholder": "Passwort eingeben",
+    "error": {
+      "empty": "Bitte gib ein Passwort ein.",
+      "INVALID_PASSWORD": "Das Passwort entspricht nicht den Anforderungen."
+    }
+  },
+  "passwordConfirmation": {
+    "label": "Passwort bestätigen",
+    "placeholder": "Passwort erneut eingeben",
+    "error": {
+      "empty": "Bitte bestätige dein Passwort.",
+      "mismatch": "Die Passwörter stimmen nicht überein."
+    }
+  },
+  "registrationCode": {
+    "label": "Registrierungscode",
+    "placeholder": "Registrierungscode eingeben",
+    "error": {
+      "empty": "Bitte gib einen Registrierungscode ein.",
+      "INVALID_REGISTRATION_CODE": "Der Registrierungscode is ungültig."
+    }
+  },
+  "submit": "Konto erstellen",
+  "error": {
+    "INVALID_USERNAME": "Der Benutzername ist ungültig.",
+    "INVALID_PASSWORD": "Das Passwort entspricht nicht den Anforderungen.",
+    "USERNAME_TAKEN": "Dieser Benutzername ist schon vergeben.",
+    "INTERNAL_ERROR": "Ups, da ist etwas schiefgelaufen. Bitte versuch es später nochmal.",
+    "INVALID_REGISTRATION_CODE": "Der Registrierungscode is ungültig oder fehlt.",
+    "unknown": "Ein unbekannter Fehler ist aufgetreten."
+  },
+  "infoLogIn": {
+    "question": "Du hast schon ein Konto?",
+    "action": "Zum Login"
+  }
+}

@@ -1,0 +1,156 @@
+@import "@modules/uicomponents/styles/variables.layout";
+
+.horizontal-layout {
+	position:   relative;
+	display:    flex;
+	box-sizing: border-box;
+	min-width:  0;
+
+	//============================
+	//  Horizontal alignment
+	//============================
+
+	&, &[data-align-horizontal="start"] {
+		justify-content: flex-start;
+	}
+
+	&[data-align-horizontal="center"] {
+		justify-content: center;
+	}
+
+	&[data-align-horizontal="end"] {
+		justify-content: flex-end;
+	}
+
+	&[data-align-horizontal="space-around"] {
+		justify-content: space-around;
+	}
+
+	&[data-align-horizontal="space-between"] {
+		justify-content: space-between;
+	}
+
+	&[data-align-horizontal="space-evenly"] {
+		justify-content: space-evenly;
+	}
+
+	//============================
+	//  Vertical alignment
+	//============================
+
+	&, &[data-align-vertical="top"] {
+		align-items: flex-start;
+	}
+
+	&[data-align-vertical="center"] {
+		align-items: center;
+	}
+
+	&[data-align-vertical="bottom"] {
+		align-items: flex-end;
+	}
+
+	&[data-align-vertical="stretch"] {
+		align-items: stretch;
+	}
+
+	//============================
+	//  Direction
+	//============================
+
+	&, &[data-direction="left-to-right"] {
+		flex-direction: row;
+	}
+
+	&[data-direction="right-to-left"] {
+		flex-direction: row-reverse;
+	}
+
+	//============================
+	//  Spacing
+	//============================
+
+	&[data-spacing="3xs"] {
+		gap: @space-3xs;
+	}
+
+	&[data-spacing="2xs"] {
+		gap: @space-2xs;
+	}
+
+	&[data-spacing="xs"] {
+		gap: @space-xs;
+	}
+
+	&[data-spacing="s"] {
+		gap: @space-s;
+	}
+
+	&[data-spacing="m"] {
+		gap: @space-m;
+	}
+
+	&[data-spacing="l"] {
+		gap: @space-l;
+	}
+
+	&[data-spacing="xl"] {
+		gap: @space-xl;
+	}
+
+	&[data-spacing="2xl"] {
+		gap: @space-2xl;
+	}
+
+	&[data-spacing="3xl"] {
+		gap: @space-3xl;
+	}
+
+	//============================
+	//  Padding
+	//============================
+
+	&[data-padding="3xs"] {
+		padding: @space-3xs;
+	}
+
+	&[data-padding="2xs"] {
+		padding: @space-2xs;
+	}
+
+	&[data-padding="xs"] {
+		padding: @space-xs;
+	}
+
+	&[data-padding="s"] {
+		padding: @space-s;
+	}
+
+	&[data-padding="m"] {
+		padding: @space-m;
+	}
+
+	&[data-padding="l"] {
+		padding: @space-l;
+	}
+
+	&[data-padding="xl"] {
+		padding: @space-xl;
+	}
+
+	&[data-padding="2xl"] {
+		padding: @space-2xl;
+	}
+
+	&[data-padding="3xl"] {
+		padding: @space-3xl;
+	}
+
+	//============================
+	//  Scrollable
+	//============================
+
+	&[data-scrollable] {
+		overflow-y: auto;
+	}
+}

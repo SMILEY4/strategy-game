@@ -7,14 +7,14 @@ interface RequestConfig {
 }
 
 interface RequestConfigWithContent<TContent> extends RequestConfig{
-    content: TContent
+    content?: TContent
 }
 
 export interface HttpClient {
     get: <TResponse = never>(config: RequestConfig) => Promise<TResponse>;
-    post: <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
-    put: <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
-    delete: <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
+    post: <TResponse = never, TRequest = any>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
+    put: <TResponse = never, TRequest = any>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
+    delete: <TResponse = never, TRequest = any>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
 }
 
 interface HttpClientAuthHandler {
@@ -39,7 +39,7 @@ interface Dependencies {
         }
     })
 
-    const user = await client.post<CreateUser, User>({
+    const user = await client.post<User, CreateUser>({
         url: "/api/user",
         authenticated: true,
         content: {
@@ -50,6 +50,12 @@ interface Dependencies {
             "X-Client-Id": "12345"
         }
     })
+
+RETURNS on 2xx
+- specified response type (response parsed as json)
+
+THROWS on 4xx, 5xx, network errors, etc
+- AppError
 
  */
 export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => {
@@ -117,6 +123,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
                 {
                     method: props.method,
                     headers: await buildHeaders(props.config, serializedRequestBody !== undefined),
+                    body: serializedRequestBody,
                 },
             );
         } catch (networkError) {
@@ -149,7 +156,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
             });
         },
 
-        post: async <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>): Promise<TResponse> => {
+        post: async <TResponse = never, TRequest = any>(config: RequestConfigWithContent<TRequest>): Promise<TResponse> => {
             return makeRequest<TRequest, TResponse>({
                 method: "POST",
                 url: config.url,
@@ -159,7 +166,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
             });
         },
 
-        put: async <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>): Promise<TResponse> => {
+        put: async <TResponse = never, TRequest = any>(config: RequestConfigWithContent<TRequest>): Promise<TResponse> => {
             return makeRequest<TRequest, TResponse>({
                 method: "PUT",
                 url: config.url,
@@ -169,7 +176,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
             });
         },
 
-        delete: async <TRequest = never, TResponse = never>(config: RequestConfigWithContent<TRequest>): Promise<TResponse> => {
+        delete: async <TResponse = never, TRequest = any>(config: RequestConfigWithContent<TRequest>): Promise<TResponse> => {
             return makeRequest<TRequest, TResponse>({
                 method: "DELETE",
                 url: config.url,

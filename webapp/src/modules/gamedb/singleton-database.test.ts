@@ -95,7 +95,6 @@ describe("singleton database", () => {
 
 })
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 function expectCallback(call: any, id: string, size: number) {
     expect(call[0].id).toBe(id)
     expect(call[0].size).toBe(size)

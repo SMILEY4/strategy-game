@@ -19,7 +19,7 @@ fun Application.setupAuthentication() {
             authenticate { tokenCredentials ->
                 try {
                     val userId = service.authenticate(SessionToken(tokenCredentials.token))
-                    UserPrincipal(userId)
+                    UserPrincipal(userId, tokenCredentials.token)
                 } catch (_: Exception) {
                     null
                 }
@@ -37,7 +37,7 @@ fun Application.setupAuthentication() {
             authenticate { tokenCredentials ->
                 try {
                     val userId = service.authenticate(OneTimeToken(tokenCredentials.token))
-                    UserPrincipal(userId)
+                    UserPrincipal(userId, tokenCredentials.token)
                 } catch (_: Exception) {
                     null
                 }

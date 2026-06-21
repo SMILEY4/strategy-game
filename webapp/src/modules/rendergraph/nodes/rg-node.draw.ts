@@ -16,7 +16,6 @@ export interface DrawRenderGraphNode extends RenderGraphNodeBase<"draw"> {
 
 export type DrawRenderGraphNodeInput =
     | TextureRenderGraphNode
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | SelectTextureRenderGraphNode<any, any>
     | RendertargetRenderGraphNode
     | DataRenderGraphNode<unknown>

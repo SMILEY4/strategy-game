@@ -7,7 +7,6 @@ export interface GeometryRenderGraphNode extends RenderGraphNodeBase<"geometry">
 }
 
 export interface GeometrySource<TKeys extends string> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly source: TransformVertexOutRenderGraphNode<any, TKeys>;
     readonly output: TKeys;
 }

@@ -7,6 +7,7 @@ import io.github.smiley4.ktorplus.core.PropertyAnalyzer
 import io.github.smiley4.ktorplus.request.RequestPropertyHandler
 import io.github.smiley4.ktorplus.typedescriptor.TypeDescriptorEntry
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
+import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedToken
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
@@ -36,8 +37,11 @@ fun setupKtorPlus(json: Json) {
     KtorPlusConfig.encoders.add(0, SessionTokenTranscoder())
     KtorPlusConfig.decoders.add(0, SessionTokenTranscoder())
 
-    KtorPlusConfig.propertyAnalyzers.add(0, AuthenticatedUserIdAnalyzer())
-    KtorPlusConfig.requestHandlers.add(0, AuthenticatedUserIdRequestPropertyHandler())
+    KtorPlusConfig.propertyAnalyzers.add(AuthenticatedUserIdAnalyzer())
+    KtorPlusConfig.requestHandlers.add(AuthenticatedUserIdRequestPropertyHandler())
+
+    KtorPlusConfig.propertyAnalyzers.add(AuthenticatedTokenAnalyzer())
+    KtorPlusConfig.requestHandlers.add(AuthenticatedTokenRequestPropertyHandler())
 }
 
 private class UserIdTranscoder : ParameterEncoder<UserId>, ParameterDecoder<UserId> {
@@ -84,9 +88,41 @@ private class AuthenticatedUserIdRequestPropertyHandler : RequestPropertyHandler
 
     override suspend fun handle(descriptor: AuthenticatedUserIdDescriptor, call: RoutingCall): Map<String, Any?> {
         val principal = call.authentication.principal<UserPrincipal>()
-            ?: throw IllegalArgumentException("Missing principal for user id.")
+            ?: throw IllegalArgumentException("Missing principal.")
         return mapOf(
             descriptor.property.name to principal.userId,
+        )
+    }
+
+}
+
+
+
+
+
+private class AuthenticatedTokenDescriptor(
+    val property: KCallable<*>,
+) : TypeDescriptorEntry
+
+private class AuthenticatedTokenAnalyzer : PropertyAnalyzer<AuthenticatedToken, TypeDescriptorEntry> {
+
+    override fun getAnnotationType() = typeOf<AuthenticatedToken>()
+
+    override fun process(type: KClass<*>, property: KCallable<*>, annotation: AuthenticatedToken) = AuthenticatedTokenDescriptor(
+        property = property
+    )
+
+}
+
+private class AuthenticatedTokenRequestPropertyHandler : RequestPropertyHandler<AuthenticatedTokenDescriptor> {
+
+    override fun appliesTo(descriptor: TypeDescriptorEntry) = descriptor is AuthenticatedTokenDescriptor
+
+    override suspend fun handle(descriptor: AuthenticatedTokenDescriptor, call: RoutingCall): Map<String, Any?> {
+        val principal = call.authentication.principal<UserPrincipal>()
+            ?: throw IllegalArgumentException("Missing principal.")
+        return mapOf(
+            descriptor.property.name to principal.token,
         )
     }
 
