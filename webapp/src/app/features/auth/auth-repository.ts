@@ -1,59 +1,48 @@
 import type {AuthClient} from "@app/features/auth/auth.client.ts";
+import type {AuthTokenStorage} from "@app/features/auth/auth-token-storage.ts";
 
 export interface AuthRepository {
     isAuthenticated: () => boolean;
     getToken: () => string | null;
     logIn: (username: string, password: string) => Promise<void>;
     logOut: () => Promise<void>;
-    clearLocal: () => void
+    clearLocal: () => void;
 }
 
 interface Dependencies {
+    authStorage: AuthTokenStorage;
     authClient: AuthClient;
 }
 
-const LocalStorageKeys = {
-    TOKEN: "token",
-};
-
-export const authRepository = ({ authClient}: Dependencies): AuthRepository => {
-
-    function storeAuthData(token: string): void {
-        localStorage.setItem(LocalStorageKeys.TOKEN, token);
-    }
-
-    function clearAuthData(): void {
-        localStorage.removeItem(LocalStorageKeys.TOKEN);
-    }
+export const authRepository = ({authStorage, authClient}: Dependencies): AuthRepository => {
 
     return {
         isAuthenticated: () => {
-            const token = localStorage.getItem(LocalStorageKeys.TOKEN)
-            return !!token
+            return !!authStorage.getToken();
         },
 
         getToken: () => {
-            return localStorage.getItem(LocalStorageKeys.TOKEN) ?? null
+            return authStorage.getToken();
         },
 
         logIn: async (username: string, password: string) => {
             try {
-                const authData = await authClient.logIn(username, password)
-                storeAuthData(authData.token)
+                const authData = await authClient.logIn(username, password);
+                authStorage.setToken(authData.token);
             } catch (error) {
-                clearAuthData()
-                throw error
+                authStorage.clear();
+                throw error;
             }
         },
 
         logOut: async () => {
-            clearAuthData()
-            await authClient.logOut()
+            authStorage.clear();
+            await authClient.logOut();
         },
 
         clearLocal: () => {
-            clearAuthData()
+            authStorage.clear();
         },
-    }
+    };
 
-}
+};

@@ -51,7 +51,7 @@ fun Route.routingEngine() {
     }) {
         val context by inject<WebSocketContext<GameConnection, ServerGameMessage>>()
         authenticate(RoutingAuthConstants.AUTHKEY_USER_OTT_WEBSOCKET) {
-            route("/game") { routeGameWebsocket(context) }
+            route("/game/{gameId}") { routeGameWebsocket(context) }
         }
     }
 }

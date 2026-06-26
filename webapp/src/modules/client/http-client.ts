@@ -17,8 +17,8 @@ export interface HttpClient {
     delete: <TResponse = never, TRequest = any>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
 }
 
-interface HttpClientAuthHandler {
-    getToken: () => string | Promise<string>;
+export interface HttpClientAuthHandler {
+    getToken: () => string | null | Promise<string | null>;
     handleUnauthorized: () => void | Promise<void>;
 }
 
@@ -138,7 +138,10 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
             if (response.status === 204) {
                 return undefined as TResponse;
             }
-            return response.json();
+            const responseContent = (await response.text()).trim()
+            return responseContent
+                ? JSON.parse(responseContent)
+                : undefined as TResponse;
         } else {
             throw new AppError(await parseErrorResponse(response));
         }

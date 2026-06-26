@@ -47,14 +47,14 @@ export function useLoginViewModel(): LoginViewModel {
 
     const [login, loginLoading] = useAction((username: string, password: string) => DI.logInUseCase.execute(username, password));
 
-    const {gotoMatches} = useRouting();
+    const {gotoMatchList} = useRouting();
 
     function handleSubmit() {
         if (!isFormValid) {
             return Promise.resolve();
         }
         login(username.value, password.value)
-            .then(() => gotoMatches())
+            .then(() => gotoMatchList())
             .catch(error => {
                 if (error instanceof AppError) {
                     if (error.errorCode === "INCORRECT_USERNAME_OR_PASSWORD") {

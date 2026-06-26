@@ -33,7 +33,7 @@ private object RequestOneTimeGrantRoute : KoinComponent {
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
-            val token = service.generateOneTimeGrant(UserId(request.userId))
+            val token = service.generateOneTimeGrant(request.userId)
             return RouteResponse.Success(token)
         } catch (e: GenerateOneTimeGrantError) {
             return when (e) {
@@ -47,7 +47,7 @@ private object RequestOneTimeGrantRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: String,
+        @AuthenticatedUserId val userId: UserId,
     )
 
     sealed class RouteResponse {

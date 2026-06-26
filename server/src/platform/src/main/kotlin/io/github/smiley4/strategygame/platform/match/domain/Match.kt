@@ -10,7 +10,7 @@ import io.github.smiley4.strategygame.shared.events.GameGenerationRequestedEvent
 import io.github.smiley4.strategygame.shared.events.MatchDeletedEvent
 import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 
-internal enum class MatchState {
+enum class MatchState {
     CONFIGURING,
     ACTIVE,
 }

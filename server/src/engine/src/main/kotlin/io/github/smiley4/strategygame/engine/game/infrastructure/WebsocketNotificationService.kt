@@ -16,26 +16,26 @@ internal class WebsocketNotificationService(
 
     override suspend fun disconnect(gameId: GameId, userId: UserId) {
         wsContext.connections()
-            .filter { it.userId == userId.id.toString() && it.gameId == gameId.id.toString() }
+            .filter { it.userId == userId && it.gameId == gameId.id.toString() }
             .close(CloseReason(CloseReason.Codes.NORMAL, "Disconnected from server"))
     }
 
     override suspend fun sendGameState(gameId: GameId, userId: UserId, gameState: ObjectType) {
         wsContext.connections()
-            .filter { it.userId == userId.id.toString() && it.gameId == gameId.id.toString() }
+            .filter { it.userId == userId && it.gameId == gameId.id.toString() }
             .send(ServerGameMessage.GameState(gameState.pretty(3)))
     }
 
     override fun getConnectedGames(userId: UserId): List<GameId> {
         return wsContext.connections().toList()
-            .filter { it.userId == userId.id.toString() }
+            .filter { it.userId == userId }
             .map { GameId(it.gameId) }
     }
 
     override fun getConnectedUsers(gameId: GameId): List<UserId> {
         return wsContext.connections().toList()
             .filter { it.gameId == gameId.id.toString() }
-            .map { UserId(it.userId) }
+            .map { it.userId }
     }
 
 

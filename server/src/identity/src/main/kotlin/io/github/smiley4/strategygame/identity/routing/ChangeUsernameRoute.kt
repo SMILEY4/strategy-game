@@ -37,7 +37,7 @@ private object ChangeUsernameRoute : KoinComponent {
     suspend fun handle(request: RouteRequest): RouteResponse {
         try {
             service.changeUsername(
-                UserId(request.userId),
+                request.userId,
                 Username(request.body.newUsername)
             )
             return RouteResponse.Success()
@@ -58,7 +58,7 @@ private object ChangeUsernameRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: String,
+        @AuthenticatedUserId val userId: UserId,
         @Body val body: RequestBody
     ) {
 

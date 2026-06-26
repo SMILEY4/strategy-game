@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.platform.match.domain.MatchServiceImpl
 import io.github.smiley4.strategygame.platform.match.infrastructure.InMemoryMatchRepository
 import io.github.smiley4.strategygame.platform.routing.routeCreateMatch
 import io.github.smiley4.strategygame.platform.routing.routeDeleteMatch
+import io.github.smiley4.strategygame.platform.routing.routeFetchMatch
 import io.github.smiley4.strategygame.platform.routing.routeGenerateMatch
 import io.github.smiley4.strategygame.platform.routing.routeJoinMatch
 import io.github.smiley4.strategygame.platform.routing.routeListMatches
@@ -33,6 +34,7 @@ fun Route.routingPlatform() {
         authenticate(RoutingAuthConstants.AUTHKEY_USER_SESSION) {
             route("/match") { routeListMatches() }
             route("/match") { routeCreateMatch() }
+            route("/match/{matchId}") { routeFetchMatch() }
             route("/match/{matchId}") { routeDeleteMatch() }
             route("/match/{matchId}") { routeJoinMatch() }
             route("/match/{matchId}/game") { routeGenerateMatch() }

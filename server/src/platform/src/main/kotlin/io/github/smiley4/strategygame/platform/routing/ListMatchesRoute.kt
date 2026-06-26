@@ -6,15 +6,16 @@ import io.github.smiley4.ktorplus.data.Request
 import io.github.smiley4.ktorplus.data.Response
 import io.github.smiley4.ktorplus.get
 import io.github.smiley4.strategygame.platform.match.MatchService
-import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.platform.routing.ListMatchesRoute.RouteRequest
 import io.github.smiley4.strategygame.platform.routing.ListMatchesRoute.RouteResponse
-import io.github.smiley4.strategygame.shared.values.UserId
-import io.github.smiley4.strategygame.shared.values.UserIdError
+import io.github.smiley4.strategygame.platform.routing.ListMatchesRoute.RouteResponse.Success.MatchListEntry
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
+import io.github.smiley4.strategygame.shared.values.MatchId
+import io.github.smiley4.strategygame.shared.values.UserId
 import io.ktor.server.routing.Route
+import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -32,12 +33,15 @@ private object ListMatchesRoute : KoinComponent {
 
     fun handle(request: RouteRequest): RouteResponse {
         try {
-            val matches = service.listMatches(
-                UserId(request.userId)
-            )
+            val matches = service
+                .listMatches(request.userId)
+                .map {
+                    MatchListEntry(
+                        id = it.id,
+                        name = it.name,
+                    )
+                }
             return RouteResponse.Success(matches)
-        } catch (_: UserIdError) {
-            return RouteResponse.InvalidUserId()
         } catch (_: Exception) {
             return RouteResponse.InternalError()
         }
@@ -46,26 +50,23 @@ private object ListMatchesRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: String,
+        @AuthenticatedUserId val userId: UserId,
     )
 
     sealed class RouteResponse {
 
         @Response(HttpStatusCode.OK, "The matches were successfully retrieved")
         class Success(
-            @Body val matches: List<MatchId>
-        ) : RouteResponse()
+            @Body val matches: List<MatchListEntry>
+        ) : RouteResponse() {
 
-
-        @Response(HttpStatusCode.BAD_REQUEST, "The provided user id is invalid.")
-        class InvalidUserId(
-            @Body val body: HttpErrorResponse = HttpErrorResponse(
-                status = HttpStatusCode.BAD_REQUEST,
-                errorCode = "INVALID_USER_ID",
-                title = "Invalid user id",
-                detail = "The provided user id is invalid.",
+            @Serializable
+            data class MatchListEntry(
+                val id: MatchId,
+                val name: String,
             )
-        ) : RouteResponse()
+
+        }
 
 
         @Response(HttpStatusCode.INTERNAL_SERVER_ERROR, "An internal error occurred.")

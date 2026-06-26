@@ -5,7 +5,7 @@ import {routing} from "@pages/routing.tsx";
 import "@app/i18n/i18n.ts"
 import "./main.less"
 
-const router = createBrowserRouter(routing);
+export const router = createBrowserRouter(routing);
 
 createRoot(document.getElementById("root") || document.createElement("div")).render(
     <StrictMode>

@@ -37,7 +37,7 @@ private object ChangePasswordRoute : KoinComponent {
     fun handle(request: RouteRequest): RouteResponse {
         try {
             service.changePassword(
-                UserId(request.userId),
+                request.userId,
                 UnsafePassword(request.body.newPassword)
             )
             return RouteResponse.Success()
@@ -57,7 +57,7 @@ private object ChangePasswordRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: String,
+        @AuthenticatedUserId val userId: UserId,
         @Body val body: RequestBody
     ) {
 

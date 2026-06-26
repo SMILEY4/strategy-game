@@ -1,10 +1,13 @@
 import {useRegisterViewModel} from "@pages/register/register.view-model.ts";
 import {useTranslation} from "react-i18next";
 import {VerticalLayout} from "@modules/uicomponents/layout/vertical/VerticalLayout.tsx";
+import {useRouting} from "@pages/routing.tsx";
+import {Link} from "react-router";
 
 export function RegisterPage() {
 
     const viewModel = useRegisterViewModel();
+    const {urlLogin} = useRouting();
     const {t} = useTranslation("register");
 
     return (
@@ -26,6 +29,7 @@ export function RegisterPage() {
                     onChange={e => viewModel.passwordConfirmation.onChange(e.target.value)}
                 />
                 <button onClick={viewModel.register.submit}>{t("submit")}</button>
+                <Link to={urlLogin()}>Log-In</Link>
             </VerticalLayout>
         </VerticalLayout>
     );

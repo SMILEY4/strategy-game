@@ -1,6 +1,8 @@
 import {Navigate, type RouteObject, useMatches, useNavigate} from "react-router";
 import {LoginPage} from "@pages/login/Login.page.tsx";
 import {RegisterPage} from "@pages/register/Register.page.tsx";
+import {MatchPage} from "@pages/match/Match.page.tsx";
+import {MatchListPage} from "@pages/matchList/Match-list.page.tsx";
 
 type RouteInfo = {
     id: string,
@@ -22,8 +24,8 @@ export const Routes = {
         id: "login",
         path: "login",
     },
-    MATCHES: {
-        id: "matches",
+    MATCH_LIST: {
+        id: "match-list",
         path: "matches",
     },
     MATCH: {
@@ -42,7 +44,7 @@ export const routing: RouteObject[] = [
     {
         id: Routes.ROOT.id,
         path: Routes.ROOT.path,
-        element: <Navigate to={`/${Routes.MATCHES.path}`} replace/>,
+        element: <Navigate to={`/${Routes.MATCH_LIST.path}`} replace/>,
     },
     {
         id: Routes.REGISTER.id,
@@ -55,20 +57,20 @@ export const routing: RouteObject[] = [
         element: <LoginPage/>,
     },
     {
-        id: Routes.MATCHES.id,
-        path: Routes.MATCHES.path,
-        element: <div>Match List</div>,
+        id: Routes.MATCH_LIST.id,
+        path: Routes.MATCH_LIST.path,
+        element: <MatchListPage/>,
     },
     {
         id: Routes.MATCH.id,
         path: Routes.MATCH.path(Routes.MATCH.propMatchId),
-        element: <div>Match</div>,
+        element: <MatchPage/>,
     },
     {
         id: Routes.GAME.id,
         path: Routes.GAME.path(Routes.GAME.propGameId),
         element: <div>Game</div>,
-    }
+    },
 ];
 
 export function useRouting() {
@@ -80,9 +82,11 @@ export function useRouting() {
         urlRegister: () => "/" + Routes.REGISTER.path,
         gotoRegister: () => void navigate("/" + Routes.REGISTER.path),
 
-        gotoMatches: () => void navigate("/" + Routes.MATCHES.path),
+        gotoMatchList: () => void navigate("/" + Routes.MATCH_LIST.path),
         gotoMatch: (matchId: string) => void navigate("/" + Routes.MATCH.path(matchId)),
-    }
+
+        gotoGame: (gameId: string) => void navigate("/" + Routes.GAME.path(gameId)),
+    };
 }
 
 export function useRouteIds(): string[] {

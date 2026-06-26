@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@tanstack/query-core": "^5.101.0",
     "classnames": "^2.5.1",
     "gl-matrix": "^3.4.4",
     "i18next": "^26.3.1",

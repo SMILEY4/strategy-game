@@ -2,13 +2,14 @@ package io.github.smiley4.strategygame.platform.match.domain
 
 import io.github.smiley4.strategygame.platform.match.DeleteMatchError
 import io.github.smiley4.strategygame.platform.match.GenerateGameError
+import io.github.smiley4.strategygame.platform.match.GetMatchDetailsError
 import io.github.smiley4.strategygame.platform.match.JoinMatchError
 import io.github.smiley4.strategygame.platform.match.MatchService
+import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
+import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
-import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
-import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 
 internal class MatchServiceImpl(
     private val matchRepository: MatchRepository,
@@ -82,10 +83,16 @@ internal class MatchServiceImpl(
     }
 
 
-    override fun listMatches(user: UserId): List<MatchId> {
+    override fun listMatches(user: UserId): List<MatchSnapshot> {
         return matchRepository
             .findByPlayer(user)
-            .map { it.getId() }
+            .map { it.toSnapshot() }
+    }
+
+    override fun getMatchDetails(user: UserId, matchId: MatchId): MatchSnapshot {
+        val match = matchRepository.findById(matchId)
+            ?: throw GetMatchDetailsError.NotFound(matchId.value.toString())
+        return match.toSnapshot()
     }
 
 }

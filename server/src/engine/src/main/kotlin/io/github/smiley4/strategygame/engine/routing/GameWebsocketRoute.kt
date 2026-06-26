@@ -32,7 +32,7 @@ object GameWebsocketRoute : KoinComponent {
 
     suspend fun handleOpen(context: WebSocketContext<GameConnection, ServerGameMessage>, connection: GameConnection) {
         try {
-            service.connect(GameId(connection.gameId), UserId(connection.userId))
+            service.connect(GameId(connection.gameId), connection.userId)
         } catch (_: Exception) {
             context.connections().close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Error"))
         }
@@ -40,7 +40,7 @@ object GameWebsocketRoute : KoinComponent {
 
     suspend fun handleMessage(connection: GameConnection, message: ClientGameMessage) {
         when(message) {
-            is ClientGameMessage.SubmitTurn -> service.submitTurn(UserId(connection.userId), GameId(connection.gameId), listOf())
+            is ClientGameMessage.SubmitTurn -> service.submitTurn(connection.userId, GameId(connection.gameId), listOf())
         }
     }
 
@@ -48,7 +48,7 @@ object GameWebsocketRoute : KoinComponent {
     @Connection
     class GameConnection(
         @PathParameter val gameId: String,
-        @AuthenticatedUserId val userId: String
+        @AuthenticatedUserId val userId: UserId
     )
 
 

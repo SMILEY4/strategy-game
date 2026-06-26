@@ -10,6 +10,7 @@ import io.github.smiley4.strategygame.identity.auth.LogInUserError
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.routing.LogInRoute.RouteRequest
 import io.github.smiley4.strategygame.identity.routing.LogInRoute.RouteResponse
+import io.github.smiley4.strategygame.identity.routing.LogInRoute.RouteResponse.Success.AuthDataResponse
 import io.github.smiley4.strategygame.identity.shared.UnsafePassword
 import io.github.smiley4.strategygame.identity.shared.UnsafePasswordError
 import io.github.smiley4.strategygame.identity.shared.Username
@@ -41,7 +42,7 @@ private object LogInRoute : KoinComponent {
                 Username(request.body.username),
                 UnsafePassword(request.body.password)
             )
-            return RouteResponse.Success(token)
+            return RouteResponse.Success(AuthDataResponse(token))
         } catch (_: UsernameError) {
             return RouteResponse.IncorrectUsernameOrPassword()
         } catch (_: UnsafePasswordError) {
@@ -73,8 +74,15 @@ private object LogInRoute : KoinComponent {
 
         @Response(HttpStatusCode.OK, "The user was successfully logged in")
         class Success(
-            @Body val token: SessionToken
-        ) : RouteResponse()
+            @Body val body: AuthDataResponse
+        ) : RouteResponse() {
+
+            @Serializable
+            data class AuthDataResponse(
+                val token: SessionToken
+            )
+
+        }
 
 
         @Response(HttpStatusCode.BAD_REQUEST, "The provided username or password is incorrect.")

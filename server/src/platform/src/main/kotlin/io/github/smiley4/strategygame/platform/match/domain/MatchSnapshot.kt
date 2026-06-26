@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
 
 
-internal data class MatchSnapshot(
+data class MatchSnapshot(
     val id: MatchId,
     val name: String,
     val participants: List<MatchParticipantSnapshot>,
@@ -13,7 +13,7 @@ internal data class MatchSnapshot(
     val gameId: GameId?,
 )
 
-internal data class MatchParticipantSnapshot(
+data class MatchParticipantSnapshot(
     val userId: UserId,
     val role: MatchParticipantRole,
 )

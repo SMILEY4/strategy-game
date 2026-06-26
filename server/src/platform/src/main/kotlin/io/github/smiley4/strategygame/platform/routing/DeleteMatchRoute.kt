@@ -36,7 +36,7 @@ private object DeleteMatchRoute : KoinComponent {
     suspend fun handle(request: RouteRequest): RouteResponse {
         try {
             service.delete(
-                UserId(request.userId),
+                request.userId,
                 MatchId(request.matchId)
             )
             return RouteResponse.Success()
@@ -57,7 +57,7 @@ private object DeleteMatchRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: String,
+        @AuthenticatedUserId val userId: UserId,
         @PathParameter("matchId") val matchId: String
     )
 

@@ -33,7 +33,7 @@ private object CreateMatchRoute : KoinComponent {
     fun handle(request: RouteRequest): RouteResponse {
         try {
             service.create(
-                UserId(request.userId),
+                request.userId,
                 request.body.name
             )
             return RouteResponse.Success()
@@ -47,7 +47,7 @@ private object CreateMatchRoute : KoinComponent {
 
     @Request
     class RouteRequest(
-        @AuthenticatedUserId val userId: String,
+        @AuthenticatedUserId val userId: UserId,
         @Body val body: RequestBody
     ) {
 
