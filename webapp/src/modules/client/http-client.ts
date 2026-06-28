@@ -1,13 +1,14 @@
 import {AppError, type AppErrorData} from "@app/app-error.ts";
 
 interface RequestConfig {
-    url: string
+    url: string,
+    queryParams?: Record<string, string | number | boolean>
     authenticated?: boolean;
     headers?: Record<string, string>;
 }
 
-interface RequestConfigWithContent<TContent> extends RequestConfig{
-    content?: TContent
+interface RequestConfigWithContent<TContent> extends RequestConfig {
+    content?: TContent;
 }
 
 export interface HttpClient {
@@ -63,7 +64,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
     async function buildHeaders(config: RequestConfig | undefined, withBody: boolean): Promise<Headers> {
         const headers = new Headers({
             "Accept": "application/json",
-            ...(config?.headers ?? {})
+            ...(config?.headers ?? {}),
         });
 
         if (config?.authenticated) {
@@ -103,9 +104,19 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
         };
     }
 
+    function buildUrl(url: string, queryParams: Record<string, string | number | boolean>): string {
+        let completeUrl = new URL(url, baseUrl).toString();
+        const queryParamEntries = Object.entries(queryParams).map(([key, value]) => `${key}=${value.toString()}`);
+        if (queryParamEntries.length > 0) {
+            completeUrl += "?" + queryParamEntries.join("&");
+        }
+        return completeUrl;
+    }
+
     async function makeRequest<TRequest, TResponse>(props: {
         method: string,
         url: string,
+        queryParams: Record<string, string | number | boolean>
         withBody: boolean,
         requestBody?: TRequest,
         config?: RequestConfig
@@ -119,7 +130,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
         let response: Response;
         try {
             response = await fetch(
-                new URL(props.url, baseUrl),
+                buildUrl(props.url, props.queryParams),
                 {
                     method: props.method,
                     headers: await buildHeaders(props.config, serializedRequestBody !== undefined),
@@ -138,7 +149,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
             if (response.status === 204) {
                 return undefined as TResponse;
             }
-            const responseContent = (await response.text()).trim()
+            const responseContent = (await response.text()).trim();
             return responseContent
                 ? JSON.parse(responseContent)
                 : undefined as TResponse;
@@ -153,6 +164,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
             return makeRequest<never, TResponse>({
                 method: "GET",
                 url: config.url,
+                queryParams: config.queryParams || {},
                 withBody: false,
                 requestBody: undefined as never,
                 config: config,
@@ -163,6 +175,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
             return makeRequest<TRequest, TResponse>({
                 method: "POST",
                 url: config.url,
+                queryParams: config.queryParams || {},
                 withBody: true,
                 requestBody: config.content,
                 config: config,
@@ -173,6 +186,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
             return makeRequest<TRequest, TResponse>({
                 method: "PUT",
                 url: config.url,
+                queryParams: config.queryParams || {},
                 withBody: true,
                 requestBody: config.content,
                 config: config,
@@ -183,6 +197,7 @@ export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => 
             return makeRequest<TRequest, TResponse>({
                 method: "DELETE",
                 url: config.url,
+                queryParams: config.queryParams || {},
                 withBody: true,
                 requestBody: config.content,
                 config: config,

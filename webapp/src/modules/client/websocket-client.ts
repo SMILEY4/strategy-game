@@ -2,6 +2,7 @@ import { AppError } from "@app/app-error.ts";
 
 interface WebsocketConnectionConfig<TServerMessage, TClientMessage> {
     url: string;
+    queryParams?: Record<string, string | number | boolean>
     key?: string;
     onOpen?: () => void;
     onClose?: () => void;
@@ -72,6 +73,15 @@ export const websocketClient = ({ baseUrl }: Dependencies): WebsocketClient => {
 
     const connections = new Map<string, ActiveConnection>();
 
+    function buildUrl(url: string, queryParams: Record<string, string | number | boolean>): string {
+        let completeUrl = new URL(url, baseUrl).toString();
+        const queryParamEntries = Object.entries(queryParams).map(([key, value]) => `${key}=${value.toString()}`);
+        if (queryParamEntries.length > 0) {
+            completeUrl += "?" + queryParamEntries.join("&");
+        }
+        return completeUrl;
+    }
+
     function closeConnection(key: string) {
         const connection = connections.get(key);
         if (!connection) {
@@ -125,11 +135,7 @@ export const websocketClient = ({ baseUrl }: Dependencies): WebsocketClient => {
                 });
             }
 
-            const absoluteUrl = baseUrl.endsWith('/') || config.url.startsWith('/')
-                ? `${baseUrl}${config.url}`
-                : `${baseUrl}/${config.url}`;
-
-            const socket = new WebSocket(absoluteUrl);
+            const socket = new WebSocket(buildUrl(config.url, config.queryParams ?? {}));
 
             const connectionRecord: ActiveConnection = {
                 key,

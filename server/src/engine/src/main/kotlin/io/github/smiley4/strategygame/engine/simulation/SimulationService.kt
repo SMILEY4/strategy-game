@@ -29,6 +29,12 @@ class SimulationService(
         gameStateRepository.delete(gameId)
     }
 
+    fun buildInitialGameState(gameId: GameId, player: UserId): ObjectType {
+        val gameState = gameStateRepository.load(gameId)
+            ?: throw ProcessTurnError.NotFound(gameId.id.toString())
+        return playerStateBuilder.build(gameState, player)
+    }
+
     fun processTurn(gameId: GameId, commands: Collection<PlayerCommand>, connectedPlayers: Collection<UserId>): Map<UserId, ObjectType> {
 
         val gameState = gameStateRepository.load(gameId)

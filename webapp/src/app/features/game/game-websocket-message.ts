@@ -1,0 +1,29 @@
+export type GameWebsocketClientMessage = null
+
+export interface GameWebsocketClientMessageBase {
+    type: string;
+}
+
+
+export type GameWebsocketServerMessage =
+    | GameState
+
+interface GameWebsocketServerMessageBase {
+    type: string;
+}
+
+interface GameState extends GameWebsocketServerMessageBase {
+    type: "io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage.GameState",
+    stateJson: {
+        game: {
+            turn: number
+        },
+        tiles: ({
+            id: string,
+            position: {
+                q: number,
+                r: number
+            }
+        })[]
+    }
+}

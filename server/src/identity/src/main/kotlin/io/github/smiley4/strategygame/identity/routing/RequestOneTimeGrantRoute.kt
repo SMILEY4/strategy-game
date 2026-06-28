@@ -8,13 +8,16 @@ import io.github.smiley4.ktorplus.get
 import io.github.smiley4.strategygame.identity.auth.AuthService
 import io.github.smiley4.strategygame.identity.auth.GenerateOneTimeGrantError
 import io.github.smiley4.strategygame.identity.auth.domain.OneTimeToken
+import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.identity.routing.RequestOneTimeGrantRoute.RouteRequest
 import io.github.smiley4.strategygame.identity.routing.RequestOneTimeGrantRoute.RouteResponse
+import io.github.smiley4.strategygame.identity.routing.RequestOneTimeGrantRoute.RouteResponse.Success.AuthDataResponse
 import io.github.smiley4.strategygame.shared.values.UserId
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
 import io.ktor.server.routing.Route
+import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -34,7 +37,7 @@ private object RequestOneTimeGrantRoute : KoinComponent {
     fun handle(request: RouteRequest): RouteResponse {
         try {
             val token = service.generateOneTimeGrant(request.userId)
-            return RouteResponse.Success(token)
+            return RouteResponse.Success(AuthDataResponse(token))
         } catch (e: GenerateOneTimeGrantError) {
             return when (e) {
                 is GenerateOneTimeGrantError.InvalidToken -> RouteResponse.InvalidToken()
@@ -54,8 +57,15 @@ private object RequestOneTimeGrantRoute : KoinComponent {
 
         @Response(HttpStatusCode.OK, "The one time token was successfully granted.")
         class Success(
-            @Body val token: OneTimeToken
-        ) : RouteResponse()
+            @Body val body: AuthDataResponse
+        ) : RouteResponse()  {
+
+            @Serializable
+            data class AuthDataResponse(
+                val token: OneTimeToken
+            )
+
+        }
 
 
         @Response(HttpStatusCode.BAD_REQUEST, "The provided token invalid.")

@@ -6,15 +6,18 @@ import io.github.smiley4.ktorplus.core.ParameterEncoder
 import io.github.smiley4.ktorplus.core.PropertyAnalyzer
 import io.github.smiley4.ktorplus.request.RequestPropertyHandler
 import io.github.smiley4.ktorplus.typedescriptor.TypeDescriptorEntry
+import io.github.smiley4.ktorplus.websocketconnection.WebSocketConnectionPropertyHandler
 import io.github.smiley4.strategygame.identity.auth.domain.SessionToken
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedToken
-import io.github.smiley4.strategygame.shared.values.MatchId
-import io.github.smiley4.strategygame.shared.values.GameId
-import io.github.smiley4.strategygame.shared.values.UserId
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.infrastructure.UserPrincipal
+import io.github.smiley4.strategygame.shared.values.GameId
+import io.github.smiley4.strategygame.shared.values.MatchId
+import io.github.smiley4.strategygame.shared.values.UserId
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.authentication
 import io.ktor.server.routing.RoutingCall
+import io.ktor.websocket.WebSocketSession
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
@@ -39,9 +42,11 @@ fun setupKtorPlus(json: Json) {
 
     KtorPlusConfig.propertyAnalyzers.add(AuthenticatedUserIdAnalyzer())
     KtorPlusConfig.requestHandlers.add(AuthenticatedUserIdRequestPropertyHandler())
+    KtorPlusConfig.connectionHandlers.add(AuthenticatedUserIdConnectionPropertyHandler())
 
     KtorPlusConfig.propertyAnalyzers.add(AuthenticatedTokenAnalyzer())
     KtorPlusConfig.requestHandlers.add(AuthenticatedTokenRequestPropertyHandler())
+
 }
 
 private class UserIdTranscoder : ParameterEncoder<UserId>, ParameterDecoder<UserId> {
@@ -96,8 +101,23 @@ private class AuthenticatedUserIdRequestPropertyHandler : RequestPropertyHandler
 
 }
 
+private class AuthenticatedUserIdConnectionPropertyHandler : WebSocketConnectionPropertyHandler<AuthenticatedUserIdDescriptor> {
 
+    override fun appliesTo(descriptor: TypeDescriptorEntry) = descriptor is AuthenticatedUserIdDescriptor
 
+    override suspend fun handle(
+        descriptor: AuthenticatedUserIdDescriptor,
+        call: ApplicationCall,
+        session: WebSocketSession
+    ): Map<String, Any?> {
+        val principal = call.authentication.principal<UserPrincipal>()
+            ?: throw IllegalArgumentException("Missing principal.")
+        return mapOf(
+            descriptor.property.name to principal.userId,
+        )
+    }
+
+}
 
 
 private class AuthenticatedTokenDescriptor(

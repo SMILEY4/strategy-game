@@ -21,6 +21,10 @@ sealed class DeleteGameError(message: String?, cause: Throwable? = null) : Excep
     class NotFound(gameId: String) : DeleteGameError("The game '$gameId' could not be found")
 }
 
+sealed class ConnectToGameError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
+    class NotFound(gameId: String) : ConnectToGameError("The game '$gameId' could not be found")
+}
+
 sealed class SubmitTurnError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
     class NotFound(gameId: String) : SubmitTurnError("The game '$gameId' could not be found")
     class NotParticipant : SubmitTurnError("The player is not a participant of the game")

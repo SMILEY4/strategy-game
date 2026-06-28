@@ -9,9 +9,9 @@ export interface MatchRepository {
     prefetchDetails: (matchId: string) => Promise<void>;
     listAllReactive: (subscription: ReactiveStateletSubscription<MatchListEntry[]>) => ReactiveResult<MatchListEntry[]>;
     detailsReactive: (matchId: string, subscription: ReactiveStateletSubscription<MatchDetails>) => ReactiveResult<MatchDetails>;
+    getDetails: (matchId: string) => MatchDetails | undefined;
     create: (name: string) => Promise<void>;
     delete: (matchId: string) => Promise<void>;
-    createGame: (matchId: string) => Promise<void>;
 }
 
 interface Dependencies {
@@ -28,8 +28,8 @@ export const matchRepository = ({matchClient}: Dependencies): MatchRepository =>
     const queryClient = new QueryClient({
         defaultOptions: {
             queries: {
-                staleTime: seconds(10).inMilliseconds().getValue(),
-                gcTime: minutes(5).inMilliseconds().getValue(),
+                staleTime: seconds(10).getValueMilliseconds(),
+                gcTime: minutes(5).getValueMilliseconds(),
                 retry: 1,
             },
         },
@@ -41,6 +41,7 @@ export const matchRepository = ({matchClient}: Dependencies): MatchRepository =>
             return queryClient.prefetchQuery({
                 queryKey: QueryKeys.LIST_ALL,
                 queryFn: () => matchClient.listAll(),
+                staleTime: 0,
             });
         },
 
@@ -48,6 +49,7 @@ export const matchRepository = ({matchClient}: Dependencies): MatchRepository =>
             return queryClient.prefetchQuery({
                 queryKey: QueryKeys.DETAILS(matchId),
                 queryFn: () => matchClient.getDetails(matchId),
+                staleTime: 0,
             });
         },
 
@@ -75,6 +77,10 @@ export const matchRepository = ({matchClient}: Dependencies): MatchRepository =>
             });
         },
 
+        getDetails: (matchId: string) => {
+            return queryClient.getQueryData<MatchDetails>(QueryKeys.DETAILS(matchId))
+        },
+
         create: async (name: string) => {
             await matchClient.create(name);
             await queryClient.refetchQueries({queryKey: QueryKeys.LIST_ALL});
@@ -83,11 +89,6 @@ export const matchRepository = ({matchClient}: Dependencies): MatchRepository =>
         delete: async (matchId: string) => {
             await matchClient.delete(matchId);
             await queryClient.refetchQueries({queryKey: QueryKeys.LIST_ALL});
-            await queryClient.refetchQueries({queryKey: QueryKeys.DETAILS(matchId)});
-        },
-
-        createGame: async (matchId: string) => {
-            await matchClient.createGame(matchId);
             await queryClient.refetchQueries({queryKey: QueryKeys.DETAILS(matchId)});
         },
 

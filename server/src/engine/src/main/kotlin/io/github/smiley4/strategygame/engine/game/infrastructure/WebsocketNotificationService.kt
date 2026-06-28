@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.engine.game.infrastructure
 
-import com.lectra.koson.KosonType
 import com.lectra.koson.ObjectType
 import io.github.smiley4.ktorplus.WebSocketContext
 import io.github.smiley4.strategygame.engine.game.domain.GameNotificationService
@@ -9,7 +8,10 @@ import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGa
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
 import io.ktor.websocket.CloseReason
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.JsonUnquotedLiteral
 
+@OptIn(ExperimentalSerializationApi::class)
 internal class WebsocketNotificationService(
     private val wsContext: WebSocketContext<GameConnection, ServerGameMessage>,
 ) : GameNotificationService {
@@ -23,7 +25,7 @@ internal class WebsocketNotificationService(
     override suspend fun sendGameState(gameId: GameId, userId: UserId, gameState: ObjectType) {
         wsContext.connections()
             .filter { it.userId == userId && it.gameId == gameId.id.toString() }
-            .send(ServerGameMessage.GameState(gameState.pretty(3)))
+            .send(ServerGameMessage.GameState(JsonUnquotedLiteral(gameState.pretty(3))))
     }
 
     override fun getConnectedGames(userId: UserId): List<GameId> {

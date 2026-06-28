@@ -20,7 +20,9 @@ import io.github.smiley4.strategygame.engine.simulation.infrastructure.InMemoryG
 import io.github.smiley4.strategygame.engine.simulation.playerstate.PlayerStateBuilder
 import io.github.smiley4.strategygame.shared.infrastructure.RoutingAuthConstants
 import io.ktor.server.auth.authenticate
+import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions

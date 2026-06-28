@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.ktor.server.sessions)
     implementation(libs.ktor.server.websockets)
     implementation(libs.ktor.server.cors)
+    implementation(libs.ktor.server.calllogging)
     implementation(libs.ktor.plus)
     implementation(libs.ktor.openapitools.openapi)
     implementation(libs.ktor.openapitools.swagger)

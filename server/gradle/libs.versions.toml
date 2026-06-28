@@ -22,7 +22,7 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.11.0"
 ktor = "3.4.3"
 ktor-openapi-tools = "5.7.0"
-ktor-plus = "0.2.0"
+ktor-plus = "0.4.0"
 logback = "1.5.32"
 logstash-logback-encoder = "9.0"
 mockk = "1.14.9"
@@ -42,6 +42,7 @@ ktor-server-serialization-kotlinxjson = { module = "io.ktor:ktor-serialization-k
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 ktor-server-sessions = { module = "io.ktor:ktor-server-sessions", version.ref = "ktor" }
 ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
+ktor-server-calllogging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor" }
 
 
 ktor-plus = { module = "io.github.smiley4:ktor-plus", version.ref = "ktor-plus" }

@@ -21,6 +21,7 @@ export function days(amount: number): Days {
 
 export interface DurationUnit {
     getValue(): number;
+    getValueMilliseconds(): number;
     inMilliseconds(): Milliseconds;
     inSeconds(): Seconds;
     inMinutes(): Minutes;
@@ -38,6 +39,10 @@ export class Milliseconds implements DurationUnit {
     }
 
     getValue(): number {
+        return this.value;
+    }
+
+    getValueMilliseconds(): number {
         return this.value;
     }
 
@@ -74,6 +79,10 @@ export class Seconds implements DurationUnit {
         return this.value;
     }
 
+    getValueMilliseconds(): number {
+        return this.value * 1000;
+    }
+
     inMilliseconds(): Milliseconds {
         return new Milliseconds(this.value * 1000);
     }
@@ -105,6 +114,10 @@ export class Minutes implements DurationUnit {
 
     getValue(): number {
         return this.value;
+    }
+
+    getValueMilliseconds(): number {
+        return this.value * 6000;
     }
 
     inMilliseconds(): Milliseconds {
@@ -140,6 +153,10 @@ export class Hours implements DurationUnit {
         return this.value;
     }
 
+    getValueMilliseconds(): number {
+        return this.value * 3.6e+6;
+    }
+
     inMilliseconds(): Milliseconds {
         return new Milliseconds(this.value * 3.6e+6);
     }
@@ -171,6 +188,10 @@ export class Days implements DurationUnit {
 
     getValue(): number {
         return this.value;
+    }
+
+    getValueMilliseconds(): number {
+        return this.value * 8.64e+7;
     }
 
     inMilliseconds(): Milliseconds {

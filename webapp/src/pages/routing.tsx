@@ -3,6 +3,8 @@ import {LoginPage} from "@pages/login/Login.page.tsx";
 import {RegisterPage} from "@pages/register/Register.page.tsx";
 import {MatchPage} from "@pages/match/Match.page.tsx";
 import {MatchListPage} from "@pages/matchList/Match-list.page.tsx";
+import {GamePage} from "@pages/game/Game.page.tsx";
+import {StrictMode} from "react";
 
 type RouteInfo = {
     id: string,
@@ -49,27 +51,45 @@ export const routing: RouteObject[] = [
     {
         id: Routes.REGISTER.id,
         path: Routes.REGISTER.path,
-        element: <RegisterPage/>,
+        element: (
+            <StrictMode>
+                <RegisterPage/>
+            </StrictMode>
+        ),
     },
     {
         id: Routes.LOGIN.id,
         path: Routes.LOGIN.path,
-        element: <LoginPage/>,
+        element: (
+            <StrictMode>
+                <LoginPage/>
+            </StrictMode>
+        ),
     },
     {
         id: Routes.MATCH_LIST.id,
         path: Routes.MATCH_LIST.path,
-        element: <MatchListPage/>,
+        element: (
+            <StrictMode>
+                <MatchListPage/>
+            </StrictMode>
+        ),
     },
     {
         id: Routes.MATCH.id,
         path: Routes.MATCH.path(Routes.MATCH.propMatchId),
-        element: <MatchPage/>,
+        element: (
+            <StrictMode>
+                <MatchPage/>
+            </StrictMode>
+        ),
     },
     {
         id: Routes.GAME.id,
         path: Routes.GAME.path(Routes.GAME.propGameId),
-        element: <div>Game</div>,
+        element: (
+            <GamePage/>
+        ),
     },
 ];
 

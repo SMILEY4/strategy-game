@@ -15,17 +15,26 @@ import {listMatchesReactiveUseCase} from "@app/features/match/match.use-case.lis
 import {createMatchUseCase} from "@app/features/match/match.use-case.create.ts";
 import {matchDetailsReactiveUseCase} from "@app/features/match/match.use-case.details-reactive.ts";
 import {createGameUseCase} from "@app/features/match/match.use-case.create-game.ts";
+import {gameWebsocketClient} from "@app/features/game/game.ws-client.ts";
+import {gameEngine} from "@app/features/game/game.engine.ts";
+import {gameClient} from "@app/features/game/game.client.ts";
+import {gameRepository} from "@app/features/game/game.repository.ts";
 
 
 interface EnvShape {
-    serverUrl: string;
+    serverHttpUrl: string;
+    serverWebsocketUrl: string;
 }
 
 export const Env: EnvShape = {
     // @ts-expect-error window.RUNTIME_CONFIG is not known to TypeScript
-    serverUrl: window.RUNTIME_CONFIG?.SERVER_URL
+    serverHttpUrl: window.RUNTIME_CONFIG?.SERVER_URL
         ?? import.meta.env.VITE_SERVER_URL
         ?? "http://localhost:8080",
+    // @ts-expect-error window.RUNTIME_CONFIG is not known to TypeScript
+    serverWebsocketUrl: window.RUNTIME_CONFIG?.SERVER_URL
+        ?? import.meta.env.VITE_SERVER_URL
+        ?? "ws://localhost:8080",
 };
 
 
@@ -50,6 +59,11 @@ interface DIShape {
     createMatchUseCase: ReturnType<typeof createMatchUseCase>,
     deleteMatchUseCase: ReturnType<typeof deleteMatchUseCase>,
     createGameUseCase: ReturnType<typeof createGameUseCase>,
+    // game
+    gameClient: ReturnType<typeof gameClient>,
+    gameWebsocketClient: ReturnType<typeof gameWebsocketClient>,
+    gameRepository: ReturnType<typeof gameRepository>,
+    gameEngine: ReturnType<typeof gameEngine>,
 }
 
 
@@ -62,14 +76,14 @@ export const DIConfig = {
     httpClient: {
         scope: "singleton",
         create: (resolve) => httpClient({
-            baseUrl: Env.serverUrl,
+            baseUrl: Env.serverHttpUrl,
             authHandler: resolve.clientAuthHandler,
         }),
     },
     wsClient: {
         scope: "singleton",
         create: () => websocketClient({
-            baseUrl: Env.serverUrl,
+            baseUrl: Env.serverWebsocketUrl,
         }),
     },
     // auth
@@ -125,7 +139,28 @@ export const DIConfig = {
     },
     createGameUseCase: {
         scope: "transient",
-        create: (resolve) => createGameUseCase({repository: resolve.matchRepository}),
+        create: (resolve) => createGameUseCase({client: resolve.matchClient, repository: resolve.matchRepository}),
+    },
+    // game
+    gameClient: {
+        scope: "transient",
+        create: (resolve) => gameClient({httpClient: resolve.httpClient}),
+    },
+    gameWebsocketClient: {
+        scope: "transient",
+        create: (resolve) => gameWebsocketClient({wsClient: resolve.wsClient}),
+    },
+    gameRepository: {
+        scope: "singleton",
+        create: () => gameRepository(),
+    },
+    gameEngine: {
+        scope: "singleton",
+        create: (resolve) => gameEngine({
+            client: resolve.gameClient,
+            wsClient: resolve.gameWebsocketClient,
+            repository: resolve.gameRepository,
+        }),
     },
 } satisfies FactoryMap<DIShape>;
 

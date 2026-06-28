@@ -14,6 +14,7 @@ import io.github.smiley4.strategygame.platform.routing.FetchMatchRoute.RouteResp
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
+import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
 import io.ktor.server.routing.Route
@@ -41,7 +42,8 @@ private object FetchMatchRoute : KoinComponent {
                     id = details.id,
                     name = details.name,
                     participants = details.participants.map { it.userId },
-                    state = details.state.name
+                    state = details.state.name,
+                    gameId = details.gameId,
                 )
             )
         } catch (e: GetMatchDetailsError) {
@@ -72,7 +74,8 @@ private object FetchMatchRoute : KoinComponent {
                 val id: MatchId,
                 val name: String,
                 val participants: List<UserId>,
-                val state: String
+                val state: String,
+                val gameId: GameId?
             )
 
         }

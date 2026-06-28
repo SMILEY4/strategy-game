@@ -1,16 +1,17 @@
 package io.github.smiley4.strategygame.engine.game.domain
 
+import io.github.smiley4.strategygame.engine.game.ConnectToGameError
 import io.github.smiley4.strategygame.engine.game.DeleteGameError
 import io.github.smiley4.strategygame.engine.game.GameService
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
 import io.github.smiley4.strategygame.engine.shared.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.SimulationService
+import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
+import io.github.smiley4.strategygame.shared.events.GameCreatedEvent
+import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
-import io.github.smiley4.strategygame.shared.events.GameCreatedEvent
-import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
-import io.github.smiley4.strategygame.shared.utils.KeyedMutex
 
 internal class GameServiceImpl(
     private val simulationService: SimulationService,
@@ -46,8 +47,21 @@ internal class GameServiceImpl(
     }
 
     override suspend fun connect(gameId: GameId, player: UserId) {
-        notificationService.getConnectedGames(player).forEach { gameId ->
+        notificationService.getConnectedGames(player).filter { it != gameId }.forEach { gameId ->
             notificationService.disconnect(gameId, player)
+        }
+
+        try {
+
+            val game = gameRepository.findById(gameId)
+                ?: throw ConnectToGameError.NotFound(gameId.id.toString())
+
+            val playerState = simulationService.buildInitialGameState(game.getId(), player)
+            notificationService.sendGameState(gameId, player, playerState)
+
+        } catch (e: Exception) {
+            notificationService.disconnect(gameId, player)
+            throw e
         }
     }
 

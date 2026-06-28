@@ -16,12 +16,15 @@ import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.ktor.server.routing.Route
 import io.ktor.websocket.CloseReason
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
+import kotlinx.serialization.json.JsonElement
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 internal fun Route.routeGameWebsocket(context: WebSocketContext<GameConnection, ServerGameMessage>) {
     webSocket<GameConnection, ClientGameMessage, ServerGameMessage>("", context) {
         onOpen { context, connection -> handleOpen(context, connection) }
+        onClose { context, connection -> println("Connection closed: $connection") }
         onMessage { _, connection, message -> handleMessage(connection, message) }
     }
 }
@@ -33,7 +36,8 @@ object GameWebsocketRoute : KoinComponent {
     suspend fun handleOpen(context: WebSocketContext<GameConnection, ServerGameMessage>, connection: GameConnection) {
         try {
             service.connect(GameId(connection.gameId), connection.userId)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            e.printStackTrace()
             context.connections().close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Error"))
         }
     }
@@ -62,7 +66,7 @@ object GameWebsocketRoute : KoinComponent {
     @Serializable
     sealed interface ServerGameMessage {
         @Serializable
-        class GameState(val stateJson: String) : ServerGameMessage
+        class GameState(val stateJson: JsonElement) : ServerGameMessage
     }
 
 }

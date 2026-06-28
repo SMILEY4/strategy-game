@@ -1,25 +1,36 @@
-import type {WebsocketClient, WebsocketConnectionHandle} from "@modules/client/websocket-client.ts";
-import type {GameWebsocketClientMessage, GameWebsocketServerMessage} from "@app/game/game-websocket-message.ts";
+import type {WebsocketClient} from "@modules/client/websocket-client.ts";
+import type {GameWebsocketClientMessage, GameWebsocketServerMessage} from "@app/features/game/game-websocket-message.ts";
 
 export interface GameWebsocketClient {
-    connect: (gameId: string) => WebsocketConnectionHandle<GameWebsocketClientMessage>
+    connect: (gameId: string, token: string, onMessage: (message: GameWebsocketServerMessage) => void) => void
+    disconnect: () => void
 }
 
 interface Dependencies {
     wsClient: WebsocketClient;
 }
 
+
+const GAME_CONNECTION_KEY = "game"
+
 export const gameWebsocketClient = ({wsClient}: Dependencies): GameWebsocketClient => ({
 
-    connect: (gameId: string) => {
-        return wsClient.open<GameWebsocketServerMessage, GameWebsocketClientMessage>({
-            url: `/api/game/${gameId}`,
-            key: "game#" + gameId,
+    connect: (gameId: string, token: string, onMessage: (message: GameWebsocketServerMessage) => void) => {
+        wsClient.open<GameWebsocketServerMessage, GameWebsocketClientMessage>({
+            url: `/api/engine/game/${gameId}`,
+            queryParams: {
+                token: token
+            },
+            key: GAME_CONNECTION_KEY,
             onOpen: () => {},
             onClose: () => {},
             onError: () => {},
-            onMessage: () => {},
+            onMessage: (message, _handle) => onMessage(message),
         })
     },
+
+    disconnect: () => {
+        wsClient.close(GAME_CONNECTION_KEY)
+    }
 
 });

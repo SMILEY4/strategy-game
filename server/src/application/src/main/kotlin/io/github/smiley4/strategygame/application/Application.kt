@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.application
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.strategygame.application.plugins.setupAuthentication
 import io.github.smiley4.strategygame.application.plugins.setupCORS
+import io.github.smiley4.strategygame.application.plugins.setupCallLogging
 import io.github.smiley4.strategygame.application.plugins.setupContentNegotiation
 import io.github.smiley4.strategygame.application.plugins.setupDependencyInjection
 import io.github.smiley4.strategygame.application.plugins.setupKtorPlus
@@ -38,6 +39,7 @@ fun Application.module() {
     setupCORS()
     setupDependencyInjection()
     setupAuthentication()
+    setupCallLogging()
     val json = setupContentNegotiation()
     setupKtorPlus(json)
     setupOpenApi(json)
