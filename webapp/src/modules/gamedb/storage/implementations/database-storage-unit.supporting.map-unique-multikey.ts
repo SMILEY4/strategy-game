@@ -46,7 +46,7 @@ export class MapUniqueMultikeySupportingStorage<ENTITY, KEY> implements Supporti
     }
 
     public onInsertMany(entities: ENTITY[]): void {
-        for (let entity of entities) {
+        for (const entity of entities) {
             this.set(this.keyProvider(entity), entity)
         }
     }
@@ -56,7 +56,7 @@ export class MapUniqueMultikeySupportingStorage<ENTITY, KEY> implements Supporti
     }
 
     public onDeleteMany(entities: ENTITY[]): void {
-        for (let entity of entities) {
+        for (const entity of entities) {
             this.delete(this.keyProvider(entity));
         }
     }

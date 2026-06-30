@@ -28,9 +28,9 @@ const QUERY_SIZE_GREATER_OR_EQUAL: TestQuery<number> = {
 function createDb(): Database<TestStorageMapping, TestEntity, string> {
     return DatabaseBuilder.create<TestEntity, string, TestStorageMapping>()
         .withIdProvider(entity => entity.id)
-        .withStorage({
-            primary: new MapPrimaryDatabaseStorageUnit<TestEntity, string>(e => e.id) 
-        })
+        .withStorage(idProvider => ({
+            primary: new MapPrimaryDatabaseStorageUnit<TestEntity, string>(idProvider),
+        }))
         .build()
 }
 
@@ -391,7 +391,6 @@ describe("database", () => {
         test("subscribe on entity", () => {
             const db = createDb()
             const callback = vi.fn();
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const [subscriberId, _] = db.subscribeOnEntity("2", callback);
 
             db.insert({id: "1", size: 1, nested: {value: "a"}});
@@ -437,7 +436,6 @@ describe("database", () => {
         test("subscribe query", () => {
             const db = createDb()
             const callback = vi.fn();
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const [subscriberId, _] = db.subscribeOnQuery(QUERY_SIZE_GREATER_OR_EQUAL, 2, callback);
 
             db.insert({id: "1", size: 1, nested: {value: "a"}});

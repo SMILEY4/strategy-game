@@ -1,6 +1,6 @@
-import type {GameRendererDataProvider} from "@renderer/data/game-renderer-data-provider.ts";
+import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import {quat, vec3} from "gl-matrix";
-import type {RenderCameraData} from "@renderer/data/models.ts";
+import type {RenderCameraData} from "@pages/game/renderer/data/models.ts";
 
 export class CameraController {
 

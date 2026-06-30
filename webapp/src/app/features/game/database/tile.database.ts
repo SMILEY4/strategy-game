@@ -1,0 +1,29 @@
+import {MapPrimaryDatabaseStorageUnit} from "@modules/gamedb/storage/implementations/database-storage-unit.primary.map.ts";
+import type {Query} from "@modules/gamedb/database/query.ts";
+import type {Database} from "@modules/gamedb/database/database.ts";
+import {DatabaseBuilder} from "@modules/gamedb/database-builder.ts";
+import type {Tile} from "@app/features/game/models/tile.ts";
+import {MapSupportingStorage} from "@modules/gamedb/storage/implementations/database-storage-unit.supporting.map.ts";
+import {MapUniqueSupportingStorage} from "@modules/gamedb/storage/implementations/database-storage-unit.supporting.map-unique.ts";
+
+
+export type TileDatabase = Database<TileStorageMapping, Tile, string>
+
+type TileStorageMapping = {
+    primary: MapPrimaryDatabaseStorageUnit<Tile, string>,
+    byPosition: MapUniqueSupportingStorage<Tile, string>,
+    byChunk: MapSupportingStorage<Tile, string>
+}
+
+export function tileDb(): TileDatabase {
+    return DatabaseBuilder.create<Tile, string, TileStorageMapping>()
+        .withIdProvider(e => e.id)
+        .withStorage(idProvider => ({
+            primary: new MapPrimaryDatabaseStorageUnit<Tile, string>(idProvider),
+            byPosition: new MapUniqueSupportingStorage<Tile, string>(e => `${e.position.q};${e.position.r}`),
+            byChunk: new MapSupportingStorage<Tile, string>(e => `${e.chunk.q};${e.chunk.r}`)
+        }))
+        .build()
+}
+
+export type TileQuery<ARGS> = Query<TileStorageMapping, Tile, string, ARGS>

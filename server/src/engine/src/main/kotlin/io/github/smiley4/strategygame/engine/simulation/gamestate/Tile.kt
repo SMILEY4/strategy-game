@@ -4,7 +4,7 @@ import kotlin.uuid.Uuid
 
 data class Tile(
     val id: Id,
-    val position: Position,
+    val position: HexPosition,
     val world: WorldData,
     val meta: Metadata,
 ) {
@@ -14,15 +14,8 @@ data class Tile(
 
     data class Ref(
         val id: Id,
-        val position: Position,
+        val position: HexPosition,
     )
-
-    data class Position(
-        val q: Int,
-        val r: Int,
-    ) {
-        val s: Int get() = -q - r
-    }
 
     data class WorldData(
         val biome: Biome,
@@ -57,7 +50,6 @@ data class Tile(
 
     data class Metadata(
         val seed: Int,
-        val chunkQ: Int,
-        val chunkR: Int,
+        val chunk: HexPosition,
     )
 }

@@ -264,7 +264,6 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
     }
 
     private checkSubscribersDb(entities: ENTITY[], operation: DatabaseOperation) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_, subscriber] of this.subscribers.db) {
             subscriber.callback(entities, operation);
         }

@@ -11,6 +11,8 @@ import type {TransformVertexOutRenderGraphNode} from "@modules/rendergraph/nodes
 import type {SelectTextureRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.select-texture.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas-size.ts";
+import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
+import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 
 export type RenderGraphNode =
     | CanvasRenderGraphNode
@@ -26,6 +28,8 @@ export type RenderGraphNode =
     | TransformVertexOutRenderGraphNode<any, any>
     | CameraRenderGraphNode
     | CanvasSizeRenderGraphNode
+    | WasmDataRenderGraphNode
+    | WasmOperationRenderGraphNode
 
 export type RenderGraphNodeId = string
 

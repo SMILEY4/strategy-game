@@ -19,6 +19,7 @@ import {gameWebsocketClient} from "@app/features/game/game.ws-client.ts";
 import {gameEngine} from "@app/features/game/game.engine.ts";
 import {gameClient} from "@app/features/game/game.client.ts";
 import {gameRepository} from "@app/features/game/game.repository.ts";
+import {tileDb} from "@app/features/game/database/tile.database.ts";
 
 
 interface EnvShape {
@@ -64,6 +65,7 @@ interface DIShape {
     gameWebsocketClient: ReturnType<typeof gameWebsocketClient>,
     gameRepository: ReturnType<typeof gameRepository>,
     gameEngine: ReturnType<typeof gameEngine>,
+    tileDb: ReturnType<typeof tileDb>
 }
 
 
@@ -160,7 +162,12 @@ export const DIConfig = {
             client: resolve.gameClient,
             wsClient: resolve.gameWebsocketClient,
             repository: resolve.gameRepository,
+            tileDb: resolve.tileDb
         }),
+    },
+    tileDb: {
+        scope: "singleton",
+        create: () => tileDb(),
     },
 } satisfies FactoryMap<DIShape>;
 

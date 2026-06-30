@@ -26,6 +26,10 @@ class PlayerStateBuilder {
             "q" to tile.position.q
             "r" to tile.position.r
         }
+        "chunk" to obj {
+            "q" to tile.meta.chunk.q
+            "r" to tile.meta.chunk.r
+        }
     }
 
 }

@@ -1,12 +1,19 @@
 package io.github.smiley4.strategygame.engine.simulation.generation
 
 import io.github.smiley4.strategygame.engine.simulation.domain.generation.FastNoiseLite
-import io.github.smiley4.strategygame.engine.simulation.domain.generation.TilemapPositionsProvider
+import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
+import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
+import kotlin.collections.map
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.min
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 class WorldGenerator {
+
+    private val chunkRadius = 30
 
     private val noise = FastNoiseLite().apply {
         this.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2)
@@ -24,12 +31,13 @@ class WorldGenerator {
         noise.SetSeed(seed)
         val random = Random(seed)
 
-        val tilePositions = TilemapPositionsProvider().createHexagon(radius)
-        val tiles = tilePositions.map {
-            val height = noise.GetNoise(it.q.toFloat(), it.r.toFloat())
+        val tilePositions = buildTilePositionsWithChunks(radius, chunkRadius)
+
+        val tiles = tilePositions.map { (tilePositions, chunkPosition) ->
+            val height = noise.GetNoise(tilePositions.q.toFloat(), tilePositions.r.toFloat())
             Tile(
                 id = Tile.Id(),
-                position = it,
+                position = tilePositions,
                 world = Tile.WorldData(
                     biome = if (height < 0) Tile.Biome.OCEAN
                     else Tile.Biome.entries.filter { b -> b != Tile.Biome.OCEAN }[random.nextInt(Tile.Biome.entries.size - 1)],
@@ -47,8 +55,7 @@ class WorldGenerator {
                 ),
                 meta = Tile.Metadata(
                     seed = random.nextInt(),
-                    chunkQ = 0,
-                    chunkR = 0
+                    chunk = chunkPosition
                 )
             )
         }
@@ -56,5 +63,49 @@ class WorldGenerator {
         return tiles
     }
 
+    private fun buildTilePositionsWithChunks(mapRadius: Int, chunkRadius: Int): List<Pair<HexPosition, HexPosition>> {
+        val chunkPositions = buildChunkPositions(mapRadius, chunkRadius)
+        val tilesPositions = buildTilePositions(mapRadius)
+        return tilesPositions.map {
+            it to findChunk(it, chunkPositions)
+        }
+    }
+
+    private fun findChunk(tilePosition: HexPosition, chunkPositions: List<HexPosition>): HexPosition  {
+        var nearestChunkPosition: HexPosition? = null
+        var nearestChunkDistance = Int.MAX_VALUE
+
+        chunkPositions.forEach { chunkPosition ->
+            val distance = chunkPosition.distance(tilePosition)
+            if(distance < nearestChunkDistance) {
+                nearestChunkDistance = distance
+                nearestChunkPosition = chunkPosition
+            }
+        }
+
+        return nearestChunkPosition ?: throw Exception("Could not find chunk position for tile at $tilePosition")
+    }
+
+    private fun buildTilePositions(mapRadius: Int): List<HexPosition> {
+        return TilemapPositionsProvider().createHexagon(mapRadius)
+    }
+
+    private fun buildChunkPositions(mapRadius: Int, chunkRadius: Int): List<HexPosition> {
+
+        val chunkGridRadius = ceil((mapRadius / chunkRadius).toDouble()).toInt()
+        val chunks = mutableListOf<HexPosition>()
+
+        for(q in -chunkGridRadius..chunkGridRadius) {
+            for(r in -chunkGridRadius..chunkGridRadius) {
+                val center = HexPosition(q, r)
+                if(maxOf(abs(center.q), abs(center.r), abs(center.s)) > chunkGridRadius) {
+                    continue
+                }
+                chunks.add(center)
+            }
+        }
+
+        return chunks
+    }
 
 }

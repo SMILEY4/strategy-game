@@ -24,11 +24,11 @@ export class StandardDatabaseBuilder<
     STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
 > {
 
-    private _storageMapping: STORAGE | null = null;
+    private _storageMappingFunc: ((idProvider: IdProvider<ENTITY, ID>) => STORAGE) | null = null;
     private _idProvider: IdProvider<ENTITY, ID> | null = null;
 
-    public withStorage(storage: STORAGE): StandardDatabaseBuilder<ENTITY, ID, STORAGE> {
-        this._storageMapping = storage;
+    public withStorage(storage: (idProvider: IdProvider<ENTITY, ID>) => STORAGE): StandardDatabaseBuilder<ENTITY, ID, STORAGE> {
+        this._storageMappingFunc = storage;
         return this;
     }
 
@@ -38,13 +38,13 @@ export class StandardDatabaseBuilder<
     }
 
     public build(): Database<STORAGE, ENTITY, ID> {
-        if (!this._storageMapping) {
+        if (!this._storageMappingFunc) {
             throw new Error("Storage must be defined");
         }
         if (!this._idProvider) {
             throw new Error("Id provider must be defined");
         }
-        const storage = new DatabaseStorage<STORAGE, ENTITY, ID>(this._storageMapping);
+        const storage = new DatabaseStorage<STORAGE, ENTITY, ID>(this._storageMappingFunc(this._idProvider));
         return new DatabaseImpl<STORAGE, ENTITY, ID>(storage, this._idProvider);
     }
 

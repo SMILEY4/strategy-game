@@ -48,7 +48,7 @@ export class MapSupportingStorage<ENTITY, KEY> implements SupportingDatabaseStor
     }
 
     public onInsertMany(entities: ENTITY[]): void {
-        for (let entity of entities) {
+        for (const entity of entities) {
             this.onInsert(entity);
         }
     }
@@ -67,7 +67,7 @@ export class MapSupportingStorage<ENTITY, KEY> implements SupportingDatabaseStor
     }
 
     public onDeleteMany(entities: ENTITY[]): void {
-        for (let entity of entities) {
+        for (const entity of entities) {
             this.onDelete(entity);
         }
     }

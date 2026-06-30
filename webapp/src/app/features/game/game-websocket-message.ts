@@ -23,6 +23,10 @@ interface GameState extends GameWebsocketServerMessageBase {
             position: {
                 q: number,
                 r: number
+            },
+            chunk: {
+                q: number,
+                r: number
             }
         })[]
     }

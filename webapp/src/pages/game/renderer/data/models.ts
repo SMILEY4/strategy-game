@@ -7,7 +7,6 @@ export interface RenderChunk {
     centerWorldPos: vec3,
     minY: number,
     maxY: number,
-    tileIndices: number[],
 }
 
 export interface RenderTile {

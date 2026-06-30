@@ -16,6 +16,8 @@ import type {SelectTextureRenderGraphNode} from "@modules/rendergraph/nodes/rg-n
 import type {RenderGraphNode} from "@modules/rendergraph/nodes/rg-node.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas-size.ts";
+import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
+import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 
 export class RenderGraphBuilder {
 
@@ -303,6 +305,30 @@ export class RenderGraphBuilder {
                 far: options.far,
             },
         };
+        this.nodes.push(node);
+        return node;
+    }
+
+    public wasmData(options: {
+        input: DataRenderGraphNode<any> | WasmOperationRenderGraphNode,
+    }) {
+        const node: WasmDataRenderGraphNode = {
+            type: "wasm-data",
+            id: RenderGraphBuilder.generateNodeId(),
+            input: options.input,
+        }
+        this.nodes.push(node);
+        return node;
+    }
+
+    public wasmOperation(options: {
+        func: () => void
+    }) {
+        const node: WasmOperationRenderGraphNode = {
+            type: "wasm-operation",
+            id: RenderGraphBuilder.generateNodeId(),
+            func: options.func
+        }
         this.nodes.push(node);
         return node;
     }
