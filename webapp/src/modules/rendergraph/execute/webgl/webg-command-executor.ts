@@ -1,10 +1,10 @@
-import {assertExhaustive} from "@modules/utilities/common.ts";
 import {type GLUniformValueType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {mat4, vec3} from "gl-matrix";
 import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
 import type {ValueEntry, WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-compiler.ts";
 import {WebGlExecutionContext} from "@modules/rendergraph/execute/webgl/webgl-execution-context.ts";
+import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 
 
 export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExecutionContext) {
@@ -153,6 +153,17 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         return;
     }
 
+    if(command.type === "DOWNLOAD_WASM_VERTEX_DATA") {
+        if(isAnyDirty(command.refWasmData) || !context.isInitialized(command.refOut)) {
+            context.setInitialized(command.refOut);
+            const value = command.func()
+            const buffer = context.getVertexBuffer(command.refOut);
+            buffer.setData(value.data, true);
+            context.setVertexBufferElementCount(command.refOut, value.count);
+        }
+        return;
+    }
+
     if (command.type === "SELECT_TEXTURE") {
         if (isAnyDirty(...command.args) || !context.isInitialized(command.refOut)) {
             const args = command.args.map(arg => {
@@ -286,10 +297,62 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         return;
     }
 
+    if(command.type === "DOWNLOAD_WASM_DATA") {
+        if(context.isDirty(command.wasmDataRef) || !context.isInitialized(command.ref)) {
+            context.setData(command.ref, command.func());
+        }
+        return
+    }
+
+    if(command.type === "UPLOAD_WASM_DATA") {
+        if(isAnyDirty(command.sourceRef) || !context.isInitialized(command.ref)) {
+            const data = getData(command.sourceRef)
+            command.func(data)
+            context.setInitialized(command.ref)
+            context.setDirty(command.ref)
+        }
+        return
+    }
+
+    if(command.type === "EXECUTE_WASM") {
+        if(isAnyDirty(...command.dataRefs, ...command.wasmRefs)) {
+            const args = command.dataRefs.map(arg => {
+                if (arg.type === "const") return arg.value;
+                if (arg.type === "ref") return context.getData(arg.ref);
+            });
+            const result = command.func(args)
+            Object.entries(result).forEach(([key, modified]) => {
+                if(modified) {
+                    const wasmDataNodeRefs = command.outKeyWasmDataMapping[key]
+                    if(wasmDataNodeRefs) {
+                        wasmDataNodeRefs.forEach(ref => context.setDirty(ref))
+                    }
+                }
+            })
+        }
+        return
+    }
+
     assertExhaustive(command);
 
-    function isAnyDirty(...args: ValueEntry[]): boolean {
-        return args.some(arg => arg.type === "ref" && context.isDirty(arg.ref));
+    function isAnyDirty(...args: (ValueEntry | string)[]): boolean {
+        return args.some(arg => {
+            if(typeof arg === "string") {
+                return context.isDirty(arg)
+            } else {
+                return arg.type === "ref" && context.isDirty(arg.ref)
+            }
+        });
+    }
+
+    function getData<T>(ref: ValueEntry): T {
+        if(ref.type === "const") {
+            return ref.value as T
+        }
+        if(ref.type === "ref") {
+            return context.getData(ref.ref);
+        }
+        assertExhaustive(ref)
     }
 
 }

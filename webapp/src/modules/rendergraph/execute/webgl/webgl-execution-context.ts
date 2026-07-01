@@ -11,7 +11,7 @@ import type {
     WebGlVertexArrayResource,
     WebGlVertexBufferResource,
 } from "@modules/rendergraph/execute/webgl/webgl-resource.ts";
-import {assertExhaustive} from "@modules/utilities/common.ts";
+import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 
 export type WebglExecutionContextFactory = (canvas: HTMLCanvasElement) => WebGlExecutionContext
 

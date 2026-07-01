@@ -2,7 +2,7 @@ import type {RenderGraphNode} from "@modules/rendergraph/nodes/rg-node.ts";
 import type {WebGlDrawCallNode} from "@modules/rendergraph/compile/webgl/webgl-draw-call-graph.node.ts";
 import type {DrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import type {ShaderRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.shader.ts";
-import type {GeometryRenderGraphNode, GeometrySource} from "@modules/rendergraph/nodes/rg-node.geometry.ts";
+import type {GeometryRenderGraphNode, WasmGeometrySource} from "@modules/rendergraph/nodes/rg-node.geometry.ts";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import type {CanvasRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas.ts";
 import type {TextureRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.texture.ts";
@@ -10,12 +10,14 @@ import type {SelectTextureRenderGraphNode} from "@modules/rendergraph/nodes/rg-n
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {TransformRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.transform.ts";
-import {assertExhaustive} from "@modules/utilities/common.ts";
 import type {TransformMultiOutRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.transform-multi-out.ts";
 import type {vec3} from "gl-matrix";
 import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas-size.ts";
 import type {TransformVertexOutRenderGraphNode, VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
 import type {WebGlResource, WebGlVertexArrayAttributeResource} from "@modules/rendergraph/execute/webgl/webgl-resource.ts";
+import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
+import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
+import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
 
 export type WebGlCommand =
     | { type: "USE_SHADER", id: string }
@@ -31,7 +33,13 @@ export type WebGlCommand =
     | { type: "DRAW", refVertexCount: string, mode: GLenum }
     | { type: "DRAW_INSTANCED", refVertexCount: string, refInstanceCount: string, mode: GLenum }
     | { type: "LOAD_EXTERNAL_DATA", ref: string, func: () => unknown, checkChanged: (prev: unknown) => boolean }
-    | { type: "TRANSFORM_DATA", args: ValueEntry[], refOut: string, func: (args: unknown[]) => unknown | null, checkChanged: (prev: unknown, next: unknown) => boolean }
+    | {
+    type: "TRANSFORM_DATA",
+    args: ValueEntry[],
+    refOut: string,
+    func: (args: unknown[]) => unknown | null,
+    checkChanged: (prev: unknown, next: unknown) => boolean
+}
     | { type: "TRANSFORM_DATA_MULTI_OUT", args: ValueEntry[], refOut: string, func: (args: unknown[]) => Record<string, unknown | null> } // todo: better "no result" type
     | {
     type: "TRANSFORM_DATA_VERTEX_OUT",
@@ -59,12 +67,28 @@ export type WebGlCommand =
     | { type: "CALCULATE_VIEW_PROJECTION", ref: string, refProjection: string, refView: string }
     | { type: "SET_VIEWPORT", size: ValueEntry<[number, number]> }
     | { type: "CLEAR_BUFFER", clearColor: ValueEntry<[number, number, number, number]> }
+    | { type: "DOWNLOAD_WASM_DATA", wasmDataRef: string, ref: string, func: () => unknown }
+    | { type: "UPLOAD_WASM_DATA", sourceRef: ValueEntry, ref: string, func: (data: any) => void }
+    | {
+    type: "EXECUTE_WASM",
+    wasmRefs: string[],
+    dataRefs: ValueEntry[],
+    func: (data: any) => Record<string, boolean>,
+    outKeyWasmDataMapping: Record<string, string[]>
+}
+| {
+    type: "DOWNLOAD_WASM_VERTEX_DATA",
+    refWasmData: string,
+    refOut: string,
+    func: () => VertexDataResult
+}
 
 
 export type ValueEntry<T = unknown> = { type: "const", value: T } | { type: "ref", ref: string }
 
 interface CompileContext {
-    commands: WebGlCommand[],
+    nodes: RenderGraphNode[]
+    commands: WebGlCommand[]
     resources: WebGlResource[]
     activeShader: ShaderRenderGraphNode | null,
     activeGeometry: GeometryRenderGraphNode | null,
@@ -76,6 +100,7 @@ interface CompileContext {
 export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDrawCallNode[], availableTextureUnits: number) {
 
     const context: CompileContext = {
+        nodes: nodes,
         commands: [],
         resources: [],
         activeShader: null,
@@ -100,12 +125,12 @@ export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDra
         compileDrawCallInfo(drawCallInfo, context);
     });
 
-    console.log("compiled render graph:", context.commands.length, "commands and", context.resources.length, "resources")
+    console.log("compiled render graph:", context.commands.length, "commands and", context.resources.length, "resources");
 
     return {
         commands: context.commands,
         resources: context.resources,
-    }
+    };
 }
 
 function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext) {
@@ -174,10 +199,10 @@ function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext
 function switchToCanvasRenderTarget(canvas: CanvasRenderGraphNode, context: CompileContext) {
     context.commands.push({type: "UNBIND_FRAMEBUFFER"});
     context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: "rg-internal:canvas-size"}});
-    if(canvas.clearColor) {
+    if (canvas.clearColor) {
         context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: canvas.clearColor}});
     }
-    context.commands.push({type: "SET_DEPTH_TESTING", enabled: canvas.depthTesting })
+    context.commands.push({type: "SET_DEPTH_TESTING", enabled: canvas.depthTesting});
 }
 
 
@@ -210,10 +235,10 @@ function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode, contex
         context.commands.push({type: "SET_VIEWPORT", size: dataResult});
     }
 
-    if(node.clearColor) {
+    if (node.clearColor) {
         context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: node.clearColor}});
     }
-    context.commands.push({type: "SET_DEPTH_TESTING", enabled: node.depthTesting })
+    context.commands.push({type: "SET_DEPTH_TESTING", enabled: node.depthTesting});
 
 }
 
@@ -251,7 +276,7 @@ function setUniformTexture(node: TextureRenderGraphNode, bindAs: string, lockedT
         type: "SET_UNIFORM",
         programId: context.activeShader!.id,
         name: (context.activeShader?.prefixUniforms ?? "") + bindAs,
-        value: { type: "const", value: unit },
+        value: {type: "const", value: unit},
     });
 }
 
@@ -264,7 +289,7 @@ function setUniformFramebufferTexture(node: RendertargetRenderGraphNode, bindAs:
         type: "SET_UNIFORM",
         programId: context.activeShader!.id,
         name: (context.activeShader?.prefixUniforms ?? "") + bindAs,
-        value: { type: "const", value: unit },
+        value: {type: "const", value: unit},
     });
 }
 
@@ -287,7 +312,7 @@ function setUniformSelectTexture(node: SelectTextureRenderGraphNode<unknown[], s
         type: "SET_UNIFORM",
         programId: context.activeShader!.id,
         name: (context.activeShader?.prefixUniforms ?? "") + bindAs,
-        value: { type: "const", value: unit },
+        value: {type: "const", value: unit},
     });
 }
 
@@ -307,7 +332,7 @@ function setUniformCanvasSize(node: CanvasSizeRenderGraphNode, bindAs: string, c
         type: "SET_UNIFORM",
         programId: context.activeShader!.id,
         name: (context.activeShader?.prefixUniforms ?? "") + bindAs,
-        value: dataResult
+        value: dataResult,
     });
 }
 
@@ -317,7 +342,7 @@ function setUniformCamera(node: CameraRenderGraphNode, bindAs: string, context: 
         type: "SET_UNIFORM",
         programId: context.activeShader!.id,
         name: (context.activeShader?.prefixUniforms ?? "") + bindAs,
-        value: { type: "ref", ref: refData + "#viewproj" }
+        value: {type: "ref", ref: refData + "#viewproj"},
     });
 }
 
@@ -325,25 +350,41 @@ function generateDrawCall(geometry: GeometryRenderGraphNode, context: CompileCon
     let vertexCountRef: string | null = null;
     let instanceCountRef: string | null = null;
     geometry.sources.forEach(source => {
-        const transformer = source.source;
-        const out = transformer.outputs[source.output];
-        if (out.content === "vertices") {
-            vertexCountRef = transformer.id + "#" + source.output;
+        const dataSource = source.source;
+        if(source.sourceType === "transformer") {
+            if(dataSource.type !== "transform-vertex-out") {
+                throw new Error("Unexpected source type")
+            }
+            const out = dataSource.outputs[source.output];
+            if (out.content === "vertices") {
+                vertexCountRef = dataSource.id + "#" + source.output;
+            }
+            if (out.content === "instances") {
+                instanceCountRef = dataSource.id + "#" + source.output;
+            }
+            return;
         }
-        if (out.content === "instances") {
-            instanceCountRef = transformer.id + "#" + source.output;
+        if(source.sourceType === "wasm") {
+            if (source.content === "vertices") {
+                vertexCountRef = dataSource.id;
+            }
+            if (source.content === "instances") {
+                instanceCountRef = dataSource.id;
+            }
+            return
         }
+        assertExhaustive(source)
     });
-    let mode: GLenum = null!
-    if(geometry.primitiveTypes === "triangles") {
-        mode = WebGL2RenderingContext.TRIANGLES
+    let mode: GLenum = null!;
+    if (geometry.primitiveTypes === "triangles") {
+        mode = WebGL2RenderingContext.TRIANGLES;
     }
-    if(geometry.primitiveTypes === "lines") {
-        mode = WebGL2RenderingContext.LINES
+    if (geometry.primitiveTypes === "lines") {
+        mode = WebGL2RenderingContext.LINES;
     }
 
     if (vertexCountRef !== null && instanceCountRef === null) {
-        context.commands.push({type: "DRAW", refVertexCount: vertexCountRef, mode: mode });
+        context.commands.push({type: "DRAW", refVertexCount: vertexCountRef, mode: mode});
     }
     if (vertexCountRef !== null && instanceCountRef !== null) {
         context.commands.push({type: "DRAW_INSTANCED", refVertexCount: vertexCountRef, refInstanceCount: instanceCountRef, mode: mode});
@@ -366,7 +407,90 @@ function resolveDataNode(node: DataRenderGraphNode<any>, context: CompileContext
     if (node.source.type === "transform-multi-out") {
         return resolveDataNodeTransformMultiOut(node, context);
     }
+    if (node.source.type === "wasm") {
+        return resolveDataNodeWasm(node, context);
+    }
     assertExhaustive(node.source);
+}
+
+function resolveDataNodeWasm(node: DataRenderGraphNode<unknown>, context: CompileContext): ValueEntry {
+    ifNotYetVisited(node, context, () => {
+        if (node.source.type !== "wasm") {
+            throw new Error("Invalid data source type");
+        }
+        const wasmDataRef = resolveWasmDataNode(node.source.value, context);
+        context.resources.push({
+            type: "data",
+            key: node.id,
+            resource: null,
+        });
+        context.commands.push({
+            type: "DOWNLOAD_WASM_DATA",
+            ref: node.id,
+            wasmDataRef: wasmDataRef,
+            func: node.source.download,
+        });
+    });
+    return {type: "ref", ref: node.id};
+}
+
+function resolveWasmDataNode(node: WasmDataRenderGraphNode, context: CompileContext): string {
+    ifNotYetVisited(node, context, () => {
+        if (node.source.type === "js") {
+            const sourceRef = resolveDataNode(node.source.data, context);
+            context.commands.push({
+                type: "UPLOAD_WASM_DATA",
+                sourceRef: sourceRef,
+                ref: node.id,
+                func: node.source.upload,
+            });
+            return;
+        }
+        if (node.source.type === "wasm") {
+            resolveWasmOperationNode(node.source.operation, context);
+            return;
+        }
+        assertExhaustive(node.source);
+    });
+    return node.id;
+}
+
+function resolveWasmOperationNode(node: WasmOperationRenderGraphNode<any, any>, context: CompileContext) {
+    ifNotYetVisited(node, context, () => {
+
+        const wasmNodeRefs = node.wasmInputs.map(it => resolveWasmDataNode(it, context));
+        const dataNodeRefs = node.dataInputs.map(it => resolveDataNode(it, context));
+
+        const outKeyWasmDataMapping = new Map<string, string[]>();
+
+        function addOutMappingEntry(key: string, ref: string) {
+            if (!outKeyWasmDataMapping.has(key)) {
+                outKeyWasmDataMapping.set(key, []);
+            }
+            outKeyWasmDataMapping.get(key)?.push(ref);
+        }
+
+        context.nodes.forEach(it => {
+            if (it.type === "wasm-data") {
+                const source = it.source;
+                if (source.type === "wasm" && source.operation === node) {
+                    node.outputs.forEach(outKey => {
+                        if (source.key === undefined || source.key === outKey) {
+                            addOutMappingEntry(outKey.toString(), it.id);
+                        }
+                    });
+                }
+            }
+        });
+
+        context.commands.push({
+            type: "EXECUTE_WASM",
+            wasmRefs: wasmNodeRefs,
+            dataRefs: dataNodeRefs,
+            outKeyWasmDataMapping: Object.fromEntries(outKeyWasmDataMapping),
+            func: node.func,
+        });
+    });
 }
 
 /**
@@ -450,7 +574,7 @@ function resolveTransformerMultiOut(node: TransformMultiOutRenderGraphNode<unkno
     return {type: "ref", ref: node.id};
 }
 
-function resolveTransformerVertexOut(node: TransformVertexOutRenderGraphNode<unknown[], any>, context: CompileContext): ValueEntry {
+function resolveTransformerVertexOut(node: TransformVertexOutRenderGraphNode<unknown[], any>, context: CompileContext) {
     ifNotYetVisited(node, context, () => {
         Object.keys(node.outputs).forEach(outputKey => {
             context.resources.push({
@@ -458,31 +582,48 @@ function resolveTransformerVertexOut(node: TransformVertexOutRenderGraphNode<unk
                 key: node.id + "#" + outputKey,
                 resource: null,
             });
-        })
+        });
         const args = node.inputs.map(inputNode => resolveDataNode(inputNode, context));
         context.commands.push({type: "TRANSFORM_DATA_VERTEX_OUT", args: args, refOut: node.id, func: node.func});
     });
-    return {type: "ref", ref: node.id};
 }
-
 
 function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNode, context: CompileContext) {
     ifNotYetVisited(node, context, () => {
 
         const attributes: WebGlVertexArrayAttributeResource[] = [];
-        (node.sources as GeometrySource<any>[]).forEach(source => {
-            const bufferContent = source.source.outputs[source.output].content;
-            const bufferLayout = source.source.outputs[source.output].layout;
-            bufferLayout.forEach(entry => {
-                attributes.push({
-                    bufferResourceKey: source.source.id + "#" + source.output,
-                    name: (context.activeShader?.prefixVertexAttributes ?? "") + entry.name,
-                    type: entry.type,
-                    amountComponents: entry.amountComponents,
-                    normalized: entry.normalized,
-                    divisor: bufferContent === "vertices" ? 0 : 1,
+        node.sources.forEach(source => {
+            if(source.sourceType === "transformer") {
+                const bufferContent = source.source.outputs[source.output].content;
+                const bufferLayout = source.source.outputs[source.output].layout;
+                bufferLayout.forEach(entry => {
+                    attributes.push({
+                        bufferResourceKey: source.source.id + "#" + source.output,
+                        name: (context.activeShader?.prefixVertexAttributes ?? "") + entry.name,
+                        type: entry.type,
+                        amountComponents: entry.amountComponents,
+                        normalized: entry.normalized,
+                        divisor: bufferContent === "vertices" ? 0 : 1,
+                    });
                 });
-            });
+               return
+            }
+            if(source.sourceType === "wasm") {
+                const bufferContent = source.content
+                const bufferLayout = source.layout
+                bufferLayout.forEach(entry => {
+                    attributes.push({
+                        bufferResourceKey: source.source.id + "#vertexdata",
+                        name: (context.activeShader?.prefixVertexAttributes ?? "") + entry.name,
+                        type: entry.type,
+                        amountComponents: entry.amountComponents,
+                        normalized: entry.normalized,
+                        divisor: bufferContent === "vertices" ? 0 : 1,
+                    });
+                });
+                return
+            }
+            assertExhaustive(source)
         });
 
         context.resources.push({
@@ -491,15 +632,38 @@ function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNo
             attributes: attributes,
             programResourceKey: nodeProgram.id,
             resource: null,
-        })
+        });
 
         node.sources.forEach(source => {
-            resolveTransformerVertexOut(source.source, context);
+            if(source.sourceType === "transformer") {
+                resolveTransformerVertexOut(source.source, context);
+                return;
+            }
+            if(source.sourceType === "wasm") {
+                resolveWasmGeometrySource(source, context)
+                return
+            }
+            assertExhaustive(source)
         });
-    })
+    });
     context.commands.push({type: "BIND_VAO", id: node.id});
 }
 
+
+function resolveWasmGeometrySource(source: WasmGeometrySource, context: CompileContext) {
+    resolveWasmDataNode(source.source, context)
+    context.resources.push({
+        type: "vertexbuffer",
+        key: source.source.id + "#vertexdata",
+        resource: null,
+    });
+    context.commands.push({
+        type: "DOWNLOAD_WASM_VERTEX_DATA",
+        refWasmData: source.source.id,
+        refOut: source.source.id + "#vertexdata",
+        func: source.download
+    })
+}
 
 /**
  * @return the ref to the camera data (append with #proj, #view, #projview)
@@ -510,17 +674,17 @@ function updateAndResolveCamera(node: CameraRenderGraphNode, context: CompileCon
             type: "data",
             key: node.id + "#proj",
             resource: null,
-        })
+        });
         context.resources.push({
             type: "data",
             key: node.id + "#view",
             resource: null,
-        })
+        });
         context.resources.push({
             type: "data",
             key: node.id + "#viewproj",
             resource: null,
-        })
+        });
         if (node.data.type === "perspective") {
             const up = resolveDataNode(node.data.up, context) as ValueEntry<vec3>;
             const position = resolveDataNode(node.data.position, context) as ValueEntry<vec3>;
@@ -565,7 +729,7 @@ function updateAndResolveCamera(node: CameraRenderGraphNode, context: CompileCon
                 refView: node.id + "#view",
             });
         }
-    })
+    });
     return node.id;
 }
 

@@ -7,11 +7,11 @@ import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.
 import type {TransformRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.transform.ts";
 import type {TransformMultiOutRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.transform-multi-out.ts";
 import type {
-    TransformVertexOutRenderGraphNode,
+    TransformVertexOutRenderGraphNode, VertexDataLayout,
     VertexDataOutput,
     VertexDataResult,
 } from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
-import type {GeometryRenderGraphNode, GeometrySource} from "@modules/rendergraph/nodes/rg-node.geometry.ts";
+import type {GeometryRenderGraphNode, GeometrySource, WasmGeometrySource} from "@modules/rendergraph/nodes/rg-node.geometry.ts";
 import type {SelectTextureRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.select-texture.ts";
 import type {RenderGraphNode} from "@modules/rendergraph/nodes/rg-node.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
@@ -55,6 +55,7 @@ export class RenderGraphBuilder {
             | { type: "external", fetch: () => TData, checkChanged: (prev: TData) => boolean }
             | { type: "transform", transformer: TransformRenderGraphNode<any, TData> }
             | { type: "transform-multi-out", key: string, transformer: TransformMultiOutRenderGraphNode<any, Record<string, any | null>> }
+            | { type: "wasm", value: WasmDataRenderGraphNode, download: () => TData }
     }): DataRenderGraphNode<TData> {
         const node: DataRenderGraphNode<TData> = {
             type: "data",
@@ -110,7 +111,7 @@ export class RenderGraphBuilder {
     }
 
     public geometry(options: {
-        sources: GeometrySource<string>[];
+        sources: (GeometrySource<string> | WasmGeometrySource)[];
         primitives?: "triangles" | "lines"
     }): GeometryRenderGraphNode {
         const node: GeometryRenderGraphNode = {
@@ -128,8 +129,24 @@ export class RenderGraphBuilder {
         output: keyof T["outputs"],
     }): GeometrySource<string> {
         return {
+            sourceType: "transformer",
             source: options.source,
             output: options.output as string,
+        };
+    }
+
+    public wasmGeometrySource(options: {
+        source: WasmDataRenderGraphNode;
+        download: () => VertexDataResult,
+        content: "vertices" | "instances",
+        layout: VertexDataLayout[],
+    }): WasmGeometrySource {
+        return {
+            sourceType: "wasm",
+            source: options.source,
+            download: options.download,
+            content: options.content,
+            layout: options.layout,
         };
     }
 
@@ -310,25 +327,33 @@ export class RenderGraphBuilder {
     }
 
     public wasmData(options: {
-        input: DataRenderGraphNode<any> | WasmOperationRenderGraphNode,
+        source:
+            | { type: "wasm", key?: string, operation: WasmOperationRenderGraphNode<any, any> }
+            | { type: "js", data: DataRenderGraphNode<any>, upload: (args: any) => void }; // todo: any args
     }) {
         const node: WasmDataRenderGraphNode = {
             type: "wasm-data",
             id: RenderGraphBuilder.generateNodeId(),
-            input: options.input,
-        }
+            source: options.source,
+        };
         this.nodes.push(node);
         return node;
     }
 
-    public wasmOperation(options: {
-        func: () => void
+    public wasmOperation<TIn extends any[], TOut extends Record<string, boolean>>(options: {
+        wasmInputs: WasmDataRenderGraphNode[],
+        dataInputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
+        outputs: (keyof TOut)[]
+        func: (...args: TIn) => TOut;
     }) {
-        const node: WasmOperationRenderGraphNode = {
+        const node: WasmOperationRenderGraphNode<TIn, TOut> = {
             type: "wasm-operation",
             id: RenderGraphBuilder.generateNodeId(),
-            func: options.func
-        }
+            wasmInputs: options.wasmInputs,
+            dataInputs: options.dataInputs,
+            outputs: options.outputs,
+            func: options.func,
+        };
         this.nodes.push(node);
         return node;
     }

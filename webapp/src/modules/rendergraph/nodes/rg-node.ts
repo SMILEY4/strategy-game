@@ -29,7 +29,7 @@ export type RenderGraphNode =
     | CameraRenderGraphNode
     | CanvasSizeRenderGraphNode
     | WasmDataRenderGraphNode
-    | WasmOperationRenderGraphNode
+    | WasmOperationRenderGraphNode<any, any>
 
 export type RenderGraphNodeId = string
 

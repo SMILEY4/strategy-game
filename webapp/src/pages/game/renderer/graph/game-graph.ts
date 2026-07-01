@@ -1,6 +1,6 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {RenderCameraData, RenderChunk} from "@pages/game/renderer/data/models.ts";
+import type {RenderCameraData} from "@pages/game/renderer/data/models.ts";
 import type {Tile} from "@app/features/game/models/tile.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {vec2} from "gl-matrix";
@@ -57,46 +57,66 @@ export function gameGraph(dataProvider: GameRendererDataProvider, g: RenderGraph
         return true; // todo
     });
 
-    const collectChunks = g.transform<[Tile[]], RenderChunk[]>({
-        inputs: [dataAllTiles],
-        func: (_tiles: Tile[]) => [],
-    });
-
-    const dataAllChunks = g.dataTransformer<RenderChunk[]>(collectChunks);
-
-    const cullChunks = g.transform<[RenderChunk[], RenderCameraData], RenderChunk[]>({
-        inputs: [dataAllChunks, dataCamera],
-        func: (_chunks: RenderChunk[], _camera: RenderCameraData) => [],
-    });
-
-    const dataVisibleChunks = g.dataTransformer<RenderChunk[]>(cullChunks);
-
-    const tileInstanceTransformer = g.transformVertexOut({
-        inputs: [dataVisibleChunks],
-        outputs: {
-            instances: {
-                content: "instances",
-                layout: [
-                    {
-                        name: "worldPosition",
-                        type: GlAttributeType.FLOAT,
-                        amountComponents: 3,
-                    },
-                ],
-            },
-        },
-        func: (_chunks: RenderChunk[]) => {
-
-            const buffer = new ArrayBuffer(6 * 3 * 3 * GlAttributeType.FLOAT.bytes);
-
-            return {
-                "instances": {
-                    data: buffer,
-                    count: 6 * 3,
-                },
-            };
+    const wasmAllTiles = g.wasmData({
+        source: {
+            type: "js",
+            data: dataAllTiles,
+            upload: () => undefined
         },
     });
+
+    const collectChunks = g.wasmOperation({
+        wasmInputs: [],
+        dataInputs: [],
+        outputs: ["allChunks"],
+        func: () => ({
+            allChunks: false
+        })
+    });
+
+    const wasmAllChunks = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: collectChunks,
+            key: "allChunks",
+        }
+    });
+
+    const cullChunks = g.wasmOperation({
+        wasmInputs: [wasmAllChunks],
+        dataInputs: [dataCamera],
+        outputs: ["visibleChunks"],
+        func: (_camera: RenderCameraData) => ({
+            visibleChunks: false
+        })
+    });
+
+    const wasmVisibleChunks = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: cullChunks,
+            key: "visibleChunks"
+        }
+    });
+
+    const buildTileInstances = g.wasmOperation({
+        wasmInputs: [wasmVisibleChunks, wasmAllTiles],
+        dataInputs: [],
+        outputs: ["tileInstances"],
+        func: () => ({
+            tileInstances: false
+        })
+    });
+
+    const wasmTileInstances = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: buildTileInstances,
+            key: "tileInstances"
+        }
+    });
+
+
 
     const tileMeshTransformer = g.transformVertexOut({
         inputs: [],
@@ -157,10 +177,18 @@ export function gameGraph(dataProvider: GameRendererDataProvider, g: RenderGraph
                 source: tileMeshTransformer,
                 output: "mesh",
             }),
-            g.geometrySource({
-                source: tileInstanceTransformer,
-                output: "instances",
-            }),
+            g.wasmGeometrySource({
+                source: wasmTileInstances,
+                download: () => (null as any),
+                content: "instances",
+                layout: [
+                    {
+                        name: "worldPosition",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 3,
+                    },
+                ],
+            })
         ],
     });
 
