@@ -1,2 +1,0 @@
-- reduce technical depts
-- simplify current gameplay mechanics
