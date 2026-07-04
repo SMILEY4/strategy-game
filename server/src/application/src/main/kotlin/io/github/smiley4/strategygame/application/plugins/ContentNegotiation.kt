@@ -21,6 +21,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 
+/**
+ * Configure JSON serialization.
+ */
 fun Application.setupContentNegotiation(): Json {
     val json = Json {
         serializersModule = SerializersModule {

@@ -24,6 +24,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
+/**
+ * Configure Ktor-Plus with custom encoders, decoders, and property handlers for value types and annotations.
+ */
 fun setupKtorPlus(json: Json) {
 
     KtorPlusConfig.json = json

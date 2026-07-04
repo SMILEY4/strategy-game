@@ -7,6 +7,9 @@ class MatchParticipant(
     val role: MatchParticipantRole,
 )
 
+/**
+ * Role of a participant within a match.
+ */
 enum class MatchParticipantRole {
     OWNER,
     GUEST

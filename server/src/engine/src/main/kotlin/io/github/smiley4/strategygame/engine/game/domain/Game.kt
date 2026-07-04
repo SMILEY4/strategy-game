@@ -5,6 +5,9 @@ import io.github.smiley4.strategygame.engine.shared.PlayerCommand
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
 
+/**
+ * Aggregate for a single game instance. Tracks players and pending turn commands.
+ */
 class Game private constructor(
     private val id: GameId,
     private val players: Set<UserId>,

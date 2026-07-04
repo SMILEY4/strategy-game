@@ -28,6 +28,9 @@ import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
 import org.koin.ktor.ext.inject
 
+/**
+ * Register engine module dependencies in the Koin container.
+ */
 fun Module.dependenciesEngine() {
 
     single<WebSocketContext<GameConnection, ServerGameMessage>> { WebSocketContext.create<GameConnection, ServerGameMessage>() }
@@ -46,6 +49,9 @@ fun Module.dependenciesEngine() {
 
 }
 
+/**
+ * Configure engine-related routes under the /api/engine prefix.
+ */
 fun Route.routingEngine() {
     route("engine", {
         description = "Gameplay handling"

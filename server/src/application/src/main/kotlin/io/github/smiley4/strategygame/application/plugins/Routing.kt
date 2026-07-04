@@ -7,6 +7,9 @@ import io.ktor.server.application.Application
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 
+/**
+ * Configure top-level API routing. All routes are nested under /api.
+ */
 fun Application.setupRouting() {
     routing {
         route("api") {

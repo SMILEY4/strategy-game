@@ -49,6 +49,11 @@ DI wired in `DependencyInjection.kt` via Koin. All API routes under `/api/`.
 
 Detekt is auto-correcting, enforced (`ignoreFailures = false`), config at `server/detekt/detekt.yml`.
 
+### Documentation
+
+- Public API (service interfaces, domain events, error classes) should have minimal KDoc.
+- Implementation classes and internal details can omit KDoc if the purpose is clear.
+
 ### Important
 
 - Entrypoint: `Application.kt` uses Ktor's `EngineMain` pattern, NOT an `application` plugin.

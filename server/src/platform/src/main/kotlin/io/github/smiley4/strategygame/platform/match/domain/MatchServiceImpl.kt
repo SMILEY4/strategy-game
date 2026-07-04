@@ -11,6 +11,9 @@ import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
 
+/**
+ * Implementation of [MatchService]. Uses a keyed mutex for per-match synchronization.
+ */
 internal class MatchServiceImpl(
     private val matchRepository: MatchRepository,
     private val eventBus: WritableEventBus

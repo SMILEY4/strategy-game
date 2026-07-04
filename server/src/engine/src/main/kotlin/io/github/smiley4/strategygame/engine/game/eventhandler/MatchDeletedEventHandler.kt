@@ -7,6 +7,9 @@ import io.github.smiley4.strategygame.shared.eventbus.ReadableEventBus
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.mapNotNull
 
+/**
+ * Listens for [MatchDeletedEvent] and deletes the associated game if one exists.
+ */
 class MatchDeletedEventHandler(
     private val gameService: GameService,
     private val eventBus: ReadableEventBus

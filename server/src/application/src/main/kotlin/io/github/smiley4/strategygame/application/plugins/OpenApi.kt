@@ -11,6 +11,9 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import kotlinx.serialization.json.Json
 
+/**
+ * Install and configure Ktor OpenAPI plugin with kotlinx-serialization schema generator.
+ */
 fun Application.setupOpenApi(json: Json) {
     install(OpenApi) {
         info {
@@ -26,6 +29,9 @@ fun Application.setupOpenApi(json: Json) {
     }
 }
 
+/**
+ * Serve OpenAPI spec at /api/api.json and Swagger UI at /api/swagger.
+ */
 fun Route.routingOpenApi() {
     // todo: authenticate ?
     route("api.json") {

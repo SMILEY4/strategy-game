@@ -11,6 +11,9 @@ import kotlin.math.min
 import kotlin.random.Random
 import kotlin.random.nextInt
 
+/**
+ * Generates tile-based game worlds using noise functions with chunk-based organization.
+ */
 class WorldGenerator {
 
     private val chunkRadius = 30

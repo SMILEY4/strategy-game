@@ -19,6 +19,9 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
 
+/**
+ * Register platform module dependencies in the Koin container.
+ */
 fun Module.dependenciesPlatform() {
     single { GameCreatedEventHandler(get(), get()) }.withOptions { createdAtStart() }
 
@@ -26,6 +29,9 @@ fun Module.dependenciesPlatform() {
     single<MatchService> { MatchServiceImpl(get(), get()) }
 }
 
+/**
+ * Configure platform-related routes under the /api/platform prefix.
+ */
 fun Route.routingPlatform() {
     route("platform", {
         description = "Match handling"

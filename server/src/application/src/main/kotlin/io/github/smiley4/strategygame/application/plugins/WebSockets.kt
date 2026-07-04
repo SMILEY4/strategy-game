@@ -5,6 +5,9 @@ import io.ktor.server.application.install
 import io.ktor.server.websocket.WebSockets
 
 
+/**
+ * Install Ktor WebSocket support.
+ */
 fun Application.setupWebSockets() {
     install(WebSockets)
 }

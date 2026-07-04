@@ -7,6 +7,9 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
+/**
+ * In-memory event bus implementation.
+ */
 class EventBusImpl : ReadableEventBus, WritableEventBus {
 
     private val mutableEvents = MutableSharedFlow<Event>(

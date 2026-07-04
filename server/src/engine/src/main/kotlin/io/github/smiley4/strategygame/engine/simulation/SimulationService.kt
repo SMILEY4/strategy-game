@@ -9,6 +9,9 @@ import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
 import kotlin.random.Random
 
+/**
+ * Handles world generation, turn processing, and player state building.
+ */
 class SimulationService(
     private val gameStateRepository: GameStateRepository,
     private val worldGenerator: WorldGenerator,
@@ -58,6 +61,9 @@ class SimulationService(
 }
 
 
+/**
+ * Errors that can occur while processing a turn.
+ */
 sealed class ProcessTurnError(message: String?, cause: Throwable? = null) : Exception(message, cause) {
     class NotFound(gameId: String) : ProcessTurnError("The game '$gameId' could not be found")
 }

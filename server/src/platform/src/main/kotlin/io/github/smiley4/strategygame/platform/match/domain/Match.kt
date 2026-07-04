@@ -10,11 +10,17 @@ import io.github.smiley4.strategygame.shared.events.GameGenerationRequestedEvent
 import io.github.smiley4.strategygame.shared.events.MatchDeletedEvent
 import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 
+/**
+ * State of a match. CONFIGURING while players can join, ACTIVE once a game has started.
+ */
 enum class MatchState {
     CONFIGURING,
     ACTIVE,
 }
 
+/**
+ * Aggregate for a single match instance. Manages participants, state transitions, and game linkage.
+ */
 internal class Match private constructor(
     private val id: MatchId,
     private val name: String,

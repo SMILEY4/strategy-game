@@ -12,6 +12,9 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.bearer
 import org.koin.ktor.ext.inject
 
+/**
+ * Configure api authentication methods
+ */
 fun Application.setupAuthentication() {
     val service by inject<AuthService>()
     install(Authentication) {

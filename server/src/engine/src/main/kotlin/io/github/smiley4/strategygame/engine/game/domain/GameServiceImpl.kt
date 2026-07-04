@@ -13,6 +13,9 @@ import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
 
+/**
+ * Implementation of [GameService]. Coordinates simulation, persistence, notifications, and event emission.
+ */
 internal class GameServiceImpl(
     private val simulationService: SimulationService,
     private val gameRepository: GameRepository,

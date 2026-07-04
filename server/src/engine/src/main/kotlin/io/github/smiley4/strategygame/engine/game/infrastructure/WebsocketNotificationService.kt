@@ -11,6 +11,9 @@ import io.ktor.websocket.CloseReason
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.JsonUnquotedLiteral
 
+/**
+ * Implementation of [GameNotificationService] using Ktor-Plus WebSocket connections.
+ */
 @OptIn(ExperimentalSerializationApi::class)
 internal class WebsocketNotificationService(
     private val wsContext: WebSocketContext<GameConnection, ServerGameMessage>,

@@ -5,6 +5,9 @@ import io.github.smiley4.strategygame.platform.match.domain.MatchSnapshot
 import io.github.smiley4.strategygame.shared.values.MatchId
 import io.github.smiley4.strategygame.shared.values.UserId
 
+/**
+ * In-memory implementation of [MatchRepository].
+ */
 internal class InMemoryMatchRepository : MatchRepository {
 
     private val matches = mutableListOf<MatchSnapshot>()

@@ -7,6 +7,9 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateConte
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.shared.values.UserId
 
+/**
+ * Builds the game state snapshot visible to a specific player.
+ */
 class PlayerStateBuilder {
 
     fun build(game: GameStateContext, player: UserId): ObjectType {

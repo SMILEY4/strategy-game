@@ -6,6 +6,9 @@ import io.github.smiley4.strategygame.shared.eventbus.DomainEventHandler
 import io.github.smiley4.strategygame.shared.eventbus.ReadableEventBus
 import kotlinx.coroutines.flow.filterIsInstance
 
+/**
+ * Listens for [GameCreatedEvent] and attaches the game to its match.
+ */
 internal class GameCreatedEventHandler(
     private val eventBus: ReadableEventBus,
     private val matchService: MatchService,

@@ -29,6 +29,10 @@ internal fun Route.routeGameWebsocket(context: WebSocketContext<GameConnection, 
     }
 }
 
+/**
+ * WebSocket route handler for real-time game communication.
+ * Exposes [GameConnection], [ClientGameMessage], and [ServerGameMessage] types.
+ */
 object GameWebsocketRoute : KoinComponent {
 
     private val service by inject<GameService>()
@@ -49,20 +53,27 @@ object GameWebsocketRoute : KoinComponent {
     }
 
 
+    /**
+     * Represents a connected player for a specific game.
+     */
     @Connection
     class GameConnection(
         @PathParameter val gameId: String,
         @AuthenticatedUserId val userId: UserId
     )
 
-
+    /**
+     * Messages sent from the client to the server over the WebSocket.
+     */
     @Serializable
     sealed interface ClientGameMessage {
         @Serializable
         class SubmitTurn : ClientGameMessage
     }
 
-
+    /**
+     * Messages sent from the server to the client over the WebSocket.
+     */
     @Serializable
     sealed interface ServerGameMessage {
         @Serializable

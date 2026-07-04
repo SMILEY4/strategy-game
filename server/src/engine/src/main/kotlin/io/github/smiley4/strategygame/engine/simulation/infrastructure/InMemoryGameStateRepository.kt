@@ -4,6 +4,9 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateConte
 import io.github.smiley4.strategygame.engine.simulation.GameStateRepository
 import io.github.smiley4.strategygame.shared.values.GameId
 
+/**
+ * In-memory implementation of [GameStateRepository].
+ */
 class InMemoryGameStateRepository : GameStateRepository {
 
     val gameContexts = mutableMapOf<GameId, GameStateContext>()

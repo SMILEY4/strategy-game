@@ -4,6 +4,9 @@ import com.lectra.koson.ObjectType
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
 
+/**
+ * Internal service for messages to players and managing WebSocket connections per game.
+ */
 internal interface GameNotificationService {
     suspend fun disconnect(gameId: GameId, userId: UserId)
     suspend fun sendGameState(gameId: GameId, userId: UserId, gameState: ObjectType)

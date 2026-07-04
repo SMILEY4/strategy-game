@@ -24,6 +24,9 @@ import io.ktor.server.routing.Route
 import org.koin.core.module.Module
 
 
+/**
+ * Register identity module dependencies in the Koin container.
+ */
 fun Module.dependenciesIdentity() {
 
     // Shared
@@ -39,6 +42,9 @@ fun Module.dependenciesIdentity() {
     single<AuthService> { AuthServiceImpl(get(), get(), get(), get()) }
 }
 
+/**
+ * Configure identity-related routes under the /api/identity prefix.
+ */
 fun Route.routingIdentity() {
     route("identity", {
         description = "User management and authentication"

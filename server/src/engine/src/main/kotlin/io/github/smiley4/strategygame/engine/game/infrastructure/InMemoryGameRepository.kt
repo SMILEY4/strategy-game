@@ -5,6 +5,9 @@ import io.github.smiley4.strategygame.engine.game.domain.GameRepository
 import io.github.smiley4.strategygame.engine.game.domain.GameSnapshot
 import io.github.smiley4.strategygame.shared.values.GameId
 
+/**
+ * In-memory implementation of [GameRepository].
+ */
 class InMemoryGameRepository : GameRepository {
 
     val games = mutableListOf<GameSnapshot>()

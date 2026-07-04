@@ -6,6 +6,9 @@ import io.github.smiley4.strategygame.shared.eventbus.DomainEventHandler
 import io.github.smiley4.strategygame.shared.eventbus.ReadableEventBus
 import kotlinx.coroutines.flow.filterIsInstance
 
+/**
+ * Listens for [GameGenerationRequestedEvent] and triggers game creation.
+ */
 class GameGenerationRequestedEventHandler(
     private val gameService: GameService,
     private val eventBus: ReadableEventBus

@@ -15,6 +15,9 @@ import org.koin.core.logger.MESSAGE
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 
+/**
+ * Install Koin and register all module dependencies.
+ */
 fun Application.setupDependencyInjection() {
     install(Koin) {
         modules(dependencies())
@@ -33,6 +36,9 @@ fun Application.setupDependencyInjection() {
     }
 }
 
+/**
+ * Top-level Koin module assembling all sub-module dependencies and shared application dependencies.
+ */
 fun dependencies() = module {
     dependenciesIdentity()
     dependenciesPlatform()
