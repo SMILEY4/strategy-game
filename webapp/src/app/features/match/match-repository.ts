@@ -4,6 +4,7 @@ import {QueryClient} from "@tanstack/query-core";
 import {minutes, seconds} from "@modules/utilities/time-units.ts";
 import type {MatchDetails, MatchListEntry} from "@app/features/match/match.ts";
 
+/** Repository for match data, using TanStack Query for caching and reactivity. */
 export interface MatchRepository {
     prefetchList: () => Promise<void>;
     prefetchDetails: (matchId: string) => Promise<void>;

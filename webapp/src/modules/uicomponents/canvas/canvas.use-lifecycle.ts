@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useRef} from "react";
 
+/** Hook that manages canvas element lifecycle: resize, render loop, and WebGL context loss/restore. */
 export function useCanvasLifecycle(options: {
     onInitialize?: (canvas: HTMLCanvasElement) => void,
     onUpdate?: () => void,

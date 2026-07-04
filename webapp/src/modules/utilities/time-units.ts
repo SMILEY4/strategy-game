@@ -1,24 +1,30 @@
+/** Create a duration value in milliseconds. */
 export function milliseconds(amount: number): Milliseconds {
     return new Milliseconds(amount);
 }
 
+/** Create a duration value in seconds. */
 export function seconds(amount: number): Seconds {
     return new Seconds(amount);
 }
 
+/** Create a duration value in minutes. */
 export function minutes(amount: number): Minutes {
     return new Minutes(amount);
 }
 
+/** Create a duration value in hours. */
 export function hours(amount: number): Hours {
     return new Hours(amount);
 }
 
+/** Create a duration value in days. */
 export function days(amount: number): Days {
     return new Days(amount);
 }
 
 
+/** A duration value that can be converted between time units. */
 export interface DurationUnit {
     getValue(): number;
     getValueMilliseconds(): number;

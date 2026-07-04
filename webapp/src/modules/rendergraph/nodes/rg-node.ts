@@ -14,6 +14,7 @@ import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node
 import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 
+/** Union of all render graph node types. */
 export type RenderGraphNode =
     | CanvasRenderGraphNode
     | DataRenderGraphNode<any>
@@ -31,8 +32,10 @@ export type RenderGraphNode =
     | WasmDataRenderGraphNode
     | WasmOperationRenderGraphNode<any, any>
 
+/** Unique identifier for a render graph node. */
 export type RenderGraphNodeId = string
 
+/** Base interface for all render graph nodes, carrying a type discriminator and unique id. */
 export interface RenderGraphNodeBase<TypeIdentifier extends string> {
     readonly type: TypeIdentifier,
     readonly id: RenderGraphNodeId

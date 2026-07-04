@@ -1,3 +1,4 @@
+/** Stub renderer class for the game scene. Not yet fully implemented. */
 export class GameRenderer {
 
     // private readonly dataProvider;

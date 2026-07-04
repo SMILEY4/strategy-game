@@ -3,6 +3,7 @@ import {seconds} from "@modules/utilities/time-units.ts";
 import {delay} from "@modules/utilities/delay.ts";
 import type {MatchClient} from "@app/features/match/match.client.ts";
 
+/** Use case for creating a game from a match. Polls until the game is ready. */
 export interface CreateGameUseCase {
     execute: (matchId: string) => Promise<void>;
 }

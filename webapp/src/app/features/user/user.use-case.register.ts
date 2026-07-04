@@ -1,5 +1,6 @@
 import type {UserClient} from "@app/features/user/user.client.ts";
 
+/** Use case for registering a new user. */
 export interface RegisterUseCase {
     execute: (username: string, password: string) => Promise<void>;
 }

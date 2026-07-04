@@ -27,6 +27,7 @@ interface EnvShape {
     serverWebsocketUrl: string;
 }
 
+/** Environment configuration resolved from window.RUNTIME_CONFIG or Vite env vars. */
 export const Env: EnvShape = {
     // @ts-expect-error window.RUNTIME_CONFIG is not known to TypeScript
     serverHttpUrl: window.RUNTIME_CONFIG?.SERVER_URL
@@ -69,6 +70,7 @@ interface DIShape {
 }
 
 
+/** DI container configuration. Each entry specifies singleton or transient scope and its factory. */
 export const DIConfig = {
     // common
     clientAuthHandler: {
@@ -172,4 +174,5 @@ export const DIConfig = {
 } satisfies FactoryMap<DIShape>;
 
 
+/** Application-wide dependency injection container. */
 export const DI = createDI(DIConfig);

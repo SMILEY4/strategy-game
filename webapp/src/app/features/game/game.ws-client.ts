@@ -1,6 +1,7 @@
 import type {WebsocketClient} from "@modules/client/websocket-client.ts";
 import type {GameWebsocketClientMessage, GameWebsocketServerMessage} from "@app/features/game/game-websocket-message.ts";
 
+/** WebSocket client for game connections, using one-time token auth. */
 export interface GameWebsocketClient {
     connect: (gameId: string, token: string, onMessage: (message: GameWebsocketServerMessage) => void) => void
     disconnect: () => void

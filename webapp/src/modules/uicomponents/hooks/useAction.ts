@@ -1,5 +1,6 @@
 import {useState} from "react";
 
+/** Wraps an action function with a loading state. Returns [perform, loading] tuple. */
 export function useAction<Args extends unknown[], T>(action: (...args: Args) => T): [(...args: Args) => Promise<Awaited<T>>, boolean] {
     const [loading, setLoading] = useState(false);
 

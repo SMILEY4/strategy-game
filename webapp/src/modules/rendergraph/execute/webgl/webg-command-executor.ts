@@ -7,6 +7,7 @@ import {WebGlExecutionContext} from "@modules/rendergraph/execute/webgl/webgl-ex
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 
 
+/** Execute a list of compiled WebGL commands against the given execution context. */
 export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExecutionContext) {
     for (let i = 0, n = commands.length; i < n; i++) {
         execute(commands[i], context);

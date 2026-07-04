@@ -5,11 +5,13 @@ import {type WebGlCommand, webglCompile} from "@modules/rendergraph/compile/webg
 import {WebGlExecutionContext, type WebglExecutionContextFactory} from "@modules/rendergraph/execute/webgl/webgl-execution-context.ts";
 import {executeWebGlCommands} from "@modules/rendergraph/execute/webgl/webg-command-executor.ts";
 
+/** Compiled render graph that executes draw commands against a WebGL canvas. */
 export interface RenderGraph {
     initializeCanvas(canvas: HTMLCanvasElement | null): void;
     execute(): void;
 }
 
+/** WebGL2 implementation of [RenderGraph]. Compiled once and executed per frame. */
 export class WebGlRenderGraph implements RenderGraph {
 
     public static build(nodes: RenderGraphNode[]) {

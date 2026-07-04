@@ -1,6 +1,7 @@
 import type {AuthClient} from "@app/features/auth/auth.client.ts";
 import type {AuthTokenStorage} from "@app/features/auth/auth-token-storage.ts";
 
+/** Repository for authentication operations, coordinating client calls with token storage. */
 export interface AuthRepository {
     isAuthenticated: () => boolean;
     getToken: () => string | null;

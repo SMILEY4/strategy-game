@@ -13,9 +13,11 @@ import type {
 } from "@modules/rendergraph/execute/webgl/webgl-resource.ts";
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 
+/** Factory function that creates a [WebGlExecutionContext] for a given canvas element. */
 export type WebglExecutionContextFactory = (canvas: HTMLCanvasElement) => WebGlExecutionContext
 
 
+/** Runtime context holding all compiled WebGL resources and managing dirty tracking per frame. */
 export class WebGlExecutionContext {
 
     public static build(canvas: HTMLCanvasElement, resources: WebGlResource[]): WebGlExecutionContext {

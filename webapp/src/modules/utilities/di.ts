@@ -1,21 +1,20 @@
 export type Scope = "singleton" | "transient"
 
-// Defines how to create an instance of type T, with access to dependencies (Deps)
+/** Defines how to create an instance of type T with access to dependencies. */
 export type Factory<T, Deps> = {
     scope: Scope,
     create: (resolve: Deps) => T,
 }
 
-// A map of factory names to their factory definitions, all sharing the same Deps type
+/** A map of factory names to their factory definitions, all sharing the same Deps type. */
 export type FactoryMap<Deps> = Record<string, Factory<unknown, Deps>>;
 
-// Extract the actual instance types from a FactoryMap (unwraps Factory<T> to just T)
+/** Extract the actual instance types from a FactoryMap (unwraps Factory<T> to just T). */
 export type Instances<F extends FactoryMap<unknown>> = {
     [K in keyof F]: F[K] extends Factory<infer T, unknown> ? T : never
 }
 
-// Creates a DI container that lazily instantiates factories
-// Deps: the shape of all available dependencies (resolver type)
+/** Create a DI container that lazily instantiates factories. */
 export function createDI<Deps>(factories: FactoryMap<Deps>): Deps {
     const singletons = new Map<keyof typeof factories, unknown>();
     const di = {} as Deps;

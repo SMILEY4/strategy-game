@@ -3,6 +3,7 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-http-backend";
 import {initReactI18next} from "react-i18next";
 
+/** Initialize i18next with HTTP backend, language detection, and react-i18next integration. */
 void i18n
     .use(Backend)
     .use(LanguageDetector)

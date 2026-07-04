@@ -2,6 +2,7 @@ import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-rend
 import {quat, vec3} from "gl-matrix";
 import type {RenderCameraData} from "@pages/game/renderer/data/models.ts";
 
+/** Handles keyboard and mouse camera movement in the 3D game scene. */
 export class CameraController {
 
     private readonly dataProvider: GameRendererDataProvider;

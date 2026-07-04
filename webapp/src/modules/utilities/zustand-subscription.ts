@@ -1,6 +1,7 @@
 import type {ReactiveResult, ReactiveStateletResult, ReactiveStateletSubscription} from "@modules/utilities/repository-utils.ts";
 import type {StoreApi} from "zustand/vanilla";
 
+/** Subscribe to a Zustand store slice, returning reactive result with the initial value. */
 export function subscribeToZustand<TStore, TData>(
     store: StoreApi<TStore>,
     subscription: ReactiveStateletSubscription<TData>,

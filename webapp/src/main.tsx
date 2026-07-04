@@ -1,3 +1,5 @@
+/** Application root — creates the React Router and mounts it into the DOM. */
+
 import {createBrowserRouter, RouterProvider} from "react-router";
 import {createRoot} from "react-dom/client";
 import {routing} from "@pages/routing.tsx";

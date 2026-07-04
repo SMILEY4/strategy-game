@@ -1,5 +1,6 @@
 import { AppError } from "@app/app-error.ts";
 
+/** Configuration for opening a WebSocket connection. */
 interface WebsocketConnectionConfig<TServerMessage, TClientMessage> {
     url: string;
     queryParams?: Record<string, string | number | boolean>
@@ -10,6 +11,7 @@ interface WebsocketConnectionConfig<TServerMessage, TClientMessage> {
     onMessage?: (message: TServerMessage, handle: WebsocketConnectionHandle<TClientMessage>) => void;
 }
 
+/** Handle for interacting with an open WebSocket connection. */
 export interface WebsocketConnectionHandle<TClientMessage> {
     key: string;
     close: () => void;
@@ -22,6 +24,7 @@ interface ActiveConnection {
     buffer: string[];
 }
 
+/** Typed WebSocket client supporting multiple simultaneous connections keyed by identifier. */
 export interface WebsocketClient {
     open: <TServerMessage, TClientMessage>(config: WebsocketConnectionConfig<TServerMessage, TClientMessage>) => WebsocketConnectionHandle<TClientMessage>;
     send: <TClientMessage>(key: string, message: TClientMessage) => void;
@@ -69,6 +72,7 @@ USAGE:
     client.close("pingpong")
 
  */
+/** Create a new WebSocket client that resolves relative URLs against the given base URL. */
 export const websocketClient = ({ baseUrl }: Dependencies): WebsocketClient => {
 
     const connections = new Map<string, ActiveConnection>();

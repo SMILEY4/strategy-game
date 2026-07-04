@@ -1,6 +1,7 @@
 import type {AuthData} from "@app/features/auth/auth-data.ts";
 import type {HttpClient} from "@modules/client/http-client.ts";
 
+/** Auth API client for login/logout endpoints. */
 export interface AuthClient {
     logIn: (username: string, password: string) => Promise<AuthData>;
     logOut: () => Promise<void>;

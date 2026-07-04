@@ -5,6 +5,7 @@ import type {Tile} from "@app/features/game/models/tile.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {vec2} from "gl-matrix";
 
+/** Build the render graph for the game scene using a builder and data provider. */
 export function gameGraph(dataProvider: GameRendererDataProvider, g: RenderGraphBuilder) {
 
     const canvasSize = g.canvasSize();

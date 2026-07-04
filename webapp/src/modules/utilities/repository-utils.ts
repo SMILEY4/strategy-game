@@ -1,7 +1,9 @@
 import {hashKey, QueryClient, type QueryKey} from "@tanstack/query-core";
 
+/** Result of subscribing to reactive data, providing the initial value and an unsubscribe function. */
 export type ReactiveResult<TData> = { initial: ReactiveStateletResult<TData>, unsubscribe: () => void };
 
+/** Union type representing the status of a reactive data statelet. */
 export type ReactiveStateletResult<TData> =
     | { status: "init" }
     | { status: "available", data: TData }
@@ -12,6 +14,7 @@ export type ReactiveStateletResult<TData> =
 export type ReactiveStateletSubscription<TData> = ((state: ReactiveStateletResult<TData>) => void) | null
 
 
+/** Subscribe to query cache changes for a given query key, providing reactive data updates. */
 export function getReactiveData<TData>(options: {
     queryClient: QueryClient,
     queryKey: QueryKey,

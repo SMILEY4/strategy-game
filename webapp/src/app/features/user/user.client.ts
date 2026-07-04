@@ -1,5 +1,6 @@
 import type {HttpClient} from "@modules/client/http-client.ts";
 
+/** User API client for registration. */
 export interface UserClient {
     register: (username: string, password: string) => Promise<void>;
 }

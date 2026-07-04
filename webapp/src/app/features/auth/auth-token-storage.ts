@@ -1,3 +1,4 @@
+/** Persistence layer for auth tokens, backed by localStorage. */
 export interface AuthTokenStorage {
     getToken: () => string | null;
     setToken: (token: string) => void;

@@ -2,6 +2,7 @@ import {createStore} from "zustand/vanilla";
 import type {ReactiveResult, ReactiveStateletSubscription} from "@modules/utilities/repository-utils.ts";
 import {subscribeToZustand} from "@modules/utilities/zustand-subscription.ts";
 
+/** Zustand-backed repository tracking the current game connection state. */
 export interface GameRepository {
     setState: (state: "loading" | "playing" | "error") => void;
     getStateReactive: (subscription: ReactiveStateletSubscription<"loading" | "playing" | "error">) => ReactiveResult<"loading" | "playing" | "error">;

@@ -1,6 +1,7 @@
 import type {HttpClient} from "@modules/client/http-client.ts";
 import type {MatchDetails, MatchListEntry} from "@app/features/match/match.ts";
 
+/** Match API client for CRUD operations on matches. */
 export interface MatchClient {
     listAll: () => Promise<MatchListEntry[]>;
     getDetails: (matchId: string) => Promise<MatchDetails>;

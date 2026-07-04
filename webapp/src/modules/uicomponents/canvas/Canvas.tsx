@@ -3,6 +3,7 @@ import {useCanvasLifecycle} from "@modules/uicomponents/canvas/canvas.use-lifecy
 import type {ReactElement, ReactNode} from "react";
 import classNames from "classnames";
 
+/** Props for the canvas component, combining lifecycle and interaction callbacks. */
 interface CanvasProps {
     className?: string;
     children?: ReactNode;
@@ -17,6 +18,7 @@ interface CanvasProps {
     onMouseClick?: (x: number, y: number) => void
 }
 
+/** A canvas wrapper component that manages WebGL lifecycle and mouse interactions. */
 export function Canvas(props: CanvasProps): ReactElement {
 
     const interactions = useCanvasInteractions({...props});

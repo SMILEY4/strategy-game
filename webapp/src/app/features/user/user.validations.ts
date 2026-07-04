@@ -1,5 +1,7 @@
+/** Result type for user input validation. */
 export type UserValidationResult<TErrorReason extends string> = { valid: true } | { valid: false, reason: TErrorReason }
 
+/** Validation functions for user registration form fields. */
 export const UserValidations = {
 
     username(value: string): UserValidationResult<"empty"> {

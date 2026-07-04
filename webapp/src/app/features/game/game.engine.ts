@@ -4,6 +4,7 @@ import type {GameClient} from "@app/features/game/game.client.ts";
 import type {GameRepository} from "@app/features/game/game.repository.ts";
 import {type TileDatabase} from "@app/features/game/database/tile.database.ts";
 
+/** Orchestrates the game lifecycle: connecting via WebSocket and routing messages to the database. */
 export interface GameEngine {
     start: (gameId: string) => void;
     stop: () => void;

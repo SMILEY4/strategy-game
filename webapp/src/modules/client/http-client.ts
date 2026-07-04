@@ -1,5 +1,6 @@
 import {AppError, type AppErrorData} from "@app/app-error.ts";
 
+/** Configuration for an HTTP request without a body. */
 interface RequestConfig {
     url: string,
     queryParams?: Record<string, string | number | boolean>
@@ -7,10 +8,12 @@ interface RequestConfig {
     headers?: Record<string, string>;
 }
 
+/** Configuration for an HTTP request with an optional body. */
 interface RequestConfigWithContent<TContent> extends RequestConfig {
     content?: TContent;
 }
 
+/** Typed HTTP client using fetch with JSON serialization and Bearer token auth. */
 export interface HttpClient {
     get: <TResponse = never>(config: RequestConfig) => Promise<TResponse>;
     post: <TResponse = never, TRequest = any>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
@@ -18,6 +21,7 @@ export interface HttpClient {
     delete: <TResponse = never, TRequest = any>(config: RequestConfigWithContent<TRequest>) => Promise<TResponse>;
 }
 
+/** Handles token retrieval and unauthorized response handling for the HTTP client. */
 export interface HttpClientAuthHandler {
     getToken: () => string | null | Promise<string | null>;
     handleUnauthorized: () => void | Promise<void>;
@@ -59,6 +63,7 @@ THROWS on 4xx, 5xx, network errors, etc
 - AppError
 
  */
+/** Create a new HTTP client that resolves relative URLs against the given base URL. */
 export const httpClient = ({baseUrl, authHandler}: Dependencies): HttpClient => {
 
     async function buildHeaders(config: RequestConfig | undefined, withBody: boolean): Promise<Headers> {

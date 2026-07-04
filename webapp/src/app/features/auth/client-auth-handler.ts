@@ -7,6 +7,7 @@ interface Dependencies {
     storage: AuthTokenStorage;
 }
 
+/** Auth handler for the HTTP client, providing tokens and redirecting on 401. */
 export const clientAuthHandler = ({storage}: Dependencies): HttpClientAuthHandler => {
     return {
         getToken: () => {

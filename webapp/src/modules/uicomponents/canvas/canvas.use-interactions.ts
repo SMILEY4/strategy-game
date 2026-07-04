@@ -1,5 +1,6 @@
 import {type MouseEvent, useRef, type WheelEvent} from "react";
 
+/** Hook that translates DOM mouse events into structured callbacks for the canvas. */
 export function useCanvasInteractions(options: {
     onMouseMove?: (mx: number, my: number, x: number, y: number, buttons: number) => void
     onMouseScroll?: (scroll: number, x: number, y: number) => void

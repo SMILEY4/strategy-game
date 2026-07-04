@@ -19,6 +19,7 @@ import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node
 import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 
+/** Builder for constructing a render graph by declaring nodes and their connections. */
 export class RenderGraphBuilder {
 
     private readonly nodes: RenderGraphNode[] = [];

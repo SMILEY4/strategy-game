@@ -1,3 +1,4 @@
+/** Messages sent from client to server over the game WebSocket. */
 export type GameWebsocketClientMessage = null
 
 export interface GameWebsocketClientMessageBase {
@@ -5,6 +6,7 @@ export interface GameWebsocketClientMessageBase {
 }
 
 
+/** Messages sent from server to client over the game WebSocket. */
 export type GameWebsocketServerMessage =
     | GameState
 

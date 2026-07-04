@@ -29,6 +29,7 @@ interface LoginViewModel {
     generalError: undefined | string,
 }
 
+/** View-model for the login page, managing form state and validation. */
 export function useLoginViewModel(): LoginViewModel {
 
     const username = useValidatedInput<"empty" | "wrongCredentials">(

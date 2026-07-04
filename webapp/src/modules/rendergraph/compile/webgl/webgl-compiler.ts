@@ -19,6 +19,7 @@ import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
 
+/** A compiled WebGL2 command from the render graph. */
 export type WebGlCommand =
     | { type: "USE_SHADER", id: string }
     | { type: "BIND_FRAMEBUFFER", id: string }
@@ -84,6 +85,7 @@ export type WebGlCommand =
 }
 
 
+/** A typed value reference: either a constant or a reference to a data resource. */
 export type ValueEntry<T = unknown> = { type: "const", value: T } | { type: "ref", ref: string }
 
 interface CompileContext {
@@ -97,6 +99,7 @@ interface CompileContext {
     textureUnits: (string | null)[]
 }
 
+/** Compile a set of render graph nodes into a flat list of WebGL commands and resources. */
 export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDrawCallNode[], availableTextureUnits: number) {
 
     const context: CompileContext = {

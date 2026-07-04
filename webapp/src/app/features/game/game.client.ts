@@ -1,5 +1,6 @@
 import type {HttpClient} from "@modules/client/http-client.ts";
 
+/** Game API client for fetching one-time WebSocket tokens. */
 export interface GameClient {
     getGameWebsocketToken(): Promise<string>;
 }

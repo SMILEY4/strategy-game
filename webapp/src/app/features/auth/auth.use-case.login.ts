@@ -1,5 +1,6 @@
 import type {AuthRepository} from "@app/features/auth/auth-repository.ts";
 
+/** Use case for authenticating a user with username and password. */
 export interface LogInUseCase {
     execute: (username: string, password: string) => Promise<void>;
 }
