@@ -2,7 +2,7 @@ import {type GLUniformValueType} from "@modules/rendergraph/webgl/gl-program.ts"
 import {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {mat4, vec3} from "gl-matrix";
 import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
-import type {ValueEntry, WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-compiler.ts";
+import type {ValueEntry, WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-command.ts";
 import {WebGlExecutionContext} from "@modules/rendergraph/execute/webgl/webgl-execution-context.ts";
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import {subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
@@ -23,12 +23,12 @@ export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExe
 function execute(command: WebGlCommand, context: WebGlExecutionContext) {
     switch (command.type) {
         case "USE_SHADER": {
-            context.getProgram(command.id).use();
+            context.getProgram(command.shaderId).use();
             return;
         }
 
         case "BIND_FRAMEBUFFER": {
-            context.getFramebuffer(command.id).bind();
+            context.getFramebuffer(command.framebufferId).bind();
             return;
         }
 
@@ -38,37 +38,37 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "RESIZE_FRAMEBUFFER": {
-            if (context.isDirty(command.refSize)) {
-                const framebuffer = context.getFramebuffer(command.id);
-                const size = context.getData<[number, number]>(command.refSize);
+            if (context.isDirty(command.sizeRef)) {
+                const framebuffer = context.getFramebuffer(command.framebufferId);
+                const size = context.getData<[number, number]>(command.sizeRef);
                 framebuffer.resize(size[0], size[1], false);
             }
             return;
         }
 
         case "BIND_VAO": {
-            context.getVertexArray(command.id).bind();
+            context.getVertexArray(command.vaoId).bind();
             return;
         }
 
         case "BIND_TEXTURE": {
-            context.getTexture(command.id).bind(command.unit);
+            context.getTexture(command.textureId).bind(command.textureUnit);
             return;
         }
 
         case "BIND_TEXTURE_REF": {
-            const textureId = context.getData<string>(command.idRef);
-            context.getTexture(textureId).bind(command.unit);
+            const textureId = context.getData<string>(command.textureIdRef);
+            context.getTexture(textureId).bind(command.textureUnit);
             return;
         }
 
         case "BIND_TEXTURE_FRAMEBUFFER": {
-            context.getFramebuffer(command.id).bindTexture(command.unit);
+            context.getFramebuffer(command.framebufferId).bindTexture(command.textureUnit);
             return;
         }
 
         case "SET_UNIFORM": {
-            const program = context.getProgram(command.programId);
+            const program = context.getProgram(command.shaderId);
             if (command.value.type === "const") {
                 program.setUniform(command.name, command.value.value as GLUniformValueType);
             }
@@ -81,7 +81,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
         case "DRAW": {
             const gl = context.getRenderingContext();
-            const vertexCount = context.getVertexBufferElementCount(command.refVertexCount);
+            const vertexCount = context.getVertexBufferElementCount(command.vertexCountRef);
             gl.drawArrays(command.mode, 0, vertexCount);
             GlError.check(gl, "drawArrays", "drawing");
             return;
@@ -89,46 +89,46 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
         case "DRAW_INSTANCED": {
             const gl = context.getRenderingContext();
-            const vertexCount = context.getVertexBufferElementCount(command.refVertexCount);
-            const instanceCount = context.getVertexBufferElementCount(command.refInstanceCount);
+            const vertexCount = context.getVertexBufferElementCount(command.vertexCountRef);
+            const instanceCount = context.getVertexBufferElementCount(command.instanceCountRef);
             gl.drawArraysInstanced(command.mode, 0, vertexCount, instanceCount);
             GlError.check(gl, "drawArraysInstanced", "drawing instanced");
             return;
         }
 
         case "LOAD_EXTERNAL_DATA": {
-            const prev = context.getData(command.ref)
-            if(!context.isInitialized(command.ref) || command.checkChanged(prev)) {
-                context.setData(command.ref, command.func());
+            const prev = context.getData(command.outputRef)
+            if(!context.isInitialized(command.outputRef) || command.checkChanged(prev)) {
+                context.setData(command.outputRef, command.fetch());
             }
             return;
         }
 
         case "TRANSFORM_DATA": {
-            if (isAnyDirty(context, ...command.args) || !context.isInitialized(command.refOut)) {
-                const args = command.args.map(arg => {
+            if (isAnyDirty(context, ...command.inputRefs) || !context.isInitialized(command.outputRef)) {
+                const args = command.inputRefs.map(arg => {
                     if (arg.type === "const") return arg.value;
                     if (arg.type === "ref") return context.getData(arg.ref);
                 });
                 const result = command.func(...(args as Parameters<typeof command.func>));
-                if(command.checkChanged(context.getData(command.refOut), result)) {
-                    context.setData(command.refOut, result);
+                if(command.checkChanged(context.getData(command.outputRef), result)) {
+                    context.setData(command.outputRef, result);
                 }
             }
             return;
         }
 
         case "TRANSFORM_DATA_MULTI_OUT": {
-            if (isAnyDirty(context, ...command.args) || !context.isInitialized(command.refOut)) {
-                context.setInitialized(command.refOut);
-                const args = command.args.map(arg => {
+            if (isAnyDirty(context, ...command.inputRefs) || !context.isInitialized(command.outputRef)) {
+                context.setInitialized(command.outputRef);
+                const args = command.inputRefs.map(arg => {
                     if (arg.type === "const") return arg.value;
                     if (arg.type === "ref") return context.getData(arg.ref);
                 });
                 const result = command.func(...(args as Parameters<typeof command.func>));
                 Object.entries(result).forEach(([key, value]) => {
                     if (value != null) {
-                        context.setData(subResourceKey(command.refOut, key), value);
+                        context.setData(subResourceKey(command.outputRef, key), value);
                     }
                 });
             }
@@ -136,16 +136,16 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "TRANSFORM_DATA_VERTEX_OUT": {
-            if (isAnyDirty(context, ...command.args) || !context.isInitialized(command.refOut)) {
-                context.setInitialized(command.refOut);
-                const args = command.args.map(arg => {
+            if (isAnyDirty(context, ...command.inputRefs) || !context.isInitialized(command.outputRef)) {
+                context.setInitialized(command.outputRef);
+                const args = command.inputRefs.map(arg => {
                     if (arg.type === "const") return arg.value;
                     if (arg.type === "ref") return context.getData(arg.ref);
                 });
                 const result = command.func(...(args as Parameters<typeof command.func>));
                 Object.entries(result).forEach(([key, value]) => {
                     if (value != null) {
-                        const bufferKey = subResourceKey(command.refOut, key);
+                        const bufferKey = subResourceKey(command.outputRef, key);
                         const buffer = context.getVertexBuffer(bufferKey);
                         buffer.setData(value.data, true);
                         context.setVertexBufferElementCount(bufferKey, value.count);
@@ -156,34 +156,34 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "DOWNLOAD_WASM_VERTEX_DATA": {
-            if(isAnyDirty(context, command.refWasmData) || !context.isInitialized(command.refOut)) {
-                context.setInitialized(command.refOut);
-                const value = command.func()
-                const buffer = context.getVertexBuffer(command.refOut);
+            if(isAnyDirty(context, command.wasmDataRef) || !context.isInitialized(command.outputRef)) {
+                context.setInitialized(command.outputRef);
+                const value = command.fetch()
+                const buffer = context.getVertexBuffer(command.outputRef);
                 buffer.setData(value.data, true);
-                context.setVertexBufferElementCount(command.refOut, value.count);
+                context.setVertexBufferElementCount(command.outputRef, value.count);
             }
             return;
         }
 
         case "SELECT_TEXTURE": {
-            if (isAnyDirty(context, ...command.args) || !context.isInitialized(command.refOut)) {
-                const args = command.args.map(arg => {
+            if (isAnyDirty(context, ...command.inputRefs) || !context.isInitialized(command.outputRef)) {
+                const args = command.inputRefs.map(arg => {
                     if (arg.type === "const") return arg.value;
                     if (arg.type === "ref") return context.getData(arg.ref);
                 });
                 const result = command.func(...(args as Parameters<typeof command.func>));
-                context.setData(command.refOut, result);
+                context.setData(command.outputRef, result);
             }
             return;
         }
 
         case "CALCULATE_PERSPECTIVE_PROJECTION": {
-            if (isAnyDirty(context, command.fov, command.size, command.near, command.far) || !context.isInitialized(command.ref)) {
-                let matrix = context.getData<mat4>(command.ref);
+            if (isAnyDirty(context, command.fov, command.size, command.near, command.far) || !context.isInitialized(command.outputRef)) {
+                let matrix = context.getData<mat4>(command.outputRef);
                 if (!matrix) {
                     matrix = mat4.create();
-                    context.setData(command.ref, matrix);
+                    context.setData(command.outputRef, matrix);
                 }
                 const fov = command.fov.type === "const"
                     ? command.fov.value
@@ -199,17 +199,17 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                     : context.getData<[number, number]>(command.size.ref);
                 const aspectRatio = size[0] / size[1];
                 mat4.perspective(matrix, fov, aspectRatio, near, far);
-                context.setDirty(command.ref);
+                context.setDirty(command.outputRef);
             }
             return;
         }
 
         case "CALCULATE_ORTHOGRAPHIC_PROJECTION": {
-            if (isAnyDirty(context, command.size, command.near, command.far) || !context.isInitialized(command.ref)) {
-                let matrix = context.getData<mat4>(command.ref);
+            if (isAnyDirty(context, command.size, command.near, command.far) || !context.isInitialized(command.outputRef)) {
+                let matrix = context.getData<mat4>(command.outputRef);
                 if (!matrix) {
                     matrix = mat4.create();
-                    context.setData(command.ref, matrix);
+                    context.setData(command.outputRef, matrix);
                 }
                 const near = command.near.type === "const"
                     ? command.near.value
@@ -223,17 +223,17 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 const width = size[0];
                 const height = size[1];
                 mat4.ortho(matrix, -width / 2, width / 2, -height / 2, height / 2, near, far);
-                context.setDirty(command.ref);
+                context.setDirty(command.outputRef);
             }
             return;
         }
 
         case "CALCULATE_3D_VIEW": {
-            if (isAnyDirty(context, command.position, command.direction, command.up) || !context.isInitialized(command.ref)) {
-                let matrix = context.getData<mat4>(command.ref);
+            if (isAnyDirty(context, command.position, command.direction, command.up) || !context.isInitialized(command.outputRef)) {
+                let matrix = context.getData<mat4>(command.outputRef);
                 if (!matrix) {
                     matrix = mat4.create();
-                    context.setData(command.ref, matrix);
+                    context.setData(command.outputRef, matrix);
                 }
                 const position = command.position.type === "const"
                     ? command.position.value
@@ -250,22 +250,22 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                     position[2] + direction[2],
                 );
                 mat4.lookAt(matrix, position, target, up);
-                context.setDirty(command.ref);
+                context.setDirty(command.outputRef);
             }
             return;
         }
 
         case "CALCULATE_VIEW_PROJECTION": {
-            if (context.isDirty(command.refView) || context.isDirty(command.refProjection) || !context.isInitialized(command.ref)) {
-                let matrixViewProjection = context.getData<mat4>(command.ref);
+            if (context.isDirty(command.viewRef) || context.isDirty(command.projectionRef) || !context.isInitialized(command.outputRef)) {
+                let matrixViewProjection = context.getData<mat4>(command.outputRef);
                 if (!matrixViewProjection) {
                     matrixViewProjection = mat4.create();
-                    context.setData(command.ref, matrixViewProjection);
+                    context.setData(command.outputRef, matrixViewProjection);
                 }
-                const matrixView = context.getData<mat4>(command.refView);
-                const matrixProjection = context.getData<mat4>(command.refProjection);
+                const matrixView = context.getData<mat4>(command.viewRef);
+                const matrixProjection = context.getData<mat4>(command.projectionRef);
                 mat4.multiply(matrixViewProjection, matrixProjection, matrixView);
-                context.setDirty(command.ref);
+                context.setDirty(command.outputRef);
             }
             return;
         }
@@ -300,32 +300,32 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "DOWNLOAD_WASM_DATA": {
-            if(context.isDirty(command.wasmDataRef) || !context.isInitialized(command.ref)) {
-                context.setData(command.ref, command.func());
+            if(context.isDirty(command.wasmDataRef) || !context.isInitialized(command.outputRef)) {
+                context.setData(command.outputRef, command.fetch());
             }
             return;
         }
 
         case "UPLOAD_WASM_DATA": {
-            if(isAnyDirty(context, command.sourceRef) || !context.isInitialized(command.ref)) {
+            if(isAnyDirty(context, command.sourceRef) || !context.isInitialized(command.sourceRef)) {
                 const data = getDataHelper(context, command.sourceRef)
-                command.func(data)
-                context.setInitialized(command.ref)
-                context.setDirty(command.ref)
+                command.upload(data)
+                context.setInitialized(command.wasmDataRef)
+                context.setDirty(command.wasmDataRef)
             }
             return;
         }
 
         case "EXECUTE_WASM": {
-            if(isAnyDirty(context, ...command.dataRefs, ...command.wasmRefs)) {
-                const args = command.dataRefs.map(arg => {
+            if(isAnyDirty(context, ...command.dataInputRefs, ...command.wasmInputRefs)) {
+                const args = command.dataInputRefs.map(arg => {
                     if (arg.type === "const") return arg.value;
                     if (arg.type === "ref") return context.getData(arg.ref);
                 });
                 const result = command.func(...(args as Parameters<typeof command.func>));
                 Object.entries(result).forEach(([key, modified]) => {
                     if(modified) {
-                        const wasmDataNodeRefs = command.outKeyWasmDataMapping[key]
+                        const wasmDataNodeRefs = command.outputKeyMapping[key]
                         if(wasmDataNodeRefs) {
                             wasmDataNodeRefs.forEach(ref => context.setDirty(ref))
                         }
