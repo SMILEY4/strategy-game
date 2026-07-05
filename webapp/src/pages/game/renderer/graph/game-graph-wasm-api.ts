@@ -11,7 +11,9 @@ export interface GameGraphWasmApi {
     downloadTileInstances: () => VertexDataResult
 }
 
-
+/**
+ * Note: first implementation of some logic in JS, this logic will later be migrated to WASM.
+ */
 export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
     let wasmTiles: TileCollection = {tiles: [], revId: "-"};
@@ -54,35 +56,6 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             });
             return {visibleChunks: true};
         },
-
-        // buildTileInstances: () => {
-        //
-        //     const tileCount = wasmTiles.tiles.length;
-        //     const buffer = new ArrayBuffer(tileCount * 4 * GlAttributeType.FLOAT.bytes);
-        //     const view = new DataView(buffer);
-        //     let viewCounter = 0;
-        //
-        //     function pushFloat32(value: number) {
-        //         view.setFloat32(viewCounter, value, true);
-        //         viewCounter += GlAttributeType.FLOAT.bytes;
-        //     }
-        //
-        //     for (let i = 0, n = wasmTiles.tiles.length; i < n; i++) {
-        //         const tile = wasmTiles.tiles[i];
-        //         pushFloat32(tile.position.q);
-        //         pushFloat32(tile.position.r);
-        //         pushFloat32(tile.chunk.q);
-        //         pushFloat32(tile.chunk.r);
-        //     }
-        //
-        //     instances = {
-        //         data: buffer,
-        //         count: tileCount,
-        //     };
-        //
-        //
-        //     return {tileInstances: true};
-        // },
 
         buildTileInstances: () => {
 

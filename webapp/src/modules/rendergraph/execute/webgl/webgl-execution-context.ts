@@ -36,8 +36,6 @@ export class WebGlExecutionContext {
     constructor(resources: WebGlResource[], gl: WebGL2RenderingContext) {
         this.gl = gl;
 
-        console.log("Creating webgl execution context with resources: ", resources.map(it => ({type: it.type, id: it.key})));
-
         resources.forEach(resource => {
             this.resources.set(resource.key, resource);
         });

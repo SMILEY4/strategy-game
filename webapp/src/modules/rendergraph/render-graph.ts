@@ -4,6 +4,7 @@ import {buildWebglDrawCallGraph} from "@modules/rendergraph/compile/webgl/webgl-
 import {type WebGlCommand, webglCompile} from "@modules/rendergraph/compile/webgl/webgl-compiler.ts";
 import {WebGlExecutionContext, type WebglExecutionContextFactory} from "@modules/rendergraph/execute/webgl/webgl-execution-context.ts";
 import {executeWebGlCommands} from "@modules/rendergraph/execute/webgl/webg-command-executor.ts";
+import {KEY_CANVAS_SIZE} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
 
 /** Compiled render graph that executes draw commands against a WebGL canvas. */
 export interface RenderGraph {
@@ -37,7 +38,7 @@ export class WebGlRenderGraph implements RenderGraph {
         this.dispose()
         if (canvas) {
             this.executionContext = this.executionContextFactory(canvas);
-            this.executionContext.setData("rg-internal:canvas-size", [canvas.width, canvas.height])
+            this.executionContext.setData(KEY_CANVAS_SIZE, [canvas.width, canvas.height])
             this.executionContext.setAllDirty(true)
         } else {
             this.executionContext = null;
@@ -46,8 +47,8 @@ export class WebGlRenderGraph implements RenderGraph {
 
     public onResizeCanvas(canvas: HTMLCanvasElement | null) {
         if(this.executionContext && canvas) {
-            this.executionContext.setData("rg-internal:canvas-size", [canvas.width, canvas.height])
-            this.executionContext.setDirty("rg-internal:canvas-size")
+            this.executionContext.setData(KEY_CANVAS_SIZE, [canvas.width, canvas.height])
+            this.executionContext.setDirty(KEY_CANVAS_SIZE)
         }
     }
 
