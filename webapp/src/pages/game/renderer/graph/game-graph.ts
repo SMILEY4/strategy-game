@@ -1,17 +1,19 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {RenderCameraData} from "@pages/game/renderer/data/models.ts";
-import type {Tile} from "@app/features/game/models/tile.ts";
+import type {RenderCameraData, TileCollection} from "@pages/game/renderer/data/models.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {vec2} from "gl-matrix";
+import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph-wasm-api.ts";
+import SHADER_TILEMAP_VERT from "./../shader/tilemap.vsh?raw";
+import SHADER_TILEMAP_FRAG from "./../shader/tilemap.fsh?raw";
 
 /** Build the render graph for the game scene using a builder and data provider. */
-export function gameGraph(dataProvider: GameRendererDataProvider, g: RenderGraphBuilder) {
+export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: GameGraphWasmApi) {
 
     const canvasSize = g.canvasSize();
 
     const dataCamera = g.dataExternal<RenderCameraData>(() => dataProvider.getCamera(), (prev) => {
-        return prev?.revId !== dataProvider.getCamera().revId;
+        return prev?.revId !== dataProvider.getCameraRevId();
     });
 
     const camera = g.cameraPerspective({
@@ -54,25 +56,23 @@ export function gameGraph(dataProvider: GameRendererDataProvider, g: RenderGraph
         ),
     });
 
-    const dataAllTiles = g.dataExternal<Tile[]>(() => dataProvider.getTiles(), (_prev) => {
-        return true; // todo
+    const dataAllTiles = g.dataExternal<TileCollection>(() => dataProvider.getTiles(), (prev) => {
+        return prev?.revId !== dataProvider.getTilesRevId();
     });
 
     const wasmAllTiles = g.wasmData({
         source: {
             type: "js",
             data: dataAllTiles,
-            upload: () => undefined
+            upload: (tiles: TileCollection) => wasmApi.uploadTiles(tiles),
         },
     });
 
     const collectChunks = g.wasmOperation({
-        wasmInputs: [],
+        wasmInputs: [wasmAllTiles],
         dataInputs: [],
         outputs: ["allChunks"],
-        func: () => ({
-            allChunks: false
-        })
+        func: () => wasmApi.collectChunks(),
     });
 
     const wasmAllChunks = g.wasmData({
@@ -80,43 +80,38 @@ export function gameGraph(dataProvider: GameRendererDataProvider, g: RenderGraph
             type: "wasm",
             operation: collectChunks,
             key: "allChunks",
-        }
+        },
     });
 
     const cullChunks = g.wasmOperation({
         wasmInputs: [wasmAllChunks],
         dataInputs: [dataCamera],
         outputs: ["visibleChunks"],
-        func: (_camera: RenderCameraData) => ({
-            visibleChunks: false
-        })
+        func: (camera: RenderCameraData) => wasmApi.cullChunks(camera),
     });
 
     const wasmVisibleChunks = g.wasmData({
         source: {
             type: "wasm",
             operation: cullChunks,
-            key: "visibleChunks"
-        }
+            key: "visibleChunks",
+        },
     });
 
     const buildTileInstances = g.wasmOperation({
         wasmInputs: [wasmVisibleChunks, wasmAllTiles],
         dataInputs: [],
         outputs: ["tileInstances"],
-        func: () => ({
-            tileInstances: false
-        })
+        func: () => wasmApi.buildTileInstances(),
     });
 
     const wasmTileInstances = g.wasmData({
         source: {
             type: "wasm",
             operation: buildTileInstances,
-            key: "tileInstances"
-        }
+            key: "tileInstances",
+        },
     });
-
 
 
     const tileMeshTransformer = g.transformVertexOut({
@@ -180,22 +175,27 @@ export function gameGraph(dataProvider: GameRendererDataProvider, g: RenderGraph
             }),
             g.wasmGeometrySource({
                 source: wasmTileInstances,
-                download: () => (null as any),
+                download: () => wasmApi.downloadTileInstances(),
                 content: "instances",
                 layout: [
                     {
-                        name: "worldPosition",
+                        name: "tilePosition",
                         type: GlAttributeType.FLOAT,
-                        amountComponents: 3,
+                        amountComponents: 2,
+                    },
+                    {
+                        name: "chunkPosition",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
                     },
                 ],
-            })
+            }),
         ],
     });
 
     const shader = g.shader({
-        srcVertex: "...",
-        srcFragment: "...",
+        srcVertex: SHADER_TILEMAP_VERT,
+        srcFragment: SHADER_TILEMAP_FRAG,
         prefixUniforms: "u_",
         prefixVertexAttributes: "in_",
     });

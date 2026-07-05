@@ -1,17 +1,10 @@
 import type {vec3} from "gl-matrix";
+import type {Tile} from "@app/features/game/models/tile.ts";
 
-export interface RenderChunk {
-    centerQ: number,
-    centerR: number,
-    radius: number,
-    centerWorldPos: vec3,
-    minY: number,
-    maxY: number,
-}
 
-export interface RenderTile {
-    q: number;
-    r: number;
+export interface TileCollection {
+    tiles: Tile[],
+    revId: string
 }
 
 export interface RenderCameraData {

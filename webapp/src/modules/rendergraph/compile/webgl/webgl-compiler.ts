@@ -369,10 +369,10 @@ function generateDrawCall(geometry: GeometryRenderGraphNode, context: CompileCon
         }
         if(source.sourceType === "wasm") {
             if (source.content === "vertices") {
-                vertexCountRef = dataSource.id;
+                vertexCountRef = dataSource.id + "#vertexdata";
             }
             if (source.content === "instances") {
-                instanceCountRef = dataSource.id;
+                instanceCountRef = dataSource.id + "#vertexdata";
             }
             return
         }

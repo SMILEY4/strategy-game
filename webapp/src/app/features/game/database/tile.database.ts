@@ -29,3 +29,16 @@ export function tileDb(): TileDatabase {
 
 /** Query type alias for tile database queries. */
 export type TileQuery<ARGS> = Query<TileStorageMapping, Tile, string, ARGS>
+
+
+export const TileQueries = {
+
+    ALL: {
+        run: (storage: TileStorageMapping) => {
+            return storage.primary.getAll()
+        }
+    }
+
+} satisfies {
+    ALL: TileQuery<never>
+}

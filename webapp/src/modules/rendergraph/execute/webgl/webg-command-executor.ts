@@ -10,7 +10,12 @@ import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 /** Execute a list of compiled WebGL commands against the given execution context. */
 export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExecutionContext) {
     for (let i = 0, n = commands.length; i < n; i++) {
-        execute(commands[i], context);
+        try {
+            execute(commands[i], context);
+        } catch (error) {
+            console.error("Failed to execute webgl command", commands[i], context.getResources())
+            throw error;
+        }
     }
 }
 

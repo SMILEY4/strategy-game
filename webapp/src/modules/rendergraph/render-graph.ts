@@ -14,7 +14,7 @@ export interface RenderGraph {
 /** WebGL2 implementation of [RenderGraph]. Compiled once and executed per frame. */
 export class WebGlRenderGraph implements RenderGraph {
 
-    public static build(nodes: RenderGraphNode[]) {
+    public static build(nodes: RenderGraphNode[]): WebGlRenderGraph {
         const drawCalls = buildWebglDrawCallGraph(nodes);
         const sortedDrawCalls = sortWebGlDrawCallNodes(drawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
         const {commands, resources} = webglCompile(nodes, sortedDrawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS);

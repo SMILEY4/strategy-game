@@ -5,9 +5,7 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import kotlin.collections.map
-import kotlin.math.abs
 import kotlin.math.ceil
-import kotlin.math.min
 import kotlin.random.Random
 import kotlin.random.nextInt
 
@@ -95,16 +93,16 @@ class WorldGenerator {
 
     private fun buildChunkPositions(mapRadius: Int, chunkRadius: Int): List<HexPosition> {
 
-        val chunkGridRadius = ceil((mapRadius / chunkRadius).toDouble()).toInt()
+        val chunkGridRadius = ceil((mapRadius.toDouble() / chunkRadius.toDouble())).toInt()
         val chunks = mutableListOf<HexPosition>()
 
         for(q in -chunkGridRadius..chunkGridRadius) {
             for(r in -chunkGridRadius..chunkGridRadius) {
-                val center = HexPosition(q, r)
-                if(maxOf(abs(center.q), abs(center.r), abs(center.s)) > chunkGridRadius) {
+                val chunkPos = HexPosition(q, r)
+                if(maxOf(chunkPos.q, chunkPos.r, chunkPos.s) > chunkGridRadius) {
                     continue
                 }
-                chunks.add(center)
+                chunks.add(HexPosition(q * chunkRadius, r * chunkRadius))
             }
         }
 
