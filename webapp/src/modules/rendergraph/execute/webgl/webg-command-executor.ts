@@ -98,7 +98,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
     if (command.type === "LOAD_EXTERNAL_DATA") {
         const prev = context.getData(command.ref)
-        if(command.checkChanged(prev) || !context.isInitialized(command.ref)) {
+        if(!context.isInitialized(command.ref) || command.checkChanged(prev)) {
             context.setData(command.ref, command.func());
         }
         return;
@@ -321,7 +321,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 if (arg.type === "const") return arg.value;
                 if (arg.type === "ref") return context.getData(arg.ref);
             });
-            const result = command.func(args)
+            const result = command.func(...(args as Parameters<typeof command.func>));
             Object.entries(result).forEach(([key, modified]) => {
                 if(modified) {
                     const wasmDataNodeRefs = command.outKeyWasmDataMapping[key]

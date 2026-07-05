@@ -90,10 +90,10 @@ export class WebGlExecutionContext {
 
         function loadFramebuffer(gl: WebGL2RenderingContext, resource: WebGlFramebufferResource) {
             resource.resource = GlFramebuffer.create(gl, {
-                width: 0,
-                height: 0,
-                color: true,
-                depth: false,
+                width: resource.initialSize[0],
+                height: resource.initialSize[1],
+                color: resource.color,
+                depth: resource.depth,
             });
             return;
         }

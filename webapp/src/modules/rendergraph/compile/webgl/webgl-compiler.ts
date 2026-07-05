@@ -74,7 +74,7 @@ export type WebGlCommand =
     type: "EXECUTE_WASM",
     wasmRefs: string[],
     dataRefs: ValueEntry[],
-    func: (data: any) => Record<string, boolean>,
+    func: (args: unknown[]) => Record<string, boolean>,
     outKeyWasmDataMapping: Record<string, string[]>
 }
 | {
@@ -110,7 +110,7 @@ export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDra
         activeRenderTarget: null,
         activeGeometry: null,
         relevantVisitedNodeIds: new Set<string>(),
-        textureUnits: new Array(availableTextureUnits).map(_ => null),
+        textureUnits: Array.from({ length: availableTextureUnits }, () => null),
     };
 
     const drawCallInfos = sortedDrawCalls.map(drawCall => {

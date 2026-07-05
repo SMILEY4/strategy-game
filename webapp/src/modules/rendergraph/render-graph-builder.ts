@@ -306,7 +306,6 @@ export class RenderGraphBuilder {
         up: DataRenderGraphNode<[number, number, number]>;
         position: DataRenderGraphNode<[number, number, number]>;
         direction: DataRenderGraphNode<[number, number, number]>;
-        fov: DataRenderGraphNode<number>;
         near: DataRenderGraphNode<number>;
         far: DataRenderGraphNode<number>;
     }): CameraRenderGraphNode {
@@ -364,7 +363,7 @@ export class RenderGraphBuilder {
     }
 
     private static generateNodeId(): string {
-        return Date.now() + "-" + Math.round(Math.random() * 1_000_000);
+        return crypto.randomUUID()
     }
 
 }
