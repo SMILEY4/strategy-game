@@ -5,7 +5,7 @@ import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
 import type {ValueEntry, WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-compiler.ts";
 import {WebGlExecutionContext} from "@modules/rendergraph/execute/webgl/webgl-execution-context.ts";
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
-import {subKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
+import {subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
 
 
 /** Execute a list of compiled WebGL commands against the given execution context. */
@@ -128,7 +128,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 const result = command.func(...(args as Parameters<typeof command.func>));
                 Object.entries(result).forEach(([key, value]) => {
                     if (value != null) {
-                        context.setData(subKey(command.refOut, key), value);
+                        context.setData(subResourceKey(command.refOut, key), value);
                     }
                 });
             }
@@ -145,7 +145,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 const result = command.func(...(args as Parameters<typeof command.func>));
                 Object.entries(result).forEach(([key, value]) => {
                     if (value != null) {
-                        const bufferKey = subKey(command.refOut, key);
+                        const bufferKey = subResourceKey(command.refOut, key);
                         const buffer = context.getVertexBuffer(bufferKey);
                         buffer.setData(value.data, true);
                         context.setVertexBufferElementCount(bufferKey, value.count);

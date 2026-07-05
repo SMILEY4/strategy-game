@@ -18,7 +18,7 @@ import type {WebGlResource, WebGlVertexArrayAttributeResource} from "@modules/re
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
-import {KEY_CANVAS_SIZE, SUB_PROJECTION, SUB_VIEW, SUB_VIEW_PROJECTION, SUB_VERTEX_DATA, subKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
+import {KEY_CANVAS_SIZE, cameraProjectionKey, cameraViewKey, cameraViewProjectionKey, wasmVertexDataKey, subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
 
 /** A compiled WebGL2 command from the render graph. */
 export type WebGlCommand =
@@ -344,7 +344,7 @@ function setUniformCamera(node: CameraRenderGraphNode, bindAs: string, context: 
         type: "SET_UNIFORM",
         programId: context.activeShader!.id,
         name: (context.activeShader?.prefixUniforms ?? "") + bindAs,
-        value: {type: "ref", ref: subKey(refData, SUB_VIEW_PROJECTION)},
+        value: {type: "ref", ref: cameraViewProjectionKey(refData)},
     });
 }
 
@@ -359,19 +359,19 @@ function generateDrawCall(geometry: GeometryRenderGraphNode, context: CompileCon
             }
             const out = dataSource.outputs[source.output];
             if (out.content === "vertices") {
-                vertexCountRef = subKey(dataSource.id, source.output);
+                vertexCountRef = subResourceKey(dataSource.id, source.output);
             }
             if (out.content === "instances") {
-                instanceCountRef = subKey(dataSource.id, source.output);
+                instanceCountRef = subResourceKey(dataSource.id, source.output);
             }
             return;
         }
         if(source.sourceType === "wasm") {
             if (source.content === "vertices") {
-                vertexCountRef = subKey(dataSource.id, SUB_VERTEX_DATA);
+                vertexCountRef = wasmVertexDataKey(dataSource.id);
             }
             if (source.content === "instances") {
-                instanceCountRef = subKey(dataSource.id, SUB_VERTEX_DATA);
+                instanceCountRef = wasmVertexDataKey(dataSource.id);
             }
             return
         }
@@ -535,7 +535,7 @@ function resolveDataNodeTransformMultiOut(node: DataRenderGraphNode<unknown>, co
     const transformerResult = resolveTransformerMultiOut(transformerNode, context);
     return transformerResult.type === "const"
         ? transformerResult
-        : {type: "ref", ref: subKey(transformerResult.ref, node.source.key)};
+        : {type: "ref", ref: subResourceKey(transformerResult.ref, node.source.key)};
 }
 
 function resolveCanvasSize(_node: CanvasSizeRenderGraphNode, _context: CompileContext): ValueEntry<[number, number]> {
@@ -559,14 +559,14 @@ function resolveTransformer(node: TransformRenderGraphNode<unknown[], unknown>, 
 }
 
 /**
- * @return the "ref" to the resource holding the actual value. Use subKey(ref, key) to select the specific output
+ * @return the "ref" to the resource holding the actual value. Use cameraViewProjectionKey(ref) to select the specific output
  */
 function resolveTransformerMultiOut(node: TransformMultiOutRenderGraphNode<unknown[], any>, context: CompileContext): ValueEntry {
     ifNotYetVisited(node, context, () => {
         node.outputs.forEach(outputKey => {
             context.resources.push({
                 type: "data",
-                key: subKey(node.id, outputKey.toString()),
+                key: subResourceKey(node.id, outputKey.toString()),
                 resource: null,
             });
         });
@@ -581,7 +581,7 @@ function resolveTransformerVertexOut(node: TransformVertexOutRenderGraphNode<unk
         Object.keys(node.outputs).forEach(outputKey => {
             context.resources.push({
                 type: "vertexbuffer",
-                key: subKey(node.id, outputKey),
+                key: subResourceKey(node.id, outputKey),
                 resource: null,
             });
         });
@@ -600,7 +600,7 @@ function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNo
                 const bufferLayout = source.source.outputs[source.output].layout;
                 bufferLayout.forEach(entry => {
                     attributes.push({
-                        bufferResourceKey: subKey(source.source.id, source.output),
+                        bufferResourceKey: subResourceKey(source.source.id, source.output),
                         name: (context.activeShader?.prefixVertexAttributes ?? "") + entry.name,
                         type: entry.type,
                         amountComponents: entry.amountComponents,
@@ -615,7 +615,7 @@ function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNo
                 const bufferLayout = source.layout
                 bufferLayout.forEach(entry => {
                     attributes.push({
-                        bufferResourceKey: subKey(source.source.id, SUB_VERTEX_DATA),
+                        bufferResourceKey: wasmVertexDataKey(source.source.id),
                         name: (context.activeShader?.prefixVertexAttributes ?? "") + entry.name,
                         type: entry.type,
                         amountComponents: entry.amountComponents,
@@ -656,35 +656,35 @@ function resolveWasmGeometrySource(source: WasmGeometrySource, context: CompileC
     resolveWasmDataNode(source.source, context)
     context.resources.push({
         type: "vertexbuffer",
-        key: subKey(source.source.id, SUB_VERTEX_DATA),
+        key: wasmVertexDataKey(source.source.id),
         resource: null,
     });
     context.commands.push({
         type: "DOWNLOAD_WASM_VERTEX_DATA",
         refWasmData: source.source.id,
-        refOut: subKey(source.source.id, SUB_VERTEX_DATA),
+        refOut: wasmVertexDataKey(source.source.id),
         func: source.download
     })
 }
 
 /**
- * @return the ref to the camera data (append with subKey() + SUB_PROJECTION, SUB_VIEW, or SUB_VIEW_PROJECTION)
+ * @return the ref to the camera data (append with cameraProjectionKey(), cameraViewKey(), or cameraViewProjectionKey())
  */
 function updateAndResolveCamera(node: CameraRenderGraphNode, context: CompileContext): string {
     ifNotYetVisited(node, context, () => {
         context.resources.push({
             type: "data",
-            key: subKey(node.id, SUB_PROJECTION),
+            key: cameraProjectionKey(node.id),
             resource: null,
         });
         context.resources.push({
             type: "data",
-            key: subKey(node.id, SUB_VIEW),
+            key: cameraViewKey(node.id),
             resource: null,
         });
         context.resources.push({
             type: "data",
-            key: subKey(node.id, SUB_VIEW_PROJECTION),
+            key: cameraViewProjectionKey(node.id),
             resource: null,
         });
         if (node.data.type === "perspective") {
@@ -699,18 +699,18 @@ function updateAndResolveCamera(node: CameraRenderGraphNode, context: CompileCon
                 : resolveDataNode(node.renderTargetSize, context) as ValueEntry<[number, number]>;
             context.commands.push({
                 type: "CALCULATE_PERSPECTIVE_PROJECTION",
-                ref: subKey(node.id, SUB_PROJECTION),
+                ref: cameraProjectionKey(node.id),
                 size: size,
                 fov: fov,
                 near: near,
                 far: far,
             });
-            context.commands.push({type: "CALCULATE_3D_VIEW", ref: subKey(node.id, SUB_VIEW), up: up, position: position, direction: direction});
+            context.commands.push({type: "CALCULATE_3D_VIEW", ref: cameraViewKey(node.id), up: up, position: position, direction: direction});
             context.commands.push({
                 type: "CALCULATE_VIEW_PROJECTION",
-                ref: subKey(node.id, SUB_VIEW_PROJECTION),
-                refProjection: subKey(node.id, SUB_PROJECTION),
-                refView: subKey(node.id, SUB_VIEW),
+                ref: cameraViewProjectionKey(node.id),
+                refProjection: cameraProjectionKey(node.id),
+                refView: cameraViewKey(node.id),
             });
         }
         if (node.data.type === "orthographic") {
@@ -722,13 +722,13 @@ function updateAndResolveCamera(node: CameraRenderGraphNode, context: CompileCon
             const size = node.renderTargetSize.type === "canvas-size"
                 ? resolveCanvasSize(node.renderTargetSize, context)
                 : resolveDataNode(node.renderTargetSize, context) as ValueEntry<[number, number]>;
-            context.commands.push({type: "CALCULATE_ORTHOGRAPHIC_PROJECTION", ref: subKey(node.id, SUB_PROJECTION), size: size, near: near, far: far});
-            context.commands.push({type: "CALCULATE_3D_VIEW", ref: subKey(node.id, SUB_VIEW), up: up, position: position, direction: direction});
+            context.commands.push({type: "CALCULATE_ORTHOGRAPHIC_PROJECTION", ref: cameraProjectionKey(node.id), size: size, near: near, far: far});
+            context.commands.push({type: "CALCULATE_3D_VIEW", ref: cameraViewKey(node.id), up: up, position: position, direction: direction});
             context.commands.push({
                 type: "CALCULATE_VIEW_PROJECTION",
-                ref: subKey(node.id, SUB_VIEW_PROJECTION),
-                refProjection: subKey(node.id, SUB_PROJECTION),
-                refView: subKey(node.id, SUB_VIEW),
+                ref: cameraViewProjectionKey(node.id),
+                refProjection: cameraProjectionKey(node.id),
+                refView: cameraViewKey(node.id),
             });
         }
     });
