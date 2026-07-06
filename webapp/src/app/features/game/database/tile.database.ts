@@ -16,7 +16,7 @@ type TileStorageMapping = {
     byChunk: MapSupportingStorage<Tile, string>
 }
 
-export function tileDb(): TileDatabase {
+export function tileDatabase(): TileDatabase {
     return DatabaseBuilder.create<Tile, string, TileStorageMapping>()
         .withIdProvider(e => e.id)
         .withStorage(idProvider => ({

@@ -1,5 +1,5 @@
-import type {vec3} from "gl-matrix";
 import type {Tile} from "@app/features/game/models/tile.ts";
+import type {Camera} from "@app/features/game/models/camera.ts";
 
 
 export interface TileCollection {
@@ -7,13 +7,4 @@ export interface TileCollection {
     revId: string
 }
 
-export interface RenderCameraData {
-    revId: number,
-    up: vec3,
-    position: vec3,
-    direction: vec3,
-    fov: number,
-    near: number,
-    far: number,
-    aspect: number,
-}
+export type RenderCamera = Camera & { revId: string }

@@ -1,0 +1,42 @@
+import {DI} from "@app/app.ts";
+import {GameRenderer} from "@pages/game/renderer/game-renderer.ts";
+
+interface GamePlayingViewModel {
+    onInitialize: (canvas: HTMLCanvasElement) => void;
+    onUpdate: () => void,
+    onResize: (canvas: HTMLCanvasElement) => void,
+    onMouseMove: (mx: number, my: number, buttons: number) => void,
+    onDispose: () => void
+}
+
+const renderer = new GameRenderer()
+
+export function useGamePlayingViewModel(): GamePlayingViewModel {
+
+    const onInitialize = (canvas: HTMLCanvasElement) => {
+        renderer.initialize(canvas)
+    };
+
+    const onUpdate = () => {
+        DI.gameEngine.onUpdate()
+        renderer.update()
+    };
+
+    const onResize = (canvas: HTMLCanvasElement) => {
+        DI.gameEngine.onResize(canvas.width, canvas.height);
+        renderer.resize(canvas)
+    };
+
+    const onMouseMove = DI.gameEngine.onMouseMove;
+
+    const onDispose = renderer.dispose
+
+
+    return {
+        onInitialize: onInitialize,
+        onUpdate: onUpdate,
+        onResize: onResize,
+        onMouseMove: onMouseMove,
+        onDispose: onDispose
+    };
+}

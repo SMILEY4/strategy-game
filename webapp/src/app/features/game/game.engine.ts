@@ -3,22 +3,27 @@ import type {GameWebsocketServerMessage} from "@app/features/game/game-websocket
 import type {GameClient} from "@app/features/game/game.client.ts";
 import type {GameRepository} from "@app/features/game/game.repository.ts";
 import {type TileDatabase} from "@app/features/game/database/tile.database.ts";
+import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
 
 /** Orchestrates the game lifecycle: connecting via WebSocket and routing messages to the database. */
 export interface GameEngine {
     start: (gameId: string) => void;
     stop: () => void;
     onMessage: (message: GameWebsocketServerMessage) => void;
+    onUpdate: () => void;
+    onResize: (width: number, height: number) => void;
+    onMouseMove: (mx: number, my: number, buttons: number) => void;
 }
 
 interface Dependencies {
     client: GameClient,
     wsClient: GameWebsocketClient;
     repository: GameRepository;
-    tileDb: TileDatabase
+    tileDb: TileDatabase,
+    cameraController: CameraController
 }
 
-export const gameEngine = ({client, wsClient, repository, tileDb}: Dependencies): GameEngine => {
+export const gameEngine = ({client, wsClient, repository, tileDb, cameraController}: Dependencies): GameEngine => {
     const instance = {
 
         start: async (gameId: string) => {
@@ -30,6 +35,7 @@ export const gameEngine = ({client, wsClient, repository, tileDb}: Dependencies)
         stop: () => {
             repository.setState("loading");
             wsClient.disconnect();
+            cameraController.dispose();
         },
 
         onMessage: (message: GameWebsocketServerMessage) => {
@@ -40,9 +46,22 @@ export const gameEngine = ({client, wsClient, repository, tileDb}: Dependencies)
                 });
                 if (repository.getState() === "loading") {
                     repository.setState("playing");
+                    cameraController.initialize();
                 }
             }
         },
+
+        onUpdate: () => {
+            cameraController.update()
+        },
+
+        onResize: (width: number, height: number) => {
+            cameraController.onResize(width, height);
+        },
+
+        onMouseMove: (mx: number, my: number, buttons: number) => {
+            cameraController.onMouseMove(mx, my, buttons);
+        }
 
     };
     return instance;

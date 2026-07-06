@@ -1,22 +1,17 @@
 import {Canvas} from "@modules/uicomponents/canvas/Canvas.tsx";
-import {GameRenderer} from "@pages/game/renderer/game-renderer.ts";
-import {useEffect} from "react";
-
-const renderer = new GameRenderer()
+import {useGamePlayingViewModel} from "@pages/game/game-playing.view-model.ts";
 
 export function GamePlayingPage() {
 
-    useEffect(() => {
-        renderer.listen()
-    })
+    const viewModel = useGamePlayingViewModel();
 
     return (
         <Canvas
-            onInitialize={canvas => renderer.initialize(canvas)}
-            onUpdate={() => renderer.update()}
-            onResize={canvas => renderer.resize(canvas)}
-            onDispose={() => renderer.dispose()}
-            onMouseMove={(mx, my, _x, _y, buttons) => renderer.mouseMove(mx, my, buttons)}
+            onInitialize={canvas => viewModel.onInitialize(canvas)}
+            onUpdate={() => viewModel.onUpdate()}
+            onResize={canvas => viewModel.onResize(canvas)}
+            onDispose={() => viewModel.onDispose()}
+            onMouseMove={(mx, my, _x, _y, buttons) => viewModel.onMouseMove(mx, my, buttons)}
         />
     );
 }

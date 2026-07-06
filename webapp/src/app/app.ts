@@ -19,7 +19,9 @@ import {gameWebsocketClient} from "@app/features/game/game.ws-client.ts";
 import {gameEngine} from "@app/features/game/game.engine.ts";
 import {gameClient} from "@app/features/game/game.client.ts";
 import {gameRepository} from "@app/features/game/game.repository.ts";
-import {tileDb} from "@app/features/game/database/tile.database.ts";
+import {tileDatabase} from "@app/features/game/database/tile.database.ts";
+import {cameraControllerFreecam} from "@app/features/game/gameplay/camera/camera-controller.freecam.ts";
+import {cameraDatabase} from "@app/features/game/database/camera.database.ts";
 
 
 interface EnvShape {
@@ -66,7 +68,9 @@ interface DIShape {
     gameWebsocketClient: ReturnType<typeof gameWebsocketClient>,
     gameRepository: ReturnType<typeof gameRepository>,
     gameEngine: ReturnType<typeof gameEngine>,
-    tileDb: ReturnType<typeof tileDb>
+    cameraController: ReturnType<typeof cameraControllerFreecam>
+    tileDatabase: ReturnType<typeof tileDatabase>
+    cameraDatabase: ReturnType<typeof cameraDatabase>
 }
 
 
@@ -75,11 +79,11 @@ export const DIConfig = {
     // common
     clientAuthHandler: {
         scope: "singleton",
-        create: (resolve) => clientAuthHandler({storage: resolve.authStorage}),
+        create: resolve => clientAuthHandler({storage: resolve.authStorage}),
     },
     httpClient: {
         scope: "singleton",
-        create: (resolve) => httpClient({
+        create: resolve => httpClient({
             baseUrl: Env.serverHttpUrl,
             authHandler: resolve.clientAuthHandler,
         }),
@@ -97,62 +101,62 @@ export const DIConfig = {
     },
     authClient: {
         scope: "transient",
-        create: (resolve) => authClient({httpClient: resolve.httpClient}),
+        create: resolve => authClient({httpClient: resolve.httpClient}),
     },
     authRepository: {
         scope: "singleton",
-        create: (resolve) => authRepository({authStorage: resolve.authStorage, authClient: resolve.authClient}),
+        create: resolve => authRepository({authStorage: resolve.authStorage, authClient: resolve.authClient}),
     },
     logInUseCase: {
         scope: "transient",
-        create: (resolve) => logInUseCase({repository: resolve.authRepository}),
+        create: resolve => logInUseCase({repository: resolve.authRepository}),
     },
     // user
     userClient: {
         scope: "transient",
-        create: (resolve) => userClient({httpClient: resolve.httpClient}),
+        create: resolve => userClient({httpClient: resolve.httpClient}),
     },
     registerUseCase: {
         scope: "transient",
-        create: (resolve) => registerUseCase({userClient: resolve.userClient}),
+        create: resolve => registerUseCase({userClient: resolve.userClient}),
     },
     // matches
     matchClient: {
         scope: "transient",
-        create: (resolve) => matchClient({httpClient: resolve.httpClient}),
+        create: resolve => matchClient({httpClient: resolve.httpClient}),
     },
     matchRepository: {
         scope: "singleton",
-        create: (resolve) => matchRepository({matchClient: resolve.matchClient}),
+        create: resolve => matchRepository({matchClient: resolve.matchClient}),
     },
     listMatchesUseCase: {
         scope: "transient",
-        create: (resolve) => listMatchesReactiveUseCase({repository: resolve.matchRepository}),
+        create: resolve => listMatchesReactiveUseCase({repository: resolve.matchRepository}),
     },
     matchDetailsUseCase: {
         scope: "transient",
-        create: (resolve) => matchDetailsReactiveUseCase({repository: resolve.matchRepository}),
+        create: resolve => matchDetailsReactiveUseCase({repository: resolve.matchRepository}),
     },
     createMatchUseCase: {
         scope: "transient",
-        create: (resolve) => createMatchUseCase({repository: resolve.matchRepository}),
+        create: resolve => createMatchUseCase({repository: resolve.matchRepository}),
     },
     deleteMatchUseCase: {
         scope: "transient",
-        create: (resolve) => deleteMatchUseCase({repository: resolve.matchRepository}),
+        create: resolve => deleteMatchUseCase({repository: resolve.matchRepository}),
     },
     createGameUseCase: {
         scope: "transient",
-        create: (resolve) => createGameUseCase({client: resolve.matchClient, repository: resolve.matchRepository}),
+        create: resolve => createGameUseCase({client: resolve.matchClient, repository: resolve.matchRepository}),
     },
     // game
     gameClient: {
         scope: "transient",
-        create: (resolve) => gameClient({httpClient: resolve.httpClient}),
+        create: resolve => gameClient({httpClient: resolve.httpClient}),
     },
     gameWebsocketClient: {
         scope: "transient",
-        create: (resolve) => gameWebsocketClient({wsClient: resolve.wsClient}),
+        create: resolve => gameWebsocketClient({wsClient: resolve.wsClient}),
     },
     gameRepository: {
         scope: "singleton",
@@ -160,16 +164,27 @@ export const DIConfig = {
     },
     gameEngine: {
         scope: "singleton",
-        create: (resolve) => gameEngine({
+        create: resolve => gameEngine({
             client: resolve.gameClient,
             wsClient: resolve.gameWebsocketClient,
             repository: resolve.gameRepository,
-            tileDb: resolve.tileDb
+            tileDb: resolve.tileDatabase,
+            cameraController: resolve.cameraController
         }),
     },
-    tileDb: {
+    cameraController: {
+        scope: "transient",
+        create: resolve => cameraControllerFreecam({
+            cameraDb: resolve.cameraDatabase
+        }),
+    },
+    tileDatabase: {
         scope: "singleton",
-        create: () => tileDb(),
+        create: () => tileDatabase(),
+    },
+    cameraDatabase: {
+        scope: "singleton",
+        create: () => cameraDatabase(),
     },
 } satisfies FactoryMap<DIShape>;
 

@@ -1,4 +1,7 @@
 export interface CameraController {
-    onMouseMove(mx: number, my: number, buttons: number): void;
-    // todo ...
+    initialize: () => void;
+    dispose: () =>  void;
+    update: () => void;
+    onMouseMove: (mx: number, my: number, buttons: number) => void;
+    onResize: (width: number, height: number) => void;
 }

@@ -9,8 +9,13 @@ export function cameraDatabase(): CameraDatabase {
     return DatabaseBuilder
         .createSingleton<Camera>()
         .withInitialValue({
-            position: vec3.fromValues(0, 0, 0),
-            direction: vec3.fromValues(0, 0, 0)
+            up: vec3.fromValues(0, 1, 0),
+            position: vec3.fromValues(-50, 40, 0),
+            direction: vec3.fromValues(2, -1, 0),
+            fov: 50,
+            near: 0.01,
+            far: 1000,
+            aspect: 1,
         })
-        .build()
+        .build();
 }

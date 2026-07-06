@@ -1,6 +1,6 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {RenderCameraData, TileCollection} from "@pages/game/renderer/data/models.ts";
+import type {RenderCamera, TileCollection} from "@pages/game/renderer/data/models.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {vec2} from "gl-matrix";
 import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph-wasm-api.ts";
@@ -12,7 +12,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const canvasSize = g.canvasSize();
 
-    const dataCamera = g.dataExternal<RenderCameraData>(() => dataProvider.getCamera(), (prev) => {
+    const dataCamera = g.dataExternal<RenderCamera>(() => dataProvider.getCamera(), (prev) => {
         return prev?.revId !== dataProvider.getCameraRevId();
     });
 
@@ -87,7 +87,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         wasmInputs: [wasmAllChunks],
         dataInputs: [dataCamera],
         outputs: ["visibleChunks"],
-        func: (camera: RenderCameraData) => wasmApi.cullChunks(camera),
+        func: (camera: RenderCamera) => wasmApi.cullChunks(camera),
     });
 
     const wasmVisibleChunks = g.wasmData({
