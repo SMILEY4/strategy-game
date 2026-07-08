@@ -13,6 +13,7 @@ export interface GameEngine {
     onUpdate: () => void;
     onResize: (width: number, height: number) => void;
     onMouseMove: (mx: number, my: number, buttons: number) => void;
+    onCanvasClick: (x: number, y: number) => void;
 }
 
 interface Dependencies {
@@ -61,6 +62,10 @@ export const gameEngine = ({client, wsClient, repository, tileDb, cameraControll
 
         onMouseMove: (mx: number, my: number, buttons: number) => {
             cameraController.onMouseMove(mx, my, buttons);
+        },
+
+        onCanvasClick: (x: number, y: number) => {
+            cameraController.onCanvasClick(x, y);
         }
 
     };

@@ -12,6 +12,7 @@ export function GamePlayingPage() {
             onResize={canvas => viewModel.onResize(canvas)}
             onDispose={() => viewModel.onDispose()}
             onMouseMove={(mx, my, _x, _y, buttons) => viewModel.onMouseMove(mx, my, buttons)}
+            onMouseClick={(x, y) => viewModel.onMouseClick(x, y)}
         />
     );
 }

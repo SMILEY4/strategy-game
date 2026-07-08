@@ -37,8 +37,15 @@ export const TileQueries = {
         run: (storage: TileStorageMapping) => {
             return storage.primary.getAll()
         }
+    },
+
+    BY_POSITION: {
+        run: (storage: TileStorageMapping, args: { q: number, r: number }) => {
+            return storage.byPosition.getByKey(`${args.q};${args.r}`);
+        }
     }
 
 } satisfies {
-    ALL: TileQuery<never>
+    ALL: TileQuery<never>,
+    BY_POSITION: TileQuery<{ q: number, r: number }>
 }

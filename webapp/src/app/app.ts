@@ -175,7 +175,8 @@ export const DIConfig = {
     cameraController: {
         scope: "transient",
         create: resolve => cameraControllerFreecam({
-            cameraDb: resolve.cameraDatabase
+            cameraDb: resolve.cameraDatabase,
+            tileDb: resolve.tileDatabase,
         }),
     },
     tileDatabase: {

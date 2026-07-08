@@ -41,7 +41,8 @@ export function useCanvasInteractions(options: {
 
     function click(duration: number, e: MouseEvent) {
         if (duration < 150) {
-            options.onMouseClick?.(e.clientX, e.clientY);
+            const rect = e.currentTarget.getBoundingClientRect();
+            options.onMouseClick?.(e.clientX - rect.left, e.clientY - rect.top);
         }
     }
 
