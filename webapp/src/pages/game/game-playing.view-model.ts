@@ -5,8 +5,9 @@ interface GamePlayingViewModel {
     onInitialize: (canvas: HTMLCanvasElement) => void;
     onUpdate: () => void,
     onResize: (canvas: HTMLCanvasElement) => void,
-    onMouseMove: (mx: number, my: number, buttons: number) => void,
+    onMouseMove: (mx: number, my: number, x: number, y: number, buttons: number) => void,
     onMouseClick: (x: number, y: number) => void,
+    onMouseScroll: (delta: number, x: number, y: number) => void,
     onDispose: () => void
 }
 
@@ -30,6 +31,7 @@ export function useGamePlayingViewModel(): GamePlayingViewModel {
 
     const onMouseMove = DI.gameEngine.onMouseMove;
     const onMouseClick = DI.gameEngine.onCanvasClick;
+    const onMouseScroll = DI.gameEngine.onScroll;
 
     const onDispose = renderer.dispose
 
@@ -40,6 +42,7 @@ export function useGamePlayingViewModel(): GamePlayingViewModel {
         onResize: onResize,
         onMouseMove: onMouseMove,
         onMouseClick: onMouseClick,
+        onMouseScroll: onMouseScroll,
         onDispose: onDispose
     };
 }

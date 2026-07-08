@@ -11,11 +11,12 @@ export function useCanvasInteractions(options: {
     const refTimestampMouseDown = useRef<number>(0);
 
     function mouseMove(e: MouseEvent) {
+        const rect = e.currentTarget.getBoundingClientRect();
         options.onMouseMove?.(
             e.movementX,
             e.movementY,
-            e.clientX,
-            e.clientY,
+            e.clientX - rect.left,
+            e.clientY - rect.top,
             e.buttons,
         );
     }
@@ -36,7 +37,8 @@ export function useCanvasInteractions(options: {
     }
 
     function scroll(e: WheelEvent) {
-        options.onMouseScroll?.(e.deltaY, e.deltaX, e.deltaY);
+        const rect = e.currentTarget.getBoundingClientRect();
+        options.onMouseScroll?.(e.deltaY, e.clientX - rect.left, e.clientY - rect.top);
     }
 
     function click(duration: number, e: MouseEvent) {

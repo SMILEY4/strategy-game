@@ -12,8 +12,9 @@ export interface GameEngine {
     onMessage: (message: GameWebsocketServerMessage) => void;
     onUpdate: () => void;
     onResize: (width: number, height: number) => void;
-    onMouseMove: (mx: number, my: number, buttons: number) => void;
+    onMouseMove: (mx: number, my: number, x: number, y: number, buttons: number) => void;
     onCanvasClick: (x: number, y: number) => void;
+    onScroll: (delta: number, x: number, y: number) => void;
 }
 
 interface Dependencies {
@@ -60,12 +61,16 @@ export const gameEngine = ({client, wsClient, repository, tileDb, cameraControll
             cameraController.onResize(width, height);
         },
 
-        onMouseMove: (mx: number, my: number, buttons: number) => {
-            cameraController.onMouseMove(mx, my, buttons);
+        onMouseMove: (mx: number, my: number, x: number, y: number, buttons: number) => {
+            cameraController.onMouseMove(mx, my, x, y, buttons);
         },
 
         onCanvasClick: (x: number, y: number) => {
             cameraController.onCanvasClick(x, y);
+        },
+
+        onScroll: (delta: number, x: number, y: number) => {
+            cameraController.onScroll(delta, x, y);
         }
 
     };

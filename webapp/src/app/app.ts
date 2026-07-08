@@ -20,7 +20,7 @@ import {gameEngine} from "@app/features/game/game.engine.ts";
 import {gameClient} from "@app/features/game/game.client.ts";
 import {gameRepository} from "@app/features/game/game.repository.ts";
 import {tileDatabase} from "@app/features/game/database/tile.database.ts";
-import {cameraControllerFreecam} from "@app/features/game/gameplay/camera/camera-controller.freecam.ts";
+import {cameraControllerOrbit} from "@app/features/game/gameplay/camera/camera-controller.orbit.ts";
 import {cameraDatabase} from "@app/features/game/database/camera.database.ts";
 
 
@@ -68,7 +68,7 @@ interface DIShape {
     gameWebsocketClient: ReturnType<typeof gameWebsocketClient>,
     gameRepository: ReturnType<typeof gameRepository>,
     gameEngine: ReturnType<typeof gameEngine>,
-    cameraController: ReturnType<typeof cameraControllerFreecam>
+    cameraController: ReturnType<typeof cameraControllerOrbit>
     tileDatabase: ReturnType<typeof tileDatabase>
     cameraDatabase: ReturnType<typeof cameraDatabase>
 }
@@ -174,7 +174,7 @@ export const DIConfig = {
     },
     cameraController: {
         scope: "transient",
-        create: resolve => cameraControllerFreecam({
+        create: resolve => cameraControllerOrbit({
             cameraDb: resolve.cameraDatabase,
             tileDb: resolve.tileDatabase,
         }),
