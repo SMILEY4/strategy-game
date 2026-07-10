@@ -1,0 +1,272 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+
+.button {
+	outline:     none;
+	background:  unset;
+	margin:      unset;
+	padding:     unset;
+
+	box-sizing:  border-box;
+	position:    relative;
+
+	cursor:      pointer;
+	user-select: none;
+	overflow:    hidden;
+
+	.button__inner {
+		box-sizing:      border-box;
+		position:        relative;
+
+		width:           100%;
+		height:          100%;
+
+		display:         flex;
+		justify-content: center;
+		align-items:     center;
+
+		white-space:     nowrap;
+
+
+	}
+
+	//============================
+	//  Size
+	//============================
+
+	&[data-size="s"] {
+		height: @size-s;
+
+		.button__inner {
+			padding:     0 @space-xs;
+			gap:         @space-3xs;
+			font-size:   @font-size-0;
+			font-weight: @font-weight-m;
+			font-family: @font-type-title;
+
+			svg {
+				height: 70%;
+			}
+		}
+	}
+
+
+	&, &[data-size="m"] {
+		height: @size-m;
+
+		.button__inner {
+			padding:     0 @space-s;
+			gap:         @space-2xs;
+			font-size:   @font-size-0;
+			font-weight: @font-weight-m;
+			font-family: @font-type-title;
+
+			svg {
+				height: 70%;
+			}
+		}
+	}
+
+	&[data-size="l"] {
+		height: @size-l;
+
+		.button__inner {
+			padding:     0 @space-m;
+			gap:         @space-xs;
+			font-size:   @font-size-2;
+			font-weight: @font-weight-m;
+			font-family: @font-type-title;
+
+			svg {
+				height: 70%;
+			}
+		}
+	}
+
+
+	//============================
+	//  Shape
+	//============================
+
+	&, &[data-shape="box"] {
+		border-radius: @radius-m;
+
+		.button__inner {
+			border-radius: @radius-m;
+		}
+	}
+
+	&[data-shape="pill"] {
+		border-radius: @radius-inf;
+
+		.button__inner {
+			border-radius: @radius-inf;
+		}
+	}
+
+	&[data-shape="square"] {
+		aspect-ratio:  1/1;
+		border-radius: @radius-m;
+
+		.button__inner {
+			aspect-ratio:  1/1;
+			border-radius: @radius-m;
+			padding:       unset;
+		}
+	}
+
+
+	&[data-shape="circle"] {
+		aspect-ratio:  1/1;
+		border-radius: @radius-circle;
+
+		.button__inner {
+			aspect-ratio:  1/1;
+			border-radius: @radius-circle;
+			padding:       unset;
+		}
+	}
+
+
+	//============================
+	//  Intent
+	//============================
+
+	border:      1px solid transparent;
+	background:  @gradient-border-primary;
+	box-shadow:  @shadow-object;
+
+	& .button__inner {
+		text-shadow: @shadow-text;
+
+		svg {
+			filter: drop-shadow(@shadow-text);
+		}
+	}
+
+	&, &[data-intent="neutral"] {
+
+		&:disabled {
+			background: @gradient-border-primary-disabled;
+		}
+
+		&:not(:disabled) .button__inner {
+			background: @gradient-neutral;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
+			color:      @color-neutral-content;
+
+			svg {
+				fill:   @color-neutral-content;
+				stroke: @color-neutral-content;
+			}
+		}
+
+		&:hover:not(:disabled) .button__inner {
+			background: @gradient-neutral-hover;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
+			color:      @color-neutral-content-hover;
+
+			svg {
+				fill:   @color-neutral-content-hover;
+				stroke: @color-neutral-content-hover;
+			}
+		}
+
+		&:active:not(:disabled) .button__inner {
+			background: @gradient-neutral-active;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
+			color:      @color-neutral-content-active;
+
+			svg {
+				fill:   @color-neutral-content-active;
+				stroke: @color-neutral-content-active;
+			}
+		}
+
+		&:disabled .button__inner {
+			background: @gradient-neutral-disabled;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
+			color:      @color-neutral-content-disabled;
+
+			svg {
+				fill:   @color-neutral-content-disabled;
+				stroke: @color-neutral-content-disabled;
+			}
+		}
+
+	}
+
+	&[data-intent="danger"] {
+
+		border:     1px solid transparent;
+		background: @gradient-border-primary;
+		box-shadow: @shadow-object;
+
+		&:disabled {
+			background: @gradient-border-primary-disabled;
+		}
+
+		&:not(:disabled) .button__inner {
+			background: @gradient-danger;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-danger-light;
+			color:      @color-danger-content;
+		}
+
+		&:hover:not(:disabled) .button__inner {
+			background: @gradient-danger-hover;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-danger-light;
+			color:      @color-danger-content-hover;
+		}
+
+		&:active:not(:disabled) .button__inner {
+			background: @gradient-danger-active;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-danger-light;
+			color:      @color-danger-content-active;
+		}
+
+		&:disabled .button__inner {
+			background: @gradient-danger-disabled;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-danger-light;
+			color:      @color-danger-content-disabled;
+		}
+
+	}
+
+	&[data-intent="success"] {
+
+		border:     1px solid transparent;
+		background: @gradient-border-primary;
+		box-shadow: @shadow-object;
+
+		&:disabled {
+			background: @gradient-border-primary-disabled;
+		}
+
+		&:not(:disabled) .button__inner {
+			background: @gradient-success;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-success-light;
+			color:      @color-success-content;
+		}
+
+		&:hover:not(:disabled) .button__inner {
+			background: @gradient-success-hover;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-success-light;
+			color:      @color-success-content-hover;
+		}
+
+		&:active:not(:disabled) .button__inner {
+			background: @gradient-success-active;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-success-light;
+			color:      @color-success-content-active;
+		}
+
+		&:disabled .button__inner {
+			background: @gradient-success-disabled;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-success-light;
+			color:      @color-success-content-disabled;
+		}
+
+	}
+
+}

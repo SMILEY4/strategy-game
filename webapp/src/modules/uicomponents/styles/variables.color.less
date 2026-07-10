@@ -1,0 +1,130 @@
+/*
+Element Borders
+*/
+
+@color-border-light:               hsl(25, 10%, 90%);
+@color-border-dark:                hsl(25, 30%, 60%);
+
+@color-border-light-focus:         hsl(25, 10%, 100%);
+@color-border-dark-focus:          hsl(41, 50%, 70%);
+
+@color-border-light-disabled:      hsl(25, 10%, 80%);
+@color-border-dark-disabled:       hsl(25, 10%, 55%);
+
+@gradient-border-primary:          linear-gradient(90deg, @color-border-dark, @color-border-light, @color-border-dark);
+@gradient-border-primary-focus:    linear-gradient(90deg, @color-border-dark-focus, @color-border-light-focus, @color-border-dark-focus);
+@gradient-border-primary-disabled: linear-gradient(90deg, @color-border-dark-disabled, @color-border-light-disabled, @color-border-dark-disabled);
+
+
+/*
+Neutral element colors
+*/
+
+@color-neutral-content:            hsl(225, 15%, 85%);
+@color-neutral-light:              hsl(215, 30%, 35%);
+@color-neutral-dark:               hsl(215, 20%, 25%);
+
+@color-neutral-content-hover:      hsl(225, 15%, 85%);
+@color-neutral-light-hover:        hsl(215, 30%, 40%);
+@color-neutral-dark-hover:         hsl(215, 20%, 30%);
+
+@color-neutral-content-active:     hsl(225, 15%, 85%);
+@color-neutral-light-active:       hsl(215, 30%, 30%);
+@color-neutral-dark-active:        hsl(215, 20%, 20%);
+
+@color-neutral-content-disabled:   hsl(225, 5%, 70%);
+@color-neutral-light-disabled:     hsl(215, 15%, 30%);
+@color-neutral-dark-disabled:      hsl(215, 10%, 20%);
+
+@gradient-neutral:                 radial-gradient(ellipse at bottom, @color-neutral-light 20%, transparent 60%),
+								   linear-gradient(@color-neutral-dark 50%, @color-neutral-light);
+
+@gradient-neutral-hover:           radial-gradient(ellipse at bottom, @color-neutral-light-hover 20%, transparent 60%),
+								   linear-gradient(@color-neutral-dark-hover 50%, @color-neutral-light-hover);
+
+@gradient-neutral-active:          radial-gradient(ellipse at bottom, @color-neutral-light-active 20%, transparent 60%),
+								   linear-gradient(@color-neutral-dark-active 50%, @color-neutral-light-active);
+
+@gradient-neutral-disabled:        radial-gradient(ellipse at bottom, @color-neutral-light-disabled 20%, transparent 60%),
+								   linear-gradient(@color-neutral-dark-disabled 50%, @color-neutral-light-disabled);
+
+
+/*
+Danger element colors
+*/
+
+@color-danger-content:               hsl(20, 20%, 85%);
+@color-danger-light:                 hsl(0, 40%, 35%);
+@color-danger-dark:                  hsl(0, 30%, 25%);
+
+@color-danger-content-hover:         hsl(20, 20%, 85%);
+@color-danger-light-hover:           hsl(0, 40%, 40%);
+@color-danger-dark-hover:            hsl(0, 30%, 30%);
+
+@color-danger-content-active:        hsl(20, 20%, 85%);
+@color-danger-light-active:          hsl(0, 40%, 30%);
+@color-danger-dark-active:           hsl(0, 30%, 20%);
+
+@color-danger-content-disabled:      hsl(20, 10%, 70%);
+@color-danger-light-disabled:        hsl(0, 15%, 30%);
+@color-danger-dark-disabled:         hsl(0, 10%, 20%);
+
+@gradient-danger:                    radial-gradient(ellipse at bottom, @color-danger-light 20%, transparent 60%),
+								   linear-gradient(@color-danger-dark 50%, @color-danger-light);
+
+@gradient-danger-hover:              radial-gradient(ellipse at bottom, @color-danger-light-hover 20%, transparent 60%),
+								   linear-gradient(@color-danger-dark-hover 50%, @color-danger-light-hover);
+
+@gradient-danger-active:             radial-gradient(ellipse at bottom, @color-danger-light-active 20%, transparent 60%),
+								   linear-gradient(@color-danger-dark-active 50%, @color-danger-light-active);
+
+@gradient-danger-disabled:           radial-gradient(ellipse at bottom, @color-danger-light-disabled 20%, transparent 60%),
+								   linear-gradient(@color-danger-dark-disabled 50%, @color-danger-light-disabled);
+
+
+/*
+Success element colors
+*/
+
+@color-success-content:            hsl(135, 15%, 85%);
+@color-success-light:              hsl(115, 37%, 33%);
+@color-success-dark:               hsl(115, 30%, 25%);
+
+@color-success-content-hover:      hsl(135, 15%, 85%);
+@color-success-light-hover:        hsl(115, 37%, 38%);
+@color-success-dark-hover:         hsl(115, 30%, 30%);
+
+@color-success-content-active:     hsl(135, 15%, 85%);
+@color-success-light-active:       hsl(115, 37%, 28%);
+@color-success-dark-active:        hsl(115, 30%, 20%);
+
+@color-success-content-disabled:   hsl(135, 5%, 70%);
+@color-success-light-disabled:     hsl(115, 10%, 33%);
+@color-success-dark-disabled:      hsl(115, 10%, 20%);
+
+@gradient-success:                 radial-gradient(ellipse at bottom, @color-success-light 20%, transparent 60%),
+								   linear-gradient(@color-success-dark 50%, @color-success-light);
+
+@gradient-success-hover:           radial-gradient(ellipse at bottom, @color-success-light-hover 20%, transparent 60%),
+								   linear-gradient(@color-success-dark-hover 50%, @color-success-light-hover);
+
+@gradient-success-active:          radial-gradient(ellipse at bottom, @color-success-light-active 20%, transparent 60%),
+								   linear-gradient(@color-success-dark-active 50%, @color-success-light-active);
+
+@gradient-success-disabled:        radial-gradient(ellipse at bottom, @color-success-light-disabled 20%, transparent 60%),
+								   linear-gradient(@color-success-dark-disabled 50%, @color-success-light-disabled);
+
+
+/*
+Shadows
+*/
+
+@shadow-object:                    0 0 3px rgba(0, 0, 0, 70%),
+								   0 0 10px rgba(0, 0, 0, 50%);
+
+@shadow-inset:                     inset 0 0 2px 1px rgba(0, 0, 0, 20%),
+								   inset 0 0 3px rgba(0, 0, 0, 30%),
+								   inset 0 0 5px rgba(0, 0, 0, 50%),
+								   inset 0 0 7px rgba(0, 0, 0, 60%);
+
+@shadow-text:                      1px 1px 2px rgba(0, 0, 0, 60%);

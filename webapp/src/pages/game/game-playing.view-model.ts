@@ -30,11 +30,12 @@ export function useGamePlayingViewModel(): GamePlayingViewModel {
     };
 
     const onMouseMove = DI.gameEngine.onMouseMove;
+
     const onMouseClick = DI.gameEngine.onCanvasClick;
+
     const onMouseScroll = DI.gameEngine.onScroll;
 
     const onDispose = renderer.dispose
-
 
     return {
         onInitialize: onInitialize,

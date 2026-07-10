@@ -11,9 +11,12 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@react-hook/resize-observer": "^2.0.2",
     "@tanstack/query-core": "^5.101.0",
+    "@types/howler": "^2.2.13",
     "classnames": "^2.5.1",
     "gl-matrix": "^3.4.4",
+    "howler": "^2.2.4",
     "i18next": "^26.3.1",
     "i18next-browser-languagedetector": "^8.2.1",
     "i18next-http-backend": "^4.0.0",

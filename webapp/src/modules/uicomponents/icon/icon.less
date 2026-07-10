@@ -1,0 +1,17 @@
+.icon {
+	height: 1em;
+
+	&.icon--spinning {
+		animation: icon-spin 1s linear infinite;
+	}
+
+}
+
+@keyframes icon-spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}

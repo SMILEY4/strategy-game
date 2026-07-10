@@ -11,13 +11,13 @@ export interface UseDataOptions<TData> {
  */
 export function useData<TData>(options: UseDataOptions<TData>): ReactiveStateletResult<TData> {
 
-    const { initial, unsubscribe } = options.fn(null)
-    unsubscribe()
-
-    const [state, setState] = useState<ReactiveStateletResult<TData>>(initial);
+    const [state, setState] = useState<ReactiveStateletResult<TData>>(
+        () => options.fn(null).initial
+    );
 
     useEffect(() => {
-        return options.fn(next => setState(next)).unsubscribe;
+        const { unsubscribe } = options.fn(next => setState(next));
+        return unsubscribe;
     }, [options.fn]);
 
     return state;

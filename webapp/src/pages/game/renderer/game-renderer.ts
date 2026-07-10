@@ -22,7 +22,6 @@ export class GameRenderer {
         this.renderGraph.initializeCanvas(canvas);
     }
 
-
     public update(): void {
         this.renderGraph.execute();
     }

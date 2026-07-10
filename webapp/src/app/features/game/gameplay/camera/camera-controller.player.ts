@@ -73,7 +73,7 @@ function screenToWorld(
     );
 }
 
-export const cameraControllerOrbit = ({cameraDb, tileDb}: Dependencies): CameraController => {
+export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): CameraController => {
 
     const pivot = vec3.fromValues(0, 0, 0);
     let distance = 40;

@@ -207,5 +207,7 @@ export const cameraControllerFreecam = ({cameraDb, tileDb}: Dependencies): Camer
                 }
             })
         },
+
+        onScroll: () => undefined
     };
 };
