@@ -1,0 +1,103 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+
+//============================
+//  Container: Heading
+//============================
+
+.txt--heading {
+	font-family: @font-type-title;
+	font-weight: @font-weight-m;
+	color:       @color-background-content;
+	text-shadow: @shadow-text;
+	margin:      0;
+
+	&[data-level="1"] { font-size: @font-size-8; }
+	&[data-level="2"] { font-size: @font-size-6; }
+	&[data-level="3"] { font-size: @font-size-4; }
+	&[data-level="4"] { font-size: @font-size-2; }
+	&[data-level="5"] { font-size: @font-size-1; }
+	&[data-level="6"] { font-size: @font-size-0; }
+}
+
+//============================
+//  Container: Body
+//============================
+
+.txt--body {
+	font-family: @font-type-body;
+	font-weight: @font-weight-s;
+	font-size:   @font-size-0;
+	color:       @color-background-content;
+	line-height: 1.5;
+	margin:      0;
+}
+
+//============================
+//  Container: Line
+//============================
+
+.txt--line {
+	font-family:        @font-type-body;
+	font-weight:        @font-weight-s;
+	font-size:          @font-size-0;
+	color:              @color-background-content;
+	white-space:        nowrap;
+	overflow:           hidden;
+	text-overflow:      ellipsis;
+	display:            block;
+}
+
+//============================
+//  Content: String
+//============================
+
+.txt__string {
+	// plain text, inherits container styles
+}
+
+//============================
+//  Content: Number
+//============================
+
+.txt__number {
+	&.txt__number--positive {
+		color: @color-success-content;
+	}
+
+	&.txt__number--negative {
+		color: @color-danger-content;
+	}
+
+	&.txt__number--zero {
+		color: @color-neutral-content;
+	}
+}
+
+//============================
+//  Content: Icon
+//============================
+
+.txt__icon {
+	display: inline;
+
+	> svg {
+		height:          1em;
+		vertical-align:  -0.125em;
+	}
+}
+
+//============================
+//  Special: Clickable
+//============================
+
+.txt__clickable {
+	cursor:             pointer;
+	text-decoration:    underline;
+	text-underline-offset: 2px;
+
+	&:hover {
+		color: @color-background-content;
+		filter: brightness(1.2);
+	}
+}
