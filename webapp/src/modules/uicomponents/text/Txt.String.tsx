@@ -3,14 +3,15 @@ import classNames from "classnames";
 import "./text.less";
 
 export type Txt_StringProps = {
-    text: string,
-} & ComponentPropsWithRef<"span">
+    children: string
+} & Omit<ComponentPropsWithRef<"span">, "children">
+
 
 export function Txt_String(props: Txt_StringProps): ReactElement {
 
     const {
-        text,
         className,
+        children,
         ...rest
     } = props;
 
@@ -19,7 +20,7 @@ export function Txt_String(props: Txt_StringProps): ReactElement {
             {...rest}
             className={classNames("txt__string", className)}
         >
-            {text}
+            {children}
         </span>
     );
 }

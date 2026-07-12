@@ -12,12 +12,29 @@
 	text-shadow: @shadow-text;
 	margin:      0;
 
-	&[data-level="1"] { font-size: @font-size-8; }
-	&[data-level="2"] { font-size: @font-size-6; }
-	&[data-level="3"] { font-size: @font-size-4; }
-	&[data-level="4"] { font-size: @font-size-2; }
-	&[data-level="5"] { font-size: @font-size-1; }
-	&[data-level="6"] { font-size: @font-size-0; }
+	&[data-level="1"] {
+		font-size: @font-size-8;
+	}
+
+	&[data-level="2"] {
+		font-size: @font-size-6;
+	}
+
+	&[data-level="3"] {
+		font-size: @font-size-4;
+	}
+
+	&[data-level="4"] {
+		font-size: @font-size-2;
+	}
+
+	&[data-level="5"] {
+		font-size: @font-size-1;
+	}
+
+	&[data-level="6"] {
+		font-size: @font-size-0;
+	}
 }
 
 //============================
@@ -29,6 +46,7 @@
 	font-weight: @font-weight-s;
 	font-size:   @font-size-0;
 	color:       @color-background-content;
+	text-shadow: @shadow-text;
 	line-height: 1.5;
 	margin:      0;
 }
@@ -38,15 +56,16 @@
 //============================
 
 .txt--line {
-	display:            block;
-	white-space:        nowrap;
-	overflow:           hidden;
-	text-overflow:      ellipsis;
+	display:       block;
+	white-space:   nowrap;
+	overflow:      hidden;
+	text-overflow: ellipsis;
 
-	font-family:        @font-type-body;
-	font-weight:        @font-weight-s;
-	font-size:          @font-size-0;
-	color:              @color-background-content;
+	font-family:   @font-type-body;
+	font-weight:   @font-weight-s;
+	font-size:     @font-size-0;
+	color:         @color-background-content;
+	text-shadow:   @shadow-text;
 }
 
 //============================
@@ -63,15 +82,18 @@
 
 .txt__number {
 	&.txt__number--positive {
-		color: @color-success-content;
+		font-weight: @font-weight-l;
+		color:       @color-success-light;
 	}
 
 	&.txt__number--negative {
-		color: @color-danger-content;
+		font-weight: @font-weight-l;
+		color:       @color-danger-light;
 	}
 
 	&.txt__number--zero {
-		color: @color-neutral-content;
+		font-weight: @font-weight-l;
+		color:       @color-neutral-content;
 	}
 }
 
@@ -83,8 +105,11 @@
 	display: inline;
 
 	> svg {
-		height:          1em;
-		vertical-align:  -0.125em;
+		height:         1em;
+		vertical-align: -0.125em;
+		stroke:         @color-background-content;
+		fill:           @color-background-content;
+		filter:         drop-shadow(@shadow-text);
 	}
 }
 
@@ -93,13 +118,45 @@
 //============================
 
 .txt__clickable {
-	cursor:             pointer;
-	text-decoration:    underline;
+	cursor:                pointer;
+	text-decoration:       underline;
 	text-underline-offset: 2px;
 
 	&:hover {
-		color: @color-background-content;
+		color:  @color-background-content;
 		filter: brightness(1.2);
+	}
+}
+
+//============================
+//  Light background variant
+//============================
+
+.txt--heading[data-light], .txt--body[data-light], .txt--line[data-light] {
+	color:       hsl(30, 15%, 15%);
+	text-shadow: @shadow-text-light;
+
+	.txt__icon > svg {
+		stroke: hsl(30, 15%, 15%);
+		fill:   hsl(30, 15%, 15%);
+		filter: none;
+	}
+
+	.txt__number.txt__number--positive {
+		color: hsl(135, 50%, 25%);
+	}
+
+	.txt__number.txt__number--negative {
+		color: hsl(0, 55%, 35%);
+	}
+
+	.txt__number.txt__number--zero {
+		color: hsl(225, 10%, 35%);
+	}
+
+	.txt__clickable:hover {
+		color:  hsl(30, 15%, 15%);
+		filter: brightness(0.8);
 	}
 }
 
@@ -108,7 +165,7 @@
 //============================
 
 :is(.txt--heading, .txt--body, .txt--line)
-    :is(.txt__string, .txt__number, .txt__icon, .txt__clickable)
-    + :is(.txt__string, .txt__number, .txt__icon, .txt__clickable) {
+:is(.txt__string, .txt__number, .txt__icon, .txt__clickable)
++ :is(.txt__string, .txt__number, .txt__icon, .txt__clickable) {
 	margin-left: 0.25em;
 }

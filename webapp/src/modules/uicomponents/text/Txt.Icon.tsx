@@ -3,13 +3,13 @@ import classNames from "classnames";
 import "./text.less";
 
 export type Txt_IconProps = {
-    icon: ReactElement,
-} & ComponentPropsWithRef<"span">
+    children: ReactElement,
+} & Omit<ComponentPropsWithRef<"span">, "children">
 
 export function Txt_Icon(props: Txt_IconProps): ReactElement {
 
     const {
-        icon,
+        children,
         className,
         ...rest
     } = props;
@@ -19,7 +19,7 @@ export function Txt_Icon(props: Txt_IconProps): ReactElement {
             {...rest}
             className={classNames("txt__icon", className)}
         >
-            {icon}
+            {children}
         </span>
     );
 }

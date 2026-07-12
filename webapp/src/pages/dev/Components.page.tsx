@@ -16,33 +16,45 @@ export function ComponentsPage(): ReactElement {
 
             {/*==========  TEXT ==========*/}
 
+            <VerticalLayout>
+                <Txt.Heading h1>Text</Txt.Heading>
+                <Txt.Body>
+                    Text with extra features. Headers, single lines and paragraphs. Can contain strings, formatted numbers, icons and clickable sections.
+                </Txt.Body>
+            </VerticalLayout>
+
             <>
                 <HorizontalLayout spacing3xl horizontalStart verticalCenter>
 
                     <VerticalLayout spacingS verticalStart horizontalCenter>
                         <Txt.Heading level={1}>
-                            <Txt.String text={"Heading"}/>
-                            <Txt.Number value={1}/>
+                            <Txt.String>Heading</Txt.String>
+                            <Txt.Number>{1}</Txt.Number>
                         </Txt.Heading>
                         <Txt.Heading level={2}>
-                            <Txt.String text={"Heading"}/>
-                            <Txt.Number value={2}/>
+                            <Txt.String>Heading</Txt.String>
+                            <Txt.Number>{2}</Txt.Number>
                         </Txt.Heading>
                         <Txt.Heading level={3}>
-                            <Txt.String text={"Heading"}/>
-                            <Txt.Number value={3}/>
+                            <Txt.String>Heading</Txt.String>
+                            <Txt.Number>{3}</Txt.Number>
                         </Txt.Heading>
                         <Txt.Heading level={4}>
-                            <Txt.String text={"Heading"}/>
-                            <Txt.Number value={4}/>
+                            <Txt.String>Heading</Txt.String>
+                            <Txt.Number>{4}</Txt.Number>
                         </Txt.Heading>
                         <Txt.Heading level={5}>
-                            <Txt.String text={"Heading"}/>
-                            <Txt.Number value={5}/>
+                            <Txt.String>Heading</Txt.String>
+                            <Txt.Number>{5}</Txt.Number>
                         </Txt.Heading>
                         <Txt.Heading level={6}>
-                            <Txt.String text={"Heading"}/>
-                            <Txt.Number value={6}/>
+                            <Txt.String>Heading</Txt.String>
+                            <Txt.Number>{6}</Txt.Number>
+                        </Txt.Heading>
+                        <Txt.Heading level={1}>
+                            <Txt.String>Heading with</Txt.String>
+                            <Txt.Icon><Icon.Eye/></Txt.Icon>
+                            <Txt.String>Icon</Txt.String>
                         </Txt.Heading>
                     </VerticalLayout>
 
@@ -53,9 +65,9 @@ export function ComponentsPage(): ReactElement {
                             maxWidth: 200,
                         }}>
                             <Txt.Line>
-                                <Txt.String text={"Some line that"}/>
-                                <Txt.String text={"continues on"}/>
-                                <Txt.String text={"for quite some length."}/>
+                                <Txt.String>Some line that</Txt.String>
+                                <Txt.String>continues on</Txt.String>
+                                <Txt.String>for quite some length.</Txt.String>
                             </Txt.Line>
                         </div>
                         <div style={{
@@ -64,8 +76,8 @@ export function ComponentsPage(): ReactElement {
                             maxWidth: 200,
                         }}>
                             <Txt.Line>
-                                <Txt.String text={"Some line that"}/>
-                                <Txt.String text={"ends here"}/>
+                                <Txt.String>Some line that</Txt.String>
+                                <Txt.String>ends here</Txt.String>
                             </Txt.Line>
                         </div>
                     </VerticalLayout>
@@ -77,9 +89,9 @@ export function ComponentsPage(): ReactElement {
                             maxWidth: 200,
                         }}>
                             <Txt.Body>
-                                <Txt.String text={"Some paragraph that"}/>
-                                <Txt.String text={"continues on"}/>
-                                <Txt.String text={"for quite some length."}/>
+                                <Txt.String>Some paragraph that</Txt.String>
+                                <Txt.String>continues on</Txt.String>
+                                <Txt.String>for quite some length.</Txt.String>
                             </Txt.Body>
                         </div>
                         <div style={{
@@ -88,8 +100,8 @@ export function ComponentsPage(): ReactElement {
                             maxWidth: 200,
                         }}>
                             <Txt.Body>
-                                <Txt.String text={"Some paragraph that"}/>
-                                <Txt.String text={"ends here"}/>
+                                <Txt.String>Some paragraph that</Txt.String>
+                                <Txt.String>ends here</Txt.String>
                             </Txt.Body>
                         </div>
                     </VerticalLayout>
@@ -97,8 +109,6 @@ export function ComponentsPage(): ReactElement {
                 </HorizontalLayout>
 
                 <HorizontalLayout spacing3xl horizontalStart verticalCenter>
-
-                    <VerticalLayout spacingS verticalStart horizontalCenter>
 
                         <div style={{
                             border: "1px solid gray",
@@ -106,39 +116,81 @@ export function ComponentsPage(): ReactElement {
                             resize: "both",
                             maxHeight: "fit-content",
                             maxWidth: "fit-content",
-                            overflow: "auto"
+                            overflow: "auto",
                         }}>
+                            <Txt.Heading level={5}>Complex Text on Dark</Txt.Heading>
                             <Txt.Body>
-                                <Txt.String text={"Some paragraph that includes formatted numbers for example"}/>
-                                <Txt.Number value={42.12345} decimals={2}/>
-                                <Txt.String text={"or as percentages"}/>
-                                <Txt.Number value={0.7512345} decimals={1} percentage/>
-                                <Txt.String text={"and optionally with a forced sign: "}/>
-                                <Txt.Number value={14} forceSign/>
-                                <Txt.String text={". Text can also include icons"}/>
-                                <Txt.Icon icon={<Icon.TrashCan/>}/>
-                                <Txt.String text={"inline in the paragraph."}/>
-                                <Txt.String text={"One can even make."}/>
+                                <Txt.String>Some paragraph that includes formatted numbers for example</Txt.String>
+                                <Txt.Number decimals={2}>{42.12345}</Txt.Number>
+                                <Txt.String>or as percentages</Txt.String>
+                                <Txt.Number decimals={1} percentage>{0.7512345}</Txt.Number>
+                                <Txt.String>and optionally with a forced sign:</Txt.String>
+                                <Txt.Number forceSign colored>{14}</Txt.Number>
+                                <Txt.Number forceSign colored>{-24}</Txt.Number>
+                                <Txt.String>. Text can also include icons</Txt.String>
+                                <Txt.Icon><Icon.TrashCan/></Txt.Icon>
+                                <Txt.String>inline in the paragraph.</Txt.String>
+                                <Txt.String>One can even make.</Txt.String>
                                 <Txt.Clickable onClick={() => console.log("Clicked the text")}>
-                                    <Txt.String text={"some parts ("}/>
-                                    <Txt.Icon icon={<Icon.Eye/>}/>
-                                    <Txt.Number value={0.99} percentage/>
-                                    <Txt.String text={") clickable!"}/>
+                                    <Txt.String>"some parts ("</Txt.String>
+                                    <Txt.Icon><Icon.Eye/></Txt.Icon>
+                                    <Txt.Number percentage>{0.99}</Txt.Number>
+                                    <Txt.String>) clickable!</Txt.String>
                                 </Txt.Clickable>
-                                <Txt.String text={"Awesome right?"}/>
+                                <Txt.String>Awesome right?</Txt.String>
                             </Txt.Body>
                         </div>
 
-                    </VerticalLayout>
+                    <div style={{
+                        border: "1px solid gray",
+                        width: 200,
+                        resize: "both",
+                        maxHeight: "fit-content",
+                        maxWidth: "fit-content",
+                        overflow: "auto",
+                        backgroundColor: "lightgrey"
+                    }}>
+                        <Txt.Heading level={5} light>Complex Text on Light</Txt.Heading>
+                        <Txt.Body light>
+                            <Txt.String>Some paragraph that includes formatted numbers for example</Txt.String>
+                            <Txt.Number decimals={2}>{42.12345}</Txt.Number>
+                            <Txt.String>or as percentages</Txt.String>
+                            <Txt.Number decimals={1} percentage>{0.7512345}</Txt.Number>
+                            <Txt.String>and optionally with a forced sign:</Txt.String>
+                            <Txt.Number forceSign colored>{14}</Txt.Number>
+                            <Txt.Number forceSign colored>{-24}</Txt.Number>
+                            <Txt.String>. Text can also include icons</Txt.String>
+                            <Txt.Icon><Icon.TrashCan/></Txt.Icon>
+                            <Txt.String>inline in the paragraph.</Txt.String>
+                            <Txt.String>One can even make.</Txt.String>
+                            <Txt.Clickable onClick={() => console.log("Clicked the text")}>
+                                <Txt.String>"some parts ("</Txt.String>
+                                <Txt.Icon><Icon.Eye/></Txt.Icon>
+                                <Txt.Number percentage>{0.99}</Txt.Number>
+                                <Txt.String>) clickable!</Txt.String>
+                            </Txt.Clickable>
+                            <Txt.String>Awesome right?</Txt.String>
+                        </Txt.Body>
+                    </div>
 
                 </HorizontalLayout>
 
-                </>
+            </>
 
 
             {/*==========  PANELS (parchment) ==========*/}
 
             <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Parchment Panels</Txt.Heading>
+                    <Txt.Body>
+                        Decorative Parchment panels to display any content inside.
+                        Can have different edge variants (straight, wavy and torn)
+                        and decorative borders (ornamented or raised metallic).
+                    </Txt.Body>
+                </VerticalLayout>
+
 
                 <HorizontalLayout spacing3xl horizontalStart verticalCenter>
                     <Panel.Parchment edge="straight" border="none" style={{width: 300, height: 200}}/>
@@ -161,6 +213,16 @@ export function ComponentsPage(): ReactElement {
             {/*==========  PANELS (decorated) ==========*/}
 
             <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Decorative Panels</Txt.Heading>
+                    <Txt.Body>
+                        Decorative panels to display any content inside.
+                        Can have different border variants (no border, raised metallic, line decoration, ornament decoration, and raised metallic ornament),
+                        textures (none, paper, ornament pattern) and colors.
+                        In addition to this, users can specify additional colors and images to overlay - either as a gradient or a full fill.
+                    </Txt.Body>
+                </VerticalLayout>
 
                 <HorizontalLayout spacing3xl horizontalStart verticalCenter>
                     <Panel.Decorated pattern="none" border="none" style={{width: 300, height: 200}}/>
@@ -242,6 +304,15 @@ export function ComponentsPage(): ReactElement {
             {/*==========  BUTTON ==========*/}
 
             <>
+
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Buttons</Txt.Heading>
+                    <Txt.Body>
+                        Clickable buttons of different sizes, shapes (box, pill, square, circle) and variant. Can also contain icons.
+                    </Txt.Body>
+                </VerticalLayout>
+
                 <HorizontalLayout spacing3xl horizontalStart verticalCenter>
 
                     <VerticalLayout spacingS verticalStart horizontalCenter>
@@ -280,6 +351,14 @@ export function ComponentsPage(): ReactElement {
             {/*==========  CHECKBOX ==========*/}
 
             <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Checkbox</Txt.Heading>
+                    <Txt.Body>
+                        Selectable checkboxes of different sizes.
+                    </Txt.Body>
+                </VerticalLayout>
+
                 <HorizontalLayout spacing3xl horizontalStart verticalCenter>
 
                     <VerticalLayout spacingS verticalStart horizontalCenter>
@@ -300,6 +379,14 @@ export function ComponentsPage(): ReactElement {
             {/*==========  TEXTFIELD ==========*/}
 
             <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Text Fields</Txt.Heading>
+                    <Txt.Body>
+                        Text fields to accept user input. Can be different sizes and shapes (box, pill) and support icons and labels above and below the box.
+                    </Txt.Body>
+                </VerticalLayout>
+
                 <HorizontalLayout spacing3xl horizontalStart verticalCenter>
 
                     <VerticalLayout spacingS verticalStart horizontalCenter>

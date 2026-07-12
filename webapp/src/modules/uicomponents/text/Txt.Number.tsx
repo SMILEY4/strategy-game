@@ -3,24 +3,26 @@ import classNames from "classnames";
 import "./text.less";
 
 export type Txt_NumberProps = {
-    value: number,
     decimals?: number,
     percentage?: boolean,
     forceSign?: boolean,
     colored?: boolean,
-} & ComponentPropsWithRef<"span">
+    children: number,
+} & Omit<ComponentPropsWithRef<"span">, "children">
 
 export function Txt_Number(props: Txt_NumberProps): ReactElement {
 
     const {
-        value,
         decimals,
         percentage = false,
         forceSign = false,
         colored = false,
         className,
+        children,
         ...rest
     } = props;
+
+    const value = children;
 
     let formatted: string;
 
