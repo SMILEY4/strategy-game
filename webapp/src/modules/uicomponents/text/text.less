@@ -38,14 +38,15 @@
 //============================
 
 .txt--line {
+	display:            block;
+	white-space:        nowrap;
+	overflow:           hidden;
+	text-overflow:      ellipsis;
+
 	font-family:        @font-type-body;
 	font-weight:        @font-weight-s;
 	font-size:          @font-size-0;
 	color:              @color-background-content;
-	white-space:        nowrap;
-	overflow:           hidden;
-	text-overflow:      ellipsis;
-	display:            block;
 }
 
 //============================
@@ -100,4 +101,14 @@
 		color: @color-background-content;
 		filter: brightness(1.2);
 	}
+}
+
+//============================
+//  Spacing between content elements
+//============================
+
+:is(.txt--heading, .txt--body, .txt--line)
+    :is(.txt__string, .txt__number, .txt__icon, .txt__clickable)
+    + :is(.txt__string, .txt__number, .txt__icon, .txt__clickable) {
+	margin-left: 0.25em;
 }

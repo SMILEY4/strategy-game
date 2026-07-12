@@ -103,7 +103,10 @@ export function ComponentsPage(): ReactElement {
                         <div style={{
                             border: "1px solid gray",
                             width: 200,
-                            maxWidth: 200,
+                            resize: "both",
+                            maxHeight: "fit-content",
+                            maxWidth: "fit-content",
+                            overflow: "auto"
                         }}>
                             <Txt.Body>
                                 <Txt.String text={"Some paragraph that includes formatted numbers for example"}/>
