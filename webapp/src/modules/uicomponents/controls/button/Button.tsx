@@ -66,7 +66,7 @@ export type ButtonProps = {
     & ShapeShorthands
     & SizeShorthands
     & IntentShorthands
-& SoundShorthands
+    & SoundShorthands
 
 export function Button(props: ButtonProps): ReactElement {
 
@@ -123,19 +123,19 @@ export function Button(props: ButtonProps): ReactElement {
     });
 
     const playSound = useCallback(() => {
-        if(soundResolved === "silent") {
-            return
+        if (soundResolved === "silent") {
+            return;
         }
-        if(soundResolved === "click") {
-            gameAudio.CLICK_PRIMARY.play()
-            return
+        if (soundResolved === "click") {
+            gameAudio.CLICK_PRIMARY.play();
+            return;
         }
-        if(soundResolved === "click-close") {
-            gameAudio.CLICK_CLOSE.play()
-            return
+        if (soundResolved === "click-close") {
+            gameAudio.CLICK_CLOSE.play();
+            return;
         }
-        assertExhaustive(soundResolved)
-    }, [soundResolved])
+        assertExhaustive(soundResolved);
+    }, [soundResolved]);
 
     const hover = useHover();
 
@@ -144,7 +144,7 @@ export function Button(props: ButtonProps): ReactElement {
             playSound();
             onClick?.();
         },
-        onPress: () => undefined,
+        onPress: undefined,
         disabled: disabled,
         shouldTriggerOnKeyUp: true,
     });
@@ -212,5 +212,5 @@ function resolveSound(props: { sound?: Sound } & SoundShorthands): Sound {
     if (props.silent) return "silent";
     if (props.playClick) return "click";
     if (props.playClose) return "click-close";
-    return "click"
+    return "click";
 }

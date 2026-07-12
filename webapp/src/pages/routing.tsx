@@ -5,6 +5,7 @@ import {MatchPage} from "@pages/match/Match.page.tsx";
 import {MatchListPage} from "@pages/matchList/Match-list.page.tsx";
 import {GamePage} from "@pages/game/Game.page.tsx";
 import {StrictMode} from "react";
+import {ComponentsPage} from "@pages/dev/Components.page.tsx";
 
 type RouteInfo = {
     id: string,
@@ -90,6 +91,19 @@ export const routing: RouteObject[] = [
         element: (
             <GamePage/>
         ),
+    },
+    {
+        id: "dev",
+        path: "dev",
+        children: [
+            {
+                id: "components",
+                path: "components",
+                element: (
+                    <ComponentsPage/>
+                ),
+            },
+        ],
     },
 ];
 

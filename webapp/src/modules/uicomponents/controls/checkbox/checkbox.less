@@ -1,0 +1,131 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+
+.checkbox {
+	outline:         unset;
+	background:      unset;
+	border:          unset;
+
+	display:         flex;
+	align-items:     center;
+	justify-content: start;
+	gap:             @space-xs;
+
+	cursor:          pointer;
+
+	&:disabled {
+		cursor: default;
+	}
+
+	.checkbox__box {
+		font-size:       inherit;
+
+		display:         flex;
+		align-items:     center;
+		justify-content: center;
+		overflow:        hidden;
+
+		border-radius:   @radius-m;
+
+		.checkbox__box__inner {
+			width:         100%;
+			height:        100%;
+			border-radius: @radius-m;
+
+			svg {
+				min-height: 130%;
+				min-width:  130%;
+				margin: -15% -15%;
+			}
+
+		}
+
+	}
+
+	//============================
+	//  Size
+	//============================
+
+	&[data-size="s"] {
+		font-size:   @font-size-0;
+		font-weight: @font-weight-m;
+		font-family: @font-type-body;
+
+		height:      @size-xs;
+
+		.checkbox__box {
+			height:       100%;
+			aspect-ratio: 1/1;
+		}
+	}
+
+	&, &[data-size="m"] {
+		font-size:   @font-size-0;
+		font-weight: @font-weight-m;
+		font-family: @font-type-body;
+
+		height:      @size-s;
+
+		.checkbox__box {
+			height:       100%;
+			aspect-ratio: 1/1;
+		}
+	}
+
+	&[data-size="l"] {
+		font-size:   @font-size-1;
+		font-weight: @font-weight-m;
+		font-family: @font-type-body;
+
+		height:      @size-m;
+
+		.checkbox__box {
+			height:       100%;
+			aspect-ratio: 1/1;
+		}
+	}
+
+	//============================
+	//  Intent
+	//============================
+
+	color:           @color-background-content;
+	text-shadow:     @shadow-text;
+
+	& .checkbox__box {
+		border:     1px solid transparent;
+		background: @gradient-border-primary;
+		box-shadow: @shadow-object;
+
+		.checkbox__box__inner {
+			background: @gradient-neutral;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
+			color:      @color-neutral-content;
+
+			svg {
+				fill:       @color-neutral-content;
+				stroke:     @color-neutral-content;
+				filter:     drop-shadow(@shadow-text);
+			}
+		}
+
+	}
+
+	&:disabled  .checkbox__box {
+		border:     1px solid transparent;
+		background: @gradient-border-primary-disabled;
+
+		.checkbox__box__inner {
+			background: @gradient-neutral-disabled;
+			color:      @color-neutral-content-disabled;
+
+			svg {
+				fill:       @color-neutral-content-disabled;
+				stroke:     @color-neutral-content-disabled;
+			}
+		}
+
+	}
+
+}

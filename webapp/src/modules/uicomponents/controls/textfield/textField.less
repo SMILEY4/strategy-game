@@ -1,0 +1,194 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+
+.text-field__root {
+	display:         flex;
+	flex-direction:  column;
+	align-items:     stretch;
+	justify-content: start;
+	gap:             0;
+}
+
+.text-field__control {
+
+	.text-field__control__inner {
+		width:           100%;
+		height:          100%;
+
+		display:         flex;
+		flex-direction:  row;
+		align-items:     center;
+		justify-content: start;
+		gap:             @space-3xs;
+	}
+
+
+
+	//============================
+	//  Size
+	//============================
+
+	&[data-size="s"] {
+		height: @size-s;
+
+		.text-field__input {
+			padding:     0 @space-xs;
+			font-size:   @font-size-0;
+		}
+
+	}
+
+	&, &[data-size="m"] {
+		height: @size-m;
+		.text-field__input {
+			padding:     0 @space-xs;
+			font-size:   @font-size-0;
+		}
+	}
+
+	&[data-size="l"] {
+		height: @size-l;
+		.text-field__input {
+			padding:     0 @space-s;
+			font-size:   @font-size-1;
+		}
+	}
+
+	//============================
+	//  Shape
+	//============================
+
+	&, &[data-shape="box"] {
+		border-radius: @radius-m;
+
+		.text-field__control__inner {
+			border-radius: @radius-m;
+		}
+	}
+
+	&[data-shape="pill"] {
+		border-radius: @radius-inf;
+
+		.text-field__control__inner {
+			border-radius: @radius-inf;
+		}
+	}
+
+	//============================
+	//  State
+	//============================
+
+	border:      1px solid transparent;
+	background:  @gradient-border-primary;
+	box-shadow:  @shadow-object;
+
+	& .text-field__control__inner {
+		background: @gradient-background;
+		box-shadow:    inset 0 0 30px @color-background-shadow;
+	}
+
+	&:has(.text-field__input:disabled) {
+		background: @gradient-border-primary-disabled;
+
+		.text-field__control__inner {
+			background: @gradient-background-disabled;
+		}
+	}
+
+	//============================
+	//  Input
+	//============================
+
+	.text-field__input {
+		width:       100%;
+		height:      100%;
+		box-sizing:  border-box;
+
+		flex-grow:   1;
+		flex-shrink: 1;
+
+		background:  unset;
+		border:      unset;
+		outline:     unset;
+
+		font-weight: @font-weight-m;
+		font-family: @font-type-body;
+
+		text-shadow: @shadow-text;
+		color: @color-background-content;
+
+		&::placeholder {
+			color: @color-background-content-subtle
+		}
+	}
+
+	//============================
+	//  Icon
+	//============================
+
+	svg {
+		aspect-ratio:    1/1;
+		flex-grow:       0;
+		flex-shrink:     0;
+		padding:         @space-3xs;
+		height: 70%;
+		filter: drop-shadow(@shadow-text);
+		fill:   @color-background-content;
+		stroke: @color-background-content;
+
+		&:first-child {
+			margin-left: @space-2xs;
+		}
+
+		&:last-child {
+			margin-right: @space-2xs;
+		}
+
+	}
+
+	//============================
+	//  Show Password
+	//============================
+
+	.text-field__show-password {
+		height:          100%;
+		aspect-ratio:    1/1;
+		flex-grow:       0;
+		flex-shrink:     0;
+		cursor:          pointer;
+		display:         flex;
+		align-items:     center;
+		justify-content: center;
+
+		svg {
+			margin:     unset;
+		}
+	}
+
+}
+
+//============================
+//  Label
+//============================
+
+.text-field__label {
+	font-size:   @font-size--1;
+	font-weight: @font-weight-m;
+	font-family: @font-type-body;
+	text-shadow: @shadow-text;
+	color: @color-background-content;
+}
+
+//============================
+//  Message
+//============================
+
+.text-field__message {
+	margin-top: @space-2xs;
+	font-size:   @font-size--1;
+	font-weight: @font-weight-m;
+	font-family: @font-type-body;
+	text-shadow: @shadow-text;
+	color: @color-background-content;
+}
