@@ -3,17 +3,17 @@
 @import "@modules/uicomponents/styles/variables.typography.less";
 
 .button {
-	outline:     none;
-	background:  unset;
-	margin:      unset;
-	padding:     unset;
+	outline:           none;
+	background:        unset;
+	margin:            unset;
+	padding:           unset;
 
-	box-sizing:  border-box;
-	position:    relative;
+	box-sizing:        border-box;
+	position:          relative;
 
-	cursor:      pointer;
-	user-select: none;
-	overflow:    hidden;
+	cursor:            pointer;
+	user-select:       none;
+	overflow:          hidden;
 
 	&:disabled {
 		cursor: default;
@@ -135,9 +135,15 @@
 	//  Intent
 	//============================
 
-	border:      1px solid transparent;
+	border:            1px solid transparent;
 	background:  @gradient-border-primary;
-	box-shadow:  @shadow-object;
+	box-shadow:        @shadow-object;
+
+	// border gets darker towards bottom (overlay second gradient). Keep ??????
+	//background:        linear-gradient(180deg, transparent, hsl(30 19% 20% / 0.5)),
+	//				   @gradient-border-primary;
+	//background-origin: border-box;
+	//background-clip:   border-box;
 
 	& .button__inner {
 		text-shadow: @shadow-text;

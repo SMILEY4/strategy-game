@@ -5,30 +5,107 @@ import {Icon} from "@modules/uicomponents/icon/Icon.tsx";
 import {Checkbox} from "@modules/uicomponents/controls/checkbox/Checkbox.tsx";
 import {TextField} from "@modules/uicomponents/controls/textfield/TextField.tsx";
 import type {ReactElement} from "react";
-import "./components.page.less"
-import { Panel } from "@/modules/uicomponents/panel/Panel";
+import "./components.page.less";
+import {Panel} from "@/modules/uicomponents/panel/Panel";
 
 export function ComponentsPage(): ReactElement {
 
     return (
         <VerticalLayout className="components-page" center spacing3xl padding2xl fillWidth>
 
-            {/*==========  PANELS ==========*/}
+            {/*==========  PANELS (parchment) ==========*/}
 
             <HorizontalLayout spacing3xl horizontalStart verticalCenter>
-                <Panel.Parchment edge="straight" border="none" style={{ width: 300, height: 200}}/>
-                <Panel.Parchment edge="simplified" border="none" style={{ width: 300, height: 200}}/>
-                <Panel.Parchment edge="detailed" border="none" style={{ width: 300, height: 200}}/>
+                <Panel.Parchment edge="straight" border="none" style={{width: 300, height: 200}}/>
+                <Panel.Parchment edge="simplified" border="none" style={{width: 300, height: 200}}/>
+                <Panel.Parchment edge="detailed" border="none" style={{width: 300, height: 200}}/>
             </HorizontalLayout>
 
             <HorizontalLayout spacing3xl horizontalStart verticalCenter>
-                <Panel.Parchment edge="straight" border="ornamental" style={{ width: 300, height: 200}}/>
-                <Panel.Parchment edge="simplified" border="ornamental" style={{ width: 300, height: 200}}/>
-                <Panel.Parchment edge="detailed" border="ornamental" style={{ width: 300, height: 200}}/>
+                <Panel.Parchment edge="straight" border="ornamental" style={{width: 300, height: 200}}/>
+                <Panel.Parchment edge="simplified" border="ornamental" style={{width: 300, height: 200}}/>
+                <Panel.Parchment edge="detailed" border="ornamental" style={{width: 300, height: 200}}/>
             </HorizontalLayout>
 
             <HorizontalLayout spacing3xl horizontalStart verticalCenter>
-                <Panel.Parchment edge="straight" border="metal" style={{ width: 300, height: 200}}/>
+                <Panel.Parchment edge="straight" border="metal" style={{width: 300, height: 200}}/>
+            </HorizontalLayout>
+
+            {/*==========  PANELS (decorated) ==========*/}
+
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated pattern="none" border="none" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="paper" border="none" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="ornament" border="none" style={{width: 300, height: 200}}/>
+            </HorizontalLayout>
+
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated pattern="none" border="metal" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="paper" border="metal" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="ornament" border="metal" style={{width: 300, height: 200}}/>
+            </HorizontalLayout>
+
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated pattern="none" border="line" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="paper" border="line" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="ornament" border="line" style={{width: 300, height: 200}}/>
+            </HorizontalLayout>
+
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated pattern="none" border="ornamental" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="paper" border="ornamental" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="ornament" border="ornamental" style={{width: 300, height: 200}}/>
+            </HorizontalLayout>
+
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated pattern="none" border="metal-ornament" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="paper" border="metal-ornament" style={{width: 300, height: 200}}/>
+                <Panel.Decorated pattern="ornament" border="metal-ornament" style={{width: 300, height: 200}}/>
+            </HorizontalLayout>
+
+
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated variant="neutral" style={{width: 150, height: 100}}/>
+                <Panel.Decorated variant="blue" style={{width: 150, height: 100}}/>
+                <Panel.Decorated variant="red" style={{width: 150, height: 100}}/>
+            </HorizontalLayout>
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated variant="green" style={{width: 150, height: 100}}/>
+                <Panel.Decorated variant="purple" style={{width: 150, height: 100}}/>
+                <Panel.Decorated variant="yellow" style={{width: 150, height: 100}}/>
+            </HorizontalLayout>
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated variant="orange" style={{width: 150, height: 100}}/>
+                <Panel.Decorated variant="teal" style={{width: 150, height: 100}}/>
+                <Panel.Decorated variant="bronze" style={{width: 150, height: 100}}/>
+            </HorizontalLayout>
+
+
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated overlay={{ color: "red", direction: "top" }} style={{width: 300, height: 200}}/>
+                <Panel.Decorated overlay={{ color: "cyan", direction: "left" }} style={{width: 300, height: 200}}/>
+                <Panel.Decorated overlay={{ color: "darkGreen", direction: "fill" }} style={{width: 300, height: 200}}/>
+            </HorizontalLayout>
+
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated overlay={{ url: "/cobblestone.jpg", direction: "top" }} style={{width: 300, height: 200}}/>
+                <Panel.Decorated overlay={{ url: "/cobblestone.jpg", direction: "left" }} style={{width: 300, height: 200}}/>
+                <Panel.Decorated overlay={{ url: "/cobblestone.jpg", direction: "fill" }} style={{width: 300, height: 200}}/>
+            </HorizontalLayout>
+
+
+            <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                <Panel.Decorated>
+                    <VerticalLayout paddingL spacingS horizontalLeft>
+                        <Button>Click Me!</Button>
+                        <Checkbox>Select Me</Checkbox>
+                        <TextField.Root>
+                            <TextField.Control>
+                                <TextField.Input placeholder="Text Input"/>
+                            </TextField.Control>
+                        </TextField.Root>
+                    </VerticalLayout>
+                </Panel.Decorated>
             </HorizontalLayout>
 
 
@@ -82,7 +159,6 @@ export function ComponentsPage(): ReactElement {
                     <Checkbox disabled={false}>Enabled</Checkbox>
                     <Checkbox disabled={true}>Disabled</Checkbox>
                 </VerticalLayout>
-
 
 
             </HorizontalLayout>
