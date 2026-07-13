@@ -6,12 +6,14 @@
 	outline:         unset;
 	background:      unset;
 	border:          unset;
-	padding: unset;
+	padding:         unset;
 
 	display:         flex;
 	align-items:     center;
 	justify-content: start;
 	gap:             @space-xs;
+
+	font-family:     @font-type-body;
 
 	cursor:          pointer;
 
@@ -20,6 +22,9 @@
 	}
 
 	.checkbox__box {
+		height:          100%;
+		aspect-ratio:    1/1;
+
 		font-size:       inherit;
 
 		display:         flex;
@@ -37,7 +42,7 @@
 			svg {
 				min-height: 130%;
 				min-width:  130%;
-				margin: -15% -15%;
+				margin:     -15% -15%;
 			}
 
 		}
@@ -50,80 +55,62 @@
 
 	&[data-size="s"] {
 		font-size:   @font-size-0;
-		font-weight: @font-weight-m;
-		font-family: @font-type-body;
-
+		font-weight: @font-weight-s;
 		height:      @size-xs;
-
-		.checkbox__box {
-			height:       100%;
-			aspect-ratio: 1/1;
-		}
 	}
 
 	&, &[data-size="m"] {
 		font-size:   @font-size-0;
-		font-weight: @font-weight-m;
-		font-family: @font-type-body;
-
+		font-weight: @font-weight-s;
 		height:      @size-s;
 
-		.checkbox__box {
-			height:       100%;
-			aspect-ratio: 1/1;
-		}
 	}
 
 	&[data-size="l"] {
 		font-size:   @font-size-1;
-		font-weight: @font-weight-m;
-		font-family: @font-type-body;
-
+		font-weight: @font-weight-s;
 		height:      @size-m;
-
-		.checkbox__box {
-			height:       100%;
-			aspect-ratio: 1/1;
-		}
 	}
 
 	//============================
 	//  Intent
 	//============================
 
-	color:           @color-content-primary;
-	text-shadow:     @shadow-text;
+	color:           @content-on-dark;
+	text-shadow:     @shadow-content-on-dark;
 
 	& .checkbox__box {
-		border:     1px solid transparent;
-		background: @gradient-border;
-		box-shadow: @shadow-object;
+		border:            1px solid transparent;
+		background:        @border-subtle-gradient;
+		background-origin: border-box;
+		background-clip:   border-box;
+		box-shadow:        @shadow-element-drop-subtle;
 
 		.checkbox__box__inner {
-			background: @gradient-surface-neutral;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-neutral-inner;
-			color:      @surface-neutral-content;
+			background: @element-fill-neutral-gradient;
+			box-shadow: @shadow-element-inset;
+			color:      @content-on-dark;
 
 			svg {
-				fill:       @surface-neutral-content;
-				stroke:     @surface-neutral-content;
-				filter:     drop-shadow(@shadow-text);
+				fill:   @content-on-dark;
+				stroke: @content-on-dark;
+				filter: drop-shadow(@shadow-content-on-dark);
 			}
 		}
 
 	}
 
-	&:disabled  .checkbox__box {
+	&:disabled .checkbox__box {
 		border:     1px solid transparent;
-		background: @gradient-border-disabled;
+		background: @border-subtle-disabled-gradient;
 
 		.checkbox__box__inner {
-			background: @gradient-surface-neutral-disabled;
-			color:      @surface-neutral-content-disabled;
+			background: @element-fill-neutral-disabled-gradient;
+			color:      @content-subtle-on-dark;
 
 			svg {
-				fill:       @surface-neutral-content-disabled;
-				stroke:     @surface-neutral-content-disabled;
+				fill:   @content-subtle-on-dark;
+				stroke: @content-subtle-on-dark;
 			}
 		}
 

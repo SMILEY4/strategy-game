@@ -63,7 +63,7 @@ export function Txt_Heading(props: Txt_HeadingProps): ReactElement {
         <Tag
             {...rest}
             className={classNames("txt", "txt--heading", className)}
-            data-level={level}
+            data-level={levelResolved}
             data-align={alignResolved}
             data-light={light || undefined}
         >

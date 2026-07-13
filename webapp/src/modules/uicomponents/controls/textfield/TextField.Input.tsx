@@ -9,7 +9,7 @@ type TextField_InputProps = {
         onValueChange?: (value: string) => void,
         onConfirm?: (value: string) => void,
     }
-    & Omit<ComponentPropsWithoutRef<"input">, "onBlur" | "onKeyDown" | "type" | "value" | "children">
+    & Omit<ComponentPropsWithoutRef<"input">, "onBlur" | "onKeyDown" | "onChange" | "type" | "value" | "children">
 
 
 export function TextField_Input(props: TextField_InputProps): ReactElement {

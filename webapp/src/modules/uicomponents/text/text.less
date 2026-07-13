@@ -8,20 +8,20 @@
 .txt--heading {
 	font-family: @font-type-title;
 	font-weight: @font-weight-m;
-	color:       @color-content-primary;
-	text-shadow: @shadow-text;
+	color:       @content-on-dark;
+	text-shadow: @shadow-content-on-dark;
 	margin:      0;
 
 	&[data-level="1"] {
-		font-size: @font-size-8;
+		font-size: @font-size-5;
 	}
 
 	&[data-level="2"] {
-		font-size: @font-size-6;
+		font-size: @font-size-4;
 	}
 
 	&[data-level="3"] {
-		font-size: @font-size-4;
+		font-size: @font-size-3;
 	}
 
 	&[data-level="4"] {
@@ -57,8 +57,8 @@
 	font-family: @font-type-body;
 	font-weight: @font-weight-s;
 	font-size:   @font-size-0;
-	color:       @color-content-primary;
-	text-shadow: @shadow-text;
+	color:       @content-on-dark;
+	text-shadow: @shadow-content-on-dark;
 	line-height: 1.5;
 	margin:      0;
 }
@@ -76,8 +76,8 @@
 	font-family:   @font-type-body;
 	font-weight:   @font-weight-s;
 	font-size:     @font-size-0;
-	color:         @color-content-primary;
-	text-shadow:   @shadow-text;
+	color:         @content-on-dark;
+	text-shadow:   @shadow-content-on-dark;
 
 	&, &[data-align="left"] {
 		text-align: left;
@@ -117,17 +117,17 @@
 .txt__number {
 	&.txt__number--positive {
 		font-weight: @font-weight-l;
-		color:       @surface-success-inner;
+		color:       @content-success-on-dark;
 	}
 
 	&.txt__number--negative {
 		font-weight: @font-weight-l;
-		color:       @surface-danger-inner;
+		color:       @content-danger-on-dark;
 	}
 
 	&.txt__number--zero {
 		font-weight: @font-weight-l;
-		color:       @surface-neutral-content;
+		color:       @content-on-dark;
 	}
 }
 
@@ -141,9 +141,9 @@
 	> svg {
 		height:         1em;
 		vertical-align: -0.125em;
-		stroke:         @color-content-primary;
-		fill:           @color-content-primary;
-		filter:         drop-shadow(@shadow-text);
+		stroke:         @content-on-dark;
+		fill:           @content-on-dark;
+		filter:         drop-shadow(@shadow-content-on-dark);
 	}
 }
 
@@ -157,7 +157,7 @@
 	text-underline-offset: 2px;
 
 	&:hover {
-		color:  @color-content-primary;
+		color:  @content-on-dark;
 		filter: brightness(1.2);
 	}
 }
@@ -167,29 +167,29 @@
 //============================
 
 .txt--heading[data-light], .txt--body[data-light], .txt--line[data-light] {
-	color:       hsl(30, 15%, 15%);
-	text-shadow: @shadow-text-light;
+	color:       @content-on-light;
+	text-shadow: @shadow-content-on-light;
 
 	.txt__icon > svg {
-		stroke: hsl(30, 15%, 15%);
-		fill:   hsl(30, 15%, 15%);
-		filter: none;
+		stroke: @content-on-light;
+		fill:   @content-on-light;
+		filter: drop-shadow(@shadow-content-on-light);
 	}
 
 	.txt__number.txt__number--positive {
-		color: hsl(135, 50%, 25%);
+		color: @content-success-on-light;
 	}
 
 	.txt__number.txt__number--negative {
-		color: hsl(0, 55%, 35%);
+		color: @content-danger-on-light;
 	}
 
 	.txt__number.txt__number--zero {
-		color: hsl(225, 10%, 35%);
+		color: @content-on-light;
 	}
 
 	.txt__clickable:hover {
-		color:  hsl(30, 15%, 15%);
+		color:  @content-on-light;
 		filter: brightness(0.8);
 	}
 }

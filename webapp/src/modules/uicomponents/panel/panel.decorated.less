@@ -1,13 +1,12 @@
 @import "@modules/uicomponents/styles/variables.color.less";
 @import "@modules/uicomponents/styles/variables.layout.less";
 @import "@modules/uicomponents/styles/variables.typography.less";
+@import "@modules/uicomponents/styles/variables.resources.less";
 
 
 .panel--decorated {
 
-	box-shadow: 1px 3px 8px rgba(0, 0, 0, 0.5),
-				0 0 1px rgba(0, 0, 0, 0.7);
-
+	box-shadow: @shadow-surface-drop;
 	overflow:   hidden;
 
 	.panel--decorated__base {
@@ -19,12 +18,12 @@
 	}
 
 	.panel--decorated__overlay {
-		position: absolute;
-		top:      0;
-		bottom:   0;
-		left:     0;
-		right:    0;
-		background-size: cover;
+		position:            absolute;
+		top:                 0;
+		bottom:              0;
+		left:                0;
+		right:               0;
+		background-size:     cover;
 		background-position: center center;
 	}
 
@@ -85,12 +84,12 @@
 	}
 
 	&[data-border="metal"] {
-		border:        1px solid transparent;
-		background:    @gradient-border-disabled;
+		border:     1px solid transparent;
+		background: @border-subtle-gradient;
 
 
 		.panel--decorated__base {
-			box-shadow:    @shadow-inset-light;
+			box-shadow: @shadow-element-inset;
 		}
 
 	}
@@ -98,31 +97,30 @@
 	&[data-border="line"] {
 
 		.panel--decorated__decoration {
-			content:       '';
-			position:      absolute;
-			top:           3px;
-			bottom:        3px;
-			left:          3px;
-			right:         3px;
-			border:        1px solid @color-decorative-gold;
+			content:  '';
+			position: absolute;
+			top:      3px;
+			bottom:   3px;
+			left:     3px;
+			right:    3px;
+			border:   1px solid @decorative-gold;
 		}
 	}
 
 	&[data-border="ornamental"] {
 
+
 		.panel--decorated__decoration {
-			content:        '';
-			position:       absolute;
-			top:            2px;
-			bottom:         2px;
-			left:           2px;
-			right:          2px;
+			content:      '';
+			position:     absolute;
+			top:          2px;
+			bottom:       2px;
+			left:         2px;
+			right:        2px;
 
-			border:         25px solid transparent;
-			border-image:   url("/shapes/ornament-border/border_4.png") 480 stretch;
-
-			mix-blend-mode: soft-light;
-			opacity:        100%;
+			border:       25px solid transparent;
+			border-image: @border-image-ornament;
+			opacity:      40%;
 		}
 	}
 
@@ -137,7 +135,7 @@
 			right:        0;
 
 			border:       30px solid transparent;
-			border-image: url("/shapes/metal-ornament-border/texture.png") 90 stretch;
+			border-image: @border-image-metal-ornament;
 			opacity:      70%;
 		}
 	}
@@ -148,39 +146,39 @@
 
 
 	&[data-variant="neutral"] .panel--decorated__base {
-		background: @gradient-bg-base;
+		background: @surface-fill-base-gradient;
 	}
 
 	&[data-variant="blue"] .panel--decorated__base {
-		background: @gradient-bg-blue;
+		background: @surface-fill-blue-gradient;
 	}
 
 	&[data-variant="red"] .panel--decorated__base {
-		background: @gradient-bg-red;
+		background: @surface-fill-red-gradient;
 	}
 
 	&[data-variant="green"] .panel--decorated__base {
-		background: @gradient-bg-green;
+		background: @surface-fill-green-gradient;
 	}
 
 	&[data-variant="purple"] .panel--decorated__base {
-		background: @gradient-bg-purple;
+		background: @surface-fill-purple-gradient;
 	}
 
 	&[data-variant="yellow"] .panel--decorated__base {
-		background: @gradient-bg-yellow;
+		background: @surface-fill-yellow-gradient;
 	}
 
 	&[data-variant="orange"] .panel--decorated__base {
-		background: @gradient-bg-orange;
+		background: @surface-fill-orange-gradient;
 	}
 
 	&[data-variant="teal"] .panel--decorated__base {
-		background: @gradient-bg-teal;
+		background: @surface-fill-teal-gradient;
 	}
 
 	&[data-variant="bronze"] .panel--decorated__base {
-		background: @gradient-bg-bronze;
+		background: @surface-fill-bronze-gradient;
 	}
 
 	//============================
@@ -193,7 +191,7 @@
 	&[data-pattern="paper"] {
 
 		.panel--decorated__texture {
-			background-image:  url("/images/paper/plain_white_paper/texture.jpg");
+			background-image:  @texture-paper;
 			background-repeat: repeat, no-repeat;
 			background-size:   450px 450px, cover;
 			mix-blend-mode:    multiply;
@@ -204,9 +202,9 @@
 	&[data-pattern="ornament"] {
 
 		.panel--decorated__texture {
-			background-image:  url("/images/ornament/texture_2.png");
+			background-image:  @texture-pattern;
 			background-repeat: repeat, no-repeat;
-			background-size:       70px 70px, cover;
+			background-size:   70px 70px, cover;
 			mix-blend-mode:    multiply;
 		}
 

@@ -24,7 +24,6 @@
 	}
 
 
-
 	//============================
 	//  Size
 	//============================
@@ -33,25 +32,27 @@
 		height: @size-s;
 
 		.text-field__input {
-			padding:     0 @space-xs;
-			font-size:   @font-size-0;
+			padding:   0 @space-xs;
+			font-size: @font-size-0;
 		}
 
 	}
 
 	&, &[data-size="m"] {
 		height: @size-m;
+
 		.text-field__input {
-			padding:     0 @space-xs;
-			font-size:   @font-size-0;
+			padding:   0 @space-xs;
+			font-size: @font-size-0;
 		}
 	}
 
 	&[data-size="l"] {
 		height: @size-l;
+
 		.text-field__input {
-			padding:     0 @space-s;
-			font-size:   @font-size-1;
+			padding:   0 @space-s;
+			font-size: @font-size-1;
 		}
 	}
 
@@ -79,20 +80,22 @@
 	//  State
 	//============================
 
-	border:      1px solid transparent;
-	background:  @gradient-border;
-	box-shadow:  @shadow-object;
+	border:            1px solid transparent;
+	background:        @border-subtle-gradient;
+	background-origin: border-box;
+	background-clip:   border-box;
+	box-shadow:        @shadow-element-drop-subtle;
 
 	& .text-field__control__inner {
-		background: @gradient-bg-base;
-		box-shadow:    inset 0 0 30px @color-bg-shadow;
+		background: @element-fill-neutral-gradient;
+		box-shadow: @shadow-element-inset
 	}
 
 	&:has(.text-field__input:disabled) {
-		background: @gradient-border-disabled;
+		background: @border-subtle-disabled-gradient;
 
 		.text-field__control__inner {
-			background: @gradient-bg-base-disabled;
+			background: @element-fill-neutral-disabled-gradient;
 		}
 	}
 
@@ -115,11 +118,11 @@
 		font-weight: @font-weight-m;
 		font-family: @font-type-body;
 
-		text-shadow: @shadow-text;
-		color: @color-content-primary;
+		text-shadow: @shadow-content-on-dark;
+		color:       @content-on-dark;
 
 		&::placeholder {
-			color: @color-content-subtle
+			color: @content-subtle-on-dark;
 		}
 	}
 
@@ -128,14 +131,14 @@
 	//============================
 
 	svg {
-		aspect-ratio:    1/1;
-		flex-grow:       0;
-		flex-shrink:     0;
-		padding:         @space-3xs;
-		height: 70%;
-		filter: drop-shadow(@shadow-text);
-		fill:   @color-content-primary;
-		stroke: @color-content-primary;
+		aspect-ratio: 1/1;
+		flex-grow:    0;
+		flex-shrink:  0;
+		padding:      @space-3xs;
+		height:       60%;
+		filter:       drop-shadow(@shadow-content-on-dark);
+		fill:         @content-on-dark;
+		stroke:       @content-on-dark;
 
 		&:first-child {
 			margin-left: @space-2xs;
@@ -162,7 +165,7 @@
 		justify-content: center;
 
 		svg {
-			margin:     unset;
+			margin: unset;
 		}
 	}
 
@@ -176,8 +179,8 @@
 	font-size:   @font-size--1;
 	font-weight: @font-weight-m;
 	font-family: @font-type-body;
-	text-shadow: @shadow-text;
-	color: @color-content-primary;
+	text-shadow: @shadow-content-on-dark;
+	color:       @content-on-dark;
 }
 
 //============================
@@ -185,10 +188,10 @@
 //============================
 
 .text-field__message {
-	margin-top: @space-2xs;
+	margin-top:  @space-2xs;
 	font-size:   @font-size--1;
 	font-weight: @font-weight-m;
 	font-family: @font-type-body;
-	text-shadow: @shadow-text;
-	color: @color-content-primary;
+	text-shadow: @shadow-content-on-dark;
+	color:       @content-on-dark;
 }

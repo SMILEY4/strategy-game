@@ -1,18 +1,16 @@
 @import "@modules/uicomponents/styles/variables.color.less";
 @import "@modules/uicomponents/styles/variables.layout.less";
 @import "@modules/uicomponents/styles/variables.typography.less";
+@import "@modules/uicomponents/styles/variables.resources.less";
 
 
 .panel--parchment {
-	filter: drop-shadow(0px 3px 8px rgba(0, 0, 0, 0.5));
+	filter: drop-shadow(@shadow-surface-drop);
 
 	.panel--parchment__inner {
 		width:                 100%;
 		height:                100%;
-
-		background-image:      url("/images/paper/45_parchment_paper_texture_seamless/texture.png"),
-							   url("/images/paper/36_crumpled_paper_texture_seamless/texture_2.png"),
-							   radial-gradient(#e3d1ae, #b39a78);
+		background-image:      @texture-parchment, @texture-crumpled-paper, @surface-fill-parchment-gradient;
 		background-blend-mode: color-burn;
 		background-repeat:     repeat, repeat, no-repeat;
 		background-size:       300px 300px, 500px 500px, cover;
@@ -26,12 +24,12 @@
 	}
 
 	&[data-edge="simplified"] .panel--parchment__inner {
-		mask-image: url("/shapes/parchment-edge/simplified.svg");
+		mask-image: @edge-mask-simple;
 		mask-size:  100% 100%;
 	}
 
 	&[data-edge="detailed"] .panel--parchment__inner {
-		mask-image: url("/shapes/parchment-edge/detailed.svg");
+		mask-image: @edge-mask-detailed;
 		mask-size:  100% 100%;
 	}
 
@@ -53,7 +51,7 @@
 			right:          7px;
 
 			border:         30px solid transparent;
-			border-image:   url("/shapes/ornament-border/border_3.png") 480 stretch;
+			border-image:   @border-image-ornament-mask;
 
 			mix-blend-mode: soft-light;
 			opacity:        60%;
@@ -62,11 +60,13 @@
 	}
 
 	&[data-border="metal"] {
-		border:      1px solid transparent;
-		background:  @gradient-border;
+		border:        1px solid transparent;
+		background:    @border-subtle-gradient;
+		border-radius: @radius-m;
 
 		.panel--parchment__inner {
-			box-shadow: @shadow-inset;
+			border-radius: @radius-m;
+			box-shadow:    @shadow-element-inset;
 		}
 
 	}

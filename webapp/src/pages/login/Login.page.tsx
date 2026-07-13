@@ -1,5 +1,4 @@
 import {useLoginViewModel} from "@pages/login/login.view-model.ts";
-import {useTranslation} from "react-i18next";
 import {VerticalLayout} from "@modules/uicomponents/layout/vertical/VerticalLayout.tsx";
 import {useRouting} from "@pages/routing.tsx";
 import { Panel } from "@/modules/uicomponents/panel/Panel";
@@ -65,7 +64,7 @@ export function LoginPage() {
                                             <TextField.Input
                                                 placeholder="Username"
                                                 value={viewModel.username.value}
-                                                onChange={e => viewModel.username.onChange(e.target.value)}
+                                                onValueChange={value => viewModel.username.onChange(value)}
                                             />
                                         </TextField.Control>
                                     </TextField.Root>
@@ -75,7 +74,7 @@ export function LoginPage() {
                                             <TextField.Input
                                                 placeholder="Password"
                                                 value={viewModel.password.value}
-                                                onChange={e => viewModel.password.onChange(e.target.value)}
+                                                onValueChange={value => viewModel.password.onChange(value)}
                                             />
                                             <TextField.ShowPassword/>
                                         </TextField.Control>
