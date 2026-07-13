@@ -35,6 +35,18 @@
 	&[data-level="6"] {
 		font-size: @font-size-0;
 	}
+
+	&, &[data-align="left"] {
+		text-align: left;
+	}
+
+	&[data-align="center"] {
+		text-align: center;
+	}
+
+	&[data-align="right"] {
+		text-align: right;
+	}
 }
 
 //============================
@@ -66,6 +78,19 @@
 	font-size:     @font-size-0;
 	color:         @color-content-primary;
 	text-shadow:   @shadow-text;
+
+	&, &[data-align="left"] {
+		text-align: left;
+	}
+
+	&[data-align="center"] {
+		text-align: center;
+	}
+
+	&[data-align="right"] {
+		text-align: right;
+	}
+
 }
 
 //============================
@@ -75,6 +100,15 @@
 .txt__string {
 	// plain text, inherits container styles
 }
+
+//============================
+//  Content: Link
+//============================
+
+.txt__link {
+	color: inherit;
+}
+
 
 //============================
 //  Content: Number
@@ -165,7 +199,7 @@
 //============================
 
 :is(.txt--heading, .txt--body, .txt--line)
-:is(.txt__string, .txt__number, .txt__icon, .txt__clickable)
-+ :is(.txt__string, .txt__number, .txt__icon, .txt__clickable) {
+:is(.txt__string, .txt__link, .txt__number, .txt__icon, .txt__clickable)
++ :is(.txt__string, .txt__link, .txt__number, .txt__icon, .txt__clickable) {
 	margin-left: 0.25em;
 }

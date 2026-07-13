@@ -19,6 +19,15 @@ type BorderShorthands = {
     metalOrnamentBorder?: boolean;
 };
 
+type Corner =
+    | "sharp"
+    | "rounded"
+
+type CornerShorthands = {
+    sharpCorner?: boolean;
+    roundedCorner?: boolean;
+}
+
 type Pattern =
     | "none"
     | "paper"
@@ -67,12 +76,14 @@ type Overlay = ColorOverlay | ImageOverlay;
 
 export type Panel_DecoratedProps = {
         border?: Border;
+        corner?: Corner;
         pattern?: Pattern;
         variant?: Variant;
         overlay?: Overlay
     }
     & ComponentPropsWithoutRef<"div">
     & BorderShorthands
+    & CornerShorthands
     & PatternShorthands
     & VariantShorthands
 
@@ -89,6 +100,11 @@ export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
         metalBorder,
         lineBorder,
         metalOrnamentBorder,
+
+        // corner
+        corner,
+        sharpCorner,
+        roundedCorner,
 
         // pattern
         pattern,
@@ -116,6 +132,7 @@ export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
     } = props;
 
     const borderResolved = resolveBorder({border, noBorder, ornamentalBorder, metalBorder, lineBorder, metalOrnamentBorder});
+    const cornerResolved = resolveCorner({ corner, sharpCorner, roundedCorner})
     const patternResolved = resolvePattern({pattern, noPattern, paperPattern, ornamentPattern});
     const variantResolved = resolveVariant({variant, neutral, blue, red, green, purple, yellow, orange, teal, bronze});
     const overlayType = determineOverlayType(overlay);
@@ -125,6 +142,7 @@ export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
             {...rest}
             className={classNames("panel", "panel--decorated", className)}
             data-border={borderResolved}
+            data-corner={cornerResolved}
             data-pattern={patternResolved}
             data-variant={variantResolved}
         >
@@ -194,6 +212,13 @@ function resolveBorder(props: { border?: Border } & BorderShorthands): Border {
     if (props.lineBorder) return "line";
     if (props.metalOrnamentBorder) return "metal-ornament";
     return "line";
+}
+
+function resolveCorner(props: { corner?: Corner } & CornerShorthands): Corner | undefined {
+    if (props.corner) return props.corner;
+    if (props.sharpCorner) return "sharp";
+    if (props.roundedCorner) return "rounded";
+    return undefined;
 }
 
 function resolvePattern(props: { pattern?: Pattern } & PatternShorthands): Pattern {
