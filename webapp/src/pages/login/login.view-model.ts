@@ -33,12 +33,12 @@ interface LoginViewModel {
 export function useLoginViewModel(): LoginViewModel {
 
     const username = useValidatedInput<"empty" | "wrongCredentials">(
-        {valid: false, reason: "empty"},
+        {valid: true},
         value => UserValidations.username(value),
     );
 
     const password = useValidatedInput<"empty" | "wrongCredentials">(
-        {valid: false, reason: "empty"},
+        {valid: true},
         value => UserValidations.password(value),
     );
 
@@ -54,6 +54,7 @@ export function useLoginViewModel(): LoginViewModel {
         if (!isFormValid) {
             return Promise.resolve();
         }
+        setGeneralError(undefined);
         login(username.value, password.value)
             .then(() => gotoMatchList())
             .catch(error => {

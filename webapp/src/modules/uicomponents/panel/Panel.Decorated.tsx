@@ -62,6 +62,12 @@ type VariantShorthands = {
     bronze?: boolean
 };
 
+type SizeShorthands = {
+    fillWidth?: boolean;
+    fillHeight?: boolean;
+    fillParent?: boolean;
+}
+
 type ColorOverlay = {
     color: string;
     direction: "top" | "bottom" | "left" | "right" | "fill";
@@ -86,6 +92,7 @@ export type Panel_DecoratedProps = {
     & CornerShorthands
     & PatternShorthands
     & VariantShorthands
+& SizeShorthands
 
 export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
 
@@ -124,6 +131,11 @@ export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
         teal,
         bronze,
 
+        // size
+        fillWidth,
+        fillHeight,
+        fillParent,
+
         // overlay
         overlay,
 
@@ -135,6 +147,8 @@ export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
     const cornerResolved = resolveCorner({ corner, sharpCorner, roundedCorner})
     const patternResolved = resolvePattern({pattern, noPattern, paperPattern, ornamentPattern});
     const variantResolved = resolveVariant({variant, neutral, blue, red, green, purple, yellow, orange, teal, bronze});
+    const sizeXResolved = resolveSizeX({ fillParent, fillWidth, fillHeight})
+    const sizeYResolved = resolveSizeY({ fillParent, fillWidth, fillHeight})
     const overlayType = determineOverlayType(overlay);
 
     return (
@@ -145,6 +159,8 @@ export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
             data-corner={cornerResolved}
             data-pattern={patternResolved}
             data-variant={variantResolved}
+            data-size-x={sizeXResolved}
+            data-size-y={sizeYResolved}
         >
             <div className={styles["panel--decorated__base"]}/>
             {overlay && (
@@ -249,4 +265,16 @@ function determineOverlayType(gradient?: Overlay): "image" | "color" | undefined
     if ("color" in gradient) return "color";
     if ("url" in gradient) return "image";
     assertExhaustive(gradient);
+}
+
+function resolveSizeX(props: SizeShorthands): boolean | undefined {
+    if(props.fillParent) return true
+    if(props.fillWidth) return true
+    return undefined
+}
+
+function resolveSizeY(props: SizeShorthands): boolean | undefined {
+    if(props.fillParent) return true
+    if(props.fillHeight) return true
+    return undefined
 }

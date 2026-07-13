@@ -39,17 +39,17 @@ interface RegisterViewModel {
 export function useRegisterViewModel(): RegisterViewModel {
 
     const username = useValidatedInput<"empty" | "INVALID_USERNAME" | "USERNAME_TAKEN">(
-        {valid: false, reason: "empty"},
+        {valid: true},
         value => UserValidations.username(value),
     );
 
     const password = useValidatedInput<"empty" | "INVALID_PASSWORD">(
-        {valid: false, reason: "empty"},
+        {valid: true},
         value => UserValidations.password(value),
     );
 
     const passwordConfirmation = useValidatedInput<"empty" | "mismatch">(
-        {valid: false, reason: "empty"},
+        {valid: true},
         value => UserValidations.passwordConfirmation(value, password.value),
     );
 
@@ -65,11 +65,11 @@ export function useRegisterViewModel(): RegisterViewModel {
         if (!isFormValid) {
             return Promise.resolve();
         }
+        setGeneralError(undefined);
         register(username.value, password.value)
             .then(() => gotoLogin())
             .catch(error => {
                 if (error instanceof AppError) {
-                    // todo
                     if (error.errorCode === "INVALID_PASSWORD") {
                         password.setValidation({valid: false, reason: "INVALID_PASSWORD"});
                         return;

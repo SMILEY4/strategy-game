@@ -1,6 +1,9 @@
 {
+  "header": {
+    "title": "Willkommen zurück",
+    "subtitle": "Logge dich ein um deine Reise fortzusetzen."
+  },
   "username": {
-    "label": "Benutzername",
     "placeholder": "Benutzernamen eingeben",
     "error": {
       "empty": "Bitte gib deinen Benutzernamen ein.",
@@ -8,13 +11,13 @@
     }
   },
   "password": {
-    "label": "Passwort",
     "placeholder": "Passwort eingeben",
     "error": {
       "empty": "Bitte gib dein Passwort ein.",
       "wrongCredentials": "Benutzername oder Passwort stimmt nicht."
     }
   },
+  "rememberMe": "Benutzernamen und Passwort merken",
   "submit": "Einloggen",
   "error": {
     "UNAUTHORIZED": "Benutzername oder Passwort stimmt nicht.",

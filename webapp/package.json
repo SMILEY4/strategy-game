@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "i18nextTypes": "npx i18next-cli types"
   },
   "dependencies": {
     "@react-hook/resize-observer": "^2.0.2",

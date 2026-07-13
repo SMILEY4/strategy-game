@@ -1,6 +1,9 @@
 {
+  "header": {
+    "title": "The title of the login form",
+    "subtitle": "A subtitle for the login form"
+  },
   "username": {
-    "label": "The label of the username input",
     "placeholder": "The placeholder text in the empty username input",
     "error": {
       "empty": "username validation error: is empty",
@@ -8,13 +11,13 @@
     }
   },
   "password": {
-    "label": "The label of the password input",
     "placeholder": "The placeholder text in the empty password input",
     "error": {
       "empty": "password validation error: is empty",
       "wrongCredentials": "validation error: username or password is incorrect"
     }
   },
+  "rememberMe": "The label for the remember-me checkbox",
   "submit": "The form submit button text",
   "error": {
     "UNAUTHORIZED": "general error response: provided username or password is incorrect",

@@ -6,6 +6,10 @@ export default interface Resources {
       "UNAUTHORIZED": "general error response: provided username or password is incorrect",
       "unknown": "general error response: unexpected error"
     },
+    "header": {
+      "subtitle": "A subtitle for the login form",
+      "title": "The title of the login form"
+    },
     "infoRegister": {
       "action": "Link to the register page.",
       "question": "Question whether the user does not have an account and wants to register instead."
@@ -15,16 +19,15 @@ export default interface Resources {
         "empty": "password validation error: is empty",
         "wrongCredentials": "validation error: username or password is incorrect"
       },
-      "label": "The label of the password input",
       "placeholder": "The placeholder text in the empty password input"
     },
+    "rememberMe": "The label for the remember-me checkbox",
     "submit": "The form submit button text",
     "username": {
       "error": {
         "empty": "username validation error: is empty",
         "wrongCredentials": "validation error: username or password is incorrect"
       },
-      "label": "The label of the username input",
       "placeholder": "The placeholder text in the empty username input"
     }
   },

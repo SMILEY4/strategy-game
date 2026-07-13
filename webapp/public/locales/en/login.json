@@ -1,6 +1,9 @@
 {
+  "header": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to continue your journey."
+  },
   "username": {
-    "label": "Username",
     "placeholder": "Enter your username",
     "error": {
       "empty": "Please enter your username.",
@@ -8,21 +11,21 @@
     }
   },
   "password": {
-    "label": "Password",
     "placeholder": "Enter your password",
     "error": {
       "empty": "Please enter your password.",
       "wrongCredentials": "Username or password invalid."
     }
   },
-  "submit": "Log in",
+  "rememberMe": "Remember Me",
+  "submit": "Login",
   "error": {
     "UNAUTHORIZED": "Username or password doesn't match.",
     "INTERNAL_ERROR": "Oops, something went wrong. Please try again later.",
     "unknown": "An unknown error occurred."
   },
   "infoRegister": {
-    "question": "Don't have an account yet?",
-    "action": "Sign up"
+    "question": "Don't have an account?",
+    "action": "Create Account."
   }
 }

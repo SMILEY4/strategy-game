@@ -98,7 +98,19 @@
 //============================
 
 .txt__string {
-	// plain text, inherits container styles
+
+	&, &[data-intent="neutral"] {
+		color: @content-on-dark;
+	}
+
+	&[data-intent="positive"] {
+		color: @content-success-on-dark;
+	}
+
+	&[data-intent="negative"] {
+		color: @content-danger-on-dark;
+	}
+
 }
 
 //============================
@@ -106,11 +118,11 @@
 //============================
 
 .txt__link {
-	color: inherit;
+	color:   inherit;
 	outline: unset;
 
 	&:focus {
-			box-shadow: @decorative-focus-glow;
+		box-shadow: @decorative-focus-glow;
 	}
 
 }
@@ -147,9 +159,22 @@
 	> svg {
 		height:         1em;
 		vertical-align: -0.125em;
-		stroke:         @content-on-dark;
-		fill:           @content-on-dark;
 		filter:         drop-shadow(@shadow-content-on-dark);
+	}
+
+	&, &[data-intent="neutral"] > svg {
+		stroke: @content-on-dark;
+		fill:   @content-on-dark;
+	}
+
+	&[data-intent="positive"] > svg {
+		stroke: @content-success-on-dark;
+		fill:   @content-success-on-dark;
+	}
+
+	&[data-intent="negative"] > svg {
+		stroke: @content-danger-on-dark;
+		fill:   @content-danger-on-dark;
 	}
 }
 
