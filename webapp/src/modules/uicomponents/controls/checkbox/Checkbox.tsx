@@ -1,7 +1,7 @@
 import {type ComponentPropsWithRef, type ReactElement, useCallback, useState} from "react";
 import classNames from "classnames";
 import {Icon} from "@modules/uicomponents/icon/Icon";
-import "./checkbox.less";
+import styles from "./checkbox.module.less";
 import {gameAudio} from "@app/audio/gameAudio.ts";
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import {useHover} from "@modules/uicomponents/hooks/useHover.ts";
@@ -120,7 +120,7 @@ export function Checkbox(props: CheckboxProps): ReactElement {
             {...press.elementProps}
             {...press.elementDataAttributes}
 
-            className={classNames("checkbox", className)}
+            className={classNames(styles.checkbox, className)}
 
             type={"button"}
             role={"checkbox"}
@@ -134,8 +134,8 @@ export function Checkbox(props: CheckboxProps): ReactElement {
 
             data-size={sizeResolved}
         >
-            <div className="checkbox__box">
-                <div className="checkbox__box__inner">
+            <div className={styles.checkbox__box}>
+                <div className={styles.checkbox__box__inner}>
                     {isChecked && (<Icon.Check/>)}
                 </div>
             </div>

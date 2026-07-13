@@ -1,6 +1,6 @@
 import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./text.less";
+import styles from "./text.module.less";
 
 export type Txt_ClickableProps = {
     onClick?: () => void,
@@ -18,7 +18,7 @@ export function Txt_Clickable(props: Txt_ClickableProps): ReactElement {
     return (
         <span
             {...rest}
-            className={classNames("txt__clickable", className)}
+            className={classNames(styles.txt__clickable, className)}
             onClick={onClick}
             role={onClick ? "button" : undefined}
             tabIndex={onClick ? 0 : undefined}

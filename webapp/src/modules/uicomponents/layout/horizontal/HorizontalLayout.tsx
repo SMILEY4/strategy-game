@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import type {ComponentPropsWithoutRef, ReactElement} from "react";
-import "./horizontalLayout.less";
+import styles from "./horizontalLayout.module.less";
 
 type HorizontalAlign =
     | "start"
@@ -208,7 +208,7 @@ export function HorizontalLayout(props: HorizontalLayoutProps): ReactElement {
     return (
         <div
             {...rest}
-            className={classNames("horizontal-layout", className)}
+            className={classNames(styles["horizontal-layout"], className)}
             data-align-horizontal={horizontalAlignResolved}
             data-align-vertical={verticalAlignResolved}
             data-direction={directionResolved}

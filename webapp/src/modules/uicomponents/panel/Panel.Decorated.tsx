@@ -1,6 +1,6 @@
 import type {ComponentPropsWithoutRef, CSSProperties, ReactElement} from "react";
 import classNames from "classnames";
-import "./panel.decorated.less";
+import styles from "./panel.decorated.module.less";
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 
 
@@ -140,16 +140,16 @@ export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
     return (
         <div
             {...rest}
-            className={classNames("panel", "panel--decorated", className)}
+            className={classNames(styles.panel, styles["panel--decorated"], className)}
             data-border={borderResolved}
             data-corner={cornerResolved}
             data-pattern={patternResolved}
             data-variant={variantResolved}
         >
-            <div className="panel--decorated__base"/>
+            <div className={styles["panel--decorated__base"]}/>
             {overlay && (
                 <div
-                    className="panel--decorated__overlay"
+                    className={styles["panel--decorated__overlay"]}
                     style={{
                         ...(overlayType === "color" ? buildColorOverlayStyle(overlay as ColorOverlay) : {}),
                         ...(overlayType === "image" ? buildImageOverlayStyle(overlay as ImageOverlay) : {}),
@@ -157,12 +157,12 @@ export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
                 />
             )}
             {patternResolved !== "none" && (
-                <div className="panel--decorated__texture"/>
+                <div className={styles["panel--decorated__texture"]}/>
             )}
             {(borderResolved !== "none" && borderResolved !== "metal") && (
-                <div className="panel--decorated__decoration"/>
+                <div className={styles["panel--decorated__decoration"]}/>
             )}
-            <div className="panel--decorated__content">
+            <div className={styles["panel--decorated__content"]}>
                 {children}
             </div>
         </div>

@@ -100,6 +100,30 @@
 	}
 
 	//============================
+	//  Icon
+	//============================
+
+	svg {
+		aspect-ratio: 1/1;
+		flex-grow:    0;
+		flex-shrink:  0;
+		padding:      @space-3xs;
+		height:       60%;
+		filter:       drop-shadow(@shadow-content-on-dark);
+		fill:         @content-on-dark;
+		stroke:       @content-on-dark;
+
+		&:first-child {
+			margin-left: @space-2xs;
+		}
+
+		&:last-child {
+			margin-right: @space-2xs;
+		}
+
+	}
+
+	//============================
 	//  Input
 	//============================
 
@@ -124,30 +148,6 @@
 		&::placeholder {
 			color: @content-subtle-on-dark;
 		}
-	}
-
-	//============================
-	//  Icon
-	//============================
-
-	svg {
-		aspect-ratio: 1/1;
-		flex-grow:    0;
-		flex-shrink:  0;
-		padding:      @space-3xs;
-		height:       60%;
-		filter:       drop-shadow(@shadow-content-on-dark);
-		fill:         @content-on-dark;
-		stroke:       @content-on-dark;
-
-		&:first-child {
-			margin-left: @space-2xs;
-		}
-
-		&:last-child {
-			margin-right: @space-2xs;
-		}
-
 	}
 
 	//============================

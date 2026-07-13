@@ -1,6 +1,6 @@
 import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./text.less";
+import styles from "./text.module.less";
 
 export type Txt_StringProps = {
     children: string
@@ -18,7 +18,7 @@ export function Txt_String(props: Txt_StringProps): ReactElement {
     return (
         <span
             {...rest}
-            className={classNames("txt__string", className)}
+            className={classNames(styles.txt__string, className)}
         >
             {children}
         </span>

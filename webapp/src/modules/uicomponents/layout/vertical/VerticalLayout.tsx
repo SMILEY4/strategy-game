@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import type {ComponentPropsWithoutRef, ReactElement} from "react";
-import "./verticalLayout.less";
+import styles from "./verticalLayout.module.less";
 
 type VerticalAlign =
     | "start"
@@ -214,7 +214,7 @@ export function VerticalLayout(props: VerticalLayoutProps): ReactElement {
     return (
         <div
             {...rest}
-            className={classNames("vertical-layout", className)}
+            className={classNames(styles["vertical-layout"], className)}
             data-align-vertical={verticalAlignResolved}
             data-align-horizontal={horizontalAlignResolved}
             data-direction={directionResolved}

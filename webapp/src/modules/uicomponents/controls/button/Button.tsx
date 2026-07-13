@@ -1,6 +1,6 @@
 import {type ComponentPropsWithRef, type ReactElement, useCallback} from "react";
 import classNames from "classnames";
-import "./button.less";
+import styles from "./button.module.less";
 import {useHover} from "@modules/uicomponents/hooks/useHover.ts";
 import {usePress} from "@modules/uicomponents/hooks/usePress.ts";
 import {gameAudio} from "@app/audio/gameAudio.ts";
@@ -160,7 +160,7 @@ export function Button(props: ButtonProps): ReactElement {
             {...press.elementProps}
             {...press.elementDataAttributes}
 
-            className={classNames("button", className)}
+            className={classNames(styles.button, className)}
 
             type={formSubmit ? "submit" : "button"}
             role={"button"}
@@ -175,7 +175,7 @@ export function Button(props: ButtonProps): ReactElement {
             data-size={sizeResolved}
             data-intent={intentResolved}
         >
-            <div className={classNames("button__inner")}>
+            <div className={classNames(styles.button__inner)}>
                 {children}
             </div>
         </button>

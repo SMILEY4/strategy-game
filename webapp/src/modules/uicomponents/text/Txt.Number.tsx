@@ -1,6 +1,6 @@
 import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./text.less";
+import styles from "./text.module.less";
 
 export type Txt_NumberProps = {
     decimals?: number,
@@ -45,16 +45,16 @@ export function Txt_Number(props: Txt_NumberProps): ReactElement {
 
     const colorClass = colored
         ? value > 0
-            ? "txt__number--positive"
+            ? styles["txt__number--positive"]
             : value < 0
-                ? "txt__number--negative"
-                : "txt__number--zero"
+                ? styles["txt__number--negative"]
+                : styles["txt__number--zero"]
         : undefined;
 
     return (
         <span
             {...rest}
-            className={classNames("txt__number", colorClass, className)}
+            className={classNames(styles.txt__number, colorClass, className)}
         >
             {formatted}
         </span>

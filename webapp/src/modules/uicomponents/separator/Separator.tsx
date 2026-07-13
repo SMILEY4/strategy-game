@@ -1,6 +1,6 @@
 import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./separator.less";
+import styles from "./separator.module.less";
 
 type Direction = "vertical" | "horizontal";
 
@@ -86,7 +86,7 @@ export function Separator(props: SeparatorProps): ReactElement {
     return (
         <div
             {...rest}
-            className={classNames("separator", className)}
+            className={classNames(styles.separator, className)}
             data-direction={directionResolved}
             data-variant={variantResolved}
             data-size={sizeResolved}

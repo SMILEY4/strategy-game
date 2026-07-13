@@ -1,5 +1,5 @@
 import {type ReactElement} from "react";
-import "./textField.less";
+import styles from "./textField.module.less";
 import {useTextFieldContext} from "@modules/uicomponents/controls/textfield/TextField.Context.tsx";
 import { Icon } from "@modules/uicomponents/icon/Icon";
 
@@ -17,7 +17,7 @@ export function TextField_ShowPassword(): ReactElement {
 
     return (
         <div
-            className="text-field__show-password"
+            className={styles["text-field__show-password"]}
             onPointerDown={() => setShowPassword(true)}
             onPointerUp={() => setShowPassword(false)}
             onPointerLeave={() => setShowPassword(false)}

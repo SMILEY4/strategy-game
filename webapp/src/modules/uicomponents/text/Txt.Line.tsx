@@ -1,6 +1,6 @@
 import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./text.less";
+import styles from "./text.module.less";
 
 
 type Align =
@@ -42,7 +42,7 @@ export function Txt_Line(props: Txt_LineProps): ReactElement {
     return (
         <span
             {...rest}
-            className={classNames("txt", "txt--line", className)}
+            className={classNames(styles.txt, styles["txt--line"], className)}
             data-align={alignResolved}
             data-light={light || undefined}
         >

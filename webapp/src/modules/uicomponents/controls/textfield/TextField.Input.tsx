@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import {type ComponentPropsWithoutRef, type ReactElement} from "react";
-import "./textField.less";
+import styles from "./textField.module.less";
 import {useTextFieldInput} from "@modules/uicomponents/controls/textfield/useTextField.ts";
 
 
@@ -33,7 +33,7 @@ export function TextField_Input(props: TextField_InputProps): ReactElement {
         <input
             {...rest}
             {...elementProps}
-            className={classNames("text-field__input", className)}
+            className={classNames(styles["text-field__input"], className)}
             placeholder={placeholder}
             disabled={disabled}
             autoFocus={autoFocus}

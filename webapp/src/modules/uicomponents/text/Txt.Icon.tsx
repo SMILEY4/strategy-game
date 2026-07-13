@@ -1,6 +1,6 @@
 import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./text.less";
+import styles from "./text.module.less";
 
 export type Txt_IconProps = {
     children: ReactElement,
@@ -17,7 +17,7 @@ export function Txt_Icon(props: Txt_IconProps): ReactElement {
     return (
         <span
             {...rest}
-            className={classNames("txt__icon", className)}
+            className={classNames(styles.txt__icon, className)}
         >
             {children}
         </span>

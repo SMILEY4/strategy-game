@@ -1,5 +1,5 @@
 import {type ReactElement} from "react";
-import "./textField.less";
+import styles from "./textField.module.less";
 import classNames from "classnames";
 
 interface TextField_MessageProps {
@@ -17,7 +17,7 @@ export function TextField_Message(props: TextField_MessageProps): ReactElement |
         return null;
     }
     return (
-        <span className={classNames("text-field__message", className)}>
+        <span className={classNames(styles["text-field__message"], className)}>
             {children}
         </span>
     );

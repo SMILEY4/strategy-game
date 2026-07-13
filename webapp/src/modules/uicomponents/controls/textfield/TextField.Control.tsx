@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import {type ComponentPropsWithoutRef, type ReactElement} from "react";
-import "./textField.less";
+import styles from "./textField.module.less";
 
 
 type Shape =
@@ -69,11 +69,11 @@ export function TextField_Control(props: TextField_ControlProps): ReactElement {
     return (
         <div
             {...rest}
-            className={classNames("text-field__control", className)}
+            className={classNames(styles["text-field__control"], className)}
             data-shape={shapeResolved}
             data-size={sizeResolved}
         >
-            <div className={classNames("text-field__control__inner")}>
+            <div className={classNames(styles["text-field__control__inner"])}>
                 {children}
             </div>
         </div>

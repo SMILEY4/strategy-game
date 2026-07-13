@@ -1,6 +1,6 @@
 import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./text.less";
+import styles from "./text.module.less";
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6
 
@@ -62,7 +62,7 @@ export function Txt_Heading(props: Txt_HeadingProps): ReactElement {
     return (
         <Tag
             {...rest}
-            className={classNames("txt", "txt--heading", className)}
+            className={classNames(styles.txt, styles["txt--heading"], className)}
             data-level={levelResolved}
             data-align={alignResolved}
             data-light={light || undefined}

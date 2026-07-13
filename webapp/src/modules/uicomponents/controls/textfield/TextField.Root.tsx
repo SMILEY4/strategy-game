@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import {type ComponentPropsWithoutRef, type ReactElement, useState} from "react";
-import "./textField.less";
+import styles from "./textField.module.less";
 import { TextFieldContext } from "./TextField.Context";
 
 
@@ -29,7 +29,7 @@ export function TextField_Root(props: TextField_RootProps): ReactElement {
             setType: setTypeInternal,
         }}>
             <div
-                className={classNames("text-field__root", className)}
+                className={classNames(styles.textField__root, className)}
                 {...rest}
             >
                 {children}

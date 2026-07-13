@@ -1,6 +1,6 @@
 import type {ComponentPropsWithoutRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./panel.parchment.less";
+import styles from "./panel.parchment.module.less";
 
 
 type Edge =
@@ -64,12 +64,12 @@ export function Panel_Parchment(props: Panel_ParchmentProps): ReactElement {
         <div
             {...rest}
 
-            className={classNames("panel", "panel--parchment", className)}
+            className={classNames(styles.panel, styles["panel--parchment"], className)}
 
             data-edge={edgeResolved}
             data-border={borderResolved}
         >
-            <div className="panel--parchment__inner">
+            <div className={styles["panel--parchment__inner"]}>
                 {children}
             </div>
         </div>

@@ -1,6 +1,6 @@
 import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./text.less";
+import styles from "./text.module.less";
 import {Link} from "react-router";
 
 export type Txt_LinkProps = {
@@ -22,7 +22,7 @@ export function Txt_Link(props: Txt_LinkProps): ReactElement {
         <Link
             {...rest}
             to={to}
-            className={classNames("txt__link", className)}
+            className={classNames(styles.txt__link, className)}
         >
             {children}
         </Link>

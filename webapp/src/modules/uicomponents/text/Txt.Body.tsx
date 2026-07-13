@@ -1,6 +1,6 @@
 import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
-import "./text.less";
+import styles from "./text.module.less";
 
 export type Txt_BodyProps = {
     light?: boolean,
@@ -18,7 +18,7 @@ export function Txt_Body(props: Txt_BodyProps): ReactElement {
     return (
         <p
             {...rest}
-            className={classNames("txt", "txt--body", className)}
+            className={classNames(styles.txt, styles["txt--body"], className)}
             data-light={light || undefined}
         >
             {children}

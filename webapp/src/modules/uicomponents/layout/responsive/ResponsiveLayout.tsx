@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import type {ComponentPropsWithoutRef, ReactElement} from "react";
-import "./responsiveLayout.less";
+import styles from "./responsiveLayout.module.less";
 
 type Direction =
     | "left-to-right"
@@ -110,7 +110,7 @@ export function ResponsiveLayout(props: ResponsiveLayoutProps): ReactElement {
 
     return (
         <div
-            className={classNames("responsive-layout", className)}
+            className={classNames(styles["responsive-layout"], className)}
             data-direction={resolveDirection(props, "base")}
             data-direction-xs={resolveDirection(props, "xs")}
             data-direction-s={resolveDirection(props, "s")}

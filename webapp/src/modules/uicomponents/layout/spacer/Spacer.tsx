@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import type {ComponentPropsWithoutRef, ReactElement} from "react";
-import "./spacer.less";
+import styles from "./spacer.module.less";
 
 type SpacerProps = {
     direction?: "vertical" | "horizontal";
@@ -32,7 +32,7 @@ export function Spacer(props: SpacerProps): ReactElement {
     return (
         <div
             {...rest}
-            className={classNames("spacer", className)}
+            className={classNames(styles.spacer, className)}
             data-direction={directionResolved}
         />
     );

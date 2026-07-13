@@ -1,5 +1,5 @@
 import {type ReactElement} from "react";
-import "./textField.less";
+import styles from "./textField.module.less";
 import classNames from "classnames";
 
 interface TextField_LabelProps {
@@ -17,7 +17,7 @@ export function TextField_Label(props: TextField_LabelProps): ReactElement | nul
         return null;
     }
     return (
-        <span className={classNames("text-field__label", className)}>
+        <span className={classNames(styles["text-field__label"], className)}>
             {children}
         </span>
     );
