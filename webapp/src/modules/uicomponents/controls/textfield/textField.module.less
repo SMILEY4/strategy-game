@@ -23,7 +23,6 @@
 		gap:             @space-3xs;
 	}
 
-
 	//============================
 	//  Size
 	//============================
@@ -85,6 +84,10 @@
 	background-origin: border-box;
 	background-clip:   border-box;
 	box-shadow:        @shadow-element-drop-subtle;
+
+	&:focus-within {
+		box-shadow: @decorative-focus-glow;
+	}
 
 	& .text-field__control__inner {
 		background: @element-fill-neutral-gradient;

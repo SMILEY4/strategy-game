@@ -79,6 +79,12 @@
 	color:           @content-on-dark;
 	text-shadow:     @shadow-content-on-dark;
 
+	&:focus {
+		.checkbox__box {
+			box-shadow: @decorative-focus-glow;
+		}
+	}
+
 	& .checkbox__box {
 		border:            1px solid transparent;
 		background:        @border-subtle-gradient;

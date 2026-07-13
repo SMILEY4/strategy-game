@@ -139,6 +139,10 @@
 	background-clip:   border-box;
 	box-shadow:        @shadow-element-drop;
 
+	&:focus {
+		box-shadow: @decorative-focus-glow;
+	}
+
 	& .button__inner {
 		box-shadow:  @shadow-element-inset;
 		color:       @content-on-dark;
