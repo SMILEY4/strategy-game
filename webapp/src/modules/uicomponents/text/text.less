@@ -8,7 +8,7 @@
 .txt--heading {
 	font-family: @font-type-title;
 	font-weight: @font-weight-m;
-	color:       @color-background-content;
+	color:       @color-content-primary;
 	text-shadow: @shadow-text;
 	margin:      0;
 
@@ -45,7 +45,7 @@
 	font-family: @font-type-body;
 	font-weight: @font-weight-s;
 	font-size:   @font-size-0;
-	color:       @color-background-content;
+	color:       @color-content-primary;
 	text-shadow: @shadow-text;
 	line-height: 1.5;
 	margin:      0;
@@ -64,7 +64,7 @@
 	font-family:   @font-type-body;
 	font-weight:   @font-weight-s;
 	font-size:     @font-size-0;
-	color:         @color-background-content;
+	color:         @color-content-primary;
 	text-shadow:   @shadow-text;
 }
 
@@ -83,17 +83,17 @@
 .txt__number {
 	&.txt__number--positive {
 		font-weight: @font-weight-l;
-		color:       @color-success-light;
+		color:       @surface-success-inner;
 	}
 
 	&.txt__number--negative {
 		font-weight: @font-weight-l;
-		color:       @color-danger-light;
+		color:       @surface-danger-inner;
 	}
 
 	&.txt__number--zero {
 		font-weight: @font-weight-l;
-		color:       @color-neutral-content;
+		color:       @surface-neutral-content;
 	}
 }
 
@@ -107,8 +107,8 @@
 	> svg {
 		height:         1em;
 		vertical-align: -0.125em;
-		stroke:         @color-background-content;
-		fill:           @color-background-content;
+		stroke:         @color-content-primary;
+		fill:           @color-content-primary;
 		filter:         drop-shadow(@shadow-text);
 	}
 }
@@ -123,7 +123,7 @@
 	text-underline-offset: 2px;
 
 	&:hover {
-		color:  @color-background-content;
+		color:  @color-content-primary;
 		filter: brightness(1.2);
 	}
 }

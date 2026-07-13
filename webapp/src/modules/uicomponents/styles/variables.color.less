@@ -1,190 +1,163 @@
 /*
-Element Borders
+Borders
 */
+@color-border-edge:               hsl(25, 30%, 60%);
+@color-border-mid:                hsl(25, 10%, 90%);
 
-@color-border-light:               hsl(25, 10%, 90%);
-@color-border-dark:                hsl(25, 30%, 60%);
+@color-border-edge-disabled:      hsl(25, 10%, 55%);
+@color-border-mid-disabled:       hsl(25, 10%, 80%);
 
-@color-border-light-focus:         hsl(25, 10%, 100%);
-@color-border-dark-focus:          hsl(41, 50%, 70%);
-
-@color-border-light-disabled:      hsl(25, 10%, 80%);
-@color-border-dark-disabled:       hsl(25, 10%, 55%);
-
-@gradient-border-primary:          linear-gradient(90deg, @color-border-dark, @color-border-light, @color-border-dark);
-@gradient-border-primary-focus:    linear-gradient(90deg, @color-border-dark-focus, @color-border-light-focus, @color-border-dark-focus);
-@gradient-border-primary-disabled: linear-gradient(90deg, @color-border-dark-disabled, @color-border-light-disabled, @color-border-dark-disabled);
+@gradient-border:                 linear-gradient(90deg, @color-border-edge, @color-border-mid, @color-border-edge);
+@gradient-border-disabled:        linear-gradient(90deg, @color-border-edge-disabled, @color-border-mid-disabled, @color-border-edge-disabled);
 
 
 /*
-Neutral element colors
+Surface intents (neutral, danger, success)
+
+State variants are derived from the base colors:
+- hover:   lighten by 5%
+- active:  darken by 5%
+- disabled: desaturate + darken
 */
 
-@color-neutral-content:            hsl(225, 15%, 85%);
-@color-neutral-light:              hsl(215, 30%, 35%);
-@color-neutral-dark:               hsl(215, 20%, 25%);
+// Neutral
+@surface-neutral-content:            hsl(225, 15%, 85%);
+@surface-neutral-inner:              hsl(215, 30%, 35%);
+@surface-neutral-outer:              hsl(215, 20%, 25%);
 
-@color-neutral-content-hover:      hsl(225, 15%, 85%);
-@color-neutral-light-hover:        hsl(215, 30%, 40%);
-@color-neutral-dark-hover:         hsl(215, 20%, 30%);
+@surface-neutral-inner-hover:        lighten(@surface-neutral-inner, 5%);
+@surface-neutral-inner-active:       darken(@surface-neutral-inner, 5%);
+@surface-neutral-inner-disabled:     darken(desaturate(@surface-neutral-inner, 15%), 5%);
 
-@color-neutral-content-active:     hsl(225, 15%, 85%);
-@color-neutral-light-active:       hsl(215, 30%, 30%);
-@color-neutral-dark-active:        hsl(215, 20%, 20%);
+@surface-neutral-outer-hover:        lighten(@surface-neutral-outer, 5%);
+@surface-neutral-outer-active:       darken(@surface-neutral-outer, 5%);
+@surface-neutral-outer-disabled:     darken(desaturate(@surface-neutral-outer, 10%), 5%);
 
-@color-neutral-content-disabled:   hsl(225, 5%, 70%);
-@color-neutral-light-disabled:     hsl(215, 15%, 30%);
-@color-neutral-dark-disabled:      hsl(215, 10%, 20%);
+@surface-neutral-content-disabled:   darken(desaturate(@surface-neutral-content, 10%), 15%);
 
-@gradient-neutral:                 radial-gradient(ellipse at bottom, @color-neutral-light 20%, transparent 60%),
-								   linear-gradient(@color-neutral-dark 50%, @color-neutral-light);
+@gradient-surface-neutral:           radial-gradient(ellipse at bottom, @surface-neutral-inner 20%, transparent 60%),
+                                     linear-gradient(@surface-neutral-outer 50%, @surface-neutral-inner);
 
-@gradient-neutral-hover:           radial-gradient(ellipse at bottom, @color-neutral-light-hover 20%, transparent 60%),
-								   linear-gradient(@color-neutral-dark-hover 50%, @color-neutral-light-hover);
+@gradient-surface-neutral-hover:     radial-gradient(ellipse at bottom, @surface-neutral-inner-hover 20%, transparent 60%),
+                                     linear-gradient(@surface-neutral-outer-hover 50%, @surface-neutral-inner-hover);
 
-@gradient-neutral-active:          radial-gradient(ellipse at bottom, @color-neutral-light-active 20%, transparent 60%),
-								   linear-gradient(@color-neutral-dark-active 50%, @color-neutral-light-active);
+@gradient-surface-neutral-active:    radial-gradient(ellipse at bottom, @surface-neutral-inner-active 20%, transparent 60%),
+                                     linear-gradient(@surface-neutral-outer-active 50%, @surface-neutral-inner-active);
 
-@gradient-neutral-disabled:        radial-gradient(ellipse at bottom, @color-neutral-light-disabled 20%, transparent 60%),
-								   linear-gradient(@color-neutral-dark-disabled 50%, @color-neutral-light-disabled);
+@gradient-surface-neutral-disabled:  radial-gradient(ellipse at bottom, @surface-neutral-inner-disabled 20%, transparent 60%),
+                                     linear-gradient(@surface-neutral-outer-disabled 50%, @surface-neutral-inner-disabled);
+
+
+// Danger
+@surface-danger-content:             hsl(20, 20%, 85%);
+@surface-danger-inner:               hsl(0, 40%, 35%);
+@surface-danger-outer:               hsl(0, 30%, 25%);
+
+@surface-danger-inner-hover:         lighten(@surface-danger-inner, 5%);
+@surface-danger-inner-active:        darken(@surface-danger-inner, 5%);
+@surface-danger-inner-disabled:      darken(desaturate(@surface-danger-inner, 25%), 5%);
+
+@surface-danger-outer-hover:         lighten(@surface-danger-outer, 5%);
+@surface-danger-outer-active:        darken(@surface-danger-outer, 5%);
+@surface-danger-outer-disabled:      darken(desaturate(@surface-danger-outer, 20%), 5%);
+
+@surface-danger-content-disabled:    darken(desaturate(@surface-danger-content, 10%), 15%);
+
+@gradient-surface-danger:            radial-gradient(ellipse at bottom, @surface-danger-inner 20%, transparent 60%),
+                                     linear-gradient(@surface-danger-outer 50%, @surface-danger-inner);
+
+@gradient-surface-danger-hover:      radial-gradient(ellipse at bottom, @surface-danger-inner-hover 20%, transparent 60%),
+                                     linear-gradient(@surface-danger-outer-hover 50%, @surface-danger-inner-hover);
+
+@gradient-surface-danger-active:     radial-gradient(ellipse at bottom, @surface-danger-inner-active 20%, transparent 60%),
+                                     linear-gradient(@surface-danger-outer-active 50%, @surface-danger-inner-active);
+
+@gradient-surface-danger-disabled:   radial-gradient(ellipse at bottom, @surface-danger-inner-disabled 20%, transparent 60%),
+                                     linear-gradient(@surface-danger-outer-disabled 50%, @surface-danger-inner-disabled);
+
+
+// Success
+@surface-success-content:            hsl(135, 15%, 85%);
+@surface-success-inner:              hsl(115, 37%, 33%);
+@surface-success-outer:              hsl(115, 30%, 25%);
+
+@surface-success-inner-hover:        lighten(@surface-success-inner, 5%);
+@surface-success-inner-active:       darken(@surface-success-inner, 5%);
+@surface-success-inner-disabled:     desaturate(@surface-success-inner, 27%);
+
+@surface-success-outer-hover:        lighten(@surface-success-outer, 5%);
+@surface-success-outer-active:       darken(@surface-success-outer, 5%);
+@surface-success-outer-disabled:     darken(desaturate(@surface-success-outer, 20%), 5%);
+
+@surface-success-content-disabled:   darken(desaturate(@surface-success-content, 10%), 15%);
+
+@gradient-surface-success:           radial-gradient(ellipse at bottom, @surface-success-inner 20%, transparent 60%),
+                                     linear-gradient(@surface-success-outer 50%, @surface-success-inner);
+
+@gradient-surface-success-hover:     radial-gradient(ellipse at bottom, @surface-success-inner-hover 20%, transparent 60%),
+                                     linear-gradient(@surface-success-outer-hover 50%, @surface-success-inner-hover);
+
+@gradient-surface-success-active:    radial-gradient(ellipse at bottom, @surface-success-inner-active 20%, transparent 60%),
+                                     linear-gradient(@surface-success-outer-active 50%, @surface-success-inner-active);
+
+@gradient-surface-success-disabled:  radial-gradient(ellipse at bottom, @surface-success-inner-disabled 20%, transparent 60%),
+                                     linear-gradient(@surface-success-outer-disabled 50%, @surface-success-inner-disabled);
 
 
 /*
-Danger element colors
+Decorative panel backgrounds
 */
+@gradient-bg-base:                 radial-gradient(ellipse, hsl(206, 13%, 26%) 0%, hsl(240, 9%, 25%) 100%);
+@gradient-bg-base-disabled:        radial-gradient(ellipse, hsl(210 6% 26%) 0%, hsl(240 3% 25%) 100%);
 
-@color-danger-content:             hsl(20, 20%, 85%);
-@color-danger-light:               hsl(0, 40%, 35%);
-@color-danger-dark:                hsl(0, 30%, 25%);
-
-@color-danger-content-hover:       hsl(20, 20%, 85%);
-@color-danger-light-hover:         hsl(0, 40%, 40%);
-@color-danger-dark-hover:          hsl(0, 30%, 30%);
-
-@color-danger-content-active:      hsl(20, 20%, 85%);
-@color-danger-light-active:        hsl(0, 40%, 30%);
-@color-danger-dark-active:         hsl(0, 30%, 20%);
-
-@color-danger-content-disabled:    hsl(20, 10%, 70%);
-@color-danger-light-disabled:      hsl(0, 15%, 30%);
-@color-danger-dark-disabled:       hsl(0, 10%, 20%);
-
-@gradient-danger:                  radial-gradient(ellipse at bottom, @color-danger-light 20%, transparent 60%),
-								   linear-gradient(@color-danger-dark 50%, @color-danger-light);
-
-@gradient-danger-hover:            radial-gradient(ellipse at bottom, @color-danger-light-hover 20%, transparent 60%),
-								   linear-gradient(@color-danger-dark-hover 50%, @color-danger-light-hover);
-
-@gradient-danger-active:           radial-gradient(ellipse at bottom, @color-danger-light-active 20%, transparent 60%),
-								   linear-gradient(@color-danger-dark-active 50%, @color-danger-light-active);
-
-@gradient-danger-disabled:         radial-gradient(ellipse at bottom, @color-danger-light-disabled 20%, transparent 60%),
-								   linear-gradient(@color-danger-dark-disabled 50%, @color-danger-light-disabled);
+@gradient-bg-blue:                 radial-gradient(ellipse, hsl(210, 34%, 32%) 0%, hsl(220, 20%, 30%) 100%);
+@gradient-bg-red:                  radial-gradient(ellipse, hsl(339 22% 34%) 0%, hsl(343 16% 30%) 100%);
+@gradient-bg-green:                radial-gradient(ellipse, hsl(94 22% 31%) 0%, hsl(123 18% 27%) 100%);
+@gradient-bg-purple:               radial-gradient(ellipse, hsl(281 22% 31%) 0%, hsl(283 18% 27%) 100%);
+@gradient-bg-yellow:               radial-gradient(ellipse, hsl(42 30% 32%) 0%, hsl(38 22% 28%) 100%);
+@gradient-bg-orange:               radial-gradient(ellipse, hsl(20 35% 32%) 0%, hsl(15 28% 28%) 100%);
+@gradient-bg-teal:                 radial-gradient(ellipse, hsl(175 25% 30%) 0%, hsl(185 20% 27%) 100%);
+@gradient-bg-bronze:               radial-gradient(ellipse, hsl(28 20% 30%) 0%, hsl(22 15% 26%) 100%);
 
 
 /*
-Success element colors
+Text/ink colors
 */
-
-@color-success-content:            hsl(135, 15%, 85%);
-@color-success-light:              hsl(115, 37%, 33%);
-@color-success-dark:               hsl(115, 30%, 25%);
-
-@color-success-content-hover:      hsl(135, 15%, 85%);
-@color-success-light-hover:        hsl(115, 37%, 38%);
-@color-success-dark-hover:         hsl(115, 30%, 30%);
-
-@color-success-content-active:     hsl(135, 15%, 85%);
-@color-success-light-active:       hsl(115, 37%, 28%);
-@color-success-dark-active:        hsl(115, 30%, 20%);
-
-@color-success-content-disabled:   hsl(135, 5%, 70%);
-@color-success-light-disabled:     hsl(115, 10%, 33%);
-@color-success-dark-disabled:      hsl(115, 10%, 20%);
-
-@gradient-success:                 radial-gradient(ellipse at bottom, @color-success-light 20%, transparent 60%),
-								   linear-gradient(@color-success-dark 50%, @color-success-light);
-
-@gradient-success-hover:           radial-gradient(ellipse at bottom, @color-success-light-hover 20%, transparent 60%),
-								   linear-gradient(@color-success-dark-hover 50%, @color-success-light-hover);
-
-@gradient-success-active:          radial-gradient(ellipse at bottom, @color-success-light-active 20%, transparent 60%),
-								   linear-gradient(@color-success-dark-active 50%, @color-success-light-active);
-
-@gradient-success-disabled:        radial-gradient(ellipse at bottom, @color-success-light-disabled 20%, transparent 60%),
-								   linear-gradient(@color-success-dark-disabled 50%, @color-success-light-disabled);
+@color-content-primary:            hsl(20, 10%, 85%);
+@color-content-subtle:             hsla(20, 10%, 85%, 60%);
+@color-bg-shadow:                  hsl(248, 11%, 10%);
 
 
 /*
-Backgrounds
+Signal colors
 */
-@gradient-background:              radial-gradient(ellipse, hsl(206, 13%, 26%) 0%, hsl(240, 9%, 25%) 100%);
-@gradient-background-disabled:     radial-gradient(ellipse, hsl(210 6% 26%) 0%, hsl(240 3% 25%) 100%);
-@color-background-content:         hsl(20, 10%, 85%);
-@color-background-content-subtle:  hsla(20, 10%, 85%, 60%);
-@color-background-shadow:          hsl(248, 11%, 10%);
-
-@gradient-background-blue:         radial-gradient(ellipse, hsl(210, 34%, 32%) 0%, hsl(220, 20%, 30%) 100%);
-@color-background-blue-content:    hsl(20, 10%, 85%);
-@color-background-blue-shadow:     hsl(240, 11%, 20%);
-
-@gradient-background-red:         radial-gradient(ellipse, hsl(339 22% 34%) 0%, hsl(343 16% 30%) 100%);
-@color-background-red-content:    hsl(20, 10%, 85%);
-@color-background-red-shadow:     hsl(240, 11%, 20%);
-
-
-@gradient-background-green:         radial-gradient(ellipse, hsl(94 22% 31%) 0%, hsl(123 18% 27%) 100%);
-@color-background-green-content:    hsl(20, 10%, 85%);
-@color-background-green-shadow:     hsl(240, 11%, 20%);
-
-
-@gradient-background-purple:         radial-gradient(ellipse, hsl(281 22% 31%) 0%, hsl(283 18% 27%) 100%);
-@color-background-purple-content:    hsl(20, 10%, 85%);
-@color-background-purple-shadow:     hsl(240, 11%, 20%);
-
-
-@gradient-background-yellow:         radial-gradient(ellipse, hsl(42 30% 32%) 0%, hsl(38 22% 28%) 100%);
-@color-background-yellow-content:    hsl(20, 10%, 85%);
-@color-background-yellow-shadow:     hsl(240, 11%, 20%);
-
-@gradient-background-orange:         radial-gradient(ellipse, hsl(20 35% 32%) 0%, hsl(15 28% 28%) 100%);
-@color-background-orange-content:    hsl(20, 10%, 85%);
-@color-background-orange-shadow:     hsl(240, 11%, 20%);
-
-@gradient-background-teal:           radial-gradient(ellipse, hsl(175 25% 30%) 0%, hsl(185 20% 27%) 100%);
-@color-background-teal-content:      hsl(20, 10%, 85%);
-@color-background-teal-shadow:       hsl(240, 11%, 20%);
-
-@gradient-background-bronze:         radial-gradient(ellipse, hsl(28 20% 30%) 0%, hsl(22 15% 26%) 100%);
-@color-background-bronze-content:    hsl(20, 10%, 85%);
-@color-background-bronze-shadow:     hsl(240, 11%, 20%);
-
+@signal-success:                   hsl(115, 60%, 50%);
+@signal-danger:                    hsl(0, 70%, 50%);
+@signal-warning:                   hsl(40, 80%, 50%);
+@signal-info:                      hsl(210, 60%, 50%);
 
 
 /*
 Shadows
 */
-
 @shadow-object:                    0 0 3px rgba(0, 0, 0, 70%),
-								   0 0 10px rgba(0, 0, 0, 50%);
+                                   0 0 10px rgba(0, 0, 0, 50%);
 
 @shadow-inset:                     inset 0 0 2px 1px rgba(0, 0, 0, 20%),
-								   inset 0 0 3px rgba(0, 0, 0, 20%),
-								   inset 0 0 5px rgba(0, 0, 0, 50%),
-								   inset 0 0 7px rgba(0, 0, 0, 60%);
+                                   inset 0 0 3px rgba(0, 0, 0, 20%),
+                                   inset 0 0 5px rgba(0, 0, 0, 50%),
+                                   inset 0 0 7px rgba(0, 0, 0, 60%);
 
-@shadow-inset-light:                     inset 0 0 2px 1px rgba(0, 0, 0, 20%),
-								   inset 0 0 3px rgba(0, 0, 0, 20%),
-								   inset 0 0 5px rgba(0, 0, 0, 30%);
+@shadow-inset-light:               inset 0 0 2px 1px rgba(0, 0, 0, 20%),
+                                   inset 0 0 3px rgba(0, 0, 0, 20%),
+                                   inset 0 0 5px rgba(0, 0, 0, 30%);
 
 @shadow-text:                      1px 1px 2px rgba(0, 0, 0, 60%);
 
-@shadow-text-light:                      1px 1px 2px rgba(255, 255, 255, 40%);
+@shadow-text-light:                1px 1px 2px rgba(255, 255, 255, 40%);
 
 
 /*
 Decorations
 */
-
-@color-decorative-gold:            hsla(35, 44%, 72%, 40%); //hsla(35, 20%, 70%, 40%);
-@color-decorative-white:           hsla(35, 0%, 72%, 30%); //hsla(35, 20%, 70%, 40%);
+@color-decorative-gold:            hsla(35, 44%, 72%, 40%);

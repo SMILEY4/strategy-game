@@ -136,12 +136,12 @@
 	//============================
 
 	border:            1px solid transparent;
-	background:  @gradient-border-primary;
+	background:  @gradient-border;
 	box-shadow:        @shadow-object;
 
 	// border gets darker towards bottom (overlay second gradient). Keep ??????
 	//background:        linear-gradient(180deg, transparent, hsl(30 19% 20% / 0.5)),
-	//				   @gradient-border-primary;
+	//				   @gradient-border;
 	//background-origin: border-box;
 	//background-clip:   border-box;
 
@@ -156,50 +156,50 @@
 	&, &[data-intent="neutral"] {
 
 		&:disabled {
-			background: @gradient-border-primary-disabled;
+			background: @gradient-border-disabled;
 		}
 
 		&:not(:disabled) .button__inner {
-			background: @gradient-neutral;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
-			color:      @color-neutral-content;
+			background: @gradient-surface-neutral;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-neutral-inner;
+			color:      @surface-neutral-content;
 
 			svg {
-				fill:   @color-neutral-content;
-				stroke: @color-neutral-content;
+				fill:   @surface-neutral-content;
+				stroke: @surface-neutral-content;
 			}
 		}
 
 		&:hover:not(:disabled) .button__inner {
-			background: @gradient-neutral-hover;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
-			color:      @color-neutral-content-hover;
+			background: @gradient-surface-neutral-hover;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-neutral-inner;
+			color:      @surface-neutral-content;
 
 			svg {
-				fill:   @color-neutral-content-hover;
-				stroke: @color-neutral-content-hover;
+				fill:   @surface-neutral-content;
+				stroke: @surface-neutral-content;
 			}
 		}
 
 		&:active:not(:disabled) .button__inner {
-			background: @gradient-neutral-active;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
-			color:      @color-neutral-content-active;
+			background: @gradient-surface-neutral-active;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-neutral-inner;
+			color:      @surface-neutral-content;
 
 			svg {
-				fill:   @color-neutral-content-active;
-				stroke: @color-neutral-content-active;
+				fill:   @surface-neutral-content;
+				stroke: @surface-neutral-content;
 			}
 		}
 
 		&:disabled .button__inner {
-			background: @gradient-neutral-disabled;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
-			color:      @color-neutral-content-disabled;
+			background: @gradient-surface-neutral-disabled;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-neutral-inner;
+			color:      @surface-neutral-content-disabled;
 
 			svg {
-				fill:   @color-neutral-content-disabled;
-				stroke: @color-neutral-content-disabled;
+				fill:   @surface-neutral-content-disabled;
+				stroke: @surface-neutral-content-disabled;
 			}
 		}
 
@@ -208,35 +208,35 @@
 	&[data-intent="danger"] {
 
 		border:     1px solid transparent;
-		background: @gradient-border-primary;
+		background: @gradient-border;
 		box-shadow: @shadow-object;
 
 		&:disabled {
-			background: @gradient-border-primary-disabled;
+			background: @gradient-border-disabled;
 		}
 
 		&:not(:disabled) .button__inner {
-			background: @gradient-danger;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-danger-light;
-			color:      @color-danger-content;
+			background: @gradient-surface-danger;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-danger-inner;
+			color:      @surface-danger-content;
 		}
 
 		&:hover:not(:disabled) .button__inner {
-			background: @gradient-danger-hover;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-danger-light;
-			color:      @color-danger-content-hover;
+			background: @gradient-surface-danger-hover;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-danger-inner;
+			color:      @surface-danger-content;
 		}
 
 		&:active:not(:disabled) .button__inner {
-			background: @gradient-danger-active;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-danger-light;
-			color:      @color-danger-content-active;
+			background: @gradient-surface-danger-active;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-danger-inner;
+			color:      @surface-danger-content;
 		}
 
 		&:disabled .button__inner {
-			background: @gradient-danger-disabled;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-danger-light;
-			color:      @color-danger-content-disabled;
+			background: @gradient-surface-danger-disabled;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-danger-inner;
+			color:      @surface-danger-content-disabled;
 		}
 
 	}
@@ -244,35 +244,35 @@
 	&[data-intent="success"] {
 
 		border:     1px solid transparent;
-		background: @gradient-border-primary;
+		background: @gradient-border;
 		box-shadow: @shadow-object;
 
 		&:disabled {
-			background: @gradient-border-primary-disabled;
+			background: @gradient-border-disabled;
 		}
 
 		&:not(:disabled) .button__inner {
-			background: @gradient-success;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-success-light;
-			color:      @color-success-content;
+			background: @gradient-surface-success;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-success-inner;
+			color:      @surface-success-content;
 		}
 
 		&:hover:not(:disabled) .button__inner {
-			background: @gradient-success-hover;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-success-light;
-			color:      @color-success-content-hover;
+			background: @gradient-surface-success-hover;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-success-inner;
+			color:      @surface-success-content;
 		}
 
 		&:active:not(:disabled) .button__inner {
-			background: @gradient-success-active;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-success-light;
-			color:      @color-success-content-active;
+			background: @gradient-surface-success-active;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-success-inner;
+			color:      @surface-success-content;
 		}
 
 		&:disabled .button__inner {
-			background: @gradient-success-disabled;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-success-light;
-			color:      @color-success-content-disabled;
+			background: @gradient-surface-success-disabled;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-success-inner;
+			color:      @surface-success-content-disabled;
 		}
 
 	}

@@ -80,19 +80,19 @@
 	//============================
 
 	border:      1px solid transparent;
-	background:  @gradient-border-primary;
+	background:  @gradient-border;
 	box-shadow:  @shadow-object;
 
 	& .text-field__control__inner {
-		background: @gradient-background;
-		box-shadow:    inset 0 0 30px @color-background-shadow;
+		background: @gradient-bg-base;
+		box-shadow:    inset 0 0 30px @color-bg-shadow;
 	}
 
 	&:has(.text-field__input:disabled) {
-		background: @gradient-border-primary-disabled;
+		background: @gradient-border-disabled;
 
 		.text-field__control__inner {
-			background: @gradient-background-disabled;
+			background: @gradient-bg-base-disabled;
 		}
 	}
 
@@ -116,10 +116,10 @@
 		font-family: @font-type-body;
 
 		text-shadow: @shadow-text;
-		color: @color-background-content;
+		color: @color-content-primary;
 
 		&::placeholder {
-			color: @color-background-content-subtle
+			color: @color-content-subtle
 		}
 	}
 
@@ -134,8 +134,8 @@
 		padding:         @space-3xs;
 		height: 70%;
 		filter: drop-shadow(@shadow-text);
-		fill:   @color-background-content;
-		stroke: @color-background-content;
+		fill:   @color-content-primary;
+		stroke: @color-content-primary;
 
 		&:first-child {
 			margin-left: @space-2xs;
@@ -177,7 +177,7 @@
 	font-weight: @font-weight-m;
 	font-family: @font-type-body;
 	text-shadow: @shadow-text;
-	color: @color-background-content;
+	color: @color-content-primary;
 }
 
 //============================
@@ -190,5 +190,5 @@
 	font-weight: @font-weight-m;
 	font-family: @font-type-body;
 	text-shadow: @shadow-text;
-	color: @color-background-content;
+	color: @color-content-primary;
 }

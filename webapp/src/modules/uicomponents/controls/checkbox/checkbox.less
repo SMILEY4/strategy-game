@@ -91,22 +91,22 @@
 	//  Intent
 	//============================
 
-	color:           @color-background-content;
+	color:           @color-content-primary;
 	text-shadow:     @shadow-text;
 
 	& .checkbox__box {
 		border:     1px solid transparent;
-		background: @gradient-border-primary;
+		background: @gradient-border;
 		box-shadow: @shadow-object;
 
 		.checkbox__box__inner {
-			background: @gradient-neutral;
-			box-shadow: @shadow-inset, inset 0 0 10px 3px @color-neutral-light;
-			color:      @color-neutral-content;
+			background: @gradient-surface-neutral;
+			box-shadow: @shadow-inset, inset 0 0 10px 3px @surface-neutral-inner;
+			color:      @surface-neutral-content;
 
 			svg {
-				fill:       @color-neutral-content;
-				stroke:     @color-neutral-content;
+				fill:       @surface-neutral-content;
+				stroke:     @surface-neutral-content;
 				filter:     drop-shadow(@shadow-text);
 			}
 		}
@@ -115,15 +115,15 @@
 
 	&:disabled  .checkbox__box {
 		border:     1px solid transparent;
-		background: @gradient-border-primary-disabled;
+		background: @gradient-border-disabled;
 
 		.checkbox__box__inner {
-			background: @gradient-neutral-disabled;
-			color:      @color-neutral-content-disabled;
+			background: @gradient-surface-neutral-disabled;
+			color:      @surface-neutral-content-disabled;
 
 			svg {
-				fill:       @color-neutral-content-disabled;
-				stroke:     @color-neutral-content-disabled;
+				fill:       @surface-neutral-content-disabled;
+				stroke:     @surface-neutral-content-disabled;
 			}
 		}
 
