@@ -8,6 +8,7 @@ import type {ReactElement} from "react";
 import "./components.page.less";
 import {Panel} from "@/modules/uicomponents/panel/Panel";
 import {Txt} from "@modules/uicomponents/text/Txt.tsx";
+import {Separator} from "@modules/uicomponents/separator/Separator.tsx";
 
 export function ComponentsPage(): ReactElement {
 
@@ -16,14 +17,15 @@ export function ComponentsPage(): ReactElement {
 
             {/*==========  TEXT ==========*/}
 
-            <VerticalLayout>
-                <Txt.Heading h1>Text</Txt.Heading>
-                <Txt.Body>
-                    Text with extra features. Headers, single lines and paragraphs. Can contain strings, formatted numbers, icons and clickable sections.
-                </Txt.Body>
-            </VerticalLayout>
-
             <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Text</Txt.Heading>
+                    <Txt.Body>
+                        Text with extra features. Headers, single lines and paragraphs. Can contain strings, formatted numbers, icons and clickable sections.
+                    </Txt.Body>
+                </VerticalLayout>
+
                 <HorizontalLayout spacing3xl horizontalStart verticalCenter>
 
                     <VerticalLayout spacingS verticalStart horizontalCenter>
@@ -298,6 +300,46 @@ export function ComponentsPage(): ReactElement {
                         </VerticalLayout>
                     </Panel.Decorated>
                 </HorizontalLayout>
+
+            </>
+
+            {/*==========  SEPARATOR ==========*/}
+
+            <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Separator</Txt.Heading>
+                    <Txt.Body>
+                        Separators that quickly add spacing between elements and/or add a decorative line.
+                    </Txt.Body>
+                </VerticalLayout>
+
+
+                <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+
+                    <div style={{
+                        border: "1px solid gray",
+                        width: 200,
+                    }}>
+                        <Txt.Line><Txt.String>Element Above</Txt.String></Txt.Line>
+                        <Separator horizontal line/>
+                        <Txt.Line><Txt.String>Element Below</Txt.String></Txt.Line>
+                    </div>
+
+                    <div style={{
+                        border: "1px solid gray",
+                        width: 200,
+                        height: 200,
+                        display: "flex",
+                        flexDirection: "row"
+                    }}>
+                        <Txt.Line><Txt.String>Left Element</Txt.String></Txt.Line>
+                        <Separator vertical line/>
+                        <Txt.Line><Txt.String>Right Element</Txt.String></Txt.Line>
+                    </div>
+
+                </HorizontalLayout>
+
 
             </>
 

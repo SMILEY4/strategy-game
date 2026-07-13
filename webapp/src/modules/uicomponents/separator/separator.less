@@ -1,0 +1,76 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+
+.separator {
+	box-sizing:      border-box;
+	flex-shrink:     0;
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+
+	//============================
+	//  Direction
+	//============================
+
+	&, &[data-direction="horizontal"] {
+		width: 100%;
+	}
+
+	&[data-direction="vertical"] {
+		height:        100%;
+		align-self:    stretch;
+		width:         auto;
+	}
+
+	//============================
+	//  Size
+	//============================
+
+	&[data-direction="horizontal"] {
+		&[data-size="none"]  { height: 0; }
+		&[data-size="3xs"]   { height: @space-3xs; }
+		&[data-size="2xs"]   { height: @space-2xs; }
+		&[data-size="xs"]    { height: @space-xs; }
+		&[data-size="s"]     { height: @space-s; }
+		&[data-size="m"]     { height: @space-m; }
+		&[data-size="l"]     { height: @space-l; }
+		&[data-size="xl"]    { height: @space-xl; }
+		&[data-size="2xl"]   { height: @space-2xl; }
+		&[data-size="3xl"]   { height: @space-3xl; }
+	}
+
+	&[data-direction="vertical"] {
+		&[data-size="none"]  { width: 0; }
+		&[data-size="3xs"]   { width: @space-3xs; }
+		&[data-size="2xs"]   { width: @space-2xs; }
+		&[data-size="xs"]    { width: @space-xs; }
+		&[data-size="s"]     { width: @space-s; }
+		&[data-size="m"]     { width: @space-m; }
+		&[data-size="l"]     { width: @space-l; }
+		&[data-size="xl"]    { width: @space-xl; }
+		&[data-size="2xl"]   { width: @space-2xl; }
+		&[data-size="3xl"]   { width: @space-3xl; }
+	}
+
+	//============================
+	//  Variant: line
+	//============================
+
+	&[data-variant="line"]::before {
+		content:    "";
+		display:    block;
+		flex-shrink: 0;
+	}
+
+	&[data-variant="line"][data-direction="horizontal"]::before {
+		width:      100%;
+		height:     2px;
+		background: linear-gradient(90deg, transparent 0%, @color-decorative-gold 30%, @color-decorative-gold 70%, transparent 100%);
+	}
+
+	&[data-variant="line"][data-direction="vertical"]::before {
+		width:      2px;
+		height:     100%;
+		background: linear-gradient(180deg, transparent 0%, @color-decorative-gold 30%, @color-decorative-gold 70%, transparent 100%);
+	}
+}
