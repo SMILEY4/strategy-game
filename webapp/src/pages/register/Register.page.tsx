@@ -15,43 +15,22 @@ export function RegisterPage() {
 
     return (
         <VerticalLayout center fillWidth fillHeight>
-            <Panel.Decorated
-                border="none"
-                corner="sharp"
-                pattern="paper"
-                variant="neutral"
-                style={{
-                    width: "100%",
-                    height: "100%",
-                }}
-            >
+            <Panel.Decorated neutral noBorder sharpCorner paperPattern fillParent>
 
-                <VerticalLayout center fillWidth fillHeight padding="l">
+                <VerticalLayout center fillWidth fillHeight paddingL>
                     <Panel.Decorated
-                        border="ornamental"
-                        corner="rounded"
-                        pattern="paper"
-                        variant="neutral"
+                        neutral ornamentalBorder roundedCorner paperPattern fillParent
                         overlay={{
                             url: "/images/backgrounds/scenery_2.png",
-                            direction: "fill"
-                        }}
-                        style={{
-                            width: "100%",
-                            height: "100%",
+                            direction: "fill",
                         }}
                     >
 
-                        <VerticalLayout center fillWidth fillHeight padding="l">
-                            <Panel.Decorated
-                                border="ornamental"
-                                corner="rounded"
-                                pattern="paper"
-                                variant="neutral"
-                            >
-                                <VerticalLayout verticalStart horizontalStretch padding="xl" spacing="m">
+                        <VerticalLayout center fillWidth fillHeight paddingL>
+                            <Panel.Decorated neutral ornamentalBorder roundedCorner paperPattern>
+                                <VerticalLayout verticalStart horizontalStretch paddingXl spacingM>
 
-                                    <VerticalLayout verticalStart horizontalCenter spacing="3xs">
+                                    <VerticalLayout verticalStart horizontalCenter spacing3xs>
                                         <Txt.Heading h1><Txt.String>Create Your Account</Txt.String></Txt.Heading>
                                         <Txt.Line><Txt.String>Shape your world's history.</Txt.String></Txt.Line>
                                     </VerticalLayout>
@@ -113,30 +92,4 @@ export function RegisterPage() {
             </Panel.Decorated>
         </VerticalLayout>
     )
-
-    // return (
-    //     <VerticalLayout center fillWidth fillHeight>
-    //         <VerticalLayout verticalStart horizontalStretch spacingS>
-    //             <input
-    //                 placeholder={t("username.placeholder")}
-    //                 value={viewModel.username.value}
-    //                 onChange={e => viewModel.username.onChange(e.target.value)}
-    //             />
-    //             <input
-    //                 placeholder={t("password.placeholder")}
-    //                 value={viewModel.password.value}
-    //                 onChange={e => viewModel.password.onChange(e.target.value)}
-    //             />
-    //             <input
-    //                 placeholder={t("passwordConfirmation.placeholder")}
-    //                 value={viewModel.passwordConfirmation.value}
-    //                 onChange={e => viewModel.passwordConfirmation.onChange(e.target.value)}
-    //             />
-    //             <button onClick={viewModel.register.submit}>{t("submit")}</button>
-    //             <Link to={urlLogin()}>Log-In</Link>
-    //         </VerticalLayout>
-    //     </VerticalLayout>
-    // );
-
-
 }
