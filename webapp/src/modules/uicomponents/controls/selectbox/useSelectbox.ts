@@ -143,6 +143,11 @@ export function useSelectbox(options: SelectboxOptions): SelectboxData {
         selectItem(selected);
     }
 
+    // handle the element getting unfocused (for some additional cases)
+    function onBlur() {
+        setIsOpen(false);
+    }
+
     const referenceProps = getReferenceProps({
         ...hover.elementProps
     })
@@ -151,15 +156,14 @@ export function useSelectbox(options: SelectboxOptions): SelectboxData {
         elementProps: {
             ...referenceProps,
             onClick(event: MouseEvent) {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
                 (referenceProps as any).onClick?.(event)
                 onInputClick();
             },
             onKeyDown(event: KeyboardEvent) {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
                 (referenceProps as any).onKeyDown?.(event)
                 onInputKeyDown(event);
             },
+            onBlur: () => onBlur(),
             "data-disabled": options.disabled ? "" : undefined,
             "data-hover": hover.isHovered ? "" : undefined,
             "data-open": isOpen,

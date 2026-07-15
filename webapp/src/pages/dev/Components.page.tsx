@@ -4,7 +4,7 @@ import {Button} from "@modules/uicomponents/controls/button/Button.tsx";
 import {Icon} from "@modules/uicomponents/icon/Icon.tsx";
 import {Checkbox} from "@modules/uicomponents/controls/checkbox/Checkbox.tsx";
 import {TextField} from "@modules/uicomponents/controls/textfield/TextField.tsx";
-import type {ReactElement} from "react";
+import {type ReactElement, useState} from "react";
 import "./components.page.less";
 import {Panel} from "@/modules/uicomponents/panel/Panel";
 import {Txt} from "@modules/uicomponents/text/Txt.tsx";
@@ -12,6 +12,47 @@ import {Separator} from "@modules/uicomponents/separator/Separator.tsx";
 import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";
 
 export function ComponentsPage(): ReactElement {
+
+
+    const languages = [
+        {
+            key: "german",
+            display: "German",
+            flag: "🇩🇪"
+        },
+        {
+            key: "french",
+            display: "French",
+            flag: "🇫🇷"
+        },
+        {
+            key: "english",
+            display: "English",
+            flag: "🇺🇸"
+        },
+        {
+            key: "italian",
+            display: "Italian",
+            flag: "🇮🇹"
+        },
+        {
+            key: "dutch",
+            display: "Dutch",
+            flag: "🇳🇱"
+        },
+        {
+            key: "swedish",
+            display: "Swedish",
+            flag: "🇸🇪"
+        },
+        {
+            key: "spanish",
+            display: "Spanish",
+            flag: "🇪🇸"
+        }
+    ]
+
+    const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
 
     return (
         <VerticalLayout className="components-page" center spacing3xl padding2xl fillWidth>
@@ -572,15 +613,54 @@ export function ComponentsPage(): ReactElement {
 
                     <VerticalLayout spacingS verticalStart horizontalCenter>
 
-                        <Selectbox.Root selectedItem={{ key: "German"}}>
-                            <Selectbox.Control>
-                                German
+                        <Selectbox.Root
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeS>
+                                {selectedLanguage.flag + " " + selectedLanguage.display}
                             </Selectbox.Control>
                             <Selectbox.List>
                                 {
-                                    ["German", "French", "English", "Italian", "Dutch", "Swedish", "Spanish"].map(lang => (
-                                        <Selectbox.Item key={lang}>
-                                            {lang}
+                                    languages.map(lang => (
+                                        <Selectbox.Item key={lang.key}>
+                                            {lang.flag + " " + lang.display}
+                                        </Selectbox.Item>
+                                    ))
+                                }
+                            </Selectbox.List>
+                        </Selectbox.Root>
+
+                        <Selectbox.Root
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeM>
+                                {selectedLanguage.flag + " " + selectedLanguage.display}
+                            </Selectbox.Control>
+                            <Selectbox.List>
+                                {
+                                    languages.map(lang => (
+                                        <Selectbox.Item key={lang.key}>
+                                            {lang.flag + " " + lang.display}
+                                        </Selectbox.Item>
+                                    ))
+                                }
+                            </Selectbox.List>
+                        </Selectbox.Root>
+
+                        <Selectbox.Root
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeL>
+                                {selectedLanguage.flag + " " + selectedLanguage.display}
+                            </Selectbox.Control>
+                            <Selectbox.List>
+                                {
+                                    languages.map(lang => (
+                                        <Selectbox.Item key={lang.key}>
+                                            {lang.flag + " " + lang.display}
                                         </Selectbox.Item>
                                     ))
                                 }

@@ -104,13 +104,15 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
             {...selectbox.data.elementProps}
             ref={selectbox.data.refs.setElement}
         >
-            <div className="selectbox__control__content">
-                {children}
+            <div className="selectbox__control__inner">
+                <div className="selectbox__control__content">
+                    {children}
+                </div>
+                <Icon.ChevronDown className={classNames(
+                    "selectbox__chevron",
+                    {"selectbox__chevron--open": selectbox.data.status === "open"},
+                )}/>
             </div>
-            <Icon.ChevronDown className={classNames(
-                "selectbox__chevron",
-                {"selectbox__chevron--open": selectbox.data.status === "open"},
-            )}/>
         </div>
     );
 }

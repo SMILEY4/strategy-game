@@ -15,77 +15,111 @@
 }
 
 .selectbox__control {
-	display:         flex;
-	flex-direction:  row;
-	align-items:     center;
-	justify-content: start;
-	gap:             @space-3xs;
 
-	background:      white;
-	color:           white;
-	fill:            white;
-	stroke:          white;
+	cursor:            pointer;
+	outline: unset;
 
-	cursor: pointer;
+	.selectbox__control__inner {
+		width:           100%;
+		height:          100%;
 
-	//============================
-	//  State
-	//============================
-
-	&, &[data-state="neutral"] {
+		display:         flex;
+		flex-direction:  row;
+		align-items:     center;
+		justify-content: start;
+		gap:             @space-3xs;
 	}
 
-	&[data-state="error"] {
-		background: red;
-	}
-
-	&[data-state="success"] {
-		background: green;
-	}
-
-	//============================
-	//  Shape
-	//============================
-
-	&, &[data-shape="rounded"] {
-		border-radius: @radius-m;
-	}
-
-	&[data-shape="pill"] {
-		border-radius: @radius-inf;
-	}
-
-	&[data-shape="circle"] {
-		border-radius: 100%;
-		aspect-ratio:  1/1;
-	}
 
 	//============================
 	//  Size
 	//============================
 
 	&[data-size="s"] {
-		& .selectbox__control__content {
-			padding: 0 @space-xs;
+		height: @size-s;
+
+		.selectbox__control__content {
+			padding:   0 @space-xs;
+			font-size: @font-size-0;
 		}
 
-		height: @size-xs
 	}
 
 	&, &[data-size="m"] {
-		& .selectbox__control__content {
-			padding: 0 @space-xs;
+		height: @size-m;
+
+		.selectbox__control__content {
+			padding:   0 @space-xs;
+			font-size: @font-size-0;
 		}
 
-		height: @size-s
 	}
 
 	&[data-size="l"] {
-		& .selectbox__control__content {
-			padding: 0 @space-xs;
-		}
+		height: @size-l;
 
-		height: @size-m
+		.selectbox__control__content {
+			padding:   0 @space-xs;
+			font-size: @font-size-1;
+		}
+	}
+
+	//============================
+	//  Shape
+	//============================
+
+	&, &[data-shape="box"] {
+		border-radius: @radius-m;
+
+		.selectbox__control__inner {
+			border-radius: @radius-m;
+		}
+	}
+
+	&[data-shape="pill"] {
+		border-radius: @radius-inf;
+
+		.selectbox__control__inner {
+			border-radius: @radius-inf;
+		}
+	}
+
+	//============================
+	//  State
+	//============================
+
+	border:            1px solid transparent;
+	background:        @border-strong-gradient;
+	background-origin: border-box;
+	background-clip:   border-box;
+	box-shadow:        @shadow-element-drop;
+
+	&:focus-within {
+		box-shadow: @decorative-focus-glow;
+	}
+
+	& .selectbox__control__inner {
+		background: @element-fill-neutral-gradient;
+		box-shadow: @shadow-element-inset;
+	}
+
+	&:has(.selectbox__input:disabled) {
+		background: @border-subtle-disabled-gradient;
+
+		.selectbox__control__inner {
+			background: @element-fill-neutral-disabled-gradient;
+		}
+	}
+
+	.selectbox__control__content {
+		color:       @content-on-dark;
+		text-shadow: @shadow-content-on-dark;
+		filter:      drop-shadow(@shadow-content-on-dark);
+	}
+
+	.selectbox__chevron {
+		fill:   @content-on-dark;
+		stroke: @content-on-dark;
 	}
 
 	//============================
@@ -93,15 +127,13 @@
 	//============================
 
 	.selectbox__control__content {
-		width:       100%;
-		height:      100%;
-		flex-grow:   1;
-		flex-shrink: 1;
-		color:       white;
-		font-family: inherit;
+		width:           100%;
+		height:          100%;
+		flex-grow:       1;
+		flex-shrink:     1;
 
-		display: flex;
-		align-items: center;
+		display:         flex;
+		align-items:     center;
 		justify-content: stretch;
 	}
 
@@ -118,7 +150,6 @@
 		align-items:     center;
 		justify-content: center;
 		padding:         @space-3xs;
-		fill:            white;
 		transition:      transform 200ms;
 	}
 
@@ -126,20 +157,6 @@
 		transform: rotateX(180deg);
 	}
 
-}
-
-.selectbox__label {
-	align-self:       start;
-	margin-left:      @space-2xs;
-	margin-bottom:    -5px;
-	z-index:          1;
-	padding:          0 4px;
-	border-radius:    @radius-s;
-	background-color: white;
-}
-
-.selectbox__error-message {
-	margin-left: @space-xs;
 }
 
 //============================
@@ -158,10 +175,12 @@
 	min-height:          0;
 	max-height:          100%;
 	overflow-y:          auto;
-	background-color:    black;
 	border-radius:       @radius-m;
-	box-shadow:          unset;
 	box-sizing:          border-box;
+
+	box-shadow:          @shadow-surface-drop;
+	background:          @element-fill-neutral-gradient;
+	border:              1px solid @border-subtle-color-dark;
 
 	transition-property: opacity;
 
@@ -182,10 +201,11 @@
 .selectbox__item {
 	cursor:  pointer;
 	outline: unset;
-	padding: @space-2xs @space-xs;
+	padding: @space-xs @space-s;
+	color:   @content-on-dark;
 
 	&[data-active] {
-		background-color: black;
+		background-color: @element-fill-blue-dark;
 	}
 
 }
