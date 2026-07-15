@@ -55,11 +55,11 @@
 	&, &[data-corner="rounded"] {
 		border-radius: @radius-m;
 
-		.panel--decorated__base {
+		> .panel--decorated__base {
 			border-radius: @radius-m;
 		}
 
-		.panel--decorated__decoration {
+		> .panel--decorated__decoration {
 			border-radius: @radius-m;
 		}
 	}
@@ -67,11 +67,11 @@
 	&[data-corner="sharp"] {
 		border-radius: unset;
 
-		.panel--decorated__base {
+		> .panel--decorated__base {
 			border-radius: unset;
 		}
 
-		.panel--decorated__decoration {
+		> .panel--decorated__decoration {
 			border-radius: unset;
 		}
 	}
@@ -88,7 +88,7 @@
 		background: @border-subtle-gradient;
 
 
-		.panel--decorated__base {
+		> .panel--decorated__base {
 			box-shadow: @shadow-element-inset;
 		}
 
@@ -96,7 +96,7 @@
 
 	&[data-border="line"] {
 
-		.panel--decorated__decoration {
+		> .panel--decorated__decoration {
 			content:  '';
 			position: absolute;
 			top:      3px;
@@ -109,8 +109,7 @@
 
 	&[data-border="ornamental"] {
 
-
-		.panel--decorated__decoration {
+		> .panel--decorated__decoration {
 			content:      '';
 			position:     absolute;
 			top:          2px;
@@ -126,7 +125,7 @@
 
 	&[data-border="metal-ornament"] {
 
-		.panel--decorated__decoration {
+		> .panel--decorated__decoration {
 			content:      '';
 			position:     absolute;
 			top:          0;
@@ -190,7 +189,7 @@
 
 	&[data-pattern="paper"] {
 
-		.panel--decorated__texture {
+		> .panel--decorated__texture {
 			background-image:  @texture-paper;
 			background-repeat: repeat, no-repeat;
 			background-size:   450px 450px, cover;
@@ -201,7 +200,7 @@
 
 	&[data-pattern="ornament"] {
 
-		.panel--decorated__texture {
+		> .panel--decorated__texture {
 			background-image:  @texture-pattern;
 			background-repeat: repeat, no-repeat;
 			background-size:   70px 70px, cover;
