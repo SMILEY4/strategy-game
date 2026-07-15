@@ -1,0 +1,191 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+
+//============================
+//  CONTROL
+//============================
+
+.selectbox__root {
+	display:         flex;
+	flex-direction:  column;
+	align-items:     stretch;
+	justify-content: start;
+	gap:             0;
+}
+
+.selectbox__control {
+	display:         flex;
+	flex-direction:  row;
+	align-items:     center;
+	justify-content: start;
+	gap:             @space-3xs;
+
+	background:      white;
+	color:           white;
+	fill:            white;
+	stroke:          white;
+
+	cursor: pointer;
+
+	//============================
+	//  State
+	//============================
+
+	&, &[data-state="neutral"] {
+	}
+
+	&[data-state="error"] {
+		background: red;
+	}
+
+	&[data-state="success"] {
+		background: green;
+	}
+
+	//============================
+	//  Shape
+	//============================
+
+	&, &[data-shape="rounded"] {
+		border-radius: @radius-m;
+	}
+
+	&[data-shape="pill"] {
+		border-radius: @radius-inf;
+	}
+
+	&[data-shape="circle"] {
+		border-radius: 100%;
+		aspect-ratio:  1/1;
+	}
+
+	//============================
+	//  Size
+	//============================
+
+	&[data-size="s"] {
+		& .selectbox__control__content {
+			padding: 0 @space-xs;
+		}
+
+		height: @size-xs
+	}
+
+	&, &[data-size="m"] {
+		& .selectbox__control__content {
+			padding: 0 @space-xs;
+		}
+
+		height: @size-s
+	}
+
+	&[data-size="l"] {
+		& .selectbox__control__content {
+			padding: 0 @space-xs;
+		}
+
+		height: @size-m
+	}
+
+	//============================
+	//  Content
+	//============================
+
+	.selectbox__control__content {
+		width:       100%;
+		height:      100%;
+		flex-grow:   1;
+		flex-shrink: 1;
+		color:       white;
+		font-family: inherit;
+
+		display: flex;
+		align-items: center;
+		justify-content: stretch;
+	}
+
+	//============================
+	//  Chevron
+	//============================
+
+	.selectbox__chevron {
+		height:          70%;
+		aspect-ratio:    1/1;
+		flex-grow:       0;
+		flex-shrink:     0;
+		display:         flex;
+		align-items:     center;
+		justify-content: center;
+		padding:         @space-3xs;
+		fill:            white;
+		transition:      transform 200ms;
+	}
+
+	.selectbox__chevron--open {
+		transform: rotateX(180deg);
+	}
+
+}
+
+.selectbox__label {
+	align-self:       start;
+	margin-left:      @space-2xs;
+	margin-bottom:    -5px;
+	z-index:          1;
+	padding:          0 4px;
+	border-radius:    @radius-s;
+	background-color: white;
+}
+
+.selectbox__error-message {
+	margin-left: @space-xs;
+}
+
+//============================
+//  MENU
+//============================
+
+
+.selectbox__list-container {
+	display:        flex;
+	flex-direction: column;
+	z-index:        1000;
+}
+
+.selectbox__list {
+	width:               100%;
+	min-height:          0;
+	max-height:          100%;
+	overflow-y:          auto;
+	background-color:    black;
+	border-radius:       @radius-m;
+	box-shadow:          unset;
+	box-sizing:          border-box;
+
+	transition-property: opacity;
+
+	&[data-status="open"], &[data-status="close"] {
+		transition-duration: 200ms;
+	}
+
+	&[data-status="initial"], &[data-status="close"] {
+		opacity: 0;
+	}
+
+}
+
+//============================
+//  ITEM
+//============================
+
+.selectbox__item {
+	cursor:  pointer;
+	outline: unset;
+	padding: @space-2xs @space-xs;
+
+	&[data-active] {
+		background-color: black;
+	}
+
+}

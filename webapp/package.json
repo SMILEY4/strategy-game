@@ -12,6 +12,7 @@
     "i18nextTypes": "npx i18next-cli types"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.20",
     "@react-hook/resize-observer": "^2.0.2",
     "@tanstack/query-core": "^5.101.0",
     "@types/howler": "^2.2.13",

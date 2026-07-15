@@ -9,6 +9,7 @@ import "./components.page.less";
 import {Panel} from "@/modules/uicomponents/panel/Panel";
 import {Txt} from "@modules/uicomponents/text/Txt.tsx";
 import {Separator} from "@modules/uicomponents/separator/Separator.tsx";
+import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";
 
 export function ComponentsPage(): ReactElement {
 
@@ -22,7 +23,8 @@ export function ComponentsPage(): ReactElement {
                 <VerticalLayout>
                     <Txt.Heading h1>Text</Txt.Heading>
                     <Txt.Body>
-                        Text with extra features. Headers, single lines and paragraphs. Can contain strings, formatted numbers, icons and clickable sections.
+                        Text with extra features. Headers, single lines and paragraphs. Can contain strings, formatted numbers, icons and
+                        clickable sections.
                     </Txt.Body>
                 </VerticalLayout>
 
@@ -112,36 +114,36 @@ export function ComponentsPage(): ReactElement {
 
                 <HorizontalLayout spacing3xl horizontalStart verticalCenter>
 
-                        <div style={{
-                            border: "1px solid gray",
-                            width: 200,
-                            resize: "both",
-                            maxHeight: "fit-content",
-                            maxWidth: "fit-content",
-                            overflow: "auto",
-                        }}>
-                            <Txt.Heading level={5}>Complex Text on Dark</Txt.Heading>
-                            <Txt.Body>
-                                <Txt.String>Some paragraph that includes formatted numbers for example</Txt.String>
-                                <Txt.Number decimals={2}>{42.12345}</Txt.Number>
-                                <Txt.String>or as percentages</Txt.String>
-                                <Txt.Number decimals={1} percentage>{0.7512345}</Txt.Number>
-                                <Txt.String>and optionally with a forced sign:</Txt.String>
-                                <Txt.Number forceSign colored>{14}</Txt.Number>
-                                <Txt.Number forceSign colored>{-24}</Txt.Number>
-                                <Txt.String>. Text can also include icons</Txt.String>
-                                <Txt.Icon><Icon.TrashCan/></Txt.Icon>
-                                <Txt.String>inline in the paragraph.</Txt.String>
-                                <Txt.String>One can even make.</Txt.String>
-                                <Txt.Clickable onClick={() => console.log("Clicked the text")}>
-                                    <Txt.String>"some parts ("</Txt.String>
-                                    <Txt.Icon><Icon.Eye/></Txt.Icon>
-                                    <Txt.Number percentage>{0.99}</Txt.Number>
-                                    <Txt.String>) clickable!</Txt.String>
-                                </Txt.Clickable>
-                                <Txt.String>Awesome right?</Txt.String>
-                            </Txt.Body>
-                        </div>
+                    <div style={{
+                        border: "1px solid gray",
+                        width: 200,
+                        resize: "both",
+                        maxHeight: "fit-content",
+                        maxWidth: "fit-content",
+                        overflow: "auto",
+                    }}>
+                        <Txt.Heading level={5}>Complex Text on Dark</Txt.Heading>
+                        <Txt.Body>
+                            <Txt.String>Some paragraph that includes formatted numbers for example</Txt.String>
+                            <Txt.Number decimals={2}>{42.12345}</Txt.Number>
+                            <Txt.String>or as percentages</Txt.String>
+                            <Txt.Number decimals={1} percentage>{0.7512345}</Txt.Number>
+                            <Txt.String>and optionally with a forced sign:</Txt.String>
+                            <Txt.Number forceSign colored>{14}</Txt.Number>
+                            <Txt.Number forceSign colored>{-24}</Txt.Number>
+                            <Txt.String>. Text can also include icons</Txt.String>
+                            <Txt.Icon><Icon.TrashCan/></Txt.Icon>
+                            <Txt.String>inline in the paragraph.</Txt.String>
+                            <Txt.String>One can even make.</Txt.String>
+                            <Txt.Clickable onClick={() => console.log("Clicked the text")}>
+                                <Txt.String>"some parts ("</Txt.String>
+                                <Txt.Icon><Icon.Eye/></Txt.Icon>
+                                <Txt.Number percentage>{0.99}</Txt.Number>
+                                <Txt.String>) clickable!</Txt.String>
+                            </Txt.Clickable>
+                            <Txt.String>Awesome right?</Txt.String>
+                        </Txt.Body>
+                    </div>
 
                     <div style={{
                         border: "1px solid gray",
@@ -150,7 +152,7 @@ export function ComponentsPage(): ReactElement {
                         maxHeight: "fit-content",
                         maxWidth: "fit-content",
                         overflow: "auto",
-                        backgroundColor: "lightgrey"
+                        backgroundColor: "lightgrey",
                     }}>
                         <Txt.Heading level={5} light>Complex Text on Light</Txt.Heading>
                         <Txt.Body light>
@@ -220,9 +222,11 @@ export function ComponentsPage(): ReactElement {
                     <Txt.Heading h1>Decorative Panels</Txt.Heading>
                     <Txt.Body>
                         Decorative panels to display any content inside.
-                        Can have different border variants (no border, raised metallic, line decoration, ornament decoration, and raised metallic ornament),
+                        Can have different border variants (no border, raised metallic, line decoration, ornament decoration, and raised
+                        metallic ornament),
                         textures (none, paper, ornament pattern) and colors.
-                        In addition to this, users can specify additional colors and images to overlay - either as a gradient or a full fill.
+                        In addition to this, users can specify additional colors and images to overlay - either as a gradient or a full
+                        fill.
                     </Txt.Body>
                 </VerticalLayout>
 
@@ -331,7 +335,7 @@ export function ComponentsPage(): ReactElement {
                         width: 200,
                         height: 200,
                         display: "flex",
-                        flexDirection: "row"
+                        flexDirection: "row",
                     }}>
                         <Txt.Line><Txt.String>Left Element</Txt.String></Txt.Line>
                         <Separator vertical line/>
@@ -425,7 +429,8 @@ export function ComponentsPage(): ReactElement {
                 <VerticalLayout>
                     <Txt.Heading h1>Text Fields</Txt.Heading>
                     <Txt.Body>
-                        Text fields to accept user input. Can be different sizes and shapes (box, pill) and support icons and labels above and below the box.
+                        Text fields to accept user input. Can be different sizes and shapes (box, pill) and support icons and labels above
+                        and below the box.
                     </Txt.Body>
                 </VerticalLayout>
 
@@ -550,6 +555,44 @@ export function ComponentsPage(): ReactElement {
                     </VerticalLayout>
 
                 </HorizontalLayout>
+            </>
+
+            {/*==========  SELECTBOX ==========*/}
+
+            <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Selectbox</Txt.Heading>
+                    <Txt.Body>
+                        Choose an option from a list of available options via a drop down menu.
+                    </Txt.Body>
+                </VerticalLayout>
+
+                <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+
+                    <VerticalLayout spacingS verticalStart horizontalCenter>
+
+                        <Selectbox.Root selectedItem={{ key: "German"}}>
+                            <Selectbox.Control>
+                                German
+                            </Selectbox.Control>
+                            <Selectbox.List>
+                                {
+                                    ["German", "French", "English", "Italian", "Dutch", "Swedish", "Spanish"].map(lang => (
+                                        <Selectbox.Item key={lang}>
+                                            {lang}
+                                        </Selectbox.Item>
+                                    ))
+                                }
+                            </Selectbox.List>
+                        </Selectbox.Root>
+
+                    </VerticalLayout>
+
+
+                </HorizontalLayout>
+
+                <div style={{height: 500}}/>
             </>
 
         </VerticalLayout>

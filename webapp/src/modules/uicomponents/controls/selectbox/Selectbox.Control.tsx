@@ -1,0 +1,140 @@
+import {type ComponentPropsWithoutRef, type ReactElement} from "react";
+import classNames from "classnames";
+import "./selectbox.less";
+import {useSelectboxContext} from "@modules/uicomponents/controls/selectbox/Selectbox.Context.tsx";
+import { Icon } from "../../icon/Icon";
+
+type Shape =
+    | "box"
+    | "pill"
+
+type ShapeShorthands = {
+    box?: boolean;
+    pill?: boolean;
+};
+
+type Size =
+    | "s"
+    | "m"
+    | "l";
+
+type SizeShorthands = {
+    sizeS?: boolean;
+    sizeM?: boolean;
+    sizeL?: boolean;
+};
+
+type State =
+    | "neutral"
+    | "success"
+    | "error";
+
+type StateShorthands = {
+    success?: boolean;
+    error?: boolean;
+};
+
+type Selectbox_ControlProps = {
+        shape?: Shape;
+        size?: Size;
+        state?: State;
+    }
+    & ComponentPropsWithoutRef<"div">
+    & ShapeShorthands
+    & SizeShorthands
+    & StateShorthands
+
+
+export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
+
+    const {
+        className,
+        children,
+
+        // shape
+        shape,
+        box,
+        pill,
+
+        // size
+        size,
+        sizeS,
+        sizeM,
+        sizeL,
+
+        // state
+        state,
+        success,
+        error,
+
+        // safe DOM props
+        ...rest
+    } = props;
+
+    const selectbox = useSelectboxContext();
+
+    const shapeResolved = resolveShape({
+        shape,
+        box,
+        pill,
+    });
+
+    const sizeResolved = resolveSize({
+        size,
+        sizeS,
+        sizeM,
+        sizeL,
+    });
+
+    const stateResolved = resolveState({
+        state,
+        success,
+        error,
+    });
+
+
+    return (
+        <div
+            {...rest}
+            className={classNames("selectbox__control", className)}
+            data-shape={shapeResolved}
+            data-size={sizeResolved}
+            data-state={stateResolved}
+            tabIndex={0}
+            {...selectbox.data.elementProps}
+            ref={selectbox.data.refs.setElement}
+        >
+            <div className="selectbox__control__content">
+                {children}
+            </div>
+            <Icon.ChevronDown className={classNames(
+                "selectbox__chevron",
+                {"selectbox__chevron--open": selectbox.data.status === "open"},
+            )}/>
+        </div>
+    );
+}
+
+Selectbox_Control.displayName = "Selectbox.Control";
+
+function resolveShape(props: { shape?: Shape } & ShapeShorthands): Shape | undefined {
+    if (props.shape) return props.shape;
+    if (props.box) return "box";
+    if (props.pill) return "pill";
+    return undefined;
+}
+
+function resolveSize(props: { size?: Size } & SizeShorthands): Size | undefined {
+    if (props.size) return props.size;
+    if (props.sizeS) return "s";
+    if (props.sizeM) return "m";
+    if (props.sizeL) return "l";
+    return undefined;
+}
+
+function resolveState(props: { state?: State } & StateShorthands): State | undefined {
+    if (props.state) return props.state;
+    if (props.error) return "error";
+    if (props.success) return "success";
+    return undefined;
+}
