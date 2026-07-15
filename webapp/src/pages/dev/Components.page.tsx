@@ -41,6 +41,11 @@ export function ComponentsPage(): ReactElement {
             flag: "🇳🇱"
         },
         {
+            key: "norwegian",
+            display: "Norwegian",
+            flag: "🇳🇴"
+        },
+        {
             key: "swedish",
             display: "Swedish",
             flag: "🇸🇪"
@@ -669,6 +674,49 @@ export function ComponentsPage(): ReactElement {
 
                     </VerticalLayout>
 
+
+                    <VerticalLayout spacingS verticalStart horizontalCenter>
+
+                        <Selectbox.Root
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeM>
+                                {selectedLanguage.flag + " " + selectedLanguage.display}
+                            </Selectbox.Control>
+                            <Selectbox.List>
+                                {
+                                    languages.map(lang => (
+                                        <Selectbox.Item key={lang.key}>
+                                            {lang.flag + " " + lang.display}
+                                        </Selectbox.Item>
+                                    ))
+                                }
+                            </Selectbox.List>
+                        </Selectbox.Root>
+
+                        <Selectbox.Root
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeM stableSize={{
+                                enabled: true,
+                                allOptions: languages.map(lang => lang.flag + " " + lang.display)
+                            }}>
+                                {selectedLanguage.flag + " " + selectedLanguage.display}
+                            </Selectbox.Control>
+                            <Selectbox.List>
+                                {
+                                    languages.map(lang => (
+                                        <Selectbox.Item key={lang.key}>
+                                            {lang.flag + " " + lang.display}
+                                        </Selectbox.Item>
+                                    ))
+                                }
+                            </Selectbox.List>
+                        </Selectbox.Root>
+
+                    </VerticalLayout>
 
                 </HorizontalLayout>
 

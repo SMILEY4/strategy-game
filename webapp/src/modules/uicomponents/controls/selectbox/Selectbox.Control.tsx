@@ -1,8 +1,8 @@
-import {type ComponentPropsWithoutRef, type ReactElement} from "react";
+import {type ComponentPropsWithoutRef, type ReactElement, type ReactNode} from "react";
 import classNames from "classnames";
 import "./selectbox.less";
 import {useSelectboxContext} from "@modules/uicomponents/controls/selectbox/Selectbox.Context.tsx";
-import { Icon } from "../../icon/Icon";
+import {Icon} from "../../icon/Icon";
 
 type Shape =
     | "box"
@@ -38,6 +38,9 @@ type Selectbox_ControlProps = {
         shape?: Shape;
         size?: Size;
         state?: State;
+        stableSize?:
+            | { enabled: false }
+            | { enabled: true; allOptions: ReactNode[] },
     }
     & ComponentPropsWithoutRef<"div">
     & ShapeShorthands
@@ -50,6 +53,7 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
     const {
         className,
         children,
+        stableSize,
 
         // shape
         shape,
@@ -105,8 +109,35 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
             ref={selectbox.data.refs.setElement}
         >
             <div className="selectbox__control__inner">
-                <div className="selectbox__control__content">
-                    {children}
+                <div className={classNames(
+                    "selectbox__control__content",
+                    stableSize?.enabled && "selectbox__control__content--stable",
+                )}>
+                    {
+                        props.stableSize?.enabled === true
+                            ? (
+                                <>
+                                    {
+                                        props.stableSize.allOptions.map(option => (
+                                            <div className={classNames(
+                                                "selectbox__control__content__item",
+                                                "selectbox__control__content__item--hidden"
+                                            )}>
+                                                {option}
+                                            </div>
+                                        ))
+                                    }
+                                    <div className={"selectbox__control__content__item"}>
+                                        {children}
+                                    </div>
+                                </>
+                            )
+                            : (
+                                <div className={"selectbox__control__content__item"}>
+                                    {children}
+                                </div>
+                            )
+                    }
                 </div>
                 <Icon.ChevronDown className={classNames(
                     "selectbox__chevron",

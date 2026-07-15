@@ -135,6 +135,20 @@
 		display:         flex;
 		align-items:     center;
 		justify-content: stretch;
+
+		&.selectbox__control__content--stable {
+			display: grid;
+
+			> .selectbox__control__content__item {
+				grid-area: 1/1;
+				visibility: visible;
+			}
+
+			> .selectbox__control__content__item--hidden {
+				grid-area: 1/1;
+				visibility: hidden;
+			}
+		}
 	}
 
 	//============================
