@@ -2,7 +2,7 @@ import React, {type ReactElement, type ReactNode} from "react";
 import {type SelectboxData, type SelectboxItem, useSelectbox} from "./useSelectbox.ts";
 import classNames from "classnames";
 import {FloatingFocusManager, FloatingPortal} from "@floating-ui/react";
-import "./selectbox.less";
+import styles from "./selectbox.module.less";
 import { SelectboxContext } from "./Selectbox.Context.tsx";
 import type {Selectbox_ListProps} from "@modules/uicomponents/controls/selectbox/Selectbox.List.tsx";
 import type {Selectbox_ItemProps} from "@modules/uicomponents/controls/selectbox/Selectbox.Item.tsx";
@@ -38,7 +38,7 @@ export function Selectbox_Root(props: Selectbox_RootProps): ReactElement {
     return (
         <SelectboxContext.Provider value={{data: selectbox}}>
 
-            <div className="selectbox__root">
+            <div className={styles.root}>
                 {trueChildren}
             </div>
 
@@ -50,12 +50,12 @@ export function Selectbox_Root(props: Selectbox_RootProps): ReactElement {
                         visuallyHiddenDismiss
                     >
                         <div
-                            className={"selectbox__list-container"}
+                            className={styles.listContainer}
                             ref={selectbox.refs.setListContainer}
                             {...selectbox.listContainerProps}
                         >
                             <div
-                                className={classNames("selectbox__list", props.classNameFloating)}
+                                className={classNames(styles.list, props.classNameFloating)}
                                 {...selectbox.listProps}
                             >
                                 {itemChildren}
@@ -122,7 +122,7 @@ function getItemChildren(children: ReactNode, selectbox: SelectboxData): ReactNo
                     const element = (
                         <div
                             key={listChild.key}
-                            className="selectbox__item"
+                            className={styles.item}
                             {...selectbox.itemProps(itemElementIndex)}
                         >
                             {itemProps.children}

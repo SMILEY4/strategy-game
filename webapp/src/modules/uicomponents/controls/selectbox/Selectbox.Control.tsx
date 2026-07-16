@@ -1,6 +1,6 @@
 import {type ComponentPropsWithoutRef, type ReactElement, type ReactNode} from "react";
 import classNames from "classnames";
-import "./selectbox.less";
+import styles from "./selectbox.module.less";
 import {useSelectboxContext} from "@modules/uicomponents/controls/selectbox/Selectbox.Context.tsx";
 import {Icon} from "../../icon/Icon";
 
@@ -100,7 +100,7 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
     return (
         <div
             {...rest}
-            className={classNames("selectbox__control", className)}
+            className={classNames(styles.control, className)}
             data-shape={shapeResolved}
             data-size={sizeResolved}
             data-state={stateResolved}
@@ -108,10 +108,10 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
             {...selectbox.data.elementProps}
             ref={selectbox.data.refs.setElement}
         >
-            <div className="selectbox__control__inner">
+            <div className={styles.control__inner}>
                 <div className={classNames(
-                    "selectbox__control__content",
-                    stableSize?.enabled && "selectbox__control__content--stable",
+                    styles.control__content,
+                    stableSize?.enabled && styles['control__content--stable'],
                 )}>
                     {
                         props.stableSize?.enabled === true
@@ -120,28 +120,28 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
                                     {
                                         props.stableSize.allOptions.map(option => (
                                             <div className={classNames(
-                                                "selectbox__control__content__item",
-                                                "selectbox__control__content__item--hidden"
+                                                styles.control__content__item,
+                                                styles['control__content__item--hidden']
                                             )}>
                                                 {option}
                                             </div>
                                         ))
                                     }
-                                    <div className={"selectbox__control__content__item"}>
+                                    <div className={styles.control__content__item}>
                                         {children}
                                     </div>
                                 </>
                             )
                             : (
-                                <div className={"selectbox__control__content__item"}>
+                                <div className={styles.control__content__item}>
                                     {children}
                                 </div>
                             )
                     }
                 </div>
                 <Icon.ChevronDown className={classNames(
-                    "selectbox__chevron",
-                    {"selectbox__chevron--open": selectbox.data.status === "open"},
+                    styles.chevron,
+                    {[styles['chevron--open']]: selectbox.data.status === "open"},
                 )}/>
             </div>
         </div>

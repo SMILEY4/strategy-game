@@ -1,5 +1,4 @@
 import {type ReactNode} from "react";
-import "./selectbox.less";
 
 export type Selectbox_ListProps = {
     children: ReactNode;
