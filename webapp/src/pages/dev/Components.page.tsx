@@ -628,18 +628,13 @@ export function ComponentsPage(): ReactElement {
 
                         <Selectbox.Root
                             items={languages}
+                            // renderItem={(item: LanguageItem) => (
+                            //     <Selectbox.Item key={item.key}>{item.flag + " " + item.display}</Selectbox.Item>
+                            // )}
                             selectedItem={selectedLanguage}
                             onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
-                            renderItem={(item: LanguageItem) => (
-                                <Selectbox.Item key={item.key}>{item.flag + " " + item.display}</Selectbox.Item>
-                            )}
                         >
-                            <Selectbox.Control sizeM stableSize={{
-                                enabled: true,
-                                allOptions: languages.map(lang => lang.flag + " " + lang.display)
-                            }}>
-                                {selectedLanguage.flag + " " + selectedLanguage.display}
-                            </Selectbox.Control>
+                            <Selectbox.Control sizeM stableSize></Selectbox.Control>
                             <Selectbox.List listOffset={0}/>
                         </Selectbox.Root>
 

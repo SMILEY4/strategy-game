@@ -1,4 +1,4 @@
-import {type ComponentPropsWithoutRef, type ReactElement, type ReactNode} from "react";
+import {type ComponentPropsWithoutRef, type ReactElement} from "react";
 import classNames from "classnames";
 import styles from "./selectbox.module.less";
 import {useSelectboxContext} from "@modules/uicomponents/controls/selectbox/Selectbox.Context.tsx";
@@ -38,9 +38,7 @@ type Selectbox_ControlProps = {
         shape?: Shape;
         size?: Size;
         state?: State;
-        stableSize?:
-            | { enabled: false }
-            | { enabled: true; allOptions: ReactNode[] },
+        stableSize?: boolean
     }
     & ComponentPropsWithoutRef<"div">
     & ShapeShorthands
@@ -111,19 +109,22 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
             <div className={styles.control__inner}>
                 <div className={classNames(
                     styles.control__content,
-                    stableSize?.enabled && styles['control__content--stable'],
+                    stableSize && styles['control__content--stable'],
                 )}>
                     {
-                        props.stableSize?.enabled === true
+                        props.stableSize && selectbox.renderItem
                             ? (
                                 <>
                                     {
-                                        props.stableSize.allOptions.map(option => (
-                                            <div className={classNames(
-                                                styles.control__content__item,
-                                                styles['control__content__item--hidden']
-                                            )}>
-                                                {option}
+                                        selectbox.items.map(item => (
+                                            <div
+                                                key={item.key}
+                                                className={classNames(
+                                                    styles.control__content__item,
+                                                    styles['control__content__item--hidden']
+                                                )}
+                                            >
+                                                {selectbox.renderItem!(item)}
                                             </div>
                                         ))
                                     }

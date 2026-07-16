@@ -1,9 +1,11 @@
 import * as React from "react";
-import {createContext} from "react";
-import type {SelectboxData} from "@modules/uicomponents/controls/selectbox/useSelectbox.ts";
+import {createContext, type ReactElement} from "react";
+import type {SelectboxData, SelectboxItem} from "@modules/uicomponents/controls/selectbox/useSelectbox.ts";
 
 interface ContextType {
     data: SelectboxData;
+    items: SelectboxItem[];
+    renderItem: ((item: SelectboxItem) => ReactElement);
 }
 
 export const SelectboxContext = createContext<ContextType | null>(null);
@@ -15,4 +17,3 @@ export function useSelectboxContext(): ContextType {
     }
     return context;
 }
-
