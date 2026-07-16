@@ -50,6 +50,7 @@ export function Selectbox_Root<TItem extends SelectboxItem>(props: Selectbox_Roo
         <SelectboxContext.Provider value={{
             data: selectbox,
             items: props.items ?? [],
+            selectedItem: props.selectedItem ?? null,
             renderItem: renderItemFunc,
         }}>
 

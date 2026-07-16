@@ -5,6 +5,7 @@ import type {SelectboxData, SelectboxItem} from "@modules/uicomponents/controls/
 interface ContextType {
     data: SelectboxData;
     items: SelectboxItem[];
+    selectedItem: SelectboxItem | null;
     renderItem: ((item: SelectboxItem) => ReactElement);
 }
 

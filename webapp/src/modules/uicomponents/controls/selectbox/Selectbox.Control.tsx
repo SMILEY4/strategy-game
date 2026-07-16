@@ -38,9 +38,10 @@ type Selectbox_ControlProps = {
         shape?: Shape;
         size?: Size;
         state?: State;
-        stableSize?: boolean
+        stableSize?: boolean;
+        children?: never;
     }
-    & ComponentPropsWithoutRef<"div">
+    & Omit<ComponentPropsWithoutRef<"div">, "children">
     & ShapeShorthands
     & SizeShorthands
     & StateShorthands
@@ -50,7 +51,6 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
 
     const {
         className,
-        children,
         stableSize,
 
         // shape
@@ -74,6 +74,10 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
     } = props;
 
     const selectbox = useSelectboxContext();
+
+    const display = selectbox.selectedItem
+        ? selectbox.renderItem(selectbox.selectedItem)
+        : null;
 
     const shapeResolved = resolveShape({
         shape,
@@ -112,7 +116,7 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
                     stableSize && styles['control__content--stable'],
                 )}>
                     {
-                        props.stableSize && selectbox.renderItem
+                        props.stableSize
                             ? (
                                 <>
                                     {
@@ -124,18 +128,18 @@ export function Selectbox_Control(props: Selectbox_ControlProps): ReactElement {
                                                     styles['control__content__item--hidden']
                                                 )}
                                             >
-                                                {selectbox.renderItem!(item)}
+                                                {selectbox.renderItem(item)}
                                             </div>
                                         ))
                                     }
                                     <div className={styles.control__content__item}>
-                                        {children}
+                                        {display}
                                     </div>
                                 </>
                             )
                             : (
                                 <div className={styles.control__content__item}>
-                                    {children}
+                                    {display}
                                 </div>
                             )
                     }

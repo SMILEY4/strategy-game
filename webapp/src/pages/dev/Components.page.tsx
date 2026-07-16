@@ -628,9 +628,49 @@ export function ComponentsPage(): ReactElement {
 
                         <Selectbox.Root
                             items={languages}
-                            // renderItem={(item: LanguageItem) => (
-                            //     <Selectbox.Item key={item.key}>{item.flag + " " + item.display}</Selectbox.Item>
-                            // )}
+                            renderItem={(item: LanguageItem) => (
+                                <Selectbox.Item key={item.key}>{item.flag + " " + item.display}</Selectbox.Item>
+                            )}
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeM stableSize box/>
+                            <Selectbox.List/>
+                        </Selectbox.Root>
+
+                        <Selectbox.Root
+                            items={languages}
+                            renderItem={(item: LanguageItem) => (
+                                <Selectbox.Item key={item.key}>{item.flag + " " + item.display}</Selectbox.Item>
+                            )}
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeM stableSize pill/>
+                            <Selectbox.List/>
+                        </Selectbox.Root>
+
+                    </VerticalLayout>
+
+                    <VerticalLayout spacingS verticalStart horizontalCenter>
+
+                        <Selectbox.Root
+                            items={languages}
+                            renderItem={(item: LanguageItem) => (
+                                <Selectbox.Item key={item.key}>{item.flag + " " + item.display}</Selectbox.Item>
+                            )}
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeS stableSize></Selectbox.Control>
+                            <Selectbox.List/>
+                        </Selectbox.Root>
+
+                        <Selectbox.Root
+                            items={languages}
+                            renderItem={(item: LanguageItem) => (
+                                <Selectbox.Item key={item.key}>{item.flag + " " + item.display}</Selectbox.Item>
+                            )}
                             selectedItem={selectedLanguage}
                             onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
                         >
@@ -638,112 +678,37 @@ export function ComponentsPage(): ReactElement {
                             <Selectbox.List listOffset={0}/>
                         </Selectbox.Root>
 
+                        <Selectbox.Root
+                            items={languages}
+                            renderItem={(item: LanguageItem) => (
+                                <Selectbox.Item key={item.key}>{item.flag + " " + item.display}</Selectbox.Item>
+                            )}
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeL stableSize></Selectbox.Control>
+                            <Selectbox.List/>
+                        </Selectbox.Root>
 
                     </VerticalLayout>
 
-                {/*<HorizontalLayout spacing3xl horizontalStart verticalCenter>*/}
 
-                {/*    <VerticalLayout spacingS verticalStart horizontalCenter>*/}
+                    <VerticalLayout spacingS verticalStart horizontalCenter>
 
-                {/*        <Selectbox.Root*/}
-                {/*            selectedItem={selectedLanguage}*/}
-                {/*            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}*/}
-                {/*        >*/}
-                {/*            <Selectbox.Control sizeS>*/}
-                {/*                {selectedLanguage.flag + " " + selectedLanguage.display}*/}
-                {/*            </Selectbox.Control>*/}
-                {/*            <Selectbox.List>*/}
-                {/*                {*/}
-                {/*                    languages.map(lang => (*/}
-                {/*                        <Selectbox.Item key={lang.key}>*/}
-                {/*                            {lang.flag + " " + lang.display}*/}
-                {/*                        </Selectbox.Item>*/}
-                {/*                    ))*/}
-                {/*                }*/}
-                {/*            </Selectbox.List>*/}
-                {/*        </Selectbox.Root>*/}
-
-                {/*        <Selectbox.Root*/}
-                {/*            selectedItem={selectedLanguage}*/}
-                {/*            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}*/}
-                {/*        >*/}
-                {/*            <Selectbox.Control sizeM>*/}
-                {/*                {selectedLanguage.flag + " " + selectedLanguage.display}*/}
-                {/*            </Selectbox.Control>*/}
-                {/*            <Selectbox.List>*/}
-                {/*                {*/}
-                {/*                    languages.map(lang => (*/}
-                {/*                        <Selectbox.Item key={lang.key}>*/}
-                {/*                            {lang.flag + " " + lang.display}*/}
-                {/*                        </Selectbox.Item>*/}
-                {/*                    ))*/}
-                {/*                }*/}
-                {/*            </Selectbox.List>*/}
-                {/*        </Selectbox.Root>*/}
-
-                {/*        <Selectbox.Root*/}
-                {/*            selectedItem={selectedLanguage}*/}
-                {/*            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}*/}
-                {/*        >*/}
-                {/*            <Selectbox.Control sizeL>*/}
-                {/*                {selectedLanguage.flag + " " + selectedLanguage.display}*/}
-                {/*            </Selectbox.Control>*/}
-                {/*            <Selectbox.List>*/}
-                {/*                {*/}
-                {/*                    languages.map(lang => (*/}
-                {/*                        <Selectbox.Item key={lang.key}>*/}
-                {/*                            {lang.flag + " " + lang.display}*/}
-                {/*                        </Selectbox.Item>*/}
-                {/*                    ))*/}
-                {/*                }*/}
-                {/*            </Selectbox.List>*/}
-                {/*        </Selectbox.Root>*/}
-
-                {/*    </VerticalLayout>*/}
+                        <Selectbox.Root
+                            items={languages}
+                            renderItem={(item: LanguageItem) => (
+                                <Selectbox.Item key={item.key}>{item.flag + " " + item.display}</Selectbox.Item>
+                            )}
+                            selectedItem={selectedLanguage}
+                            onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}
+                        >
+                            <Selectbox.Control sizeM stableSize></Selectbox.Control>
+                            <Selectbox.List/>
+                        </Selectbox.Root>
 
 
-                    {/*<VerticalLayout spacingS verticalStart horizontalCenter>*/}
-
-                    {/*    <Selectbox.Root*/}
-                    {/*        selectedItem={selectedLanguage}*/}
-                    {/*        onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}*/}
-                    {/*    >*/}
-                    {/*        <Selectbox.Control sizeM>*/}
-                    {/*            {selectedLanguage.flag + " " + selectedLanguage.display}*/}
-                    {/*        </Selectbox.Control>*/}
-                    {/*        <Selectbox.List>*/}
-                    {/*            {*/}
-                    {/*                languages.map(lang => (*/}
-                    {/*                    <Selectbox.Item key={lang.key}>*/}
-                    {/*                        {lang.flag + " " + lang.display}*/}
-                    {/*                    </Selectbox.Item>*/}
-                    {/*                ))*/}
-                    {/*            }*/}
-                    {/*        </Selectbox.List>*/}
-                    {/*    </Selectbox.Root>*/}
-
-                    {/*    <Selectbox.Root*/}
-                    {/*        selectedItem={selectedLanguage}*/}
-                    {/*        onSelectedItemChange={lang => setSelectedLanguage(languages.find(it => it.key == lang.key)!)}*/}
-                    {/*    >*/}
-                    {/*        <Selectbox.Control sizeM stableSize={{*/}
-                    {/*            enabled: true,*/}
-                    {/*            allOptions: languages.map(lang => lang.flag + " " + lang.display)*/}
-                    {/*        }}>*/}
-                    {/*            {selectedLanguage.flag + " " + selectedLanguage.display}*/}
-                    {/*        </Selectbox.Control>*/}
-                    {/*        <Selectbox.List>*/}
-                    {/*            {*/}
-                    {/*                languages.map(lang => (*/}
-                    {/*                    <Selectbox.Item key={lang.key}>*/}
-                    {/*                        {lang.flag + " " + lang.display}*/}
-                    {/*                    </Selectbox.Item>*/}
-                    {/*                ))*/}
-                    {/*            }*/}
-                    {/*        </Selectbox.List>*/}
-                    {/*    </Selectbox.Root>*/}
-
-                    {/*</VerticalLayout>*/}
+                    </VerticalLayout>
 
                 </HorizontalLayout>
 
