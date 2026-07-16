@@ -8,12 +8,16 @@ import {Txt} from "@/modules/uicomponents/text/Txt";
 import {Checkbox} from "@modules/uicomponents/controls/checkbox/Checkbox.tsx";
 import {Separator} from "@modules/uicomponents/separator/Separator.tsx";
 import {useTranslation} from "react-i18next";
+import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";
+import {useLanguage} from "@modules/uicomponents/hooks/useLanguage.ts";
 
 export function LoginPage() {
 
     const viewModel = useLoginViewModel();
     const {urlRegister} = useRouting();
     const {t} = useTranslation("login");
+
+    const { languages, setLanguage, selectedLanguage } = useLanguage()
 
     return (
         <VerticalLayout center fillWidth fillHeight>
@@ -109,6 +113,18 @@ export function LoginPage() {
                                 </VerticalLayout>
                             </Panel.Decorated>
                         </VerticalLayout>
+
+                        <div style={{position: "absolute", top: 24, right: 24 }}>
+                            <Selectbox.Root
+                                items={languages}
+                                selectedItem={selectedLanguage}
+                                onSelectedItemChange={setLanguage}
+                                renderItem={item => (<Selectbox.Item key={item.key}>{item.flag + " " + item.name}</Selectbox.Item>)}
+                            >
+                                <Selectbox.Control sizeM stableSize box/>
+                                <Selectbox.List/>
+                            </Selectbox.Root>
+                        </div>
 
                     </Panel.Decorated>
                 </VerticalLayout>

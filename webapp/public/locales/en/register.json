@@ -1,6 +1,9 @@
 {
+  "header": {
+    "title": "Create your account",
+    "subtitle": "Shape your world's history."
+  },
   "username": {
-    "label": "Username",
     "placeholder": "Enter your username",
     "error": {
       "empty": "Please enter a username.",
@@ -9,7 +12,6 @@
     }
   },
   "password": {
-    "label": "Password",
     "placeholder": "Enter your password",
     "error": {
       "empty": "Please enter a password.",
@@ -17,19 +19,10 @@
     }
   },
   "passwordConfirmation": {
-    "label": "Confirm password",
     "placeholder": "Re-enter your password",
     "error": {
       "empty": "Please confirm your password.",
       "mismatch": "Passwords don't match."
-    }
-  },
-  "registrationCode": {
-    "label": "Registration code",
-    "placeholder": "Enter your registration code",
-    "error": {
-      "empty": "Please enter a registration code.",
-      "INVALID_REGISTRATION_CODE": "The registration code is incorrect."
     }
   },
   "submit": "Create account",
@@ -43,6 +36,6 @@
   },
   "infoLogIn": {
     "question": "Already have an account?",
-    "action": "Log in"
+    "action": "Sign in."
   }
 }

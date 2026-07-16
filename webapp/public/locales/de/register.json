@@ -1,6 +1,9 @@
 {
+  "header": {
+    "title": "Create your account",
+    "subtitle": "Shape your world's history."
+  },
   "username": {
-    "label": "Benutzername",
     "placeholder": "Benutzernamen eingeben",
     "error": {
       "empty": "Bitte gib einen Benutzernamen ein.",
@@ -9,7 +12,6 @@
     }
   },
   "password": {
-    "label": "Passwort",
     "placeholder": "Passwort eingeben",
     "error": {
       "empty": "Bitte gib ein Passwort ein.",
@@ -17,7 +19,6 @@
     }
   },
   "passwordConfirmation": {
-    "label": "Passwort bestätigen",
     "placeholder": "Passwort erneut eingeben",
     "error": {
       "empty": "Bitte bestätige dein Passwort.",
@@ -25,7 +26,6 @@
     }
   },
   "registrationCode": {
-    "label": "Registrierungscode",
     "placeholder": "Registrierungscode eingeben",
     "error": {
       "empty": "Bitte gib einen Registrierungscode ein.",
@@ -42,7 +42,7 @@
     "unknown": "Ein unbekannter Fehler ist aufgetreten."
   },
   "infoLogIn": {
-    "question": "Du hast schon ein Konto?",
+    "question": "Du hast schon ein Nutzerprofil?",
     "action": "Zum Login"
   }
 }

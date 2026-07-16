@@ -40,6 +40,10 @@ export default interface Resources {
       "USERNAME_TAKEN": "general error response: username is already taken",
       "unknown": "general error response: unexpected error"
     },
+    "header": {
+      "subtitle": "A subtitle for the registration form",
+      "title": "The title of the registration form"
+    },
     "infoLogIn": {
       "action": "Link to the log-in page.",
       "question": "Question whether the user already has an account and wants to log-in instead."
@@ -49,7 +53,6 @@ export default interface Resources {
         "INVALID_PASSWORD": "password validation error: is invalid",
         "empty": "password validation error: is empty"
       },
-      "label": "The label of the password input",
       "placeholder": "The placeholder text in the empty password input"
     },
     "passwordConfirmation": {
@@ -57,16 +60,7 @@ export default interface Resources {
         "empty": "password confirmation error: is empty",
         "mismatch": "password confirmation error: does not match password"
       },
-      "label": "The label of the password confirmation input",
       "placeholder": "The placeholder text in the empty password confirmation input"
-    },
-    "registrationCode": {
-      "error": {
-        "INVALID_REGISTRATION_CODE": "registration code validation error: is invalid or missing",
-        "empty": "registration code validation error: is empty"
-      },
-      "label": "The label of the registration code input",
-      "placeholder": "The placeholder text in the empty registration code input"
     },
     "submit": "The form submit button text",
     "username": {
@@ -75,7 +69,6 @@ export default interface Resources {
         "USERNAME_TAKEN": "username validation error: is already taken",
         "empty": "username validation error: is empty"
       },
-      "label": "The label of the username input",
       "placeholder": "The placeholder text in the empty username input"
     }
   }

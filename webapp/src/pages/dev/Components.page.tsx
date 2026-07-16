@@ -19,7 +19,6 @@ type LanguageItem = {
 
 export function ComponentsPage(): ReactElement {
 
-
     const languages: LanguageItem[] = [
         {
             key: "german",
@@ -65,8 +64,6 @@ export function ComponentsPage(): ReactElement {
 
     const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
 
-    // @ts-ignore
-    // @ts-ignore
     return (
         <VerticalLayout className="components-page" center spacing3xl padding2xl fillWidth>
 
