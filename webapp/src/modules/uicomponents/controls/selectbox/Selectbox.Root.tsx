@@ -3,37 +3,47 @@ import {type SelectboxData, type SelectboxItem, useSelectbox} from "./useSelectb
 import classNames from "classnames";
 import {FloatingFocusManager, FloatingPortal} from "@floating-ui/react";
 import styles from "./selectbox.module.less";
-import { SelectboxContext } from "./Selectbox.Context.tsx";
+import {SelectboxContext} from "./Selectbox.Context.tsx";
 import type {Selectbox_ListProps} from "@modules/uicomponents/controls/selectbox/Selectbox.List.tsx";
 import type {Selectbox_ItemProps} from "@modules/uicomponents/controls/selectbox/Selectbox.Item.tsx";
+import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";
 
 
-type Selectbox_RootProps = {
+type Selectbox_RootProps<TItem extends SelectboxItem> = {
     children: ReactNode;
     classNameFloating?: string,
-    selectedItem?: SelectboxItem | null,
-    onSelectedItemChange?: (item: SelectboxItem) => void;
+
     disabled?: boolean,
+
+    items?: TItem[]
+    renderItem?: (item: TItem) => ReactElement
+    selectedItem?: TItem | null,
+    onSelectedItemChange?: (item: TItem) => void;
 }
 
-export function Selectbox_Root(props: Selectbox_RootProps): ReactElement {
+export function Selectbox_Root<TItem extends SelectboxItem>(props: Selectbox_RootProps<TItem>): ReactElement {
 
-    const items = getSelectboxItems(props.children);
+    const renderFunc = props.renderItem;
+
+    const listData = getListProps(props.children);
 
     const selectbox = useSelectbox({
-        items: items,
+        items: props.items ?? [],
         selectedItem: props.selectedItem,
-        onSelectedItemChange: props.onSelectedItemChange,
+        onSelectedItemChange: item => props.onSelectedItemChange?.(item as TItem),
         disabled: props.disabled,
-        transitionDuration: 200,
-        listOffset: 4,
-        listMatchWidth: true,
-        listMaxHeight: 400,
+        ...(listData ? listData : {}),
     });
 
     const trueChildren = getTrueChildren(props.children);
 
-    const itemChildren = getItemChildren(props.children, selectbox);
+    const listChildren = renderListItems(
+        props.items ?? [],
+        renderFunc
+            ? item => renderFunc(item as TItem)
+            : item => (<Selectbox.Item key={item.key}>{item.key}</Selectbox.Item>),
+        selectbox,
+    );
 
     return (
         <SelectboxContext.Provider value={{data: selectbox}}>
@@ -58,7 +68,7 @@ export function Selectbox_Root(props: Selectbox_RootProps): ReactElement {
                                 className={classNames(styles.list, props.classNameFloating)}
                                 {...selectbox.listProps}
                             >
-                                {itemChildren}
+                                {listChildren}
                             </div>
                         </div>
                     </FloatingFocusManager>
@@ -71,24 +81,20 @@ export function Selectbox_Root(props: Selectbox_RootProps): ReactElement {
 
 Selectbox_Root.displayName = "Selectbox.Root";
 
+
 /**
- * Get the config items for the selectbox from "Selectbox.Item"
+ * Get properties from the Selectbox.List child.
  */
-function getSelectboxItems(children: ReactNode): SelectboxItem[] {
-    const items: SelectboxItem[] = [];
+function getListProps(children: ReactNode): Selectbox_ListProps | null {
+    let listElement: React.ReactElement | undefined;
     React.Children.forEach(children, (child: ReactNode) => {
-        if (!React.isValidElement(child)) return;
-        if ((child.type as any).displayName === "Selectbox.List") {
-            const listProps = child.props as Selectbox_ListProps;
-            React.Children.forEach(listProps.children, (listChild: ReactNode) => {
-                if (!React.isValidElement(listChild)) return;
-                if ((listChild.type as any).displayName === "Selectbox.Item") {
-                    items.push({ key: listChild.key ?? "" });
-                }
-            });
+        if (listElement) return;
+        if (React.isValidElement(child) && (child.type as any).displayName === "Selectbox.List") {
+            listElement = child;
         }
     });
-    return items;
+    if (!listElement) return null;
+    return listElement.props as Selectbox_ListProps;
 }
 
 /**
@@ -108,30 +114,54 @@ function getTrueChildren(children: ReactNode): ReactNode[] {
 /**
  * Returns the already filtered list of item children (i.e. Selectbox.Item)
  */
-function getItemChildren(children: ReactNode, selectbox: SelectboxData): ReactNode[] {
+// function getItemChildren(children: ReactNode, selectbox: SelectboxData): ReactNode[] {
+//     const itemElements: ReactNode[] = [];
+//     let itemElementIndex = 0;
+//     React.Children.forEach(children, (child: ReactNode) => {
+//         if (!React.isValidElement(child)) return;
+//         if ((child.type as any).displayName === "Selectbox.List") {
+//             const listProps = child.props as Selectbox_ListProps;
+//             React.Children.forEach(listProps.children, (listChild: ReactNode) => {
+//                 if (!React.isValidElement(listChild)) return;
+//                 if ((listChild.type as any).displayName === "Selectbox.Item") {
+//                     const itemProps = listChild.props as Selectbox_ItemProps;
+//                     const element = (
+//                         <div
+//                             key={listChild.key}
+//                             className={styles.item}
+//                             {...selectbox.itemProps(itemElementIndex)}
+//                         >
+//                             {itemProps.children}
+//                         </div>
+//                     );
+//                     itemElements.push(element);
+//                     itemElementIndex++;
+//                 }
+//             });
+//         }
+//     });
+//     return itemElements;
+// }
+
+function renderListItems(items: SelectboxItem[], renderFunc: (item: SelectboxItem) => ReactElement, selectbox: SelectboxData): ReactNode[] {
     const itemElements: ReactNode[] = [];
     let itemElementIndex = 0;
-    React.Children.forEach(children, (child: ReactNode) => {
-        if (!React.isValidElement(child)) return;
-        if ((child.type as any).displayName === "Selectbox.List") {
-            const listProps = child.props as Selectbox_ListProps;
-            React.Children.forEach(listProps.children, (listChild: ReactNode) => {
-                if (!React.isValidElement(listChild)) return;
-                if ((listChild.type as any).displayName === "Selectbox.Item") {
-                    const itemProps = listChild.props as Selectbox_ItemProps;
-                    const element = (
-                        <div
-                            key={listChild.key}
-                            className={styles.item}
-                            {...selectbox.itemProps(itemElementIndex)}
-                        >
-                            {itemProps.children}
-                        </div>
-                    );
-                    itemElements.push(element);
-                    itemElementIndex++;
-                }
-            });
+    items.forEach(item => {
+        const itemRendered = renderFunc(item);
+        if (!React.isValidElement(itemRendered)) return;
+        if ((itemRendered.type as any).displayName === "Selectbox.Item") {
+            const itemProps = itemRendered.props as Selectbox_ItemProps;
+            const element = (
+                <div
+                    key={itemRendered.key}
+                    className={styles.item}
+                    {...selectbox.itemProps(itemElementIndex)}
+                >
+                    {itemProps.children}
+                </div>
+            );
+            itemElements.push(element);
+            itemElementIndex++;
         }
     });
     return itemElements;

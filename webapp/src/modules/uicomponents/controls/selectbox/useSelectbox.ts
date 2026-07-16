@@ -143,11 +143,6 @@ export function useSelectbox(options: SelectboxOptions): SelectboxData {
         selectItem(selected);
     }
 
-    // handle the element getting unfocused (for some additional cases)
-    function onBlur() {
-        setIsOpen(false);
-    }
-
     const referenceProps = getReferenceProps({
         ...hover.elementProps
     })
@@ -163,7 +158,6 @@ export function useSelectbox(options: SelectboxOptions): SelectboxData {
                 (referenceProps as any).onKeyDown?.(event)
                 onInputKeyDown(event);
             },
-            onBlur: () => onBlur(),
             "data-disabled": options.disabled ? "" : undefined,
             "data-hover": hover.isHovered ? "" : undefined,
             "data-open": isOpen,
