@@ -6,6 +6,25 @@ import {HorizontalLayout} from "@modules/uicomponents/layout/horizontal/Horizont
 import {TextField} from "@modules/uicomponents/controls/textfield/TextField.tsx";
 import {Button} from "@modules/uicomponents/controls/button/Button.tsx";
 import {Separator} from "@modules/uicomponents/separator/Separator.tsx";
+import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";
+import {useState} from "react";
+import type {MatchListEntry} from "@app/features/match/match.ts";
+import {useRouting} from "@pages/routing.tsx";
+
+const privacyItems = [
+    {
+        key: "public",
+        text: "Public"
+    },
+    {
+        key: "private",
+        text: "Private"
+    },
+    {
+        key: "hidden",
+        text: "Hidden"
+    }
+]
 
 export function MatchListPage() {
 
@@ -20,13 +39,14 @@ export function MatchListPage() {
                     <Txt.Heading h1 center><Txt.String>Multiplayer Lobby</Txt.String></Txt.Heading>
 
                     <HorizontalLayout horizontalSpaceBetween verticalStretch spacingL>
-                        <SectionUserMatches/>
+                        <SectionUserMatches {...viewModel}/>
                         <SectionPublicMatches/>
                         <VerticalLayout verticalStart horizontalStretch spacingL style={{
                             flexGrow: 1,
-                            flexShrink: 1
+                            flexShrink: 1,
+                            maxWidth: 500
                         }}>
-                            <SectionCreateMatch/>
+                            <SectionCreateMatch {...viewModel}/>
                             <SectionJoinWithCode/>
                         </VerticalLayout>
                     </HorizontalLayout>
@@ -36,27 +56,10 @@ export function MatchListPage() {
             </Panel.Decorated>
         </VerticalLayout>
     );
-
-    // return (
-    //     <VerticalLayout center fillWidth fillHeight>
-    //         <VerticalLayout verticalStart horizontalStretch spacingS>
-    //             <button onClick={viewModel.create.execute}>Create</button>
-    //             {viewModel.list.loading && (
-    //                 <div>Loading...</div>
-    //             )}
-    //             {!viewModel.list.loading && viewModel.list.matches.map(match => (
-    //                 <HorizontalLayout key={match.id} verticalCenter horizontalSpaceBetween style={{border: "1px solid gray", padding: "10px"}}>
-    //                     <Link to={`/match/${match.id}`}>{match.name}</Link>
-    //                     <button onClick={() => viewModel.delete.execute(match.id)}>Delete</button>
-    //                 </HorizontalLayout>
-    //             ))}
-    //         </VerticalLayout>
-    //     </VerticalLayout>
-    // );
 }
 
 
-function SectionUserMatches() {
+function SectionUserMatches(props: ReturnType<typeof useMatchListViewModel>) {
     return (
         <Panel.Decorated neutral ornamentalBorder roundedCorner paperPattern style={{
             flexGrow: 1,
@@ -67,26 +70,9 @@ function SectionUserMatches() {
                 <Txt.Heading h3><Txt.String>My Lobbies</Txt.String></Txt.Heading>
 
                 <VerticalLayout scrollable padding3xs spacingS>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
+                    {props.list.matches.map(match => (
+                        <UserMatchEntry {...match} {...props} key={match.id}/>
+                    ))}
                 </VerticalLayout>
 
             </VerticalLayout>
@@ -101,69 +87,45 @@ function SectionPublicMatches() {
             flexShrink: 1
         }}>
             <VerticalLayout verticalStart horizontalStretch paddingL spacingM fillHeight>
-
                 <Txt.Heading h3><Txt.String>Public Lobbies</Txt.String></Txt.Heading>
-
                 <VerticalLayout scrollable padding3xs spacingS>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
-                    <UserMatchEntry/>
+                    <Txt.Line center><Txt.String>Empty</Txt.String></Txt.Line>
                 </VerticalLayout>
-
             </VerticalLayout>
         </Panel.Decorated>
     );
 }
 
 
-function UserMatchEntry() {
+function UserMatchEntry(props: MatchListEntry & ReturnType<typeof useMatchListViewModel>) {
+    const { gotoMatch } = useRouting()
     return (
-        <Panel.Decorated fillWidth neutral lineBorder roundedCorner paperPattern style={{
+        <Panel.Decorated fillWidth neutral lineBorder roundedCorner ornamentPattern style={{
             flexGrow: 0,
             flexShrink: 0
         }}>
-            <VerticalLayout verticalStart horizontalStretch paddingS spacing2xs>
-                <Txt.Heading h5><Txt.String>User Match</Txt.String></Txt.Heading>
-                <Txt.Body><Txt.String>Owned by user</Txt.String></Txt.Body>
-                <Txt.Body><Txt.String>Turn 12; 8/8 Players</Txt.String></Txt.Body>
-            </VerticalLayout>
+            <HorizontalLayout verticalStretch horizontalSpaceBetween paddingS spacingS>
+                <VerticalLayout verticalStart horizontalStretch spacing2xs>
+                    <Txt.Heading h5><Txt.String>{props.name}</Txt.String></Txt.Heading>
+                    <Txt.Body><Txt.String>Owned by ?</Txt.String></Txt.Body>
+                    <Txt.Body><Txt.String>Turn ?; ?/? Players</Txt.String></Txt.Body>
+                </VerticalLayout>
+                <VerticalLayout verticalCenter horizontalStretch spacing2xs>
+                    <Button success onClick={() => gotoMatch(props.id)}>Enter</Button>
+                    <Button danger onClick={() => props.delete.execute(props.id)}>Delete</Button>
+                </VerticalLayout>
+            </HorizontalLayout>
         </Panel.Decorated>
     );
 }
 
-function PublicMatchEntry() {
-    return (
-        <Panel.Decorated fillWidth neutral lineBorder roundedCorner paperPattern style={{
-            flexGrow: 0,
-            flexShrink: 0
-        }}>
-            <VerticalLayout verticalStart horizontalStretch paddingS spacing2xs>
-                <Txt.Heading h5><Txt.String>Public Match</Txt.String></Txt.Heading>
-                <Txt.Body><Txt.String>Owned by user</Txt.String></Txt.Body>
-                <Txt.Body><Txt.String>Turn 12; 8/8 Players</Txt.String></Txt.Body>
-            </VerticalLayout>
-        </Panel.Decorated>
-    );
-}
+function SectionCreateMatch(props: ReturnType<typeof useMatchListViewModel>) {
 
-function SectionCreateMatch() {
+    const [selectedPrivacy, setSelectedPrivacy] = useState({
+        key: "private",
+        text: "Private"
+    });
+
     return (
         <Panel.Decorated neutral ornamentalBorder roundedCorner paperPattern>
             <VerticalLayout verticalStart horizontalStretch paddingL spacingM>
@@ -183,23 +145,30 @@ function SectionCreateMatch() {
                     <TextField.Label>Max Players</TextField.Label>
                     <TextField.Control sizeM>
                         <TextField.Input
-                            placeholder=""
+                            placeholder="Enter max player amount..."
                         />
                     </TextField.Control>
                 </TextField.Root>
 
-                <TextField.Root>
-                    <TextField.Label>Privacy</TextField.Label>
-                    <TextField.Control sizeM>
-                        <TextField.Input
-                            placeholder=""
-                        />
-                    </TextField.Control>
-                </TextField.Root>
+                <Selectbox.Root
+                    items={privacyItems}
+                    selectedItem={selectedPrivacy}
+                    onSelectedItemChange={setSelectedPrivacy}
+                    renderItem={item => (<Selectbox.Item key={item.key}>{item.text}</Selectbox.Item>)}
+                >
+                    <Selectbox.Control sizeM stableSize box/>
+                    <Selectbox.List/>
+                </Selectbox.Root>
 
                 <Separator invisible size3xs/>
 
-                <Button sizeL>Create Lobby</Button>
+                <Button
+                    sizeL
+                    disabled={props.create.loading}
+                    onClick={props.create.execute}
+                >
+                    Create Lobby
+                </Button>
 
             </VerticalLayout>
         </Panel.Decorated>

@@ -9,7 +9,7 @@
 	box-shadow: @shadow-surface-drop;
 	overflow:   hidden;
 
-	.panel--decorated__base {
+	> .panel--decorated__base {
 		position: absolute;
 		top:      0;
 		bottom:   0;
@@ -17,7 +17,7 @@
 		right:    0;
 	}
 
-	.panel--decorated__overlay {
+	> .panel--decorated__overlay {
 		position:            absolute;
 		top:                 0;
 		bottom:              0;
@@ -27,7 +27,7 @@
 		background-position: center center;
 	}
 
-	.panel--decorated__texture {
+	> .panel--decorated__texture {
 		position: absolute;
 		top:      0;
 		bottom:   0;
@@ -35,7 +35,7 @@
 		right:    0;
 	}
 
-	.panel--decorated__decoration {
+	> .panel--decorated__decoration {
 		position: absolute;
 		top:      0;
 		bottom:   0;
@@ -43,7 +43,7 @@
 		right:    0;
 	}
 
-	.panel--decorated__content {
+	> .panel--decorated__content {
 		width:  100%;
 		height: 100%;
 	}
@@ -144,39 +144,39 @@
 	//============================
 
 
-	&[data-variant="neutral"] .panel--decorated__base {
+	&[data-variant="neutral"] > .panel--decorated__base {
 		background: @surface-fill-base-gradient;
 	}
 
-	&[data-variant="blue"] .panel--decorated__base {
+	&[data-variant="blue"] > .panel--decorated__base {
 		background: @surface-fill-blue-gradient;
 	}
 
-	&[data-variant="red"] .panel--decorated__base {
+	&[data-variant="red"] > .panel--decorated__base {
 		background: @surface-fill-red-gradient;
 	}
 
-	&[data-variant="green"] .panel--decorated__base {
+	&[data-variant="green"] > .panel--decorated__base {
 		background: @surface-fill-green-gradient;
 	}
 
-	&[data-variant="purple"] .panel--decorated__base {
+	&[data-variant="purple"] > .panel--decorated__base {
 		background: @surface-fill-purple-gradient;
 	}
 
-	&[data-variant="yellow"] .panel--decorated__base {
+	&[data-variant="yellow"] > .panel--decorated__base {
 		background: @surface-fill-yellow-gradient;
 	}
 
-	&[data-variant="orange"] .panel--decorated__base {
+	&[data-variant="orange"] > .panel--decorated__base {
 		background: @surface-fill-orange-gradient;
 	}
 
-	&[data-variant="teal"] .panel--decorated__base {
+	&[data-variant="teal"] > .panel--decorated__base {
 		background: @surface-fill-teal-gradient;
 	}
 
-	&[data-variant="bronze"] .panel--decorated__base {
+	&[data-variant="bronze"] > .panel--decorated__base {
 		background: @surface-fill-bronze-gradient;
 	}
 
