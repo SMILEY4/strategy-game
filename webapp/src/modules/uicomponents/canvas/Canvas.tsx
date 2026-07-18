@@ -33,7 +33,6 @@ export function Canvas(props: CanvasProps): ReactElement {
             onWheel={interactions.scroll}
             onMouseLeave={interactions.mouseLeave}
         >
-            {/* eslint-disable-next-line react-hooks/refs */}
             <canvas ref={lifecycle.canvasRef}/>
             {props.children}
         </div>
