@@ -10,6 +10,10 @@ import {Panel} from "@/modules/uicomponents/panel/Panel";
 import {Txt} from "@modules/uicomponents/text/Txt.tsx";
 import {Separator} from "@modules/uicomponents/separator/Separator.tsx";
 import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";
+import {WindowStack} from "@modules/uicomponents/window/WindowStack.tsx";
+import {openWindow, useWindowInteractions} from "@modules/uicomponents/window/useWindow.ts";
+import {ANCHOR_CENTER_POINT} from "@modules/uicomponents/window/window-system.ts";
+import {CssValueUtils} from "@modules/utilities/css-value.ts";
 
 type LanguageItem = {
     key: string,
@@ -23,44 +27,44 @@ export function ComponentsPage(): ReactElement {
         {
             key: "german",
             display: "German",
-            flag: "🇩🇪"
+            flag: "🇩🇪",
         },
         {
             key: "french",
             display: "French",
-            flag: "🇫🇷"
+            flag: "🇫🇷",
         },
         {
             key: "english",
             display: "English",
-            flag: "🇺🇸"
+            flag: "🇺🇸",
         },
         {
             key: "italian",
             display: "Italian",
-            flag: "🇮🇹"
+            flag: "🇮🇹",
         },
         {
             key: "dutch",
             display: "Dutch",
-            flag: "🇳🇱"
+            flag: "🇳🇱",
         },
         {
             key: "norwegian",
             display: "Norwegian",
-            flag: "🇳🇴"
+            flag: "🇳🇴",
         },
         {
             key: "swedish",
             display: "Swedish",
-            flag: "🇸🇪"
+            flag: "🇸🇪",
         },
         {
             key: "spanish",
             display: "Spanish",
-            flag: "🇪🇸"
-        }
-    ]
+            flag: "🇪🇸",
+        },
+    ];
 
     const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
 
@@ -712,7 +716,83 @@ export function ComponentsPage(): ReactElement {
                 <div style={{height: 500}}/>
             </>
 
+            <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Window</Txt.Heading>
+                    <Txt.Body>
+                        Draggable, resizable windows.
+                    </Txt.Body>
+                </VerticalLayout>
+
+                <button onClick={() => {
+                    openWindow({
+                        anchor: ANCHOR_CENTER_POINT,
+                        preferredWidth: CssValueUtils.px(500),
+                        preferredHeight: CssValueUtils.px(400),
+                        content: (windowId: string) => (<TestWindow windowId={windowId}/>),
+                    });
+                }}>
+                    Open window
+                </button>
+
+                <WindowStack className="window-stack--showcase"/>
+
+            </>
+
         </VerticalLayout>
     );
 
+}
+
+
+function TestWindow(props: { windowId: string }) {
+
+    const {
+        resizerProps,
+        dragProps,
+        refContent,
+        closeWindow,
+    } = useWindowInteractions(props.windowId);
+
+    return (
+        <div
+            style={{
+                width: "100%",
+                height: "100%",
+                backgroundColor: "white",
+                color: "black",
+            }}
+            ref={refContent}
+        >
+
+
+            <div
+                {...dragProps}
+                style={{
+                    width: "100%",
+                    height: "50px",
+                    backgroundColor: "lightgrey",
+                }}
+            />
+
+
+            <div
+                {...resizerProps}
+                style={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    width: "30px",
+                    height: "30px",
+                    backgroundColor: "lightgrey",
+                }}
+            />
+
+            <span>I am a window!</span>
+            <span>{props.windowId}</span>
+            <button onClick={closeWindow}>Close</button>
+
+        </div>
+    );
 }

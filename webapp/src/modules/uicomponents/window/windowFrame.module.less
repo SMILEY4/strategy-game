@@ -1,0 +1,13 @@
+.window-frame {
+
+	position:   absolute;
+	max-height: 90%;
+	max-width:  90%;
+
+	&[data-blocked] {
+		pointer-events: none !important;
+		cursor:         not-allowed !important;
+		filter:         saturate(40%);
+	}
+
+}
