@@ -92,7 +92,7 @@ export type Panel_DecoratedProps = {
     & CornerShorthands
     & PatternShorthands
     & VariantShorthands
-& SizeShorthands
+    & SizeShorthands
 
 export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
 
@@ -144,11 +144,11 @@ export function Panel_Decorated(props: Panel_DecoratedProps): ReactElement {
     } = props;
 
     const borderResolved = resolveBorder({border, noBorder, ornamentalBorder, metalBorder, lineBorder, metalOrnamentBorder});
-    const cornerResolved = resolveCorner({ corner, sharpCorner, roundedCorner})
+    const cornerResolved = resolveCorner({corner, sharpCorner, roundedCorner});
     const patternResolved = resolvePattern({pattern, noPattern, paperPattern, ornamentPattern});
     const variantResolved = resolveVariant({variant, neutral, blue, red, green, purple, yellow, orange, teal, bronze});
-    const sizeXResolved = resolveSizeX({ fillParent, fillWidth, fillHeight})
-    const sizeYResolved = resolveSizeY({ fillParent, fillWidth, fillHeight})
+    const sizeXResolved = resolveSizeX({fillParent, fillWidth, fillHeight});
+    const sizeYResolved = resolveSizeY({fillParent, fillWidth, fillHeight});
     const overlayType = determineOverlayType(overlay);
 
     return (
@@ -268,13 +268,13 @@ function determineOverlayType(gradient?: Overlay): "image" | "color" | undefined
 }
 
 function resolveSizeX(props: SizeShorthands): boolean | undefined {
-    if(props.fillParent) return true
-    if(props.fillWidth) return true
-    return undefined
+    if (props.fillParent) return true;
+    if (props.fillWidth) return true;
+    return undefined;
 }
 
 function resolveSizeY(props: SizeShorthands): boolean | undefined {
-    if(props.fillParent) return true
-    if(props.fillHeight) return true
-    return undefined
+    if (props.fillParent) return true;
+    if (props.fillHeight) return true;
+    return undefined;
 }

@@ -1,8 +1,9 @@
 import {WINDOW_STACK_ID, type WindowProperties} from "@modules/uicomponents/window/window-system.ts";
 import {useWindowStore} from "@modules/uicomponents/window/window-store.ts";
 import {useDraggable} from "@modules/uicomponents/hooks/useDraggable.ts";
-import {useCallback, useRef} from "react";
+import {type MouseEvent, useCallback, useRef} from "react";
 import {CssValueUtils} from "@modules/utilities/css-value.ts";
+
 
 export function useOpenWindow(): (properties: WindowProperties) => void {
     const add = useWindowStore(state => state.add);
@@ -37,7 +38,7 @@ export function bringWindowToFront(windowId: string): void {
     useWindowStore.getState().bringToFront(windowId);
 }
 
-function filterCanInteract(e: MouseEvent): boolean {
+function filterCanInteract(e: MouseEvent<any>): boolean {
     return e.button === 0;
 }
 
@@ -126,6 +127,7 @@ export function useWindowInteractions(id: string) {
         dragProps: {
             ref: refDrag,
             onMouseDown: onMouseDownDrag,
+            "data-dragging": refDrag.current !== null
         },
         refContent: refContent,
         closeWindow: handleClose,

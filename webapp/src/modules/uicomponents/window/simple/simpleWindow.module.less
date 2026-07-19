@@ -1,0 +1,45 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+@import "@modules/uicomponents/styles/variables.resources.less";
+
+.simple-window {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: start;
+
+	> .header {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		padding: @space-xs;
+		gap: @space-m;
+		cursor: grab;
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	> .content {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: start;
+		padding: @space-xs;
+	}
+
+	> .resizer {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		width: 15px;
+		height: 15px;
+		cursor: se-resize;
+	}
+
+}

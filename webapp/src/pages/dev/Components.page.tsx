@@ -13,7 +13,7 @@ import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";
 import {WindowStack} from "@modules/uicomponents/window/WindowStack.tsx";
 import {openWindow, useWindowInteractions} from "@modules/uicomponents/window/useWindow.ts";
 import {ANCHOR_CENTER_POINT} from "@modules/uicomponents/window/window-system.ts";
-import {CssValueUtils} from "@modules/utilities/css-value.ts";
+import {SimpleWindow} from "@modules/uicomponents/window/simple/SimpleWindow.tsx";
 
 type LanguageItem = {
     key: string,
@@ -728,9 +728,16 @@ export function ComponentsPage(): ReactElement {
                 <button onClick={() => {
                     openWindow({
                         anchor: ANCHOR_CENTER_POINT,
-                        preferredWidth: CssValueUtils.px(500),
-                        preferredHeight: CssValueUtils.px(400),
-                        content: (windowId: string) => (<TestWindow windowId={windowId}/>),
+                        // preferredWidth: CssValueUtils.px(500),
+                        // preferredHeight: CssValueUtils.px(400),
+                        // content: (windowId: string) => (<TestWindow windowId={windowId}/>),
+                        content: (windowId: string) => {
+                            return (
+                                <SimpleWindow windowId={windowId} title={"Test Window"} withCloseButton={true}>
+                                    Hello Content
+                                </SimpleWindow>
+                            )
+                        }
                     });
                 }}>
                     Open window
