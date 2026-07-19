@@ -283,7 +283,7 @@ export const windowSystem = {
 
         const position = calculateWindowPosition(properties, anchor);
 
-        const windowId = properties.id ? properties.id : crypto.randomUUID()
+        const windowId = properties.id ? properties.id : crypto.randomUUID();
 
         return {
             windowId: windowId,
