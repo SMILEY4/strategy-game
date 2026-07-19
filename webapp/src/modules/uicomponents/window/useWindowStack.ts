@@ -1,4 +1,5 @@
-import {useWindowStore} from "@modules/uicomponents/window/window-store.ts";
+import {useWindowStore} from "@modules/uicomponents/window/window-store.ts"
+
 
 
 interface UseWindowStackData {

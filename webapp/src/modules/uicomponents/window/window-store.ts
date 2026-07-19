@@ -1,4 +1,5 @@
-import {type WindowData, type WindowPosition, type WindowProperties, windowSystem} from "@modules/uicomponents/window/window-system.ts";
+import {type WindowData, type WindowPosition, type WindowProperties, windowSystem} from "@modules/uicomponents/window/window-system.ts"
+
 import {create} from "zustand";
 
 
@@ -20,32 +21,34 @@ export const useWindowStore = create<WindowStoreState & WindowStoreActions>()((s
 
     add: (properties: WindowProperties) => set((state) => {
         const data = windowSystem.createInitialWindowData(properties, windowSystem.availableAnchors)
-        const windowData = [...state.windowData.filter(it => it.groupId !== data.groupId), data]
-        windowSystem.recalculateStackIndices(windowData)
+        const windowData = windowSystem.recalculateStackIndices([
+            ...state.windowData.filter(it => it.groupId !== data.groupId),
+            data,
+        ])
         return {
             ...state,
             windowData: windowData,
-            windowIds: windowData.map(it => it.windowId)
+            windowIds: windowData.map(it => it.windowId),
         }
     }),
 
     remove: (id: string) => set((state) => {
-        const windowData = state.windowData.filter(it => it.windowId !== id)
-        windowSystem.recalculateStackIndices(windowData)
+        const windowData = windowSystem.recalculateStackIndices(
+            state.windowData.filter(it => it.windowId !== id),
+        )
         return {
             ...state,
             windowData: windowData,
-            windowIds: windowData.map(it => it.windowId)
+            windowIds: windowData.map(it => it.windowId),
         }
     }),
 
     updatePosition: (id: string, updateFunc: (position: WindowPosition) => WindowPosition) => set((state) => {
         const windowData = state.windowData.map(window => {
-            if(window.windowId === id) {
+            if (window.windowId === id) {
                 return {...window, position: updateFunc(window.position)}
-            } else {
-                return window
             }
+            return window
         })
         return {
             ...state,
@@ -54,18 +57,17 @@ export const useWindowStore = create<WindowStoreState & WindowStoreActions>()((s
     }),
 
     bringToFront: (id: string) => set((state) => {
-        const windowData = state.windowData.map(window => {
-            if(window.windowId === id) {
-                return {...window, stackIndex: 999999}
-            } else {
-                return window
-            }
-        })
-        windowSystem.recalculateStackIndices(windowData)
+        const maxIndex = state.windowData.length
+        const windowData = windowSystem.recalculateStackIndices(
+            state.windowData.map(w => ({
+                ...w,
+                stackIndex: w.windowId === id ? maxIndex : w.stackIndex,
+            })),
+        )
         return {
             ...state,
             windowData: windowData,
-            windowIds: windowData.map(it => it.windowId)
+            windowIds: windowData.map(it => it.windowId),
         }
     }),
 }));

@@ -1,6 +1,6 @@
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import {type CssValue, CssValueUtils} from "@modules/utilities/css-value.ts";
-import type {ReactNode} from "react";
+import {type ReactNode} from "react";
 
 export interface WindowProperties {
     id?: string,
@@ -49,7 +49,6 @@ interface WindowAnchorBase {
  * - either "left" OR "right" must be set
  */
 interface WindowPointAnchor extends WindowAnchorBase {
-    id: string,
     type: "point"
     top: CssValue | null,
     bottom: CssValue | null,
@@ -64,7 +63,6 @@ interface WindowPointAnchor extends WindowAnchorBase {
  * - "top" AND "bottom" must be set
  */
 interface WindowVerticalLineAnchor extends WindowAnchorBase {
-    id: string,
     type: "line-vertical"
     top: CssValue,
     bottom: CssValue,
@@ -80,7 +78,6 @@ interface WindowVerticalLineAnchor extends WindowAnchorBase {
  * - "left" AND "right" must be set
  */
 interface WindowHorizontalLineAnchor extends WindowAnchorBase {
-    id: string,
     type: "line-horizontal"
     left: CssValue,
     right: CssValue,
@@ -96,7 +93,6 @@ interface WindowHorizontalLineAnchor extends WindowAnchorBase {
  * - "width" AND "height" must be set
  */
 interface WindowAreaAnchor extends WindowAnchorBase {
-    id: string,
     type: "area"
     top: CssValue | null,
     bottom: CssValue | null,
@@ -166,7 +162,7 @@ export const windowSystem = {
                         left: anchor.left,
                         right: anchor.right,
                         width: properties.preferredWidth ? properties.preferredWidth : null,
-                        height: properties.preferredWidth ? properties.preferredWidth : null,
+                        height: properties.preferredHeight ? properties.preferredHeight : null,
                         transform: "translate(-50%, -50%)",
                     };
                 }
@@ -177,7 +173,7 @@ export const windowSystem = {
                         left: anchor.left,
                         right: anchor.right,
                         width: properties.preferredWidth ? properties.preferredWidth : null,
-                        height: properties.preferredWidth ? properties.preferredWidth : null,
+                        height: properties.preferredHeight ? properties.preferredHeight : null,
                         transform: "translate(-50%, 0)",
                     };
                 }
@@ -188,7 +184,7 @@ export const windowSystem = {
                         left: anchor.left,
                         right: anchor.right,
                         width: properties.preferredWidth ? properties.preferredWidth : null,
-                        height: properties.preferredWidth ? properties.preferredWidth : null,
+                        height: properties.preferredHeight ? properties.preferredHeight : null,
                         transform: "translate(-50%, 0)",
                     };
                 }
@@ -199,7 +195,7 @@ export const windowSystem = {
                         left: null,
                         right: anchor.right,
                         width: properties.preferredWidth ? properties.preferredWidth : null,
-                        height: properties.preferredWidth ? properties.preferredWidth : null,
+                        height: properties.preferredHeight ? properties.preferredHeight : null,
                         transform: "translate(0, -50%)",
                     };
                 }
@@ -210,7 +206,7 @@ export const windowSystem = {
                         left: anchor.left,
                         right: null,
                         width: properties.preferredWidth ? properties.preferredWidth : null,
-                        height: properties.preferredWidth ? properties.preferredWidth : null,
+                        height: properties.preferredHeight ? properties.preferredHeight : null,
                         transform: "translate(0, -50%)",
                     };
                 }
@@ -300,9 +296,10 @@ export const windowSystem = {
         };
     },
 
-    recalculateStackIndices: (windows: WindowData[]): void => {
-        windows.sort((a, b) => a.stackIndex - b.stackIndex);
-        windows.forEach((it, index) => it.stackIndex = index);
+    recalculateStackIndices: (windows: WindowData[]): WindowData[] => {
+        return [...windows]
+            .sort((a, b) => a.stackIndex - b.stackIndex)
+            .map((it, index) => ({...it, stackIndex: index}));
     }
 
 };

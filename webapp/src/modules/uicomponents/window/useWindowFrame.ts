@@ -1,6 +1,6 @@
-import {useWindowStore} from "@modules/uicomponents/window/window-store.ts";
-import type {CSSProperties, ReactNode} from "react";
-import {CssValueUtils} from "@modules/utilities/css-value.ts";
+import {useWindowStore} from "@modules/uicomponents/window/window-store.ts"
+import {type CSSProperties, type ReactNode} from "react"
+import {CssValueUtils} from "@modules/utilities/css-value.ts"
 
 interface UseWindowFrameData {
     elementProps: {

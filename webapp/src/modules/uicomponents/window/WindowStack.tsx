@@ -1,9 +1,9 @@
-import type {ReactElement} from "react";
-import {useWindowStack} from "@modules/uicomponents/window/useWindowStack.ts";
-import {WindowFrame} from "@modules/uicomponents/window/WindowFrame.tsx";
-import styles from "./windowStack.module.less";
-import classNames from "classnames";
-import {WINDOW_STACK_ID} from "@modules/uicomponents/window/window-system.ts";
+import {type ReactElement} from "react"
+import {useWindowStack} from "@modules/uicomponents/window/useWindowStack.ts"
+import {WindowFrame} from "@modules/uicomponents/window/WindowFrame.tsx"
+import styles from "./windowStack.module.less"
+import classNames from "classnames"
+import {WINDOW_STACK_ID} from "@modules/uicomponents/window/window-system.ts"
 
 interface WindowStackProps {
     className?: string;

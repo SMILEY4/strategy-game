@@ -1,10 +1,10 @@
-import {type MouseEvent, type RefObject, useRef} from "react";
+import {type RefObject, useRef} from "react";
 
 export function useDraggable(
-    mouseDownFilter: (e: MouseEvent<any>) => boolean,
+    mouseDownFilter: (e: MouseEvent) => boolean,
     onDragPrepare: () => void,
     onDrag: (x: number, y: number, dx: number, dy: number) => void
-): [RefObject<HTMLDivElement | null>, (e: MouseEvent<any>) => void] {
+): [RefObject<HTMLDivElement | null>, (e: MouseEvent) => void] {
 
     const draggableRef = useRef<HTMLDivElement>(null);
     const relX = useRef(0);
@@ -12,7 +12,7 @@ export function useDraggable(
     const lastX = useRef(0);
     const lastY = useRef(0);
 
-    function onMouseDown(e: MouseEvent<any>): void {
+    function onMouseDown(e: MouseEvent): void {
         if (draggableRef && draggableRef.current && mouseDownFilter(e)) {
             relX.current = (e.pageX - draggableRef.current.getBoundingClientRect().x);
             relY.current = (e.pageY - draggableRef.current.getBoundingClientRect().y);
@@ -26,14 +26,14 @@ export function useDraggable(
         }
     }
 
-    function onMouseUp(e: any) {
+    function onMouseUp(e: MouseEvent) {
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
         e.stopPropagation();
         e.preventDefault();
     }
 
-    function onMouseMove(e: any) {
+    function onMouseMove(e: MouseEvent) {
         const x = e.pageX - relX.current;
         const y = e.pageY - relY.current;
         const dx = x - lastX.current;

@@ -20,7 +20,7 @@ export const CssValueUtils = {
     }),
 
     format: (value: CssValue | null): string | undefined => {
-        if (value === null) return null
+        if (value === null) return undefined
         if (value.unit === "px") return `${value.value}px`;
         if (value.unit === "%") return `${value.value}%`;
         if (value.unit === "raw") return value.value;
