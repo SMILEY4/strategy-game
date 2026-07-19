@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import type {ComponentPropsWithoutRef, ReactElement} from "react";
+import type {ComponentPropsWithRef, ReactElement} from "react";
 import styles from "./horizontalLayout.module.less";
 
 type HorizontalAlign =
@@ -85,7 +85,7 @@ export type HorizontalLayoutProps = {
         padding?: Spacing;
         scrollable?: boolean;
     }
-    & ComponentPropsWithoutRef<"div">
+    & ComponentPropsWithRef<"div">
     & HorizontalAlignShorthands
     & VerticalAlignShorthands
     & DirectionShorthands

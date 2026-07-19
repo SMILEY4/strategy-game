@@ -1,12 +1,12 @@
 import classNames from "classnames";
-import type {ComponentPropsWithoutRef, ReactElement} from "react";
+import type {ComponentPropsWithRef, ReactElement} from "react";
 import styles from "./spacer.module.less";
 
 type SpacerProps = {
     direction?: "vertical" | "horizontal";
     vertical?: boolean,
     horizontal?: boolean,
-} & Omit<ComponentPropsWithoutRef<"div">, "children">;
+} & Omit<ComponentPropsWithRef<"div">, "children">;
 
 
 export function Spacer(props: SpacerProps): ReactElement {

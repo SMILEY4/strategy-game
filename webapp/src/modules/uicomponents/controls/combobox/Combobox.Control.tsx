@@ -1,4 +1,4 @@
-import {type ComponentPropsWithoutRef, type ReactElement} from "react";
+import {type ComponentPropsWithRef, type ReactElement} from "react";
 import classNames from "classnames";
 import "./combobox.less";
 import {useComboBoxContext} from "@modules/uicomponents/controls/combobox/ComboBox.Context.tsx";
@@ -39,7 +39,7 @@ type Combobox_ControlProps = {
         size?: Size;
         state?: State;
     }
-    & ComponentPropsWithoutRef<"div">
+    & ComponentPropsWithRef<"div">
     & ShapeShorthands
     & SizeShorthands
     & StateShorthands

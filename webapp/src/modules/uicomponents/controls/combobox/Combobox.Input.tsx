@@ -1,11 +1,11 @@
-import {type ComponentPropsWithoutRef, type ReactElement} from "react";
+import {type ComponentPropsWithRef, type ReactElement} from "react";
 import classNames from "classnames";
 import "./combobox.less";
 import {useComboBoxContext} from "@modules/uicomponents/controls/combobox/ComboBox.Context.tsx";
 
 
 type Combobox_InputProps = {}
-    & ComponentPropsWithoutRef<"input">
+    & ComponentPropsWithRef<"input">
 
 export function Combobox_Input(props: Combobox_InputProps): ReactElement {
 

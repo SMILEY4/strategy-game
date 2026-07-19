@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import {type ComponentPropsWithoutRef, type ReactElement, useState} from "react";
+import {type ComponentPropsWithRef, type ReactElement, useState} from "react";
 import styles from "./textField.module.less";
 import { TextFieldContext } from "./TextField.Context";
 
@@ -7,7 +7,7 @@ import { TextFieldContext } from "./TextField.Context";
 type TextField_RootProps = {
         type?: "text" | "password",
     }
-    & ComponentPropsWithoutRef<"div">
+    & ComponentPropsWithRef<"div">
 
 
 export function TextField_Root(props: TextField_RootProps): ReactElement {

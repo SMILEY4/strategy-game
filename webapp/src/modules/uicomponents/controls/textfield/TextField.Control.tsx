@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import {type ComponentPropsWithoutRef, type ReactElement} from "react";
+import {type ComponentPropsWithRef, type ReactElement} from "react";
 import styles from "./textField.module.less";
 
 
@@ -27,7 +27,7 @@ type TextField_ControlProps = {
         shape?: Shape;
         size?: Size;
     }
-    & ComponentPropsWithoutRef<"div">
+    & ComponentPropsWithRef<"div">
     & ShapeShorthands
     & SizeShorthands
 

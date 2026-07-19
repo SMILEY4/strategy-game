@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import type {ComponentPropsWithoutRef, ReactElement} from "react";
+import type {ComponentPropsWithRef, ReactElement} from "react";
 import styles from "./verticalLayout.module.less";
 
 type VerticalAlign =
@@ -87,7 +87,7 @@ export type VerticalLayoutProps = {
         fillWidth?: boolean;
         fillHeight?: boolean;
     }
-    & ComponentPropsWithoutRef<"div">
+    & ComponentPropsWithRef<"div">
     & VerticalAlignShorthands
     & HorizontalAlignShorthands
     & DirectionShorthands

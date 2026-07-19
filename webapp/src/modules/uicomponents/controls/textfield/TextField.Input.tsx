@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import {type ComponentPropsWithoutRef, type ReactElement} from "react";
+import {type ComponentPropsWithRef, type ReactElement} from "react";
 import styles from "./textField.module.less";
 import {useTextFieldInput} from "@modules/uicomponents/controls/textfield/useTextField.ts";
 
@@ -9,7 +9,7 @@ type TextField_InputProps = {
         onValueChange?: (value: string) => void,
         onConfirm?: (value: string) => void,
     }
-    & Omit<ComponentPropsWithoutRef<"input">, "onBlur" | "onKeyDown" | "onChange" | "type" | "value" | "children">
+    & Omit<ComponentPropsWithRef<"input">, "onBlur" | "onKeyDown" | "onChange" | "type" | "value" | "children">
 
 
 export function TextField_Input(props: TextField_InputProps): ReactElement {

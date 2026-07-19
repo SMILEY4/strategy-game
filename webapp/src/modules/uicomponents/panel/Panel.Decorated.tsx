@@ -1,4 +1,4 @@
-import type {ComponentPropsWithoutRef, CSSProperties, ReactElement} from "react";
+import type {ComponentPropsWithRef, CSSProperties, ReactElement} from "react";
 import classNames from "classnames";
 import styles from "./panel.decorated.module.less";
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
@@ -85,9 +85,10 @@ export type Panel_DecoratedProps = {
         corner?: Corner;
         pattern?: Pattern;
         variant?: Variant;
-        overlay?: Overlay
+        overlay?: Overlay;
+        // ref: RefObject<HTMLDivElement | null>;
     }
-    & ComponentPropsWithoutRef<"div">
+    & ComponentPropsWithRef<"div">
     & BorderShorthands
     & CornerShorthands
     & PatternShorthands

@@ -1,4 +1,4 @@
-import {type ComponentPropsWithoutRef, type ReactElement} from "react";
+import {type ComponentPropsWithRef, type ReactElement} from "react";
 import classNames from "classnames";
 import styles from "./selectbox.module.less";
 import {useSelectboxContext} from "@modules/uicomponents/controls/selectbox/Selectbox.Context.tsx";
@@ -41,7 +41,7 @@ type Selectbox_ControlProps = {
         stableSize?: boolean;
         children?: never;
     }
-    & Omit<ComponentPropsWithoutRef<"div">, "children">
+    & Omit<ComponentPropsWithRef<"div">, "children">
     & ShapeShorthands
     & SizeShorthands
     & StateShorthands

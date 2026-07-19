@@ -1,4 +1,4 @@
-import type {ComponentPropsWithoutRef, ReactElement} from "react";
+import type {ComponentPropsWithRef, ReactElement} from "react";
 import classNames from "classnames";
 import styles from "./panel.parchment.module.less";
 
@@ -30,7 +30,7 @@ export type Panel_ParchmentProps = {
         edge?: Edge;
         border?: Border;
     }
-    & ComponentPropsWithoutRef<"div">
+    & ComponentPropsWithRef<"div">
     & EdgeShorthands
     & BorderShorthands
 

@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import type {ComponentPropsWithoutRef, ReactElement} from "react";
+import type {ComponentPropsWithRef, ReactElement} from "react";
 import styles from "./responsiveLayout.module.less";
 
 type Direction =
@@ -95,7 +95,7 @@ export type ResponsiveLayoutProps = {
         spacing?: Spacing | ResponsiveProp<Spacing>;
         padding?: Spacing | ResponsiveProp<Spacing>;
     }
-    & ComponentPropsWithoutRef<"div">
+    & ComponentPropsWithRef<"div">
     & DirectionShorthands
     & AlignmentShorthands
     & SpacingShorthands
