@@ -11,7 +11,7 @@ import {Txt} from "@modules/uicomponents/text/Txt.tsx";
 import {Separator} from "@modules/uicomponents/separator/Separator.tsx";
 import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";
 import {WindowStack} from "@modules/uicomponents/window/WindowStack.tsx";
-import {openWindow, useWindowInteractions} from "@modules/uicomponents/window/useWindow.ts";
+import {openWindow} from "@modules/uicomponents/window/useWindow.ts";
 import {ANCHOR_CENTER_POINT} from "@modules/uicomponents/window/window-system.ts";
 import {SimpleWindow} from "@modules/uicomponents/window/simple/SimpleWindow.tsx";
 
@@ -734,7 +734,7 @@ export function ComponentsPage(): ReactElement {
                         content: (windowId: string) => {
                             return (
                                 <SimpleWindow windowId={windowId} title={"Test Window"} withCloseButton={true}>
-                                    Hello Content
+                                    <Txt.Line><Txt.String>{windowId}</Txt.String></Txt.Line>
                                 </SimpleWindow>
                             )
                         }
@@ -750,56 +750,4 @@ export function ComponentsPage(): ReactElement {
         </VerticalLayout>
     );
 
-}
-
-
-function TestWindow(props: { windowId: string }) {
-
-    const {
-        resizerProps,
-        dragProps,
-        refContent,
-        closeWindow,
-    } = useWindowInteractions(props.windowId);
-
-    return (
-        <div
-            style={{
-                width: "100%",
-                height: "100%",
-                backgroundColor: "white",
-                color: "black",
-            }}
-            ref={refContent}
-        >
-
-
-            <div
-                {...dragProps}
-                style={{
-                    width: "100%",
-                    height: "50px",
-                    backgroundColor: "lightgrey",
-                }}
-            />
-
-
-            <div
-                {...resizerProps}
-                style={{
-                    position: "absolute",
-                    bottom: 0,
-                    right: 0,
-                    width: "30px",
-                    height: "30px",
-                    backgroundColor: "lightgrey",
-                }}
-            />
-
-            <span>I am a window!</span>
-            <span>{props.windowId}</span>
-            <button onClick={closeWindow}>Close</button>
-
-        </div>
-    );
 }

@@ -4,42 +4,54 @@
 @import "@modules/uicomponents/styles/variables.resources.less";
 
 .simple-window {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
+	width:           100%;
+	height:          100%;
+	display:         flex;
+	flex-direction:  column;
+	align-items:     stretch;
 	justify-content: start;
 
 	> .header {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
+		display:         flex;
+		flex-direction:  row;
+		align-items:     center;
 		justify-content: space-between;
-		padding: @space-xs;
-		gap: @space-m;
-		cursor: grab;
+		padding:         @space-xs;
+		gap:             @space-m;
+		cursor:          grab;
 
-		&:active {
+		&[data-dragging="true"] {
 			cursor: grabbing;
 		}
 	}
 
 	> .content {
-		display: flex;
-		flex-direction: column;
-		align-items: stretch;
+		display:         flex;
+		flex-direction:  column;
+		align-items:     stretch;
 		justify-content: start;
-		padding: @space-xs;
+		padding:         @space-xs;
 	}
 
 	> .resizer {
 		position: absolute;
-		bottom: 0;
-		right: 0;
-		width: 15px;
-		height: 15px;
-		cursor: se-resize;
+		bottom:   0;
+		right:    0;
+		width:    15px;
+		height:   15px;
+		cursor:   se-resize;
+
+		&::before {
+			content:       '';
+			position:      absolute;
+			bottom:        4px;
+			right:         4px;
+			background:    @border-subtle-gradient;
+			width:         4px;
+			height:        4px;
+			border-radius: 100%
+		}
+
 	}
 
 }

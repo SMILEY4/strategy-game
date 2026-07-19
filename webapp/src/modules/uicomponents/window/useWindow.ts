@@ -51,8 +51,15 @@ export function useWindowInteractions(id: string) {
 
     const close = useCloseWindow();
     const refContent = useRef<HTMLDivElement>(null);
-    const [refDrag, onMouseDownDrag] = useDraggable(filterCanInteract, onPrepareDragOrResize, onDrag);
-    const [refResize, onMouseDownResize] = useDraggable(filterCanInteract, onPrepareDragOrResize, onResize);
+    const {
+        ref: refDrag,
+        onMouseDown: onMouseDownDrag,
+        isDragging: isDraggingDrag,
+    } = useDraggable(filterCanInteract, onPrepareDragOrResize, onDrag);
+    const {
+        ref: refResize,
+        onMouseDown: onMouseDownResize,
+    } = useDraggable(filterCanInteract, onPrepareDragOrResize, onResize);
 
     if (!data) {
         throw new Error("Could not find window with id " + id);
@@ -127,7 +134,7 @@ export function useWindowInteractions(id: string) {
         dragProps: {
             ref: refDrag,
             onMouseDown: onMouseDownDrag,
-            "data-dragging": refDrag.current !== null
+            "data-dragging": isDraggingDrag
         },
         refContent: refContent,
         closeWindow: handleClose,

@@ -42,7 +42,7 @@ export function SimpleWindow(props: SimpleWindowProps): ReactElement {
 
                 <div
                     {...dragProps}
-                    className={styles["header"]}
+                    className={classNames(styles["header"])}
                 >
                     <Txt.Heading h4>{title}</Txt.Heading>
                     <div className="actions">
