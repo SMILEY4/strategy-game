@@ -3,42 +3,53 @@
 @import "@modules/uicomponents/styles/variables.layout.less";
 
 .tabbar {
-    display: flex;
-    position: relative;
-    border-bottom: 1px solid @border-subtle-color-dark;
-}
+	display:       flex;
+	position:      relative;
+	border-bottom: 1px solid @decorative-gold;
 
-.tabbar__tab {
-    cursor: pointer;
-    padding: @space-2xs @space-s;
-    font-family: @font-type-body;
-    font-size: @font-size-0;
-    color: @content-subtle-on-dark;
-    text-shadow: @shadow-content-on-dark;
-    user-select: none;
-    white-space: nowrap;
-    transition: color 0.15s, filter 0.15s;
-    outline: unset;
 
-    &:hover {
-        color: @content-on-dark;
-        filter: brightness(1.2);
-    }
+	> .indicator {
+		position:       absolute;
+		bottom:         0;
+		height:         2px;
+		background:     @decorative-gold-strong;
+		transition:     left 0.1s ease, width 0.1s ease;
+		pointer-events: none;
+	}
 
-    &[data-active] {
-        color: @content-on-dark;
-    }
+	> .tab {
+		cursor:      pointer;
+		padding:     @space-2xs @space-s;
+		transition:  color 0.15s, filter 0.15s;
+		outline:     unset;
 
-    &:focus {
-        box-shadow: @decorative-focus-glow;
-    }
-}
 
-.tabbar__indicator {
-    position: absolute;
-    bottom: 0;
-    height: 2px;
-    background: @content-on-dark;
-    transition: left 0.2s ease, width 0.2s ease;
-    pointer-events: none;
+		&[data-active] {
+			color: @content-on-dark;
+
+			&::before {
+				content:    '';
+				position:   absolute;
+				bottom:     0;
+				left:       0;
+				right:      0;
+				height:     50%;
+				background: radial-gradient(ellipse at bottom, @decorative-gold 0%, transparent 70%);
+				opacity:    50%;
+			}
+		}
+
+
+		&:focus::before {
+			content:    '';
+			position:   absolute;
+			bottom:     0;
+			left:       0;
+			right:      0;
+			height:     50%;
+			background: radial-gradient(ellipse at bottom, @decorative-focus-glow-color 0%, transparent 70%);
+		}
+	}
+
+
 }

@@ -26,7 +26,7 @@ export function Tabbar_Tab(props: Tabbar_TabProps): ReactElement {
     return (
         <span
             ref={refCallback}
-            className={classNames(styles.tabbar__tab, className)}
+            className={classNames(styles.tab, className)}
             data-active={isActive || undefined}
             role="tab"
             aria-selected={isActive}

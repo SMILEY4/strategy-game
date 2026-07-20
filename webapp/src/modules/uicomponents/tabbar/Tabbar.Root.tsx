@@ -60,7 +60,7 @@ export function Tabbar_Root(props: Tabbar_RootProps): ReactElement {
             >
                 {children}
                 <div
-                    className={styles.tabbar__indicator}
+                    className={styles.indicator}
                     style={{left: indicator.left, width: indicator.width}}
                 />
             </div>

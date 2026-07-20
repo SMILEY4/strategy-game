@@ -426,7 +426,9 @@ export function ComponentsPage(): ReactElement {
 
                         <Tabbar.Root selectedTab={selectedTab} onSelectTab={setSelectedTab}>
                             {tabs.map(it => (
-                                <Tabbar.Tab value={it}>{it}</Tabbar.Tab>
+                                <Tabbar.Tab value={it}>
+                                    <Txt.Heading h6>{it}</Txt.Heading>
+                                </Tabbar.Tab>
                             ))}
                         </Tabbar.Root>
 
