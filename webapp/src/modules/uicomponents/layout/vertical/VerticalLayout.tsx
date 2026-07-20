@@ -86,6 +86,7 @@ export type VerticalLayoutProps = {
         scrollable?: boolean;
         fillWidth?: boolean;
         fillHeight?: boolean;
+        fillFlex?: boolean;
     }
     & ComponentPropsWithRef<"div">
     & VerticalAlignShorthands
@@ -154,6 +155,7 @@ export function VerticalLayout(props: VerticalLayoutProps): ReactElement {
         // fill
         fillWidth,
         fillHeight,
+        fillFlex,
 
         // everything else is safe for <div />
         ...rest
@@ -223,6 +225,7 @@ export function VerticalLayout(props: VerticalLayoutProps): ReactElement {
             data-scrollable={scrollable ? "" : undefined}
             data-fill-width={fillWidth ? "" : undefined}
             data-fill-height={fillHeight ? "" : undefined}
+            data-fill-flex={fillFlex ? "" : undefined}
         >
             {children}
         </div>

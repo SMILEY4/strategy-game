@@ -1,5 +1,5 @@
 import "./game-playing.less";
-import {TopMenu} from "@pages/game/gameui/TopMenu.tsx";
+import {GameUi} from "@pages/game/gameui/GameUi.tsx";
 
 export function GamePlayingPage() {
 
@@ -20,9 +20,7 @@ export function GamePlayingPage() {
             {/*/>*/}
 
             <div className="game-interface">
-
-                <TopMenu/>
-
+                <GameUi/>
             </div>
 
         </div>
