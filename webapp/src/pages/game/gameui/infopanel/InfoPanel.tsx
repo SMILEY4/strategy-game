@@ -1,8 +1,9 @@
 import { Panel } from "@/modules/uicomponents/panel/Panel";
 import { Txt } from "@/modules/uicomponents/text/Txt";
-import type {ReactElement} from "react";
+import {type ReactElement, useState} from "react";
 import styles from "./infopanel.module.less"
 import {VerticalLayout} from "@modules/uicomponents/layout/vertical/VerticalLayout.tsx";
+import {Tabbar} from "@modules/uicomponents/tabbar/Tabbar.tsx";
 
 export function InfoPanel(): ReactElement {
 
@@ -14,25 +15,36 @@ export function InfoPanel(): ReactElement {
             roundedCorner
             paperPattern
         >
-            <InfoNothing/>
-            {/*<InfoTile/>*/}
+            <InfoSelected/>
         </Panel.Decorated>
     );
 }
 
-function InfoNothing() {
+
+function InfoSelected() {
+
+    const tabs = [
+        "Tile",
+        "Resources",
+        "Settlement",
+        "Units",
+        "Roads"
+    ]
+    const [selectedTab, setSelectedTab] = useState(tabs[0]);
+
+
     return (
-        <VerticalLayout center fillFlex fillWidth>
-            <Txt.Body><Txt.String>Nothing Selected</Txt.String></Txt.Body>
+        <VerticalLayout verticalStart horizontalStretch fillFlex fillWidth>
+            <Tabbar.Root selectedTab={selectedTab} onSelectTab={setSelectedTab}>
+                {tabs.map(tab => (
+                    <Tabbar.Tab value={tab}>
+                        <Txt.Heading h6><Txt.String>{tab}</Txt.String></Txt.Heading>
+                    </Tabbar.Tab>
+                ))}
+            </Tabbar.Root>
+            <VerticalLayout verticalStart horizontalStretch fillFlex fillWidth paddingM>
+                <Txt.Body><Txt.String>{`todo: show information about ${selectedTab} here`}</Txt.String></Txt.Body>
+            </VerticalLayout>
         </VerticalLayout>
     )
 }
-
-// function InfoTile() {
-//     return (
-//         <VerticalLayout verticalStart horizontalStretch fillFlex fillWidth paddingM>
-//             <Txt.Heading h5><Txt.String>Plains</Txt.String></Txt.Heading>
-//             <Txt.Body><Txt.String>Kingdom of Gondor</Txt.String></Txt.Body>
-//         </VerticalLayout>
-//     )
-// }

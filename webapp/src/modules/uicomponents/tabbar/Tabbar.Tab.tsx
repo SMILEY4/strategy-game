@@ -2,6 +2,7 @@ import {type ReactElement, type ReactNode, useCallback} from "react";
 import classNames from "classnames";
 import styles from "./tabbar.module.less";
 import {useTabbarContext} from "@modules/uicomponents/tabbar/Tabbar.Context.tsx";
+import {gameAudio} from "@app/audio/gameAudio.ts";
 
 export type Tabbar_TabProps = {
     value: string;
@@ -31,7 +32,10 @@ export function Tabbar_Tab(props: Tabbar_TabProps): ReactElement {
             role="tab"
             aria-selected={isActive}
             tabIndex={0}
-            onClick={() => onSelectTab(value)}
+            onClick={() => {
+                gameAudio.CLICK_PRIMARY.play();
+                onSelectTab(value)
+            }}
             onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
