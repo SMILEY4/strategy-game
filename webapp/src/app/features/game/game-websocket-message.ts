@@ -29,6 +29,18 @@ interface GameState extends GameWebsocketServerMessageBase {
             chunk: {
                 q: number,
                 r: number
+            },
+            world: {
+                biome: string,
+                elevation: string,
+                feature: string,
+                resources: ({
+                    type: string,
+                    amount: number,
+                    maxAmount: number,
+                    changeRate: number,
+                    removeOnDeplete: number
+                })[]
             }
         })[]
     }

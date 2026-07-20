@@ -33,6 +33,22 @@ class PlayerStateBuilder {
             "q" to tile.meta.chunk.q
             "r" to tile.meta.chunk.r
         }
+        "world" to obj {
+            "biome" to tile.world.biome
+            "elevation" to tile.world.elevation
+            "feature" to tile.world.feature
+            "resources" to arr[
+                tile.world.resources.map { resource ->
+                    obj {
+                        "type" to resource.type
+                        "amount" to resource.amount
+                        "maxAmount" to resource.maxAmount
+                        "changeRate" to resource.changeRate
+                        "removeOnDeplete" to resource.removeOnDeplete
+                    }
+                }
+            ]
+        }
     }
 
 }

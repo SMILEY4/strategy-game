@@ -4,5 +4,17 @@ import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 export interface Tile {
     id: string,
     position: HexPosition,
-    chunk: HexPosition
+    chunk: HexPosition,
+    world: {
+        biome: string,
+        elevation: string,
+        feature: string,
+        resources: ({
+            type: string,
+            amount: number,
+            maxAmount: number,
+            changeRate: number,
+            removeOnDeplete: number
+        })[]
+    }
 }
