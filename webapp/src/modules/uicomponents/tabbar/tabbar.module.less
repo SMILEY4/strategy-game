@@ -1,0 +1,44 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+
+.tabbar {
+    display: flex;
+    position: relative;
+    border-bottom: 1px solid @border-subtle-color-dark;
+}
+
+.tabbar__tab {
+    cursor: pointer;
+    padding: @space-2xs @space-s;
+    font-family: @font-type-body;
+    font-size: @font-size-0;
+    color: @content-subtle-on-dark;
+    text-shadow: @shadow-content-on-dark;
+    user-select: none;
+    white-space: nowrap;
+    transition: color 0.15s, filter 0.15s;
+    outline: unset;
+
+    &:hover {
+        color: @content-on-dark;
+        filter: brightness(1.2);
+    }
+
+    &[data-active] {
+        color: @content-on-dark;
+    }
+
+    &:focus {
+        box-shadow: @decorative-focus-glow;
+    }
+}
+
+.tabbar__indicator {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background: @content-on-dark;
+    transition: left 0.2s ease, width 0.2s ease;
+    pointer-events: none;
+}

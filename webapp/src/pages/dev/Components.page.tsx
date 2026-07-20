@@ -14,6 +14,7 @@ import {WindowStack} from "@modules/uicomponents/window/WindowStack.tsx";
 import {openWindow} from "@modules/uicomponents/window/useWindow.ts";
 import {ANCHOR_CENTER_POINT} from "@modules/uicomponents/window/window-system.ts";
 import {SimpleWindow} from "@modules/uicomponents/window/simple/SimpleWindow.tsx";
+import {Tabbar} from "@modules/uicomponents/tabbar/Tabbar.tsx";
 
 type LanguageItem = {
     key: string,
@@ -65,8 +66,17 @@ export function ComponentsPage(): ReactElement {
             flag: "🇪🇸",
         },
     ];
-
     const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
+
+    const tabs = [
+        "Tile",
+        "Resources",
+        "Settlement",
+        "Units",
+        "Roads"
+    ]
+    const [selectedTab, setSelectedTab] = useState(tabs[0]);
+
 
     return (
         <VerticalLayout className="components-page" center spacing3xl padding2xl fillWidth>
@@ -399,6 +409,30 @@ export function ComponentsPage(): ReactElement {
 
                 </HorizontalLayout>
 
+
+            </>
+
+            {/*==========  TABBAR ==========*/}
+
+            <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>Tabbar</Txt.Heading>
+                </VerticalLayout>
+
+                <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+
+                    <VerticalLayout spacingS verticalStart horizontalCenter>
+
+                        <Tabbar.Root selectedTab={selectedTab} onSelectTab={setSelectedTab}>
+                            {tabs.map(it => (
+                                <Tabbar.Tab value={it}>{it}</Tabbar.Tab>
+                            ))}
+                        </Tabbar.Root>
+
+                    </VerticalLayout>
+
+                </HorizontalLayout>
 
             </>
 
