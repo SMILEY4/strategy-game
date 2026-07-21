@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "wasm": "wasm-pack build ./wasm",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -26,6 +27,8 @@
     "react-dom": "^19.2.5",
     "react-i18next": "^17.0.8",
     "react-router": "^8.0.1",
+    "vite-plugin-wasm": "^3.6.0",
+    "wasm": "file:./wasm/pkg",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
