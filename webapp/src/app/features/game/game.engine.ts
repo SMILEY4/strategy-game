@@ -45,6 +45,7 @@ export const gameEngine = ({client, wsClient, repository, tileDb, cameraControll
                 tileDb.batch(() => {
                     tileDb.deleteAll();
                     tileDb.insertMany(message.stateJson.tiles);
+                    console.log("received tiles", message.stateJson.tiles)
                 });
                 if (repository.getState() === "loading") {
                     repository.setState("playing");

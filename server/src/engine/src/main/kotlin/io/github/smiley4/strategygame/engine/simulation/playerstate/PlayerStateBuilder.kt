@@ -34,7 +34,7 @@ class PlayerStateBuilder {
             "r" to tile.meta.chunk.r
         }
         "world" to obj {
-            "biome" to tile.world.biome
+            "biome" to tile.world.biome.name
             "elevation" to tile.world.elevation
             "feature" to tile.world.feature
             "resources" to arr[
@@ -48,6 +48,9 @@ class PlayerStateBuilder {
                     }
                 }
             ]
+        }
+        "meta" to obj {
+            "seed" to tile.meta.seed
         }
     }
 

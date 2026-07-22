@@ -41,6 +41,9 @@ interface GameState extends GameWebsocketServerMessageBase {
                     changeRate: number,
                     removeOnDeplete: number
                 })[]
+            },
+            meta: {
+                seed: number,
             }
         })[]
     }

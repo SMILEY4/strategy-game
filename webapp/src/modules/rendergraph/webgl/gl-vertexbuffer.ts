@@ -24,7 +24,7 @@ export class GlVertexBuffer implements GlDisposable {
      * @param gl the webgl context
      * @param data the data to load into the buffer
      */
-    public static create(gl: WebGL2RenderingContext, data: ArrayBuffer) {
+    public static create(gl: WebGL2RenderingContext, data: ArrayBufferLike | ArrayBufferView) {
         const buffer = GlVertexBuffer.createEmpty(gl);
         buffer.setData(data, true);
         return buffer;
@@ -51,7 +51,7 @@ export class GlVertexBuffer implements GlDisposable {
      * @param data the new data to load into this buffer
      * @param bind to bind the framebuffer. Leave or set false when already bound before calling this function.
      */
-    public setData(data: ArrayBuffer, bind?: boolean) {
+    public setData(data: ArrayBufferLike | ArrayBufferView, bind?: boolean) {
         if (bind) {
             this.bind();
         }

@@ -58,7 +58,9 @@ class WorldGenerator {
                     seed = random.nextInt(),
                     chunk = chunkPosition
                 )
-            )
+            ).also {
+                println(it.world.biome)
+            }
         }
 
         return tiles

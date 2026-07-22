@@ -1,14 +1,16 @@
-import type {RenderCameraData, TileCollection} from "@pages/game/renderer/data/models.ts";
+import type {TileCollection} from "@pages/game/renderer/data/models.ts";
 import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
-import type {Tile} from "@app/features/game/models/tile.ts";
-import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
+import {WasmRenderApp} from "wasm";
+import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
+
 
 export interface GameGraphWasmApi {
     uploadTiles: (tiles: TileCollection) => void,
     collectChunks: () => { allChunks: boolean }
-    cullChunks: (camera: RenderCameraData) => { visibleChunks: boolean }
+    cullChunks: () => { visibleChunks: boolean }
     buildTileInstances: () => { tileInstances: boolean },
-    downloadTileInstances: () => VertexDataResult
+    downloadTileLandInstances: () => VertexDataResult
+    downloadTileWaterInstances: () => VertexDataResult
 }
 
 /**
@@ -16,89 +18,104 @@ export interface GameGraphWasmApi {
  */
 export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
-    let wasmTiles: TileCollection = {tiles: [], revId: "-"};
-    const chunks = new Map<string, { q: number, r: number, tiles: Tile[] }>();
-    const visibleChunks = new Set<string>;
-    let instances: VertexDataResult = {
-        data: new ArrayBuffer(0),
-        count: 0,
-    };
+    const wasmApp: WasmRenderApp = new WasmRenderApp();
+
 
     return {
 
         uploadTiles: (tiles: TileCollection) => {
-            wasmTiles = {
-                tiles: [...tiles.tiles],
-                revId: tiles.revId,
-            };
+            console.log("[wasm-api]: uploading tiles (" + tiles.tiles.length + ")")
+
+            const memory = wasmApp.tiles_reserve_memory(tiles.tiles.length);
+            const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size)
+
+            const dataView = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+            let viewCounter = 0;
+
+            function pushUint8(value: number) {
+                dataView.setUint8(viewCounter, value);
+                viewCounter += 1;
+            }
+
+            function pushInt32(value: number) {
+                dataView.setInt32(viewCounter, value, true);
+                viewCounter += 4;
+            }
+
+            function pushUint32(value: number) {
+                dataView.setUint32(viewCounter, value, true);
+                viewCounter += 4;
+            }
+
+            function pushFloat32(value: number) {
+                dataView.setFloat32(viewCounter, value, true);
+                viewCounter += 4;
+            }
+
+            for(let i=0, n=tiles.tiles.length; i<n; i++) {
+                const tile = tiles.tiles[i];
+
+                // pub tile_position: HexPosition,
+                pushInt32(tile.position.q)
+                pushInt32(tile.position.r)
+
+                // pub chunk_position: HexPosition,
+                pushInt32(tile.chunk.q)
+                pushInt32(tile.chunk.r)
+
+                // pub world_position: WorldPosition,
+                pushFloat32(0)
+                pushFloat32(0)
+
+                // pub terrain: TerrainType,
+                if(tile.world.biome === "OCEAN") {
+                    pushUint8(0)
+                } else {
+                    pushUint8(1)
+                }
+
+                // pub rng_seed: u32
+                pushUint32(tile.meta.seed)
+
+            }
+
+            wasmApp.tiles_upload(memory.ptr, memory.len);
         },
 
         collectChunks: () => {
-            chunks.clear();
-
-            for (let i = 0, n = wasmTiles.tiles.length; i < n; i++) {
-                const tile = wasmTiles.tiles[i];
-                const chunkKey = `${tile.chunk.q}/${tile.chunk.r}`;
-                if (!chunks.has(chunkKey)) {
-                    chunks.set(chunkKey, {q: tile.chunk.q, r: tile.chunk.r, tiles: [tile]});
-                } else {
-                    chunks.get(chunkKey)?.tiles.push(tile);
-                }
-            }
-
-            return {allChunks: true};
+            console.log("[wasm-api]: collecting chunks")
+            const changed = wasmApp.calculate_all_chunks();
+            return {allChunks: changed};
         },
 
-        cullChunks: (_camera: RenderCameraData) => {
-            visibleChunks.clear();
-            chunks.forEach((_value, key: string) => {
-                visibleChunks.add(key);
-            });
-            return {visibleChunks: true};
+        cullChunks: () => {
+            console.log("[wasm-api]: culling chunks")
+            const changed = wasmApp.calculate_visible_chunks();
+            return {visibleChunks: changed};
         },
 
         buildTileInstances: () => {
-
-            let tileCount = 0;
-            visibleChunks.forEach(visibleChunkKey => {
-                const chunk = chunks.get(visibleChunkKey);
-                if(chunk) {
-                    tileCount += chunk.tiles.length
-                }
-            })
-
-            const buffer = new ArrayBuffer(tileCount * 4 * GlAttributeType.FLOAT.bytes);
-            const view = new DataView(buffer);
-            let viewCounter = 0;
-
-            function pushFloat32(value: number) {
-                view.setFloat32(viewCounter, value, true);
-                viewCounter += GlAttributeType.FLOAT.bytes;
-            }
-
-            visibleChunks.forEach(visibleChunkKey => {
-                const chunk = chunks.get(visibleChunkKey);
-                if(!chunk || !chunk.tiles) return
-                for (let i = 0, n=chunk.tiles.length; i < n; i++) {
-                    const tile = chunk.tiles[i]
-                    pushFloat32(tile.position.q)
-                    pushFloat32(tile.position.r)
-                    pushFloat32(tile.chunk.q)
-                    pushFloat32(tile.chunk.r)
-                }
-            })
-
-            instances = {
-                data: buffer,
-                count: tileCount
-            }
-
-
-            return { tileInstances: true }
+            console.log("[wasm-api]: building tile instances")
+            const changed = wasmApp.calculate_terrain_tile_instances();
+            return {tileInstances: changed};
         },
 
-        downloadTileInstances: () => {
-            return instances;
+        downloadTileLandInstances: () => {
+            const data = {
+                data: wasmApp.get_terrain_tile_land_instances(),
+                count: wasmApp.get_terrain_tile_land_instance_count(),
+            }
+            console.log("[wasm-api]: downloading tile land instances (" + data.count + ")")
+            return data;
+        },
+
+        downloadTileWaterInstances: () => {
+            const data = {
+                data: wasmApp.get_terrain_tile_water_instances(),
+                count: wasmApp.get_terrain_tile_water_instance_count(),
+            }
+            console.log("[wasm-api]: downloading tile water instances (" + data.count + ")")
+            return data;
         },
 
     };

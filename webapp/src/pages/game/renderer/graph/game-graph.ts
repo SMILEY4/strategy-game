@@ -87,7 +87,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         wasmInputs: [wasmAllChunks],
         dataInputs: [dataCamera],
         outputs: ["visibleChunks"],
-        func: (camera: RenderCamera) => wasmApi.cullChunks(camera),
+        func: (_camera: RenderCamera) => wasmApi.cullChunks(),
     });
 
     const wasmVisibleChunks = g.wasmData({
@@ -175,16 +175,11 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
             }),
             g.wasmGeometrySource({
                 source: wasmTileInstances,
-                download: () => wasmApi.downloadTileInstances(),
+                download: () => wasmApi.downloadTileLandInstances(),
                 content: "instances",
                 layout: [
                     {
                         name: "tilePosition",
-                        type: GlAttributeType.FLOAT,
-                        amountComponents: 2,
-                    },
-                    {
-                        name: "chunkPosition",
                         type: GlAttributeType.FLOAT,
                         amountComponents: 2,
                     },

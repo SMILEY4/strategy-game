@@ -5,11 +5,11 @@ import type {CameraController} from "@app/features/game/gameplay/camera/camera-c
 import {mat4, vec3, vec4} from "gl-matrix";
 
 const MIN_DIST = 20;
-const MAX_DIST = 150;
+const MAX_DIST = 300;
 const PITCH_AT_MIN = 25 * Math.PI / 180;
 const PITCH_AT_MAX = 75 * Math.PI / 180;
 const MOVE_SPEED = 0.3;
-const ZOOM_SPEED = 0.02;
+const ZOOM_SPEED = 0.03;
 const UP = vec3.fromValues(0, 1, 0);
 const SQRT3 = Math.sqrt(3);
 

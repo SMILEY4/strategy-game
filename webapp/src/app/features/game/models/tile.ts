@@ -16,5 +16,8 @@ export interface Tile {
             changeRate: number,
             removeOnDeplete: number
         })[]
+    },
+    meta: {
+        seed: number,
     }
 }

@@ -21,6 +21,6 @@ export interface VertexDataLayout {
 }
 
 export interface VertexDataResult {
-    readonly data: ArrayBuffer,
+    readonly data: ArrayBufferLike | ArrayBufferView,
     readonly count: number,
 }

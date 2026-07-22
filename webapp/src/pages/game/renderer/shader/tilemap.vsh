@@ -2,18 +2,15 @@
 
 in vec3 in_vertexPosition;
 in vec2 in_tilePosition;
-in vec2 in_chunkPosition;
 
 uniform mat4 u_camera;
 
 flat out vec2 v_tilePosition;
-flat out vec2 v_chunkPosition;
 
 const float SQRT_3 = 1.732050;
 
 void main() {
     v_tilePosition = in_tilePosition;
-    v_chunkPosition = in_chunkPosition;
 
     float q = in_tilePosition.x;
     float r = in_tilePosition.y;
