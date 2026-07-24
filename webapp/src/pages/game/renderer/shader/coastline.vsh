@@ -37,7 +37,6 @@ vec2 offsetVertexPosition(vec3 worldPosition, float strength) {
 }
 
 
-
 void main() {
     v_tilePosition = in_tilePosition;
     v_textureCoordinates = in_textureCoordinates;
@@ -52,7 +51,7 @@ void main() {
     vec3 tileWorldCenter = vec3(worldX, 0.0, worldZ);
 
     // calculate world coordinate of each vertex
-    float scale = 1.45;
+    float scale = 1.4;
     vec3 vertexWorldPos = tileWorldCenter + (in_vertexPosition * vec3(scale, 1.0, scale));
 
     // introduce random offset (based on unscaled world position)

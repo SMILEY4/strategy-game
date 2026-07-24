@@ -158,8 +158,8 @@ function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode, contex
     context.commands.push({type: "BIND_FRAMEBUFFER", framebufferId: node.id});
 
     if (node.size.type === "canvas-size") {
-        context.commands.push({type: "RESIZE_FRAMEBUFFER", framebufferId: node.id, sizeRef: node.size.id});
-        context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: node.size.id}});
+        context.commands.push({type: "RESIZE_FRAMEBUFFER", framebufferId: node.id, sizeRef: KEY_CANVAS_SIZE});
+        context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: KEY_CANVAS_SIZE}});
     }
     if (node.size.type === "data") {
         const dataResult = resolveDataNode(node.size, context) as ValueEntry<[number, number]>;

@@ -67,7 +67,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
                 pushFloat32(0)
                 pushFloat32(0)
 
-                // pub terrain: TerrainType,
+                // pub terrain: u8,
                 if(tile.world.biome === "OCEAN") {
                     pushUint8(0)
                 } else {
@@ -83,14 +83,14 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
         },
 
         collectChunks: () => {
-            console.log("[wasm-api]: collecting chunks")
             const changed = wasmApp.calculate_all_chunks();
+            console.log("[wasm-api]: collected chunks", changed)
             return {allChunks: changed};
         },
 
         cullChunks: () => {
-            console.log("[wasm-api]: culling chunks")
             const changed = wasmApp.calculate_visible_chunks();
+            console.log("[wasm-api]: culled chunks", changed)
             return {visibleChunks: changed};
         },
 

@@ -14,7 +14,7 @@ export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExe
         try {
             execute(commands[i], context);
         } catch (error) {
-            console.error("Failed to execute webgl command", commands[i], context.getResources())
+            console.error("Failed to execute webgl command", commands[i], context.getResources());
             throw error;
         }
     }
@@ -82,6 +82,15 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         case "DRAW": {
             const gl = context.getRenderingContext();
             const vertexCount = context.getVertexBufferElementCount(command.vertexCountRef);
+
+            gl.enable(gl.BLEND);
+            gl.blendFuncSeparate(
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA,
+                gl.ONE,
+                gl.ONE_MINUS_SRC_ALPHA,
+            );
+
             gl.drawArrays(command.mode, 0, vertexCount);
             GlError.check(gl, "drawArrays", "drawing");
             return;
@@ -97,8 +106,8 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "LOAD_EXTERNAL_DATA": {
-            const prev = context.getData(command.outputRef)
-            if(!context.isInitialized(command.outputRef) || command.checkChanged(prev)) {
+            const prev = context.getData(command.outputRef);
+            if (!context.isInitialized(command.outputRef) || command.checkChanged(prev)) {
                 context.setData(command.outputRef, command.fetch());
             }
             return;
@@ -111,7 +120,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                     if (arg.type === "ref") return context.getData(arg.ref);
                 });
                 const result = command.func(...(args as Parameters<typeof command.func>));
-                if(command.checkChanged(context.getData(command.outputRef), result)) {
+                if (command.checkChanged(context.getData(command.outputRef), result)) {
                     context.setData(command.outputRef, result);
                 }
             }
@@ -156,9 +165,9 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "DOWNLOAD_WASM_VERTEX_DATA": {
-            if(isAnyDirty(context, command.wasmDataRef) || !context.isInitialized(command.outputRef)) {
+            if (isAnyDirty(context, command.wasmDataRef) || !context.isInitialized(command.outputRef)) {
                 context.setInitialized(command.outputRef);
-                const value = command.fetch()
+                const value = command.fetch();
                 const buffer = context.getVertexBuffer(command.outputRef);
                 buffer.setData(value.data, true);
                 context.setVertexBufferElementCount(command.outputRef, value.count);
@@ -300,37 +309,37 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "DOWNLOAD_WASM_DATA": {
-            if(context.isDirty(command.wasmDataRef) || !context.isInitialized(command.outputRef)) {
+            if (context.isDirty(command.wasmDataRef) || !context.isInitialized(command.outputRef)) {
                 context.setData(command.outputRef, command.fetch());
             }
             return;
         }
 
         case "UPLOAD_WASM_DATA": {
-            if(isAnyDirty(context, command.sourceRef) || !context.isInitialized(command.sourceRef)) {
-                const data = getDataHelper(context, command.sourceRef)
-                command.upload(data)
-                context.setInitialized(command.wasmDataRef)
-                context.setDirty(command.wasmDataRef)
+            if (isAnyDirty(context, command.sourceRef) || !context.isInitialized(command.sourceRef)) {
+                const data = getDataHelper(context, command.sourceRef);
+                command.upload(data);
+                context.setInitialized(command.wasmDataRef);
+                context.setDirty(command.wasmDataRef);
             }
             return;
         }
 
         case "EXECUTE_WASM": {
-            if(isAnyDirty(context, ...command.dataInputRefs, ...command.wasmInputRefs)) {
+            if (isAnyDirty(context, ...command.dataInputRefs, ...command.wasmInputRefs)) {
                 const args = command.dataInputRefs.map(arg => {
                     if (arg.type === "const") return arg.value;
                     if (arg.type === "ref") return context.getData(arg.ref);
                 });
                 const result = command.func(...(args as Parameters<typeof command.func>));
                 Object.entries(result).forEach(([key, modified]) => {
-                    if(modified) {
-                        const wasmDataNodeRefs = command.outputKeyMapping[key]
-                        if(wasmDataNodeRefs) {
-                            wasmDataNodeRefs.forEach(ref => context.setDirty(ref))
+                    if (modified) {
+                        const wasmDataNodeRefs = command.outputKeyMapping[key];
+                        if (wasmDataNodeRefs) {
+                            wasmDataNodeRefs.forEach(ref => context.setDirty(ref));
                         }
                     }
-                })
+                });
             }
             return;
         }
@@ -342,20 +351,20 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
 function isAnyDirty(context: WebGlExecutionContext, ...args: (ValueEntry | string)[]): boolean {
     return args.some(arg => {
-        if(typeof arg === "string") {
-            return context.isDirty(arg)
+        if (typeof arg === "string") {
+            return context.isDirty(arg);
         } else {
-            return arg.type === "ref" && context.isDirty(arg.ref)
+            return arg.type === "ref" && context.isDirty(arg.ref);
         }
     });
 }
 
 function getDataHelper<T>(context: WebGlExecutionContext, ref: ValueEntry): T {
-    if(ref.type === "const") {
-        return ref.value as T
+    if (ref.type === "const") {
+        return ref.value as T;
     }
-    if(ref.type === "ref") {
+    if (ref.type === "ref") {
         return context.getData(ref.ref);
     }
-    assertExhaustive(ref)
+    assertExhaustive(ref);
 }

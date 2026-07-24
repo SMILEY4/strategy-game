@@ -7,7 +7,6 @@ use crate::render::models::tile_instance_data::{
     TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance,
 };
 use std::collections::{HashMap, HashSet};
-use crate::js::imported::console_log;
 
 pub struct Renderer {
     config: RenderConfig,

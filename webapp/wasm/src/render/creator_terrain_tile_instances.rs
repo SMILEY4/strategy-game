@@ -1,4 +1,3 @@
-use crate::js::imported::console_log;
 use crate::render::models::render_state::RenderState;
 use crate::render::models::tile_instance_data::{TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
 
@@ -10,7 +9,6 @@ pub fn build(state: &RenderState, instance_data: &mut TileInstanceData) {
         let chunk = state.chunks.get(chunk_key).unwrap();
         chunk.tiles.iter().for_each(|tile_index| {
             let tile = state.tiles[*tile_index];
-            console_log(&format!("[WASM] tile {:?}", tile.terrain));
 
             if tile.terrain == 0 {
                 instance_data.terrain_water.push(TileTerrainWaterInstance {

@@ -2,6 +2,9 @@
 precision mediump float;
 
 flat in vec2 v_tilePosition;
+in vec2 v_textureCoordinates;
+
+uniform sampler2D u_baseTerrain;
 
 out vec4 outColor;
 
@@ -11,11 +14,16 @@ float hash(vec2 p) {
 
 void main() {
 
-    // tile position
-    float r = hash(v_tilePosition + vec2(0.0, 0.0));
-    float g = hash(v_tilePosition + vec2(1.0, 2.0));
-    float b = hash(v_tilePosition + vec2(3.0, 4.0));
+    // tile position color
+    float r = max(0.5, hash(v_tilePosition + vec2(0.0, 0.0)));
+    float g = max(0.5, hash(v_tilePosition + vec2(1.0, 2.0)));
+    float b = max(0.5, hash(v_tilePosition + vec2(3.0, 4.0)));
 
-    outColor = vec4(r, g, b, 1.0);
+    // shape mask
+    vec4 texture = texture(u_baseTerrain, v_textureCoordinates);
+
+    // final color
+//    outColor = vec4(vec3(r, g, b), texture.a);
+    outColor = vec4(vec3(112.0/255.0, 112.0/255.0, 86.0/255.0), texture.a);
 
 }

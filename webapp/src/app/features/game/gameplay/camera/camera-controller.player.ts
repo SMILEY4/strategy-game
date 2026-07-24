@@ -78,6 +78,7 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
     const pivot = vec3.fromValues(0, 0, 0);
     let distance = 40;
     const yaw = 0;
+    let dirty = true;
 
     const pressedKeys = new Set<string>();
     let canvasWidth = 1;
@@ -147,7 +148,7 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
             const left = pressedKeys.has("a") || pressedKeys.has("A");
             const right = pressedKeys.has("d") || pressedKeys.has("D");
 
-            if (forward || backward || left || right) {
+            if (forward || backward || left || right || dirty) {
                 const pitch = computePitch(distance);
                 const cosPitch = Math.cos(pitch);
 
@@ -175,9 +176,11 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
                     vec3.scale(move, move, speed);
                     vec3.add(pivot, pivot, move);
                 }
-            }
 
-            applyCamera(distance);
+                applyCamera(distance);
+                dirty = false;
+
+            }
         },
 
         onMouseMove: (mx: number, my: number, x: number, y: number, buttons: number) => {
@@ -202,6 +205,7 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
             const delta = vec3.create();
             vec3.sub(delta, prevWorld, currWorld);
             vec3.add(pivot, pivot, delta);
+            dirty = true;
         },
 
         onCanvasClick: (x: number, y: number) => {
