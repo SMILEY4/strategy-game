@@ -4,12 +4,14 @@ import type {RenderCamera, TileCollection} from "@pages/game/renderer/data/model
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {vec2} from "gl-matrix";
 import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph-wasm-api.ts";
-import SHADER_TILEMAP_VERT from "./../shader/tilemap.vsh?raw";
-import SHADER_TILEMAP_FRAG from "./../shader/tilemap.fsh?raw";
-import SHADER_COMPOSE_VERT from "./../shader/compose.vsh?raw";
-import SHADER_COMPOSE_FRAG from "./../shader/compose.fsh?raw";
-import SHADER_COASTLINE_VERT from "./../shader/coastline.vsh?raw";
-import SHADER_COASTLINE_FRAG from "./../shader/coastline.fsh?raw";
+import SHADER_TILEMAP_VERT from "./../shader/tilemap.vsh";
+import SHADER_TILEMAP_FRAG from "./../shader/tilemap.fsh";
+import SHADER_COMPOSE_VERT from "./../shader/compose.vsh";
+import SHADER_COMPOSE_FRAG from "./../shader/compose.fsh";
+import SHADER_COASTLINE_VERT from "./../shader/coastline.vsh";
+import SHADER_COASTLINE_FRAG from "./../shader/coastline.fsh";
+
+
 
 /** Build the render graph for the game scene using a builder and data provider. */
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: GameGraphWasmApi) {

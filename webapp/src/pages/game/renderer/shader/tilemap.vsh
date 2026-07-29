@@ -12,19 +12,7 @@ out vec2 v_textureCoordinates;
 const float SQRT_3 = 1.732050;
 
 
-// generates a random number between -1 and +1 based on the given 2d seed
-float random(vec2 seed) {
-    float value =  fract(sin(dot(seed.xy, vec2(12.9898, 78.233))) * 43758.5453123);
-    return value * 2.0 - 1.0;
-}
-
-// generates a random 2d vector with values between -1 and +1 based on the given 2d seed
-vec2 random2(vec2 seed) {
-    return vec2(
-            random(seed + vec2(+10.0, -10.0)),
-            random(seed + vec2(-10.0, +10.0))
-    );
-}
+#include "utils/random.glsl"
 
 // calculate random offset.
 // seed is the world position of the vertex to make the random offset "seamless" between tiles
