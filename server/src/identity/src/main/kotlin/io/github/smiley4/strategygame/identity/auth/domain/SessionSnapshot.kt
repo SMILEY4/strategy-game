@@ -1,0 +1,14 @@
+package io.github.smiley4.strategygame.identity.auth.domain
+
+import io.github.smiley4.strategygame.shared.values.UserId
+import kotlin.time.Instant
+
+/**
+ * Immutable snapshot of a [Session]
+ */
+internal data class SessionSnapshot(
+    val token: SessionToken,
+    val userId: UserId,
+    val expiresAt: Instant,
+    val status: Session.Status
+)

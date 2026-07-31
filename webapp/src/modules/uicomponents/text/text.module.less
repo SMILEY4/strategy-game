@@ -1,0 +1,236 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+
+//============================
+//  Container: Heading
+//============================
+
+.txt--heading {
+	font-family: @font-type-title;
+	font-weight: @font-weight-m;
+	color:       @content-on-dark;
+	text-shadow: @shadow-content-on-dark;
+	margin:      0;
+
+	&[data-level="1"] {
+		font-size: @font-size-5;
+	}
+
+	&[data-level="2"] {
+		font-size: @font-size-4;
+	}
+
+	&[data-level="3"] {
+		font-size: @font-size-3;
+	}
+
+	&[data-level="4"] {
+		font-size: @font-size-2;
+	}
+
+	&[data-level="5"] {
+		font-size: @font-size-1;
+	}
+
+	&[data-level="6"] {
+		font-size: @font-size-0;
+	}
+
+	&, &[data-align="left"] {
+		text-align: left;
+	}
+
+	&[data-align="center"] {
+		text-align: center;
+	}
+
+	&[data-align="right"] {
+		text-align: right;
+	}
+}
+
+//============================
+//  Container: Body
+//============================
+
+.txt--body {
+	font-family: @font-type-body;
+	font-weight: @font-weight-s;
+	font-size:   @font-size-0;
+	color:       @content-on-dark;
+	text-shadow: @shadow-content-on-dark;
+	line-height: 1.5;
+	margin:      0;
+}
+
+//============================
+//  Container: Line
+//============================
+
+.txt--line {
+	display:       block;
+	white-space:   nowrap;
+	overflow:      hidden;
+	text-overflow: ellipsis;
+
+	font-family:   @font-type-body;
+	font-weight:   @font-weight-s;
+	font-size:     @font-size-0;
+	color:         @content-on-dark;
+	text-shadow:   @shadow-content-on-dark;
+
+	&, &[data-align="left"] {
+		text-align: left;
+	}
+
+	&[data-align="center"] {
+		text-align: center;
+	}
+
+	&[data-align="right"] {
+		text-align: right;
+	}
+
+}
+
+//============================
+//  Content: String
+//============================
+
+.txt__string {
+
+	&, &[data-intent="neutral"] {
+		color: @content-on-dark;
+	}
+
+	&[data-intent="positive"] {
+		color: @content-success-on-dark;
+	}
+
+	&[data-intent="negative"] {
+		color: @content-danger-on-dark;
+	}
+
+}
+
+//============================
+//  Content: Link
+//============================
+
+.txt__link {
+	color:   inherit;
+	outline: unset;
+
+	&:focus {
+		box-shadow: @decorative-focus-glow;
+	}
+
+}
+
+
+//============================
+//  Content: Number
+//============================
+
+.txt__number {
+	&.txt__number--positive {
+		font-weight: @font-weight-l;
+		color:       @content-success-on-dark;
+	}
+
+	&.txt__number--negative {
+		font-weight: @font-weight-l;
+		color:       @content-danger-on-dark;
+	}
+
+	&.txt__number--zero {
+		font-weight: @font-weight-l;
+		color:       @content-on-dark;
+	}
+}
+
+//============================
+//  Content: Icon
+//============================
+
+.txt__icon {
+	display: inline;
+
+	> svg {
+		height:         1em;
+		vertical-align: -0.125em;
+		filter:         drop-shadow(@shadow-content-on-dark);
+	}
+
+	&, &[data-intent="neutral"] > svg {
+		stroke: @content-on-dark;
+		fill:   @content-on-dark;
+	}
+
+	&[data-intent="positive"] > svg {
+		stroke: @content-success-on-dark;
+		fill:   @content-success-on-dark;
+	}
+
+	&[data-intent="negative"] > svg {
+		stroke: @content-danger-on-dark;
+		fill:   @content-danger-on-dark;
+	}
+}
+
+//============================
+//  Special: Clickable
+//============================
+
+.txt__clickable {
+	cursor:                pointer;
+	text-decoration:       underline;
+	text-underline-offset: 2px;
+
+	&:hover {
+		color:  @content-on-dark;
+		filter: brightness(1.2);
+	}
+}
+
+//============================
+//  Light background variant
+//============================
+
+.txt--heading[data-light], .txt--body[data-light], .txt--line[data-light] {
+	color:       @content-on-light;
+	text-shadow: @shadow-content-on-light;
+
+	.txt__icon > svg {
+		stroke: @content-on-light;
+		fill:   @content-on-light;
+		filter: drop-shadow(@shadow-content-on-light);
+	}
+
+	.txt__number.txt__number--positive {
+		color: @content-success-on-light;
+	}
+
+	.txt__number.txt__number--negative {
+		color: @content-danger-on-light;
+	}
+
+	.txt__number.txt__number--zero {
+		color: @content-on-light;
+	}
+
+	.txt__clickable:hover {
+		color:  @content-on-light;
+		filter: brightness(0.8);
+	}
+}
+
+//============================
+//  Spacing between content elements
+//============================
+
+:is(.txt--heading, .txt--body, .txt--line)
+:is(.txt__string, .txt__link, .txt__number, .txt__icon, .txt__clickable)
++ :is(.txt__string, .txt__link, .txt__number, .txt__icon, .txt__clickable) {
+	margin-left: 0.25em;
+}

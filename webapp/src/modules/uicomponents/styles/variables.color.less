@@ -1,0 +1,145 @@
+/*
+Notes
+- "Surface" - surfaces on which other ui components are arranged. e.g. panels
+- "Element" - ui components, often interactable. e.g. Button, TextField, ...
+- "Content" - text, icons, etc. either
+*/
+
+// placeholder for mixin function returns, define it here to make the ide happy.
+@result:                                 unset;
+
+
+//============================
+//  Border Colors
+//============================
+
+// strong border for elements, surfaces, etc
+@border-strong-color-dark:               hsl(25, 20%, 50%);
+@border-strong-color-light:              hsl(25, 10%, 70%);
+@border-strong-gradient:                 linear-gradient(60deg, @border-strong-color-dark, @border-strong-color-light, @border-strong-color-dark);
+
+// strong border for disabled elements, surfaces, etc
+@border-strong-disabled-color-dark:      hsl(25, 10%, 50%);
+@border-strong-disabled-color-light:     hsl(25, 10%, 70%);
+@border-strong-disabled-gradient:        linear-gradient(60deg, @border-strong-disabled-color-dark, @border-strong-disabled-color-light, @border-strong-disabled-color-dark);
+
+// more subtle border for elements, surfaces, etc. Alternative to strong border.
+@border-subtle-color-dark:               hsl(25, 10%, 50%);
+@border-subtle-color-light:              hsl(25, 10%, 60%);
+@border-subtle-gradient:                 linear-gradient(60deg, @border-subtle-color-dark, @border-subtle-color-light, @border-subtle-color-dark);
+
+// more subtle border for disabled elements, surfaces, etc. Alternative to strong border.
+@border-subtle-disabled-color-dark:      hsl(25, 5%, 50%);
+@border-subtle-disabled-color-light:     hsl(25, 5%, 60%);
+@border-subtle-disabled-gradient:        linear-gradient(60deg, @border-subtle-disabled-color-dark, @border-subtle-disabled-color-light, @border-subtle-disabled-color-dark);
+
+
+//============================
+//  Surface Fill Colors
+//============================
+
+@surface-fill-base-gradient:             radial-gradient(ellipse, hsl(206, 13%, 26%) 0%, hsl(240, 9%, 25%) 100%);
+@surface-fill-blue-gradient:             radial-gradient(ellipse, hsl(210, 34%, 32%) 0%, hsl(220, 20%, 30%) 100%);
+@surface-fill-red-gradient:              radial-gradient(ellipse, hsl(339 22% 34%) 0%, hsl(343 16% 30%) 100%);
+@surface-fill-green-gradient:            radial-gradient(ellipse, hsl(94 22% 31%) 0%, hsl(123 18% 27%) 100%);
+@surface-fill-purple-gradient:           radial-gradient(ellipse, hsl(281 22% 31%) 0%, hsl(283 18% 27%) 100%);
+@surface-fill-yellow-gradient:           radial-gradient(ellipse, hsl(42 30% 32%) 0%, hsl(38 22% 28%) 100%);
+@surface-fill-orange-gradient:           radial-gradient(ellipse, hsl(20 35% 32%) 0%, hsl(15 28% 28%) 100%);
+@surface-fill-teal-gradient:             radial-gradient(ellipse, hsl(175 25% 30%) 0%, hsl(185 20% 27%) 100%);
+@surface-fill-bronze-gradient:           radial-gradient(ellipse, hsl(28 20% 30%) 0%, hsl(22 15% 26%) 100%);
+@surface-fill-parchment-gradient:        radial-gradient(ellipse, #e3d1ae 0%, #b39a78 100%);
+
+
+//============================
+//  Element Fill Colors
+//============================
+
+// build the fill gradient for elements
+.make-element-fill-gradient(@light, @dark) {
+	@result: radial-gradient(ellipse at top, @light 20%, transparent 70%),
+			 linear-gradient(to top, @dark 50%, @light);
+}
+
+.make-element-fill-gradient-variant(@light, @dark) {
+	@result: radial-gradient(ellipse, @light 0%, @dark 100%);
+}
+
+// fill color for elements - blue
+@element-fill-blue-light:                hsl(215 25% 33%);
+@element-fill-blue-dark:                 hsl(215 25% 27%);
+@element-fill-blue-gradient:             .make-element-fill-gradient(@element-fill-blue-light,@element-fill-blue-dark)[@result];
+@element-fill-blue-hover-gradient:       .make-element-fill-gradient(lighten(@element-fill-blue-light, 3%),lighten(@element-fill-blue-dark, 3%))[@result];
+@element-fill-blue-active-gradient:      .make-element-fill-gradient(darken(@element-fill-blue-light, 1%),darken(@element-fill-blue-dark, 1%))[@result];
+@element-fill-blue-disabled-gradient:    .make-element-fill-gradient(darken(desaturate(@element-fill-blue-light, 10%), 3%),darken(desaturate(@element-fill-blue-dark, 10%), 3%))[@result];
+
+// fill color for elements - red
+@element-fill-red-light:                 hsl(0, 40%, 35%);
+@element-fill-red-dark:                  hsl(0, 30%, 27%);
+@element-fill-red-gradient:              .make-element-fill-gradient(@element-fill-red-light,@element-fill-red-dark)[@result];
+@element-fill-red-hover-gradient:        .make-element-fill-gradient(lighten(@element-fill-red-light, 3%),lighten(@element-fill-red-dark, 3%))[@result];
+@element-fill-red-active-gradient:       .make-element-fill-gradient(darken(@element-fill-red-light, 1%),darken(@element-fill-red-dark, 1%))[@result];
+@element-fill-red-disabled-gradient:     .make-element-fill-gradient(darken(desaturate(@element-fill-red-light, 10%), 3%),darken(desaturate(@element-fill-red-dark, 10%), 3%))[@result];
+
+// fill color for elements - green
+@element-fill-green-light:               hsl(115, 37%, 33%);
+@element-fill-green-dark:                hsl(115, 30%, 27%);
+@element-fill-green-gradient:            .make-element-fill-gradient(@element-fill-green-light,@element-fill-green-dark)[@result];
+@element-fill-green-hover-gradient:      .make-element-fill-gradient(lighten(@element-fill-green-light, 3%),lighten(@element-fill-green-dark, 3%))[@result];
+@element-fill-green-active-gradient:     .make-element-fill-gradient(darken(@element-fill-green-light, 1%),darken(@element-fill-green-dark, 1%))[@result];
+@element-fill-green-disabled-gradient:   .make-element-fill-gradient(darken(desaturate(@element-fill-green-light, 10%), 3%),darken(desaturate(@element-fill-green-dark, 10%), 3%))[@result];
+
+// fill color for elements - neutral
+@element-fill-neutral-light:             hsl(206, 11%, 21%);
+@element-fill-neutral-dark:              hsl(240, 10%, 20%);
+@element-fill-neutral-gradient:          .make-element-fill-gradient-variant(@element-fill-neutral-light,@element-fill-neutral-dark)[@result];
+@element-fill-neutral-hover-gradient:    .make-element-fill-gradient-variant(lighten(@element-fill-neutral-light, 3%),lighten(@element-fill-neutral-dark, 3%))[@result];
+@element-fill-neutral-active-gradient:   .make-element-fill-gradient-variant(darken(@element-fill-neutral-light, 1%),darken(@element-fill-neutral-dark, 1%))[@result];
+@element-fill-neutral-disabled-gradient: .make-element-fill-gradient-variant(darken(desaturate(@element-fill-neutral-light, 10%), 3%),darken(desaturate(@element-fill-neutral-dark, 10%), 3%))[@result];
+
+
+//============================
+//  Content Colors
+//============================
+
+// color for primary content
+@content-on-dark:                        hsl(35, 70%, 94%);
+@content-on-light:                       hsla(20, 10%, 25%, 95%);
+
+// more subtle primary color for content
+@content-subtle-on-dark:                 hsla(20, 11%, 89%, 70%);
+@content-subtle-on-light:                hsla(20, 10%, 25%, 70%);
+
+@content-success-on-dark:                hsl(125, 55%, 60%);
+@content-danger-on-dark:                 hsl(0, 60%, 60%);
+
+@content-success-on-light:               hsl(135, 55%, 40%);
+@content-danger-on-light:                hsl(0, 55%, 40%);
+
+
+//============================
+//  Decorative & Miscellaneous Colors
+//============================
+
+// note: ornamental border is a png file and must be recolored if this color changes (without the alpha).
+@decorative-gold:                        hsla(35, 44%, 72%, 40%);
+@decorative-gold-strong:                 hsla(35, 50%, 82%, 80%);
+@decorative-focus-glow-color:            hsla(35, 44%, 72%, 20%);
+@decorative-focus-glow:                  0 0 12px @decorative-focus-glow-color;
+
+//============================
+//  Shadows
+//============================
+
+// shadows for elements
+@shadow-element-drop:                    0 0 8px rgba(0, 0, 0, 60%);
+@shadow-element-drop-subtle:             0 0 8px rgba(0, 0, 0, 40%);
+
+@shadow-element-inset:                   inset 0 0 5px rgba(0, 0, 0, 20%),
+										 inset 0 0 10px rgba(0, 0, 0, 30%);
+
+// shadows for surfaces
+@shadow-surface-drop:                    0px 3px 8px rgba(0, 0, 0, 0.5);
+
+// shadows for content
+@shadow-content-on-dark:                 1px 1px 2px rgba(0, 0, 0, 60%);
+@shadow-content-on-light:                1px 1px 2px rgba(255, 255, 255, 40%);

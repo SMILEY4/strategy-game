@@ -1,0 +1,31 @@
+{
+  "header": {
+    "title": "Willkommen zurück",
+    "subtitle": "Logge dich ein um deine Reise fortzusetzen."
+  },
+  "username": {
+    "placeholder": "Benutzernamen eingeben",
+    "error": {
+      "empty": "Bitte gib deinen Benutzernamen ein.",
+      "wrongCredentials": "Benutzername oder Passwort stimmt nicht."
+    }
+  },
+  "password": {
+    "placeholder": "Passwort eingeben",
+    "error": {
+      "empty": "Bitte gib dein Passwort ein.",
+      "wrongCredentials": "Benutzername oder Passwort stimmt nicht."
+    }
+  },
+  "rememberMe": "Benutzernamen und Passwort merken",
+  "submit": "Einloggen",
+  "error": {
+    "UNAUTHORIZED": "Benutzername oder Passwort stimmt nicht.",
+    "INTERNAL_ERROR": "Ups, da ist etwas schiefgelaufen. Bitte versuch es später nochmal.",
+    "unknown": "Ein unbekannter Fehler ist aufgetreten."
+  },
+  "infoRegister": {
+    "question": "Du hast noch kein Nutzerprofil?",
+    "action": "Registrieren"
+  }
+}

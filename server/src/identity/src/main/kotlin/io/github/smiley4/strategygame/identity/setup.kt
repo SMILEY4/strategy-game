@@ -1,0 +1,66 @@
+package io.github.smiley4.strategygame.identity
+
+import io.github.smiley4.ktoropenapi.route
+import io.github.smiley4.strategygame.identity.auth.AuthService
+import io.github.smiley4.strategygame.identity.auth.domain.AuthServiceImpl
+import io.github.smiley4.strategygame.identity.auth.domain.OneTimeGrantRepository
+import io.github.smiley4.strategygame.identity.auth.domain.SessionRepository
+import io.github.smiley4.strategygame.identity.auth.infrastructure.InMemoryOneTimeGrantRepository
+import io.github.smiley4.strategygame.identity.auth.infrastructure.InMemorySessionRepository
+import io.github.smiley4.strategygame.identity.routing.routeChangePassword
+import io.github.smiley4.strategygame.identity.routing.routeChangeUsername
+import io.github.smiley4.strategygame.identity.routing.routeLogIn
+import io.github.smiley4.strategygame.identity.routing.routeLogOut
+import io.github.smiley4.strategygame.identity.routing.routeRegisterUser
+import io.github.smiley4.strategygame.identity.routing.routeRequestOneTimeGrant
+import io.github.smiley4.strategygame.identity.shared.PasswordHasher
+import io.github.smiley4.strategygame.identity.user.UserService
+import io.github.smiley4.strategygame.identity.user.domain.UserRepository
+import io.github.smiley4.strategygame.identity.user.domain.UserServiceImpl
+import io.github.smiley4.strategygame.identity.user.infrastructure.InMemoryUserRepository
+import io.github.smiley4.strategygame.shared.infrastructure.RoutingAuthConstants
+import io.ktor.server.auth.authenticate
+import io.ktor.server.routing.Route
+import org.koin.core.module.Module
+
+
+/**
+ * Register identity module dependencies in the Koin container.
+ */
+fun Module.dependenciesIdentity() {
+
+    // Shared
+    single<PasswordHasher> { PasswordHasher() }
+
+    // User
+    single<UserRepository> { InMemoryUserRepository() }
+    single<UserService> { UserServiceImpl(get(), get()) }
+
+    // Auth
+    single<SessionRepository> { InMemorySessionRepository() }
+    single<OneTimeGrantRepository> { InMemoryOneTimeGrantRepository() }
+    single<AuthService> { AuthServiceImpl(get(), get(), get(), get()) }
+}
+
+/**
+ * Configure identity-related routes under the /api/identity prefix.
+ */
+fun Route.routingIdentity() {
+    route("identity", {
+        description = "User management and authentication"
+        tags("identity")
+    }) {
+
+        route("/user") { routeRegisterUser() }
+
+        route("/login") { routeLogIn() }
+
+        authenticate(RoutingAuthConstants.AUTHKEY_USER_SESSION) {
+            route("/logout") { routeLogOut() }
+            route("/onetimegrant") { routeRequestOneTimeGrant() }
+            route("/user/username") { routeChangeUsername() }
+            route("/user/password") { routeChangePassword() }
+        }
+
+    }
+}

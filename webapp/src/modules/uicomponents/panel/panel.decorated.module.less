@@ -1,0 +1,230 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+@import "@modules/uicomponents/styles/variables.resources.less";
+
+
+.panel--decorated {
+
+	box-shadow:     @shadow-surface-drop;
+	overflow:       hidden;
+	display:        flex;
+	flex-direction: column;
+
+	> .panel--decorated__base {
+		position: absolute;
+		top:      0;
+		bottom:   0;
+		left:     0;
+		right:    0;
+	}
+
+	> .panel--decorated__overlay {
+		position:            absolute;
+		top:                 0;
+		bottom:              0;
+		left:                0;
+		right:               0;
+		background-size:     cover;
+		background-position: center center;
+	}
+
+	> .panel--decorated__texture {
+		position: absolute;
+		top:      0;
+		bottom:   0;
+		left:     0;
+		right:    0;
+	}
+
+	> .panel--decorated__decoration {
+		position: absolute;
+		top:      0;
+		bottom:   0;
+		left:     0;
+		right:    0;
+	}
+
+	> .panel--decorated__content {
+		width:          100%;
+		height:         100%;
+		flex:           1;
+		display:        flex;
+		flex-direction: column;
+	}
+
+	//============================
+	//  Corner
+	//============================
+
+	&, &[data-corner="rounded"] {
+		border-radius: @radius-m;
+
+		> .panel--decorated__base {
+			border-radius: @radius-m;
+		}
+
+		> .panel--decorated__decoration {
+			border-radius: @radius-m;
+		}
+	}
+
+	&[data-corner="sharp"] {
+		border-radius: unset;
+
+		> .panel--decorated__base {
+			border-radius: unset;
+		}
+
+		> .panel--decorated__decoration {
+			border-radius: unset;
+		}
+	}
+
+	//============================
+	//  Border
+	//============================
+
+	&[data-border="none"] {
+	}
+
+	&[data-border="metal"] {
+		border:     1px solid transparent;
+		background: @border-subtle-gradient;
+
+
+		> .panel--decorated__base {
+			box-shadow: @shadow-element-inset;
+		}
+
+	}
+
+	&[data-border="line"] {
+
+		> .panel--decorated__decoration {
+			content:  '';
+			position: absolute;
+			top:      3px;
+			bottom:   3px;
+			left:     3px;
+			right:    3px;
+			border:   1px solid @decorative-gold;
+		}
+	}
+
+	&[data-border="ornamental"] {
+
+		> .panel--decorated__decoration {
+			content:      '';
+			position:     absolute;
+			top:          2px;
+			bottom:       2px;
+			left:         2px;
+			right:        2px;
+
+			border:       25px solid transparent;
+			border-image: @border-image-ornament;
+			opacity:      40%;
+		}
+	}
+
+	&[data-border="metal-ornament"] {
+
+		> .panel--decorated__decoration {
+			content:      '';
+			position:     absolute;
+			top:          0;
+			bottom:       0;
+			left:         0;
+			right:        0;
+
+			border:       30px solid transparent;
+			border-image: @border-image-metal-ornament;
+			opacity:      70%;
+		}
+	}
+
+	//============================
+	//  Variant
+	//============================
+
+
+	&[data-variant="neutral"] > .panel--decorated__base {
+		background: @surface-fill-base-gradient;
+	}
+
+	&[data-variant="blue"] > .panel--decorated__base {
+		background: @surface-fill-blue-gradient;
+	}
+
+	&[data-variant="red"] > .panel--decorated__base {
+		background: @surface-fill-red-gradient;
+	}
+
+	&[data-variant="green"] > .panel--decorated__base {
+		background: @surface-fill-green-gradient;
+	}
+
+	&[data-variant="purple"] > .panel--decorated__base {
+		background: @surface-fill-purple-gradient;
+	}
+
+	&[data-variant="yellow"] > .panel--decorated__base {
+		background: @surface-fill-yellow-gradient;
+	}
+
+	&[data-variant="orange"] > .panel--decorated__base {
+		background: @surface-fill-orange-gradient;
+	}
+
+	&[data-variant="teal"] > .panel--decorated__base {
+		background: @surface-fill-teal-gradient;
+	}
+
+	&[data-variant="bronze"] > .panel--decorated__base {
+		background: @surface-fill-bronze-gradient;
+	}
+
+	//============================
+	//  Pattern
+	//============================
+
+	&[data-pattern="none"] {
+	}
+
+	&[data-pattern="paper"] {
+
+		> .panel--decorated__texture {
+			background-image:  @texture-paper;
+			background-repeat: repeat, no-repeat;
+			background-size:   450px 450px, cover;
+			mix-blend-mode:    multiply;
+		}
+
+	}
+
+	&[data-pattern="ornament"] {
+
+		> .panel--decorated__texture {
+			background-image:  @texture-pattern;
+			background-repeat: repeat, no-repeat;
+			background-size:   70px 70px, cover;
+			mix-blend-mode:    multiply;
+		}
+
+	}
+
+
+	//============================
+	//  Size
+	//============================
+
+	&[data-size-x="true"] {
+		width: 100%
+	}
+
+	&[data-size-y="true"] {
+		height: 100%
+	}
+
+}

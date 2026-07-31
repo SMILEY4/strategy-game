@@ -1,0 +1,55 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+
+.tabbar {
+	display:       flex;
+	position:      relative;
+	border-bottom: 1px solid @decorative-gold;
+
+
+	> .indicator {
+		position:       absolute;
+		bottom:         0;
+		height:         2px;
+		background:     @decorative-gold-strong;
+		transition:     left 0.1s ease, width 0.1s ease;
+		pointer-events: none;
+	}
+
+	> .tab {
+		cursor:      pointer;
+		padding:     @space-xs @space-s;
+		transition:  color 0.15s, filter 0.15s;
+		outline:     unset;
+
+
+		&[data-active] {
+			color: @content-on-dark;
+
+			&::before {
+				content:    '';
+				position:   absolute;
+				bottom:     0;
+				left:       0;
+				right:      0;
+				height:     50%;
+				background: radial-gradient(ellipse at bottom, @decorative-gold 0%, transparent 70%);
+				opacity:    50%;
+			}
+		}
+
+
+		&:focus::before {
+			content:    '';
+			position:   absolute;
+			bottom:     0;
+			left:       0;
+			right:      0;
+			height:     50%;
+			background: radial-gradient(ellipse at bottom, @decorative-focus-glow-color 0%, transparent 70%);
+		}
+	}
+
+
+}
