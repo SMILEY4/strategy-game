@@ -2,6 +2,8 @@ import type {TileCollection} from "@pages/game/renderer/data/models.ts";
 import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
 import {WasmRenderApp} from "wasm";
 import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
+import type {Tile} from "@app/features/game/models/tile.ts";
+import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
 
 
 export interface GameGraphWasmApi {
@@ -20,65 +22,48 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
     const wasmApp: WasmRenderApp = new WasmRenderApp();
 
+    const tileSerializer = wasmSerializer<Tile>({
+        "tile_position.q": {
+            provider: tile => tile.position.q,
+            type: "i32",
+        },
+        "tile_position.r": {
+            provider: tile => tile.position.r,
+            type: "i32",
+        },
+        "chunk_position.q": {
+            provider: tile => tile.chunk.q,
+            type: "i32",
+        },
+        "chunk_position.r": {
+            provider: tile => tile.chunk.r,
+            type: "i32",
+        },
+        "world_position.x": {
+            provider: () => 0,
+            type: "f32",
+        },
+        "world_position.y": {
+            provider: () => 0,
+            type: "f32",
+        },
+        "terrain": {
+            provider: tile => tile.world.biome === "OCEAN" ? 0 : 1,
+            type: "u8",
+        },
+        "meta.seed": {
+            provider: tile => tile.meta.seed,
+            type: "u32",
+        },
+    });
 
     return {
 
         uploadTiles: (tiles: TileCollection) => {
             console.log("[wasm-api]: uploading tiles (" + tiles.tiles.length + ")")
-
             const memory = wasmApp.tiles_reserve_memory(tiles.tiles.length);
             const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size)
-
-            const dataView = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-            let viewCounter = 0;
-
-            function pushUint8(value: number) {
-                dataView.setUint8(viewCounter, value);
-                viewCounter += 1;
-            }
-
-            function pushInt32(value: number) {
-                dataView.setInt32(viewCounter, value, true);
-                viewCounter += 4;
-            }
-
-            function pushUint32(value: number) {
-                dataView.setUint32(viewCounter, value, true);
-                viewCounter += 4;
-            }
-
-            function pushFloat32(value: number) {
-                dataView.setFloat32(viewCounter, value, true);
-                viewCounter += 4;
-            }
-
-            for(let i=0, n=tiles.tiles.length; i<n; i++) {
-                const tile = tiles.tiles[i];
-
-                // pub tile_position: HexPosition,
-                pushInt32(tile.position.q)
-                pushInt32(tile.position.r)
-
-                // pub chunk_position: HexPosition,
-                pushInt32(tile.chunk.q)
-                pushInt32(tile.chunk.r)
-
-                // pub world_position: WorldPosition,
-                pushFloat32(0)
-                pushFloat32(0)
-
-                // pub terrain: u8,
-                if(tile.world.biome === "OCEAN") {
-                    pushUint8(0)
-                } else {
-                    pushUint8(1)
-                }
-
-                // pub rng_seed: u32
-                pushUint32(tile.meta.seed)
-
-            }
-
+            tileSerializer(buffer, tiles.tiles)
             wasmApp.tiles_upload(memory.ptr, memory.len);
         },
 
