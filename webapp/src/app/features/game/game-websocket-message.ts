@@ -1,3 +1,5 @@
+import type {HiddenType} from "@app/features/game/models/hidden-type.ts";
+
 /** Messages sent from client to server over the game WebSocket. */
 export type GameWebsocketClientMessage = null
 
@@ -30,7 +32,8 @@ interface GameState extends GameWebsocketServerMessageBase {
                 q: number,
                 r: number
             },
-            world: {
+            visibility: 0 | 1
+            world: HiddenType<{
                 biome: string,
                 elevation: string,
                 feature: string,
@@ -41,10 +44,10 @@ interface GameState extends GameWebsocketServerMessageBase {
                     changeRate: number,
                     removeOnDeplete: number
                 })[]
-            },
+            }>
             meta: {
                 seed: number,
-            }
+            },
         })[]
     }
 }

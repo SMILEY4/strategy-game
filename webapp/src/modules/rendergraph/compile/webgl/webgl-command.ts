@@ -40,10 +40,10 @@ export type WebGlCommand =
     | { type: "SET_DEPTH_TESTING", enabled: boolean }
 
     /** Issue a non-instanced draw call. */
-    | { type: "DRAW", vertexCountRef: string, mode: GLenum }
+    | { type: "DRAW", vertexCountRef: string, mode: GLenum, blend: null | ((gl: WebGL2RenderingContext) => void) }
 
     /** Issue an instanced draw call. */
-    | { type: "DRAW_INSTANCED", vertexCountRef: string, instanceCountRef: string, mode: GLenum }
+    | { type: "DRAW_INSTANCED", vertexCountRef: string, instanceCountRef: string, mode: GLenum, blend: null | ((gl: WebGL2RenderingContext) => void) }
 
     /** Fetch external data and store it in the {@link outputRef} resource. */
     | { type: "LOAD_EXTERNAL_DATA", outputRef: string, fetch: () => unknown, checkChanged: (prev: unknown) => boolean }

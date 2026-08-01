@@ -99,6 +99,7 @@ export class RenderGraphBuilder {
         shader: ShaderRenderGraphNode,
         geometry: GeometryRenderGraphNode
         inputs?: Record<string, DrawRenderGraphNodeInput>
+        blend?: (gl: WebGL2RenderingContext) => void
     }): DrawRenderGraphNode {
         const node: DrawRenderGraphNode = {
             type: "draw",
@@ -106,6 +107,7 @@ export class RenderGraphBuilder {
             shader: options.shader,
             geometry: options.geometry,
             inputs: options.inputs ?? {},
+            blend: options.blend ?? null
         };
         this.nodes.push(node);
         return node;

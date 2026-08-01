@@ -1,14 +1,14 @@
 mod js;
-mod render;
 mod math;
+mod render;
 
-use js_sys::Uint8Array;
+use crate::js::direct_buffer;
 use crate::js::direct_buffer::DirectBuffer;
 use crate::js::models::Tile;
 use crate::render::renderer::Renderer;
 use js::direct_buffer::DirectMemoryHandle;
+use js_sys::Uint8Array;
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::js::{direct_buffer};
 
 #[wasm_bindgen]
 pub struct WasmRenderApp {
@@ -63,4 +63,11 @@ impl WasmRenderApp {
         self.renderer.get_terrain_tile_instances_water().len()
     }
 
+    pub fn get_fog_of_war_tile_instances(&self) -> Uint8Array {
+        direct_buffer::as_js_buffer(self.renderer.get_fog_of_war_tile_instances())
+    }
+
+    pub fn get_fog_of_war_tile_instances_count(&self) -> usize {
+        self.renderer.get_fog_of_war_tile_instances().len()
+    }
 }

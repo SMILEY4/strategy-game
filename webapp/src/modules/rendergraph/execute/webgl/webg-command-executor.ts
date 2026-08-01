@@ -83,13 +83,18 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
             const gl = context.getRenderingContext();
             const vertexCount = context.getVertexBufferElementCount(command.vertexCountRef);
 
-            gl.enable(gl.BLEND);
-            gl.blendFuncSeparate(
-                gl.SRC_ALPHA,
-                gl.ONE_MINUS_SRC_ALPHA,
-                gl.ONE,
-                gl.ONE_MINUS_SRC_ALPHA,
-            );
+            if (command.blend === null) {
+                gl.enable(gl.BLEND);
+                gl.blendFuncSeparate(
+                    gl.SRC_ALPHA,
+                    gl.ONE_MINUS_SRC_ALPHA,
+                    gl.ONE,
+                    gl.ONE_MINUS_SRC_ALPHA,
+                );
+            } else {
+                gl.enable(gl.BLEND);
+                command.blend(gl);
+            }
 
             gl.drawArrays(command.mode, 0, vertexCount);
             GlError.check(gl, "drawArrays", "drawing");
@@ -98,6 +103,20 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
         case "DRAW_INSTANCED": {
             const gl = context.getRenderingContext();
+
+            if (command.blend === null) {
+                gl.enable(gl.BLEND);
+                gl.blendFuncSeparate(
+                    gl.SRC_ALPHA,
+                    gl.ONE_MINUS_SRC_ALPHA,
+                    gl.ONE,
+                    gl.ONE_MINUS_SRC_ALPHA,
+                );
+            } else {
+                gl.enable(gl.BLEND);
+                command.blend(gl);
+            }
+
             const vertexCount = context.getVertexBufferElementCount(command.vertexCountRef);
             const instanceCount = context.getVertexBufferElementCount(command.instanceCountRef);
             gl.drawArraysInstanced(command.mode, 0, vertexCount, instanceCount);

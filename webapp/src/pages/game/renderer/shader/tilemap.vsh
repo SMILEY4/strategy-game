@@ -13,6 +13,7 @@ const float SQRT_3 = 1.732050;
 
 
 #include "utils/random.glsl"
+#include "utils/wireframe-vsh.glsl"
 
 // calculate random offset.
 // seed is the world position of the vertex to make the random offset "seamless" between tiles
@@ -29,6 +30,7 @@ vec2 offsetVertexPosition(vec3 worldPosition, float strength) {
 void main() {
     v_tilePosition = in_tilePosition;
     v_textureCoordinates = in_textureCoordinates;
+    computeBarycentricCoordinates();
 
     // tile coordinates
     float q = in_tilePosition.x;

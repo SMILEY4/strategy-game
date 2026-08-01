@@ -18,13 +18,18 @@ class PlayerStateBuilder {
                 "turn" to game.turn
             }
             "tiles" to arr[
-                game.tiles.map { tile(it) }
+                game.tiles.map { tile(it, player) }
             ]
         }
     }
 
-    fun tile(tile: Tile) = obj {
+    fun tile(tile: Tile, player: UserId) = obj {
+        val visibility = when {
+            tile.discoveredBy.contains(player) -> 1
+            else -> 0
+        }
         "id" to tile.id.id.toString()
+        "visibility" to visibility
         "position" to obj {
             "q" to tile.position.q
             "r" to tile.position.r
@@ -33,25 +38,37 @@ class PlayerStateBuilder {
             "q" to tile.meta.chunk.q
             "r" to tile.meta.chunk.r
         }
-        "world" to obj {
-            "biome" to tile.world.biome.name
-            "elevation" to tile.world.elevation
-            "feature" to tile.world.feature
-            "resources" to arr[
-                tile.world.resources.map { resource ->
-                    obj {
-                        "type" to resource.type
-                        "amount" to resource.amount
-                        "maxAmount" to resource.maxAmount
-                        "changeRate" to resource.changeRate
-                        "removeOnDeplete" to resource.removeOnDeplete
+        "world" to hidden(visibility == 1) {
+            obj {
+                "biome" to tile.world.biome.name
+                "elevation" to tile.world.elevation
+                "feature" to tile.world.feature
+                "resources" to arr[
+                    tile.world.resources.map { resource ->
+                        obj {
+                            "type" to resource.type
+                            "amount" to resource.amount
+                            "maxAmount" to resource.maxAmount
+                            "changeRate" to resource.changeRate
+                            "removeOnDeplete" to resource.removeOnDeplete
+                        }
                     }
-                }
-            ]
+                ]
+            }
         }
         "meta" to obj {
             "seed" to tile.meta.seed
         }
     }
+
+    private fun hidden(visible: Boolean, value: () -> Any?) = obj {
+        "visible" to visible
+        if (visible) {
+            "value" to value()
+        } else {
+            "value" to null
+        }
+    }
+
 
 }

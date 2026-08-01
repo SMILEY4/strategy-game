@@ -127,7 +127,7 @@ function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext
     });
 
     // draw call
-    generateDrawCall(drawCallInfo.geometry, context);
+    generateDrawCall(drawCallInfo, context);
 }
 
 function switchToCanvasRenderTarget(canvas: CanvasRenderGraphNode, context: CompileContext) {
@@ -280,10 +280,10 @@ function setUniformCamera(node: CameraRenderGraphNode, bindAs: string, context: 
     });
 }
 
-function generateDrawCall(geometry: GeometryRenderGraphNode, context: CompileContext) {
+function generateDrawCall(drawCallInfo: DrawCallInfo, context: CompileContext) {
     let vertexCountRef: string | null = null;
     let instanceCountRef: string | null = null;
-    geometry.sources.forEach(source => {
+    drawCallInfo.geometry.sources.forEach(source => {
         const dataSource = source.source;
         if(source.sourceType === "transformer") {
             if(dataSource.type !== "transform-vertex-out") {
@@ -310,18 +310,18 @@ function generateDrawCall(geometry: GeometryRenderGraphNode, context: CompileCon
         assertExhaustive(source)
     });
     let mode: GLenum = null!;
-    if (geometry.primitiveTypes === "triangles") {
+    if (drawCallInfo.geometry.primitiveTypes === "triangles") {
         mode = WebGL2RenderingContext.TRIANGLES;
     }
-    if (geometry.primitiveTypes === "lines") {
+    if (drawCallInfo.geometry.primitiveTypes === "lines") {
         mode = WebGL2RenderingContext.LINES;
     }
 
     if (vertexCountRef !== null && instanceCountRef === null) {
-        context.commands.push({type: "DRAW", vertexCountRef: vertexCountRef, mode: mode});
+        context.commands.push({type: "DRAW", vertexCountRef: vertexCountRef, mode: mode, blend: drawCallInfo.drawNode.blend});
     }
     if (vertexCountRef !== null && instanceCountRef !== null) {
-        context.commands.push({type: "DRAW_INSTANCED", vertexCountRef: vertexCountRef, instanceCountRef: instanceCountRef, mode: mode});
+        context.commands.push({type: "DRAW_INSTANCED", vertexCountRef: vertexCountRef, instanceCountRef: instanceCountRef, mode: mode, blend: drawCallInfo.drawNode.blend});
     }
 }
 
@@ -698,6 +698,7 @@ function findTextureUnit(textureId: string, reservedTextures: string[], context:
 }
 
 interface DrawCallInfo {
+    drawNode: DrawRenderGraphNode,
     shader: ShaderRenderGraphNode,
     geometry: GeometryRenderGraphNode,
     renderTarget: RendertargetRenderGraphNode | CanvasRenderGraphNode,
@@ -753,6 +754,7 @@ function collectDrawCallInfo(drawNode: DrawRenderGraphNode, nodes: RenderGraphNo
     });
 
     return {
+        drawNode: drawNode,
         shader: nodeShader,
         geometry: nodeGeometry,
         renderTarget: nodeRenderTarget,

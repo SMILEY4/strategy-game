@@ -13,11 +13,9 @@ export interface GameGraphWasmApi {
     buildTileInstances: () => { tileInstances: boolean },
     downloadTileLandInstances: () => VertexDataResult
     downloadTileWaterInstances: () => VertexDataResult
+    downloadTileFogOfWarInstances: () => VertexDataResult
 }
 
-/**
- * Note: first implementation of some logic in JS, this logic will later be migrated to WASM.
- */
 export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
     const wasmApp: WasmRenderApp = new WasmRenderApp();
@@ -47,8 +45,12 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             provider: () => 0,
             type: "f32",
         },
+        "visibility": {
+            provider: tile => tile.visibility,
+            type: "u8",
+        },
         "terrain": {
-            provider: tile => tile.world.biome === "OCEAN" ? 0 : 1,
+            provider: tile => tile.world.visible ? (tile.world.value.biome === "OCEAN" ? 0 : 1) : 0,
             type: "u8",
         },
         "meta.seed": {
@@ -60,27 +62,28 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
     return {
 
         uploadTiles: (tiles: TileCollection) => {
-            console.log("[wasm-api]: uploading tiles (" + tiles.tiles.length + ")")
+            console.log("[wasm-api]: uploading tiles (" + tiles.tiles.length + ")");
             const memory = wasmApp.tiles_reserve_memory(tiles.tiles.length);
-            const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size)
-            tileSerializer(buffer, tiles.tiles)
+            console.log("[wasm-api] reserved wasm memory", memory.ptr, memory.len, memory.item_size);
+            const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
+            tileSerializer(buffer, tiles.tiles);
             wasmApp.tiles_upload(memory.ptr, memory.len);
         },
 
         collectChunks: () => {
             const changed = wasmApp.calculate_all_chunks();
-            console.log("[wasm-api]: collected chunks", changed)
+            console.log("[wasm-api]: collected chunks", changed);
             return {allChunks: changed};
         },
 
         cullChunks: () => {
             const changed = wasmApp.calculate_visible_chunks();
-            console.log("[wasm-api]: culled chunks", changed)
+            // console.log("[wasm-api]: culled chunks", changed);
             return {visibleChunks: changed};
         },
 
         buildTileInstances: () => {
-            console.log("[wasm-api]: building tile instances")
+            console.log("[wasm-api]: building tile instances");
             const changed = wasmApp.calculate_terrain_tile_instances();
             return {tileInstances: changed};
         },
@@ -89,8 +92,8 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             const data = {
                 data: wasmApp.get_terrain_tile_land_instances(),
                 count: wasmApp.get_terrain_tile_land_instance_count(),
-            }
-            console.log("[wasm-api]: downloading tile land instances (" + data.count + ")")
+            };
+            console.log("[wasm-api]: downloading tile land instances (" + data.count + ")");
             return data;
         },
 
@@ -98,8 +101,17 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             const data = {
                 data: wasmApp.get_terrain_tile_water_instances(),
                 count: wasmApp.get_terrain_tile_water_instance_count(),
-            }
-            console.log("[wasm-api]: downloading tile water instances (" + data.count + ")")
+            };
+            console.log("[wasm-api]: downloading tile water instances (" + data.count + ")");
+            return data;
+        },
+
+        downloadTileFogOfWarInstances: () => {
+            const data = {
+                data: wasmApp.get_fog_of_war_tile_instances(),
+                count: wasmApp.get_fog_of_war_tile_instances_count(),
+            };
+            console.log("[wasm-api]: downloading tile FoW instances (" + data.count + ")");
             return data;
         },
 

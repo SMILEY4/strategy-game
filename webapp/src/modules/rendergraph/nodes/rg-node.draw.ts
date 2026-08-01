@@ -11,7 +11,8 @@ import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node
 export interface DrawRenderGraphNode extends RenderGraphNodeBase<"draw"> {
     readonly shader: ShaderRenderGraphNode;
     readonly geometry: GeometryRenderGraphNode;
-    readonly inputs: Record<string, DrawRenderGraphNodeInput>
+    readonly inputs: Record<string, DrawRenderGraphNodeInput>;
+    readonly blend: null | ((gl: WebGL2RenderingContext) => void)
 }
 
 export type DrawRenderGraphNodeInput =

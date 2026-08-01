@@ -1,9 +1,9 @@
-package io.github.smiley4.strategygame.engine.simulation.generation
+package io.github.smiley4.strategygame.engine.simulation.generation.tools
 
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
-import java.lang.Integer.min
 import kotlin.math.floor
 import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Builds the positions of tilemaps with hex-shaped tiles.
@@ -125,10 +125,10 @@ internal class TilemapPositionsProvider {
 				val iOffset = floor(i / 2.0).toInt()
 				for (j in (j0 - iOffset)..(j1 - iOffset)) {
 					it.add(
-						HexPosition(
-							if (iIsQ) i else j,
-							if (iIsQ) j else i
-						)
+                        HexPosition(
+                            if (iIsQ) i else j,
+                            if (iIsQ) j else i
+                        )
 					)
 				}
 			}

@@ -30,7 +30,7 @@ internal class GameServiceImpl(
     override suspend fun create(matchId: MatchId, players: Collection<UserId>): GameId {
         val game = Game(players)
         gameRepository.save(game)
-        simulationService.generateGame(game.getId())
+        simulationService.generateGame(game.getId(), players)
         eventBus.emit(
             GameCreatedEvent(
                 matchId = matchId,

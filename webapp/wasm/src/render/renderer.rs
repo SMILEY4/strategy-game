@@ -3,9 +3,7 @@ use crate::render::creator_terrain_tile_instances;
 use crate::render::models::chunk::Chunk;
 use crate::render::models::config::RenderConfig;
 use crate::render::models::render_state::RenderState;
-use crate::render::models::tile_instance_data::{
-    TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance,
-};
+use crate::render::models::tile_instance_data::{TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
 use std::collections::{HashMap, HashSet};
 
 pub struct Renderer {
@@ -91,4 +89,9 @@ impl Renderer {
     pub fn get_terrain_tile_instances_water(&self) -> &Vec<TileTerrainWaterInstance> {
         &self.tile_instance_data.terrain_water
     }
+
+    pub fn get_fog_of_war_tile_instances(&self) -> &Vec<TileFogOfWarInstance> {
+        &self.tile_instance_data.fog_of_war
+    }
+
 }

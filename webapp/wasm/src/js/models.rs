@@ -4,6 +4,7 @@ pub struct Tile {
     pub tile_position: HexPosition,
     pub chunk_position: HexPosition,
     pub world_position: WorldPosition,
+    pub visibility: u8, // 0 = not discovered, 1 = discovered not visible, 2 = visible
     pub terrain: u8,
     pub rng_seed: u32
 }
