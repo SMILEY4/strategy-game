@@ -42,6 +42,4 @@ pub fn build(state: &RenderState, instance_data: &mut TileInstanceData) {
 
         })
     });
-
-    console_log(&format!("[WASM] tiles land={}, fow={}", instance_data.terrain_land.len(), instance_data.fog_of_war.len()));
 }

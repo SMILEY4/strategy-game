@@ -5,7 +5,7 @@ pub struct Tile {
     pub chunk_position: HexPosition,
     pub world_position: WorldPosition,
     pub visibility: u8, // 0 = not discovered, 1 = discovered not visible, 2 = visible
-    pub terrain: u8,
+    pub terrain: u8, // 0 = water, 1 = land
     pub rng_seed: u32
 }
 
@@ -22,10 +22,3 @@ pub struct WorldPosition {
     pub x: f32,
     pub y: f32,
 }
-
-// #[repr(u8)]
-// #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-// pub enum TerrainType {
-//     Water = 0,
-//     Land = 1,
-// }

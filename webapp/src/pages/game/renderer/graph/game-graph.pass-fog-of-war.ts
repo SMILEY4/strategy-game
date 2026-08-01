@@ -6,6 +6,8 @@ import SHADER_FOW_VERT from "./../shader/fogOfWar.vsh";
 import SHADER_FOW_FRAG from "./../shader/fogOfWar.fsh";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
+import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "@app/features/game/database/debug.database.ts";
 
 
 export function gameGraphPassFogOfWar(
@@ -13,7 +15,8 @@ export function gameGraphPassFogOfWar(
     wasmApi: GameGraphWasmApi,
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
-        camera: CameraRenderGraphNode
+        camera: CameraRenderGraphNode,
+        dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
     },
 ) {
 
@@ -133,12 +136,28 @@ export function gameGraphPassFogOfWar(
         prefixVertexAttributes: "in_",
     });
 
+    const dataDebugHexOffsetScale = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.randomHexOffsetScale
+        })
+    )
+
+    const dataDebugScale = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.fogOfWar.scale
+        })
+    )
+
     const draw = g.draw({
         shader: shader,
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
             "baseTerrain": textureStamp,
+            "dbg_scale": dataDebugScale as DataRenderGraphNode<unknown>,
+            "dbg_hexOffsetScale": dataDebugHexOffsetScale as DataRenderGraphNode<unknown>,
         },
         blend: gl => {
             gl.blendFuncSeparate(

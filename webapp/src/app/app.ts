@@ -22,6 +22,7 @@ import {gameRepository} from "@app/features/game/game.repository.ts";
 import {tileDatabase} from "@app/features/game/database/tile.database.ts";
 import {cameraControllerPlayer} from "@app/features/game/gameplay/camera/camera-controller.player.ts";
 import {cameraDatabase} from "@app/features/game/database/camera.database.ts";
+import {debugDatabase} from "@app/features/game/database/debug.database.ts";
 
 
 interface EnvShape {
@@ -71,6 +72,7 @@ interface DIShape {
     cameraController: ReturnType<typeof cameraControllerPlayer>
     tileDatabase: ReturnType<typeof tileDatabase>
     cameraDatabase: ReturnType<typeof cameraDatabase>
+    debugDatabase: ReturnType<typeof debugDatabase>
 }
 
 
@@ -186,6 +188,10 @@ export const DIConfig = {
     cameraDatabase: {
         scope: "singleton",
         create: () => cameraDatabase(),
+    },
+    debugDatabase: {
+        scope: "singleton",
+        create: () => debugDatabase(),
     },
 } satisfies FactoryMap<DIShape>;
 

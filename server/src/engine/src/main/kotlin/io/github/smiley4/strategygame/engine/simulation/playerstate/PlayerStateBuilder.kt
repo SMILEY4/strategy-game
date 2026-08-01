@@ -61,12 +61,10 @@ class PlayerStateBuilder {
         }
     }
 
-    private fun hidden(visible: Boolean, value: () -> Any?) = obj {
+    private fun hidden(visible: Boolean, value: () -> ObjectType?) = obj {
         "visible" to visible
         if (visible) {
             "value" to value()
-        } else {
-            "value" to null
         }
     }
 

@@ -3,6 +3,8 @@ import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_COMPOSE_VERT from "./../shader/compose.vsh";
 import SHADER_COMPOSE_FRAG from "./../shader/compose.fsh";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
+import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "@app/features/game/database/debug.database.ts";
 
 
 export function gameGraphPassCompose(
@@ -10,7 +12,8 @@ export function gameGraphPassCompose(
     inputs: {
         layerBaseTerrain: RendertargetRenderGraphNode,
         layerCoastlineMask: RendertargetRenderGraphNode,
-        layerFogOfWar: RendertargetRenderGraphNode
+        layerFogOfWar: RendertargetRenderGraphNode,
+        dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
     },
 ) {
     const meshTransformer = g.transformVertexOut({
@@ -78,6 +81,13 @@ export function gameGraphPassCompose(
         prefixVertexAttributes: "in_",
     });
 
+    const dataDebugTerrainCutoff = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.terrainMask.cutoff
+        })
+    )
+
     const draw = g.draw({
         shader: shader,
         geometry: geometry,
@@ -85,6 +95,7 @@ export function gameGraphPassCompose(
             "layerBaseTerrain": inputs.layerBaseTerrain,
             "layerCoastlineMask": inputs.layerCoastlineMask,
             "layerFogOfWar": inputs.layerFogOfWar,
+            "dbg_terrainCutoff": dataDebugTerrainCutoff as DataRenderGraphNode<unknown>
         },
     });
 

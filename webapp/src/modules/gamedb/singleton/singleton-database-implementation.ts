@@ -142,11 +142,9 @@ export class SingletonDatabaseImpl<ENTITY> implements SingletonDatabase<ENTITY> 
     }
 
     private checkSubscribers() {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_, subscriber] of this.subscribers.entity) {
             subscriber.callback(this.entity);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_, subscriber] of this.subscribers.partial) {
             const currentValue = subscriber.selector(this.entity);
             if (subscriber.lastValue !== currentValue) {

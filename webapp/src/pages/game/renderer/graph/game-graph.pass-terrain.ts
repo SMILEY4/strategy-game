@@ -6,6 +6,8 @@ import SHADER_TILEMAP_VERT from "./../shader/tilemap.vsh";
 import SHADER_TILEMAP_FRAG from "./../shader/tilemap.fsh";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
+import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "@app/features/game/database/debug.database.ts";
 
 
 export function gameGraphPassTerrain(
@@ -14,6 +16,7 @@ export function gameGraphPassTerrain(
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode
+        dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
     },
 ) {
 
@@ -124,12 +127,28 @@ export function gameGraphPassTerrain(
         prefixVertexAttributes: "in_",
     });
 
+    const dataDebugHexOffsetScale = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.randomHexOffsetScale
+        })
+    )
+
+    const dataDebugScale = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.baseTerrain.scale
+        })
+    )
+
     const draw = g.draw({
         shader: shader,
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
             "baseTerrain": textureStamp,
+            "dbg_scale": dataDebugScale as DataRenderGraphNode<unknown>,
+            "dbg_hexOffsetScale": dataDebugHexOffsetScale as DataRenderGraphNode<unknown>,
         },
     });
 

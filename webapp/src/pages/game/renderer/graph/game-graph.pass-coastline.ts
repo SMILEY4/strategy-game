@@ -6,6 +6,8 @@ import {vec2} from "gl-matrix";
 import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph.wasm-api.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
+import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "@app/features/game/database/debug.database.ts";
 
 
 export function gameGraphPassCoastline(
@@ -13,7 +15,8 @@ export function gameGraphPassCoastline(
     wasmApi: GameGraphWasmApi,
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
-        camera: CameraRenderGraphNode
+        camera: CameraRenderGraphNode,
+        dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
     },
 ) {
 
@@ -123,12 +126,28 @@ export function gameGraphPassCoastline(
         prefixVertexAttributes: "in_",
     });
 
+    const dataDebugHexOffsetScale = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.randomHexOffsetScale
+        })
+    )
+
+    const dataDebugScale = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.terrainMask.scale
+        })
+    )
+
     const draw = g.draw({
         shader: shader,
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
             "shape": textureStamp,
+            "dbg_scale": dataDebugScale as DataRenderGraphNode<unknown>,
+            "dbg_hexOffsetScale": dataDebugHexOffsetScale as DataRenderGraphNode<unknown>,
         },
     });
 
