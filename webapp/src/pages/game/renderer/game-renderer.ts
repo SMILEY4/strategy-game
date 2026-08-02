@@ -13,7 +13,12 @@ export class GameRenderer {
 
 
     constructor() {
-        this.dataProvider = gameRendererDataProvider({tileDb: DI.tileDatabase, cameraDb: DI.cameraDatabase, debugDb: DI.debugDatabase});
+        this.dataProvider = gameRendererDataProvider({
+            tileDb: DI.tileDatabase,
+            cameraDb: DI.cameraDatabase,
+            debugDb: DI.debugDatabase,
+            selectedTileDb: DI.selectedTileDatabase,
+        });
         this.wasmApi = gameGraphWasmApiJsImplementation();
         this.renderGraph = WebGlRenderGraph.build(gameGraph(new RenderGraphBuilder(), this.dataProvider, this.wasmApi));
     }

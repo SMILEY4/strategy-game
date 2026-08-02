@@ -8,6 +8,7 @@ import {gameGraphDataTiles} from "@pages/game/renderer/graph/game-graph.data-til
 import {gameGraphDataCamera} from "@pages/game/renderer/graph/game-graph.data-camera.ts";
 import {gameGraphPassFogOfWar} from "@pages/game/renderer/graph/game-graph.pass-fog-of-war.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import {gameGraphPassSelectedTile} from "@pages/game/renderer/graph/game-graph.pass-selected-tile.ts";
 
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: GameGraphWasmApi) {
@@ -44,11 +45,16 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         layerBaseTerrain: layerBaseTerrain,
         layerCoastlineMask: layerCoastlineMask,
         layerFogOfWar: layerFogOfWar,
-        dataDebug: dataDebug
+        dataDebug: dataDebug,
+    });
+
+    const {drawSelectedTile} = gameGraphPassSelectedTile(g, dataProvider, {
+        camera: camera,
+        dataDebug: dataDebug,
     });
 
     g.canvas({
-        renderPasses: [drawCompose],
+        renderPasses: [drawCompose, drawSelectedTile],
         depthTesting: false,
         clearColor: [0, 0, 0, 1],
     });

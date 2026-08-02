@@ -108,6 +108,67 @@ function useDevOverlay() {
                     }
                 }))
             },
+        }),
+        "selected tile": folder({
+            thicknessSelectedTile: {
+                label: "thickness",
+                value: initialDebugDataValues.renderer.selectedTile.thickness,
+                min: 0,
+                max: 1,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        selectedTile: {
+                            ...data.renderer.selectedTile,
+                            thickness: it
+                        }
+                    }
+                }))
+            },
+            softnessSelectedTile: {
+                label: "softness",
+                value: initialDebugDataValues.renderer.selectedTile.softness,
+                min: 0,
+                max: 1,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        selectedTile: {
+                            ...data.renderer.selectedTile,
+                            softness: it
+                        }
+                    }
+                }))
+            },
+            colorSelectedTile: {
+                label: "color",
+                value: {
+                    r: initialDebugDataValues.renderer.selectedTile.color[0] * 255,
+                    g: initialDebugDataValues.renderer.selectedTile.color[1] * 255,
+                    b: initialDebugDataValues.renderer.selectedTile.color[2] * 255,
+                    a: initialDebugDataValues.renderer.selectedTile.color[3],
+                },
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        selectedTile: {
+                            ...data.renderer.selectedTile,
+                            color: [
+                                it.r / 255,
+                                it.g / 255,
+                                it.b / 255,
+                                it.a
+                            ]
+                        }
+                    }
+                }))
+            },
         })
     });
 

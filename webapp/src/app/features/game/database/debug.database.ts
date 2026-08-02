@@ -13,6 +13,11 @@ export type DebugData = {
         },
         fogOfWar: {
             scale: number,
+        },
+        selectedTile: {
+            thickness: number,
+            softness: number,
+            color: [number, number, number, number]
         }
     }
 }
@@ -29,6 +34,11 @@ export const initialDebugDataValues: DebugData = {
         },
         fogOfWar: {
             scale: 1.32,
+        },
+        selectedTile: {
+            thickness: 0.1,
+            softness: 0.02,
+            color: [ 0.9294117647058824, 0.7764705882352941, 0.39215686274509803, 0.77 ]
         }
     }
 }

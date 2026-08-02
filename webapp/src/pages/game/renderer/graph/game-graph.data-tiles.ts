@@ -14,9 +14,10 @@ export function gameGraphDataTiles(
     },
 ) {
 
-    const dataAllTiles = g.dataExternal<TileCollection>(() => dataProvider.getTiles(), (prev) => {
-        return prev?.revId !== dataProvider.getTilesRevId();
-    });
+    const dataAllTiles = g.dataExternal<TileCollection>(
+        () => dataProvider.getTiles(),
+        prev => prev?.revId !== dataProvider.getTilesRevId()
+    );
 
     const wasmAllTiles = g.wasmData({
         source: {
