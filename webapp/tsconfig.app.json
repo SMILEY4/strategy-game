@@ -22,13 +22,12 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Paths */
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@app/*": ["src/app/*"],
-      "@renderer/*": ["src/renderer/*"],
-      "@pages/*": ["src/pages/*"],
-      "@modules/*": ["src/modules/*"]
+      "@/*": ["./src/*"],
+      "@app/*": ["./src/app/*"],
+      "@renderer/*": ["./src/renderer/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@modules/*": ["./src/modules/*"]
     }
   },
   "include": ["src"]

@@ -1,6 +1,4 @@
 import type {CameraDatabase} from "@app/features/game/database/camera.database.ts";
-import type {TileDatabase} from "@app/features/game/database/tile.database.ts";
-import {TileQueries} from "@app/features/game/database/tile.database.ts";
 import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
 import {mat4, quat, vec3, vec4} from "gl-matrix";
 
@@ -11,10 +9,9 @@ const SQRT3 = Math.sqrt(3);
 
 interface Dependencies {
     cameraDb: CameraDatabase;
-    tileDb: TileDatabase;
 }
 
-export const cameraControllerFreecam = ({cameraDb, tileDb}: Dependencies): CameraController => {
+export const cameraControllerFreecam = ({cameraDb}: Dependencies): CameraController => {
 
     const pressedKeys = new Set<string>();
     let canvasWidth = 1;
@@ -78,7 +75,7 @@ export const cameraControllerFreecam = ({cameraDb, tileDb}: Dependencies): Camer
                     vec3.normalize(moveDirection, moveDirection);
                     const position = vec3.add(vec3.create(), camera.position, moveDirection);
                     return {
-                        position: position
+                        position: position,
                     };
                 }
 
@@ -117,12 +114,12 @@ export const cameraControllerFreecam = ({cameraDb, tileDb}: Dependencies): Camer
                 vec3.normalize(direction, direction);
 
                 return {
-                    direction: direction
+                    direction: direction,
                 };
             });
         },
 
-        onCanvasClick: (x: number, y: number) => {
+        transformScreenToHex: (x: number, y: number) => {
             const cam = cameraDb.get();
 
             const ndcX = (2 * x) / canvasWidth - 1;
@@ -164,7 +161,9 @@ export const cameraControllerFreecam = ({cameraDb, tileDb}: Dependencies): Camer
             );
             vec3.normalize(rayDir, rayDir);
 
-            if (Math.abs(rayDir[1]) < 0.0001) return;
+            if (Math.abs(rayDir[1]) < 0.0001) {
+                throw new Error("Could not transform to world coordinates");
+            }
 
             const t = -cam.position[1] / rayDir[1];
             const worldX = cam.position[0] + t * rayDir[0];
@@ -190,12 +189,7 @@ export const cameraControllerFreecam = ({cameraDb, tileDb}: Dependencies): Camer
                 hexR = -rq - rs;
             }
 
-            const tile = tileDb.querySingle(TileQueries.BY_POSITION, {q: hexQ, r: hexR});
-            if (tile) {
-                console.log(`Clicked tile q=${hexQ} r=${hexR} id=${tile.id}`);
-            } else {
-                console.log(`Clicked empty hex q=${hexQ} r=${hexR}`);
-            }
+            return {q: hexQ, r: hexR};
         },
 
         onResize: (width: number, height: number) => {
@@ -204,10 +198,10 @@ export const cameraControllerFreecam = ({cameraDb, tileDb}: Dependencies): Camer
             cameraDb.update(() => {
                 return {
                     aspect: width / height,
-                }
-            })
+                };
+            });
         },
 
-        onScroll: () => undefined
+        onScroll: () => undefined,
     };
 };

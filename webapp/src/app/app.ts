@@ -23,6 +23,8 @@ import {tileDatabase} from "@app/features/game/database/tile.database.ts";
 import {cameraControllerPlayer} from "@app/features/game/gameplay/camera/camera-controller.player.ts";
 import {cameraDatabase} from "@app/features/game/database/camera.database.ts";
 import {debugDatabase} from "@app/features/game/database/debug.database.ts";
+import {gameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
+import {selectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
 
 
 interface EnvShape {
@@ -73,8 +75,9 @@ interface DIShape {
     tileDatabase: ReturnType<typeof tileDatabase>
     cameraDatabase: ReturnType<typeof cameraDatabase>
     debugDatabase: ReturnType<typeof debugDatabase>
+    selectedTileDatabase: ReturnType<typeof selectedTileDatabase>,
+    gameActionClickTile: ReturnType<typeof gameActionClickTile>
 }
-
 
 /** DI container configuration. Each entry specifies singleton or transient scope and its factory. */
 export const DIConfig = {
@@ -171,14 +174,14 @@ export const DIConfig = {
             wsClient: resolve.gameWebsocketClient,
             repository: resolve.gameRepository,
             tileDb: resolve.tileDatabase,
-            cameraController: resolve.cameraController
+            cameraController: resolve.cameraController,
+            actionClickTile: resolve.gameActionClickTile,
         }),
     },
     cameraController: {
         scope: "transient",
         create: resolve => cameraControllerPlayer({
             cameraDb: resolve.cameraDatabase,
-            tileDb: resolve.tileDatabase,
         }),
     },
     tileDatabase: {
@@ -192,6 +195,14 @@ export const DIConfig = {
     debugDatabase: {
         scope: "singleton",
         create: () => debugDatabase(),
+    },
+    selectedTileDatabase: {
+        scope: "singleton",
+        create: () => selectedTileDatabase(),
+    },
+    gameActionClickTile: {
+        scope: "singleton",
+        create: resolve => gameActionClickTile({tileDb: resolve.tileDatabase, selectedTileDb: resolve.selectedTileDatabase}),
     },
 } satisfies FactoryMap<DIShape>;
 

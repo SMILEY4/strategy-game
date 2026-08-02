@@ -3,6 +3,25 @@ import type {DatabaseStorageUnitMapping} from "@modules/gamedb/storage/database-
 import {useEffect, useState} from "react";
 import {DatabaseOperation} from "@modules/gamedb/database/database-operation.ts";
 import type {Query} from "@modules/gamedb/database/query.ts";
+import type {SingletonDatabase} from "@modules/gamedb/singleton/singleton-database.ts";
+
+export function useQuerySingleton<ENTITY>(db: SingletonDatabase<ENTITY>): ENTITY {
+    const [entity, setEntity] = useState<ENTITY>(() => db.get());
+    useEffect(() => {
+        const subscription = db.subscribe(entity => setEntity(entity));
+        return () => db.unsubscribe(subscription);
+    }, [db]);
+    return entity;
+}
+
+export function useQueryPartialSingleton<ENTITY, T>(db: SingletonDatabase<ENTITY>, selector: (entity: ENTITY) => T): T {
+    const [value, setValue] = useState<T>(() => selector(db.get()));
+    useEffect(() => {
+        const subscription = db.subscribePartial(selector, entity => setValue(entity));
+        return () => db.unsubscribe(subscription);
+    }, [selector, db]);
+    return value;
+}
 
 /**
  * Access (and watch) an entity in the given database by its id
@@ -10,12 +29,10 @@ import type {Query} from "@modules/gamedb/database/query.ts";
  * @param id the id of the entity
  * @return the current entity or null
  */
-export function useEntity<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>, ENTITY, ID>(db: Database<STORAGE, ENTITY, ID>, id: ID): ENTITY | null {
+export function useQueryEntity<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>, ENTITY, ID>(db: Database<STORAGE, ENTITY, ID>, id: ID): ENTITY | null {
     const [entity, setEntity] = useState<ENTITY | null>(() => db.queryById(id));
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [subscription, _] = db.subscribeOnEntity(id, (entity, operation) => {
-            console.log("notification", entity, operation);
             if (operation === DatabaseOperation.DELETE) {
                 setEntity(null);
             } else {
@@ -39,17 +56,13 @@ export function useQuerySingle<STORAGE extends DatabaseStorageUnitMapping<ENTITY
     query: Query<STORAGE, ENTITY, ID, ARGS>,
     args: ARGS,
 ): ENTITY | null {
-
     const [entity, setEntity] = useState<ENTITY | null>(() => db.querySingle(query, args));
-
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [subscription, _] = db.subscribeOnQuerySingle(query, args, entity => {
             setEntity(entity);
         });
         return () => db.unsubscribe(subscription);
     }, [db, query, args]);
-
     return entity;
 }
 
@@ -74,7 +87,6 @@ export function useQuerySingleOrThrow<STORAGE extends DatabaseStorageUnitMapping
 }
 
 
-
 /**
  * Access (and watch) entities in the given database provided by the given query
  * @param db the database
@@ -91,7 +103,6 @@ export function useQueryMultiple<STORAGE extends DatabaseStorageUnitMapping<ENTI
     const [entities, setEntities] = useState<ENTITY[]>(() => db.queryMany(query, args));
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [subscription, _] = db.subscribeOnQuery(query, args, entities => {
             setEntities(entities);
         });

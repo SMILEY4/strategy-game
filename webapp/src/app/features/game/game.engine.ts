@@ -4,6 +4,7 @@ import type {GameClient} from "@app/features/game/game.client.ts";
 import type {GameRepository} from "@app/features/game/game.repository.ts";
 import {type TileDatabase} from "@app/features/game/database/tile.database.ts";
 import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
+import type {GameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
 
 /** Orchestrates the game lifecycle: connecting via WebSocket and routing messages to the database. */
 export interface GameEngine {
@@ -23,9 +24,10 @@ interface Dependencies {
     repository: GameRepository;
     tileDb: TileDatabase,
     cameraController: CameraController
+    actionClickTile: GameActionClickTile
 }
 
-export const gameEngine = ({client, wsClient, repository, tileDb, cameraController}: Dependencies): GameEngine => {
+export const gameEngine = ({client, wsClient, repository, tileDb, cameraController, actionClickTile}: Dependencies): GameEngine => {
     const instance = {
 
         start: async (gameId: string) => {
@@ -67,7 +69,8 @@ export const gameEngine = ({client, wsClient, repository, tileDb, cameraControll
         },
 
         onCanvasClick: (x: number, y: number) => {
-            cameraController.onCanvasClick(x, y);
+            const hexPosition = cameraController.transformScreenToHex(x, y);
+            actionClickTile.click(hexPosition)
         },
 
         onScroll: (delta: number, x: number, y: number) => {

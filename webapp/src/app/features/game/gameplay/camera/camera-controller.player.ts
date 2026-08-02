@@ -1,6 +1,4 @@
 import type {CameraDatabase} from "@app/features/game/database/camera.database.ts";
-import type {TileDatabase} from "@app/features/game/database/tile.database.ts";
-import {TileQueries} from "@app/features/game/database/tile.database.ts";
 import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
 import {mat4, vec3, vec4} from "gl-matrix";
 
@@ -15,7 +13,6 @@ const SQRT3 = Math.sqrt(3);
 
 interface Dependencies {
     cameraDb: CameraDatabase;
-    tileDb: TileDatabase;
 }
 
 function screenToWorld(
@@ -73,7 +70,7 @@ function screenToWorld(
     );
 }
 
-export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): CameraController => {
+export const cameraControllerPlayer = ({cameraDb}: Dependencies): CameraController => {
 
     const pivot = vec3.fromValues(0, 0, 0);
     let distance = 40;
@@ -208,7 +205,7 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
             dirty = true;
         },
 
-        onCanvasClick: (x: number, y: number) => {
+        transformScreenToHex: (x: number, y: number) => {
             const cam = cameraDb.get();
             const world = screenToWorld(
                 x, y,
@@ -216,7 +213,9 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
                 cam.fov, cam.aspect, cam.near, cam.far,
                 canvasWidth, canvasHeight,
             );
-            if (!world) return;
+            if (!world) {
+                throw new Error("Could not transform to world coordinates");
+            }
 
             const rFrac = world[2] / 1.5;
             const qFrac = (world[0] - SQRT3 / 2 * rFrac) / SQRT3;
@@ -238,12 +237,7 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
                 hexR = -rq - rs;
             }
 
-            const tile = tileDb.querySingle(TileQueries.BY_POSITION, {q: hexQ, r: hexR});
-            if (tile) {
-                console.log(`Clicked tile q=${hexQ} r=${hexR} id=${tile.id}`);
-            } else {
-                console.log(`Clicked empty hex q=${hexQ} r=${hexR}`);
-            }
+            return {q: hexQ, r: hexR,};
         },
 
         onScroll: (delta: number, x: number, y: number) => {

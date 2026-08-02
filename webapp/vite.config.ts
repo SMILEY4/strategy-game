@@ -2,6 +2,7 @@ import {defineConfig} from "vite";
 import react from "@vitejs/plugin-react";
 import wasm from "vite-plugin-wasm";
 import {glsl} from "./plugins/vite-glsl.ts";
+import checker from "vite-plugin-checker";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -9,6 +10,14 @@ export default defineConfig({
         react(),
         wasm(),
         glsl(),
+        checker({
+            typescript: {
+                tsconfigPath: "./tsconfig.app.json"
+            },
+            overlay: {
+                initialIsOpen: true
+            }
+        }),
     ],
     resolve: {
         alias: {
