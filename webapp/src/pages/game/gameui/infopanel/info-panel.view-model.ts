@@ -7,6 +7,10 @@ export interface InfoPanelViewModel {
         id: string,
         position: HexPosition,
     },
+    foundCapital: {
+        available: boolean,
+        execute: () => void
+    }
 }
 
 export function useInfoPanelViewModel(): InfoPanelViewModel {
@@ -20,5 +24,13 @@ export function useInfoPanelViewModel(): InfoPanelViewModel {
                 position: {q: selectedTile.q, r: selectedTile.r},
             }
             : null,
+        foundCapital: {
+            available: selectedTile ? DI.gameActionFoundCapital.validate(selectedTile) : false,
+            execute: () => {
+                if (selectedTile) {
+                    DI.gameActionFoundCapital.execute(selectedTile);
+                }
+            },
+        },
     };
 }

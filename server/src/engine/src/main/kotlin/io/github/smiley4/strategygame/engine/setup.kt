@@ -18,6 +18,7 @@ import io.github.smiley4.strategygame.engine.simulation.SimulationService
 import io.github.smiley4.strategygame.engine.simulation.generation.WorldGenerator
 import io.github.smiley4.strategygame.engine.simulation.infrastructure.InMemoryGameStateRepository
 import io.github.smiley4.strategygame.engine.simulation.playerstate.PlayerStateBuilder
+import io.github.smiley4.strategygame.engine.simulation.turn.TurnService
 import io.github.smiley4.strategygame.shared.infrastructure.RoutingAuthConstants
 import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
@@ -42,7 +43,8 @@ fun Module.dependenciesEngine() {
     single { GameGenerationRequestedEventHandler(get(), get()) }.withOptions { createdAtStart() }
     single { MatchDeletedEventHandler(get(), get()) }.withOptions { createdAtStart() }
 
-    single<SimulationService> { SimulationService(get(), get(), get()) }
+    single<TurnService> { TurnService() }
+    single<SimulationService> { SimulationService(get(), get(), get(), get()) }
     single<GameStateRepository> { InMemoryGameStateRepository() }
     single<PlayerStateBuilder> { PlayerStateBuilder() }
     single<WorldGenerator> { WorldGenerator() }

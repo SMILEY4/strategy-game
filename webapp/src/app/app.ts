@@ -25,6 +25,10 @@ import {cameraDatabase} from "@app/features/game/database/camera.database.ts";
 import {debugDatabase} from "@app/features/game/database/debug.database.ts";
 import {gameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
 import {selectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
+import {gameActionFoundCapital} from "@app/features/game/gameplay/game-action.found-capital.ts";
+import {commandDatabase} from "@app/features/game/database/command.database.ts";
+import {gameActionEndTurn} from "@app/features/game/gameplay/game-action.end-turn.ts";
+import {entityDatabase} from "@app/features/game/database/entity.database.ts";
 
 
 interface EnvShape {
@@ -67,16 +71,20 @@ interface DIShape {
     deleteMatchUseCase: ReturnType<typeof deleteMatchUseCase>,
     createGameUseCase: ReturnType<typeof createGameUseCase>,
     // game
-    gameClient: ReturnType<typeof gameClient>,
-    gameWebsocketClient: ReturnType<typeof gameWebsocketClient>,
-    gameRepository: ReturnType<typeof gameRepository>,
-    gameEngine: ReturnType<typeof gameEngine>,
+    gameClient: ReturnType<typeof gameClient>
+    gameWebsocketClient: ReturnType<typeof gameWebsocketClient>
+    gameRepository: ReturnType<typeof gameRepository>
+    gameEngine: ReturnType<typeof gameEngine>
     cameraController: ReturnType<typeof cameraControllerPlayer>
     tileDatabase: ReturnType<typeof tileDatabase>
+    entityDatabase: ReturnType<typeof entityDatabase>
+    commandDatabase: ReturnType<typeof commandDatabase>
     cameraDatabase: ReturnType<typeof cameraDatabase>
     debugDatabase: ReturnType<typeof debugDatabase>
-    selectedTileDatabase: ReturnType<typeof selectedTileDatabase>,
+    selectedTileDatabase: ReturnType<typeof selectedTileDatabase>
+    gameActionEndTurn: ReturnType<typeof gameActionEndTurn>
     gameActionClickTile: ReturnType<typeof gameActionClickTile>
+    gameActionFoundCapital: ReturnType<typeof gameActionFoundCapital>
 }
 
 /** DI container configuration. Each entry specifies singleton or transient scope and its factory. */
@@ -174,6 +182,7 @@ export const DIConfig = {
             wsClient: resolve.gameWebsocketClient,
             repository: resolve.gameRepository,
             tileDb: resolve.tileDatabase,
+            entityDb: resolve.entityDatabase,
             cameraController: resolve.cameraController,
             actionClickTile: resolve.gameActionClickTile,
         }),
@@ -188,6 +197,14 @@ export const DIConfig = {
         scope: "singleton",
         create: () => tileDatabase(),
     },
+    entityDatabase: {
+        scope: "singleton",
+        create: () => entityDatabase(),
+    },
+    commandDatabase: {
+        scope: "singleton",
+        create: () => commandDatabase(),
+    },
     cameraDatabase: {
         scope: "singleton",
         create: () => cameraDatabase(),
@@ -200,9 +217,17 @@ export const DIConfig = {
         scope: "singleton",
         create: () => selectedTileDatabase(),
     },
+    gameActionEndTurn: {
+        scope: "singleton",
+        create: resolve => gameActionEndTurn({commandDb: resolve.commandDatabase, wsClient: resolve.gameWebsocketClient}),
+    },
     gameActionClickTile: {
         scope: "singleton",
         create: resolve => gameActionClickTile({tileDb: resolve.tileDatabase, selectedTileDb: resolve.selectedTileDatabase}),
+    },
+    gameActionFoundCapital: {
+        scope: "singleton",
+        create: resolve => gameActionFoundCapital({commandDb: resolve.commandDatabase, tileDb: resolve.tileDatabase}),
     },
 } satisfies FactoryMap<DIShape>;
 

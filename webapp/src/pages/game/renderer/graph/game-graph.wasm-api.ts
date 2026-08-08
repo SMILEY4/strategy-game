@@ -1,13 +1,14 @@
-import type {TileCollection} from "@pages/game/renderer/data/models.ts";
 import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
 import {WasmRenderApp} from "wasm";
 import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
 import type {Tile} from "@app/features/game/models/tile.ts";
 import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
+import type {Entity} from "@app/features/game/models/entity.ts";
 
 
 export interface GameGraphWasmApi {
-    uploadTiles: (tiles: TileCollection) => void,
+    uploadTiles: (tiles: Tile[]) => void,
+    uploadEntities: (entities: Entity[]) => void,
     collectChunks: () => { allChunks: boolean }
     cullChunks: () => { visibleChunks: boolean }
     buildTileInstances: () => { tileInstances: boolean },
@@ -30,11 +31,11 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             type: "i32",
         },
         "chunk_position.q": {
-            provider: tile => tile.chunk.q,
+            provider: tile => tile.position.chunkQ,
             type: "i32",
         },
         "chunk_position.r": {
-            provider: tile => tile.chunk.r,
+            provider: tile => tile.position.chunkR,
             type: "i32",
         },
         "world_position.x": {
@@ -59,15 +60,41 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
         },
     });
 
+    const entitySerializer = wasmSerializer<Entity>({
+        "tile_position.q": {
+            provider: entity => entity.position.q,
+            type: "i32",
+        },
+        "tile_position.r": {
+            provider: entity => entity.position.r,
+            type: "i32",
+        },
+        "chunk_position.q": {
+            provider: entity => entity.position.chunkQ,
+            type: "i32",
+        },
+        "chunk_position.r": {
+            provider: entity => entity.position.chunkR,
+            type: "i32",
+        },
+    });
+
     return {
 
-        uploadTiles: (tiles: TileCollection) => {
-            console.log("[wasm-api]: uploading tiles (" + tiles.tiles.length + ")");
-            const memory = wasmApp.tiles_reserve_memory(tiles.tiles.length);
-            console.log("[wasm-api] reserved wasm memory", memory.ptr, memory.len, memory.item_size);
+        uploadTiles: (tiles: Tile[]) => {
+            console.log("[wasm-api]: uploading tiles (" + tiles.length + ")");
+            const memory = wasmApp.tiles_reserve_memory(tiles.length);
             const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
-            tileSerializer(buffer, tiles.tiles);
+            tileSerializer(buffer, tiles);
             wasmApp.tiles_upload(memory.ptr, memory.len);
+        },
+
+        uploadEntities: (entities: Entity[]) => {
+            console.log("[wasm-api]: uploading entities (" + entities.length + ")");
+            const memory = wasmApp.entities_reserve_memory(entities.length);
+            const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
+            entitySerializer(buffer, entities);
+            wasmApp.entities_upload(memory.ptr, memory.len);
         },
 
         collectChunks: () => {
@@ -78,7 +105,6 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
         cullChunks: () => {
             const changed = wasmApp.calculate_visible_chunks();
-            // console.log("[wasm-api]: culled chunks", changed);
             return {visibleChunks: changed};
         },
 

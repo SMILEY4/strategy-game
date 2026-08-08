@@ -4,7 +4,7 @@ mod render;
 
 use crate::js::direct_buffer;
 use crate::js::direct_buffer::DirectBuffer;
-use crate::js::models::Tile;
+use crate::js::models::{Entity, Tile};
 use crate::render::renderer::Renderer;
 use js::direct_buffer::DirectMemoryHandle;
 use js_sys::Uint8Array;
@@ -34,6 +34,15 @@ impl WasmRenderApp {
         self.renderer.set_tiles(tiles)
     }
 
+    pub fn entities_reserve_memory(&self, len: usize) -> DirectMemoryHandle {
+        DirectBuffer::reserve::<Entity>(len)
+    }
+
+    pub fn entities_upload(&mut self, ptr: usize, len: usize) {
+        let entities = unsafe { DirectBuffer::upload::<Entity>(ptr, len) };
+        self.renderer.set_entities(entities)
+    }
+
     pub fn calculate_all_chunks(&mut self) -> bool {
         self.renderer.calculate_all_chunks()
     }
@@ -43,7 +52,7 @@ impl WasmRenderApp {
     }
 
     pub fn calculate_terrain_tile_instances(&mut self) -> bool {
-        self.renderer.calculate_terrain_tile_instances();
+        self.renderer.calculate_instances();
         true
     }
 

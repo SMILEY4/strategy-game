@@ -5,6 +5,11 @@ pub struct TileInstanceData {
     pub fog_of_war: Vec<TileFogOfWarInstance>,
 }
 
+#[derive(Default)]
+pub struct MapDetailsVertexData {
+    pub map_detail_vertices: Vec<MapDetailVertex>
+}
+
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
 pub struct TileTerrainLandInstance {
@@ -24,4 +29,12 @@ pub struct TileFogOfWarInstance {
     pub position: [f32; 2],
     pub visibility: u8,
     pub _padding: [u8; 3],
+}
+
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy)]
+pub struct MapDetailVertex {
+    pub position: [f32; 3],
+    pub texture_coords: [f32; 2],
+    pub color: [f32; 3],
 }

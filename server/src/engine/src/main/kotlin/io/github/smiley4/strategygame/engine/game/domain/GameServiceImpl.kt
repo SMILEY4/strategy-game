@@ -4,8 +4,8 @@ import io.github.smiley4.strategygame.engine.game.ConnectToGameError
 import io.github.smiley4.strategygame.engine.game.DeleteGameError
 import io.github.smiley4.strategygame.engine.game.GameService
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
-import io.github.smiley4.strategygame.engine.shared.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.SimulationService
+import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.shared.eventbus.WritableEventBus
 import io.github.smiley4.strategygame.shared.events.GameCreatedEvent
 import io.github.smiley4.strategygame.shared.utils.KeyedMutex

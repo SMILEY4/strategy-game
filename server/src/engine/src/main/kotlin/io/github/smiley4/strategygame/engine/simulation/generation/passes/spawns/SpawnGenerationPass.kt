@@ -17,9 +17,10 @@ internal class SpawnGenerationPass : GenerationPass {
 
             val spawn = Entity(
                 id = Entity.Id(),
+                owner = player,
                 components = listOf(
                     EntityComponent.Position(gameState.tiles.random().ref()),
-                    EntityComponent.PlayerSpawn(player, 3)
+                    EntityComponent.PlayerSpawn(3)
                 )
             )
 

@@ -7,7 +7,6 @@ import {MapSupportingStorage} from "@modules/gamedb/storage/implementations/data
 import {MapUniqueSupportingStorage} from "@modules/gamedb/storage/implementations/database-storage-unit.supporting.map-unique.ts";
 
 
-/** Database type alias for tile storage with primary, by-position, and by-chunk indexes. */
 export type TileDatabase = Database<TileStorageMapping, Tile, string>
 
 type TileStorageMapping = {
@@ -27,7 +26,6 @@ export function tileDatabase(): TileDatabase {
         .build()
 }
 
-/** Query type alias for tile database queries. */
 export type TileQuery<ARGS> = Query<TileStorageMapping, Tile, string, ARGS>
 
 

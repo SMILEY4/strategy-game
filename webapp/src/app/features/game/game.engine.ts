@@ -5,6 +5,8 @@ import type {GameRepository} from "@app/features/game/game.repository.ts";
 import {type TileDatabase} from "@app/features/game/database/tile.database.ts";
 import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
 import type {GameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
+import {type EntityDatabase} from "@app/features/game/database/entity.database.ts";
+import {databaseBatch} from "@modules/gamedb/subscribers/batch.ts";
 
 /** Orchestrates the game lifecycle: connecting via WebSocket and routing messages to the database. */
 export interface GameEngine {
@@ -23,11 +25,12 @@ interface Dependencies {
     wsClient: GameWebsocketClient;
     repository: GameRepository;
     tileDb: TileDatabase,
+    entityDb: EntityDatabase,
     cameraController: CameraController
     actionClickTile: GameActionClickTile
 }
 
-export const gameEngine = ({client, wsClient, repository, tileDb, cameraController, actionClickTile}: Dependencies): GameEngine => {
+export const gameEngine = ({client, wsClient, repository, tileDb, entityDb, cameraController, actionClickTile}: Dependencies): GameEngine => {
     const instance = {
 
         start: async (gameId: string) => {
@@ -43,12 +46,14 @@ export const gameEngine = ({client, wsClient, repository, tileDb, cameraControll
         },
 
         onMessage: (message: GameWebsocketServerMessage) => {
-            if (message.type === "io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage.GameState") {
-                tileDb.batch(() => {
+            console.log("received message", message)
+            if (message.type === "ServerGameMessage.GameState") {
+                databaseBatch([tileDb, entityDb], () => {
                     tileDb.deleteAll();
-                    tileDb.insertMany(message.stateJson.tiles);
-                    console.log("received tiles", message.stateJson.tiles)
-                });
+                    tileDb.insertMany(message.state.tiles);
+                    entityDb.deleteAll()
+                    entityDb.insertMany(message.state.entities);
+                })
                 if (repository.getState() === "loading") {
                     repository.setState("playing");
                     cameraController.initialize();

@@ -1,15 +1,16 @@
-use crate::js::models::{HexPosition, Tile};
-use crate::render::creator_terrain_tile_instances;
+use crate::js::models::{Entity, HexPosition, Tile};
+use crate::render::{creator_map_detail_instances, creator_terrain_tile_instances};
 use crate::render::models::chunk::Chunk;
 use crate::render::models::config::RenderConfig;
 use crate::render::models::render_state::RenderState;
-use crate::render::models::tile_instance_data::{TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
+use crate::render::models::tile_instance_data::{MapDetailsVertexData, TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
 use std::collections::{HashMap, HashSet};
 
 pub struct Renderer {
     config: RenderConfig,
     state: RenderState,
     tile_instance_data: TileInstanceData,
+    map_detail_vertex_data: MapDetailsVertexData,
 }
 
 impl Renderer {
@@ -18,6 +19,7 @@ impl Renderer {
             config: RenderConfig {},
             state: RenderState::default(),
             tile_instance_data: TileInstanceData::default(),
+            map_detail_vertex_data: MapDetailsVertexData::default(),
         }
     }
 
@@ -29,33 +31,55 @@ impl Renderer {
         self.state.visible_chunks.clear();
     }
 
+    /// Set the complete list of entities for this renderer
+    pub fn set_entities(&mut self, entities: Vec<Entity>) {
+        self.state.entities = entities;
+        self.state.chunks.clear();
+        self.state.visible_chunks.clear();
+    }
+
     /// Calculate/update all chunks given the current complete list of tiles.
     /// Returns whether the list of chunks changed (independent of order or contained tiles)
     pub fn calculate_all_chunks(&mut self) -> bool {
+        
         let mut new_chunks: HashMap<HexPosition, Chunk> = HashMap::new();
+        
         for (index, tile) in self.state.tiles.iter().enumerate() {
             new_chunks
                 .entry(tile.chunk_position)
                 .or_insert_with(|| Chunk {
                     chunk_position: tile.chunk_position,
                     tiles: Vec::new(),
+                    entities: Vec::new(),
                 })
                 .tiles
                 .push(index);
         }
 
-        let changed = self.state.chunks.len() != new_chunks.len()
+        for (index, entity) in self.state.entities.iter().enumerate() {
+            new_chunks
+                .entry(entity.chunk_position)
+                .or_insert_with(|| Chunk {
+                    chunk_position: entity.chunk_position,
+                    tiles: Vec::new(),
+                    entities: Vec::new(),
+                })
+                .entities
+                .push(index);
+        }
+        
+        let changed_keys = self.state.chunks.len() != new_chunks.len()
             || self
                 .state
                 .chunks
                 .keys()
                 .any(|key| !new_chunks.contains_key(key));
 
-        if changed {
+        if changed_keys {
             self.state.visible_chunks.clear();
         }
-        self.state.chunks = new_chunks; // chunks always need to be updated regardless of "changed", since the contained tiles might have changed
-        changed
+        self.state.chunks = new_chunks; // chunks always need to be updated regardless of "changed", since the content might have changed
+        changed_keys
     }
 
     /// Calculate/update the subset of chunks visible to the current camera.
@@ -78,8 +102,9 @@ impl Renderer {
         changed
     }
 
-    pub fn calculate_terrain_tile_instances(&mut self) {
+    pub fn calculate_instances(&mut self) {
         creator_terrain_tile_instances::build(&self.state, &mut self.tile_instance_data);
+        creator_map_detail_instances::build(&self.state, &mut self.map_detail_vertex_data);
     }
 
     pub fn get_terrain_tile_instances_land(&self) -> &Vec<TileTerrainLandInstance> {

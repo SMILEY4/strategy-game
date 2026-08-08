@@ -5,6 +5,7 @@ import styles from "./infopanel.module.less";
 import {VerticalLayout} from "@modules/uicomponents/layout/vertical/VerticalLayout.tsx";
 import {Tabbar} from "@modules/uicomponents/tabbar/Tabbar.tsx";
 import {type InfoPanelViewModel, useInfoPanelViewModel} from "@pages/game/gameui/infopanel/info-panel.view-model.ts";
+import {Button} from "@modules/uicomponents/controls/button/Button.tsx";
 
 export function InfoPanel(): ReactElement {
 
@@ -59,6 +60,7 @@ function InfoSelectedTile(props: InfoPanelViewModel) {
             <VerticalLayout verticalStart horizontalStretch fillFlex fillWidth paddingM>
                 <Txt.Line><Txt.String>Id: </Txt.String><Txt.String>{`${props.tile.id}`}</Txt.String></Txt.Line>
                 <Txt.Line><Txt.String>Position: </Txt.String><Txt.String>{`${props.tile.position.q},${props.tile.position.r}`}</Txt.String></Txt.Line>
+                <Button disabled={!props.foundCapital.available} onClick={props.foundCapital.execute}>Found Capital</Button>
             </VerticalLayout>
         );
     } else {

@@ -1,11 +1,20 @@
 import type {HiddenType} from "@app/features/game/models/hidden-type.ts";
 
 /** Messages sent from client to server over the game WebSocket. */
-export type GameWebsocketClientMessage = null
+export type GameWebsocketClientMessage =
+    | SubmitTurn
 
 export interface GameWebsocketClientMessageBase {
     type: string;
 }
+
+interface SubmitTurn extends GameWebsocketClientMessageBase {
+    type: "ClientGameMessage.SubmitTurn",
+    commands: MessageCommand[]
+}
+
+type MessageCommand =
+    | { type: "FoundRealmCapital", q: number, r: number }
 
 
 /** Messages sent from server to client over the game WebSocket. */
@@ -17,13 +26,14 @@ interface GameWebsocketServerMessageBase {
 }
 
 interface GameState extends GameWebsocketServerMessageBase {
-    type: "io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage.GameState",
-    stateJson: {
+    type: "ServerGameMessage.GameState",
+    state: {
         game: {
             turn: number
         },
         tiles: ({
             id: string,
+            visibility: 0 | 1
             position: {
                 q: number,
                 r: number
@@ -32,7 +42,6 @@ interface GameState extends GameWebsocketServerMessageBase {
                 q: number,
                 r: number
             },
-            visibility: 0 | 1
             world: HiddenType<{
                 biome: string,
                 elevation: string,
@@ -45,9 +54,21 @@ interface GameState extends GameWebsocketServerMessageBase {
                     removeOnDeplete: number
                 })[]
             }>
+            createSettlement: {
+                allowed: boolean
+            }
             meta: {
                 seed: number,
             },
+        })[],
+        entities: ({
+            id: string,
+            owner: string,
+            components: (
+                | { type: "position", tileId: string, q: number, r: number }
+                | { type: "player-spawn", radius: number }
+                | { type: "settlement", isRealmCapital: boolean }
+                )[]
         })[]
     }
 }

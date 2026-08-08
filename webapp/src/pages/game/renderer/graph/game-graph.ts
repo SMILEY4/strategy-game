@@ -4,7 +4,7 @@ import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph.wasm-
 import {gameGraphPassCoastline} from "@pages/game/renderer/graph/game-graph.pass-coastline.ts";
 import {gameGraphPassTerrain} from "@pages/game/renderer/graph/game-graph.pass-terrain.ts";
 import {gameGraphPassCompose} from "@pages/game/renderer/graph/game-graph.pass-compose.ts";
-import {gameGraphDataTiles} from "@pages/game/renderer/graph/game-graph.data-tiles.ts";
+import {gameGraphDataWorld} from "@pages/game/renderer/graph/game-graph.data-world.ts";
 import {gameGraphDataCamera} from "@pages/game/renderer/graph/game-graph.data-camera.ts";
 import {gameGraphPassFogOfWar} from "@pages/game/renderer/graph/game-graph.pass-fog-of-war.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
@@ -19,7 +19,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
 
-    const {wasmTileTerrainInstances, wasmTileFogOfWarInstances} = gameGraphDataTiles(g, dataProvider, wasmApi, {
+    const {wasmTileTerrainInstances, wasmTileFogOfWarInstances} = gameGraphDataWorld(g, dataProvider, wasmApi, {
         dataCamera: dataCamera,
     });
 

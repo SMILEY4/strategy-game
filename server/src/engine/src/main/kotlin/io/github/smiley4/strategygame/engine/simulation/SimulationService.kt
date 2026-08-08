@@ -1,9 +1,10 @@
 package io.github.smiley4.strategygame.engine.simulation
 
 import com.lectra.koson.ObjectType
-import io.github.smiley4.strategygame.engine.shared.PlayerCommand
+import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.generation.WorldGenerator
 import io.github.smiley4.strategygame.engine.simulation.playerstate.PlayerStateBuilder
+import io.github.smiley4.strategygame.engine.simulation.turn.TurnService
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
 
@@ -14,6 +15,7 @@ internal class SimulationService(
     private val gameStateRepository: GameStateRepository,
     private val worldGenerator: WorldGenerator,
     private val playerStateBuilder: PlayerStateBuilder,
+    private val turnService: TurnService
 ) {
 
     fun generateGame(gameId: GameId, players: Collection<UserId>) {
@@ -36,11 +38,7 @@ internal class SimulationService(
         val gameState = gameStateRepository.load(gameId)
             ?: throw ProcessTurnError.NotFound(gameId.id.toString())
 
-        commands.forEach { command ->
-            // todo: apply command
-        }
-
-        gameState.turn++
+        turnService.execute(gameState, commands)
 
         gameStateRepository.save(gameId, gameState)
 
