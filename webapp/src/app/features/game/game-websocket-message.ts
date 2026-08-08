@@ -36,11 +36,9 @@ interface GameState extends GameWebsocketServerMessageBase {
             visibility: 0 | 1
             position: {
                 q: number,
-                r: number
-            },
-            chunk: {
-                q: number,
-                r: number
+                r: number,
+                chunkQ: number,
+                chunkR: number,
             },
             world: HiddenType<{
                 biome: string,
@@ -64,8 +62,13 @@ interface GameState extends GameWebsocketServerMessageBase {
         entities: ({
             id: string,
             owner: string,
+            position: {
+                q: number,
+                r: number,
+                chunkQ: number,
+                chunkR: number,
+            },
             components: (
-                | { type: "position", tileId: string, q: number, r: number }
                 | { type: "player-spawn", radius: number }
                 | { type: "settlement", isRealmCapital: boolean }
                 )[]

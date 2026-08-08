@@ -2,7 +2,7 @@ import {MapPrimaryDatabaseStorageUnit} from "@modules/gamedb/storage/implementat
 import type {Query} from "@modules/gamedb/database/query.ts";
 import type {Database} from "@modules/gamedb/database/database.ts";
 import {DatabaseBuilder} from "@modules/gamedb/database-builder.ts";
-import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
+import {type Entity} from "@app/features/game/models/entity.ts";
 import {MapSupportingStorage} from "@modules/gamedb/storage/implementations/database-storage-unit.supporting.map.ts";
 
 
@@ -18,12 +18,7 @@ export function entityDatabase(): EntityDatabase {
         .withIdProvider(e => e.id)
         .withStorage(idProvider => ({
             primary: new MapPrimaryDatabaseStorageUnit<Entity, string>(idProvider),
-            byPosition: new MapSupportingStorage<Entity, string>(e => {
-                const position = EntityUtils.getPosition(e);
-                return position
-                    ? `${position.q};${position.r}`
-                    : "?;?";
-            }),
+            byPosition: new MapSupportingStorage<Entity, string>(e => `${e.position.q};${e.position.r}`),
         }))
         .build();
 }

@@ -27,14 +27,23 @@ class PlayerStateBuilder {
             "entities" to arr[
                 game.entities
                     .filter { getVisibilityAt(game, it, player) != 0 }
-                    .map { entity(it) }
+                    .filter { it.components.any { component -> component is EntityComponent.Position } }
+                    .map { entity(game, it) }
             ]
         }
     }
 
-    fun entity(entity: Entity) = obj {
+    fun entity(game: GameStateContext, entity: Entity) = obj {
+        val position = entity.getComponent<EntityComponent.Position>()
+        val tile = game.tiles.first { it.id == position.tile.id }
         "id" to entity.id
         "owner" to entity.owner
+        "position" to obj {
+            "q" to position.tile.position.q
+            "r" to position.tile.position.r
+            "chunkQ" to tile.meta.chunk.q
+            "chunkR" to tile.meta.chunk.r
+        }
         "components" to arr[
             entity.components.map { component ->
                 when (component) {
@@ -64,10 +73,8 @@ class PlayerStateBuilder {
         "position" to obj {
             "q" to tile.position.q
             "r" to tile.position.r
-        }
-        "chunk" to obj {
-            "q" to tile.meta.chunk.q
-            "r" to tile.meta.chunk.r
+            "chunkQ" to tile.meta.chunk.q
+            "chunkR" to tile.meta.chunk.r
         }
         "world" to hidden(visibility == 1) {
             obj {
@@ -104,22 +111,25 @@ class PlayerStateBuilder {
 
 
     private fun getVisibilityAt(gameState: GameStateContext, entity: Entity, player: UserId): Int {
-        val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
-        if (position == null) return 0
-        return getVisibilityAt(gameState, position, player)
+        return 1;
+//        val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
+//        if (position == null) return 0
+//        return getVisibilityAt(gameState, position, player)
     }
 
     private fun getVisibilityAt(gameState: GameStateContext, positions: HexPosition, player: UserId): Int {
-        val tile = gameState.tiles.find { it.position == positions }
-        if (tile == null) return 0
-        return getVisibilityAt(tile, player)
+        return 1;
+//        val tile = gameState.tiles.find { it.position == positions }
+//        if (tile == null) return 0
+//        return getVisibilityAt(tile, player)
     }
 
     private fun getVisibilityAt(tile: Tile, player: UserId): Int {
-        return when {
-            tile.discoveredBy.contains(player) -> 1
-            else -> 0
-        }
+        return 1;
+//        return when {
+//            tile.discoveredBy.contains(player) -> 1
+//            else -> 0
+//        }
     }
 
 }

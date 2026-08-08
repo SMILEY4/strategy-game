@@ -6,6 +6,7 @@ in vec2 v_textureCoordinates;
 uniform sampler2D u_layerBaseTerrain;
 uniform sampler2D u_layerCoastlineMask;
 uniform sampler2D u_layerFogOfWar;
+uniform sampler2D u_layerMapDetails;
 
 uniform float u_dbg_terrainCutoff;
 
@@ -26,6 +27,7 @@ void main() {
     vec4 layerBaseTerrain = texture(u_layerBaseTerrain, v_textureCoordinates);
     vec4 layerCoastlineMask = texture(u_layerCoastlineMask, v_textureCoordinates);
     vec4 layerFogOfWar = texture(u_layerFogOfWar, v_textureCoordinates);
+    vec4 layerMapDetails = texture(u_layerMapDetails, v_textureCoordinates);
 
     // terrain mask
     float terrainMask = step(TERRAIN_CUTOFF, layerCoastlineMask.a);
@@ -45,6 +47,9 @@ void main() {
 
     vec3 finalColor = vec3(159.0 / 255.0, 183.0 / 255.0, 187.0 / 255.0);
     finalColor = mix(finalColor, colorTerrain.rgb, colorTerrain.a);
+
+    // map details
+    finalColor = mix(finalColor, layerMapDetails.rgb, layerMapDetails.a);
 
     // fog of war
     float maskUndiscovered = 1.0 - clamp(layerFogOfWar.r - (layerFogOfWar.g + layerFogOfWar.b), 0.0, 1.0);

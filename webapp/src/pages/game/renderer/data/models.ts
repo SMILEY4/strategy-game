@@ -9,7 +9,7 @@ export interface TileCollection {
 }
 
 export interface EntityCollection {
-    tiles: Entity[],
+    entities: Entity[],
     revId: string
 }
 

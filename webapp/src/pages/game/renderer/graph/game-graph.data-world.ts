@@ -23,7 +23,7 @@ export function gameGraphDataWorld(
         source: {
             type: "js",
             data: dataAllTiles,
-            upload: (tiles: TileCollection) => wasmApi.uploadTiles(tiles),
+            upload: (tiles: TileCollection) => wasmApi.uploadTiles(tiles.tiles),
         },
     });
 
@@ -36,7 +36,7 @@ export function gameGraphDataWorld(
         source: {
             type: "js",
             data: dataAllEntities,
-            upload: (entities: EntityCollection) => wasmApi.uploadEntities(entities),
+            upload: (entities: EntityCollection) => wasmApi.uploadEntities(entities.entities),
         },
     });
 
@@ -93,8 +93,17 @@ export function gameGraphDataWorld(
         },
     });
 
+    const wasmMapDetailVertices = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: buildTileInstances,
+            key: "mapDetailVertices",
+        },
+    });
+
     return {
         wasmTileTerrainInstances: wasmTileTerrainInstances,
-        wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
+        wasmTileFogOfWarInstances: wasmTileFogOfWarInstances,
+        wasmMapDetailVertices: wasmMapDetailVertices
     };
 }

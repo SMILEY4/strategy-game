@@ -15,6 +15,7 @@ export interface GameGraphWasmApi {
     downloadTileLandInstances: () => VertexDataResult
     downloadTileWaterInstances: () => VertexDataResult
     downloadTileFogOfWarInstances: () => VertexDataResult
+    downloadMapDetailVertices: () => VertexDataResult
 }
 
 export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
@@ -138,6 +139,15 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
                 count: wasmApp.get_fog_of_war_tile_instances_count(),
             };
             console.log("[wasm-api]: downloading tile FoW instances (" + data.count + ")");
+            return data;
+        },
+
+        downloadMapDetailVertices: () => {
+            const data = {
+                data: wasmApp.get_map_detail_vertices(),
+                count: wasmApp.get_map_detail_vertex_count(),
+            };
+            console.log("[wasm-api]: downloading map detail vertices (" + data.count + ")");
             return data;
         },
 

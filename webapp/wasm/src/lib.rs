@@ -79,4 +79,12 @@ impl WasmRenderApp {
     pub fn get_fog_of_war_tile_instances_count(&self) -> usize {
         self.renderer.get_fog_of_war_tile_instances().len()
     }
+
+    pub fn get_map_detail_vertices(&self) -> Uint8Array {
+        direct_buffer::as_js_buffer(self.renderer.get_map_detail_vertices())
+    }
+
+    pub fn get_map_detail_vertex_count(&self) -> usize {
+        self.renderer.get_map_detail_vertices().len()
+    }
 }

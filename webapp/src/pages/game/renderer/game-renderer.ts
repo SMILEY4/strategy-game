@@ -16,6 +16,7 @@ export class GameRenderer {
         this.dataProvider = gameRendererDataProvider({
             tileDb: DI.tileDatabase,
             cameraDb: DI.cameraDatabase,
+            entityDb: DI.entityDatabase,
             debugDb: DI.debugDatabase,
             selectedTileDb: DI.selectedTileDatabase,
         });

@@ -34,7 +34,9 @@ pub struct TileFogOfWarInstance {
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
 pub struct MapDetailVertex {
-    pub position: [f32; 3],
+    pub position: [f32; 2],
+    pub vertex: [f32; 3],
+    pub offset: [f32; 2],
     pub texture_coords: [f32; 2],
     pub color: [f32; 3],
 }

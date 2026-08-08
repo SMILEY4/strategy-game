@@ -21,7 +21,7 @@ export function tileDatabase(): TileDatabase {
         .withStorage(idProvider => ({
             primary: new MapPrimaryDatabaseStorageUnit<Tile, string>(idProvider),
             byPosition: new MapUniqueSupportingStorage<Tile, string>(e => `${e.position.q};${e.position.r}`),
-            byChunk: new MapSupportingStorage<Tile, string>(e => `${e.chunk.q};${e.chunk.r}`)
+            byChunk: new MapSupportingStorage<Tile, string>(e => `${e.position.chunkQ};${e.position.chunkR}`)
         }))
         .build()
 }

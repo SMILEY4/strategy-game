@@ -192,6 +192,9 @@ export const DIConfig = {
         create: resolve => cameraControllerPlayer({
             cameraDb: resolve.cameraDatabase,
         }),
+        // create: resolve => cameraControllerFreecam(y{
+        //     cameraDb: resolve.cameraDatabase,
+        // }),
     },
     tileDatabase: {
         scope: "singleton",

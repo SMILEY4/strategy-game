@@ -3,7 +3,7 @@ use crate::render::{creator_map_detail_instances, creator_terrain_tile_instances
 use crate::render::models::chunk::Chunk;
 use crate::render::models::config::RenderConfig;
 use crate::render::models::render_state::RenderState;
-use crate::render::models::tile_instance_data::{MapDetailsVertexData, TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
+use crate::render::models::tile_instance_data::{MapDetailVertex, MapDetailsVertexData, TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
 use std::collections::{HashMap, HashSet};
 
 pub struct Renderer {
@@ -117,6 +117,10 @@ impl Renderer {
 
     pub fn get_fog_of_war_tile_instances(&self) -> &Vec<TileFogOfWarInstance> {
         &self.tile_instance_data.fog_of_war
+    }
+
+    pub fn get_map_detail_vertices(&self) -> &Vec<MapDetailVertex> {
+        &self.map_detail_vertex_data.map_detail_vertices
     }
 
 }

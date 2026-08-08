@@ -70,7 +70,7 @@ export const gameRendererDataProvider = ({tileDb, entityDb, selectedTileDb, came
         getEntities: () => {
             return {
                 revId: entityDb.getRevId(),
-                tiles: entityDb.queryMany(EntityQueries.ALL, undefined),
+                entities: entityDb.queryMany(EntityQueries.ALL, undefined),
             };
         },
 

@@ -13,6 +13,7 @@ export function gameGraphPassCompose(
         layerBaseTerrain: RendertargetRenderGraphNode,
         layerCoastlineMask: RendertargetRenderGraphNode,
         layerFogOfWar: RendertargetRenderGraphNode,
+        layerMapDetails: RendertargetRenderGraphNode,
         dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
     },
 ) {
@@ -95,6 +96,7 @@ export function gameGraphPassCompose(
             "layerBaseTerrain": inputs.layerBaseTerrain,
             "layerCoastlineMask": inputs.layerCoastlineMask,
             "layerFogOfWar": inputs.layerFogOfWar,
+            "layerMapDetails": inputs.layerMapDetails,
             "dbg_terrainCutoff": dataDebugTerrainCutoff as DataRenderGraphNode<unknown>
         },
     });

@@ -9,6 +9,7 @@ import {gameGraphDataCamera} from "@pages/game/renderer/graph/game-graph.data-ca
 import {gameGraphPassFogOfWar} from "@pages/game/renderer/graph/game-graph.pass-fog-of-war.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {gameGraphPassSelectedTile} from "@pages/game/renderer/graph/game-graph.pass-selected-tile.ts";
+import {gameGraphPassMapDetails} from "@pages/game/renderer/graph/game-graph.pass-map-details.ts";
 
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: GameGraphWasmApi) {
@@ -19,7 +20,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
 
-    const {wasmTileTerrainInstances, wasmTileFogOfWarInstances} = gameGraphDataWorld(g, dataProvider, wasmApi, {
+    const {wasmTileTerrainInstances, wasmTileFogOfWarInstances, wasmMapDetailVertices } = gameGraphDataWorld(g, dataProvider, wasmApi, {
         dataCamera: dataCamera,
     });
 
@@ -41,10 +42,17 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         dataDebug: dataDebug,
     });
 
+    const {layerMapDetails} = gameGraphPassMapDetails(g, wasmApi, {
+        wasmMapDetailVertices: wasmMapDetailVertices,
+        camera: camera,
+        dataDebug: dataDebug,
+    });
+
     const {drawCompose} = gameGraphPassCompose(g, {
         layerBaseTerrain: layerBaseTerrain,
         layerCoastlineMask: layerCoastlineMask,
         layerFogOfWar: layerFogOfWar,
+        layerMapDetails: layerMapDetails,
         dataDebug: dataDebug,
     });
 
