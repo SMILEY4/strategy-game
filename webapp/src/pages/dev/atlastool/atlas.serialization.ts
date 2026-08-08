@@ -1,14 +1,16 @@
-import type {AnnotationValue, AtlasManifest, SpriteManifestEntry, SpriteRegion} from "./atlas.types.ts";
-import {clampRectToImage, computeNormalized} from "./atlas.geometry.ts";
+import type {AnnotationValue, AtlasManifest, Size, SpriteManifestEntry, SpriteRegion} from "./atlas.types.ts";
+import {clampRectToImage, computeUvCoords} from "./atlas.geometry.ts";
 
 export interface AtlasManifestSource {
     atlasName: string;
     imageName: string;
-    imageWidth: number;
-    imageHeight: number;
+    imageSize: Size;
     sprites: SpriteRegion[];
 }
 
+/** Builds and parses the exported atlas JSON manifest. */
+
+/** Returns the first unused sprite id like `sprite-0`, `sprite-1`, ... */
 export function generateSpriteId(existingIds: string[]): string {
     let index = 0;
     let id: string;
@@ -19,6 +21,7 @@ export function generateSpriteId(existingIds: string[]): string {
     return id;
 }
 
+/** Parses an annotation value typed into a text field: tries JSON first, falls back to plain text. */
 export function parseAnnotationValue(text: string): AnnotationValue {
     const trimmed = text.trim();
     if (trimmed.length === 0) {
@@ -31,20 +34,22 @@ export function parseAnnotationValue(text: string): AnnotationValue {
     }
 }
 
+/** Converts editor state into an `AtlasManifest` (adds UV coordinates per sprite). */
 export function buildManifest(source: AtlasManifestSource): AtlasManifest {
     return {
         atlas: {
             name: source.atlasName,
             image: source.imageName,
-            imageSize: {width: source.imageWidth, height: source.imageHeight},
+            imageSize: source.imageSize,
         },
         sprites: source.sprites.map(sprite => ({
             ...sprite,
-            ...computeNormalized(sprite, source.imageWidth, source.imageHeight),
+            ...computeUvCoords(sprite, source.imageSize),
         })),
     };
 }
 
+/** Serializes editor state to a pretty-printed JSON string for download. */
 export function exportManifest(source: AtlasManifestSource): string {
     return JSON.stringify(buildManifest(source), null, 2);
 }
@@ -66,6 +71,39 @@ function isAnnotationValue(value: unknown): value is AnnotationValue {
     return false;
 }
 
+function parseAnnotations(raw: unknown): Record<string, AnnotationValue> {
+    const annotations: Record<string, AnnotationValue> = {};
+    if (isRecord(raw)) {
+        for (const [key, value] of Object.entries(raw)) {
+            if (isAnnotationValue(value)) {
+                annotations[key] = value;
+            }
+        }
+    }
+    return annotations;
+}
+
+function asString(value: unknown, fallback: string): string {
+    return typeof value === "string" ? value : fallback;
+}
+
+function asId(value: unknown, fallback: string): string {
+    return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function asNumber(value: unknown, fallback: number): number {
+    return typeof value === "number" ? value : fallback;
+}
+
+function asRoundedNumber(value: unknown, fallback: number): number {
+    return typeof value === "number" ? Math.round(value) : fallback;
+}
+
+function asPositiveInt(value: unknown): number {
+    return typeof value === "number" && value > 0 ? Math.round(value) : 0;
+}
+
+/** Parses a manifest JSON string, tolerating missing/wrong fields. Throws on invalid JSON. */
 export function parseManifestJson(json: string): AtlasManifest {
     let raw: unknown;
     try {
@@ -78,11 +116,11 @@ export function parseManifestJson(json: string): AtlasManifest {
     }
 
     const atlas = isRecord(raw.atlas) ? raw.atlas : {};
-    const name = typeof atlas.name === "string" ? atlas.name : "atlas";
-    const image = typeof atlas.image === "string" ? atlas.image : "atlas";
-    const imageSize = isRecord(atlas.imageSize) ? atlas.imageSize : {};
-    const imageWidth = typeof imageSize.width === "number" && imageSize.width > 0 ? Math.round(imageSize.width) : 0;
-    const imageHeight = typeof imageSize.height === "number" && imageSize.height > 0 ? Math.round(imageSize.height) : 0;
+    const imageSizeRaw = isRecord(atlas.imageSize) ? atlas.imageSize : {};
+    const imageSize: Size = {
+        width: asPositiveInt(imageSizeRaw.width),
+        height: asPositiveInt(imageSizeRaw.height),
+    };
 
     const sprites: SpriteManifestEntry[] = [];
     if (Array.isArray(raw.sprites)) {
@@ -90,47 +128,46 @@ export function parseManifestJson(json: string): AtlasManifest {
             if (!isRecord(entry)) {
                 return;
             }
-            const annotations: Record<string, AnnotationValue> = {};
-            if (isRecord(entry.annotations)) {
-                for (const [key, value] of Object.entries(entry.annotations)) {
-                    if (isAnnotationValue(value)) {
-                        annotations[key] = value;
-                    }
-                }
-            }
             sprites.push({
-                id: typeof entry.id === "string" && entry.id.trim() ? entry.id : `sprite-${index}`,
-                name: typeof entry.name === "string" ? entry.name : `Sprite ${index + 1}`,
-                x: typeof entry.x === "number" ? Math.round(entry.x) : 0,
-                y: typeof entry.y === "number" ? Math.round(entry.y) : 0,
-                width: typeof entry.width === "number" ? Math.round(entry.width) : 0,
-                height: typeof entry.height === "number" ? Math.round(entry.height) : 0,
-                annotations,
-                u: typeof entry.u === "number" ? entry.u : 0,
-                v: typeof entry.v === "number" ? entry.v : 0,
-                uw: typeof entry.uw === "number" ? entry.uw : 0,
-                vh: typeof entry.vh === "number" ? entry.vh : 0,
+                id: asId(entry.id, `sprite-${index}`),
+                name: asString(entry.name, `Sprite ${index + 1}`),
+                x: asRoundedNumber(entry.x, 0),
+                y: asRoundedNumber(entry.y, 0),
+                width: asRoundedNumber(entry.width, 0),
+                height: asRoundedNumber(entry.height, 0),
+                u: asNumber(entry.u, 0),
+                v: asNumber(entry.v, 0),
+                uw: asNumber(entry.uw, 0),
+                vh: asNumber(entry.vh, 0),
+                annotations: parseAnnotations(entry.annotations),
             });
         });
     }
 
-    return {atlas: {name, image, imageSize: {width: imageWidth, height: imageHeight}}, sprites};
+    return {
+        atlas: {
+            name: asString(atlas.name, "atlas"),
+            image: asString(atlas.image, "atlas"),
+            imageSize,
+        },
+        sprites,
+    };
 }
 
-export function manifestToSprites(manifest: AtlasManifest, imageWidth: number, imageHeight: number): SpriteRegion[] {
+/** Converts a parsed manifest into editor sprite regions, recovering pixel rects from UVs if needed. */
+export function manifestToSprites(manifest: AtlasManifest, imageSize: Size): SpriteRegion[] {
     return manifest.sprites.map(entry => {
         const hasPixelRect = entry.width > 0 && entry.height > 0;
         const rect = clampRectToImage(
             hasPixelRect
                 ? {x: entry.x, y: entry.y, width: entry.width, height: entry.height}
                 : {
-                    x: Math.round(entry.u * imageWidth),
-                    y: Math.round(entry.v * imageHeight),
-                    width: Math.round(entry.uw * imageWidth),
-                    height: Math.round(entry.vh * imageHeight),
+                    x: Math.round(entry.u * imageSize.width),
+                    y: Math.round(entry.v * imageSize.height),
+                    width: Math.round(entry.uw * imageSize.width),
+                    height: Math.round(entry.vh * imageSize.height),
                 },
-            imageWidth,
-            imageHeight,
+            imageSize,
         );
         return {
             id: entry.id,

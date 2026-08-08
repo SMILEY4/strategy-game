@@ -1,42 +1,40 @@
-import type {Rect} from "./atlas.types.ts";
-
-export type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
-
-export const RESIZE_HANDLES: ResizeHandle[] = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
+import type {Point, Rect, ResizeHandle, Size, Viewport} from "./atlas.types.ts";
 
 export const MIN_ZOOM = 0.05;
 export const MAX_ZOOM = 32;
 export const ZOOM_LEVEL_STEP = 0.25;
 
+/** Pure math helpers for sprites, zoom and viewport mapping. */
+
 export function clamp(value: number, min: number, max: number): number {
     return Math.min(Math.max(value, min), max);
 }
 
-export function clampZoom(zoom: number): number {
-    return clamp(zoom, MIN_ZOOM, MAX_ZOOM);
-}
-
-/** Zoom expressed on a logarithmic (base 2) scale, so equal level steps are equal perceived steps. */
+/** Zoom on a logarithmic (base 2) scale so equal level steps are equal perceived steps. */
 export function zoomToLevel(zoom: number): number {
     return Math.log2(zoom);
 }
 
+/** Inverse of `zoomToLevel`: converts a level back to a zoom, clamped to the allowed range. */
 export function zoomFromLevel(level: number): number {
     return clamp(Math.pow(2, level), MIN_ZOOM, MAX_ZOOM);
 }
 
-export function snapPoint(p: { x: number, y: number }): { x: number, y: number } {
+/** Rounds a point to whole image pixels. */
+export function snapPoint(p: Point): Point {
     return {x: Math.round(p.x), y: Math.round(p.y)};
 }
 
-export function clampPointToImage(p: { x: number, y: number }, imageWidth: number, imageHeight: number): { x: number, y: number } {
+/** Clamps a point so it stays inside the image bounds. */
+export function clampPointToImage(p: Point, size: Size): Point {
     return {
-        x: clamp(p.x, 0, Math.max(0, imageWidth - 1)),
-        y: clamp(p.y, 0, Math.max(0, imageHeight - 1)),
+        x: clamp(p.x, 0, Math.max(0, size.width - 1)),
+        y: clamp(p.y, 0, Math.max(0, size.height - 1)),
     };
 }
 
-export function normalizeRect(a: { x: number, y: number }, b: { x: number, y: number }): Rect {
+/** Builds a rect from two opposite corners (inclusive, min 1px). */
+export function rectFromPoints(a: Point, b: Point): Rect {
     return {
         x: Math.min(a.x, b.x),
         y: Math.min(a.y, b.y),
@@ -45,7 +43,8 @@ export function normalizeRect(a: { x: number, y: number }, b: { x: number, y: nu
     };
 }
 
-export function clampRectToImage(rect: Rect, imageWidth: number, imageHeight: number): Rect {
+/** Clamps a rect so it stays fully inside the image bounds (keeps at least 1×1). */
+export function clampRectToImage(rect: Rect, size: Size): Rect {
     let x = rect.x;
     let y = rect.y;
     let width = rect.width;
@@ -58,63 +57,84 @@ export function clampRectToImage(rect: Rect, imageWidth: number, imageHeight: nu
         height += y;
         y = 0;
     }
-    x = clamp(x, 0, Math.max(0, imageWidth - 1));
-    y = clamp(y, 0, Math.max(0, imageHeight - 1));
-    width = clamp(width, 1, Math.max(1, imageWidth - x));
-    height = clamp(height, 1, Math.max(1, imageHeight - y));
+    x = clamp(x, 0, Math.max(0, size.width - 1));
+    y = clamp(y, 0, Math.max(0, size.height - 1));
+    width = clamp(width, 1, Math.max(1, size.width - x));
+    height = clamp(height, 1, Math.max(1, size.height - y));
     return {x, y, width, height};
 }
 
-export function clampMove(region: Rect, dx: number, dy: number, imageWidth: number, imageHeight: number): Rect {
+/** Moves a region by (dx, dy) pixels, keeping it inside the image. */
+export function clampMove(region: Rect, dx: number, dy: number, size: Size): Rect {
     return {
         ...region,
-        x: clamp(region.x + Math.round(dx), 0, Math.max(0, imageWidth - region.width)),
-        y: clamp(region.y + Math.round(dy), 0, Math.max(0, imageHeight - region.height)),
+        x: clamp(region.x + Math.round(dx), 0, Math.max(0, size.width - region.width)),
+        y: clamp(region.y + Math.round(dy), 0, Math.max(0, size.height - region.height)),
     };
 }
 
-export function clampResize(region: Rect, handle: ResizeHandle, point: { x: number, y: number }, imageWidth: number, imageHeight: number): Rect {
+/** Resizes a region by dragging a corner/edge handle to a new point, keeping it in bounds. */
+export function clampResize(region: Rect, handle: ResizeHandle, point: Point, size: Size): Rect {
     const px = Math.round(point.x);
     const py = Math.round(point.y);
-    let nx = region.x;
-    let ny = region.y;
-    let nw = region.width;
-    let nh = region.height;
+    let x = region.x;
+    let y = region.y;
+    let width = region.width;
+    let height = region.height;
 
     if (handle.includes("w")) {
-        nw = region.x + region.width - px;
-        nx = px;
+        width = region.x + region.width - px;
+        x = px;
     }
     if (handle.includes("e")) {
-        nw = px - region.x;
+        width = px - region.x;
     }
     if (handle.includes("n")) {
-        nh = region.y + region.height - py;
-        ny = py;
+        height = region.y + region.height - py;
+        y = py;
     }
     if (handle.includes("s")) {
-        nh = py - region.y;
+        height = py - region.y;
     }
 
-    if (nx < 0) {
-        nw += nx;
-        nx = 0;
+    if (x < 0) {
+        width += x;
+        x = 0;
     }
-    if (ny < 0) {
-        nh += ny;
-        ny = 0;
+    if (y < 0) {
+        height += y;
+        y = 0;
     }
-    nw = clamp(nw, 1, Math.max(1, imageWidth - nx));
-    nh = clamp(nh, 1, Math.max(1, imageHeight - ny));
+    width = clamp(width, 1, Math.max(1, size.width - x));
+    height = clamp(height, 1, Math.max(1, size.height - y));
 
-    return {x: nx, y: ny, width: nw, height: nh};
+    return {x, y, width, height};
 }
 
-export function computeNormalized(region: Rect, imageWidth: number, imageHeight: number): { u: number, v: number, uw: number, vh: number } {
+/** Texture coordinates (0..1) of a region inside the image. */
+export function computeUvCoords(region: Rect, size: Size): { u: number, v: number, uw: number, vh: number } {
     return {
-        u: imageWidth > 0 ? region.x / imageWidth : 0,
-        v: imageHeight > 0 ? region.y / imageHeight : 0,
-        uw: imageWidth > 0 ? region.width / imageWidth : 0,
-        vh: imageHeight > 0 ? region.height / imageHeight : 0,
+        u: size.width > 0 ? region.x / size.width : 0,
+        v: size.height > 0 ? region.y / size.height : 0,
+        uw: size.width > 0 ? region.width / size.width : 0,
+        vh: size.height > 0 ? region.height / size.height : 0,
     };
+}
+
+// Viewport mapping (image coordinates <-> canvas coordinates).
+
+/** Converts an image-space point to canvas/screen coordinates. */
+export function toScreenPoint(p: Point, viewport: Viewport): Point {
+    return {x: viewport.x + p.x * viewport.zoom, y: viewport.y + p.y * viewport.zoom};
+}
+
+/** Converts a canvas/screen point back to image space. */
+export function toImagePoint(p: Point, viewport: Viewport): Point {
+    return {x: (p.x - viewport.x) / viewport.zoom, y: (p.y - viewport.y) / viewport.zoom};
+}
+
+/** Converts an image-space rect to a screen rect (position scaled and offset by the viewport). */
+export function toScreenRect(region: Rect, viewport: Viewport): Rect {
+    const origin = toScreenPoint(region, viewport);
+    return {x: origin.x, y: origin.y, width: region.width * viewport.zoom, height: region.height * viewport.zoom};
 }

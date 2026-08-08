@@ -1,69 +1,47 @@
 import {useCallback, useState} from "react";
-import type {Rect, SpriteRegion} from "./atlas.types.ts";
+import type {AnnotationValue, Rect, Size, SpriteRegion} from "./atlas.types.ts";
 import {clampRectToImage} from "./atlas.geometry.ts";
 import {exportManifest, generateSpriteId, manifestToSprites, parseAnnotationValue, parseManifestJson} from "./atlas.serialization.ts";
+import {createImageFromDataUrl, readFileAsDataUrl} from "./atlas.io.ts";
 
-function readFileAsDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error("Could not read file"));
-        reader.readAsDataURL(file);
-    });
-}
-
-function createImageFromDataUrl(dataUrl: string): Promise<{ image: HTMLImageElement, width: number, height: number }> {
-    return new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve({image, width: image.naturalWidth, height: image.naturalHeight});
-        image.onerror = () => reject(new Error("Could not load image"));
-        image.src = dataUrl;
-    });
+interface LoadedImage {
+    element: HTMLImageElement;
+    size: Size;
 }
 
 function withoutSprite(sprites: SpriteRegion[], id: string): SpriteRegion[] {
     return sprites.filter(sprite => sprite.id !== id);
 }
 
-export interface AtlasEditor {
-    atlasName: string,
-    setAtlasName: (name: string) => void,
-    imageName: string,
-    setImageName: (name: string) => void,
-    image: HTMLImageElement | null,
-    imageWidth: number,
-    imageHeight: number,
+function updateAnnotations(
     sprites: SpriteRegion[],
-    selectedSpriteId: string | null,
-    loadImageDataUrl: (dataUrl: string, name?: string) => Promise<void>,
-    loadImageFile: (file: File) => Promise<void>,
-    applyProjectJson: (json: string) => void,
-    exportJson: () => string,
-    createSprite: (region: Rect) => void,
-    updateSprite: (id: string, region: Rect) => void,
-    updateSpriteMeta: (id: string, patch: Partial<Pick<SpriteRegion, "id" | "name">>) => void,
-    deleteSprite: (id: string) => void,
-    selectSprite: (id: string | null) => void,
-    addAnnotation: (id: string, key: string) => void,
-    updateAnnotationKey: (id: string, oldKey: string, newKey: string) => void,
-    updateAnnotationValue: (id: string, key: string, text: string) => void,
-    removeAnnotation: (id: string, key: string) => void,
+    id: string,
+    update: (annotations: Record<string, AnnotationValue>) => Record<string, AnnotationValue>,
+): SpriteRegion[] {
+    return sprites.map(sprite => {
+        if (sprite.id !== id) {
+            return sprite;
+        }
+        const annotations = update(sprite.annotations);
+        return annotations === sprite.annotations ? sprite : {...sprite, annotations};
+    });
 }
 
-export function useAtlasEditor(): AtlasEditor {
+/** Editor state and actions: current image, sprites, selection, annotations, and export. */
+export function useAtlasEditor() {
     const [atlasName, setAtlasName] = useState("atlas");
     const [imageName, setImageName] = useState("");
-    const [image, setImage] = useState<HTMLImageElement | null>(null);
-    const [imageWidth, setImageWidth] = useState(0);
-    const [imageHeight, setImageHeight] = useState(0);
+    const [loadedImage, setLoadedImage] = useState<LoadedImage | null>(null);
     const [sprites, setSprites] = useState<SpriteRegion[]>([]);
     const [selectedSpriteId, setSelectedSpriteId] = useState<string | null>(null);
 
+    const image = loadedImage?.element ?? null;
+    const imageSize = loadedImage?.size ?? {width: 0, height: 0};
+
+    /** Loads a new image, resetting all sprites. */
     const loadImageDataUrl = useCallback(async (dataUrl: string, name?: string) => {
-        const loaded = await createImageFromDataUrl(dataUrl);
-        setImage(loaded.image);
-        setImageWidth(loaded.width);
-        setImageHeight(loaded.height);
+        const element = await createImageFromDataUrl(dataUrl);
+        setLoadedImage({element, size: {width: element.naturalWidth, height: element.naturalHeight}});
         setSprites([]);
         setSelectedSpriteId(null);
         if (name) {
@@ -76,33 +54,35 @@ export function useAtlasEditor(): AtlasEditor {
         await loadImageDataUrl(dataUrl, file.name);
     }, [loadImageDataUrl]);
 
+    /** Loads a project JSON file, replacing the current sprite set. Requires an image. */
     const applyProjectJson = useCallback((json: string) => {
         if (!image) {
             throw new Error("Load an image first");
         }
         const manifest = parseManifestJson(json);
-        setSprites(manifestToSprites(manifest, imageWidth, imageHeight));
+        setSprites(manifestToSprites(manifest, imageSize));
         setSelectedSpriteId(null);
         setAtlasName(manifest.atlas.name);
         setImageName(manifest.atlas.image);
-    }, [image, imageWidth, imageHeight]);
+    }, [image, imageSize]);
 
+    /** Serializes the current editor state to a JSON string. */
     const exportJson = useCallback((): string => {
         if (!image) {
             throw new Error("No image loaded");
         }
-        return exportManifest({atlasName, imageName, imageWidth, imageHeight, sprites});
-    }, [atlasName, imageName, image, imageWidth, imageHeight, sprites]);
+        return exportManifest({atlasName, imageName, imageSize, sprites});
+    }, [atlasName, imageName, image, imageSize, sprites]);
 
     const createSprite = useCallback((region: Rect) => {
-        const clamped = clampRectToImage(region, imageWidth, imageHeight);
+        const clamped = clampRectToImage(region, imageSize);
         const id = generateSpriteId(sprites.map(sprite => sprite.id));
         setSprites(prev => [...prev, {id, name: id, ...clamped, annotations: {}}]);
         setSelectedSpriteId(id);
-    }, [imageWidth, imageHeight, sprites]);
+    }, [imageSize, sprites]);
 
-    const updateSprite = useCallback((id: string, region: Rect) => {
-        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, ...region} : sprite));
+    const updateSprite = useCallback((id: string, patch: Partial<Rect>) => {
+        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, ...patch} : sprite));
     }, []);
 
     const updateSpriteMeta = useCallback((id: string, patch: Partial<Pick<SpriteRegion, "id" | "name">>) => {
@@ -110,23 +90,19 @@ export function useAtlasEditor(): AtlasEditor {
         if (!target) {
             return;
         }
-        const nextId = patch.id !== undefined && patch.id.trim()
-            ? patch.id
-            : target.id;
-        const collides = nextId !== target.id && sprites.some(sprite => sprite.id === nextId);
-        const effectivePatch: Partial<Pick<SpriteRegion, "id" | "name">> = {};
-        if (!collides) {
-            effectivePatch.id = nextId;
+        const effective: Partial<Pick<SpriteRegion, "id" | "name">> = {};
+        if (patch.id !== undefined && patch.id.trim() && !sprites.some(sprite => sprite.id === patch.id)) {
+            effective.id = patch.id;
         }
         if (patch.name !== undefined) {
-            effectivePatch.name = patch.name;
+            effective.name = patch.name;
         }
-        if (Object.keys(effectivePatch).length === 0) {
+        if (Object.keys(effective).length === 0) {
             return;
         }
-        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, ...effectivePatch} : sprite));
-        if (effectivePatch.id) {
-            setSelectedSpriteId(current => current === id ? effectivePatch.id! : current);
+        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, ...effective} : sprite));
+        if (effective.id) {
+            setSelectedSpriteId(current => current === id ? effective.id! : current);
         }
     }, [sprites]);
 
@@ -140,48 +116,38 @@ export function useAtlasEditor(): AtlasEditor {
     }, []);
 
     const addAnnotation = useCallback((id: string, key: string) => {
-        setSprites(prev => prev.map(sprite => {
-            if (sprite.id !== id || key in sprite.annotations) {
-                return sprite;
-            }
-            return {...sprite, annotations: {...sprite.annotations, [key]: ""}};
-        }));
+        setSprites(prev => updateAnnotations(prev, id, annotations =>
+            key in annotations ? annotations : {...annotations, [key]: ""},
+        ));
     }, []);
 
     const updateAnnotationKey = useCallback((id: string, oldKey: string, newKey: string) => {
         if (!newKey.trim() || newKey === oldKey) {
             return;
         }
-        setSprites(prev => prev.map(sprite => {
-            if (sprite.id !== id || !(oldKey in sprite.annotations)) {
-                return sprite;
+        setSprites(prev => updateAnnotations(prev, id, annotations => {
+            if (!(oldKey in annotations)) {
+                return annotations;
             }
-            const annotations = {...sprite.annotations};
-            const value = annotations[oldKey];
-            delete annotations[oldKey];
-            annotations[newKey] = value;
-            return {...sprite, annotations};
+            const {[oldKey]: value, ...rest} = annotations;
+            return {...rest, [newKey]: value};
         }));
     }, []);
 
     const updateAnnotationValue = useCallback((id: string, key: string, text: string) => {
         const value = parseAnnotationValue(text);
-        setSprites(prev => prev.map(sprite => {
-            if (sprite.id !== id || !(key in sprite.annotations)) {
-                return sprite;
-            }
-            return {...sprite, annotations: {...sprite.annotations, [key]: value}};
-        }));
+        setSprites(prev => updateAnnotations(prev, id, annotations =>
+            key in annotations ? {...annotations, [key]: value} : annotations,
+        ));
     }, []);
 
     const removeAnnotation = useCallback((id: string, key: string) => {
-        setSprites(prev => prev.map(sprite => {
-            if (sprite.id !== id || !(key in sprite.annotations)) {
-                return sprite;
+        setSprites(prev => updateAnnotations(prev, id, annotations => {
+            if (!(key in annotations)) {
+                return annotations;
             }
-            const annotations = {...sprite.annotations};
-            delete annotations[key];
-            return {...sprite, annotations};
+            const {[key]: _removed, ...rest} = annotations;
+            return rest;
         }));
     }, []);
 
@@ -191,8 +157,7 @@ export function useAtlasEditor(): AtlasEditor {
         imageName,
         setImageName,
         image,
-        imageWidth,
-        imageHeight,
+        imageSize,
         sprites,
         selectedSpriteId,
         loadImageDataUrl,
@@ -210,3 +175,5 @@ export function useAtlasEditor(): AtlasEditor {
         removeAnnotation,
     };
 }
+
+export type AtlasEditor = ReturnType<typeof useAtlasEditor>;

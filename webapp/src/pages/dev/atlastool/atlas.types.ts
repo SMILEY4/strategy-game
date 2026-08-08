@@ -1,20 +1,40 @@
 export type AtlasTool = "select" | "draw" | "pan";
 
+/** Compass direction of a region's edge/corner resize handle. */
+export type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
+
 export type AnnotationValue = string | number | boolean | null | AnnotationValue[] | { [key: string]: AnnotationValue };
 
-export interface Rect {
+export interface Point {
     x: number;
     y: number;
+}
+
+export interface Size {
     width: number;
     height: number;
 }
 
+export interface Rect extends Size {
+    x: number;
+    y: number;
+}
+
+/** Zoom level plus the top-left pan offset of the canvas view. */
+export interface Viewport {
+    zoom: number;
+    x: number;
+    y: number;
+}
+
+/** A sprite region in the editor: pixel rect plus a unique id, name, and annotations. */
 export interface SpriteRegion extends Rect {
     id: string;
     name: string;
     annotations: Record<string, AnnotationValue>;
 }
 
+/** A sprite as stored in the exported manifest, additionally with UV coordinates (0..1). */
 export interface SpriteManifestEntry extends SpriteRegion {
     u: number;
     v: number;
@@ -22,11 +42,12 @@ export interface SpriteManifestEntry extends SpriteRegion {
     vh: number;
 }
 
+/** Top-level structure of the exported JSON file. */
 export interface AtlasManifest {
     atlas: {
         name: string;
         image: string;
-        imageSize: { width: number, height: number };
+        imageSize: Size;
     };
     sprites: SpriteManifestEntry[];
 }
