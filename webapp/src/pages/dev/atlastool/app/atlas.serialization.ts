@@ -1,4 +1,4 @@
-import type {AnnotationValue, AtlasManifest, Size, SpriteManifestEntry, SpriteRegion} from "./app/atlas.types.ts";
+import type {AnnotationValue, AtlasManifest, Size, SpriteManifestEntry, SpriteRegion} from "./atlas.types.ts";
 import {clampRectToImage, computeUvCoords} from "./atlas.geometry.ts";
 
 export interface AtlasManifestSource {

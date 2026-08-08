@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import type {AtlasTool} from "./atlas.types.ts";
-import {clampMove} from "../atlas.geometry.ts";
+import {clampMove} from "./atlas.geometry.ts";
 import type {AtlasEditorProject} from "@pages/dev/atlastool/app/atlas.editor.ts";
 
 /**

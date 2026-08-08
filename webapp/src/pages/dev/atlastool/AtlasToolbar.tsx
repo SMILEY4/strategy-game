@@ -1,10 +1,10 @@
-import {type ReactElement, useRef} from "react";
+import {type ReactElement, type RefObject, useRef} from "react";
 import type {AtlasTool} from "./app/atlas.types.ts";
-import {MAX_ZOOM, MIN_ZOOM, ZOOM_LEVEL_STEP, zoomFromLevel, zoomToLevel} from "./atlas.geometry.ts";
+import {MAX_ZOOM, MIN_ZOOM, ZOOM_LEVEL_STEP, zoomAt, zoomFromLevel, zoomToLevel} from "./app/atlas.geometry.ts";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {readFileAsText} from "@pages/dev/atlastool/app/atlas.io.ts";
 
-export function AtlasToolbar(props: AtlasEditor<true>): ReactElement {
+export function AtlasToolbar(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
 
     const inputImageRef = useRef<HTMLInputElement>(null);
     const inputJsonRef = useRef<HTMLInputElement>(null);
@@ -23,12 +23,18 @@ export function AtlasToolbar(props: AtlasEditor<true>): ReactElement {
         }
     }
 
+    function setViewportZoom(nextZoom: number) {
+        const rect = props.canvasRef?.current?.getBoundingClientRect();
+        const anchor = rect ? {x: rect.width / 2, y: rect.height / 2} : {x: 0, y: 0};
+        props.project.viewport.set(zoomAt(props.project.viewport.value, anchor, nextZoom));
+    }
+
     return (
         <>
             <header className="atlas-toolbar">
 
-                <button type="button" onClick={inputImageRef.current?.click}>Replace image</button>
-                <button type="button" onClick={inputJsonRef.current?.click}>Load JSON</button>
+                <button type="button" onClick={() => inputImageRef.current?.click()}>Replace image</button>
+                <button type="button" onClick={() => inputJsonRef.current?.click()}>Load JSON</button>
                 <button type="button" onClick={props.project.export.projectJson}>Export JSON</button>
 
                 <label className="atlas-toolbar__field">
@@ -46,7 +52,7 @@ export function AtlasToolbar(props: AtlasEditor<true>): ReactElement {
                 <div className="atlas-zoom">
                     <button
                         type="button"
-                        onClick={() => props.project.viewport.set({zoom: zoomFromLevel(zoomToLevel(props.project.viewport.value.zoom) - 0.5)})}
+                        onClick={() => setViewportZoom(zoomFromLevel(zoomToLevel(props.project.viewport.value.zoom) - 0.5))}
                         title="Zoom out"
                     >
                         −
@@ -57,12 +63,12 @@ export function AtlasToolbar(props: AtlasEditor<true>): ReactElement {
                         max={zoomToLevel(MAX_ZOOM)}
                         step={ZOOM_LEVEL_STEP}
                         value={zoomToLevel(props.project.viewport.value.zoom)}
-                        onChange={event => props.project.viewport.set({zoom: zoomFromLevel(Number(event.target.value))})}
+                        onChange={event => setViewportZoom(zoomFromLevel(Number(event.target.value)))}
                         onKeyDown={event => event.stopPropagation()}
                     />
                     <button
                         type="button"
-                        onClick={() => props.project.viewport.set({zoom: zoomFromLevel(zoomToLevel(props.project.viewport.value.zoom) + 0.5)})}
+                        onClick={() => setViewportZoom(zoomFromLevel(zoomToLevel(props.project.viewport.value.zoom) + 0.5))}
                         title="Zoom in"
                     >
                         +

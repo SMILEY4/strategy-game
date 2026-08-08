@@ -1,8 +1,8 @@
-import {type ReactElement, useEffect, useRef, useState} from "react";
+import {type ReactElement, type RefObject, useEffect, useRef, useState} from "react";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {useAtlasCanvas} from "@pages/dev/atlastool/app/useAtlasCanvas.ts";
 
-export function AtlasCanvas(props: AtlasEditor<true>): ReactElement {
+export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
 
     const {
         canvasRef,
@@ -15,7 +15,7 @@ export function AtlasCanvas(props: AtlasEditor<true>): ReactElement {
         onAuxClick,
         onWheel,
         render,
-    } = useAtlasCanvas(props);
+    } = useAtlasCanvas(props, props.canvasRef);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const statusRef = useRef<HTMLSpanElement>(null);

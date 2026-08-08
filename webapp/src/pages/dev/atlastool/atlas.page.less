@@ -257,9 +257,15 @@
 	font-size:   12px;
 }
 
+.atlas-field input {
+	width:       100%;
+	min-width:   0;
+	box-sizing:  border-box;
+}
+
 .atlas-grid {
 	display:              grid;
-	grid-template-columns: repeat(2, 1fr);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	column-gap:           8px;
 }
 

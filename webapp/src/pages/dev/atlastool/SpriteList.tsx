@@ -1,24 +1,16 @@
 import type {ReactElement} from "react";
-import type {SpriteRegion} from "./app/atlas.types.ts";
+import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 
-interface SpriteListProps {
-    sprites: SpriteRegion[];
-    selectedSpriteId: string | null;
-    onSelect: (id: string | null) => void;
-    onDelete: (id: string) => void;
-}
-
-/** Sidebar list of all sprites with select and delete actions. */
-export function SpriteList(props: SpriteListProps): ReactElement {
+export function SpriteList(props: AtlasEditor<true>): ReactElement {
     return (
         <div className="atlas-side__section">
             <div className="atlas-side__header">Sprites</div>
-            {props.sprites.length === 0 && (
+            {props.project.sprites.list.length === 0 && (
                 <div className="atlas-side__empty">No sprites yet. Draw rectangles on the image.</div>
             )}
             <ul className="atlas-sprite-list">
-                {props.sprites.map(sprite => {
-                    const selected = sprite.id === props.selectedSpriteId;
+                {props.project.sprites.list.map(sprite => {
+                    const selected = sprite.id === props.project.sprites.selectedId;
                     return (
                         <li
                             key={sprite.id}
@@ -27,7 +19,7 @@ export function SpriteList(props: SpriteListProps): ReactElement {
                             <button
                                 type="button"
                                 className="atlas-sprite-list__select"
-                                onClick={() => props.onSelect(selected ? null : sprite.id)}
+                                onClick={() => props.project.sprites.select(selected ? null : sprite.id)}
                             >
                                 <span className="atlas-sprite-list__name">{sprite.name || sprite.id}</span>
                                 <span className="atlas-sprite-list__meta">
@@ -37,7 +29,7 @@ export function SpriteList(props: SpriteListProps): ReactElement {
                             <button
                                 type="button"
                                 className="atlas-sprite-list__delete"
-                                onClick={() => props.onDelete(sprite.id)}
+                                onClick={() => props.project.sprites.delete(sprite.id)}
                             >
                                 ✕
                             </button>

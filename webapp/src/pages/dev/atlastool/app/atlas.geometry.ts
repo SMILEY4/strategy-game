@@ -1,4 +1,4 @@
-import type {Point, Rect, ResizeHandle, Size, Viewport} from "./app/atlas.types.ts";
+import type {Point, Rect, ResizeHandle, Size, Viewport} from "./atlas.types.ts";
 
 export const MIN_ZOOM = 0.05;
 export const MAX_ZOOM = 32;
@@ -137,4 +137,14 @@ export function toImagePoint(p: Point, viewport: Viewport): Point {
 export function toScreenRect(region: Rect, viewport: Viewport): Rect {
     const origin = toScreenPoint(region, viewport);
     return {x: origin.x, y: origin.y, width: region.width * viewport.zoom, height: region.height * viewport.zoom};
+}
+
+/** Returns a viewport zoomed to `nextZoom`, keeping the image point under `anchor` (screen coords) fixed. */
+export function zoomAt(viewport: Viewport, anchor: Point, nextZoom: number): Viewport {
+    const scale = nextZoom / viewport.zoom;
+    return {
+        zoom: nextZoom,
+        x: anchor.x - (anchor.x - viewport.x) * scale,
+        y: anchor.y - (anchor.y - viewport.y) * scale,
+    };
 }

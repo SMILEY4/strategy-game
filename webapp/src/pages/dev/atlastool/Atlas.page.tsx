@@ -6,6 +6,8 @@ import "./atlas.page.less";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {AtlasToolbar} from "@pages/dev/atlastool/AtlasToolbar.tsx";
 import {AtlasCanvas} from "@pages/dev/atlastool/AtlasCanvas.tsx";
+import {SpriteList} from "@pages/dev/atlastool/SpriteList.tsx";
+import {SpriteEditor} from "@pages/dev/atlastool/SpriteEditor.tsx";
 
 
 export function AtlasPage(): ReactElement {
@@ -39,7 +41,7 @@ export function EmptyProject(props: AtlasEditor<false>) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     function handleOpen() {
-        inputRef.current?.click()
+        inputRef.current?.click();
     }
 
     function handleDrop(event: ReactDragEvent) {
@@ -98,38 +100,26 @@ export function EmptyProject(props: AtlasEditor<false>) {
 
 
 export function ProjectEditor(props: AtlasEditor<true>) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     return (
         <div className="atlas-page">
 
-            <AtlasToolbar {...props}/>
+            <AtlasToolbar {...props} canvasRef={canvasRef}/>
 
             <div className="atlas-main">
                 <div className="atlas-canvas-wrap">
-                    <AtlasCanvas {...props}/>
+                    <AtlasCanvas {...props} canvasRef={canvasRef}/>
                     <div className="atlas-canvas-wrap__hint">
                         tools: 1/v select · 2/d draw · 3/p pan · wheel: zoom · middle-drag: pan · arrows: nudge (shift: ×10) · del: remove
                     </div>
                 </div>
 
-            {/*    <aside className="atlas-side">*/}
-            {/*        <SpriteList*/}
-            {/*            sprites={editor.sprites}*/}
-            {/*            selectedSpriteId={editor.selectedSpriteId}*/}
-            {/*            onSelect={editor.selectSprite}*/}
-            {/*            onDelete={editor.deleteSprite}*/}
-            {/*        />*/}
-            {/*        {selectedSprite && (*/}
-            {/*            <SpriteEditor*/}
-            {/*                sprite={selectedSprite}*/}
-            {/*                onUpdateRegion={editor.updateSprite}*/}
-            {/*                onUpdateMeta={editor.updateSpriteMeta}*/}
-            {/*                onAddAnnotation={editor.addAnnotation}*/}
-            {/*                onUpdateAnnotationKey={editor.updateAnnotationKey}*/}
-            {/*                onUpdateAnnotationValue={editor.updateAnnotationValue}*/}
-            {/*                onRemoveAnnotation={editor.removeAnnotation}*/}
-            {/*            />*/}
-            {/*        )}*/}
-            {/*    </aside>*/}
+                <aside className="atlas-side">
+                    <SpriteList {...props}/>
+                    {props.project.sprites.selectedId && (
+                        <SpriteEditor {...props}/>
+                    )}
+                </aside>
 
             </div>
 

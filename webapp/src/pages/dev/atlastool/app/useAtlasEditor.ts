@@ -1,8 +1,8 @@
 import {useCallback, useState} from "react";
 import type {AnnotationValue, AtlasTool, Rect, Size, SpriteRegion, Viewport} from "./atlas.types.ts";
-import {clampRectToImage} from "../atlas.geometry.ts";
-import {exportManifest, generateSpriteId, manifestToSprites, parseAnnotationValue, parseManifestJson} from "../atlas.serialization.ts";
-import {createImageFromDataUrl, readFileAsDataUrl} from "./atlas.io.ts";
+import {clampRectToImage} from "./atlas.geometry.ts";
+import {exportManifest, generateSpriteId, manifestToSprites, parseAnnotationValue, parseManifestJson} from "./atlas.serialization.ts";
+import {createImageFromDataUrl, downloadJson, readFileAsDataUrl} from "./atlas.io.ts";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 
 interface LoadedImage {
@@ -75,12 +75,14 @@ export function useAtlasEditor(): AtlasEditor {
         setImageName(manifest.atlas.image);
     }, [image, imageSize]);
 
-    /** Serializes the current editor state to a JSON string. */
+    /** Serializes the current editor state to a JSON string and downloads it. */
     const exportJson = useCallback((): string => {
         if (!image) {
             throw new Error("No image loaded");
         }
-        return exportManifest({atlasName, imageName, imageSize, sprites});
+        const content = exportManifest({atlasName, imageName, imageSize, sprites});
+        downloadJson(`${atlasName || "atlas"}.json`, content);
+        return content;
     }, [atlasName, imageName, image, imageSize, sprites]);
 
     const createSprite = useCallback((region: Rect) => {
