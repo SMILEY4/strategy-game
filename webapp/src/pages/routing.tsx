@@ -6,6 +6,7 @@ import {MatchListPage} from "@pages/matchList/Match-list.page.tsx";
 import {GamePage} from "@pages/game/Game.page.tsx";
 import {StrictMode} from "react";
 import {ComponentsPage} from "@pages/dev/Components.page.tsx";
+import {AtlasPage} from "@pages/dev/Atlas.page.tsx";
 
 type RouteInfo = {
     id: string,
@@ -101,6 +102,13 @@ export const routing: RouteObject[] = [
                 path: "components",
                 element: (
                     <ComponentsPage/>
+                ),
+            },
+            {
+                id: "atlas",
+                path: "atlas",
+                element: (
+                    <AtlasPage/>
                 ),
             },
         ],
