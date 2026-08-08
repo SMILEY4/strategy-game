@@ -3,42 +3,16 @@ import {clampRectToImage, computeUvCoords} from "./atlas.geometry.ts";
 
 export interface AtlasManifestSource {
     atlasName: string;
-    imageName: string;
     imageSize: Size;
     sprites: SpriteRegion[];
 }
 
-
-/** Returns the first unused sprite id like `sprite-0`, `sprite-1`, ... */
-export function generateSpriteId(existingIds: string[]): string {
-    let index = 0;
-    let id: string;
-    do {
-        id = `sprite-${index}`;
-        index++;
-    } while (existingIds.includes(id));
-    return id;
-}
-
-/** Parses an annotation value typed into a text field: tries JSON first, falls back to plain text. */
-export function parseAnnotationValue(text: string): AnnotationValue {
-    const trimmed = text.trim();
-    if (trimmed.length === 0) {
-        return text;
-    }
-    try {
-        return JSON.parse(trimmed) as AnnotationValue;
-    } catch {
-        return text;
-    }
-}
 
 /** Converts editor state into an `AtlasManifest` (adds UV coordinates per sprite). */
 export function buildManifest(source: AtlasManifestSource): AtlasManifest {
     return {
         atlas: {
             name: source.atlasName,
-            image: source.imageName,
             imageSize: source.imageSize,
         },
         sprites: source.sprites.map(sprite => ({
@@ -146,7 +120,6 @@ export function parseManifestJson(json: string): AtlasManifest {
     return {
         atlas: {
             name: asString(atlas.name, "atlas"),
-            image: asString(atlas.image, "atlas"),
             imageSize,
         },
         sprites,

@@ -13,10 +13,6 @@ export interface AtlasEditorProject {
         value: string,
         set: (value: string) => void
     },
-    imageName: {
-        value: string,
-        set: (value: string) => void
-    }
     image: {
         element: HTMLImageElement,
         size: Size

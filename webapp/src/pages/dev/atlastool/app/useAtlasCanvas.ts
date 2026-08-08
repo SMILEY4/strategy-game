@@ -1,16 +1,22 @@
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {type PointerEvent as ReactPointerEvent, type RefObject, useRef, useState} from "react";
-import type {AtlasTool, Point, Rect, ResizeHandle, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
+import type {AtlasTool, Point, Rect, ResizeHandle, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
 import {
-    clamp,
     clampMove,
+    clampPointToImage,
     clampResize,
+    hitTestEdge,
+    hitTestSprite,
     rectFromPoints,
     snapPoint,
+    toImage,
+    toScreen,
     ZOOM_LEVEL_STEP,
     zoomAt,
-    zoomFromLevel, zoomToLevel,
+    zoomFromLevel,
+    zoomToLevel,
 } from "@pages/dev/atlastool/app/atlas.geometry.ts";
+import {renderCanvas} from "@pages/dev/atlastool/app/atlas.canvas-render.ts";
 
 type Interaction =
     | { type: "pan", startScreen: Point, startPan: { x: number, y: number } }
@@ -47,7 +53,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
             return;
         }
 
-        if(event.button === 2) { // right mouse button
+        if (event.button === 2) { // right mouse button
             return;
         }
 
@@ -174,22 +180,13 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         if (selectedSprite) {
             const edgeHandle = hitTestEdge(pointScreen, selectedSprite, editor.project.viewport.value);
             if (edgeHandle) {
-                interactionRef.current = {
-                    type: "resize",
-                    spriteId: selectedSprite.id,
-                    handle: edgeHandle,
-                    startRegion: {...selectedSprite},
-                };
-                setCanvasCursor(RESIZE_CURSORS[edgeHandle]);
+                startInteractionResize(selectedSprite, edgeHandle);
                 return;
             }
         }
         const hitSpriteId = hitTestSprite(pointImage, editor.project.sprites.list);
         if (hitSpriteId) {
-            const sprite = editor.project.sprites.list.find(it => it.id === hitSpriteId)!;
-            interactionRef.current = {type: "move", spriteId: hitSpriteId, startRegion: {...sprite}, startImage: pointImage};
-            editor.project.sprites.select(hitSpriteId);
-            setCanvasCursor("move");
+            startInteractionMove(hitSpriteId, pointImage);
         } else {
             editor.project.sprites.select(null);
             startInteractionPan(pointScreen);
@@ -199,10 +196,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     //=========== TOOL DRAW ==============================================================
 
     function startToolDraw(_event: ReactPointerEvent<HTMLCanvasElement>, _pointScreen: Point, pointImage: Point) {
-        const start = clampPointToImage(snapPoint(pointImage), editor.project.image.size);
-        interactionRef.current = {type: "draw", start};
-        setDraft(rectFromPoints(start, start));
-        setCanvasCursor("crosshair");
+        startInteractionDraw(pointImage);
     }
 
     //=========== TOOL PAN ===============================================================
@@ -249,6 +243,13 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
 
     //=========== INTERACTION DRAW =======================================================
 
+    function startInteractionDraw(pointImage: Point) {
+        const start = clampPointToImage(snapPoint(pointImage), editor.project.image.size);
+        interactionRef.current = {type: "draw", start};
+        setDraft(rectFromPoints(start, start));
+        setCanvasCursor("crosshair");
+    }
+
     function continueInteractionDraw(pointImage: Point, interaction: { type: "draw", start: Point }) {
         const current = clampPointToImage(snapPoint(pointImage), editor.project.image.size);
         setDraft(rectFromPoints(interaction.start, current));
@@ -262,6 +263,13 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     }
 
     //=========== INTERACTION MOVE =======================================================
+
+    function startInteractionMove(spriteId: string, pointImage: Point) {
+        const sprite = editor.project.sprites.list.find(it => it.id === spriteId)!;
+        interactionRef.current = {type: "move", spriteId: spriteId, startRegion: {...sprite}, startImage: pointImage};
+        editor.project.sprites.select(spriteId);
+        setCanvasCursor("move");
+    }
 
     function continueInteractionMove(pointImage: Point, interaction: {
         type: "move",
@@ -278,6 +286,16 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     }
 
     //=========== INTERACTION RESIZE =====================================================
+
+    function startInteractionResize(sprite: SpriteRegion, edgeHandle: ResizeHandle) {
+        interactionRef.current = {
+            type: "resize",
+            spriteId: sprite.id,
+            handle: edgeHandle,
+            startRegion: {...sprite},
+        };
+        setCanvasCursor(RESIZE_CURSORS[edgeHandle]);
+    }
 
     function continueInteractionResize(pointImage: Point, interaction: {
         type: "resize",
@@ -296,59 +314,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     function render() {
         const canvas = canvasRef.current;
         if (!canvas) return;
-
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        const viewport = editor.project.viewport.value;
-        const image = editor.project.image.element
-        const imageSize = editor.project.image.size
-
-        const dpr = window.devicePixelRatio || 1;
-        const cssWidth = canvas.clientWidth;
-        const cssHeight = canvas.clientHeight;
-        const deviceWidth = Math.round(cssWidth * dpr);
-        const deviceHeight = Math.round(cssHeight * dpr);
-
-        if (canvas.width !== deviceWidth || canvas.height !== deviceHeight) {
-            canvas.width = deviceWidth;
-            canvas.height = deviceHeight;
-        }
-
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.fillStyle = COLORS.background;
-        ctx.fillRect(0, 0, cssWidth, cssHeight);
-
-        if (!image || imageSize.width <= 0 || imageSize.height <= 0) {
-            ctx.fillStyle = COLORS.placeholder;
-            ctx.font = "14px sans-serif";
-            ctx.fillText("No image loaded", 16, 28);
-            return;
-        }
-
-        drawImage(ctx, image, viewport, imageSize);
-
-        drawGrid(ctx, viewport, imageSize, cssWidth, cssHeight);
-
-        for (const sprite of editor.project.sprites.list) {
-            const selected = sprite.id === editor.project.sprites.selectedId;
-            drawSprite(ctx, sprite, viewport, selected);
-            if (selected) {
-                drawHandles(ctx, sprite, viewport);
-            }
-        }
-
-        if (draft) {
-            drawRect(ctx, draft, viewport, COLORS.draft, 2);
-        }
-
-        if (hoverSpriteId && hoverSpriteId !== editor.project.sprites.selectedId) {
-            const hovered = editor.project.sprites.list.find(sprite => sprite.id === hoverSpriteId);
-            if (hovered) {
-                drawRect(ctx, hovered, viewport, COLORS.hover, 1);
-            }
-        }
-
+        renderCanvas(editor, canvas, hoverSpriteId, draft);
     }
 
     //=========== MISCELLANEOUS ==========================================================
@@ -371,87 +337,10 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         onMouseDown: handleMouseDown,
         onAuxClick: handleAuxClick,
         onWheel: handleWheel,
-        render: render
+        render: render,
     };
 }
 
-function toScreen(event: { clientX: number, clientY: number }, canvas: HTMLCanvasElement): Point {
-    const rect = canvas.getBoundingClientRect();
-    return {x: event.clientX - rect.left, y: event.clientY - rect.top};
-}
-
-function toImage(event: { clientX: number, clientY: number }, canvas: HTMLCanvasElement, viewport: Viewport): Point {
-    return toImagePoint(toScreen(event, canvas), viewport);
-}
-
-/** Converts a canvas/screen point back to image space. */
-function toImagePoint(p: Point, viewport: Viewport): Point {
-    return {x: (p.x - viewport.x) / viewport.zoom, y: (p.y - viewport.y) / viewport.zoom};
-}
-
-/** Converts an image-space rect to a screen rect (position scaled and offset by the viewport). */
-function toScreenRect(region: Rect, viewport: Viewport): Rect {
-    const origin = toScreenPoint(region, viewport);
-    return {x: origin.x, y: origin.y, width: region.width * viewport.zoom, height: region.height * viewport.zoom};
-}
-
-/** Converts an image-space point to canvas/screen coordinates. */
-function toScreenPoint(p: Point, viewport: Viewport): Point {
-    return {x: viewport.x + p.x * viewport.zoom, y: viewport.y + p.y * viewport.zoom};
-}
-
-
-/** Clamps a point so it stays inside the image bounds. */
-function clampPointToImage(p: Point, size: Size): Point {
-    return {
-        x: clamp(p.x, 0, Math.max(0, size.width - 1)),
-        y: clamp(p.y, 0, Math.max(0, size.height - 1)),
-    };
-}
-
-/** Returns which resize edge/corner of a region a screen point is over, or null. */
-function hitTestEdge(screen: Point, region: Rect, viewport: Viewport): ResizeHandle | null {
-    const EDGE_THRESHOLD = 6;
-    const rect = toScreenRect(region, viewport);
-    const x0 = rect.x;
-    const y0 = rect.y;
-    const x1 = rect.x + rect.width;
-    const y1 = rect.y + rect.height;
-    const pad = EDGE_THRESHOLD;
-
-    let xSide: "" | "w" | "e" = "";
-    let ySide: "" | "n" | "s" = "";
-    if (screen.x >= x0 - pad && screen.x <= x0 + pad && screen.y >= y0 - pad && screen.y <= y1 + pad) {
-        xSide = "w";
-    } else if (screen.x >= x1 - pad && screen.x <= x1 + pad && screen.y >= y0 - pad && screen.y <= y1 + pad) {
-        xSide = "e";
-    }
-    if (screen.y >= y0 - pad && screen.y <= y0 + pad && screen.x >= x0 - pad && screen.x <= x1 + pad) {
-        ySide = "n";
-    } else if (screen.y >= y1 - pad && screen.y <= y1 + pad && screen.x >= x0 - pad && screen.x <= x1 + pad) {
-        ySide = "s";
-    }
-    if (!xSide && !ySide) {
-        return null;
-    }
-    return `${xSide}${ySide}` as ResizeHandle;
-}
-
-/** Returns the id of the sprite containing an image-space point, or null. */
-function hitTestSprite(imagePos: Point, sprites: SpriteRegion[]): string | null {
-    for (let i = sprites.length - 1; i >= 0; i--) {
-        const sprite = sprites[i];
-        if (
-            imagePos.x >= sprite.x
-            && imagePos.x < sprite.x + sprite.width
-            && imagePos.y >= sprite.y
-            && imagePos.y < sprite.y + sprite.height
-        ) {
-            return sprite.id;
-        }
-    }
-    return null;
-}
 
 const RESIZE_CURSORS: Record<ResizeHandle, string> = {
     n: "ns-resize",
@@ -483,97 +372,3 @@ function defaultCursor(tool: AtlasTool): string {
     return tool === "pan" ? "grab" : "crosshair";
 }
 
-const HANDLE_SIZE = 8;
-const MIN_GRID_ZOOM = 3;
-
-const COLORS = {
-    background: "#1e2024",
-    placeholder: "#7a8290",
-    imageBorder: "rgba(255,255,255,0.6)",
-    grid: "rgba(255,255,255,0.08)",
-    sprite: "rgba(255,90,90,0.9)",
-    spriteSelected: "#2ea6ff",
-    spriteFillSelected: "rgba(0,150,255,0.2)",
-    handleFill: "#ffffff",
-    draft: "rgba(0,200,255,0.95)",
-    hover: "rgba(255,255,255,0.7)",
-};
-
-/** Canvas drawing helpers. All coordinates are converted from image space to screen space via the viewport. */
-
-function drawRect(ctx: CanvasRenderingContext2D, region: Rect, viewport: Viewport, color: string, lineWidth: number) {
-    const rect = toScreenRect(region, viewport);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lineWidth;
-    ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
-}
-
-/** Draws the loaded image, scaled to the viewport, with a border around it. */
-function drawImage(ctx: CanvasRenderingContext2D, image: HTMLImageElement, viewport: Viewport, imageSize: Size) {
-    const rect = toScreenRect({x: 0, y: 0, ...imageSize}, viewport);
-    ctx.imageSmoothingEnabled = viewport.zoom <= MIN_GRID_ZOOM;
-    ctx.drawImage(image, rect.x, rect.y, rect.width, rect.height);
-    ctx.imageSmoothingEnabled = true;
-    ctx.strokeStyle = COLORS.imageBorder;
-    ctx.lineWidth = 1;
-    ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
-}
-
-/** Draws pixel grid lines, but only at high enough zoom to be useful. */
-function drawGrid(ctx: CanvasRenderingContext2D, viewport: Viewport, imageSize: Size, cssWidth: number, cssHeight: number) {
-    if (viewport.zoom < MIN_GRID_ZOOM) {
-        return;
-    }
-    ctx.strokeStyle = COLORS.grid;
-    ctx.lineWidth = 1;
-    const firstCol = Math.max(1, Math.ceil((0 - viewport.x) / viewport.zoom));
-    for (let col = firstCol; col < imageSize.width; col++) {
-        const x = Math.round(viewport.x + col * viewport.zoom) + 0.5;
-        if (x > cssWidth) {
-            break;
-        }
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, cssHeight);
-        ctx.stroke();
-    }
-    const firstRow = Math.max(1, Math.ceil((0 - viewport.y) / viewport.zoom));
-    for (let row = firstRow; row < imageSize.height; row++) {
-        const y = Math.round(viewport.y + row * viewport.zoom) + 0.5;
-        if (y > cssHeight) {
-            break;
-        }
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(cssWidth, y);
-        ctx.stroke();
-    }
-}
-
-/** Draws a sprite border; fills it when selected. */
-function drawSprite(ctx: CanvasRenderingContext2D, sprite: SpriteRegion, viewport: Viewport, selected: boolean) {
-    if (selected) {
-        const rect = toScreenRect(sprite, viewport);
-        ctx.fillStyle = COLORS.spriteFillSelected;
-        ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
-    }
-    drawRect(ctx, sprite, viewport, selected ? COLORS.spriteSelected : COLORS.sprite, selected ? 2 : 1);
-}
-
-/** Draws the resize handles at the corners of a region. */
-function drawHandles(ctx: CanvasRenderingContext2D, region: Rect, viewport: Viewport) {
-    const rect = toScreenRect(region, viewport);
-    const corners: Point[] = [
-        {x: rect.x, y: rect.y},
-        {x: rect.x + rect.width, y: rect.y},
-        {x: rect.x + rect.width, y: rect.y + rect.height},
-        {x: rect.x, y: rect.y + rect.height},
-    ];
-    for (const corner of corners) {
-        ctx.fillStyle = COLORS.handleFill;
-        ctx.fillRect(corner.x - HANDLE_SIZE / 2, corner.y - HANDLE_SIZE / 2, HANDLE_SIZE, HANDLE_SIZE);
-        ctx.strokeStyle = COLORS.spriteSelected;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(corner.x - HANDLE_SIZE / 2, corner.y - HANDLE_SIZE / 2, HANDLE_SIZE, HANDLE_SIZE);
-    }
-}

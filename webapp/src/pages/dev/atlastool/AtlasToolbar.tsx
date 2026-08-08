@@ -85,15 +85,6 @@ export function AtlasToolbar(props: AtlasEditor<true> & { canvasRef?: RefObject<
                     />
                 </label>
 
-                <label className="atlas-toolbar__field">
-                    Image name
-                    <input
-                        value={props.project.imageName.value}
-                        onChange={event => props.project.imageName.set(event.target.value)}
-                        onKeyDown={event => event.stopPropagation()}
-                    />
-                </label>
-
                 <span className="atlas-toolbar__info">
                     {`${props.project.image.size.width}×${props.project.image.size.height}px · ${props.project.sprites.list.length} sprites`}
                 </span>

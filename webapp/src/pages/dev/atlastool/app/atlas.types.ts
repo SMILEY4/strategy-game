@@ -46,7 +46,6 @@ export interface SpriteManifestEntry extends SpriteRegion {
 export interface AtlasManifest {
     atlas: {
         name: string;
-        image: string;
         imageSize: Size;
     };
     sprites: SpriteManifestEntry[];

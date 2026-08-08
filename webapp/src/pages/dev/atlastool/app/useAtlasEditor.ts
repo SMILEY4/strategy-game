@@ -1,7 +1,7 @@
 import {useCallback, useState} from "react";
 import type {AnnotationValue, AtlasTool, Rect, Size, SpriteRegion, Viewport} from "./atlas.types.ts";
 import {clampRectToImage} from "./atlas.geometry.ts";
-import {exportManifest, generateSpriteId, manifestToSprites, parseAnnotationValue, parseManifestJson} from "./atlas.serialization.ts";
+import {exportManifest, manifestToSprites, parseManifestJson} from "./atlas.serialization.ts";
 import {createImageFromDataUrl, downloadJson, readFileAsDataUrl} from "./atlas.io.ts";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 
@@ -33,7 +33,6 @@ export const INITIAL_VIEWPORT: Viewport = {zoom: 1, x: 40, y: 40};
 /** Editor state and actions: current image, sprites, selection, annotations, and export. */
 export function useAtlasEditor(): AtlasEditor {
     const [atlasName, setAtlasName] = useState("atlas");
-    const [imageName, setImageName] = useState("");
     const [loadedImage, setLoadedImage] = useState<LoadedImage | null>(null);
     const [sprites, setSprites] = useState<SpriteRegion[]>([]);
     const [selectedSpriteId, setSelectedSpriteId] = useState<string | null>(null);
@@ -48,19 +47,16 @@ export function useAtlasEditor(): AtlasEditor {
         : null;
 
     /** Loads a new image, resetting all sprites. */
-    const loadImageDataUrl = useCallback(async (dataUrl: string, name?: string) => {
+    const loadImageDataUrl = useCallback(async (dataUrl: string) => {
         const element = await createImageFromDataUrl(dataUrl);
         setLoadedImage({element, size: {width: element.naturalWidth, height: element.naturalHeight}});
         setSprites([]);
         setSelectedSpriteId(null);
-        if (name) {
-            setImageName(name);
-        }
     }, []);
 
     const loadImageFile = useCallback(async (file: File) => {
         const dataUrl = await readFileAsDataUrl(file);
-        await loadImageDataUrl(dataUrl, file.name);
+        await loadImageDataUrl(dataUrl);
     }, [loadImageDataUrl]);
 
     /** Loads a project JSON file, replacing the current sprite set. Requires an image. */
@@ -72,7 +68,6 @@ export function useAtlasEditor(): AtlasEditor {
         setSprites(manifestToSprites(manifest, imageSize));
         setSelectedSpriteId(null);
         setAtlasName(manifest.atlas.name);
-        setImageName(manifest.atlas.image);
     }, [image, imageSize]);
 
     /** Serializes the current editor state to a JSON string and downloads it. */
@@ -80,10 +75,10 @@ export function useAtlasEditor(): AtlasEditor {
         if (!image) {
             throw new Error("No image loaded");
         }
-        const content = exportManifest({atlasName, imageName, imageSize, sprites});
+        const content = exportManifest({atlasName, imageSize, sprites});
         downloadJson(`${atlasName || "atlas"}.json`, content);
         return content;
-    }, [atlasName, imageName, image, imageSize, sprites]);
+    }, [atlasName, image, imageSize, sprites]);
 
     const createSprite = useCallback((region: Rect) => {
         const clamped = clampRectToImage(region, imageSize);
@@ -172,10 +167,6 @@ export function useAtlasEditor(): AtlasEditor {
                 value: atlasName,
                 set: setAtlasName,
             },
-            imageName: {
-                value: imageName,
-                set: setImageName,
-            },
             image: {
                 element: loadedImage.element,
                 size: imageSize,
@@ -196,20 +187,45 @@ export function useAtlasEditor(): AtlasEditor {
             },
             tool: {
                 available: [
-                    { id: "select", displayName: "Select"},
-                    { id: "draw", displayName: "Draw"},
-                    { id: "pan", displayName: "Pan"},
+                    {id: "select", displayName: "Select"},
+                    {id: "draw", displayName: "Draw"},
+                    {id: "pan", displayName: "Pan"},
                 ],
                 active: tool,
                 select: setTool,
             },
             viewport: {
                 value: viewport,
-                set: (value: Partial<Viewport>) => setViewport(prev => ({...prev, ...value}))
+                set: (value: Partial<Viewport>) => setViewport(prev => ({...prev, ...value})),
             },
             export: {
                 projectJson: exportJson,
             },
         } : null,
     };
+}
+
+
+/** Returns the first unused sprite id like `sprite-0`, `sprite-1`, ... */
+function generateSpriteId(existingIds: string[]): string {
+    let index = 0;
+    let id: string;
+    do {
+        id = `sprite-${index}`;
+        index++;
+    } while (existingIds.includes(id));
+    return id;
+}
+
+/** Parses an annotation value typed into a text field: tries JSON first, falls back to plain text. */
+function parseAnnotationValue(text: string): AnnotationValue {
+    const trimmed = text.trim();
+    if (trimmed.length === 0) {
+        return text;
+    }
+    try {
+        return JSON.parse(trimmed) as AnnotationValue;
+    } catch {
+        return text;
+    }
 }

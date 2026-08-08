@@ -1,4 +1,4 @@
-import type {Point, Rect, ResizeHandle, Size, Viewport} from "./atlas.types.ts";
+import type {Point, Rect, ResizeHandle, Size, SpriteRegion, Viewport} from "./atlas.types.ts";
 
 export const MIN_ZOOM = 0.05;
 export const MAX_ZOOM = 32;
@@ -147,4 +147,57 @@ export function zoomAt(viewport: Viewport, anchor: Point, nextZoom: number): Vie
         x: anchor.x - (anchor.x - viewport.x) * scale,
         y: anchor.y - (anchor.y - viewport.y) * scale,
     };
+}
+
+export function toScreen(event: { clientX: number, clientY: number }, canvas: HTMLCanvasElement): Point {
+    const rect = canvas.getBoundingClientRect();
+    return {x: event.clientX - rect.left, y: event.clientY - rect.top};
+}
+
+export function toImage(event: { clientX: number, clientY: number }, canvas: HTMLCanvasElement, viewport: Viewport): Point {
+    return toImagePoint(toScreen(event, canvas), viewport);
+}
+
+/** Returns which resize edge/corner of a region a screen point is over, or null. */
+export function hitTestEdge(screen: Point, region: Rect, viewport: Viewport): ResizeHandle | null {
+    const EDGE_THRESHOLD = 6;
+    const rect = toScreenRect(region, viewport);
+    const x0 = rect.x;
+    const y0 = rect.y;
+    const x1 = rect.x + rect.width;
+    const y1 = rect.y + rect.height;
+    const pad = EDGE_THRESHOLD;
+
+    let xSide: "" | "w" | "e" = "";
+    let ySide: "" | "n" | "s" = "";
+    if (screen.x >= x0 - pad && screen.x <= x0 + pad && screen.y >= y0 - pad && screen.y <= y1 + pad) {
+        xSide = "w";
+    } else if (screen.x >= x1 - pad && screen.x <= x1 + pad && screen.y >= y0 - pad && screen.y <= y1 + pad) {
+        xSide = "e";
+    }
+    if (screen.y >= y0 - pad && screen.y <= y0 + pad && screen.x >= x0 - pad && screen.x <= x1 + pad) {
+        ySide = "n";
+    } else if (screen.y >= y1 - pad && screen.y <= y1 + pad && screen.x >= x0 - pad && screen.x <= x1 + pad) {
+        ySide = "s";
+    }
+    if (!xSide && !ySide) {
+        return null;
+    }
+    return `${ySide}${xSide}` as ResizeHandle;
+}
+
+/** Returns the id of the sprite containing an image-space point, or null. */
+export function hitTestSprite(imagePos: Point, sprites: SpriteRegion[]): string | null {
+    for (let i = sprites.length - 1; i >= 0; i--) {
+        const sprite = sprites[i];
+        if (
+            imagePos.x >= sprite.x
+            && imagePos.x < sprite.x + sprite.width
+            && imagePos.y >= sprite.y
+            && imagePos.y < sprite.y + sprite.height
+        ) {
+            return sprite.id;
+        }
+    }
+    return null;
 }
