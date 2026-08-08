@@ -1,5 +1,3 @@
-/** I/O helpers for loading files/images and downloading the exported JSON. */
-
 /** Reads a file as a data URL (used to load the sprite sheet image). */
 export function readFileAsDataUrl(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -7,7 +5,7 @@ export function readFileAsDataUrl(file: File): Promise<string> {
         reader.onload = () => resolve(reader.result as string);
         reader.onerror = () => reject(new Error("Could not read file"));
         reader.readAsDataURL(file);
-    });
+    })
 }
 
 /** Reads a file as plain text (used to load project JSON). */
@@ -25,9 +23,9 @@ export function createImageFromDataUrl(dataUrl: string): Promise<HTMLImageElemen
     });
 }
 
-/** Triggers a browser download of the given text under the given filename. */
-export function downloadText(filename: string, text: string) {
-    const blob = new Blob([text], {type: "application/json"});
+/** Triggers a browser download of the given json-content under the given filename. */
+export function downloadJson(filename: string, content: string) {
+    const blob = new Blob([content], {type: "application/json"});
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;

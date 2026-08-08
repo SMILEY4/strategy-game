@@ -1,4 +1,4 @@
-import type {Point, Rect, ResizeHandle, Size, Viewport} from "./atlas.types.ts";
+import type {Point, Rect, ResizeHandle, Size, Viewport} from "./app/atlas.types.ts";
 
 export const MIN_ZOOM = 0.05;
 export const MAX_ZOOM = 32;

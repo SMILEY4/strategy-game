@@ -1,5 +1,5 @@
 import type {ReactElement} from "react";
-import type {SpriteRegion} from "./atlas.types.ts";
+import type {SpriteRegion} from "./app/atlas.types.ts";
 
 interface SpriteListProps {
     sprites: SpriteRegion[];

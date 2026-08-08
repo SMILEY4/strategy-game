@@ -1,8 +1,9 @@
 import {useCallback, useState} from "react";
-import type {AnnotationValue, Rect, Size, SpriteRegion} from "./atlas.types.ts";
-import {clampRectToImage} from "./atlas.geometry.ts";
-import {exportManifest, generateSpriteId, manifestToSprites, parseAnnotationValue, parseManifestJson} from "./atlas.serialization.ts";
+import type {AnnotationValue, AtlasTool, Rect, Size, SpriteRegion, Viewport} from "./atlas.types.ts";
+import {clampRectToImage} from "../atlas.geometry.ts";
+import {exportManifest, generateSpriteId, manifestToSprites, parseAnnotationValue, parseManifestJson} from "../atlas.serialization.ts";
 import {createImageFromDataUrl, readFileAsDataUrl} from "./atlas.io.ts";
+import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 
 interface LoadedImage {
     element: HTMLImageElement;
@@ -27,16 +28,24 @@ function updateAnnotations(
     });
 }
 
+export const INITIAL_VIEWPORT: Viewport = {zoom: 1, x: 40, y: 40};
+
 /** Editor state and actions: current image, sprites, selection, annotations, and export. */
-export function useAtlasEditor() {
+export function useAtlasEditor(): AtlasEditor {
     const [atlasName, setAtlasName] = useState("atlas");
     const [imageName, setImageName] = useState("");
     const [loadedImage, setLoadedImage] = useState<LoadedImage | null>(null);
     const [sprites, setSprites] = useState<SpriteRegion[]>([]);
     const [selectedSpriteId, setSelectedSpriteId] = useState<string | null>(null);
+    const [tool, setTool] = useState<AtlasTool>("select");
+    const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
 
     const image = loadedImage?.element ?? null;
     const imageSize = loadedImage?.size ?? {width: 0, height: 0};
+
+    const selectedSprite = selectedSpriteId
+        ? sprites.find(sprite => sprite.id === selectedSpriteId) ?? null
+        : null;
 
     /** Loads a new image, resetting all sprites. */
     const loadImageDataUrl = useCallback(async (dataUrl: string, name?: string) => {
@@ -152,28 +161,53 @@ export function useAtlasEditor() {
     }, []);
 
     return {
-        atlasName,
-        setAtlasName,
-        imageName,
-        setImageName,
-        image,
-        imageSize,
-        sprites,
-        selectedSpriteId,
-        loadImageDataUrl,
-        loadImageFile,
-        applyProjectJson,
-        exportJson,
-        createSprite,
-        updateSprite,
-        updateSpriteMeta,
-        deleteSprite,
-        selectSprite,
-        addAnnotation,
-        updateAnnotationKey,
-        updateAnnotationValue,
-        removeAnnotation,
+        load: {
+            image: loadImageFile,
+            projectJson: applyProjectJson,
+        },
+        project: loadedImage ? {
+            atlasName: {
+                value: atlasName,
+                set: setAtlasName,
+            },
+            imageName: {
+                value: imageName,
+                set: setImageName,
+            },
+            image: {
+                element: loadedImage.element,
+                size: imageSize,
+            },
+            sprites: {
+                list: sprites,
+                selectedId: selectedSpriteId,
+                selected: selectedSprite,
+                create: createSprite,
+                updateRegion: updateSprite,
+                updateMeta: updateSpriteMeta,
+                delete: deleteSprite,
+                select: selectSprite,
+                addAnnotation: addAnnotation,
+                updateAnnotationKey: updateAnnotationKey,
+                updateAnnotationValue: updateAnnotationValue,
+                removeAnnotation: removeAnnotation,
+            },
+            tool: {
+                available: [
+                    { id: "select", displayName: "Select"},
+                    { id: "draw", displayName: "Draw"},
+                    { id: "pan", displayName: "Pan"},
+                ],
+                active: tool,
+                select: setTool,
+            },
+            viewport: {
+                value: viewport,
+                set: (value: Partial<Viewport>) => setViewport({...viewport, ...value})
+            },
+            export: {
+                projectJson: exportJson,
+            },
+        } : null,
     };
 }
-
-export type AtlasEditor = ReturnType<typeof useAtlasEditor>;

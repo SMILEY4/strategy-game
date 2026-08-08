@@ -1,56 +1,88 @@
-import {useState, type ReactElement} from "react";
-import {AtlasCanvas} from "./AtlasCanvas.tsx";
-import {AtlasToolbar} from "./AtlasToolbar.tsx";
-import {SpriteEditor} from "./SpriteEditor.tsx";
-import {SpriteList} from "./SpriteList.tsx";
-import {useAtlasEditor} from "./useAtlasEditor.ts";
-import {useAtlasFiles} from "./useAtlasFiles.ts";
-import {useAtlasKeyboard} from "./atlas.shortcuts.ts";
-import {downloadText} from "./atlas.io.ts";
-import type {AtlasTool, Viewport} from "./atlas.types.ts";
+import {type DragEvent as ReactDragEvent, type ReactElement, useRef} from "react";
+import {useAtlasEditor} from "./app/useAtlasEditor.ts";
+import {useAtlasShortcuts} from "./app/useAtlasShortcuts.ts";
+import {readFileAsText} from "./app/atlas.io.ts";
 import "./atlas.page.less";
+import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
+import {AtlasToolbar} from "@pages/dev/atlastool/AtlasToolbar.tsx";
+import {AtlasCanvas} from "@pages/dev/atlastool/AtlasCanvas.tsx";
 
-const INITIAL_VIEWPORT: Viewport = {zoom: 1, x: 40, y: 40};
 
-/** Composition root: wires editor state, file loading, shortcuts and the UI together. */
 export function AtlasPage(): ReactElement {
 
     const editor = useAtlasEditor();
-    const [tool, setTool] = useState<AtlasTool>("select");
-    const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
 
-    const {imageInputRef, projectInputRef, openImageFile, loadProjectFile, handleDrop} =
-        useAtlasFiles(editor, () => setViewport(INITIAL_VIEWPORT));
+    // const {
+    //     imageInputRef,
+    //     projectInputRef,
+    //     openImageFile,
+    //     loadProjectFile,
+    //     handleDrop,
+    // } = useAtlasFiles(editor, () => editor.project?.viewport.set(INITIAL_VIEWPORT));
 
-    useAtlasKeyboard(editor, setTool);
+    useAtlasShortcuts(editor.project);
 
-    const selectedSprite = editor.selectedSpriteId
-        ? editor.sprites.find(sprite => sprite.id === editor.selectedSpriteId) ?? null
-        : null;
+    if (editor.project == null) {
+        return (
+            <EmptyProject {...(editor as AtlasEditor<false>)} />
+        );
+    } else {
+        return (
+            <ProjectEditor {...(editor as AtlasEditor<true>)} />
+        );
+    }
+}
+
+
+export function EmptyProject(props: AtlasEditor<false>) {
+
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    function handleOpen() {
+        inputRef.current?.click()
+    }
+
+    function handleDrop(event: ReactDragEvent) {
+        event.preventDefault();
+        const files = Array.from(event.dataTransfer.files ?? []);
+        const imageFile = files.find(file => file.type.startsWith("image/"));
+        const jsonFile = files.find(file => file.type === "application/json" || file.name.endsWith(".json"));
+        if (imageFile && jsonFile) {
+            void (async () => {
+                await openImageFile(imageFile);
+                await loadProjectFile(jsonFile);
+            })();
+        } else if (imageFile) {
+            void openImageFile(imageFile);
+        } else if (jsonFile) {
+            void loadProjectFile(jsonFile);
+        }
+    }
+
+    async function openImageFile(file: File) {
+        await props.load.image(file);
+    }
+
+    async function loadProjectFile(file: File) {
+        const text = await readFileAsText(file);
+        try {
+            props.load.projectJson(text);
+        } catch (error) {
+            window.alert(error instanceof Error ? error.message : "Could not load JSON");
+        }
+    }
 
     return (
         <div className="atlas-page" onDragOver={event => event.preventDefault()} onDrop={handleDrop}>
-
-            <AtlasToolbar
-                hasImage={editor.image !== null}
-                atlasName={editor.atlasName}
-                onAtlasNameChange={editor.setAtlasName}
-                imageName={editor.imageName}
-                onImageNameChange={editor.setImageName}
-                tool={tool}
-                onToolChange={setTool}
-                zoom={viewport.zoom}
-                onZoomChange={zoom => setViewport(prev => ({...prev, zoom}))}
-                info={editor.image ? `${editor.imageSize.width}×${editor.imageSize.height}px · ${editor.sprites.length} sprites` : null}
-                onOpenImage={() => imageInputRef.current?.click()}
-                onLoadJson={() => projectInputRef.current?.click()}
-                onExportJson={() => downloadText(`${editor.atlasName || "atlas"}.json`, editor.exportJson())}
-            />
+            <div className="atlas-dropzone">
+                <p>Drop an image here to start a new project, or <button type="button" onClick={handleOpen}>choose a file</button></p>
+                <p>To continue a project, load the image together with its exported JSON (select or drop both at once).</p>
+            </div>
 
             <input
-                ref={imageInputRef}
+                ref={inputRef}
                 type="file"
-                accept="image/*"
+                accept="image/*" // todo: also load jsons ???
                 hidden
                 onChange={event => {
                     const file = event.target.files?.[0];
@@ -60,69 +92,47 @@ export function AtlasPage(): ReactElement {
                     event.target.value = "";
                 }}
             />
-            <input
-                ref={projectInputRef}
-                type="file"
-                accept=".json,application/json"
-                hidden
-                onChange={event => {
-                    const file = event.target.files?.[0];
-                    if (file) {
-                        void loadProjectFile(file);
-                    }
-                    event.target.value = "";
-                }}
-            />
+        </div>
+    );
+}
 
-            {!editor.image && (
-                <div className="atlas-dropzone">
-                    <p>Drop a sprite sheet image here to start a new project, or</p>
-                    <button type="button" onClick={() => imageInputRef.current?.click()}>choose a file</button>
-                    <p>To continue a project, load the image together with its exported JSON (drop both at once).</p>
-                </div>
-            )}
 
-            {editor.image && (
-                <div className="atlas-main">
-                    <div className="atlas-canvas-wrap">
-                        <AtlasCanvas
-                            image={editor.image}
-                            imageSize={editor.imageSize}
-                            sprites={editor.sprites}
-                            selectedSpriteId={editor.selectedSpriteId}
-                            tool={tool}
-                            viewport={viewport}
-                            onSelectSprite={editor.selectSprite}
-                            onCreateSprite={editor.createSprite}
-                            onUpdateSprite={editor.updateSprite}
-                            onSetViewport={setViewport}
-                        />
-                        <div className="atlas-canvas-wrap__hint">
-                            tools: 1/v select · 2/d draw · 3/p pan · wheel: zoom · middle-drag: pan · arrows: nudge (shift: ×10) · del: remove
-                        </div>
+export function ProjectEditor(props: AtlasEditor<true>) {
+    return (
+        <div className="atlas-page">
+
+            <AtlasToolbar {...props}/>
+
+            <div className="atlas-main">
+                <div className="atlas-canvas-wrap">
+                    <AtlasCanvas {...props}/>
+                    <div className="atlas-canvas-wrap__hint">
+                        tools: 1/v select · 2/d draw · 3/p pan · wheel: zoom · middle-drag: pan · arrows: nudge (shift: ×10) · del: remove
                     </div>
-
-                    <aside className="atlas-side">
-                        <SpriteList
-                            sprites={editor.sprites}
-                            selectedSpriteId={editor.selectedSpriteId}
-                            onSelect={editor.selectSprite}
-                            onDelete={editor.deleteSprite}
-                        />
-                        {selectedSprite && (
-                            <SpriteEditor
-                                sprite={selectedSprite}
-                                onUpdateRegion={editor.updateSprite}
-                                onUpdateMeta={editor.updateSpriteMeta}
-                                onAddAnnotation={editor.addAnnotation}
-                                onUpdateAnnotationKey={editor.updateAnnotationKey}
-                                onUpdateAnnotationValue={editor.updateAnnotationValue}
-                                onRemoveAnnotation={editor.removeAnnotation}
-                            />
-                        )}
-                    </aside>
                 </div>
-            )}
+
+            {/*    <aside className="atlas-side">*/}
+            {/*        <SpriteList*/}
+            {/*            sprites={editor.sprites}*/}
+            {/*            selectedSpriteId={editor.selectedSpriteId}*/}
+            {/*            onSelect={editor.selectSprite}*/}
+            {/*            onDelete={editor.deleteSprite}*/}
+            {/*        />*/}
+            {/*        {selectedSprite && (*/}
+            {/*            <SpriteEditor*/}
+            {/*                sprite={selectedSprite}*/}
+            {/*                onUpdateRegion={editor.updateSprite}*/}
+            {/*                onUpdateMeta={editor.updateSpriteMeta}*/}
+            {/*                onAddAnnotation={editor.addAnnotation}*/}
+            {/*                onUpdateAnnotationKey={editor.updateAnnotationKey}*/}
+            {/*                onUpdateAnnotationValue={editor.updateAnnotationValue}*/}
+            {/*                onRemoveAnnotation={editor.removeAnnotation}*/}
+            {/*            />*/}
+            {/*        )}*/}
+            {/*    </aside>*/}
+
+            </div>
+
         </div>
     );
 }

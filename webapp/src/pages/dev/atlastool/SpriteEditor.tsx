@@ -1,5 +1,5 @@
 import type {ReactElement} from "react";
-import type {AnnotationValue, Rect, SpriteRegion} from "./atlas.types.ts";
+import type {AnnotationValue, Rect, SpriteRegion} from "./app/atlas.types.ts";
 
 interface SpriteEditorProps {
     sprite: SpriteRegion;

@@ -1,6 +1,6 @@
 import {useRef, type DragEvent as ReactDragEvent} from "react";
-import type {AtlasEditor} from "./useAtlasEditor.ts";
-import {readFileAsText} from "./atlas.io.ts";
+import {readFileAsText} from "./app/atlas.io.ts";
+import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 
 /** Owns the file/image inputs and drag-and-drop handling for loading images and project JSON. */
 export function useAtlasFiles(editor: AtlasEditor, onImageLoaded: () => void) {
@@ -8,14 +8,14 @@ export function useAtlasFiles(editor: AtlasEditor, onImageLoaded: () => void) {
     const projectInputRef = useRef<HTMLInputElement>(null);
 
     async function openImageFile(file: File) {
-        await editor.loadImageFile(file);
+        await editor.load.image(file);
         onImageLoaded();
     }
 
     async function loadProjectFile(file: File) {
         const text = await readFileAsText(file);
         try {
-            editor.applyProjectJson(text);
+            editor.load.projectJson(text);
         } catch (error) {
             window.alert(error instanceof Error ? error.message : "Could not load JSON");
         }

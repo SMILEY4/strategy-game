@@ -1,4 +1,4 @@
-import type {Point, Rect, Size, SpriteRegion, Viewport} from "./atlas.types.ts";
+import type {Point, Rect, Size, SpriteRegion, Viewport} from "./app/atlas.types.ts";
 import {toScreenRect} from "./atlas.geometry.ts";
 
 export const HANDLE_SIZE = 8;

@@ -1,4 +1,4 @@
-import type {AnnotationValue, AtlasManifest, Size, SpriteManifestEntry, SpriteRegion} from "./atlas.types.ts";
+import type {AnnotationValue, AtlasManifest, Size, SpriteManifestEntry, SpriteRegion} from "./app/atlas.types.ts";
 import {clampRectToImage, computeUvCoords} from "./atlas.geometry.ts";
 
 export interface AtlasManifestSource {
@@ -8,7 +8,6 @@ export interface AtlasManifestSource {
     sprites: SpriteRegion[];
 }
 
-/** Builds and parses the exported atlas JSON manifest. */
 
 /** Returns the first unused sprite id like `sprite-0`, `sprite-1`, ... */
 export function generateSpriteId(existingIds: string[]): string {
