@@ -39,7 +39,7 @@ export function AtlasCanvas(props: AtlasEditor<true>): ReactElement {
         }
         canvas.addEventListener("wheel", onWheel, {passive: false});
         return () => canvas.removeEventListener("wheel", onWheel);
-    }, []);
+    }, [onWheel, canvasRef]);
 
     useEffect(() => {
         render();

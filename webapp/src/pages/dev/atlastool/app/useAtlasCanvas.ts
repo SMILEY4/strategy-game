@@ -41,6 +41,15 @@ export function useAtlasCanvas(editor: AtlasEditor<true>) {
         const pointScreen = toScreen(event, canvas);
         const pointImage = toImage(event, canvas, editor.project.viewport.value);
 
+        if (event.button === 1) { // middle mouse button
+            startToolPan(event, pointScreen, pointImage);
+            return;
+        }
+
+        if(event.button === 2) { // right mouse button
+            return;
+        }
+
         if (editor.project.tool.active === "select") {
             startToolSelect(event, pointScreen, pointImage);
             return;
@@ -148,8 +157,6 @@ export function useAtlasCanvas(editor: AtlasEditor<true>) {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        console.log("on wheel", editor.project.viewport.value.zoom)
-
         event.preventDefault();
         const viewport = editor.project.viewport.value;
         const rect = canvas!.getBoundingClientRect();
@@ -185,6 +192,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>) {
         if (hitSpriteId) {
             const sprite = editor.project.sprites.list.find(it => it.id === hitSpriteId)!;
             interactionRef.current = {type: "move", spriteId: hitSpriteId, startRegion: {...sprite}, startImage: pointImage};
+            editor.project.sprites.select(hitSpriteId);
             setCanvasCursor("move");
         } else {
             editor.project.sprites.select(null);
@@ -203,10 +211,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>) {
 
     //=========== TOOL PAN ===============================================================
 
-    function startToolPan(event: ReactPointerEvent<HTMLCanvasElement>, pointScreen: Point, _pointImage: Point) {
-        if (event.button === 1) {
-            event.preventDefault();
-        }
+    function startToolPan(_event: ReactPointerEvent<HTMLCanvasElement>, pointScreen: Point, _pointImage: Point) {
         startInteractionPan(pointScreen);
     }
 

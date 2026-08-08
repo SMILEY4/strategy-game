@@ -203,7 +203,7 @@ export function useAtlasEditor(): AtlasEditor {
             },
             viewport: {
                 value: viewport,
-                set: (value: Partial<Viewport>) => setViewport({...viewport, ...value})
+                set: (value: Partial<Viewport>) => setViewport(prev => ({...prev, ...value}))
             },
             export: {
                 projectJson: exportJson,
