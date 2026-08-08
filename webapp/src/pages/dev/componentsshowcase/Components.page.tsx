@@ -6,7 +6,7 @@ import {Checkbox} from "@modules/uicomponents/controls/checkbox/Checkbox.tsx";
 import {TextField} from "@modules/uicomponents/controls/textfield/TextField.tsx";
 import {type ReactElement, useState} from "react";
 import "./components.page.less";
-import {Panel} from "@/modules/uicomponents/panel/Panel";
+import {Panel} from "@modules/uicomponents/panel/Panel.tsx";
 import {Txt} from "@modules/uicomponents/text/Txt.tsx";
 import {Separator} from "@modules/uicomponents/separator/Separator.tsx";
 import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";

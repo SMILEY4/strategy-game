@@ -1,8 +1,8 @@
 import {useEffect, useRef, useState, type ReactElement, type DragEvent as ReactDragEvent} from "react";
-import {AtlasCanvas} from "@modules/atlastool/AtlasCanvas.tsx";
-import {useAtlasEditor} from "@modules/atlastool/useAtlasEditor.ts";
-import type {AnnotationValue, AtlasTool, Rect, SpriteRegion} from "@modules/atlastool/atlas.types.ts";
-import {clampMove, MIN_ZOOM, MAX_ZOOM, ZOOM_LEVEL_STEP, zoomFromLevel, zoomToLevel} from "@modules/atlastool/atlas.geometry.ts";
+import {AtlasCanvas} from "@pages/dev/atlastool/AtlasCanvas.tsx";
+import {useAtlasEditor} from "@pages/dev/atlastool/useAtlasEditor.ts";
+import type {AnnotationValue, AtlasTool, Rect, SpriteRegion} from "@pages/dev/atlastool/atlas.types.ts";
+import {clampMove, MIN_ZOOM, MAX_ZOOM, ZOOM_LEVEL_STEP, zoomFromLevel, zoomToLevel} from "@pages/dev/atlastool/atlas.geometry.ts";
 import "./atlas.page.less";
 
 function downloadText(filename: string, text: string) {
