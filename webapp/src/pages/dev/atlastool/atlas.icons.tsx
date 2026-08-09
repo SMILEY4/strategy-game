@@ -58,3 +58,21 @@ export function ViewIconReset(): ReactElement {
         </svg>
     );
 }
+
+export function UndoIcon(): ReactElement {
+    return (
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M6 3L3 6l3 3"/>
+            <path d="M3 6h6.5a3.5 3.5 0 0 1 0 7H7"/>
+        </svg>
+    );
+}
+
+export function RedoIcon(): ReactElement {
+    return (
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M10 3l3 3-3 3"/>
+            <path d="M13 6H6.5a3.5 3.5 0 0 0 0 7H9"/>
+        </svg>
+    );
+}

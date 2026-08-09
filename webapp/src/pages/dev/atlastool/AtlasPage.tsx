@@ -1,10 +1,9 @@
-import {type DragEvent as ReactDragEvent, type ReactElement, useRef, useState} from "react";
-import {useAtlasEditor} from "./app/useAtlasEditor.ts";
+import {type DragEvent as ReactDragEvent, type ReactElement, type RefObject, useRef, useState} from "react";
+import {type AtlasEditor, type AtlasEditorProject, useAtlasEditor} from "./app/useAtlasEditor.ts";
 import {useAtlasShortcuts} from "./app/useAtlasShortcuts.ts";
 import {createImageFromDataUrl, isImageFile, isJsonFile, readFileAsDataUrl, readFileAsText} from "./app/atlas.io.ts";
 import type {Size} from "./app/atlas.types.ts";
 import pageStyles from "./AtlasPage.module.less";
-import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {AtlasToolbar} from "@pages/dev/atlastool/AtlasToolbar.tsx";
 import {AtlasCanvas} from "@pages/dev/atlastool/AtlasCanvas.tsx";
 import {LayerList} from "@pages/dev/atlastool/LayerList.tsx";
@@ -24,7 +23,7 @@ export function AtlasPage(): ReactElement {
         );
     } else {
         return (
-            <ProjectEditor {...(editor as AtlasEditor<true>)} />
+            <ProjectEditor {...(editor as AtlasEditor<true>).project} canvasRef={editor.refs.canvas} />
         );
     }
 }
@@ -103,7 +102,7 @@ export function EmptyProject(props: AtlasEditor<false>): ReactElement {
         setError(null);
         try {
             const jsonText = jsonFile ? await readFileAsText(jsonFile) : null;
-            await props.load.open(imageFiles, jsonText);
+            await props.open(imageFiles, jsonText);
         } catch (caught) {
             setError(caught instanceof Error ? caught.message : "Could not open project");
             setBusy(false);
@@ -149,7 +148,7 @@ export function EmptyProject(props: AtlasEditor<false>): ReactElement {
                         {files.map((item, index) => (
                             <li key={index} className={pageStyles.fileItem}>
                                 {item.kind === "image" ? (
-                                    <img className={pageStyles.thumb} src={item.element?.src} alt="" />
+                                    <img className={pageStyles.thumb} src={item.element?.src} alt=""/>
                                 ) : (
                                     <span className={pageStyles.thumbPlaceholder}>JSON</span>
                                 )}
@@ -199,12 +198,11 @@ export function EmptyProject(props: AtlasEditor<false>): ReactElement {
 }
 
 
-export function ProjectEditor(props: AtlasEditor<true>) {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+export function ProjectEditor(props: AtlasEditorProject & { canvasRef?: RefObject<HTMLCanvasElement | null> }) {
     return (
         <div className={pageStyles.page}>
 
-            <AtlasToolbar {...props} canvasRef={canvasRef}/>
+            <AtlasToolbar {...props} canvasRef={props.canvasRef}/>
 
             <div className={pageStyles.main}>
                 <aside className={pageStyles.sideLeft}>
@@ -212,15 +210,16 @@ export function ProjectEditor(props: AtlasEditor<true>) {
                 </aside>
 
                 <div className={pageStyles.wrap}>
-                    <AtlasCanvas {...props} canvasRef={canvasRef}/>
+                    <AtlasCanvas {...props} canvasRef={props.canvasRef}/>
                     <div className={pageStyles.hint}>
-                        tools: s select · d draw · p pan · wheel: zoom · middle-drag: pan · arrows: nudge (shift: ×10) · del: remove · [ ]: cycle layers
+                        tools: s select · d draw · p pan · wheel: zoom · middle-drag: pan · arrows: nudge (shift: ×10) · del: remove · [ ]:
+                        cycle layers
                     </div>
                 </div>
 
                 <aside className={pageStyles.side}>
                     <SpriteList {...props}/>
-                    {props.project.sprites.selectedId && (
+                    {props.sprites.selected?.id && (
                         <SpriteEditor {...props}/>
                     )}
                 </aside>

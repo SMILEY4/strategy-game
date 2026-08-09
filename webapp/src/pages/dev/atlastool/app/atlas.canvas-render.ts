@@ -1,6 +1,6 @@
-import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import type {Point, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
 import {toScreenRect} from "@pages/dev/atlastool/app/atlas.geometry.ts";
+import type { AtlasEditorProject} from "@pages/dev/atlastool/app/useAtlasEditor.ts";
 
 const HANDLE_SIZE = 8;
 const MIN_GRID_ZOOM = 3;
@@ -21,14 +21,14 @@ const COLORS = {
     hover: "rgba(255,255,255,0.7)",
 };
 
-export function renderCanvas(editor: AtlasEditor<true>, canvas: HTMLCanvasElement, hoverSpriteId: string | null, draft: Rect | null) {
+export function renderCanvas(project: AtlasEditorProject, canvas: HTMLCanvasElement, hoverSpriteId: string | null, draft: Rect | null) {
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const viewport = editor.project.viewport.value;
-    const image = editor.project.images.active?.element ?? null;
-    const imageSize = editor.project.images.size;
+    const viewport = project.viewport.value;
+    const image = project.layers.active?.element ?? null;
+    const imageSize = project.atlas.size;
 
     const dpr = window.devicePixelRatio || 1;
     const cssWidth = canvas.clientWidth;
@@ -56,8 +56,8 @@ export function renderCanvas(editor: AtlasEditor<true>, canvas: HTMLCanvasElemen
 
     drawGrid(ctx, viewport, imageSize, cssWidth, cssHeight);
 
-    for (const sprite of editor.project.sprites.list) {
-        const selected = sprite.id === editor.project.sprites.selectedId;
+    for (const sprite of project.sprites.list) {
+        const selected = sprite.id === project.sprites.selected?.id;
         drawSprite(ctx, sprite, viewport, selected);
         drawSpriteName(ctx, sprite, viewport);
         if (selected && !sprite.locked) {
@@ -69,8 +69,8 @@ export function renderCanvas(editor: AtlasEditor<true>, canvas: HTMLCanvasElemen
         drawRect(ctx, draft, viewport, COLORS.draft, 2);
     }
 
-    if (hoverSpriteId && hoverSpriteId !== editor.project.sprites.selectedId) {
-        const hovered = editor.project.sprites.list.find(sprite => sprite.id === hoverSpriteId);
+    if (hoverSpriteId && hoverSpriteId !== project.sprites.selected?.id) {
+        const hovered = project.sprites.list.find(sprite => sprite.id === hoverSpriteId);
         if (hovered) {
             drawRect(ctx, hovered, viewport, hovered.locked ? COLORS.spriteLocked : COLORS.hover, 1);
         }

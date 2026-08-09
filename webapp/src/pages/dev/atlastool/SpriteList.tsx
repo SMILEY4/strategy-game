@@ -1,31 +1,31 @@
 import type {ReactElement} from "react";
 import classNames from "classnames";
-import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import type {SpriteRegion} from "@pages/dev/atlastool/app/atlas.types.ts";
 import {LockIcon, UnlockIcon} from "./atlas.icons.tsx";
 import styles from "./SpriteList.module.less";
 import sideStyles from "./atlasSide.module.less";
+import type {AtlasEditorProject} from "@pages/dev/atlastool/app/useAtlasEditor.ts";
 
-export function SpriteList(props: AtlasEditor<true>): ReactElement {
+export function SpriteList(props: AtlasEditorProject): ReactElement {
     return (
         <div className={classNames(sideStyles.section, styles.section)}>
 
             <div className={sideStyles.header}>Sprites</div>
 
-            {props.project.sprites.list.length === 0 && (
+            {props.sprites.list.length === 0 && (
                 <div className={sideStyles.empty}>No sprites yet. Draw rectangles on the image.</div>
             )}
 
             <ul className={styles.list}>
-                {props.project.sprites.list.map(sprite => {
+                {props.sprites.list.map(sprite => {
                     return (
                         <SpriteListEntry
                             key={sprite.id}
                             sprite={sprite}
-                            selected={sprite.id === props.project.sprites.selectedId}
-                            onDelete={() => props.project.sprites.delete(sprite.id)}
-                            onSelect={() => props.project.sprites.select(sprite.id)}
-                            onToggleLock={() => props.project.sprites.toggleLock(sprite.id)}
+                            selected={sprite.id === props.sprites.selected?.id}
+                            onDelete={() => props.sprites.delete(sprite.id)}
+                            onSelect={() => props.sprites.select(sprite.id)}
+                            onToggleLock={() => props.sprites.toggleLock(sprite.id)}
                         />
                     );
                 })}

@@ -36,6 +36,22 @@
 			.segmented-button();
 		}
 	}
+
+	.history {
+		.segmented();
+
+		.historyButton {
+			.segmented-button();
+
+			&:disabled {
+				opacity:        0.4;
+				cursor:         default;
+				background:     transparent;
+				color:          @atlas-text-faint;
+				pointer-events: none;
+			}
+		}
+	}
 }
 
 .zoom {

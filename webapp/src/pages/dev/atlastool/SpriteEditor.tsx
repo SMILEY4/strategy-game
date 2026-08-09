@@ -1,10 +1,10 @@
 import type {ReactElement} from "react";
 import classNames from "classnames";
-import type {AnnotationValue, Rect} from "./app/atlas.types.ts";
-import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
+import type {Rect} from "./app/atlas.types.ts";
 import {LockIcon} from "./atlas.icons.tsx";
 import styles from "./SpriteEditor.module.less";
 import sideStyles from "./atlasSide.module.less";
+import type {AtlasEditorProject} from "@pages/dev/atlastool/app/useAtlasEditor.ts";
 
 const REGION_FIELDS: Array<{ field: keyof Rect, label: string }> = [
     {field: "x", label: "X"},
@@ -13,26 +13,9 @@ const REGION_FIELDS: Array<{ field: keyof Rect, label: string }> = [
     {field: "height", label: "H"},
 ];
 
-/** Serializes an annotation value for display in a text input. */
-function annotationToText(value: AnnotationValue): string {
-    return JSON.stringify(value);
-}
+export function SpriteEditor(props: AtlasEditorProject): ReactElement {
 
-/** Returns an annotation key that isn't taken yet (key, key1, key2, ...). */
-function nextAnnotationKey(annotations: Record<string, AnnotationValue>): string {
-    let index = 0;
-    let key = "key";
-    while (key in annotations) {
-        index++;
-        key = `key${index}`;
-    }
-    return key;
-}
-
-/** Sidebar editor for a single selected sprite: id/name, region fields, and annotations. */
-export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
-
-    const sprite = props.project.sprites.selected;
+    const sprite = props.sprites.selected;
 
     function setRegionField(field: keyof Rect, rawValue: string) {
         const value = Math.round(Number(rawValue));
@@ -41,14 +24,14 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
         }
         const patch: Partial<Rect> = {};
         patch[field] = value;
-        props.project.sprites.updateRegion(sprite!.id, patch)
+        props.sprites.updateRegion(sprite!.id, patch);
     }
 
     if (!sprite) {
         return <></>;
     } else {
         const locked = sprite.locked;
-        const nameTaken = props.project.sprites.list.some(other => other.id !== sprite.id && other.name === sprite.name);
+        const nameTaken = props.sprites.list.some(other => other.id !== sprite.id && other.name === sprite.name);
         return (
             <div className={classNames(sideStyles.section, styles.section)}>
                 <div className={sideStyles.header}>Sprite</div>
@@ -70,7 +53,7 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                     <input
                         disabled={locked}
                         value={sprite.name}
-                        onChange={event => props.project.sprites.updateMeta(sprite.id, {name: event.target.value})}
+                        onChange={event => props.sprites.updateName(sprite.id, event.target.value)}
                         onKeyDown={event => event.stopPropagation()}
                     />
                     {nameTaken && (
@@ -93,43 +76,6 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                     ))}
                 </div>
 
-                <div className={sideStyles.subheader}>Annotations <span className={sideStyles.subnote}>(values are JSON)</span></div>
-                {Object.keys(sprite.annotations).length === 0 && (
-                    <div className={sideStyles.empty}>No annotations.</div>
-                )}
-                {Object.entries(sprite.annotations).map(([key, value]) => (
-                    <div key={key} className={styles.annotation}>
-                        <input
-                            className={styles.key}
-                            disabled={locked}
-                            value={key}
-                            onChange={event => props.project.sprites.updateAnnotationKey(sprite.id, key, event.target.value)}
-                            onKeyDown={event => event.stopPropagation()}
-                        />
-                        <input
-                            className={styles.value}
-                            disabled={locked}
-                            value={annotationToText(value)}
-                            onChange={event => props.project.sprites.updateAnnotationValue(sprite.id, key, event.target.value)}
-                            onKeyDown={event => event.stopPropagation()}
-                        />
-                        <button
-                            type="button"
-                            className={styles.remove}
-                            disabled={locked}
-                            onClick={() => props.project.sprites.removeAnnotation(sprite.id, key)}
-                        >
-                            ✕
-                        </button>
-                    </div>
-                ))}
-                <button
-                    type="button"
-                    disabled={locked}
-                    onClick={() => props.project.sprites.addAnnotation(sprite.id, nextAnnotationKey(sprite.annotations))}
-                >
-                    Add annotation
-                </button>
             </div>
         );
     }

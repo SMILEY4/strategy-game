@@ -1,4 +1,4 @@
-export type AtlasTool = "select" | "draw" | "pan";
+export type AtlasTool = "Select" | "Draw" | "Pan";
 
 /** Compass direction of a region's edge/corner resize handle. */
 export type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
@@ -39,7 +39,6 @@ export interface AtlasLayer {
 export interface SpriteRegion extends Rect {
     id: string;
     name: string;
-    annotations: Record<string, AnnotationValue>;
     locked: boolean;
 }
 
@@ -56,7 +55,6 @@ export interface AtlasManifest {
     atlas: {
         name: string;
         imageSize: Size;
-        /** Layer names in order, matching the images they were exported with. */
         layers: string[];
     };
     sprites: SpriteManifestEntry[];

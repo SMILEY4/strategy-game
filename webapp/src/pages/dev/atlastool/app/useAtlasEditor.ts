@@ -1,58 +1,101 @@
-import {useCallback, useMemo, useState} from "react";
-import type {AnnotationValue, AtlasLayer, AtlasManifest, AtlasTool, Rect, SpriteRegion, Viewport} from "./atlas.types.ts";
-import {clampRectToImage} from "./atlas.geometry.ts";
-import {exportManifest, manifestToSprites, parseManifestJson} from "./atlas.serialization.ts";
-import {createImageFromDataUrl, downloadJson, fileNameWithoutExtension, readFileAsDataUrl} from "./atlas.io.ts";
-import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
+import type {AtlasLayer, AtlasManifest, AtlasTool, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
+import {type RefObject, useRef, useState} from "react";
+import {createImageFromDataUrl, downloadJson, fileNameWithoutExtension, readFileAsDataUrl} from "@pages/dev/atlastool/app/atlas.io.ts";
+import {exportManifest, parseManifestJson} from "@pages/dev/atlastool/app/atlas.serialization.ts";
+import {clamp, MAX_ZOOM, MIN_ZOOM, zoomAt, zoomFromLevel, zoomToLevel} from "@pages/dev/atlastool/app/atlas.geometry.ts";
 
-function withoutSprite(sprites: SpriteRegion[], id: string): SpriteRegion[] {
-    return sprites.filter(sprite => sprite.id !== id);
+export interface AtlasEditor<IsProjectLoaded extends boolean = true | false> {
+    open: (images: File[], projectJson: string | null) => Promise<void>,
+    project: IsProjectLoaded extends true ? AtlasEditorProject : null,
+    refs: {
+        canvas: RefObject<HTMLCanvasElement | null>
+    }
 }
 
-function updateAnnotations(
-    sprites: SpriteRegion[],
-    id: string,
-    update: (annotations: Record<string, AnnotationValue>) => Record<string, AnnotationValue>,
-): SpriteRegion[] {
-    return sprites.map(sprite => {
-        if (sprite.id !== id || sprite.locked) {
-            return sprite;
-        }
-        const annotations = update(sprite.annotations);
-        return annotations === sprite.annotations ? sprite : {...sprite, annotations};
-    });
+export interface AtlasEditorProject {
+    atlas: {
+        size: Size,
+        name: string,
+        updateName: (name: string) => void,
+        load: (jsonContent: string) => void
+    }
+    layers: {
+        list: AtlasLayer[],
+        active: AtlasLayer,
+        add: (files: File[]) => Promise<void>,
+        remove: (id: string) => void,
+        select: (id: string) => void,
+    },
+    sprites: {
+        list: SpriteRegion[],
+        selected: SpriteRegion | null,
+        create: (region: Rect) => void,
+        updateRegion: (id: string, patch: Partial<Rect>) => void,
+        updateName: (id: string, name: string) => void,
+        select: (id: string | null) => void,
+        delete: (id: string) => void,
+        toggleLock: (id: string) => void,
+    },
+    tool: {
+        available: AtlasTool[],
+        active: AtlasTool,
+        select: (tool: AtlasTool) => void
+    }
+    viewport: {
+        value: Viewport & { zoomLevel: number },
+        update: (value: Partial<Viewport>) => void,
+        fit: () => void,
+        zoomIn: () => void,
+        zoomOut: () => void,
+        setZoomLevel: (level: number) => void
+    },
+    history: {
+        undo: () => void,
+        redo: () => void,
+        canUndo: boolean,
+        canRedo: boolean,
+    },
+    export: () => void
 }
 
-export const INITIAL_VIEWPORT: Viewport = {zoom: 1, x: 40, y: 40};
+interface ProjectData {
+    name: string,
+    size: Size,
+    layers: {
+        list: AtlasLayer[],
+        selectedId: string
+    },
+    sprites: {
+        list: SpriteRegion[],
+        selectedId: string | null,
+    },
+    tool: AtlasTool
+    viewport: Viewport
+}
 
-/** Editor state and actions: image layers, sprites, selection, annotations, and export. */
+type EditorAction = {
+    apply: (project: ProjectData) => ProjectData,
+    revert: (project: ProjectData) => ProjectData,
+}
+
+
 export function useAtlasEditor(): AtlasEditor {
-    const [atlasName, setAtlasName] = useState("atlas");
-    const [images, setImages] = useState<AtlasLayer[]>([]);
-    const [activeImageId, setActiveImageId] = useState<string | null>(null);
-    const [sprites, setSprites] = useState<SpriteRegion[]>([]);
-    const [selectedSpriteId, setSelectedSpriteId] = useState<string | null>(null);
-    const [tool, setTool] = useState<AtlasTool>("select");
-    const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
 
-    const activeImage = images.find(layer => layer.id === activeImageId) ?? images[0] ?? null;
-    const imageSize = useMemo(() => activeImage?.size ?? {width: 0, height: 0}, [activeImage]);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [projectData, setProjectData] = useState<ProjectData | null>(null);
+    const [actions, setActions] = useState<EditorAction[]>([]);
+    const [actionPointer, setActionPointer] = useState<number>(-1);
 
-    const selectedSprite = selectedSpriteId
-        ? sprites.find(sprite => sprite.id === selectedSpriteId) ?? null
-        : null;
+    //=========== PROJECT ================================================================
 
-    //=========== PROJECT ===============================================================
-
-    /** Opens a new project from a set of image files (one per layer) and an optional project JSON. */
-    const openProject = useCallback(async (imageFiles: File[], projectJson: string | null) => {
-        if (imageFiles.length === 0) {
+    async function handleOpen(images: File[], projectJson: string | null): Promise<void> {
+        if (images.length === 0) {
             throw new Error("Add at least one image");
         }
-        const decoded = await decodeLayerFiles(imageFiles);
 
-        const size = decoded[0].size;
-        for (const layer of decoded) {
+        const layers = await Promise.all(images.map(async file => await loadLayer(file, null)));
+        const size = layers[0].size;
+        for (const layer of layers) {
             if (layer.size.width !== size.width || layer.size.height !== size.height) {
                 throw new Error(`Images must all be the same size (found ${size.width}×${size.height} and ${layer.size.width}×${layer.size.height})`);
             }
@@ -60,281 +103,527 @@ export function useAtlasEditor(): AtlasEditor {
 
         let manifest: AtlasManifest | null = null;
         if (projectJson) {
-            manifest = parseManifestJson(projectJson);
-            if (manifest.atlas.imageSize.width > 0 &&
-                (manifest.atlas.imageSize.width !== size.width || manifest.atlas.imageSize.height !== size.height)) {
-                throw new Error(`Project image size is ${manifest.atlas.imageSize.width}×${manifest.atlas.imageSize.height}, but the selected images are ${size.width}×${size.height}`);
-            }
-            decoded.forEach((layer, index) => {
-                const manifestName = manifest!.atlas.layers[index];
-                if (manifestName) {
-                    layer.name = manifestName;
-                }
-            });
+            manifest = loadManifest(projectJson, size);
         }
 
-        const newImages = ensureUniqueLayerNames(decoded).map(layer => ({...layer, id: createSpriteId()}));
-        setImages(newImages);
-        setActiveImageId(newImages[0].id);
-        setSprites(manifest ? manifestToSprites(manifest, size) : []);
-        setSelectedSpriteId(null);
-        setAtlasName(manifest?.atlas.name || fileNameWithoutExtension(imageFiles[0].name));
-        setViewport(INITIAL_VIEWPORT);
-    }, []);
-
-    /** Loads a project JSON file, replacing the current sprite set. Requires images. */
-    const applyProjectJson = useCallback((json: string) => {
-        if (images.length === 0) {
-            throw new Error("Open a project with at least one image first");
-        }
-        const manifest = parseManifestJson(json);
-        if (manifest.atlas.imageSize.width > 0 &&
-            (manifest.atlas.imageSize.width !== imageSize.width || manifest.atlas.imageSize.height !== imageSize.height)) {
-            throw new Error(`Project image size is ${manifest.atlas.imageSize.width}×${manifest.atlas.imageSize.height}, but the current image is ${imageSize.width}×${imageSize.height}`);
-        }
-        setSprites(manifestToSprites(manifest, imageSize));
-        setSelectedSpriteId(null);
-        setAtlasName(manifest.atlas.name);
-    }, [images, imageSize]);
-
-    //=========== IMAGE LAYERS =========================================================
-
-    /** Adds one or more images as new layers, rejecting images whose size differs. */
-    const addImages = useCallback(async (files: File[]) => {
-        if (files.length === 0) {
-            return;
-        }
-        const decoded = await decodeLayerFiles(files);
-        const commonSize = images[0]?.size;
-        if (commonSize) {
-            for (const layer of decoded) {
-                if (layer.size.width !== commonSize.width || layer.size.height !== commonSize.height) {
-                    throw new Error(`Image "${layer.name}" is ${layer.size.width}×${layer.size.height}; expected ${commonSize.width}×${commonSize.height}`);
-                }
-            }
-        }
-        const named = ensureUniqueLayerNames([...images, ...decoded]).slice(images.length);
-        const newImages = named.map(layer => ({...layer, id: createSpriteId()}));
-        setImages(prev => [...prev, ...newImages]);
-        if (images.length === 0) {
-            setActiveImageId(newImages[0].id);
-        }
-    }, [images]);
-
-    /** Removes a layer. The last remaining layer cannot be removed. */
-    const removeImage = useCallback((id: string) => {
-        const index = images.findIndex(layer => layer.id === id);
-        if (index < 0 || images.length <= 1) {
-            return;
-        }
-        const next = images.filter(layer => layer.id !== id);
-        setImages(next);
-        if (activeImageId === id) {
-            setActiveImageId(next[Math.min(index, next.length - 1)].id);
-        }
-    }, [images, activeImageId]);
-
-    /** Makes the given layer the visible one. */
-    const selectImage = useCallback((id: string) => {
-        if (images.some(layer => layer.id === id)) {
-            setActiveImageId(id);
-        }
-    }, [images]);
-
-    /** Switches the visible layer by one step (wrapping around). */
-    const cycleImage = useCallback((direction: 1 | -1) => {
-        if (images.length === 0) {
-            return;
-        }
-        const index = images.findIndex(layer => layer.id === activeImage?.id);
-        const safeIndex = index < 0 ? 0 : index;
-        const nextIndex = (safeIndex + direction + images.length) % images.length;
-        setActiveImageId(images[nextIndex].id);
-    }, [images, activeImage]);
-
-    //=========== SPRITES ==============================================================
-
-    const createSprite = useCallback((region: Rect) => {
-        const clamped = clampRectToImage(region, imageSize);
-        const id = createSpriteId();
-        const name = nextSpriteName(sprites.map(sprite => sprite.name));
-        setSprites(prev => [...prev, {id, name, ...clamped, annotations: {}, locked: false}]);
-        setSelectedSpriteId(id);
-    }, [imageSize, sprites]);
-
-    const updateSprite = useCallback((id: string, patch: Partial<Rect>) => {
-        setSprites(prev => prev.map(sprite => sprite.id === id && !sprite.locked ? {...sprite, ...patch} : sprite));
-    }, []);
-
-    const updateSpriteMeta = useCallback((id: string, patch: { name: string }) => {
-        const target = sprites.find(sprite => sprite.id === id);
-        if (!target || target.locked) {
-            return;
-        }
-        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, name: patch.name} : sprite));
-    }, [sprites]);
-
-    const deleteSprite = useCallback((id: string) => {
-        const target = sprites.find(sprite => sprite.id === id);
-        if (target?.locked) {
-            return;
-        }
-        setSprites(prev => withoutSprite(prev, id));
-        setSelectedSpriteId(current => current === id ? null : current);
-    }, [sprites]);
-
-    const selectSprite = useCallback((id: string | null) => {
-        setSelectedSpriteId(id);
-    }, []);
-
-    const toggleSpriteLock = useCallback((id: string) => {
-        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, locked: !sprite.locked} : sprite));
-    }, []);
-
-    const addAnnotation = useCallback((id: string, key: string) => {
-        setSprites(prev => updateAnnotations(prev, id, annotations =>
-            key in annotations ? annotations : {...annotations, [key]: ""},
-        ));
-    }, []);
-
-    const updateAnnotationKey = useCallback((id: string, oldKey: string, newKey: string) => {
-        if (!newKey.trim() || newKey === oldKey) {
-            return;
-        }
-        setSprites(prev => updateAnnotations(prev, id, annotations => {
-            if (!(oldKey in annotations)) {
-                return annotations;
-            }
-            const {[oldKey]: value, ...rest} = annotations;
-            return {...rest, [newKey]: value};
-        }));
-    }, []);
-
-    const updateAnnotationValue = useCallback((id: string, key: string, text: string) => {
-        const value = parseAnnotationValue(text);
-        setSprites(prev => updateAnnotations(prev, id, annotations =>
-            key in annotations ? {...annotations, [key]: value} : annotations,
-        ));
-    }, []);
-
-    const removeAnnotation = useCallback((id: string, key: string) => {
-        setSprites(prev => updateAnnotations(prev, id, annotations => {
-            if (!(key in annotations)) {
-                return annotations;
-            }
-            const {[key]: _removed, ...rest} = annotations;
-            return rest;
-        }));
-    }, []);
-
-    //=========== EXPORT ===============================================================
-
-    /** Serializes the current editor state to a JSON string and downloads it. */
-    const exportJson = useCallback((): string => {
-        if (images.length === 0) {
-            throw new Error("No image loaded");
-        }
-        const content = exportManifest({
-            atlasName,
-            imageSize,
-            layers: images.map(layer => layer.name),
-            sprites,
-        });
-        downloadJson(`${atlasName || "atlas"}.json`, content);
-        return content;
-    }, [atlasName, imageSize, images, sprites]);
-
-    return {
-        load: {
-            open: openProject,
-            projectJson: applyProjectJson,
-        },
-        project: images.length > 0 ? {
-            atlasName: {
-                value: atlasName,
-                set: setAtlasName,
-            },
-            images: {
-                list: images,
-                activeId: activeImage?.id ?? null,
-                active: activeImage,
-                size: imageSize,
-                add: addImages,
-                remove: removeImage,
-                select: selectImage,
-                cycle: cycleImage,
+        setProjectData({
+            name: manifest?.atlas.name ?? "atlas",
+            size: size,
+            layers: {
+                list: layers,
+                selectedId: layers[0].id,
             },
             sprites: {
-                list: sprites,
-                selectedId: selectedSpriteId,
-                selected: selectedSprite,
-                create: createSprite,
-                updateRegion: updateSprite,
-                updateMeta: updateSpriteMeta,
-                delete: deleteSprite,
-                select: selectSprite,
-                toggleLock: toggleSpriteLock,
-                addAnnotation: addAnnotation,
-                updateAnnotationKey: updateAnnotationKey,
-                updateAnnotationValue: updateAnnotationValue,
-                removeAnnotation: removeAnnotation,
+                list: manifest?.sprites ?? [],
+                selectedId: null,
             },
-            tool: {
-                available: [
-                    {id: "select", displayName: "Select"},
-                    {id: "draw", displayName: "Draw"},
-                    {id: "pan", displayName: "Pan"},
-                ],
-                active: tool,
-                select: setTool,
-            },
+            tool: "Pan",
             viewport: {
-                value: viewport,
-                set: (value: Partial<Viewport>) => setViewport(prev => ({...prev, ...value})),
+                zoom: 1,
+                x: 40,
+                y: 40,
             },
-            export: {
-                projectJson: exportJson,
-            },
-        } : null,
+        });
+
+    }
+
+    //=========== ATLAS ==================================================================
+
+    function handleUpdateAtlasName(name: string) {
+        if (!projectData) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                name: name,
+            };
+        });
+    }
+
+    function handleOpenAtlas(jsonContent: string) {
+        if (!projectData) return;
+        const manifest = loadManifest(jsonContent, projectData.size);
+        clearCommitStack();
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                name: manifest.atlas.name,
+                sprites: {
+                    ...prev.sprites,
+                    list: manifest.sprites,
+                    selectedId: null,
+                },
+            };
+        });
+    }
+
+    //=========== LAYERS =================================================================
+
+    async function handleAddLayers(files: File[]): Promise<void> {
+        if (!projectData) return;
+        const layers = await Promise.all(files.map(async file => await loadLayer(file, projectData.size)));
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                layers: {
+                    ...prev.layers,
+                    list: [
+                        ...prev.layers.list,
+                        ...layers,
+                    ],
+                },
+            };
+        });
+    }
+
+    function handleRemoveLayer(layerId: string) {
+        if (!projectData) return;
+        if (projectData.layers.list.length === 1) {
+            throw new Error("Cannot remove the last layer");
+        }
+        setProjectData(prev => {
+            if (prev == null) return null;
+            const newLayers = prev.layers.list.filter(it => it.id !== layerId);
+            const newSelectedId = prev.layers.selectedId === layerId ? newLayers[0].id : prev.layers.selectedId;
+            return {
+                ...prev,
+                layers: {
+                    ...prev.layers,
+                    list: newLayers,
+                    selectedId: newSelectedId,
+                },
+            };
+        });
+    }
+
+    function handleSelectLayer(layerId: string) {
+        if (!projectData) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                layers: {
+                    ...prev.layers,
+                    selectedId: layerId,
+                },
+            };
+        });
+    }
+
+    //=========== TOOLS ==================================================================
+
+    function handleSelectTool(tool: AtlasTool) {
+        if (!projectData) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                tool: tool,
+            };
+        });
+    }
+
+    //=========== VIEWPORT ===============================================================
+
+    function handleUpdateViewport(patch: Partial<Viewport>) {
+        if (!projectData) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                viewport: {
+                    ...prev.viewport,
+                    ...patch,
+                },
+            };
+        });
+    }
+
+    function handleFitViewport() {
+        if (!projectData) return;
+
+        const canvasRect = canvasRef.current?.getBoundingClientRect();
+        if (!canvasRect) return;
+
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                viewport: calculateFitViewport({width: canvasRect.width, height: canvasRect.height}, projectData.size),
+            };
+        });
+    }
+
+    function calculateFitViewport(canvasSize: Size, atlasSize: Size): Viewport {
+        if (canvasSize.width <= 0 || canvasSize.height <= 0 || atlasSize.width <= 0 || atlasSize.height <= 0) {
+            return {zoom: 1, x: 40, y: 40};
+        }
+        const zoom = clamp(
+            Math.min(canvasSize.width / atlasSize.width, canvasSize.height / atlasSize.height),
+            MIN_ZOOM,
+            MAX_ZOOM,
+        );
+        return {
+            zoom,
+            x: (canvasSize.width - atlasSize.width * zoom) / 2,
+            y: (canvasSize.height - atlasSize.height * zoom) / 2,
+        };
+    }
+
+    function handleZoomIn() {
+        stepZoom(-0.5)
+    }
+
+    function handleZoomOut() {
+        stepZoom(+0.5)
+    }
+
+    function stepZoom(step: number) {
+        if (!projectData) return;
+        setZoomLevel(zoomToLevel(projectData.viewport.zoom) + step)
+    }
+
+    function handleSetZoomLevel(level: number) {
+        setZoomLevel(level)
+    }
+
+    function setZoomLevel(level: number) {
+        if (!projectData) return;
+        const canvasRect = canvasRef.current?.getBoundingClientRect();
+        if (!canvasRect) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            const zoom = zoomFromLevel(level);
+            const anchor = canvasRect ? {x: canvasRect.width / 2, y: canvasRect.height / 2} : {x: 0, y: 0};
+            const viewport = zoomAt(prev.viewport, anchor, zoom);
+            return {
+                ...prev,
+                viewport: viewport,
+            };
+        });
+    }
+
+    //=========== EXPORT =================================================================
+
+    function handleExport() {
+        if (!projectData) return;
+        const content = exportManifest({
+            atlasName: projectData.name,
+            imageSize: projectData.size,
+            layers: projectData.layers.list.map(layer => layer.name),
+            sprites: projectData.sprites.list,
+        });
+        downloadJson(`${projectData.name || "atlas"}.json`, content);
+    }
+
+    //=========== SPRITES ================================================================
+
+    function handleCreateSprite(region: Rect) {
+        if (!projectData) return;
+
+        const sprite: SpriteRegion = {
+            id: crypto.randomUUID(),
+            name: nextSpriteName(projectData.sprites.list.map(it => it.name)),
+            locked: false,
+            x: region.x,
+            y: region.y,
+            width: region.width,
+            height: region.height,
+        };
+
+        const action: EditorAction = {
+            apply: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: [
+                        ...project.sprites.list,
+                        sprite,
+                    ],
+                },
+            }),
+            revert: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.filter(it => it.id !== sprite.id),
+                },
+            }),
+        };
+        commitAction(action);
+    }
+
+    function handleUpdateSpriteRegion(spriteId: string, patch: Partial<Rect>) {
+        if (!projectData) return;
+
+        const sprite = projectData.sprites.list.find(it => it.id === spriteId);
+        if (!sprite) return;
+
+        const before: Rect = {x: sprite.x, y: sprite.y, width: sprite.width, height: sprite.height};
+        const after: Rect = {...before, ...patch};
+
+        const action: EditorAction = {
+            apply: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.map(sprite => {
+                        if (sprite.id !== spriteId) return sprite;
+                        return {
+                            ...sprite,
+                            ...after,
+                        };
+                    }),
+                },
+            }),
+            revert: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.map(sprite => {
+                        if (sprite.id !== spriteId) return sprite;
+                        return {
+                            ...sprite,
+                            ...before,
+                        };
+                    }),
+                },
+            }),
+        };
+        commitAction(action);
+    }
+
+    function handleUpdateSpriteName(spriteId: string, name: string) {
+        if (!projectData) return;
+
+        const sprite = projectData.sprites.list.find(it => it.id === spriteId);
+        if (!sprite) return;
+
+        const before = sprite.name;
+        const after = name;
+
+        const action: EditorAction = {
+            apply: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.map(sprite => {
+                        if (sprite.id !== spriteId) return sprite;
+                        return {
+                            ...sprite,
+                            name: after,
+                        };
+                    }),
+                },
+            }),
+            revert: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.map(sprite => {
+                        if (sprite.id !== spriteId) return sprite;
+                        return {
+                            ...sprite,
+                            name: before,
+                        };
+                    }),
+                },
+            }),
+        };
+        commitAction(action);
+    }
+
+    function handleSelectSprite(spriteId: string | null) {
+        if (!projectData) return;
+
+        const before = projectData.sprites.selectedId;
+        const after = spriteId;
+
+        const action: EditorAction = {
+            apply: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    selectedId: after,
+                },
+            }),
+            revert: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    selectedId: before,
+                },
+            }),
+        };
+        commitAction(action);
+    }
+
+    function handleDeleteSprite(spriteId: string) {
+        if (!projectData) return;
+
+        const sprite = projectData.sprites.list.find(it => it.id === spriteId);
+        if (!sprite) return;
+        const spriteIndex = projectData.sprites.list.indexOf(sprite);
+
+        const selectedBefore = projectData.sprites.selectedId;
+        const selectedAfter = projectData.sprites.selectedId === spriteId ? null : projectData.sprites.selectedId;
+
+        const action: EditorAction = {
+            apply: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.filter(it => it.id !== spriteId),
+                    selectedId: selectedAfter,
+                },
+            }),
+            revert: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.toSpliced(spriteIndex, 0, sprite),
+                    selectedId: selectedBefore,
+                },
+            }),
+        };
+        commitAction(action);
+    }
+
+    function handleToggleSpriteLock(spriteId: string) {
+        if (!projectData) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                sprites: {
+                    ...prev.sprites,
+                    list: prev.sprites.list.map(sprite => {
+                        if (sprite.id !== spriteId) return sprite;
+                        return {
+                            ...sprite,
+                            locked: !sprite.locked,
+                        };
+                    }),
+                },
+            };
+        });
+    }
+
+    //=========== EDITOR ACTIONS =========================================================
+
+    function clearCommitStack() {
+        setActions([]);
+    }
+
+    function commitAction(action: EditorAction) {
+        if (!projectData) return;
+        setProjectData(prev => prev == null ? null : action.apply(prev));
+        setActions(prev => [...prev.slice(0, actionPointer + 1), action]);
+        setActionPointer(prev => prev + 1);
+    }
+
+    function handleUndo() {
+        if (!projectData) return;
+        if (actionPointer < 0) return;
+
+        setProjectData(prev => prev == null ? null : actions[actionPointer].revert(prev));
+        setActionPointer(prev => prev - 1);
+    }
+
+
+    function handleRedo() {
+        if (!projectData) return;
+        if (actionPointer >= actions.length - 1) return;
+        setProjectData(prev => prev == null ? null : actions[actionPointer+1].apply(prev));
+        setActionPointer(prev => prev + 1);
+    }
+
+
+    //=========== RETURN =================================================================
+
+    return {
+        open: handleOpen,
+        project: projectData
+            ? {
+                atlas: {
+                    name: projectData.name,
+                    size: projectData.size,
+                    updateName: handleUpdateAtlasName,
+                    load: handleOpenAtlas,
+                },
+                layers: {
+                    list: projectData.layers.list,
+                    active: projectData.layers.list.find(it => it.id === projectData.layers.selectedId)!,
+                    add: handleAddLayers,
+                    remove: handleRemoveLayer,
+                    select: handleSelectLayer,
+                },
+                sprites: {
+                    list: projectData.sprites.list,
+                    selected: projectData.sprites.list.find(it => it.id === projectData.sprites.selectedId) ?? null,
+                    create: handleCreateSprite,
+                    updateRegion: handleUpdateSpriteRegion,
+                    updateName: handleUpdateSpriteName,
+                    select: handleSelectSprite,
+                    delete: handleDeleteSprite,
+                    toggleLock: handleToggleSpriteLock,
+                },
+                tool: {
+                    available: ["Select", "Pan", "Draw"],
+                    active: projectData.tool,
+                    select: handleSelectTool,
+                },
+                viewport: {
+                    value: {
+                        ...projectData.viewport,
+                        zoomLevel: zoomToLevel(projectData.viewport.zoom)
+                    },
+                    update: handleUpdateViewport,
+                    fit: handleFitViewport,
+                    zoomIn: handleZoomIn,
+                    zoomOut: handleZoomOut,
+                    setZoomLevel: handleSetZoomLevel
+                },
+                history: {
+                    undo: handleUndo,
+                    redo: handleRedo,
+                    canUndo: actionPointer >= 0,
+                    canRedo: actionPointer < actions.length - 1,
+                },
+                export: handleExport,
+            }
+            : null,
+        refs: {
+            canvas: canvasRef,
+        },
     };
 }
 
 
-/** Decodes image files into layer descriptors (without id), naming them after their file names. */
-async function decodeLayerFiles(files: File[]): Promise<Array<Omit<AtlasLayer, "id">>> {
-    return Promise.all(files.map(async file => {
-        const element = await createImageFromDataUrl(await readFileAsDataUrl(file));
-        return {
-            element,
-            size: {width: element.naturalWidth, height: element.naturalHeight},
-            name: fileNameWithoutExtension(file.name),
-        };
-    }));
-}
-
-/** Ensures every layer name is unique, appending `-2`, `-3`, ... to duplicates. */
-function ensureUniqueLayerNames<T extends { name: string }>(layers: T[]): T[] {
-    const used = new Set<string>();
-    return layers.map(layer => {
-        let name = layer.name;
-        let counter = 2;
-        while (used.has(name)) {
-            name = `${layer.name}-${counter++}`;
-        }
-        used.add(name);
-        return {...layer, name};
-    });
-}
-
-/** Returns a random, practically-unique id for a new sprite or layer. */
-function createSpriteId(): string {
-    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-        return crypto.randomUUID();
+function loadManifest(jsonContent: string, size: Size): AtlasManifest {
+    const manifest: AtlasManifest = parseManifestJson(jsonContent);
+    if (manifest.atlas.imageSize.width !== size.width || manifest.atlas.imageSize.height !== size.height) {
+        throw new Error(`Project image size is ${manifest.atlas.imageSize.width}×${manifest.atlas.imageSize.height}, but the selected images are ${size.width}×${size.height}`);
     }
-    return `sprite-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    return manifest;
 }
 
-/** Returns the first unused default name like `sprite-1`, `sprite-2`, ... */
+async function loadLayer(file: File, size: Size | null): Promise<AtlasLayer> {
+    const element = await createImageFromDataUrl(await readFileAsDataUrl(file));
+    const layer: AtlasLayer = {
+        id: crypto.randomUUID(),
+        name: fileNameWithoutExtension(file.name),
+        element: element,
+        size: {width: element.naturalWidth, height: element.naturalHeight},
+    };
+    if (size && (size.width !== layer.size.width || size.height !== layer.size.height)) {
+        throw new Error(`Images must all be the same size (expected ${size.width}×${size.height}, actual ${layer.size.width}×${layer.size.height})`);
+    }
+    return layer;
+}
+
 function nextSpriteName(existingNames: string[]): string {
     let index = 0;
     let name: string;
@@ -343,17 +632,4 @@ function nextSpriteName(existingNames: string[]): string {
         name = `sprite-${index}`;
     } while (existingNames.includes(name));
     return name;
-}
-
-/** Parses an annotation value typed into a text field: tries JSON first, falls back to plain text. */
-function parseAnnotationValue(text: string): AnnotationValue {
-    const trimmed = text.trim();
-    if (trimmed.length === 0) {
-        return text;
-    }
-    try {
-        return JSON.parse(trimmed) as AnnotationValue;
-    } catch {
-        return text;
-    }
 }

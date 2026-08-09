@@ -1,11 +1,8 @@
 import {useEffect, useEffectEvent} from "react";
 import type {AtlasTool} from "./atlas.types.ts";
 import {clampMove} from "./atlas.geometry.ts";
-import type {AtlasEditorProject} from "@pages/dev/atlastool/app/atlas.editor.ts";
+import type {AtlasEditorProject} from "@pages/dev/atlastool/app/useAtlasEditor.ts";
 
-/**
- * Global keydown handler that drives tools and sprite editing.
- */
 export function useAtlasShortcuts(project: AtlasEditorProject | null) {
     const onKeyDown = useEffectEvent((event: KeyboardEvent) => project && handleKeyDown(project, event));
 
@@ -17,9 +14,9 @@ export function useAtlasShortcuts(project: AtlasEditorProject | null) {
 }
 
 export const TOOL_HOTKEYS: Record<AtlasTool, string> = {
-    select: "S",
-    draw: "D",
-    pan: "P",
+    Select: "S",
+    Draw: "D",
+    Pan: "P",
 };
 
 const TOOL_SHORTCUTS: Record<string, AtlasTool> = {};
@@ -34,9 +31,6 @@ const ARROW_DELTAS: Record<string, { dx: number, dy: number }> = {
     ArrowDown: {dx: 0, dy: 1},
 };
 
-/**
- * handles a global key down event and triggers a matching shortcut.
- */
 function handleKeyDown(project: AtlasEditorProject, event: KeyboardEvent) {
 
     // don't trigger shortcut under these circumstances:
@@ -60,21 +54,9 @@ function handleKeyDown(project: AtlasEditorProject, event: KeyboardEvent) {
     }
 
     // check delete sprite and trigger
-    if ((event.key === "Delete" || event.key === "Backspace") && project.sprites.selectedId) {
+    if ((event.key === "Delete" || event.key === "Backspace") && project.sprites.selected?.id) {
         event.preventDefault();
-        project.sprites.delete(project.sprites.selectedId);
-        return;
-    }
-
-    // cycle through image layers
-    if (event.key === "[") {
-        event.preventDefault();
-        project.images.cycle(-1);
-        return;
-    }
-    if (event.key === "]") {
-        event.preventDefault();
-        project.images.cycle(1);
+        project.sprites.delete(project.sprites.selected?.id);
         return;
     }
 
@@ -83,9 +65,9 @@ function handleKeyDown(project: AtlasEditorProject, event: KeyboardEvent) {
     if (delta) {
         event.preventDefault();
         const step = event.shiftKey ? 10 : 1;
-        const sprite = project.sprites.list.find(candidate => candidate.id === project.sprites.selectedId);
+        const sprite = project.sprites.list.find(candidate => candidate.id === project.sprites.selected?.id);
         if (sprite) {
-            project.sprites.updateRegion(sprite.id, clampMove(sprite, delta.dx * step, delta.dy * step, project.images.size));
+            project.sprites.updateRegion(sprite.id, clampMove(sprite, delta.dx * step, delta.dy * step, project.atlas.size));
         }
         return;
     }

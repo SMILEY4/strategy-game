@@ -1,9 +1,9 @@
 import {type ReactElement, type RefObject} from "react";
-import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {useAtlasCanvas} from "@pages/dev/atlastool/app/useAtlasCanvas.ts";
 import styles from "./AtlasCanvas.module.less";
+import type {AtlasEditorProject} from "@pages/dev/atlastool/app/useAtlasEditor.ts";
 
-export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
+export function AtlasCanvas(props: AtlasEditorProject & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
 
     const {
         cursorPoint,
@@ -35,13 +35,11 @@ export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<H
                 {cursorPoint && (
                     <span>{Math.round(cursorPoint.x)}, {Math.round(cursorPoint.y)} px</span>
                 )}
-                {props.project.images.list.length > 1 && (
-                    <span>{props.project.images.active?.name} · {props.project.images.list.findIndex(layer => layer.id === props.project.images.activeId) + 1}/{props.project.images.list.length}</span>
-                )}
-                <span>{props.project.viewport.value.zoom.toFixed(2)}×</span>
-                <span>{props.project.tool.available.find(tool => tool.id === props.project.tool.active)?.displayName ?? props.project.tool.active}</span>
-                {props.project.sprites.selected && (
-                    <span>{props.project.sprites.selected.name} · {props.project.sprites.selected.width}×{props.project.sprites.selected.height}</span>
+                <span>{props.layers.active?.name}</span>
+                <span>{props.viewport.value.zoom.toFixed(2)}×</span>
+                <span>{props.tool.active}</span>
+                {props.sprites.selected && (
+                    <span>{props.sprites.selected.name}</span>
                 )}
             </div>
         </div>

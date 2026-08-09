@@ -6,7 +6,7 @@ import {MatchListPage} from "@pages/matchList/Match-list.page.tsx";
 import {GamePage} from "@pages/game/Game.page.tsx";
 import {StrictMode} from "react";
 import {ComponentsPage} from "@pages/dev/componentsshowcase/Components.page.tsx";
-import {AtlasPage} from "@pages/dev/atlastool/Atlas.page.tsx";
+import {AtlasPage} from "@pages/dev/atlastool/AtlasPage.tsx";
 
 type RouteInfo = {
     id: string,

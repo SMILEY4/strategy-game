@@ -1,4 +1,3 @@
-import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {type PointerEvent as ReactPointerEvent, type RefObject, useEffect, useEffectEvent, useRef, useState} from "react";
 import type {AtlasTool, Point, Rect, ResizeHandle, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
 import {
@@ -17,6 +16,7 @@ import {
     zoomToLevel,
 } from "@pages/dev/atlastool/app/atlas.geometry.ts";
 import {renderCanvas} from "@pages/dev/atlastool/app/atlas.canvas-render.ts";
+import type {AtlasEditorProject} from "@pages/dev/atlastool/app/useAtlasEditor.ts";
 
 type Interaction =
     | { type: "pan", startScreen: Point, startPan: { x: number, y: number } }
@@ -25,7 +25,7 @@ type Interaction =
     | { type: "resize", spriteId: string, handle: ResizeHandle, startRegion: Rect };
 
 
-export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: RefObject<HTMLCanvasElement | null>) {
+export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: RefObject<HTMLCanvasElement | null>) {
 
     const internalCanvasRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = externalCanvasRef ?? internalCanvasRef;
@@ -46,7 +46,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
 
         canvas.setPointerCapture(event.pointerId);
         const pointScreen = toScreen(event, canvas);
-        const pointImage = toImage(event, canvas, editor.project.viewport.value);
+        const pointImage = toImage(event, canvas, project.viewport.value);
 
         if (event.button === 1) { // middle mouse button
             startToolPan(event, pointScreen, pointImage);
@@ -57,15 +57,15 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
             return;
         }
 
-        if (editor.project.tool.active === "select") {
+        if (project.tool.active === "Select") {
             startToolSelect(event, pointScreen, pointImage);
             return;
         }
-        if (editor.project.tool.active === "draw") {
+        if (project.tool.active === "Draw") {
             startToolDraw(event, pointScreen, pointImage);
             return;
         }
-        if (editor.project.tool.active === "pan") {
+        if (project.tool.active === "Pan") {
             startToolPan(event, pointScreen, pointImage);
             return;
         }
@@ -76,13 +76,13 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         if (!canvas) return;
 
         const pointScreen = toScreen(event, canvas);
-        const pointImage = toImage(event, canvas, editor.project.viewport.value);
+        const pointImage = toImage(event, canvas, project.viewport.value);
         setCursorPoint(pointImage);
 
         const interaction = interactionRef.current;
 
         if (interaction == null) {
-            if (editor.project.tool.active === "select") {
+            if (project.tool.active === "Select") {
                 startInteractionHoverSprite(pointScreen, pointImage);
             } else {
                 endInteractionHoverSprite();
@@ -129,12 +129,12 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
             return;
         }
 
-        if (editor.project.tool.active === "select") {
+        if (project.tool.active === "Select") {
             const pointScreen = toScreen(event, canvas);
-            const pointImage = toImage(event, canvas, editor.project.viewport.value);
-            setCanvasCursor(selectCursor(pointScreen, pointImage, editor.project.sprites.list, editor.project.sprites.selectedId, editor.project.viewport.value));
+            const pointImage = toImage(event, canvas, project.viewport.value);
+            setCanvasCursor(selectCursor(pointScreen, pointImage, project.sprites.list, project.sprites.selected?.id, project.viewport.value));
         } else {
-            setCanvasCursor(defaultCursor(editor.project.tool.active));
+            setCanvasCursor(defaultCursor(project.tool.active));
         }
     }
 
@@ -143,7 +143,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         interactionRef.current = null;
         setDraft(null);
         setCursorPoint(null);
-        setCanvasCursor(defaultCursor(editor.project.tool.active));
+        setCanvasCursor(defaultCursor(project.tool.active));
     }
 
 
@@ -151,7 +151,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         setCursorPoint(null);
         if (!interactionRef.current) {
             setHoverSpriteId(null);
-            setCanvasCursor(defaultCursor(editor.project.tool.active));
+            setCanvasCursor(defaultCursor(project.tool.active));
         }
     }
 
@@ -174,36 +174,36 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         if (!canvas) return;
 
         event.preventDefault();
-        const viewport = editor.project.viewport.value;
+        const viewport = project.viewport.value;
         const rect = canvas.getBoundingClientRect();
         const screen = {x: event.clientX - rect.left, y: event.clientY - rect.top};
         const levelStep = event.deltaY < 0 ? ZOOM_LEVEL_STEP : -ZOOM_LEVEL_STEP;
         const nextZoom = zoomFromLevel(zoomToLevel(viewport.zoom) + levelStep);
-        editor.project.viewport.set(zoomAt(viewport, screen, nextZoom));
+        project.viewport.update(zoomAt(viewport, screen, nextZoom));
     });
 
     //=========== TOOL SELECT ============================================================
 
     function startToolSelect(_event: ReactPointerEvent<HTMLCanvasElement>, pointScreen: Point, pointImage: Point) {
-        const selectedSprite = editor.project.sprites.selected;
+        const selectedSprite = project.sprites.selected;
         if (selectedSprite && !selectedSprite.locked) {
-            const edgeHandle = hitTestEdge(pointScreen, selectedSprite, editor.project.viewport.value);
+            const edgeHandle = hitTestEdge(pointScreen, selectedSprite, project.viewport.value);
             if (edgeHandle) {
                 startInteractionResize(selectedSprite, edgeHandle);
                 return;
             }
         }
-        const hitSpriteId = hitTestSprite(pointImage, editor.project.sprites.list);
+        const hitSpriteId = hitTestSprite(pointImage, project.sprites.list);
         if (hitSpriteId) {
-            const hitSprite = editor.project.sprites.list.find(sprite => sprite.id === hitSpriteId)!;
+            const hitSprite = project.sprites.list.find(sprite => sprite.id === hitSpriteId)!;
             if (hitSprite.locked) {
-                editor.project.sprites.select(hitSpriteId);
+                project.sprites.select(hitSpriteId);
                 startInteractionPan(pointScreen);
             } else {
                 startInteractionMove(hitSpriteId, pointImage);
             }
         } else {
-            editor.project.sprites.select(null);
+            project.sprites.select(null);
             startInteractionPan(pointScreen);
         }
     }
@@ -224,14 +224,14 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     //=========== INTERACTION HOVER SPRITE ===============================================
 
     function startInteractionHoverSprite(pointScreen: Point, pointImage: Point) {
-        const hit = hitTestSprite(pointImage, editor.project.sprites.list);
+        const hit = hitTestSprite(pointImage, project.sprites.list);
         setHoverSpriteId(prev => prev === hit ? prev : hit);
-        setCanvasCursor(selectCursor(pointScreen, pointImage, editor.project.sprites.list, editor.project.sprites.selectedId, editor.project.viewport.value));
+        setCanvasCursor(selectCursor(pointScreen, pointImage, project.sprites.list, project.sprites.selected?.id, project.viewport.value));
     }
 
     function endInteractionHoverSprite() {
         setHoverSpriteId(null);
-        setCanvasCursor(defaultCursor(editor.project.tool.active));
+        setCanvasCursor(defaultCursor(project.tool.active));
     }
 
     //=========== INTERACTION PAN ========================================================
@@ -240,7 +240,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         interactionRef.current = {
             type: "pan",
             startScreen: pointScreen,
-            startPan: {x: editor.project.viewport.value.x, y: editor.project.viewport.value.y},
+            startPan: {x: project.viewport.value.x, y: project.viewport.value.y},
         };
         setCanvasCursor("grabbing");
     }
@@ -250,7 +250,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         startScreen: Point,
         startPan: { x: number, y: number }
     }) {
-        editor.project.viewport.set({
+        project.viewport.update({
             x: interaction.startPan.x + (pointScreen.x - interaction.startScreen.x),
             y: interaction.startPan.y + (pointScreen.y - interaction.startScreen.y),
         });
@@ -259,20 +259,20 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     //=========== INTERACTION DRAW =======================================================
 
     function startInteractionDraw(pointImage: Point) {
-        const start = clampPointToImage(snapPoint(pointImage), editor.project.images.size);
+        const start = clampPointToImage(snapPoint(pointImage), project.atlas.size);
         interactionRef.current = {type: "draw", start};
         setDraft(rectFromPoints(start, start));
         setCanvasCursor("crosshair");
     }
 
     function continueInteractionDraw(pointImage: Point, interaction: { type: "draw", start: Point }) {
-        const current = clampPointToImage(snapPoint(pointImage), editor.project.images.size);
+        const current = clampPointToImage(snapPoint(pointImage), project.atlas.size);
         setDraft(rectFromPoints(interaction.start, current));
     }
 
     function endInteractionDraw(_interaction: { type: "draw"; start: Point }) {
         if (draft) {
-            editor.project.sprites.create(draft);
+            project.sprites.create(draft);
             setDraft(null);
         }
     }
@@ -280,9 +280,9 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     //=========== INTERACTION MOVE =======================================================
 
     function startInteractionMove(spriteId: string, pointImage: Point) {
-        const sprite = editor.project.sprites.list.find(it => it.id === spriteId)!;
+        const sprite = project.sprites.list.find(it => it.id === spriteId)!;
         interactionRef.current = {type: "move", spriteId: spriteId, startRegion: {...sprite}, startImage: pointImage};
-        editor.project.sprites.select(spriteId);
+        project.sprites.select(spriteId);
         setCanvasCursor("move");
     }
 
@@ -294,9 +294,9 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     }) {
         const dx = pointImage.x - interaction.startImage.x;
         const dy = pointImage.y - interaction.startImage.y;
-        editor.project.sprites.updateRegion(
+        project.sprites.updateRegion(
             interaction.spriteId,
-            clampMove(interaction.startRegion, dx, dy, editor.project.images.size),
+            clampMove(interaction.startRegion, dx, dy, project.atlas.size),
         );
     }
 
@@ -318,9 +318,9 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         handle: ResizeHandle,
         startRegion: Rect
     }) {
-        editor.project.sprites.updateRegion(
+        project.sprites.updateRegion(
             interaction.spriteId,
-            clampResize(interaction.startRegion, interaction.handle, pointImage, editor.project.images.size),
+            clampResize(interaction.startRegion, interaction.handle, pointImage, project.atlas.size),
         );
     }
 
@@ -329,7 +329,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     function render() {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        renderCanvas(editor, canvas, hoverSpriteId, draft);
+        renderCanvas(project, canvas, hoverSpriteId, draft);
     }
 
     //=========== MISCELLANEOUS ==========================================================
@@ -344,9 +344,9 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     useEffect(() => {
         const canvas = canvasRef.current;
         if (canvas) {
-            canvas.style.cursor = defaultCursor(editor.project.tool.active);
+            canvas.style.cursor = defaultCursor(project.tool.active);
         }
-    }, [editor.project.tool.active, canvasRef]);
+    }, [project.tool.active, canvasRef]);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -400,7 +400,7 @@ const RESIZE_CURSORS: Record<ResizeHandle, string> = {
     sw: "nesw-resize",
 };
 
-function selectCursor(pointScreen: Point, pointImage: Point, sprites: SpriteRegion[], selectedSpriteId: string | null, viewport: Viewport): string {
+function selectCursor(pointScreen: Point, pointImage: Point, sprites: SpriteRegion[], selectedSpriteId: string | undefined, viewport: Viewport): string {
     const hit = hitTestSprite(pointImage, sprites);
     if (selectedSpriteId) {
         const selected = sprites.find(sprite => sprite.id === selectedSpriteId);
@@ -421,9 +421,9 @@ function selectCursor(pointScreen: Point, pointImage: Point, sprites: SpriteRegi
 
 function defaultCursor(tool: AtlasTool): string {
     switch (tool) {
-        case "select": return "default";
-        case "draw": return "crosshair";
-        case "pan": return "grab";
+        case "Select": return "default";
+        case "Draw": return "crosshair";
+        case "Pan": return "grab";
     }
 }
 

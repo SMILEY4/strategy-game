@@ -1,4 +1,4 @@
-import type {AnnotationValue, AtlasManifest, Size, SpriteManifestEntry, SpriteRegion} from "./atlas.types.ts";
+import type {AtlasManifest, Size, SpriteManifestEntry, SpriteRegion} from "./atlas.types.ts";
 import {clampRectToImage, computeUvCoords} from "./atlas.geometry.ts";
 
 export interface AtlasManifestSource {
@@ -33,30 +33,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isAnnotationValue(value: unknown): value is AnnotationValue {
-    if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-        return true;
-    }
-    if (Array.isArray(value)) {
-        return value.every(isAnnotationValue);
-    }
-    if (isRecord(value)) {
-        return Object.values(value).every(isAnnotationValue);
-    }
-    return false;
-}
-
-function parseAnnotations(raw: unknown): Record<string, AnnotationValue> {
-    const annotations: Record<string, AnnotationValue> = {};
-    if (isRecord(raw)) {
-        for (const [key, value] of Object.entries(raw)) {
-            if (isAnnotationValue(value)) {
-                annotations[key] = value;
-            }
-        }
-    }
-    return annotations;
-}
 
 function asString(value: unknown, fallback: string): string {
     return typeof value === "string" ? value : fallback;
@@ -122,7 +98,6 @@ export function parseManifestJson(json: string): AtlasManifest {
                 v: asNumber(entry.v, 0),
                 uw: asNumber(entry.uw, 0),
                 vh: asNumber(entry.vh, 0),
-                annotations: parseAnnotations(entry.annotations),
                 locked: asBoolean(entry.locked, false),
             });
         });
@@ -156,7 +131,6 @@ export function manifestToSprites(manifest: AtlasManifest, imageSize: Size): Spr
         return {
             id: entry.id,
             name: entry.name,
-            annotations: entry.annotations,
             locked: entry.locked,
             ...rect,
         };
