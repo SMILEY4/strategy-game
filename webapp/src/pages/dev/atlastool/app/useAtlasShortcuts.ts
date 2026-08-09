@@ -15,7 +15,7 @@ export function useAtlasShortcuts(project: AtlasEditorProject | null) {
 }
 
 export const TOOL_HOTKEYS: Record<AtlasTool, string> = {
-    select: "V",
+    select: "S",
     draw: "D",
     pan: "P",
 };
