@@ -1,5 +1,5 @@
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
-import {type PointerEvent as ReactPointerEvent, type RefObject, useEffect, useRef, useState} from "react";
+import {type PointerEvent as ReactPointerEvent, type RefObject, useCallback, useEffect, useRef, useState} from "react";
 import type {AtlasTool, Point, Rect, ResizeHandle, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
 import {
     clampMove,
@@ -29,22 +29,14 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
 
     const internalCanvasRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = externalCanvasRef ?? internalCanvasRef;
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const interactionRef = useRef<Interaction | null>(null);
 
-    // the currently hovered sprite
     const [hoverSpriteId, setHoverSpriteId] = useState<string | null>(null);
-
-    // the cursor position in image space (null when the cursor is outside the canvas)
     const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
-
-    // the current draft sprite in the progress of being drawn.
     const [draft, setDraft] = useState<Rect | null>(null);
-
-    // keep the cursor in sync with the active tool (e.g. crosshair in draw, arrow in select).
-    useEffect(() => {
-        setCanvasCursor(defaultCursor(editor.project.tool.active));
-    }, [editor.project.tool.active]);
-
+    const [, setSizeTick] = useState(0);
 
     //=========== EVENT HANDLERS =========================================================
 
@@ -330,17 +322,45 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
 
     //=========== MISCELLANEOUS ==========================================================
 
-    function setCanvasCursor(cursor: string) {
+    const setCanvasCursor = useCallback((cursor: string) => {
         const canvas = canvasRef.current;
         if (canvas) {
             canvas.style.cursor = cursor;
         }
-    }
+    }, [canvasRef, canvasRef.current])
+
+    useEffect(() => {
+        setCanvasCursor(defaultCursor(editor.project.tool.active));
+    }, [editor.project.tool.active, setCanvasCursor]);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) {
+            return;
+        }
+        const observer = new ResizeObserver(() => setSizeTick(value => value + 1));
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) {
+            return;
+        }
+        canvas.addEventListener("wheel", handleWheel, {passive: false});
+        return () => canvas.removeEventListener("wheel", handleWheel);
+    }, [handleWheel, canvasRef]);
+
+    useEffect(() => {
+        render();
+    });
 
     return {
         hoverSpriteId: hoverSpriteId,
         cursorPoint: cursorPoint,
         canvasRef: canvasRef,
+        containerRef: containerRef,
         onPointerDown: handlePointerDown,
         onPointerMove: handlePointerMove,
         onPointerUp: handlePointerUp,
