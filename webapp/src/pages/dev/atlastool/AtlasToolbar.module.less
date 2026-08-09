@@ -52,6 +52,22 @@
 			}
 		}
 	}
+
+	.background {
+		.segmented();
+
+		.backgroundButton {
+			.segmented-button();
+			width:   auto;
+			padding: 0 8px;
+			.text(@atlas-text-dim, @atlas-font-size-xs);
+
+			&.backgroundButtonActive {
+				background-color: @atlas-accent;
+				color:            @atlas-text-on-accent;
+			}
+		}
+	}
 }
 
 .zoom {

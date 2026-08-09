@@ -1,6 +1,7 @@
 import {type ReactElement, type RefObject, useRef} from "react";
 import classNames from "classnames";
 import type {AtlasTool} from "./app/atlas.types.ts";
+import type {BackgroundMode} from "./app/atlas.types.ts";
 import {MAX_ZOOM, MIN_ZOOM, ZOOM_LEVEL_STEP, zoomToLevel} from "./app/atlas.geometry.ts";
 import {readFileAsText} from "@pages/dev/atlastool/app/atlas.io.ts";
 import {TOOL_HOTKEYS} from "./app/useAtlasShortcuts.ts";
@@ -16,6 +17,7 @@ export function AtlasToolbar(props: AtlasEditorProject & { canvasRef?: RefObject
             <ToolIconGroup {...props}/>
             <ZoomControl {...props}/>
             <ViewportControls {...props}/>
+            <BackgroundControl {...props}/>
             <AtlasNameInput {...props}/>
         </header>
     );
@@ -155,6 +157,31 @@ function ViewportControls(props: AtlasEditorProject & { canvasRef?: RefObject<HT
             >
                 <ViewIconFit/>
             </button>
+        </div>
+    );
+}
+
+function BackgroundControl(props: AtlasEditorProject) {
+    const modes: Array<{ mode: BackgroundMode, label: string, title: string }> = [
+        {mode: "fill-dark", label: "Dark", title: "Dark solid background"},
+        {mode: "fill-medium", label: "Medium", title: "Medium solid background"},
+        {mode: "fill-light", label: "Light", title: "Light solid background"},
+        {mode: "checkerboard", label: "Checker", title: "Transparency checkerboard"},
+    ];
+    return (
+        <div className={styles.background} role="group" aria-label="Background">
+            {modes.map(({mode, label, title}) => (
+                <button
+                    key={mode}
+                    type="button"
+                    className={classNames(styles.backgroundButton, props.settings.background === mode && styles.backgroundButtonActive)}
+                    title={title}
+                    aria-pressed={props.settings.background === mode}
+                    onClick={() => props.settings.setBackground(mode)}
+                >
+                    {label}
+                </button>
+            ))}
         </div>
     );
 }

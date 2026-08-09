@@ -41,7 +41,35 @@ function handleKeyDown(project: AtlasEditorProject, event: KeyboardEvent) {
         target.tagName === "SELECT" ||
         target.isContentEditable
     );
-    if (isTargetEditable || event.ctrlKey || event.metaKey || event.altKey) {
+    if (isTargetEditable) {
+        return;
+    }
+
+    // undo/redo
+    if (event.ctrlKey || event.metaKey) {
+        const key = event.key.toLowerCase();
+        if (key === "z") {
+            event.preventDefault();
+            if (event.shiftKey) {
+                project.history.redo();
+            } else {
+                project.history.undo();
+            }
+        } else if (key === "y") {
+            event.preventDefault();
+            project.history.redo();
+        }
+        return;
+    }
+
+    if (event.altKey) {
+        return;
+    }
+
+    // deselect
+    if (event.key === "Escape") {
+        event.preventDefault();
+        project.sprites.select(null);
         return;
     }
 

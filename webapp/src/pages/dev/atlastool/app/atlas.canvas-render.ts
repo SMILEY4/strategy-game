@@ -1,9 +1,10 @@
-import type {Point, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
+import type {BackgroundMode, Point, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
 import {toScreenRect} from "@pages/dev/atlastool/app/atlas.geometry.ts";
 import type { AtlasEditorProject} from "@pages/dev/atlastool/app/useAtlasEditor.ts";
 
 const HANDLE_SIZE = 8;
 const MIN_GRID_ZOOM = 3;
+const CHECKER_SIZE = 10;
 
 const COLORS = {
     background: "#1e2024",
@@ -19,6 +20,17 @@ const COLORS = {
     spriteName: "rgba(255,255,255,0.5)",
     draft: "rgba(0,200,255,0.95)",
     hover: "rgba(255,255,255,0.7)",
+};
+
+const BACKGROUND_FILLS: Record<Exclude<BackgroundMode, "checkerboard">, string> = {
+    "fill-dark": "#1e2024",
+    "fill-medium": "#3a3d42",
+    "fill-light": "#c8ccd2",
+};
+
+const CHECKER_COLORS = {
+    light: "#3d4148",
+    dark: "#26282c",
 };
 
 export function renderCanvas(project: AtlasEditorProject, canvas: HTMLCanvasElement, hoverSpriteId: string | null, draft: Rect | null) {
@@ -42,8 +54,7 @@ export function renderCanvas(project: AtlasEditorProject, canvas: HTMLCanvasElem
     }
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.fillStyle = COLORS.background;
-    ctx.fillRect(0, 0, cssWidth, cssHeight);
+    drawBackground(ctx, project.settings.background, cssWidth, cssHeight);
 
     if (!image || imageSize.width <= 0 || imageSize.height <= 0) {
         ctx.fillStyle = COLORS.placeholder;
@@ -79,6 +90,22 @@ export function renderCanvas(project: AtlasEditorProject, canvas: HTMLCanvasElem
 
 
 /** Canvas drawing helpers. All coordinates are converted from image space to screen space via the viewport. */
+
+/** Fills the whole canvas either with a solid color or a transparency checkerboard. */
+function drawBackground(ctx: CanvasRenderingContext2D, mode: BackgroundMode, width: number, height: number) {
+    if (mode === "checkerboard") {
+        for (let y = 0; y < height; y += CHECKER_SIZE) {
+            for (let x = 0; x < width; x += CHECKER_SIZE) {
+                const even = (Math.floor(x / CHECKER_SIZE) + Math.floor(y / CHECKER_SIZE)) % 2 === 0;
+                ctx.fillStyle = even ? CHECKER_COLORS.light : CHECKER_COLORS.dark;
+                ctx.fillRect(x, y, CHECKER_SIZE, CHECKER_SIZE);
+            }
+        }
+    } else {
+        ctx.fillStyle = BACKGROUND_FILLS[mode];
+        ctx.fillRect(0, 0, width, height);
+    }
+}
 
 function drawRect(ctx: CanvasRenderingContext2D, region: Rect, viewport: Viewport, color: string, lineWidth: number) {
     const rect = toScreenRect(region, viewport);

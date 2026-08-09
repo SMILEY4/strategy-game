@@ -1,4 +1,4 @@
-import type {AtlasLayer, AtlasManifest, AtlasTool, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
+import type {AtlasLayer, AtlasManifest, AtlasTool, BackgroundMode, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
 import {type RefObject, useRef, useState} from "react";
 import {createImageFromDataUrl, downloadJson, fileNameWithoutExtension, readFileAsDataUrl} from "@pages/dev/atlastool/app/atlas.io.ts";
 import {exportManifest, parseManifestJson} from "@pages/dev/atlastool/app/atlas.serialization.ts";
@@ -49,6 +49,10 @@ export interface AtlasEditorProject {
         zoomOut: () => void,
         setZoomLevel: (level: number) => void
     },
+    settings: {
+        background: BackgroundMode,
+        setBackground: (mode: BackgroundMode) => void,
+    },
     history: {
         undo: () => void,
         redo: () => void,
@@ -73,6 +77,7 @@ interface ProjectData {
     },
     tool: AtlasTool
     viewport: Viewport
+    background: BackgroundMode
 }
 
 type EditorAction = {
@@ -126,6 +131,7 @@ export function useAtlasEditor(): AtlasEditor {
                 x: 40,
                 y: 40,
             },
+            background: "fill-dark",
         });
 
     }
@@ -304,6 +310,17 @@ export function useAtlasEditor(): AtlasEditor {
             return {
                 ...prev,
                 viewport: viewport,
+            };
+        });
+    }
+
+    function handleSetBackground(mode: BackgroundMode) {
+        if (!projectData) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                background: mode,
             };
         });
     }
@@ -608,6 +625,10 @@ export function useAtlasEditor(): AtlasEditor {
                     zoomIn: handleZoomIn,
                     zoomOut: handleZoomOut,
                     setZoomLevel: handleSetZoomLevel
+                },
+                settings: {
+                    background: projectData.background,
+                    setBackground: handleSetBackground,
                 },
                 history: {
                     undo: handleUndo,

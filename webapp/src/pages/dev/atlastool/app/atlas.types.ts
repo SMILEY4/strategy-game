@@ -3,6 +3,9 @@ export type AtlasTool = "Select" | "Draw" | "Pan";
 /** Compass direction of a region's edge/corner resize handle. */
 export type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
 
+/** Canvas background style behind the sprite sheet image. */
+export type BackgroundMode = "fill-dark" | "fill-medium" | "fill-light" | "checkerboard";
+
 export type AnnotationValue = string | number | boolean | null | AnnotationValue[] | { [key: string]: AnnotationValue };
 
 export interface Point {
