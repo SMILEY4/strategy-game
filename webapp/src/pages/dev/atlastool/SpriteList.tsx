@@ -8,7 +8,7 @@ import sideStyles from "./atlasSide.module.less";
 
 export function SpriteList(props: AtlasEditor<true>): ReactElement {
     return (
-        <div className={sideStyles.section}>
+        <div className={classNames(sideStyles.section, styles.section)}>
 
             <div className={sideStyles.header}>Sprites</div>
 

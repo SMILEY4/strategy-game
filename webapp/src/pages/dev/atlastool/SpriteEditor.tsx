@@ -1,4 +1,5 @@
 import type {ReactElement} from "react";
+import classNames from "classnames";
 import type {AnnotationValue, Rect} from "./app/atlas.types.ts";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {LockIcon} from "./atlas.icons.tsx";
@@ -49,7 +50,7 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
         const locked = sprite.locked;
         const nameTaken = props.project.sprites.list.some(other => other.id !== sprite.id && other.name === sprite.name);
         return (
-            <div className={sideStyles.section}>
+            <div className={classNames(sideStyles.section, styles.section)}>
                 <div className={sideStyles.header}>Sprite</div>
 
                 {locked && (
