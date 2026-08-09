@@ -76,6 +76,29 @@
 	gap:            6px;
 }
 
+.paramHeader {
+	.strong();
+	display:         flex;
+	align-items:     center;
+	justify-content: space-between;
+	gap:             8px;
+	font-size:       13px;
+	margin-top:      12px;
+	margin-bottom:   8px;
+
+	.paramActions {
+		display: flex;
+		gap:     4px;
+
+		button {
+			.button();
+			padding:     2px 8px;
+			line-height: 1.2;
+			font-size:   @atlas-font-size-xs;
+		}
+	}
+}
+
 .paramRow {
 	display:        flex;
 	align-items:    center;

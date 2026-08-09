@@ -47,6 +47,9 @@ function SingleSpriteEditor(props: AtlasEditorProject & { spriteId: string }): R
 
     const locked = sprite.locked;
     const nameTaken = props.sprites.list.some(other => other.id !== sprite.id && other.name === sprite.name);
+    const clipboard = props.sprites.attributesClipboard;
+    const pasteable = clipboard != null
+        && props.parameters.list.some(param => clipboard[param.id] !== undefined);
     return (
         <div className={classNames(sideStyles.section, styles.section)}>
             <div className={sideStyles.header}>Sprite</div>
@@ -106,8 +109,25 @@ function SingleSpriteEditor(props: AtlasEditorProject & { spriteId: string }): R
                 Auto expand
             </button>
 
-            <div className={sideStyles.subheader}>
-                Parameters
+            <div className={styles.paramHeader}>
+                <span>Parameters</span>
+                <span className={styles.paramActions}>
+                    <button
+                        type="button"
+                        onClick={() => props.sprites.copyAttributes(sprite.id)}
+                        title="Copy this sprite's parameter values"
+                    >
+                        Copy
+                    </button>
+                    <button
+                        type="button"
+                        disabled={locked || !pasteable}
+                        title={pasteable ? "Paste the copied parameter values onto this sprite" : "Copy a sprite's parameters first"}
+                        onClick={() => props.sprites.pasteAttributes(sprite.id)}
+                    >
+                        Paste
+                    </button>
+                </span>
             </div>
             {props.parameters.list.length === 0 ? (
                 <div className={sideStyles.empty}>

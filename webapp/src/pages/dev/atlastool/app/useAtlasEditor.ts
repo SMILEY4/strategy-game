@@ -41,6 +41,9 @@ export interface AtlasEditorProject {
         updateRegion: (id: string, patch: Partial<Rect>) => void,
         updateName: (id: string, name: string) => void,
         setAttribute: (spriteId: string, parameterId: string, value: ParameterValue) => void,
+        copyAttributes: (spriteId: string) => void,
+        pasteAttributes: (spriteId: string) => void,
+        attributesClipboard: Record<string, ParameterValue> | null,
         select: (id: string | null) => void,
         toggleSelect: (id: string) => void,
         delete: (id: string) => void,
@@ -105,6 +108,7 @@ export function useAtlasEditor(): AtlasEditor {
     const [projectData, setProjectData] = useState<ProjectData | null>(null);
     const [actions, setActions] = useState<EditorAction[]>([]);
     const [actionPointer, setActionPointer] = useState<number>(-1);
+    const [attributesClipboard, setAttributesClipboard] = useState<Record<string, ParameterValue> | null>(null);
     const pendingBatchRef = useRef<EditorAction[] | null>(null);
 
     //=========== PROJECT ================================================================
@@ -601,6 +605,58 @@ export function useAtlasEditor(): AtlasEditor {
         commitAction(action);
     }
 
+    function handleCopyAttributes(spriteId: string) {
+        if (!projectData) return;
+        const sprite = projectData.sprites.list.find(it => it.id === spriteId);
+        if (!sprite) return;
+        setAttributesClipboard({...sprite.attributes});
+    }
+
+    function handlePasteAttributes(spriteId: string) {
+        if (!projectData) return;
+        if (attributesClipboard == null) return;
+        const sprite = projectData.sprites.list.find(it => it.id === spriteId);
+        if (!sprite) return;
+
+        const before = {...sprite.attributes};
+        const after = {...before};
+        let changed = false;
+        for (const param of projectData.parameters) {
+            const raw = attributesClipboard[param.id];
+            if (raw === undefined) continue;
+            const coerced = coerceToType(raw, param.type);
+            if (after[param.id] !== coerced) {
+                after[param.id] = coerced;
+                changed = true;
+            }
+        }
+        if (!changed) return;
+
+        const action: EditorAction = {
+            apply: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.map(sprite => {
+                        if (sprite.id !== spriteId) return sprite;
+                        return {...sprite, attributes: after};
+                    }),
+                },
+            }),
+            revert: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.map(sprite => {
+                        if (sprite.id !== spriteId) return sprite;
+                        return {...sprite, attributes: before};
+                    }),
+                },
+            }),
+        };
+        commitAction(action);
+    }
+
     function handleSelectSprite(spriteId: string | null) {
         if (!projectData) return;
 
@@ -838,6 +894,9 @@ export function useAtlasEditor(): AtlasEditor {
                     updateRegion: handleUpdateSpriteRegion,
                     updateName: handleUpdateSpriteName,
                     setAttribute: handleSetSpriteAttribute,
+                    copyAttributes: handleCopyAttributes,
+                    pasteAttributes: handlePasteAttributes,
+                    attributesClipboard: attributesClipboard,
                     select: handleSelectSprite,
                     toggleSelect: handleToggleSelectSprite,
                     delete: handleDeleteSprite,
