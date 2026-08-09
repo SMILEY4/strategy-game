@@ -47,6 +47,7 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
         return <></>;
     } else {
         const locked = sprite.locked;
+        const nameTaken = props.project.sprites.list.some(other => other.id !== sprite.id && other.name === sprite.name);
         return (
             <div className={sideStyles.section}>
                 <div className={sideStyles.header}>Sprite</div>
@@ -60,12 +61,7 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
 
                 <label className={styles.field}>
                     Id
-                    <input
-                        disabled={locked}
-                        value={sprite.id}
-                        onChange={event => props.project.sprites.updateMeta(sprite.id, {id: event.target.value, name: sprite.name})}
-                        onKeyDown={event => event.stopPropagation()}
-                    />
+                    <code className={styles.id}>{sprite.id}</code>
                 </label>
 
                 <label className={styles.field}>
@@ -73,9 +69,12 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                     <input
                         disabled={locked}
                         value={sprite.name}
-                        onChange={event => props.project.sprites.updateMeta(sprite.id, {id: sprite.id, name: event.target.value})}
+                        onChange={event => props.project.sprites.updateMeta(sprite.id, {name: event.target.value})}
                         onKeyDown={event => event.stopPropagation()}
                     />
+                    {nameTaken && (
+                        <div className={styles.warning}>Name already used by another sprite.</div>
+                    )}
                 </label>
 
                 <div className={styles.grid}>

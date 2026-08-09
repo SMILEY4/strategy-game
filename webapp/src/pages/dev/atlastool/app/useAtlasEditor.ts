@@ -94,8 +94,9 @@ export function useAtlasEditor(): AtlasEditor {
 
     const createSprite = useCallback((region: Rect) => {
         const clamped = clampRectToImage(region, imageSize);
-        const id = generateSpriteId(sprites.map(sprite => sprite.id));
-        setSprites(prev => [...prev, {id, name: id, ...clamped, annotations: {}, locked: false}]);
+        const id = createSpriteId();
+        const name = nextSpriteName(sprites.map(sprite => sprite.name));
+        setSprites(prev => [...prev, {id, name, ...clamped, annotations: {}, locked: false}]);
         setSelectedSpriteId(id);
     }, [imageSize, sprites]);
 
@@ -103,25 +104,12 @@ export function useAtlasEditor(): AtlasEditor {
         setSprites(prev => prev.map(sprite => sprite.id === id && !sprite.locked ? {...sprite, ...patch} : sprite));
     }, []);
 
-    const updateSpriteMeta = useCallback((id: string, patch: Partial<Pick<SpriteRegion, "id" | "name">>) => {
+    const updateSpriteMeta = useCallback((id: string, patch: { name: string }) => {
         const target = sprites.find(sprite => sprite.id === id);
         if (!target || target.locked) {
             return;
         }
-        const effective: Partial<Pick<SpriteRegion, "id" | "name">> = {};
-        if (patch.id !== undefined && patch.id.trim() && !sprites.some(sprite => sprite.id === patch.id)) {
-            effective.id = patch.id;
-        }
-        if (patch.name !== undefined) {
-            effective.name = patch.name;
-        }
-        if (Object.keys(effective).length === 0) {
-            return;
-        }
-        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, ...effective} : sprite));
-        if (effective.id) {
-            setSelectedSpriteId(current => current === id ? effective.id! : current);
-        }
+        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, name: patch.name} : sprite));
     }, [sprites]);
 
     const deleteSprite = useCallback((id: string) => {
@@ -228,15 +216,23 @@ export function useAtlasEditor(): AtlasEditor {
 }
 
 
-/** Returns the first unused sprite id like `sprite-0`, `sprite-1`, ... */
-function generateSpriteId(existingIds: string[]): string {
+/** Returns a random, practically-unique id for a new sprite. */
+function createSpriteId(): string {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+    }
+    return `sprite-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+/** Returns the first unused default name like `sprite-1`, `sprite-2`, ... */
+function nextSpriteName(existingNames: string[]): string {
     let index = 0;
-    let id: string;
+    let name: string;
     do {
-        id = `sprite-${index}`;
         index++;
-    } while (existingIds.includes(id));
-    return id;
+        name = `sprite-${index}`;
+    } while (existingNames.includes(name));
+    return name;
 }
 
 /** Parses an annotation value typed into a text field: tries JSON first, falls back to plain text. */

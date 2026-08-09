@@ -24,7 +24,7 @@ export interface AtlasEditorProject {
         selected: SpriteRegion | null,
         create: (region: Rect) => void,
         updateRegion: (id: string, patch: Partial<Rect>) => void,
-        updateMeta: (id: string, patch: { id: string, name: string }) => void,
+        updateMeta: (id: string, patch: { name: string }) => void,
         select: (id: string | null) => void,
         delete: (id: string) => void,
         toggleLock: (id: string) => void,
