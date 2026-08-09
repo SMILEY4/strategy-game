@@ -16,6 +16,7 @@ const COLORS = {
     spriteLocked: "rgba(160,170,190,0.9)",
     spriteFillLocked: "rgba(120,130,150,0.15)",
     handleFill: "#ffffff",
+    spriteName: "rgba(255,255,255,0.5)",
     draft: "rgba(0,200,255,0.95)",
     hover: "rgba(255,255,255,0.7)",
 };
@@ -58,6 +59,7 @@ export function renderCanvas(editor: AtlasEditor<true>, canvas: HTMLCanvasElemen
     for (const sprite of editor.project.sprites.list) {
         const selected = sprite.id === editor.project.sprites.selectedId;
         drawSprite(ctx, sprite, viewport, selected);
+        drawSpriteName(ctx, sprite, viewport);
         if (selected && !sprite.locked) {
             drawHandles(ctx, sprite, viewport);
         }
@@ -143,6 +145,27 @@ function drawSprite(ctx: CanvasRenderingContext2D, sprite: SpriteRegion, viewpor
     } else {
         drawRect(ctx, sprite, viewport, color, lineWidth);
     }
+}
+
+/** Draws the sprite name as subtle text at the top-left of its region, when large enough to read. */
+function drawSpriteName(ctx: CanvasRenderingContext2D, sprite: SpriteRegion, viewport: Viewport) {
+    const rect = toScreenRect(sprite, viewport);
+    if (!sprite.name || rect.width < 24 || rect.height < 16) {
+        return;
+    }
+    const fontSize = Math.min(11, Math.max(8, rect.height * 0.4));
+    ctx.font = `${fontSize}px sans-serif`;
+    ctx.textBaseline = "alphabetic";
+    const maxWidth = Math.max(rect.width - 6, 0);
+    let text = sprite.name;
+    if (ctx.measureText(text).width > maxWidth) {
+        while (text.length > 1 && ctx.measureText(text + "…").width > maxWidth) {
+            text = text.slice(0, -1);
+        }
+        text += "…";
+    }
+    ctx.fillStyle = COLORS.spriteName;
+    ctx.fillText(text, rect.x + 3, rect.y + fontSize);
 }
 
 /** Draws the resize handles at the corners of a region. */
