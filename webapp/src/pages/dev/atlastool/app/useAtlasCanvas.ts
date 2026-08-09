@@ -1,5 +1,5 @@
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
-import {type PointerEvent as ReactPointerEvent, type RefObject, useRef, useState} from "react";
+import {type PointerEvent as ReactPointerEvent, type RefObject, useEffect, useRef, useState} from "react";
 import type {AtlasTool, Point, Rect, ResizeHandle, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
 import {
     clampMove,
@@ -39,6 +39,11 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
 
     // the current draft sprite in the progress of being drawn.
     const [draft, setDraft] = useState<Rect | null>(null);
+
+    // keep the cursor in sync with the active tool (e.g. crosshair in draw, arrow in select).
+    useEffect(() => {
+        setCanvasCursor(defaultCursor(editor.project.tool.active));
+    }, [editor.project.tool.active]);
 
 
     //=========== EVENT HANDLERS =========================================================
@@ -371,11 +376,15 @@ function selectCursor(pointScreen: Point, pointImage: Point, sprites: SpriteRegi
             }
         }
     }
-    return hit ? "move" : "crosshair";
+    return hit ? "move" : "default";
 }
 
 
 function defaultCursor(tool: AtlasTool): string {
-    return tool === "pan" ? "grab" : "crosshair";
+    switch (tool) {
+        case "select": return "default";
+        case "draw": return "crosshair";
+        case "pan": return "grab";
+    }
 }
 
