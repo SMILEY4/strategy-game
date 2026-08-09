@@ -54,6 +54,8 @@ export interface AtlasEditorProject {
         redo: () => void,
         canUndo: boolean,
         canRedo: boolean,
+        beginBatch: () => void,
+        endBatch: () => void,
     },
     export: () => void
 }
@@ -85,6 +87,7 @@ export function useAtlasEditor(): AtlasEditor {
     const [projectData, setProjectData] = useState<ProjectData | null>(null);
     const [actions, setActions] = useState<EditorAction[]>([]);
     const [actionPointer, setActionPointer] = useState<number>(-1);
+    const pendingBatchRef = useRef<EditorAction[] | null>(null);
 
     //=========== PROJECT ================================================================
 
@@ -363,6 +366,9 @@ export function useAtlasEditor(): AtlasEditor {
 
         const before: Rect = {x: sprite.x, y: sprite.y, width: sprite.width, height: sprite.height};
         const after: Rect = {...before, ...patch};
+        if (before.x === after.x && before.y === after.y && before.width === after.width && before.height === after.height) {
+            return;
+        }
 
         const action: EditorAction = {
             apply: project => ({
@@ -519,9 +525,26 @@ export function useAtlasEditor(): AtlasEditor {
 
     function commitAction(action: EditorAction) {
         if (!projectData) return;
-        setProjectData(prev => prev == null ? null : action.apply(prev));
-        setActions(prev => [...prev.slice(0, actionPointer + 1), action]);
-        setActionPointer(prev => prev + 1);
+        if (pendingBatchRef.current) {
+            pendingBatchRef.current.push(action);
+            setProjectData(prev => prev == null ? null : action.apply(prev));
+        } else {
+            setProjectData(prev => prev == null ? null : action.apply(prev));
+            setActions(prev => [...prev.slice(0, actionPointer + 1), action]);
+            setActionPointer(prev => prev + 1);
+        }
+    }
+
+    function beginBatch() {
+        pendingBatchRef.current = [];
+    }
+
+    function endBatch() {
+        const batch = pendingBatchRef.current;
+        pendingBatchRef.current = null;
+        if (batch && batch.length > 0) {
+            commitAction(composeActions(batch));
+        }
     }
 
     function handleUndo() {
@@ -591,6 +614,8 @@ export function useAtlasEditor(): AtlasEditor {
                     redo: handleRedo,
                     canUndo: actionPointer >= 0,
                     canRedo: actionPointer < actions.length - 1,
+                    beginBatch: beginBatch,
+                    endBatch: endBatch,
                 },
                 export: handleExport,
             }
@@ -632,4 +657,11 @@ function nextSpriteName(existingNames: string[]): string {
         name = `sprite-${index}`;
     } while (existingNames.includes(name));
     return name;
+}
+
+function composeActions(actions: EditorAction[]): EditorAction {
+    return {
+        apply: project => actions.reduce((acc, action) => action.apply(acc), project),
+        revert: project => [...actions].reverse().reduce((acc, action) => action.revert(acc), project),
+    };
 }

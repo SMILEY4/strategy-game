@@ -129,6 +129,16 @@ export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: 
             return;
         }
 
+        if (interaction?.type === "move") {
+            endInteractionMove();
+            return;
+        }
+
+        if (interaction?.type === "resize") {
+            endInteractionResize();
+            return;
+        }
+
         if (project.tool.active === "Select") {
             const pointScreen = toScreen(event, canvas);
             const pointImage = toImage(event, canvas, project.viewport.value);
@@ -139,11 +149,8 @@ export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: 
     }
 
 
-    function handlePointerCancel(_event: ReactPointerEvent<HTMLCanvasElement>) {
-        interactionRef.current = null;
-        setDraft(null);
-        setCursorPoint(null);
-        setCanvasCursor(defaultCursor(project.tool.active));
+    function handlePointerCancel(event: ReactPointerEvent<HTMLCanvasElement>) {
+        handlePointerUp(event);
     }
 
 
@@ -281,6 +288,7 @@ export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: 
 
     function startInteractionMove(spriteId: string, pointImage: Point) {
         const sprite = project.sprites.list.find(it => it.id === spriteId)!;
+        project.history.beginBatch();
         interactionRef.current = {type: "move", spriteId: spriteId, startRegion: {...sprite}, startImage: pointImage};
         project.sprites.select(spriteId);
         setCanvasCursor("move");
@@ -300,9 +308,14 @@ export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: 
         );
     }
 
+    function endInteractionMove() {
+        project.history.endBatch();
+    }
+
     //=========== INTERACTION RESIZE =====================================================
 
     function startInteractionResize(sprite: SpriteRegion, edgeHandle: ResizeHandle) {
+        project.history.beginBatch();
         interactionRef.current = {
             type: "resize",
             spriteId: sprite.id,
@@ -322,6 +335,10 @@ export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: 
             interaction.spriteId,
             clampResize(interaction.startRegion, interaction.handle, pointImage, project.atlas.size),
         );
+    }
+
+    function endInteractionResize() {
+        project.history.endBatch();
     }
 
     //=========== RENDER =================================================================
@@ -421,9 +438,12 @@ function selectCursor(pointScreen: Point, pointImage: Point, sprites: SpriteRegi
 
 function defaultCursor(tool: AtlasTool): string {
     switch (tool) {
-        case "Select": return "default";
-        case "Draw": return "crosshair";
-        case "Pan": return "grab";
+        case "Select":
+            return "default";
+        case "Draw":
+            return "crosshair";
+        case "Pan":
+            return "grab";
     }
 }
 
