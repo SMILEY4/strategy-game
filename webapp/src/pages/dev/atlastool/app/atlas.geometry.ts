@@ -149,6 +149,23 @@ export function zoomAt(viewport: Viewport, anchor: Point, nextZoom: number): Vie
     };
 }
 
+/** Returns a viewport that fits the whole image into the canvas, centered. */
+export function fitViewport(canvasSize: Size, imageSize: Size): Viewport {
+    if (canvasSize.width <= 0 || canvasSize.height <= 0 || imageSize.width <= 0 || imageSize.height <= 0) {
+        return {zoom: 1, x: 40, y: 40};
+    }
+    const zoom = clamp(
+        Math.min(canvasSize.width / imageSize.width, canvasSize.height / imageSize.height),
+        MIN_ZOOM,
+        MAX_ZOOM,
+    );
+    return {
+        zoom,
+        x: (canvasSize.width - imageSize.width * zoom) / 2,
+        y: (canvasSize.height - imageSize.height * zoom) / 2,
+    };
+}
+
 export function toScreen(event: { clientX: number, clientY: number }, canvas: HTMLCanvasElement): Point {
     const rect = canvas.getBoundingClientRect();
     return {x: event.clientX - rect.left, y: event.clientY - rect.top};

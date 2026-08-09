@@ -1,9 +1,10 @@
 import {type ReactElement, type RefObject, useRef} from "react";
 import type {AtlasTool} from "./app/atlas.types.ts";
-import {MAX_ZOOM, MIN_ZOOM, ZOOM_LEVEL_STEP, zoomAt, zoomFromLevel, zoomToLevel} from "./app/atlas.geometry.ts";
+import {MAX_ZOOM, MIN_ZOOM, ZOOM_LEVEL_STEP, fitViewport, zoomAt, zoomFromLevel, zoomToLevel} from "./app/atlas.geometry.ts";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {readFileAsText} from "@pages/dev/atlastool/app/atlas.io.ts";
 import {TOOL_HOTKEYS} from "./app/useAtlasShortcuts.ts";
+import {INITIAL_VIEWPORT} from "./app/useAtlasEditor.ts";
 
 function ToolIconSelect(): ReactElement {
     return (
@@ -35,6 +36,22 @@ const TOOL_ICONS: Record<AtlasTool, () => ReactElement> = {
     pan: ToolIconPan,
 };
 
+function ViewIconFit(): ReactElement {
+    return (
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
+            <path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/>
+        </svg>
+    );
+}
+
+function ViewIconReset(): ReactElement {
+    return (
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
+            <path d="M13 8a5 5 0 1 1-1.5-3.54M13 2.5V6H9.5"/>
+        </svg>
+    );
+}
+
 export function AtlasToolbar(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
 
     const inputImageRef = useRef<HTMLInputElement>(null);
@@ -58,6 +75,18 @@ export function AtlasToolbar(props: AtlasEditor<true> & { canvasRef?: RefObject<
         const rect = props.canvasRef?.current?.getBoundingClientRect();
         const anchor = rect ? {x: rect.width / 2, y: rect.height / 2} : {x: 0, y: 0};
         props.project.viewport.set(zoomAt(props.project.viewport.value, anchor, nextZoom));
+    }
+
+    function fitView() {
+        const rect = props.canvasRef?.current?.getBoundingClientRect();
+        if (!rect) {
+            return;
+        }
+        props.project.viewport.set(fitViewport({width: rect.width, height: rect.height}, props.project.image.size));
+    }
+
+    function resetView() {
+        props.project.viewport.set({...INITIAL_VIEWPORT});
     }
 
     return (
@@ -112,6 +141,15 @@ export function AtlasToolbar(props: AtlasEditor<true> & { canvasRef?: RefObject<
                         +
                     </button>
                     <span className="atlas-zoom__value">{props.project.viewport.value.zoom.toFixed(2)}×</span>
+                </div>
+
+                <div className="atlas-view">
+                    <button type="button" className="atlas-view__button" onClick={fitView} title="Fit image to view" aria-label="Fit image to view">
+                        <ViewIconFit/>
+                    </button>
+                    <button type="button" className="atlas-view__button" onClick={resetView} title="Reset view" aria-label="Reset view">
+                        <ViewIconReset/>
+                    </button>
                 </div>
 
                 <label className="atlas-toolbar__field">
