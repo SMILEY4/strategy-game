@@ -7,6 +7,7 @@ import {readFileAsText} from "@pages/dev/atlastool/app/atlas.io.ts";
 import {TOOL_HOTKEYS} from "./app/useAtlasShortcuts.ts";
 import {INITIAL_VIEWPORT} from "@pages/dev/atlastool/app/useAtlasEditor.ts";
 import styles from "./AtlasToolbar.module.less";
+import {ToolIconDraw, ToolIconPan, ToolIconSelect, ViewIconFit, ViewIconReset} from "@pages/dev/atlastool/atlas.icons.tsx";
 
 export function AtlasToolbar(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
     return (
@@ -177,46 +178,5 @@ function AtlasNameInput(props: AtlasEditor<true>) {
                 onKeyDown={event => event.stopPropagation()}
             />
         </label>
-    );
-}
-
-function ToolIconSelect(): ReactElement {
-    return (
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
-            <path d="M3.5 2v11.2l3.1-3.1h4.2L3.5 2z"/>
-        </svg>
-    );
-}
-
-function ToolIconDraw(): ReactElement {
-    return (
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-            <rect x="2.75" y="2.75" width="10.5" height="10.5" rx="1"/>
-        </svg>
-    );
-}
-
-function ToolIconPan(): ReactElement {
-    return (
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
-            <path
-                d="M5.5 3a1 1 0 0 1 2 0v4.5h1.75V2a1 1 0 0 1 2 0v5.5h1.75V4.5a1 1 0 0 1 2 0v5.25A4.25 4.25 0 0 1 11 14H9.5a3 3 0 0 1-2.2-.98L4 9.7a1 1 0 0 1 1.45-1.38L6.5 9.6V3z"/>
-        </svg>
-    );
-}
-
-function ViewIconFit(): ReactElement {
-    return (
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
-            <path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/>
-        </svg>
-    );
-}
-
-function ViewIconReset(): ReactElement {
-    return (
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
-            <path d="M13 8a5 5 0 1 1-1.5-3.54M13 2.5V6H9.5"/>
-        </svg>
     );
 }

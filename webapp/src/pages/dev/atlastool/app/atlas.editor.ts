@@ -26,6 +26,7 @@ export interface AtlasEditorProject {
         updateMeta: (id: string, patch: { id: string, name: string }) => void,
         select: (id: string | null) => void,
         delete: (id: string) => void,
+        toggleLock: (id: string) => void,
         addAnnotation: (id: string, key: string) => void, // todo: remove key and inline nextKey-logic
         updateAnnotationKey: (id: string, key: string, newKey: string) => void,
         updateAnnotationValue: (id: string, key: string, newValue: string) => void,

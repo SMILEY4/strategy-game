@@ -16,6 +16,10 @@
 			background-color: @atlas-accent;
 			color:            @atlas-text-on-accent;
 		}
+
+		&.itemLocked .name {
+			color: @atlas-text-dim;
+		}
 	}
 
 	.select {
@@ -41,9 +45,32 @@
 		.tabular();
 	}
 
+	.lock {
+		.ghost-button();
+		margin-left: 4px;
+		padding:     4px 6px;
+
+		&:hover {
+			color: @atlas-text !important;
+		}
+
+		&[aria-pressed="true"] {
+			color: @atlas-accent !important;
+		}
+	}
+
 	.delete {
 		.ghost-button();
 		margin-left: 4px;
 		padding:     4px 6px;
+
+		&:disabled {
+			color:  @atlas-text-faint !important;
+			cursor: default;
+
+			&:hover {
+				color: @atlas-text-faint !important;
+			}
+		}
 	}
 }

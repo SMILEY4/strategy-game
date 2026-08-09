@@ -1,5 +1,17 @@
 @import "./atlas.variables.less";
 
+.lockedNote {
+	display:          flex;
+	align-items:      center;
+	gap:              6px;
+	padding:          6px 8px;
+	margin-bottom:    8px;
+	border-radius:    @atlas-radius;
+	background-color: @atlas-bg-input;
+	border:           1px solid @atlas-border-soft;
+	.text(@atlas-text-dim, @atlas-font-size-sm);
+}
+
 .field {
 	display:        flex;
 	flex-direction: column;

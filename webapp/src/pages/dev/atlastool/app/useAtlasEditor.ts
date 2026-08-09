@@ -20,7 +20,7 @@ function updateAnnotations(
     update: (annotations: Record<string, AnnotationValue>) => Record<string, AnnotationValue>,
 ): SpriteRegion[] {
     return sprites.map(sprite => {
-        if (sprite.id !== id) {
+        if (sprite.id !== id || sprite.locked) {
             return sprite;
         }
         const annotations = update(sprite.annotations);
@@ -83,17 +83,17 @@ export function useAtlasEditor(): AtlasEditor {
     const createSprite = useCallback((region: Rect) => {
         const clamped = clampRectToImage(region, imageSize);
         const id = generateSpriteId(sprites.map(sprite => sprite.id));
-        setSprites(prev => [...prev, {id, name: id, ...clamped, annotations: {}}]);
+        setSprites(prev => [...prev, {id, name: id, ...clamped, annotations: {}, locked: false}]);
         setSelectedSpriteId(id);
     }, [imageSize, sprites]);
 
     const updateSprite = useCallback((id: string, patch: Partial<Rect>) => {
-        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, ...patch} : sprite));
+        setSprites(prev => prev.map(sprite => sprite.id === id && !sprite.locked ? {...sprite, ...patch} : sprite));
     }, []);
 
     const updateSpriteMeta = useCallback((id: string, patch: Partial<Pick<SpriteRegion, "id" | "name">>) => {
         const target = sprites.find(sprite => sprite.id === id);
-        if (!target) {
+        if (!target || target.locked) {
             return;
         }
         const effective: Partial<Pick<SpriteRegion, "id" | "name">> = {};
@@ -113,12 +113,20 @@ export function useAtlasEditor(): AtlasEditor {
     }, [sprites]);
 
     const deleteSprite = useCallback((id: string) => {
+        const target = sprites.find(sprite => sprite.id === id);
+        if (target?.locked) {
+            return;
+        }
         setSprites(prev => withoutSprite(prev, id));
         setSelectedSpriteId(current => current === id ? null : current);
-    }, []);
+    }, [sprites]);
 
     const selectSprite = useCallback((id: string | null) => {
         setSelectedSpriteId(id);
+    }, []);
+
+    const toggleSpriteLock = useCallback((id: string) => {
+        setSprites(prev => prev.map(sprite => sprite.id === id ? {...sprite, locked: !sprite.locked} : sprite));
     }, []);
 
     const addAnnotation = useCallback((id: string, key: string) => {
@@ -180,6 +188,7 @@ export function useAtlasEditor(): AtlasEditor {
                 updateMeta: updateSpriteMeta,
                 delete: deleteSprite,
                 select: selectSprite,
+                toggleLock: toggleSpriteLock,
                 addAnnotation: addAnnotation,
                 updateAnnotationKey: updateAnnotationKey,
                 updateAnnotationValue: updateAnnotationValue,

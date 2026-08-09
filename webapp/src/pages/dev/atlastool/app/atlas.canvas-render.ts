@@ -13,6 +13,8 @@ const COLORS = {
     sprite: "rgba(255,90,90,0.9)",
     spriteSelected: "#2ea6ff",
     spriteFillSelected: "rgba(0,150,255,0.2)",
+    spriteLocked: "rgba(160,170,190,0.9)",
+    spriteFillLocked: "rgba(120,130,150,0.15)",
     handleFill: "#ffffff",
     draft: "rgba(0,200,255,0.95)",
     hover: "rgba(255,255,255,0.7)",
@@ -56,7 +58,7 @@ export function renderCanvas(editor: AtlasEditor<true>, canvas: HTMLCanvasElemen
     for (const sprite of editor.project.sprites.list) {
         const selected = sprite.id === editor.project.sprites.selectedId;
         drawSprite(ctx, sprite, viewport, selected);
-        if (selected) {
+        if (selected && !sprite.locked) {
             drawHandles(ctx, sprite, viewport);
         }
     }
@@ -68,7 +70,7 @@ export function renderCanvas(editor: AtlasEditor<true>, canvas: HTMLCanvasElemen
     if (hoverSpriteId && hoverSpriteId !== editor.project.sprites.selectedId) {
         const hovered = editor.project.sprites.list.find(sprite => sprite.id === hoverSpriteId);
         if (hovered) {
-            drawRect(ctx, hovered, viewport, COLORS.hover, 1);
+            drawRect(ctx, hovered, viewport, hovered.locked ? COLORS.spriteLocked : COLORS.hover, 1);
         }
     }
 }
@@ -125,14 +127,22 @@ function drawGrid(ctx: CanvasRenderingContext2D, viewport: Viewport, imageSize: 
     }
 }
 
-/** Draws a sprite border; fills it when selected. */
+/** Draws a sprite border; fills it when selected. Locked sprites are dashed and muted. */
 function drawSprite(ctx: CanvasRenderingContext2D, sprite: SpriteRegion, viewport: Viewport, selected: boolean) {
     if (selected) {
         const rect = toScreenRect(sprite, viewport);
-        ctx.fillStyle = COLORS.spriteFillSelected;
+        ctx.fillStyle = sprite.locked ? COLORS.spriteFillLocked : COLORS.spriteFillSelected;
         ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
     }
-    drawRect(ctx, sprite, viewport, selected ? COLORS.spriteSelected : COLORS.sprite, selected ? 2 : 1);
+    const color = sprite.locked ? COLORS.spriteLocked : selected ? COLORS.spriteSelected : COLORS.sprite;
+    const lineWidth = selected ? 2 : 1;
+    if (sprite.locked) {
+        ctx.setLineDash([4, 4]);
+        drawRect(ctx, sprite, viewport, color, lineWidth);
+        ctx.setLineDash([]);
+    } else {
+        drawRect(ctx, sprite, viewport, color, lineWidth);
+    }
 }
 
 /** Draws the resize handles at the corners of a region. */

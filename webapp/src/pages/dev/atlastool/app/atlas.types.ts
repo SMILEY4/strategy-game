@@ -32,6 +32,7 @@ export interface SpriteRegion extends Rect {
     id: string;
     name: string;
     annotations: Record<string, AnnotationValue>;
+    locked: boolean;
 }
 
 /** A sprite as stored in the exported manifest, additionally with UV coordinates (0..1). */

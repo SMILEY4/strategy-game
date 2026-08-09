@@ -68,6 +68,10 @@ function asNumber(value: unknown, fallback: number): number {
     return typeof value === "number" ? value : fallback;
 }
 
+function asBoolean(value: unknown, fallback: boolean): boolean {
+    return typeof value === "boolean" ? value : fallback;
+}
+
 function asRoundedNumber(value: unknown, fallback: number): number {
     return typeof value === "number" ? Math.round(value) : fallback;
 }
@@ -113,6 +117,7 @@ export function parseManifestJson(json: string): AtlasManifest {
                 uw: asNumber(entry.uw, 0),
                 vh: asNumber(entry.vh, 0),
                 annotations: parseAnnotations(entry.annotations),
+                locked: asBoolean(entry.locked, false),
             });
         });
     }
@@ -145,6 +150,7 @@ export function manifestToSprites(manifest: AtlasManifest, imageSize: Size): Spr
             id: entry.id,
             name: entry.name,
             annotations: entry.annotations,
+            locked: entry.locked,
             ...rect,
         };
     });

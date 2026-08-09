@@ -66,6 +66,11 @@
 	&:focus {
 		outline: 1px solid @atlas-accent;
 	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor:  not-allowed;
+	}
 }
 
 .button() {
@@ -79,6 +84,15 @@
 
 	&:hover {
 		background-color: @atlas-bg-button-hover;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor:  not-allowed;
+
+		&:hover {
+			background-color: @atlas-bg-button;
+		}
 	}
 }
 

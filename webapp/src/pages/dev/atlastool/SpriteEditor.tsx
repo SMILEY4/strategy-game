@@ -1,6 +1,7 @@
 import type {ReactElement} from "react";
 import type {AnnotationValue, Rect} from "./app/atlas.types.ts";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
+import {LockIcon} from "./atlas.icons.tsx";
 import styles from "./SpriteEditor.module.less";
 import sideStyles from "./atlasSide.module.less";
 
@@ -45,13 +46,22 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
     if (!sprite) {
         return <></>;
     } else {
+        const locked = sprite.locked;
         return (
             <div className={sideStyles.section}>
                 <div className={sideStyles.header}>Sprite</div>
 
+                {locked && (
+                    <div className={styles.lockedNote}>
+                        <LockIcon/>
+                        <span>This sprite is locked. Unlock it in the sprite list to edit.</span>
+                    </div>
+                )}
+
                 <label className={styles.field}>
                     Id
                     <input
+                        disabled={locked}
                         value={sprite.id}
                         onChange={event => props.project.sprites.updateMeta(sprite.id, {id: event.target.value, name: sprite.name})}
                         onKeyDown={event => event.stopPropagation()}
@@ -61,6 +71,7 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                 <label className={styles.field}>
                     Name
                     <input
+                        disabled={locked}
                         value={sprite.name}
                         onChange={event => props.project.sprites.updateMeta(sprite.id, {id: sprite.id, name: event.target.value})}
                         onKeyDown={event => event.stopPropagation()}
@@ -73,6 +84,7 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                             {label}
                             <input
                                 type="number"
+                                disabled={locked}
                                 value={sprite[field]}
                                 onChange={event => setRegionField(field, event.target.value)}
                                 onKeyDown={event => event.stopPropagation()}
@@ -89,12 +101,14 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                     <div key={key} className={styles.annotation}>
                         <input
                             className={styles.key}
+                            disabled={locked}
                             value={key}
                             onChange={event => props.project.sprites.updateAnnotationKey(sprite.id, key, event.target.value)}
                             onKeyDown={event => event.stopPropagation()}
                         />
                         <input
                             className={styles.value}
+                            disabled={locked}
                             value={annotationToText(value)}
                             onChange={event => props.project.sprites.updateAnnotationValue(sprite.id, key, event.target.value)}
                             onKeyDown={event => event.stopPropagation()}
@@ -102,6 +116,7 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                         <button
                             type="button"
                             className={styles.remove}
+                            disabled={locked}
                             onClick={() => props.project.sprites.removeAnnotation(sprite.id, key)}
                         >
                             ✕
@@ -110,6 +125,7 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                 ))}
                 <button
                     type="button"
+                    disabled={locked}
                     onClick={() => props.project.sprites.addAnnotation(sprite.id, nextAnnotationKey(sprite.annotations))}
                 >
                     Add annotation

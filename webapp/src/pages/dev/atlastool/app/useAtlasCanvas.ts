@@ -180,7 +180,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
 
     function startToolSelect(_event: ReactPointerEvent<HTMLCanvasElement>, pointScreen: Point, pointImage: Point) {
         const selectedSprite = editor.project.sprites.selected;
-        if (selectedSprite) {
+        if (selectedSprite && !selectedSprite.locked) {
             const edgeHandle = hitTestEdge(pointScreen, selectedSprite, editor.project.viewport.value);
             if (edgeHandle) {
                 startInteractionResize(selectedSprite, edgeHandle);
@@ -189,7 +189,13 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         }
         const hitSpriteId = hitTestSprite(pointImage, editor.project.sprites.list);
         if (hitSpriteId) {
-            startInteractionMove(hitSpriteId, pointImage);
+            const hitSprite = editor.project.sprites.list.find(sprite => sprite.id === hitSpriteId)!;
+            if (hitSprite.locked) {
+                editor.project.sprites.select(hitSpriteId);
+                startInteractionPan(pointScreen);
+            } else {
+                startInteractionMove(hitSpriteId, pointImage);
+            }
         } else {
             editor.project.sprites.select(null);
             startInteractionPan(pointScreen);
@@ -389,14 +395,18 @@ function selectCursor(pointScreen: Point, pointImage: Point, sprites: SpriteRegi
     const hit = hitTestSprite(pointImage, sprites);
     if (selectedSpriteId) {
         const selected = sprites.find(sprite => sprite.id === selectedSpriteId);
-        if (selected) {
+        if (selected && !selected.locked) {
             const handle = hitTestEdge(pointScreen, selected, viewport);
             if (handle) {
                 return RESIZE_CURSORS[handle];
             }
         }
     }
-    return hit ? "move" : "default";
+    if (hit) {
+        const hitSprite = sprites.find(sprite => sprite.id === hit)!;
+        return hitSprite.locked ? "default" : "move";
+    }
+    return "default";
 }
 
 
