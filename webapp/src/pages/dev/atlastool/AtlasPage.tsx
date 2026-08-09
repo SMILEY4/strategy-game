@@ -7,6 +7,7 @@ import pageStyles from "./AtlasPage.module.less";
 import {AtlasToolbar} from "@pages/dev/atlastool/AtlasToolbar.tsx";
 import {AtlasCanvas} from "@pages/dev/atlastool/AtlasCanvas.tsx";
 import {LayerList} from "@pages/dev/atlastool/LayerList.tsx";
+import {ParametersPanel} from "@pages/dev/atlastool/ParametersPanel.tsx";
 import {SpriteList} from "@pages/dev/atlastool/SpriteList.tsx";
 import {SpriteEditor} from "@pages/dev/atlastool/SpriteEditor.tsx";
 
@@ -207,6 +208,7 @@ export function ProjectEditor(props: AtlasEditorProject & { canvasRef?: RefObjec
             <div className={pageStyles.main}>
                 <aside className={pageStyles.sideLeft}>
                     <LayerList {...props}/>
+                    <ParametersPanel {...props}/>
                 </aside>
 
                 <div className={pageStyles.wrap}>

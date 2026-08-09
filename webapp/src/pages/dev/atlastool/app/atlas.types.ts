@@ -3,6 +3,19 @@ export type AtlasTool = "Select" | "Draw" | "Pan";
 /** Compass direction of a region's edge/corner resize handle. */
 export type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
 
+/** A user-defined parameter shared by all sprites. */
+export type ParameterType = "boolean" | "string" | "number";
+
+/** A value assigned to a parameter on a single sprite. */
+export type ParameterValue = boolean | string | number;
+
+/** Project-level definition of a sprite parameter (schema). */
+export interface ParameterDef {
+    id: string;
+    name: string;
+    type: ParameterType;
+}
+
 /** Canvas background style behind the sprite sheet image. */
 export type BackgroundMode = "fill-dark" | "fill-medium" | "fill-light" | "checkerboard";
 
@@ -44,6 +57,7 @@ export interface SpriteRegion extends Rect {
     id: string;
     name: string;
     locked: boolean;
+    attributes: Record<string, ParameterValue>;
 }
 
 /** A sprite as stored in the exported manifest, additionally with UV coordinates (0..1). */
@@ -61,5 +75,6 @@ export interface AtlasManifest {
         imageSize: Size;
         layers: string[];
     };
+    parameters: ParameterDef[];
     sprites: SpriteManifestEntry[];
 }

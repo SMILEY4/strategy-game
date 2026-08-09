@@ -1,8 +1,9 @@
-import type {AtlasLayer, AtlasManifest, AtlasTool, BackgroundMode, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
+import type {AtlasLayer, AtlasManifest, AtlasTool, BackgroundMode, ParameterDef, ParameterType, ParameterValue, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
 import {type RefObject, useRef, useState} from "react";
 import {createImageFromDataUrl, downloadJson, fileNameWithoutExtension, readFileAsDataUrl} from "@pages/dev/atlastool/app/atlas.io.ts";
 import {exportManifest, parseManifestJson} from "@pages/dev/atlastool/app/atlas.serialization.ts";
 import {clamp, MAX_ZOOM, MIN_ZOOM, zoomAt, zoomFromLevel, zoomToLevel} from "@pages/dev/atlastool/app/atlas.geometry.ts";
+import {coerceToType, defaultAttributes, defaultValueForType} from "@pages/dev/atlastool/app/atlas.parameters.ts";
 
 export interface AtlasEditor<IsProjectLoaded extends boolean = true | false> {
     open: (images: File[], projectJson: string | null) => Promise<void>,
@@ -26,12 +27,20 @@ export interface AtlasEditorProject {
         remove: (id: string) => void,
         select: (id: string) => void,
     },
+    parameters: {
+        list: ParameterDef[],
+        add: () => void,
+        updateName: (id: string, name: string) => void,
+        updateType: (id: string, type: ParameterType) => void,
+        remove: (id: string) => void,
+    },
     sprites: {
         list: SpriteRegion[],
         selected: SpriteRegion[],
         create: (region: Rect) => void,
         updateRegion: (id: string, patch: Partial<Rect>) => void,
         updateName: (id: string, name: string) => void,
+        setAttribute: (spriteId: string, parameterId: string, value: ParameterValue) => void,
         select: (id: string | null) => void,
         toggleSelect: (id: string) => void,
         delete: (id: string) => void,
@@ -74,6 +83,7 @@ interface ProjectData {
         list: AtlasLayer[],
         selectedId: string
     },
+    parameters: ParameterDef[],
     sprites: {
         list: SpriteRegion[],
         selectedIds: string[],
@@ -124,6 +134,7 @@ export function useAtlasEditor(): AtlasEditor {
                 list: layers,
                 selectedId: layers[0].id,
             },
+            parameters: manifest?.parameters ?? [],
             sprites: {
                 list: manifest?.sprites ?? [],
                 selectedIds: [],
@@ -161,6 +172,7 @@ export function useAtlasEditor(): AtlasEditor {
             return {
                 ...prev,
                 name: manifest.atlas.name,
+                parameters: manifest.parameters,
                 sprites: {
                     ...prev.sprites,
                     list: manifest.sprites,
@@ -219,6 +231,86 @@ export function useAtlasEditor(): AtlasEditor {
                 layers: {
                     ...prev.layers,
                     selectedId: layerId,
+                },
+            };
+        });
+    }
+
+    //=========== PARAMETERS ============================================================
+
+    function handleAddParameter() {
+        if (!projectData) return;
+        const def: ParameterDef = {
+            id: crypto.randomUUID(),
+            name: nextParameterName(projectData.parameters.map(it => it.name)),
+            type: "string",
+        };
+        const defaultValue = defaultValueForType(def.type);
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                parameters: [...prev.parameters, def],
+                sprites: {
+                    ...prev.sprites,
+                    list: prev.sprites.list.map(sprite => ({
+                        ...sprite,
+                        attributes: {
+                            ...sprite.attributes,
+                            [def.id]: defaultValue,
+                        },
+                    })),
+                },
+            };
+        });
+    }
+
+    function handleUpdateParameterName(parameterId: string, name: string) {
+        if (!projectData) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                parameters: prev.parameters.map(param => param.id === parameterId ? {...param, name: name} : param),
+            };
+        });
+    }
+
+    function handleUpdateParameterType(parameterId: string, type: ParameterType) {
+        if (!projectData) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                parameters: prev.parameters.map(param => param.id === parameterId ? {...param, type: type} : param),
+                sprites: {
+                    ...prev.sprites,
+                    list: prev.sprites.list.map(sprite => ({
+                        ...sprite,
+                        attributes: {
+                            ...sprite.attributes,
+                            [parameterId]: coerceToType(sprite.attributes[parameterId], type),
+                        },
+                    })),
+                },
+            };
+        });
+    }
+
+    function handleRemoveParameter(parameterId: string) {
+        if (!projectData) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                parameters: prev.parameters.filter(param => param.id !== parameterId),
+                sprites: {
+                    ...prev.sprites,
+                    list: prev.sprites.list.map(sprite => {
+                        const attributes = {...sprite.attributes};
+                        delete attributes[parameterId];
+                        return {...sprite, attributes: attributes};
+                    }),
                 },
             };
         });
@@ -336,6 +428,7 @@ export function useAtlasEditor(): AtlasEditor {
             atlasName: projectData.name,
             imageSize: projectData.size,
             layers: projectData.layers.list.map(layer => layer.name),
+            parameters: projectData.parameters,
             sprites: projectData.sprites.list,
         });
         downloadJson(`${projectData.name || "atlas"}.json`, content);
@@ -350,6 +443,7 @@ export function useAtlasEditor(): AtlasEditor {
             id: crypto.randomUUID(),
             name: nextSpriteName(projectData.sprites.list.map(it => it.name)),
             locked: false,
+            attributes: defaultAttributes(projectData.parameters),
             x: region.x,
             y: region.y,
             width: region.width,
@@ -461,11 +555,56 @@ export function useAtlasEditor(): AtlasEditor {
         commitAction(action);
     }
 
+    function handleSetSpriteAttribute(spriteId: string, parameterId: string, value: ParameterValue) {
+        if (!projectData) return;
+
+        const sprite = projectData.sprites.list.find(it => it.id === spriteId);
+        if (!sprite) return;
+
+        const before = sprite.attributes[parameterId];
+        if (before === value) return;
+
+        const action: EditorAction = {
+            apply: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.map(sprite => {
+                        if (sprite.id !== spriteId) return sprite;
+                        return {
+                            ...sprite,
+                            attributes: {
+                                ...sprite.attributes,
+                                [parameterId]: value,
+                            },
+                        };
+                    }),
+                },
+            }),
+            revert: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.map(sprite => {
+                        if (sprite.id !== spriteId) return sprite;
+                        const attributes = {...sprite.attributes};
+                        if (before === undefined) {
+                            delete attributes[parameterId];
+                        } else {
+                            attributes[parameterId] = before;
+                        }
+                        return {...sprite, attributes: attributes};
+                    }),
+                },
+            }),
+        };
+        commitAction(action);
+    }
+
     function handleSelectSprite(spriteId: string | null) {
         if (!projectData) return;
 
-        const before = projectData.sprites.selectedIds;
-        const after = spriteId ? [spriteId] : [];
+        const before = projectData.sprites.selectedIds;        const after = spriteId ? [spriteId] : [];
 
         const action: EditorAction = {
             apply: project => ({
@@ -683,6 +822,13 @@ export function useAtlasEditor(): AtlasEditor {
                     remove: handleRemoveLayer,
                     select: handleSelectLayer,
                 },
+                parameters: {
+                    list: projectData.parameters,
+                    add: handleAddParameter,
+                    updateName: handleUpdateParameterName,
+                    updateType: handleUpdateParameterType,
+                    remove: handleRemoveParameter,
+                },
                 sprites: {
                     list: projectData.sprites.list,
                     selected: projectData.sprites.selectedIds
@@ -691,6 +837,7 @@ export function useAtlasEditor(): AtlasEditor {
                     create: handleCreateSprite,
                     updateRegion: handleUpdateSpriteRegion,
                     updateName: handleUpdateSpriteName,
+                    setAttribute: handleSetSpriteAttribute,
                     select: handleSelectSprite,
                     toggleSelect: handleToggleSelectSprite,
                     delete: handleDeleteSprite,
@@ -765,6 +912,16 @@ function nextSpriteName(existingNames: string[]): string {
     do {
         index++;
         name = `sprite-${index}`;
+    } while (existingNames.includes(name));
+    return name;
+}
+
+function nextParameterName(existingNames: string[]): string {
+    let index = 0;
+    let name: string;
+    do {
+        index++;
+        name = `parameter-${index}`;
     } while (existingNames.includes(name));
     return name;
 }

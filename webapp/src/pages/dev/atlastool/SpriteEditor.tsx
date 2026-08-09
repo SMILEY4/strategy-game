@@ -1,7 +1,8 @@
 import type {ReactElement} from "react";
 import classNames from "classnames";
-import type {Rect} from "./app/atlas.types.ts";
+import type {ParameterDef, Rect} from "./app/atlas.types.ts";
 import {autoExpandSpriteBounds} from "./app/atlas.auto-expand.ts";
+import {defaultValueForType} from "./app/atlas.parameters.ts";
 import {LockIcon} from "./atlas.icons.tsx";
 import styles from "./SpriteEditor.module.less";
 import sideStyles from "./atlasSide.module.less";
@@ -105,7 +106,82 @@ function SingleSpriteEditor(props: AtlasEditorProject & { spriteId: string }): R
                 Auto expand
             </button>
 
+            <div className={sideStyles.subheader}>
+                Parameters
+            </div>
+            {props.parameters.list.length === 0 ? (
+                <div className={sideStyles.empty}>
+                    No parameters defined. Add them in the Parameters section.
+                </div>
+            ) : (
+                <div className={styles.parameters}>
+                    {props.parameters.list.map(param => (
+                        <ParameterRow
+                            key={param.id}
+                            param={param}
+                            value={sprite.attributes[param.id] ?? defaultValueForType(param.type)}
+                            locked={locked}
+                            onChange={value => props.sprites.setAttribute(sprite.id, param.id, value)}
+                        />
+                    ))}
+                </div>
+            )}
+
         </div>
+    );
+}
+
+function ParameterRow(props: {
+    param: ParameterDef,
+    value: boolean | string | number,
+    locked: boolean,
+    onChange: (value: boolean | string | number) => void,
+}): ReactElement {
+    if (props.param.type === "boolean") {
+        return (
+            <label className={styles.paramRow}>
+                <span className={styles.paramLabel}>{props.param.name}</span>
+                <input
+                    type="checkbox"
+                    disabled={props.locked}
+                    checked={props.value === true}
+                    onChange={event => props.onChange(event.target.checked)}
+                />
+            </label>
+        );
+    }
+    if (props.param.type === "number") {
+        return (
+            <label className={styles.paramRow}>
+                <span className={styles.paramLabel}>{props.param.name}</span>
+                <input
+                    className={styles.paramInput}
+                    type="number"
+                    disabled={props.locked}
+                    value={String(props.value)}
+                    onChange={event => {
+                        const parsed = Number(event.target.value);
+                        if (Number.isFinite(parsed)) {
+                            props.onChange(parsed);
+                        }
+                    }}
+                    onKeyDown={event => event.stopPropagation()}
+                />
+            </label>
+        );
+    }
+    return (
+        <label className={styles.paramRow}>
+            <span className={styles.paramLabel}>{props.param.name}</span>
+            <input
+                className={styles.paramInput}
+                type="text"
+                disabled={props.locked}
+                value={String(props.value)}
+                onChange={event => props.onChange(event.target.value)}
+                onKeyDown={event => event.stopPropagation()}
+            />
+        </label>
     );
 }
 

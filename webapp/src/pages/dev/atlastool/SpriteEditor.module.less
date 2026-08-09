@@ -70,6 +70,34 @@
 	gap:            8px;
 }
 
+.parameters {
+	display:        flex;
+	flex-direction: column;
+	gap:            6px;
+}
+
+.paramRow {
+	display:        flex;
+	align-items:    center;
+	gap:            8px;
+
+	.paramLabel {
+		.text(@atlas-text-muted, @atlas-font-size-sm);
+		flex:        0 0 92px;
+		min-width:   0;
+		overflow:    hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.paramInput {
+		flex:        1;
+		min-width:   0;
+		width:       auto;
+		font-family: "Consolas", "Menlo", monospace;
+	}
+}
+
 .annotation {
 	display:       flex;
 	gap:           4px;
