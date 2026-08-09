@@ -22,9 +22,10 @@ export function SpriteList(props: AtlasEditorProject): ReactElement {
                         <SpriteListEntry
                             key={sprite.id}
                             sprite={sprite}
-                            selected={sprite.id === props.sprites.selected?.id}
+                            selected={props.sprites.selected.some(candidate => candidate.id === sprite.id)}
                             onDelete={() => props.sprites.delete(sprite.id)}
                             onSelect={() => props.sprites.select(sprite.id)}
+                            onToggle={() => props.sprites.toggleSelect(sprite.id)}
                             onToggleLock={() => props.sprites.toggleLock(sprite.id)}
                         />
                     );
@@ -35,14 +36,28 @@ export function SpriteList(props: AtlasEditorProject): ReactElement {
     );
 }
 
-function SpriteListEntry(props: { sprite: SpriteRegion, selected: boolean, onDelete: () => void, onSelect: () => void, onToggleLock: () => void }) {
+function SpriteListEntry(props: {
+    sprite: SpriteRegion,
+    selected: boolean,
+    onDelete: () => void,
+    onSelect: () => void,
+    onToggle: () => void,
+    onToggleLock: () => void,
+}) {
     const locked = props.sprite.locked;
     return (
         <li className={classNames(styles.item, props.selected && styles.itemSelected, locked && styles.itemLocked)}>
             <button
                 type="button"
                 className={styles.select}
-                onClick={props.onSelect}
+                title={props.selected ? "Click to select, Shift/Ctrl+Click to deselect" : "Click to select, Shift/Ctrl+Click to multi-select"}
+                onClick={event => {
+                    if (event.shiftKey || event.ctrlKey || event.metaKey) {
+                        props.onToggle();
+                    } else {
+                        props.onSelect();
+                    }
+                }}
             >
                 <span className={styles.name}>
                     {props.sprite.name || props.sprite.id}

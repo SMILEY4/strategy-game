@@ -82,21 +82,19 @@ function handleKeyDown(project: AtlasEditorProject, event: KeyboardEvent) {
     }
 
     // check delete sprite and trigger
-    if ((event.key === "Delete" || event.key === "Backspace") && project.sprites.selected?.id) {
+    if ((event.key === "Delete" || event.key === "Backspace") && project.sprites.selected.length > 0) {
         event.preventDefault();
-        project.sprites.delete(project.sprites.selected?.id);
+        project.sprites.deleteSelected();
         return;
     }
 
     // check move viewport and trigger
     const delta = ARROW_DELTAS[event.key];
-    if (delta) {
+    if (delta && project.sprites.selected.length === 1) {
         event.preventDefault();
         const step = event.shiftKey ? 10 : 1;
-        const sprite = project.sprites.list.find(candidate => candidate.id === project.sprites.selected?.id);
-        if (sprite) {
-            project.sprites.updateRegion(sprite.id, clampMove(sprite, delta.dx * step, delta.dy * step, project.atlas.size));
-        }
+        const sprite = project.sprites.selected[0];
+        project.sprites.updateRegion(sprite.id, clampMove(sprite, delta.dx * step, delta.dy * step, project.atlas.size));
         return;
     }
 

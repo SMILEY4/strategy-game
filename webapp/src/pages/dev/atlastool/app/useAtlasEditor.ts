@@ -28,13 +28,16 @@ export interface AtlasEditorProject {
     },
     sprites: {
         list: SpriteRegion[],
-        selected: SpriteRegion | null,
+        selected: SpriteRegion[],
         create: (region: Rect) => void,
         updateRegion: (id: string, patch: Partial<Rect>) => void,
         updateName: (id: string, name: string) => void,
         select: (id: string | null) => void,
+        toggleSelect: (id: string) => void,
         delete: (id: string) => void,
+        deleteSelected: () => void,
         toggleLock: (id: string) => void,
+        toggleLockSelected: () => void,
     },
     tool: {
         available: AtlasTool[],
@@ -73,7 +76,7 @@ interface ProjectData {
     },
     sprites: {
         list: SpriteRegion[],
-        selectedId: string | null,
+        selectedIds: string[],
     },
     tool: AtlasTool
     viewport: Viewport
@@ -123,7 +126,7 @@ export function useAtlasEditor(): AtlasEditor {
             },
             sprites: {
                 list: manifest?.sprites ?? [],
-                selectedId: null,
+                selectedIds: [],
             },
             tool: "Pan",
             viewport: {
@@ -161,7 +164,7 @@ export function useAtlasEditor(): AtlasEditor {
                 sprites: {
                     ...prev.sprites,
                     list: manifest.sprites,
-                    selectedId: null,
+                    selectedIds: [],
                 },
             };
         });
@@ -461,22 +464,49 @@ export function useAtlasEditor(): AtlasEditor {
     function handleSelectSprite(spriteId: string | null) {
         if (!projectData) return;
 
-        const before = projectData.sprites.selectedId;
-        const after = spriteId;
+        const before = projectData.sprites.selectedIds;
+        const after = spriteId ? [spriteId] : [];
 
         const action: EditorAction = {
             apply: project => ({
                 ...project,
                 sprites: {
                     ...project.sprites,
-                    selectedId: after,
+                    selectedIds: after,
                 },
             }),
             revert: project => ({
                 ...project,
                 sprites: {
                     ...project.sprites,
-                    selectedId: before,
+                    selectedIds: before,
+                },
+            }),
+        };
+        commitAction(action);
+    }
+
+    function handleToggleSelectSprite(spriteId: string) {
+        if (!projectData) return;
+
+        const before = projectData.sprites.selectedIds;
+        const after = before.includes(spriteId)
+            ? before.filter(id => id !== spriteId)
+            : [...before, spriteId];
+
+        const action: EditorAction = {
+            apply: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    selectedIds: after,
+                },
+            }),
+            revert: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    selectedIds: before,
                 },
             }),
         };
@@ -490,8 +520,8 @@ export function useAtlasEditor(): AtlasEditor {
         if (!sprite) return;
         const spriteIndex = projectData.sprites.list.indexOf(sprite);
 
-        const selectedBefore = projectData.sprites.selectedId;
-        const selectedAfter = projectData.sprites.selectedId === spriteId ? null : projectData.sprites.selectedId;
+        const selectedBefore = projectData.sprites.selectedIds;
+        const selectedAfter = selectedBefore.filter(id => id !== spriteId);
 
         const action: EditorAction = {
             apply: project => ({
@@ -499,7 +529,7 @@ export function useAtlasEditor(): AtlasEditor {
                 sprites: {
                     ...project.sprites,
                     list: project.sprites.list.filter(it => it.id !== spriteId),
-                    selectedId: selectedAfter,
+                    selectedIds: selectedAfter,
                 },
             }),
             revert: project => ({
@@ -507,9 +537,46 @@ export function useAtlasEditor(): AtlasEditor {
                 sprites: {
                     ...project.sprites,
                     list: project.sprites.list.toSpliced(spriteIndex, 0, sprite),
-                    selectedId: selectedBefore,
+                    selectedIds: selectedBefore,
                 },
             }),
+        };
+        commitAction(action);
+    }
+
+    function handleDeleteSelectedSprites() {
+        if (!projectData) return;
+
+        const ids = projectData.sprites.selectedIds;
+        if (ids.length === 0) return;
+
+        const removed = projectData.sprites.list.filter(it => ids.includes(it.id));
+        const indexes = removed.map(sprite => projectData.sprites.list.indexOf(sprite));
+        const selectedBefore = [...ids];
+
+        const action: EditorAction = {
+            apply: project => ({
+                ...project,
+                sprites: {
+                    ...project.sprites,
+                    list: project.sprites.list.filter(it => !ids.includes(it.id)),
+                    selectedIds: [],
+                },
+            }),
+            revert: project => {
+                let list = project.sprites.list;
+                for (let i = indexes.length - 1; i >= 0; i--) {
+                    list = list.toSpliced(indexes[i], 0, removed[i]);
+                }
+                return {
+                    ...project,
+                    sprites: {
+                        ...project.sprites,
+                        list: list,
+                        selectedIds: selectedBefore,
+                    },
+                };
+            },
         };
         commitAction(action);
     }
@@ -529,6 +596,22 @@ export function useAtlasEditor(): AtlasEditor {
                             locked: !sprite.locked,
                         };
                     }),
+                },
+            };
+        });
+    }
+
+    function handleToggleLockSelected() {
+        if (!projectData) return;
+        const ids = projectData.sprites.selectedIds;
+        if (ids.length === 0) return;
+        setProjectData(prev => {
+            if (prev == null) return null;
+            return {
+                ...prev,
+                sprites: {
+                    ...prev.sprites,
+                    list: prev.sprites.list.map(sprite => ids.includes(sprite.id) ? {...sprite, locked: !sprite.locked} : sprite),
                 },
             };
         });
@@ -602,13 +685,18 @@ export function useAtlasEditor(): AtlasEditor {
                 },
                 sprites: {
                     list: projectData.sprites.list,
-                    selected: projectData.sprites.list.find(it => it.id === projectData.sprites.selectedId) ?? null,
+                    selected: projectData.sprites.selectedIds
+                        .map(id => projectData.sprites.list.find(it => it.id === id))
+                        .filter((sprite): sprite is SpriteRegion => sprite != null),
                     create: handleCreateSprite,
                     updateRegion: handleUpdateSpriteRegion,
                     updateName: handleUpdateSpriteName,
                     select: handleSelectSprite,
+                    toggleSelect: handleToggleSelectSprite,
                     delete: handleDeleteSprite,
+                    deleteSelected: handleDeleteSelectedSprites,
                     toggleLock: handleToggleSpriteLock,
+                    toggleLockSelected: handleToggleLockSelected,
                 },
                 tool: {
                     available: ["Select", "Pan", "Draw"],

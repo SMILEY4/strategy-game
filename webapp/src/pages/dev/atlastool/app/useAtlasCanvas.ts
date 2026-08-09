@@ -142,7 +142,7 @@ export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: 
         if (project.tool.active === "Select") {
             const pointScreen = toScreen(event, canvas);
             const pointImage = toImage(event, canvas, project.viewport.value);
-            setCanvasCursor(selectCursor(pointScreen, pointImage, project.sprites.list, project.sprites.selected?.id, project.viewport.value));
+            setCanvasCursor(selectCursor(pointScreen, pointImage, project.sprites.list, project.sprites.selected, project.viewport.value));
         } else {
             setCanvasCursor(defaultCursor(project.tool.active));
         }
@@ -191,8 +191,20 @@ export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: 
 
     //=========== TOOL SELECT ============================================================
 
-    function startToolSelect(_event: ReactPointerEvent<HTMLCanvasElement>, pointScreen: Point, pointImage: Point) {
-        const selectedSprite = project.sprites.selected;
+    function startToolSelect(event: ReactPointerEvent<HTMLCanvasElement>, pointScreen: Point, pointImage: Point) {
+        const hitSpriteId = hitTestSprite(pointImage, project.sprites.list);
+
+        // shift/ctrl/meta click toggles the sprite's selection
+        if (event.shiftKey || event.ctrlKey || event.metaKey) {
+            if (hitSpriteId) {
+                project.sprites.toggleSelect(hitSpriteId);
+            }
+            return;
+        }
+
+        const selected = project.sprites.selected;
+        const singleSelection = selected.length === 1;
+        const selectedSprite = singleSelection ? selected[0] : null;
         if (selectedSprite && !selectedSprite.locked) {
             const edgeHandle = hitTestEdge(pointScreen, selectedSprite, project.viewport.value);
             if (edgeHandle) {
@@ -200,12 +212,14 @@ export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: 
                 return;
             }
         }
-        const hitSpriteId = hitTestSprite(pointImage, project.sprites.list);
         if (hitSpriteId) {
             const hitSprite = project.sprites.list.find(sprite => sprite.id === hitSpriteId)!;
             if (hitSprite.locked) {
                 project.sprites.select(hitSpriteId);
                 startInteractionPan(pointScreen);
+            } else if (selected.some(sprite => sprite.id === hitSpriteId) && selected.length > 1) {
+                // part of a multi-selection: moving/resizing is not allowed
+                return;
             } else {
                 startInteractionMove(hitSpriteId, pointImage);
             }
@@ -233,7 +247,7 @@ export function useAtlasCanvas(project: AtlasEditorProject, externalCanvasRef?: 
     function startInteractionHoverSprite(pointScreen: Point, pointImage: Point) {
         const hit = hitTestSprite(pointImage, project.sprites.list);
         setHoverSpriteId(prev => prev === hit ? prev : hit);
-        setCanvasCursor(selectCursor(pointScreen, pointImage, project.sprites.list, project.sprites.selected?.id, project.viewport.value));
+        setCanvasCursor(selectCursor(pointScreen, pointImage, project.sprites.list, project.sprites.selected, project.viewport.value));
     }
 
     function endInteractionHoverSprite() {
@@ -417,11 +431,11 @@ const RESIZE_CURSORS: Record<ResizeHandle, string> = {
     sw: "nesw-resize",
 };
 
-function selectCursor(pointScreen: Point, pointImage: Point, sprites: SpriteRegion[], selectedSpriteId: string | undefined, viewport: Viewport): string {
+function selectCursor(pointScreen: Point, pointImage: Point, sprites: SpriteRegion[], selectedSprites: SpriteRegion[], viewport: Viewport): string {
     const hit = hitTestSprite(pointImage, sprites);
-    if (selectedSpriteId) {
-        const selected = sprites.find(sprite => sprite.id === selectedSpriteId);
-        if (selected && !selected.locked) {
+    if (selectedSprites.length === 1) {
+        const selected = selectedSprites[0];
+        if (!selected.locked) {
             const handle = hitTestEdge(pointScreen, selected, viewport);
             if (handle) {
                 return RESIZE_CURSORS[handle];
@@ -430,7 +444,13 @@ function selectCursor(pointScreen: Point, pointImage: Point, sprites: SpriteRegi
     }
     if (hit) {
         const hitSprite = sprites.find(sprite => sprite.id === hit)!;
-        return hitSprite.locked ? "default" : "move";
+        if (hitSprite.locked) {
+            return "default";
+        }
+        if (selectedSprites.length > 1 && selectedSprites.some(sprite => sprite.id === hit)) {
+            return "default";
+        }
+        return "move";
     }
     return "default";
 }

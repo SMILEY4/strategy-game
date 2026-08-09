@@ -67,11 +67,14 @@ export function renderCanvas(project: AtlasEditorProject, canvas: HTMLCanvasElem
 
     drawGrid(ctx, viewport, imageSize, cssWidth, cssHeight);
 
+    const selectedIds = new Set(project.sprites.selected.map(sprite => sprite.id));
+    const singleSelection = selectedIds.size === 1;
+
     for (const sprite of project.sprites.list) {
-        const selected = sprite.id === project.sprites.selected?.id;
-        drawSprite(ctx, sprite, viewport, selected);
+        const isSelected = selectedIds.has(sprite.id);
+        drawSprite(ctx, sprite, viewport, isSelected);
         drawSpriteName(ctx, sprite, viewport);
-        if (selected && !sprite.locked) {
+        if (isSelected && !sprite.locked && singleSelection) {
             drawHandles(ctx, sprite, viewport);
         }
     }
@@ -80,7 +83,7 @@ export function renderCanvas(project: AtlasEditorProject, canvas: HTMLCanvasElem
         drawRect(ctx, draft, viewport, COLORS.draft, 2);
     }
 
-    if (hoverSpriteId && hoverSpriteId !== project.sprites.selected?.id) {
+    if (hoverSpriteId && !selectedIds.has(hoverSpriteId)) {
         const hovered = project.sprites.list.find(sprite => sprite.id === hoverSpriteId);
         if (hovered) {
             drawRect(ctx, hovered, viewport, hovered.locked ? COLORS.spriteLocked : COLORS.hover, 1);

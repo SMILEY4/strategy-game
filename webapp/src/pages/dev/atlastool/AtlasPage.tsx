@@ -219,7 +219,7 @@ export function ProjectEditor(props: AtlasEditorProject & { canvasRef?: RefObjec
 
                 <aside className={pageStyles.side}>
                     <SpriteList {...props}/>
-                    {props.sprites.selected?.id && (
+                    {props.sprites.selected.length > 0 && (
                         <SpriteEditor {...props}/>
                     )}
                 </aside>

@@ -38,8 +38,12 @@ export function AtlasCanvas(props: AtlasEditorProject & { canvasRef?: RefObject<
                 <span>{props.layers.active?.name}</span>
                 <span>{props.viewport.value.zoom.toFixed(2)}×</span>
                 <span>{props.tool.active}</span>
-                {props.sprites.selected && (
-                    <span>{props.sprites.selected.name}</span>
+                {props.sprites.selected.length > 0 && (
+                    <span>
+                        {props.sprites.selected.length > 1
+                            ? `${props.sprites.selected.length} selected`
+                            : props.sprites.selected[0].name}
+                    </span>
                 )}
             </div>
         </div>
