@@ -1,0 +1,49 @@
+@import "./atlas.variables.less";
+
+.list {
+	list-style: none;
+	margin:     0;
+	padding:    0;
+	max-height: 240px;
+	overflow-y: auto;
+
+	.item {
+		display:       flex;
+		align-items:   center;
+		margin-bottom: 4px;
+
+		&.itemSelected .select {
+			background-color: @atlas-accent;
+			color:            @atlas-text-on-accent;
+		}
+	}
+
+	.select {
+		flex:             1;
+		display:          flex;
+		flex-direction:   column;
+		align-items:      flex-start;
+		text-align:       left;
+		padding:          6px 10px;
+		border-radius:    @atlas-radius;
+		background-color: @atlas-bg;
+		border:           1px solid @atlas-border-soft;
+		.text(@atlas-text, @atlas-font-size);
+		cursor:           pointer;
+	}
+
+	.name {
+		.strong();
+	}
+
+	.meta {
+		.text(@atlas-text-dim, @atlas-font-size-xs);
+		.tabular();
+	}
+
+	.delete {
+		.ghost-button();
+		margin-left: 4px;
+		padding:     4px 6px;
+	}
+}

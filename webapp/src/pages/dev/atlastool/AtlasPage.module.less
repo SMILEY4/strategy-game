@@ -1,0 +1,68 @@
+@import "./atlas.variables.less";
+
+.page {
+	display:        flex;
+	flex-direction: column;
+	height:         100vh;
+	overflow:       hidden;
+
+	background-color: @atlas-bg;
+	color:            @atlas-text;
+	font-family:      @atlas-font-family;
+	font-size:        @atlas-font-size;
+
+	button {
+		.button();
+	}
+
+	input[type="text"],
+	input[type="number"],
+	select {
+		.input();
+	}
+}
+
+.dropzone {
+	flex:            1;
+	display:         flex;
+	flex-direction:  column;
+	align-items:     center;
+	justify-content: center;
+	gap:             12px;
+
+	.text(@atlas-text-muted, @atlas-font-size);
+	text-align:      center;
+}
+
+.main {
+	flex:     1;
+	display:  flex;
+	overflow: hidden;
+}
+
+.wrap {
+	position: relative;
+	flex:     1;
+	overflow: hidden;
+
+	.hint {
+		position:       absolute;
+		top:            8px;
+		left:           8px;
+		right:          8px;
+		pointer-events: none;
+
+		.text(@atlas-text-dim, @atlas-font-size-xs);
+		text-align:     right;
+	}
+}
+
+.side {
+	width:           300px;
+	flex-shrink:     0;
+	display:         flex;
+	flex-direction:  column;
+	overflow-y:      auto;
+
+	.panel(left);
+}

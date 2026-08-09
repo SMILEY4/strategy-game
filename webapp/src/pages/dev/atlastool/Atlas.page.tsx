@@ -2,7 +2,7 @@ import {type DragEvent as ReactDragEvent, type ReactElement, useRef} from "react
 import {useAtlasEditor} from "./app/useAtlasEditor.ts";
 import {useAtlasShortcuts} from "./app/useAtlasShortcuts.ts";
 import {readFileAsText} from "./app/atlas.io.ts";
-import "./atlas.page.less";
+import pageStyles from "./AtlasPage.module.less";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {AtlasToolbar} from "@pages/dev/atlastool/AtlasToolbar.tsx";
 import {AtlasCanvas} from "@pages/dev/atlastool/AtlasCanvas.tsx";
@@ -13,14 +13,6 @@ import {SpriteEditor} from "@pages/dev/atlastool/SpriteEditor.tsx";
 export function AtlasPage(): ReactElement {
 
     const editor = useAtlasEditor();
-
-    // const {
-    //     imageInputRef,
-    //     projectInputRef,
-    //     openImageFile,
-    //     loadProjectFile,
-    //     handleDrop,
-    // } = useAtlasFiles(editor, () => editor.project?.viewport.set(INITIAL_VIEWPORT));
 
     useAtlasShortcuts(editor.project);
 
@@ -75,8 +67,8 @@ export function EmptyProject(props: AtlasEditor<false>) {
     }
 
     return (
-        <div className="atlas-page" onDragOver={event => event.preventDefault()} onDrop={handleDrop}>
-            <div className="atlas-dropzone">
+        <div className={pageStyles.page} onDragOver={event => event.preventDefault()} onDrop={handleDrop}>
+            <div className={pageStyles.dropzone}>
                 <p>Drop an image here to start a new project, or <button type="button" onClick={handleOpen}>choose a file</button></p>
                 <p>To continue a project, load the image together with its exported JSON (select or drop both at once).</p>
             </div>
@@ -102,19 +94,19 @@ export function EmptyProject(props: AtlasEditor<false>) {
 export function ProjectEditor(props: AtlasEditor<true>) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     return (
-        <div className="atlas-page">
+        <div className={pageStyles.page}>
 
             <AtlasToolbar {...props} canvasRef={canvasRef}/>
 
-            <div className="atlas-main">
-                <div className="atlas-canvas-wrap">
+            <div className={pageStyles.main}>
+                <div className={pageStyles.wrap}>
                     <AtlasCanvas {...props} canvasRef={canvasRef}/>
-                    <div className="atlas-canvas-wrap__hint">
+                    <div className={pageStyles.hint}>
                         tools: s select · d draw · p pan · wheel: zoom · middle-drag: pan · arrows: nudge (shift: ×10) · del: remove
                     </div>
                 </div>
 
-                <aside className="atlas-side">
+                <aside className={pageStyles.side}>
                     <SpriteList {...props}/>
                     {props.project.sprites.selectedId && (
                         <SpriteEditor {...props}/>

@@ -1,0 +1,44 @@
+@import "./atlas.variables.less";
+
+.field {
+	display:        flex;
+	flex-direction: column;
+	gap:            4px;
+	margin-bottom:  8px;
+
+	.text(@atlas-text-muted, @atlas-font-size-sm);
+
+	input {
+		width:      100%;
+		min-width:  0;
+		box-sizing: border-box;
+	}
+}
+
+.grid {
+	display:               grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap:            8px;
+}
+
+.annotation {
+	display:       flex;
+	gap:           4px;
+	margin-bottom: 6px;
+
+	.key {
+		flex:      1;
+		min-width: 0;
+	}
+
+	.value {
+		flex:        1.4;
+		min-width:   0;
+		font-family: "Consolas", "Menlo", monospace;
+	}
+
+	.remove {
+		.ghost-button();
+		padding: 0 6px;
+	}
+}

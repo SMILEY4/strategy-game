@@ -1,0 +1,57 @@
+@import "./atlas.variables.less";
+
+.toolbar {
+	.panel();
+
+	display:   flex;
+	align-items: center;
+	gap:       8px;
+	flex-wrap: wrap;
+	padding:   8px 12px;
+
+	.field {
+		display:    flex;
+		align-items: center;
+		gap:        6px;
+		.text(@atlas-text-muted, @atlas-font-size-sm);
+	}
+
+	.tools {
+		.segmented();
+
+		.toolButton {
+			.segmented-button();
+
+			&.toolButtonActive {
+				background-color: @atlas-accent;
+				color:            @atlas-text-on-accent;
+			}
+		}
+	}
+
+	.view {
+		.segmented();
+
+		.viewButton {
+			.segmented-button();
+		}
+	}
+}
+
+.zoom {
+	display:    flex;
+	align-items: center;
+	gap:        4px;
+
+	input[type="range"] {
+		width:        140px;
+		accent-color: @atlas-accent;
+	}
+
+	.zoomValue {
+		min-width:  44px;
+		text-align: right;
+		.text(@atlas-text-muted, @atlas-font-size-sm);
+		.tabular();
+	}
+}

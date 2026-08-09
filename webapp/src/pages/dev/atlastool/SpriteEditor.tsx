@@ -1,6 +1,8 @@
 import type {ReactElement} from "react";
 import type {AnnotationValue, Rect} from "./app/atlas.types.ts";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
+import styles from "./SpriteEditor.module.less";
+import sideStyles from "./atlasSide.module.less";
 
 const REGION_FIELDS: Array<{ field: keyof Rect, label: string }> = [
     {field: "x", label: "X"},
@@ -44,10 +46,10 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
         return <></>;
     } else {
         return (
-            <div className="atlas-side__section">
-                <div className="atlas-side__header">Sprite</div>
+            <div className={sideStyles.section}>
+                <div className={sideStyles.header}>Sprite</div>
 
-                <label className="atlas-field">
+                <label className={styles.field}>
                     Id
                     <input
                         value={sprite.id}
@@ -56,7 +58,7 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                     />
                 </label>
 
-                <label className="atlas-field">
+                <label className={styles.field}>
                     Name
                     <input
                         value={sprite.name}
@@ -65,9 +67,9 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                     />
                 </label>
 
-                <div className="atlas-grid">
+                <div className={styles.grid}>
                     {REGION_FIELDS.map(({field, label}) => (
-                        <label className="atlas-field" key={field}>
+                        <label className={styles.field} key={field}>
                             {label}
                             <input
                                 type="number"
@@ -79,27 +81,27 @@ export function SpriteEditor(props: AtlasEditor<true>): ReactElement {
                     ))}
                 </div>
 
-                <div className="atlas-side__subheader">Annotations <span className="atlas-side__subnote">(values are JSON)</span></div>
+                <div className={sideStyles.subheader}>Annotations <span className={sideStyles.subnote}>(values are JSON)</span></div>
                 {Object.keys(sprite.annotations).length === 0 && (
-                    <div className="atlas-side__empty">No annotations.</div>
+                    <div className={sideStyles.empty}>No annotations.</div>
                 )}
                 {Object.entries(sprite.annotations).map(([key, value]) => (
-                    <div key={key} className="atlas-annotation">
+                    <div key={key} className={styles.annotation}>
                         <input
-                            className="atlas-annotation__key"
+                            className={styles.key}
                             value={key}
                             onChange={event => props.project.sprites.updateAnnotationKey(sprite.id, key, event.target.value)}
                             onKeyDown={event => event.stopPropagation()}
                         />
                         <input
-                            className="atlas-annotation__value"
+                            className={styles.value}
                             value={annotationToText(value)}
                             onChange={event => props.project.sprites.updateAnnotationValue(sprite.id, key, event.target.value)}
                             onKeyDown={event => event.stopPropagation()}
                         />
                         <button
                             type="button"
-                            className="atlas-annotation__remove"
+                            className={styles.remove}
                             onClick={() => props.project.sprites.removeAnnotation(sprite.id, key)}
                         >
                             ✕

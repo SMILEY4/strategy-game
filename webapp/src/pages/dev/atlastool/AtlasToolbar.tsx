@@ -1,14 +1,16 @@
 import {type ReactElement, type RefObject, useRef} from "react";
+import classNames from "classnames";
 import type {AtlasTool} from "./app/atlas.types.ts";
 import {fitViewport, MAX_ZOOM, MIN_ZOOM, ZOOM_LEVEL_STEP, zoomAt, zoomFromLevel, zoomToLevel} from "./app/atlas.geometry.ts";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {readFileAsText} from "@pages/dev/atlastool/app/atlas.io.ts";
 import {TOOL_HOTKEYS} from "./app/useAtlasShortcuts.ts";
 import {INITIAL_VIEWPORT} from "@pages/dev/atlastool/app/useAtlasEditor.ts";
+import styles from "./AtlasToolbar.module.less";
 
 export function AtlasToolbar(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
     return (
-        <header className="atlas-toolbar">
+        <header className={styles.toolbar}>
             <ProjectActions {...props}/>
             <ToolIconGroup {...props}/>
             <ZoomControl {...props}/>
@@ -80,7 +82,7 @@ const TOOL_ICONS: Record<AtlasTool, () => ReactElement> = {
 
 function ToolIconGroup(props: AtlasEditor<true>) {
     return (
-        <div className="atlas-tools" role="group" aria-label="Tool">
+        <div className={styles.tools} role="group" aria-label="Tool">
             {props.project.tool.available.map(tool => {
                 const Icon = TOOL_ICONS[tool.id];
                 const active = props.project.tool.active === tool.id;
@@ -88,7 +90,7 @@ function ToolIconGroup(props: AtlasEditor<true>) {
                     <button
                         key={tool.id}
                         type="button"
-                        className={active ? "atlas-tools__button atlas-tools__button--active" : "atlas-tools__button"}
+                        className={classNames(styles.toolButton, active && styles.toolButtonActive)}
                         title={`${tool.displayName} (${TOOL_HOTKEYS[tool.id]})`}
                         aria-pressed={active}
                         onClick={() => props.project.tool.select(tool.id)}
@@ -110,7 +112,7 @@ function ZoomControl(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanv
     }
 
     return (
-        <div className="atlas-zoom">
+        <div className={styles.zoom}>
             <button
                 type="button"
                 onClick={() => setViewportZoom(zoomFromLevel(zoomToLevel(props.project.viewport.value.zoom) - 0.5))}
@@ -134,7 +136,7 @@ function ZoomControl(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanv
             >
                 +
             </button>
-            <span className="atlas-zoom__value">{props.project.viewport.value.zoom.toFixed(2)}×</span>
+            <span className={styles.zoomValue}>{props.project.viewport.value.zoom.toFixed(2)}×</span>
         </div>
     );
 }
@@ -154,11 +156,11 @@ function ViewportControls(props: AtlasEditor<true> & { canvasRef?: RefObject<HTM
     }
 
     return (
-        <div className="atlas-view">
-            <button type="button" className="atlas-view__button" onClick={fitView} title="Fit image to view" aria-label="Fit image to view">
+        <div className={styles.view}>
+            <button type="button" className={styles.viewButton} onClick={fitView} title="Fit image to view" aria-label="Fit image to view">
                 <ViewIconFit/>
             </button>
-            <button type="button" className="atlas-view__button" onClick={resetView} title="Reset view" aria-label="Reset view">
+            <button type="button" className={styles.viewButton} onClick={resetView} title="Reset view" aria-label="Reset view">
                 <ViewIconReset/>
             </button>
         </div>
@@ -167,7 +169,7 @@ function ViewportControls(props: AtlasEditor<true> & { canvasRef?: RefObject<HTM
 
 function AtlasNameInput(props: AtlasEditor<true>) {
     return (
-        <label className="atlas-toolbar__field">
+        <label className={styles.field}>
             Atlas name
             <input
                 value={props.project.atlasName.value}

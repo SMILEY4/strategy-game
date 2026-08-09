@@ -1,0 +1,29 @@
+@import "./atlas.variables.less";
+
+.section {
+	padding:       12px;
+	border-bottom: 1px solid @atlas-divider;
+}
+
+.header {
+	.strong();
+	font-size:     14px;
+	margin-bottom: 8px;
+}
+
+.subheader {
+	.strong();
+	font-size:     13px;
+	margin-top:    12px;
+	margin-bottom: 8px;
+}
+
+.subnote {
+	.text(@atlas-text-dim, @atlas-font-size-xs);
+	font-weight: normal;
+}
+
+.empty {
+	.text(@atlas-text-faint, @atlas-font-size-sm);
+	margin-bottom: 8px;
+}

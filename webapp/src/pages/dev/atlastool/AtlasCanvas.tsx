@@ -1,6 +1,7 @@
 import {type ReactElement, type RefObject} from "react";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {useAtlasCanvas} from "@pages/dev/atlastool/app/useAtlasCanvas.ts";
+import styles from "./AtlasCanvas.module.less";
 
 export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
 
@@ -18,9 +19,9 @@ export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<H
     } = useAtlasCanvas(props, props.canvasRef);
 
     return (
-        <div ref={containerRef} className="atlas-canvas">
+        <div ref={containerRef} className={styles.canvas}>
             <canvas
-                className="atlas-canvas__surface"
+                className={styles.surface}
                 ref={canvasRef}
                 onPointerDown={onPointerDown}
                 onPointerMove={onPointerMove}
@@ -30,7 +31,7 @@ export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<H
                 onMouseDown={onMouseDown}
                 onAuxClick={onAuxClick}
             />
-            <div className="atlas-canvas__status">
+            <div className={styles.status}>
                 {cursorPoint && (
                     <span>{Math.round(cursorPoint.x)}, {Math.round(cursorPoint.y)} px</span>
                 )}
