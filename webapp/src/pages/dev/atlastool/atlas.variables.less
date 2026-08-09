@@ -107,6 +107,17 @@
 	}
 }
 
+.ghost-button-disabled() {
+	&:disabled {
+		color:  @atlas-text-faint !important;
+		cursor: default;
+
+		&:hover {
+			color: @atlas-text-faint !important;
+		}
+	}
+}
+
 .segmented() {
 	display:        flex;
 	align-items:    center;

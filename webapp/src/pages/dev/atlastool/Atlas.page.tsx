@@ -38,14 +38,14 @@ export function EmptyProject(props: AtlasEditor<false>) {
 
     function handleDrop(event: ReactDragEvent) {
         event.preventDefault();
-        const files = Array.from(event.dataTransfer.files ?? []);
+        handleFiles(Array.from(event.dataTransfer.files ?? []));
+    }
+
+    function handleFiles(files: File[]) {
         const imageFile = files.find(file => file.type.startsWith("image/"));
         const jsonFile = files.find(file => file.type === "application/json" || file.name.endsWith(".json"));
         if (imageFile && jsonFile) {
-            void (async () => {
-                await openImageFile(imageFile);
-                await loadProjectFile(jsonFile);
-            })();
+            void loadImageAndProject(imageFile, jsonFile);
         } else if (imageFile) {
             void openImageFile(imageFile);
         } else if (jsonFile) {
@@ -55,6 +55,15 @@ export function EmptyProject(props: AtlasEditor<false>) {
 
     async function openImageFile(file: File) {
         await props.load.image(file);
+    }
+
+    async function loadImageAndProject(imageFile: File, jsonFile: File) {
+        const jsonText = await readFileAsText(jsonFile);
+        try {
+            await props.load.imageAndProject(imageFile, jsonText);
+        } catch (error) {
+            window.alert(error instanceof Error ? error.message : "Could not load JSON");
+        }
     }
 
     async function loadProjectFile(file: File) {
@@ -70,18 +79,19 @@ export function EmptyProject(props: AtlasEditor<false>) {
         <div className={pageStyles.page} onDragOver={event => event.preventDefault()} onDrop={handleDrop}>
             <div className={pageStyles.dropzone}>
                 <p>Drop an image here to start a new project, or <button type="button" onClick={handleOpen}>choose a file</button></p>
-                <p>To continue a project, load the image together with its exported JSON (select or drop both at once).</p>
+                <p>To continue a project, select or drop the image together with its exported JSON.</p>
             </div>
 
             <input
                 ref={inputRef}
                 type="file"
-                accept="image/*" // todo: also load jsons ???
+                multiple
+                accept="image/*,.json"
                 hidden
                 onChange={event => {
-                    const file = event.target.files?.[0];
-                    if (file) {
-                        void openImageFile(file);
+                    const files = Array.from(event.target.files ?? []);
+                    if (files.length > 0) {
+                        handleFiles(files);
                     }
                     event.target.value = "";
                 }}

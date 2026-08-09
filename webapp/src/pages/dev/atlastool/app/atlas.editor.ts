@@ -3,7 +3,8 @@ import type {AtlasTool, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atl
 export interface AtlasEditor<IsProjectLoaded extends boolean = true | false> {
     load: {
         image: (file: File) => Promise<void>,
-        projectJson: (jsonContent: string) => void
+        projectJson: (jsonContent: string) => void,
+        imageAndProject: (imageFile: File, projectJson: string) => Promise<void>
     },
     project: IsProjectLoaded extends true ? AtlasEditorProject : null
 }

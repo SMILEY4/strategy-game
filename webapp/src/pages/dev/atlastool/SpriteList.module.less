@@ -61,16 +61,8 @@
 
 	.delete {
 		.ghost-button();
+		.ghost-button-disabled();
 		margin-left: 4px;
 		padding:     4px 6px;
-
-		&:disabled {
-			color:  @atlas-text-faint !important;
-			cursor: default;
-
-			&:hover {
-				color: @atlas-text-faint !important;
-			}
-		}
 	}
 }

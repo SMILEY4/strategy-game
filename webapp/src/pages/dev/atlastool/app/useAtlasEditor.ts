@@ -59,6 +59,18 @@ export function useAtlasEditor(): AtlasEditor {
         await loadImageDataUrl(dataUrl);
     }, [loadImageDataUrl]);
 
+    /** Loads an image and a project JSON atomically, without relying on state that may be stale in the caller. */
+    const loadImageAndProject = useCallback(async (imageFile: File, projectJson: string) => {
+        const dataUrl = await readFileAsDataUrl(imageFile);
+        const element = await createImageFromDataUrl(dataUrl);
+        const size = {width: element.naturalWidth, height: element.naturalHeight};
+        const manifest = parseManifestJson(projectJson);
+        setLoadedImage({element, size});
+        setSprites(manifestToSprites(manifest, size));
+        setSelectedSpriteId(null);
+        setAtlasName(manifest.atlas.name);
+    }, []);
+
     /** Loads a project JSON file, replacing the current sprite set. Requires an image. */
     const applyProjectJson = useCallback((json: string) => {
         if (!image) {
@@ -169,6 +181,7 @@ export function useAtlasEditor(): AtlasEditor {
         load: {
             image: loadImageFile,
             projectJson: applyProjectJson,
+            imageAndProject: loadImageAndProject,
         },
         project: loadedImage ? {
             atlasName: {
