@@ -27,8 +27,8 @@ export function renderCanvas(editor: AtlasEditor<true>, canvas: HTMLCanvasElemen
     if (!ctx) return;
 
     const viewport = editor.project.viewport.value;
-    const image = editor.project.image.element;
-    const imageSize = editor.project.image.size;
+    const image = editor.project.images.active?.element ?? null;
+    const imageSize = editor.project.images.size;
 
     const dpr = window.devicePixelRatio || 1;
     const cssWidth = canvas.clientWidth;

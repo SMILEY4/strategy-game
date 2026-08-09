@@ -35,6 +35,9 @@ export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<H
                 {cursorPoint && (
                     <span>{Math.round(cursorPoint.x)}, {Math.round(cursorPoint.y)} px</span>
                 )}
+                {props.project.images.list.length > 1 && (
+                    <span>{props.project.images.active?.name} · {props.project.images.list.findIndex(layer => layer.id === props.project.images.activeId) + 1}/{props.project.images.list.length}</span>
+                )}
                 <span>{props.project.viewport.value.zoom.toFixed(2)}×</span>
                 <span>{props.project.tool.available.find(tool => tool.id === props.project.tool.active)?.displayName ?? props.project.tool.active}</span>
                 {props.project.sprites.selected && (

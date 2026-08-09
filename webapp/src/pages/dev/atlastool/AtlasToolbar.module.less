@@ -16,6 +16,107 @@
 		.text(@atlas-text-muted, @atlas-font-size-sm);
 	}
 
+	.layers {
+		display:    flex;
+		align-items: center;
+		gap:        4px;
+
+		.layersLabel {
+			.text(@atlas-text-muted, @atlas-font-size-sm);
+			margin-right: 2px;
+			white-space:  nowrap;
+		}
+
+		.layerNav {
+			.button();
+			padding:    3px 6px;
+			line-height: 1;
+			font-size:  @atlas-font-size-xs;
+		}
+
+		.layerList {
+			display:    flex;
+			align-items: center;
+			gap:        4px;
+			max-width:  260px;
+			overflow-x: auto;
+
+			.layerPill {
+				.button();
+				padding:        3px 10px;
+				font-size:      @atlas-font-size-sm;
+				white-space:    nowrap;
+				background-color: transparent;
+				border-color:   transparent;
+				color:          @atlas-text-dim;
+
+				&:hover {
+					background-color: @atlas-bg-button;
+					color:            @atlas-text;
+				}
+
+				&.layerPillActive {
+					background-color: @atlas-accent;
+					border-color:     @atlas-accent;
+					color:            @atlas-text-on-accent;
+				}
+			}
+		}
+
+		.layerAction {
+			.button();
+			padding:     3px 8px;
+			font-size:   @atlas-font-size-sm;
+			white-space: nowrap;
+		}
+	}
+
+	.menu {
+		position: relative;
+
+		.menuButton {
+			.button();
+			display:     flex;
+			align-items: center;
+			gap:         4px;
+			white-space: nowrap;
+		}
+
+		.menuButtonOpen {
+			background-color: @atlas-bg-button-hover;
+		}
+
+		.menuItems {
+			position:       absolute;
+			top:            100%;
+			left:           0;
+			z-index:        20;
+			margin-top:     4px;
+			min-width:      180px;
+			padding:        4px;
+			display:        flex;
+			flex-direction: column;
+			gap:            2px;
+
+			background-color: @atlas-bg-panel;
+			border:           1px solid @atlas-border;
+			border-radius:    @atlas-radius;
+			box-shadow:       0 4px 12px rgba(0, 0, 0, 0.4);
+
+			button {
+				.button();
+				text-align: left;
+				border:     none;
+				background: transparent;
+				color:      @atlas-text;
+
+				&:hover {
+					background-color: @atlas-bg-button;
+				}
+			}
+		}
+	}
+
 	.tools {
 		.segmented();
 

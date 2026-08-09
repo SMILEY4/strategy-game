@@ -4,6 +4,7 @@ import {clampRectToImage, computeUvCoords} from "./atlas.geometry.ts";
 export interface AtlasManifestSource {
     atlasName: string;
     imageSize: Size;
+    layers: string[];
     sprites: SpriteRegion[];
 }
 
@@ -14,6 +15,7 @@ export function buildManifest(source: AtlasManifestSource): AtlasManifest {
         atlas: {
             name: source.atlasName,
             imageSize: source.imageSize,
+            layers: source.layers,
         },
         sprites: source.sprites.map(sprite => ({
             ...sprite,
@@ -99,6 +101,10 @@ export function parseManifestJson(json: string): AtlasManifest {
         height: asPositiveInt(imageSizeRaw.height),
     };
 
+    const layers = Array.isArray(atlas.layers)
+        ? atlas.layers.filter((name): name is string => typeof name === "string" && name.trim().length > 0)
+        : [];
+
     const sprites: SpriteManifestEntry[] = [];
     if (Array.isArray(raw.sprites)) {
         raw.sprites.forEach((entry, index) => {
@@ -126,6 +132,7 @@ export function parseManifestJson(json: string): AtlasManifest {
         atlas: {
             name: asString(atlas.name, "atlas"),
             imageSize,
+            layers,
         },
         sprites,
     };

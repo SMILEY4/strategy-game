@@ -1,10 +1,9 @@
-import type {AtlasTool, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
+import type {AtlasLayer, AtlasTool, Rect, Size, SpriteRegion, Viewport} from "@pages/dev/atlastool/app/atlas.types.ts";
 
 export interface AtlasEditor<IsProjectLoaded extends boolean = true | false> {
     load: {
-        image: (file: File) => Promise<void>,
+        open: (images: File[], projectJson: string | null) => Promise<void>,
         projectJson: (jsonContent: string) => void,
-        imageAndProject: (imageFile: File, projectJson: string) => Promise<void>
     },
     project: IsProjectLoaded extends true ? AtlasEditorProject : null
 }
@@ -14,9 +13,15 @@ export interface AtlasEditorProject {
         value: string,
         set: (value: string) => void
     },
-    image: {
-        element: HTMLImageElement,
-        size: Size
+    images: {
+        list: AtlasLayer[],
+        activeId: string | null,
+        active: AtlasLayer | null,
+        size: Size,
+        add: (files: File[]) => Promise<void>,
+        remove: (id: string) => void,
+        select: (id: string) => void,
+        cycle: (direction: 1 | -1) => void,
     },
     sprites: {
         list: SpriteRegion[],

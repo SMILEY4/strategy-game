@@ -259,14 +259,14 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     //=========== INTERACTION DRAW =======================================================
 
     function startInteractionDraw(pointImage: Point) {
-        const start = clampPointToImage(snapPoint(pointImage), editor.project.image.size);
+        const start = clampPointToImage(snapPoint(pointImage), editor.project.images.size);
         interactionRef.current = {type: "draw", start};
         setDraft(rectFromPoints(start, start));
         setCanvasCursor("crosshair");
     }
 
     function continueInteractionDraw(pointImage: Point, interaction: { type: "draw", start: Point }) {
-        const current = clampPointToImage(snapPoint(pointImage), editor.project.image.size);
+        const current = clampPointToImage(snapPoint(pointImage), editor.project.images.size);
         setDraft(rectFromPoints(interaction.start, current));
     }
 
@@ -296,7 +296,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         const dy = pointImage.y - interaction.startImage.y;
         editor.project.sprites.updateRegion(
             interaction.spriteId,
-            clampMove(interaction.startRegion, dx, dy, editor.project.image.size),
+            clampMove(interaction.startRegion, dx, dy, editor.project.images.size),
         );
     }
 
@@ -320,7 +320,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     }) {
         editor.project.sprites.updateRegion(
             interaction.spriteId,
-            clampResize(interaction.startRegion, interaction.handle, pointImage, editor.project.image.size),
+            clampResize(interaction.startRegion, interaction.handle, pointImage, editor.project.images.size),
         );
     }
 

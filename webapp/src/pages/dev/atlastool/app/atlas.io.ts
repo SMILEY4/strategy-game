@@ -36,3 +36,20 @@ export function downloadJson(filename: string, content: string) {
     anchor.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+/** Whether the file looks like a supported raster image. */
+export function isImageFile(file: File): boolean {
+    return file.type.startsWith("image/") || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(file.name);
+}
+
+/** Whether the file is a JSON project file. */
+export function isJsonFile(file: File): boolean {
+    return file.type === "application/json" || file.name.toLowerCase().endsWith(".json");
+}
+
+/** Returns a file name without its final extension, e.g. `albedo.png` -> `albedo`. */
+export function fileNameWithoutExtension(fileName: string): string {
+    const lastDot = fileName.lastIndexOf(".");
+    const base = lastDot > 0 ? fileName.slice(0, lastDot) : fileName;
+    return base.trim() || "layer";
+}

@@ -1,4 +1,4 @@
-import {type ReactElement, type RefObject, useRef} from "react";
+import {type ReactElement, type RefObject, useEffect, useRef, useState} from "react";
 import classNames from "classnames";
 import type {AtlasTool} from "./app/atlas.types.ts";
 import {fitViewport, MAX_ZOOM, MIN_ZOOM, ZOOM_LEVEL_STEP, zoomAt, zoomFromLevel, zoomToLevel} from "./app/atlas.geometry.ts";
@@ -12,7 +12,8 @@ import {ToolIconDraw, ToolIconPan, ToolIconSelect, ViewIconFit, ViewIconReset} f
 export function AtlasToolbar(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
     return (
         <header className={styles.toolbar}>
-            <ProjectActions {...props}/>
+            <LayersControl {...props}/>
+            <ProjectMenu {...props}/>
             <ToolIconGroup {...props}/>
             <ZoomControl {...props}/>
             <ViewportControls {...props}/>
@@ -21,13 +22,110 @@ export function AtlasToolbar(props: AtlasEditor<true> & { canvasRef?: RefObject<
     );
 }
 
-function ProjectActions(props: AtlasEditor<true>) {
-    const inputImageRef = useRef<HTMLInputElement>(null);
+/** Lets the user view, cycle, add, and remove image layers (all same size, at least one). */
+function LayersControl(props: AtlasEditor<true>) {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const {list, activeId} = props.project.images;
+
+    async function addImages(files: File[]) {
+        if (files.length === 0) {
+            return;
+        }
+        try {
+            await props.project.images.add(files);
+        } catch (error) {
+            window.alert(error instanceof Error ? error.message : "Could not add image");
+        }
+    }
+
+    return (
+        <div className={styles.layers}>
+            <span className={styles.layersLabel} title={`All layers share the same size (${props.project.images.size.width}×${props.project.images.size.height})`}>Layers</span>
+            <button
+                type="button"
+                className={styles.layerNav}
+                onClick={() => props.project.images.cycle(-1)}
+                title="Previous layer ([)"
+                aria-label="Previous layer"
+            >
+                ◀
+            </button>
+            <div className={styles.layerList}>
+                {list.map(layer => (
+                    <button
+                        key={layer.id}
+                        type="button"
+                        className={classNames(styles.layerPill, layer.id === activeId && styles.layerPillActive)}
+                        title={`${layer.name} (${layer.size.width}×${layer.size.height})`}
+                        onClick={() => props.project.images.select(layer.id)}
+                    >
+                        {layer.name}
+                    </button>
+                ))}
+            </div>
+            <button
+                type="button"
+                className={styles.layerNav}
+                onClick={() => props.project.images.cycle(1)}
+                title="Next layer (])"
+                aria-label="Next layer"
+            >
+                ▶
+            </button>
+            <button
+                type="button"
+                className={styles.layerAction}
+                onClick={() => inputRef.current?.click()}
+                title="Add image layer"
+            >
+                + Add
+            </button>
+            <button
+                type="button"
+                className={styles.layerAction}
+                onClick={() => { if (activeId) props.project.images.remove(activeId); }}
+                disabled={list.length <= 1}
+                title={list.length <= 1 ? "Cannot remove the only layer" : "Remove active layer"}
+            >
+                − Remove
+            </button>
+
+            <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={event => {
+                    const selected = Array.from(event.target.files ?? []);
+                    if (selected.length > 0) {
+                        void addImages(selected);
+                    }
+                    event.target.value = "";
+                }}
+            />
+        </div>
+    );
+}
+
+/** Project-level actions: load a project JSON (replaces sprites) and export the current one. */
+function ProjectMenu(props: AtlasEditor<true>) {
+    const [open, setOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
     const inputJsonRef = useRef<HTMLInputElement>(null);
 
-    function openImageFile(file: File) {
-        void props.load.image(file);
-    }
+    useEffect(() => {
+        if (!open) {
+            return;
+        }
+        const onPointerDown = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("pointerdown", onPointerDown);
+        return () => document.removeEventListener("pointerdown", onPointerDown);
+    }, [open]);
 
     async function loadProjectFile(file: File) {
         const text = await readFileAsText(file);
@@ -39,24 +137,40 @@ function ProjectActions(props: AtlasEditor<true>) {
     }
 
     return (
-        <>
-            <button type="button" onClick={() => inputImageRef.current?.click()}>Replace image</button>
-            <button type="button" onClick={() => inputJsonRef.current?.click()}>Load JSON</button>
-            <button type="button" onClick={props.project.export.projectJson}>Export JSON</button>
-
-            <input
-                ref={inputImageRef}
-                type="file"
-                accept="image/*" // todo: also load jsons ???
-                hidden
-                onChange={event => {
-                    const file = event.target.files?.[0];
-                    if (file) {
-                        openImageFile(file);
-                    }
-                    event.target.value = "";
-                }}
-            />
+        <div className={styles.menu} ref={menuRef}>
+            <button
+                type="button"
+                className={classNames(styles.menuButton, open && styles.menuButtonOpen)}
+                onClick={() => setOpen(value => !value)}
+                aria-haspopup="menu"
+                aria-expanded={open}
+            >
+                Project ▾
+            </button>
+            {open && (
+                <div className={styles.menuItems} role="menu">
+                    <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                            setOpen(false);
+                            inputJsonRef.current?.click();
+                        }}
+                    >
+                        Load project JSON…
+                    </button>
+                    <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                            setOpen(false);
+                            props.project.export.projectJson();
+                        }}
+                    >
+                        Export project JSON
+                    </button>
+                </div>
+            )}
 
             <input
                 ref={inputJsonRef}
@@ -71,7 +185,7 @@ function ProjectActions(props: AtlasEditor<true>) {
                     event.target.value = "";
                 }}
             />
-        </>
+        </div>
     );
 }
 
@@ -149,7 +263,7 @@ function ViewportControls(props: AtlasEditor<true> & { canvasRef?: RefObject<HTM
         if (!rect) {
             return;
         }
-        props.project.viewport.set(fitViewport({width: rect.width, height: rect.height}, props.project.image.size));
+        props.project.viewport.set(fitViewport({width: rect.width, height: rect.height}, props.project.images.size));
     }
 
     function resetView() {

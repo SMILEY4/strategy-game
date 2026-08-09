@@ -66,6 +66,18 @@ function handleKeyDown(project: AtlasEditorProject, event: KeyboardEvent) {
         return;
     }
 
+    // cycle through image layers
+    if (event.key === "[") {
+        event.preventDefault();
+        project.images.cycle(-1);
+        return;
+    }
+    if (event.key === "]") {
+        event.preventDefault();
+        project.images.cycle(1);
+        return;
+    }
+
     // check move viewport and trigger
     const delta = ARROW_DELTAS[event.key];
     if (delta) {
@@ -73,7 +85,7 @@ function handleKeyDown(project: AtlasEditorProject, event: KeyboardEvent) {
         const step = event.shiftKey ? 10 : 1;
         const sprite = project.sprites.list.find(candidate => candidate.id === project.sprites.selectedId);
         if (sprite) {
-            project.sprites.updateRegion(sprite.id, clampMove(sprite, delta.dx * step, delta.dy * step, project.image.size));
+            project.sprites.updateRegion(sprite.id, clampMove(sprite, delta.dx * step, delta.dy * step, project.images.size));
         }
         return;
     }

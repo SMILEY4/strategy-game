@@ -27,6 +27,14 @@ export interface Viewport {
     y: number;
 }
 
+/** A single image layer of the sprite sheet. All layers share the same pixel size. */
+export interface AtlasLayer {
+    id: string;
+    name: string;
+    element: HTMLImageElement;
+    size: Size;
+}
+
 /** A sprite region in the editor: pixel rect plus a unique id, name, and annotations. */
 export interface SpriteRegion extends Rect {
     id: string;
@@ -48,6 +56,8 @@ export interface AtlasManifest {
     atlas: {
         name: string;
         imageSize: Size;
+        /** Layer names in order, matching the images they were exported with. */
+        layers: string[];
     };
     sprites: SpriteManifestEntry[];
 }
