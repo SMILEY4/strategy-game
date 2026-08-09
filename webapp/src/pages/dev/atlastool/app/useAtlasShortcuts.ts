@@ -14,14 +14,16 @@ export function useAtlasShortcuts(project: AtlasEditorProject | null) {
     }, [project]);
 }
 
-const TOOL_SHORTCUTS: Record<string, AtlasTool> = {
-    "1": "select",
-    "v": "select",
-    "2": "draw",
-    "d": "draw",
-    "3": "pan",
-    "p": "pan",
+export const TOOL_HOTKEYS: Record<AtlasTool, string> = {
+    select: "V",
+    draw: "D",
+    pan: "P",
 };
+
+const TOOL_SHORTCUTS: Record<string, AtlasTool> = {};
+for (const [tool, key] of Object.entries(TOOL_HOTKEYS) as Array<[AtlasTool, string]>) {
+    TOOL_SHORTCUTS[key.toLowerCase()] = tool;
+}
 
 const ARROW_DELTAS: Record<string, { dx: number, dy: number }> = {
     ArrowLeft: {dx: -1, dy: 0},

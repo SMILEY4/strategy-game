@@ -110,7 +110,7 @@ export function ProjectEditor(props: AtlasEditor<true>) {
                 <div className="atlas-canvas-wrap">
                     <AtlasCanvas {...props} canvasRef={canvasRef}/>
                     <div className="atlas-canvas-wrap__hint">
-                        tools: 1/v select · 2/d draw · 3/p pan · wheel: zoom · middle-drag: pan · arrows: nudge (shift: ×10) · del: remove
+                        tools: v select · d draw · p pan · wheel: zoom · middle-drag: pan · arrows: nudge (shift: ×10) · del: remove
                     </div>
                 </div>
 

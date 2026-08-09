@@ -3,12 +3,7 @@ import type {AtlasTool} from "./app/atlas.types.ts";
 import {MAX_ZOOM, MIN_ZOOM, ZOOM_LEVEL_STEP, zoomAt, zoomFromLevel, zoomToLevel} from "./app/atlas.geometry.ts";
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {readFileAsText} from "@pages/dev/atlastool/app/atlas.io.ts";
-
-const TOOL_HOTKEYS: Record<AtlasTool, string> = {
-    select: "V",
-    draw: "D",
-    pan: "P",
-};
+import {TOOL_HOTKEYS} from "./app/useAtlasShortcuts.ts";
 
 function ToolIconSelect(): ReactElement {
     return (
