@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import {useEffect, useEffectEvent} from "react";
 import type {AtlasTool} from "./atlas.types.ts";
 import {clampMove} from "./atlas.geometry.ts";
 import type {AtlasEditorProject} from "@pages/dev/atlastool/app/atlas.editor.ts";
@@ -7,13 +7,12 @@ import type {AtlasEditorProject} from "@pages/dev/atlastool/app/atlas.editor.ts"
  * Global keydown handler that drives tools and sprite editing.
  */
 export function useAtlasShortcuts(project: AtlasEditorProject | null) {
-    const projectRef = useRef(project);
-    projectRef.current = project;
+    const onKeyDown = useEffectEvent((event: KeyboardEvent) => project && handleKeyDown(project, event));
 
     useEffect(() => {
-        const onKeyDown = (event: KeyboardEvent) => projectRef.current && handleKeyDown(projectRef.current, event);
-        window.addEventListener("keydown", onKeyDown);
-        return () => window.removeEventListener("keydown", onKeyDown);
+        const listener = (event: KeyboardEvent) => onKeyDown(event);
+        window.addEventListener("keydown", listener);
+        return () => window.removeEventListener("keydown", listener);
     }, []);
 }
 
