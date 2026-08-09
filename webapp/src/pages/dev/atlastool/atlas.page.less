@@ -236,12 +236,14 @@
 	overflow:    hidden;
 
 	&__hint {
-		.bottom-overlay();
-		left:        8px;
-		right:       8px;
+		position:       absolute;
+		top:            8px;
+		left:           8px;
+		right:          8px;
+		pointer-events: none;
 
 		.text(@atlas-text-dim, @atlas-font-size-xs);
-		text-align:  right;
+		text-align:     right;
 	}
 }
 
@@ -261,11 +263,19 @@
 	&__status {
 		.bottom-overlay();
 		left:            8px;
+		display:         flex;
+		align-items:     center;
 		padding:         3px 8px;
 		border-radius:   @atlas-radius;
 		background-color: @atlas-status-bg;
 		.text(@atlas-status-text, @atlas-font-size-sm);
 		.tabular();
+
+		span + span::before {
+			content: "·";
+			margin:  0 6px;
+			opacity: 0.6;
+		}
 	}
 }
 

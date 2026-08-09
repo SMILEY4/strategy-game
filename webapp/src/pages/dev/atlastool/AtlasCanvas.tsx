@@ -2,9 +2,15 @@ import {type ReactElement, type RefObject, useEffect, useRef, useState} from "re
 import type {AtlasEditor} from "@pages/dev/atlastool/app/atlas.editor.ts";
 import {useAtlasCanvas} from "@pages/dev/atlastool/app/useAtlasCanvas.ts";
 
+/** Formats a coordinate as a UV value (0..1) relative to the given dimension. */
+function toUv(value: number, max: number): string {
+    return (max > 0 ? value / max : 0).toFixed(3);
+}
+
 export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<HTMLCanvasElement | null> }): ReactElement {
 
     const {
+        cursorPoint,
         canvasRef,
         onPointerDown,
         onPointerMove,
@@ -18,7 +24,6 @@ export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<H
     } = useAtlasCanvas(props, props.canvasRef);
 
     const containerRef = useRef<HTMLDivElement>(null);
-    const statusRef = useRef<HTMLSpanElement>(null);
 
     const [, setSizeTick] = useState(0);
 
@@ -59,7 +64,17 @@ export function AtlasCanvas(props: AtlasEditor<true> & { canvasRef?: RefObject<H
                 onAuxClick={onAuxClick}
             />
             <div className="atlas-canvas__status">
-                <span ref={statusRef}/>
+                {cursorPoint && (
+                    <>
+                        <span>{Math.round(cursorPoint.x)}, {Math.round(cursorPoint.y)} px</span>
+                        <span>u {toUv(cursorPoint.x, props.project.image.size.width)} · v {toUv(cursorPoint.y, props.project.image.size.height)}</span>
+                    </>
+                )}
+                <span>{props.project.viewport.value.zoom.toFixed(2)}×</span>
+                <span>{props.project.tool.available.find(tool => tool.id === props.project.tool.active)?.displayName ?? props.project.tool.active}</span>
+                {props.project.sprites.selected && (
+                    <span>{props.project.sprites.selected.name} · {props.project.sprites.selected.width}×{props.project.sprites.selected.height}</span>
+                )}
             </div>
         </div>
     );

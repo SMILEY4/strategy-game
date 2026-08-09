@@ -34,6 +34,9 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     // the currently hovered sprite
     const [hoverSpriteId, setHoverSpriteId] = useState<string | null>(null);
 
+    // the cursor position in image space (null when the cursor is outside the canvas)
+    const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
+
     // the current draft sprite in the progress of being drawn.
     const [draft, setDraft] = useState<Rect | null>(null);
 
@@ -78,6 +81,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
         canvas.setPointerCapture(event.pointerId);
         const pointScreen = toScreen(event, canvas);
         const pointImage = toImage(event, canvas, editor.project.viewport.value);
+        setCursorPoint(pointImage);
 
         const interaction = interactionRef.current;
 
@@ -135,11 +139,13 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
     function handlePointerCancel(_event: ReactPointerEvent<HTMLCanvasElement>) {
         interactionRef.current = null;
         setDraft(null);
+        setCursorPoint(null);
         setCanvasCursor(defaultCursor(editor.project.tool.active));
     }
 
 
     function handlePointerLeave(_event: ReactPointerEvent<HTMLCanvasElement>) {
+        setCursorPoint(null);
         if (!interactionRef.current) {
             setHoverSpriteId(null);
             setCanvasCursor(defaultCursor(editor.project.tool.active));
@@ -328,6 +334,7 @@ export function useAtlasCanvas(editor: AtlasEditor<true>, externalCanvasRef?: Re
 
     return {
         hoverSpriteId: hoverSpriteId,
+        cursorPoint: cursorPoint,
         canvasRef: canvasRef,
         onPointerDown: handlePointerDown,
         onPointerMove: handlePointerMove,
