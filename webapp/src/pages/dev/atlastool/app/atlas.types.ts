@@ -36,6 +36,7 @@ export interface AtlasLayer {
     name: string;
     element: HTMLImageElement;
     size: Size;
+    alpha: Uint8Array | null;
 }
 
 /** A sprite region in the editor: pixel rect plus a unique id, name, and annotations. */

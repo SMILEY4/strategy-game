@@ -1,6 +1,7 @@
 import type {ReactElement} from "react";
 import classNames from "classnames";
 import type {Rect} from "./app/atlas.types.ts";
+import {autoExpandSpriteBounds} from "./app/atlas.auto-expand.ts";
 import {LockIcon} from "./atlas.icons.tsx";
 import styles from "./SpriteEditor.module.less";
 import sideStyles from "./atlasSide.module.less";
@@ -75,6 +76,21 @@ export function SpriteEditor(props: AtlasEditorProject): ReactElement {
                         </label>
                     ))}
                 </div>
+
+                <button
+                    type="button"
+                    className={styles.expand}
+                    disabled={locked}
+                    title="Expand the region to tightly fit the opaque pixels on the active layer"
+                    onClick={() => {
+                        const rect = autoExpandSpriteBounds(props.layers.active, sprite);
+                        if (rect) {
+                            props.sprites.updateRegion(sprite.id, rect);
+                        }
+                    }}
+                >
+                    Auto expand
+                </button>
 
             </div>
         );

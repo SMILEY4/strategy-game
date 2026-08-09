@@ -663,6 +663,7 @@ async function loadLayer(file: File, size: Size | null): Promise<AtlasLayer> {
         name: fileNameWithoutExtension(file.name),
         element: element,
         size: {width: element.naturalWidth, height: element.naturalHeight},
+        alpha: null,
     };
     if (size && (size.width !== layer.size.width || size.height !== layer.size.height)) {
         throw new Error(`Images must all be the same size (expected ${size.width}×${size.height}, actual ${layer.size.width}×${layer.size.height})`);
