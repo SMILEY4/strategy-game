@@ -7,47 +7,52 @@ export interface ExpandOptions {
     padding?: number;
 }
 
-/** Returns the cached alpha channel for the layer, computing and storing it on the layer on first use. */
-function getLayerAlpha(layer: AtlasLayer): Uint8Array | null {
-    const width = layer.element.naturalWidth || layer.element.width;
-    const height = layer.element.naturalHeight || layer.element.height;
+let sharedCanvas: HTMLCanvasElement | null = null;
+let sharedContext: CanvasRenderingContext2D | null = null;
+let drawnElement: HTMLImageElement | null = null;
 
-    if (layer.alpha) {
-        if (layer.alpha.length === width * height) {
-            return layer.alpha;
-        }
-        layer.alpha = null;
-    }
+/** Returns a shared canvas with the layer's image drawn into it, re-drawing only when the source changes. */
+function getLayerContext(layer: AtlasLayer): CanvasRenderingContext2D | null {
+    const width = layer.size.width;
+    const height = layer.size.height;
 
     if (width <= 0 || height <= 0) return null;
 
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (!ctx) return null;
-
-    ctx.drawImage(layer.element, 0, 0);
-    const rgba = ctx.getImageData(0, 0, width, height).data;
-    const alpha = new Uint8Array(width * height);
-    for (let i = 0, a = 3; i < alpha.length; i++, a += 4) {
-        alpha[i] = rgba[a];
+    if (!sharedCanvas) {
+        sharedCanvas = document.createElement("canvas");
     }
-    layer.alpha = alpha;
-    return alpha;
+    if (sharedCanvas.width !== width || sharedCanvas.height !== height) {
+        sharedCanvas.width = width;
+        sharedCanvas.height = height;
+        sharedContext = null;
+        drawnElement = null;
+    }
+    if (!sharedContext) {
+        sharedContext = sharedCanvas.getContext("2d", { willReadFrequently: true });
+        if (!sharedContext) return null;
+    }
+    if (drawnElement !== layer.element) {
+        sharedContext.drawImage(layer.element, 0, 0);
+        drawnElement = layer.element;
+    }
+    return sharedContext;
 }
 
 /**
  * Expands an initial selection rectangle outward to fit the surrounding sprite.
+ *
+ * Reads only the pixels needed for the expansion: the read region starts at the initial
+ * rectangle and grows outward in steps as the bounds expand, instead of reading the
+ * whole image up front.
  */
 export function autoExpandSpriteBounds(layer: AtlasLayer, initialRect: Rect, options: ExpandOptions = {}): Rect | null {
     const { alphaThreshold = 0, padding = 0 } = options;
 
-    const data = getLayerAlpha(layer);
-    if (!data) return null;
+    const ctx = getLayerContext(layer);
+    if (!ctx) return null;
 
-    const imageWidth = layer.element.naturalWidth || layer.element.width;
-    const imageHeight = layer.element.naturalHeight || layer.element.height;
+    const imageWidth = layer.size.width;
+    const imageHeight = layer.size.height;
 
     // 1. Sanitize & clamp initial input rectangle
     let minX = Math.max(0, Math.floor(initialRect.x));
@@ -57,9 +62,30 @@ export function autoExpandSpriteBounds(layer: AtlasLayer, initialRect: Rect, opt
 
     if (minX > maxX || minY > maxY) return null;
 
-    // Check if a pixel at (x, y) is solid (non-transparent)
+    // Read region covering the current bounds; grows (in chunks) as the bounds expand.
+    let readX = minX;
+    let readY = minY;
+    let readW = maxX - minX + 1;
+    let readH = maxY - minY + 1;
+    let data = ctx.getImageData(readX, readY, readW, readH).data;
+
+    const readPixel = (x: number, y: number): number => {
+        if (x < readX || x > readX + readW - 1 || y < readY || y > readY + readH - 1) {
+            const x0 = Math.max(0, minX - 1 - readW);
+            const y0 = Math.max(0, minY - 1 - readH);
+            const x1 = Math.min(imageWidth - 1, maxX + 1 + readW);
+            const y1 = Math.min(imageHeight - 1, maxY + 1 + readH);
+            readX = x0;
+            readY = y0;
+            readW = x1 - x0 + 1;
+            readH = y1 - y0 + 1;
+            data = ctx.getImageData(readX, readY, readW, readH).data;
+        }
+        return data[((y - readY) * readW + (x - readX)) * 4 + 3];
+    };
+
     const isOpaque = (x: number, y: number): boolean => {
-        return data[y * imageWidth + x] > alphaThreshold;
+        return readPixel(x, y) > alphaThreshold;
     };
 
     // Check if the initial box contains any visible pixels at all
