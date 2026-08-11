@@ -59,12 +59,18 @@ export interface SpriteRegion extends Rect {
     attributes: Record<string, ParameterValue>;
 }
 
-/** A sprite as stored in the exported manifest, additionally with UV coordinates (0..1). */
+/** UV coordinates (0..1) of a sprite within the atlas image. */
+export interface UvRect {
+    uMin: number;
+    vMin: number;
+    uMax: number;
+    vMax: number;
+}
+
+/** A sprite as stored in the exported manifest, additionally with UV coordinates and normalized size. */
 export interface SpriteManifestEntry extends SpriteRegion {
-    u: number;
-    v: number;
-    uw: number;
-    vh: number;
+    uv: UvRect;
+    normalized: Size;
 }
 
 /** Top-level structure of the exported JSON file. */
@@ -72,7 +78,6 @@ export interface AtlasManifest {
     atlas: {
         name: string;
         imageSize: Size;
-        layers: string[];
     };
     parameters: ParameterDef[];
     sprites: SpriteManifestEntry[];

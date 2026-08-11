@@ -1,41 +1,84 @@
-import type {AtlasManifest, ParameterDef, Size, SpriteManifestEntry, SpriteRegion} from "./atlas.types.ts";
-import {clampRectToImage, computeUvCoords} from "./atlas.geometry.ts";
+import type {
+    AtlasManifest,
+    ParameterDef,
+    ParameterValue,
+    Rect,
+    Size,
+    SpriteManifestEntry,
+    SpriteRegion,
+    UvRect,
+} from "./atlas.types.ts";
+import {clampRectToImage, computeNormalizedSize, computeUvCoords} from "./atlas.geometry.ts";
 import {isParameterType, normalizeAttributes} from "./atlas.parameters.ts";
 
 export interface AtlasManifestSource {
     atlasName: string;
     imageSize: Size;
-    layers: string[];
     parameters: ParameterDef[];
     sprites: SpriteRegion[];
 }
 
+/** A sprite entry as it appears in the exported JSON file. */
+interface SerializedSprite {
+    id: string;
+    name: string;
+    size: Rect;
+    uv: UvRect;
+    normalized: Size;
+    locked: boolean;
+    attributes: Record<string, ParameterValue>;
+}
 
-/** Converts editor state into an `AtlasManifest` (adds UV coordinates per sprite). */
+/** Converts editor state into an `AtlasManifest` (adds UV coordinates and normalized size per sprite). */
 export function buildManifest(source: AtlasManifestSource): AtlasManifest {
     return {
         atlas: {
             name: source.atlasName,
             imageSize: source.imageSize,
-            layers: source.layers,
         },
         parameters: source.parameters,
-        sprites: source.sprites.map(sprite => ({
-            ...sprite,
-            ...computeUvCoords(sprite, source.imageSize),
-        })),
+        sprites: source.sprites.map(sprite => toManifestEntry(sprite, source.imageSize)),
+    };
+}
+
+function toManifestEntry(sprite: SpriteRegion, imageSize: Size): SpriteManifestEntry {
+    return {
+        ...sprite,
+        uv: computeUvCoords(sprite, imageSize),
+        normalized: computeNormalizedSize(sprite),
     };
 }
 
 /** Serializes editor state to a pretty-printed JSON string for download. */
 export function exportManifest(source: AtlasManifestSource): string {
-    return JSON.stringify(buildManifest(source), null, 2);
+    const manifest = buildManifest(source);
+    return JSON.stringify({
+        atlas: manifest.atlas,
+        parameters: manifest.parameters,
+        sprites: manifest.sprites.map(serializeSprite),
+    }, null, 2);
+}
+
+function serializeSprite(entry: SpriteManifestEntry): SerializedSprite {
+    return {
+        id: entry.id,
+        name: entry.name,
+        size: {
+            x: entry.x,
+            y: entry.y,
+            width: entry.width,
+            height: entry.height,
+        },
+        uv: entry.uv,
+        normalized: entry.normalized,
+        locked: entry.locked,
+        attributes: entry.attributes,
+    };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 }
-
 
 function asString(value: unknown, fallback: string): string {
     return typeof value === "string" ? value : fallback;
@@ -61,6 +104,37 @@ function asPositiveInt(value: unknown): number {
     return typeof value === "number" && value > 0 ? Math.round(value) : 0;
 }
 
+/** Reads a sprite's pixel rect, accepting either a nested `size` object or legacy flat x/y/width/height. */
+function readSpriteRect(raw: Record<string, unknown>): { x: number, y: number, width: number, height: number } {
+    const size = isRecord(raw.size) ? raw.size : raw;
+    return {
+        x: asRoundedNumber(size.x, 0),
+        y: asRoundedNumber(size.y, 0),
+        width: asRoundedNumber(size.width, 0),
+        height: asRoundedNumber(size.height, 0),
+    };
+}
+
+/** Reads a sprite's UVs, accepting either a nested `uv` object or legacy flat u/v/uw/vh. */
+function readSpriteUv(raw: Record<string, unknown>): UvRect {
+    if (isRecord(raw.uv)) {
+        return {
+            uMin: asNumber(raw.uv.uMin, 0),
+            vMin: asNumber(raw.uv.vMin, 0),
+            uMax: asNumber(raw.uv.uMax, 0),
+            vMax: asNumber(raw.uv.vMax, 0),
+        };
+    }
+    const u = asNumber(raw.u, 0);
+    const v = asNumber(raw.v, 0);
+    return {
+        uMin: u,
+        vMin: v,
+        uMax: asNumber(raw.uw, 0) + u,
+        vMax: asNumber(raw.vh, 0) + v,
+    };
+}
+
 /** Parses a manifest JSON string, tolerating missing/wrong fields. Throws on invalid JSON. */
 export function parseManifestJson(json: string): AtlasManifest {
     let raw: unknown;
@@ -79,10 +153,6 @@ export function parseManifestJson(json: string): AtlasManifest {
         width: asPositiveInt(imageSizeRaw.width),
         height: asPositiveInt(imageSizeRaw.height),
     };
-
-    const layers = Array.isArray(atlas.layers)
-        ? atlas.layers.filter((name): name is string => typeof name === "string" && name.trim().length > 0)
-        : [];
 
     const parameters: ParameterDef[] = [];
     if (Array.isArray(raw.parameters)) {
@@ -106,17 +176,13 @@ export function parseManifestJson(json: string): AtlasManifest {
                 return;
             }
             const rawAttributes = isRecord(entry.attributes) ? entry.attributes : null;
+            const rect = readSpriteRect(entry);
             sprites.push({
                 id: asId(entry.id, `sprite-${index}`),
                 name: asString(entry.name, `Sprite ${index + 1}`),
-                x: asRoundedNumber(entry.x, 0),
-                y: asRoundedNumber(entry.y, 0),
-                width: asRoundedNumber(entry.width, 0),
-                height: asRoundedNumber(entry.height, 0),
-                u: asNumber(entry.u, 0),
-                v: asNumber(entry.v, 0),
-                uw: asNumber(entry.uw, 0),
-                vh: asNumber(entry.vh, 0),
+                ...rect,
+                uv: readSpriteUv(entry),
+                normalized: computeNormalizedSize(rect),
                 locked: asBoolean(entry.locked, false),
                 attributes: normalizeAttributes(rawAttributes as Partial<Record<string, unknown>>, parameters),
             });
@@ -127,7 +193,6 @@ export function parseManifestJson(json: string): AtlasManifest {
         atlas: {
             name: asString(atlas.name, "atlas"),
             imageSize,
-            layers,
         },
         parameters,
         sprites,
@@ -142,10 +207,10 @@ export function manifestToSprites(manifest: AtlasManifest, imageSize: Size): Spr
             hasPixelRect
                 ? {x: entry.x, y: entry.y, width: entry.width, height: entry.height}
                 : {
-                    x: Math.round(entry.u * imageSize.width),
-                    y: Math.round(entry.v * imageSize.height),
-                    width: Math.round(entry.uw * imageSize.width),
-                    height: Math.round(entry.vh * imageSize.height),
+                    x: Math.round(entry.uv.uMin * imageSize.width),
+                    y: Math.round(entry.uv.vMin * imageSize.height),
+                    width: Math.round((entry.uv.uMax - entry.uv.uMin) * imageSize.width),
+                    height: Math.round((entry.uv.vMax - entry.uv.vMin) * imageSize.height),
                 },
             imageSize,
         );

@@ -1,4 +1,4 @@
-import type {Point, Rect, ResizeHandle, Size, SpriteRegion, Viewport} from "./atlas.types.ts";
+import type {Point, Rect, ResizeHandle, Size, SpriteRegion, UvRect, Viewport} from "./atlas.types.ts";
 
 export const MIN_ZOOM = 0.05;
 export const MAX_ZOOM = 32;
@@ -112,12 +112,22 @@ export function clampResize(region: Rect, handle: ResizeHandle, point: Point, si
 }
 
 /** Texture coordinates (0..1) of a region inside the image. */
-export function computeUvCoords(region: Rect, size: Size): { u: number, v: number, uw: number, vh: number } {
+export function computeUvCoords(region: Rect, size: Size): UvRect {
     return {
-        u: size.width > 0 ? region.x / size.width : 0,
-        v: size.height > 0 ? region.y / size.height : 0,
-        uw: size.width > 0 ? region.width / size.width : 0,
-        vh: size.height > 0 ? region.height / size.height : 0,
+        uMin: size.width > 0 ? region.x / size.width : 0,
+        vMin: size.height > 0 ? region.y / size.height : 0,
+        uMax: size.width > 0 ? (region.x + region.width) / size.width : 0,
+        vMax: size.height > 0 ? (region.y + region.height) / size.height : 0,
+    };
+}
+
+/** Normalized sprite size (aspect ratio): the larger side is 1, the smaller side is its fraction. */
+export function computeNormalizedSize(size: Size): Size {
+    const max = Math.max(size.width, size.height);
+    if (max <= 0) return {width: 0, height: 0};
+    return {
+        width: size.width / max,
+        height: size.height / max,
     };
 }
 

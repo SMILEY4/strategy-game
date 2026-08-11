@@ -431,7 +431,6 @@ export function useAtlasEditor(): AtlasEditor {
         const content = exportManifest({
             atlasName: projectData.name,
             imageSize: projectData.size,
-            layers: projectData.layers.list.map(layer => layer.name),
             parameters: projectData.parameters,
             sprites: projectData.sprites.list,
         });
