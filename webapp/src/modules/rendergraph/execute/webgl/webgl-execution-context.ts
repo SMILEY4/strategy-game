@@ -1,5 +1,5 @@
 import {GlAttributeType, GlProgram} from "@modules/rendergraph/webgl/gl-program.ts";
-import {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import GlFramebuffer from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {GlVertexBuffer} from "@modules/rendergraph/webgl/gl-vertexbuffer.ts";
 import {type AttributeConfig, GlVertexArray} from "@modules/rendergraph/webgl/gl-vertexarray.ts";
 import {GlTexture, GLTextureMagFilter, GLTextureMinFilter, GLTextureWrap} from "@modules/rendergraph/webgl/gl-texture.ts";
@@ -91,8 +91,23 @@ export class WebGlExecutionContext {
             resource.resource = GlFramebuffer.create(gl, {
                 width: resource.initialSize[0],
                 height: resource.initialSize[1],
-                color: resource.color,
-                depth: resource.depth,
+                attachments: Object.entries(resource.attachments).map(([name, attachment]) => {
+                    if(attachment.type === "color") {
+                        return {
+                            type: "color",
+                            name: name,
+                            format: attachment.format,
+                        }
+                    }
+                    if(attachment.type === "depth") {
+                        return {
+                            type: "depth",
+                            name: name,
+                            format: attachment.format,
+                        }
+                    }
+                    assertExhaustive(attachment)
+                }),
             });
             return;
         }
@@ -122,7 +137,7 @@ export class WebGlExecutionContext {
                 const programAttributeInfo = program.getInformation().attributes
                     .find(it => it.name === attribute.name);
                 if (!programAttributeInfo && attribute.type !== GlAttributeType.PADDING) {
-                    console.warn("Could not find attribute info '" + attribute.name + "' in program '" + resource.programResourceKey + "'")
+                    console.warn("Could not find attribute info '" + attribute.name + "' in program '" + resource.programResourceKey + "'");
                 }
                 return {
                     buffer: buffer.resource.buffer,
@@ -259,8 +274,8 @@ export class WebGlExecutionContext {
         if (!resource || resource.type !== "vertexbuffer" || !resource.resource) {
             throw new Error("Resource (vertex buffer) with key '" + id + "' is not known.");
         }
-        this.setInitialized(id)
-        this.setDirty(id)
+        this.setInitialized(id);
+        this.setDirty(id);
         resource.resource.elementCount = count;
     }
 
@@ -293,8 +308,8 @@ export class WebGlExecutionContext {
         if (!resource || resource.type !== "data") {
             throw new Error("Resource (data) with key '" + id + "' is not known.");
         }
-        this.setInitialized(id)
-        this.setDirty(id)
+        this.setInitialized(id);
+        this.setDirty(id);
         resource.resource = value;
     }
 
@@ -315,13 +330,13 @@ export class WebGlExecutionContext {
     }
 
     isInitialized(id: string | ValueEntry): boolean {
-        if(typeof id === "string") {
+        if (typeof id === "string") {
             return this.initializedResources.has(id);
         } else {
-            if(id.type === "ref") {
-                return this.initializedResources.has(id.ref)
+            if (id.type === "ref") {
+                return this.initializedResources.has(id.ref);
             } else {
-                return true
+                return true;
             }
         }
     }
@@ -331,7 +346,7 @@ export class WebGlExecutionContext {
     }
 
     getResources(): WebGlResource[] {
-        return Array.from(this.resources.values())
+        return Array.from(this.resources.values());
     }
 
 }

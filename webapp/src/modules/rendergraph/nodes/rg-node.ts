@@ -13,6 +13,7 @@ import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.cam
 import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas-size.ts";
 import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
+import type {PickRenderTargetAttachmentRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.pick-attachment.ts";
 
 /** Union of all render graph node types. */
 export type RenderGraphNode =
@@ -20,7 +21,7 @@ export type RenderGraphNode =
     | DataRenderGraphNode<any>
     | DrawRenderGraphNode
     | GeometryRenderGraphNode
-    | RendertargetRenderGraphNode
+    | RendertargetRenderGraphNode<any>
     | SelectTextureRenderGraphNode<any, any>
     | ShaderRenderGraphNode
     | TextureRenderGraphNode
@@ -31,6 +32,7 @@ export type RenderGraphNode =
     | CanvasSizeRenderGraphNode
     | WasmDataRenderGraphNode
     | WasmOperationRenderGraphNode<any, any>
+    | PickRenderTargetAttachmentRenderGraphNode<any>
 
 /** Unique identifier for a render graph node. */
 export type RenderGraphNodeId = string

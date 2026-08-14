@@ -1,13 +1,14 @@
 import type {CanvasRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas.ts";
 import type {DrawRenderGraphNode, DrawRenderGraphNodeInput} from "@modules/rendergraph/nodes/rg-node.draw.ts";
-import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
+import type {RendertargetAttachment, RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import type {ShaderRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.shader.ts";
 import type {TextureRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.texture.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {TransformRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.transform.ts";
 import type {TransformMultiOutRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.transform-multi-out.ts";
 import type {
-    TransformVertexOutRenderGraphNode, VertexDataLayout,
+    TransformVertexOutRenderGraphNode,
+    VertexDataLayout,
     VertexDataOutput,
     VertexDataResult,
 } from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
@@ -18,6 +19,7 @@ import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.cam
 import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas-size.ts";
 import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
+import type {PickRenderTargetAttachmentRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.pick-attachment.ts";
 
 /** Builder for constructing a render graph by declaring nodes and their connections. */
 export class RenderGraphBuilder {
@@ -107,7 +109,7 @@ export class RenderGraphBuilder {
             shader: options.shader,
             geometry: options.geometry,
             inputs: options.inputs ?? {},
-            blend: options.blend ?? null
+            blend: options.blend ?? null,
         };
         this.nodes.push(node);
         return node;
@@ -153,23 +155,35 @@ export class RenderGraphBuilder {
         };
     }
 
-    public rendertarget(options: {
+    public rendertarget<TKeys extends string>(options: {
         size: DataRenderGraphNode<[number, number]> | CanvasSizeRenderGraphNode
         renderPasses: DrawRenderGraphNode[],
-        colorBuffer?: boolean,
-        depthBuffer?: boolean,
+        attachments: Record<TKeys, RendertargetAttachment>,
         depthTesting?: boolean,
         clearColor?: [number, number, number, number]
-    }): RendertargetRenderGraphNode {
-        const node: RendertargetRenderGraphNode = {
+    }): RendertargetRenderGraphNode<TKeys> {
+        const node: RendertargetRenderGraphNode<TKeys> = {
             type: "rendertarget",
             id: RenderGraphBuilder.generateNodeId(),
             size: options.size,
             renderPasses: options.renderPasses,
-            colorBuffer: options.colorBuffer ?? true,
-            depthBuffer: options.depthBuffer ?? false,
+            attachments: options.attachments,
             depthTesting: options.depthTesting ?? false,
             clearColor: options.clearColor ?? null,
+        };
+        this.nodes.push(node);
+        return node;
+    }
+
+    public pickRendertargetAttachment<TKeys extends string>(options: {
+        rendertarget: RendertargetRenderGraphNode<TKeys>,
+        attachment: TKeys
+    }): PickRenderTargetAttachmentRenderGraphNode<TKeys> {
+        const node: PickRenderTargetAttachmentRenderGraphNode<TKeys> = {
+            type: "pick-rendertarget-attachment",
+            id: RenderGraphBuilder.generateNodeId(),
+            rendertarget: options.rendertarget,
+            attachment: options.attachment,
         };
         this.nodes.push(node);
         return node;
@@ -365,7 +379,7 @@ export class RenderGraphBuilder {
     }
 
     private static generateNodeId(): string {
-        return crypto.randomUUID()
+        return crypto.randomUUID();
     }
 
 }

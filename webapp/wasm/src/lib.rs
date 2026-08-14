@@ -4,7 +4,7 @@ mod render;
 
 use crate::js::direct_buffer;
 use crate::js::direct_buffer::DirectBuffer;
-use crate::js::models::{Entity, Tile};
+use crate::js::models::{Entity, SpriteSheetEntry, Tile};
 use crate::render::renderer::Renderer;
 use js::direct_buffer::DirectMemoryHandle;
 use js_sys::Uint8Array;
@@ -23,6 +23,10 @@ impl WasmRenderApp {
         WasmRenderApp {
             renderer: Renderer::new(),
         }
+    }
+
+    pub fn add_spritesheet_entries(&mut self, group_id: u8, entries: Vec<SpriteSheetEntry>) {
+        self.renderer.set_spritesheet_entries(group_id, entries);
     }
 
     pub fn tiles_reserve_memory(&self, len: usize) -> DirectMemoryHandle {

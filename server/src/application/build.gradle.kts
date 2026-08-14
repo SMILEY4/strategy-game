@@ -35,5 +35,5 @@ dependencies {
     implementation(libs.schemakenerator.core)
     implementation(libs.schemakenerator.serialization)
     implementation(libs.schemakenerator.swagger)
-
+    implementation(libs.schemakenerator.reflection)
 }

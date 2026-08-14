@@ -8,6 +8,7 @@ import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.w
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 
 
 export function gameGraphPassFogOfWar(
@@ -174,9 +175,12 @@ export function gameGraphPassFogOfWar(
     const rendertarget = g.rendertarget({
         size: canvasSize,
         renderPasses: [draw],
-        colorBuffer: true,
-        depthBuffer: false,
-        depthTesting: false,
+        attachments: {
+            color: {
+                type: "color",
+                format: GLColorStoreFormat.RGBA_8,
+            },
+        },
         clearColor: [1, 0, 0, 1],
     });
 

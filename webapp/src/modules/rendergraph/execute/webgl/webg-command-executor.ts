@@ -1,5 +1,5 @@
 import {type GLUniformValueType} from "@modules/rendergraph/webgl/gl-program.ts";
-import {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import GlFramebuffer from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {mat4, vec3} from "gl-matrix";
 import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
 import type {ValueEntry, WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-command.ts";
@@ -28,7 +28,8 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "BIND_FRAMEBUFFER": {
-            context.getFramebuffer(command.framebufferId).bind();
+            const framebuffer = context.getFramebuffer(command.framebufferId);
+            framebuffer.bind()
             return;
         }
 
@@ -63,7 +64,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "BIND_TEXTURE_FRAMEBUFFER": {
-            context.getFramebuffer(command.framebufferId).bindTexture(command.textureUnit);
+            context.getFramebuffer(command.framebufferId).bindTexture(command.attachmentName, command.textureUnit);
             return;
         }
 

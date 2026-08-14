@@ -1,8 +1,9 @@
 import type {GlTexture} from "@modules/rendergraph/webgl/gl-texture.ts";
-import type {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import GlFramebuffer from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {type GlAttributeComponentAmount, GlAttributeType, type GlProgram} from "@modules/rendergraph/webgl/gl-program.ts";
 import type {GlVertexBuffer} from "@modules/rendergraph/webgl/gl-vertexbuffer.ts";
 import type {GlVertexArray} from "@modules/rendergraph/webgl/gl-vertexarray.ts";
+import type {RendertargetAttachment} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 
 export type WebGlResource =
     | WebGlDataResource
@@ -32,8 +33,7 @@ export interface WebGlTextureResource extends WebglResourceBase<"texture"> {
 
 export interface WebGlFramebufferResource extends WebglResourceBase<"framebuffer"> {
     readonly initialSize: [number, number]
-    readonly color: boolean
-    readonly depth: boolean
+    readonly attachments: Record<string, RendertargetAttachment>,
     resource: GlFramebuffer | null;
 }
 

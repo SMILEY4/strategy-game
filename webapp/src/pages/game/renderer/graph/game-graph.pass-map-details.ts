@@ -7,6 +7,7 @@ import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.w
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 
 
 export function gameGraphPassMapDetails(
@@ -15,7 +16,7 @@ export function gameGraphPassMapDetails(
     inputs: {
         wasmMapDetailVertices: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
+        dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
     },
 ) {
 
@@ -57,6 +58,15 @@ export function gameGraphPassMapDetails(
         ],
     });
 
+
+    const textureSpritesColor = g.texture({
+        url: "/sprites/tileset_color.png",
+    });
+
+    const textureSpritesOutline = g.texture({
+        url: "/sprites/tileset_outline.png",
+    });
+
     const shader = g.shader({
         srcVertex: SHADER_MAP_DETAILS_VERT,
         srcFragment: SHADER_MAP_DETAILS_FRAG,
@@ -69,6 +79,8 @@ export function gameGraphPassMapDetails(
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
+            "spritesColor": textureSpritesColor,
+            "spritesOutline": textureSpritesOutline,
         },
     });
 
@@ -77,8 +89,16 @@ export function gameGraphPassMapDetails(
     const rendertarget = g.rendertarget({
         size: canvasSize,
         renderPasses: [draw],
-        colorBuffer: true,
-        depthBuffer: true,
+        attachments: {
+            color: {
+                type: "color",
+                format: GLColorStoreFormat.RGBA_8,
+            },
+            depth: {
+                type: "depth",
+                format: GLDepthStoreFormat.DEPTH_COMPONENT24,
+            },
+        },
         depthTesting: true,
         clearColor: [0, 0, 0, 0],
     });

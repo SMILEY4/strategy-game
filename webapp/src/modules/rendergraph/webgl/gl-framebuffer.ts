@@ -1,10 +1,72 @@
 import {GlError} from "./gl-error.ts";
 import type {GlDisposable} from "@modules/rendergraph/webgl/gl-disposable.ts";
 
+export type GLFramebufferConfig = {
+    width: number,
+    height: number,
+    attachments: GLFramebufferAttachmentConfig[]
+}
+
+export type GLFramebufferAttachmentConfig = GLFramebufferColorAttachmentConfig | GLFramebufferDepthAttachmentConfig
+
+type GLFramebufferColorAttachmentConfig = {
+    type: "color",
+    name: string,
+    format: GLColorStoreFormat
+}
+
+type GLFramebufferDepthAttachmentConfig = {
+    type: "depth",
+    name: string,
+    format: GLDepthStoreFormat
+}
+
+export class GLColorStoreFormat {
+    public static readonly RGBA_8 = new GLColorStoreFormat(WebGL2RenderingContext.RGBA8);
+    public static readonly RGB_8 = new GLColorStoreFormat(WebGL2RenderingContext.RGB8);
+    public static readonly RGBA_16F = new GLColorStoreFormat(WebGL2RenderingContext.RGBA16F);
+    public static readonly RGBA_32F = new GLColorStoreFormat(WebGL2RenderingContext.RGBA32F);
+    public static readonly R_8 = new GLColorStoreFormat(WebGL2RenderingContext.R8);
+    public static readonly R_16F = new GLColorStoreFormat(WebGL2RenderingContext.R16F);
+    public static readonly R_32F = new GLColorStoreFormat(WebGL2RenderingContext.R32F);
+
+    readonly id: GLint;
+
+    private constructor(id: GLint) {
+        this.id = id;
+    }
+}
+
+export class GLDepthStoreFormat {
+    public static readonly DEPTH_COMPONENT24 = new GLDepthStoreFormat(WebGL2RenderingContext.DEPTH_COMPONENT24);
+    public static readonly DEPTH24_STENCIL8 = new GLDepthStoreFormat(WebGL2RenderingContext.DEPTH24_STENCIL8);
+
+    readonly id: GLint;
+
+    private constructor(id: GLint) {
+        this.id = id;
+    }
+}
+
+type GLFramebufferAttachment = GLFramebufferColorAttachment | GLFramebufferDepthAttachment
+
+interface GLFramebufferColorAttachment {
+    type: "color"
+    config: GLFramebufferColorAttachmentConfig
+    handle: WebGLTexture,
+    attachmentSlot: number
+}
+
+interface GLFramebufferDepthAttachment {
+    type: "depth"
+    config: GLFramebufferDepthAttachmentConfig
+    handle: WebGLTexture,
+}
+
 /**
  * A webgl framebuffer handle to render to
  */
-export class GlFramebuffer implements GlDisposable {
+class GlFramebuffer implements GlDisposable {
 
     /**
      * Unbind any currently bound framebuffer
@@ -20,132 +82,112 @@ export class GlFramebuffer implements GlDisposable {
      * @param gl the webgl context
      * @param config the configuration of the framebuffer
      */
-    public static create(gl: WebGL2RenderingContext, config: { width: number, height: number, color?: boolean, depth?: boolean }) {
+    public static create(gl: WebGL2RenderingContext, config: GLFramebufferConfig) {
+        const { width, height, attachments } = config;
 
-        const width = config.width;
-        const height = config.height;
-        const depth = config.depth ?? false;
-        const color = config.color ?? true;
+        if (attachments.filter(it => it.type === "depth").length > 1) {
+            throw new Error("Could not create framebuffer: too many depth attachments defined");
+        }
 
-        // create framebuffer handle
         const fb = gl.createFramebuffer();
         GlError.check(gl, "createFramebuffer", "creating framebuffer");
-        if (fb === null || fb === undefined) {
+        if (!fb) {
             throw new Error("Could not create framebuffer");
         }
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
         GlError.check(gl, "bindFramebuffer", "binding framebuffer");
 
-        // attach color buffer
-        let colorBuffer: WebGLTexture | null = null;
-        if (color) {
-            colorBuffer = GlFramebuffer.createTargetTexture(gl, width, height);
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colorBuffer, 0);
-            GlError.check(gl, "framebufferTexture2D", "attach texture to framebuffer");
-        } else {
-            gl.drawBuffers([gl.NONE]);
-            gl.readBuffer(gl.NONE);
+        const fbAttachments: GLFramebufferAttachment[] = [];
+
+        let colorAttachmentSlot = 0;
+        attachments.forEach(attachment => {
+            const textureHandle = gl.createTexture();
+            GlError.check(gl, "createTexture", "creating framebuffer attachment");
+            if (!textureHandle) {
+                throw new Error("Could not create framebuffer attachment");
+            }
+
+            gl.bindTexture(gl.TEXTURE_2D, textureHandle);
+            GlError.check(gl, "bindTexture", "binding framebuffer attachment");
+
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            GlError.check(gl, "texParameteri", "setting parameters of framebuffer attachment");
+
+            gl.texStorage2D(gl.TEXTURE_2D, 1, attachment.format.id, width, height);
+            GlError.check(gl, "texStorage2D", "reserving memory for framebuffer attachment");
+
+            const attachmentPoint = attachment.type === "depth"
+                ? (attachment.format.id === WebGL2RenderingContext.DEPTH24_STENCIL8
+                    ? gl.DEPTH_STENCIL_ATTACHMENT
+                    : gl.DEPTH_ATTACHMENT)
+                : gl.COLOR_ATTACHMENT0 + colorAttachmentSlot;
+
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, textureHandle, 0);
+
+            if (attachment.type === "color") {
+                fbAttachments.push({
+                    type: "color",
+                    config: attachment as GLFramebufferColorAttachmentConfig,
+                    handle: textureHandle,
+                    attachmentSlot: colorAttachmentSlot,
+                });
+                colorAttachmentSlot++;
+            } else {
+                fbAttachments.push({
+                    type: "depth",
+                    config: attachment as GLFramebufferDepthAttachmentConfig,
+                    handle: textureHandle,
+                });
+            }
+        });
+
+        // Enable drawBuffers whenever there is 1 or more color buffers
+        const drawBuffers: GLenum[] = fbAttachments
+            .filter((att): att is GLFramebufferColorAttachment => att.type === "color")
+            .map(att => gl.COLOR_ATTACHMENT0 + att.attachmentSlot);
+        if (drawBuffers.length > 0) {
+            gl.drawBuffers(drawBuffers);
+            GlError.check(gl, "drawBuffers", "set target color buffers");
         }
 
-        // attach depth buffer
-        let depthBuffer: WebGLRenderbuffer | null = null;
-        if (depth) {
-            depthBuffer = GlFramebuffer.createDepthBuffer(gl, width, height);
-            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
-            GlError.check(gl, "framebufferRenderbuffer", "attach depth buffer to framebuffer");
-        }
-
-        // check status
+        // Check status
         const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
         if (status !== gl.FRAMEBUFFER_COMPLETE) {
             throw new Error(`Framebuffer incomplete: ${status}`);
         }
 
-        // unbind
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         GlError.check(gl, "bindFramebuffer", "unbinding framebuffer");
 
-        return new GlFramebuffer(gl, width, height, fb, colorBuffer, depthBuffer);
-    }
-
-
-    private static createTargetTexture(gl: WebGL2RenderingContext, width: number, height: number): WebGLTexture {
-
-        const textureHandle = gl.createTexture();
-        GlError.check(gl, "createTexture", "creating framebuffer-texture");
-        if (textureHandle === null || textureHandle === undefined) {
-            throw new Error("Could not create framebuffer-texture");
-        }
-
-        gl.bindTexture(gl.TEXTURE_2D, textureHandle);
-        GlError.check(gl, "bindTexture", "binding framebuffer-texture");
-
-        gl.texImage2D(
-            gl.TEXTURE_2D,
-            0,
-            gl.RGBA,
-            width,
-            height,
-            0,
-            gl.RGBA,
-            gl.UNSIGNED_BYTE,
-            null,
-        );
-        GlError.check(gl, "texImage2D", "filling framebuffer-texture");
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        GlError.check(gl, "texParameteri", "setting parameters of framebuffer-texture");
-
-        gl.bindTexture(gl.TEXTURE_2D, null);
-
-        return textureHandle;
-    }
-
-    private static createDepthBuffer(gl: WebGL2RenderingContext, width: number, height: number): WebGLRenderbuffer {
-        const depthBuffer = gl.createRenderbuffer();
-        GlError.check(gl, "createRenderbuffer", "creating (depth) render buffer");
-
-        if (depthBuffer === null || depthBuffer === undefined) {
-            throw new Error("Could not create (depth) renderbuffer");
-        }
-
-        gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
-        GlError.check(gl, "bindRenderbuffer", "binding (depth) render buffer");
-
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, width, height);
-        GlError.check(gl, "renderbufferStorage", "define (depth) render buffer structure");
-
-        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-
-        return depthBuffer;
+        return new GlFramebuffer(gl, width, height, fb, fbAttachments);
     }
 
     private readonly gl: WebGL2RenderingContext;
     private readonly handle: WebGLFramebuffer;
-    private readonly colorHandle: WebGLTexture | null;
-    private readonly depthHandle: WebGLRenderbuffer | null;
+    private readonly attachments: GLFramebufferAttachment[];
+    private readonly attachmentMapping = new Map<string, number>();
     private width: number;
     private height: number;
-    private lastBoundUnit: number = -1;
 
     private constructor(
         gl: WebGL2RenderingContext,
         width: number,
         height: number,
         handle: WebGLFramebuffer,
-        colorHandle: WebGLTexture | null,
-        depthHandle: WebGLRenderbuffer | null,
+        attachments: GLFramebufferAttachment[],
     ) {
         this.gl = gl;
         this.handle = handle;
         this.width = width;
         this.height = height;
-        this.colorHandle = colorHandle;
-        this.depthHandle = depthHandle;
+        this.attachments = attachments;
+        attachments.forEach((attachment, index) => {
+            this.attachmentMapping.set(attachment.config.name, index);
+        });
     }
 
     /**
@@ -158,35 +200,42 @@ export class GlFramebuffer implements GlDisposable {
         if (width === this.width && height === this.height) {
             return;
         }
+
         if (bind) {
             this.bind();
         }
 
-        // resize color buffer
-        if (this.colorHandle) {
-            this.gl.bindTexture(this.gl.TEXTURE_2D, this.colorHandle);
-            this.gl.texImage2D(
-                this.gl.TEXTURE_2D,
-                0,
-                this.gl.RGBA,
-                width,
-                height,
-                0,
-                this.gl.RGBA,
-                this.gl.UNSIGNED_BYTE,
-                null,
-            );
-            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-            GlError.check(this.gl, "resize-framebuffer", "resizing framebuffer color buffer");
-        }
+        this.attachments.forEach(attachment => {
+            // Delete old immutable texture handle
+            this.gl.deleteTexture(attachment.handle);
 
-        // resize depth buffer
-        if (this.depthHandle) {
-            this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.depthHandle);
-            this.gl.renderbufferStorage(this.gl.RENDERBUFFER, this.gl.DEPTH_COMPONENT24, width, height);
-            this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
-            GlError.check(this.gl, "resize-framebuffer", "resizing framebuffer depth buffer");
-        }
+            // Re-create new texture handle
+            const newTexture = this.gl.createTexture();
+            if (!newTexture) {
+                throw new Error("Failed to re-allocate texture during framebuffer resize");
+            }
+
+            this.gl.bindTexture(this.gl.TEXTURE_2D, newTexture);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+
+            // Allocate fresh immutable storage with new dimensions
+            this.gl.texStorage2D(this.gl.TEXTURE_2D, 1, attachment.config.format.id, width, height);
+
+            const attachmentPoint = attachment.type === "depth"
+                ? (attachment.config.format.id === WebGL2RenderingContext.DEPTH24_STENCIL8
+                    ? this.gl.DEPTH_STENCIL_ATTACHMENT
+                    : this.gl.DEPTH_ATTACHMENT)
+                : this.gl.COLOR_ATTACHMENT0 + attachment.attachmentSlot;
+
+            // Re-attach to FBO
+            this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, attachmentPoint, this.gl.TEXTURE_2D, newTexture, 0);
+
+            // Update local object reference
+            attachment.handle = newTexture;
+        });
 
         // check status
         const status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
@@ -206,46 +255,36 @@ export class GlFramebuffer implements GlDisposable {
         GlError.check(this.gl, "bindFramebuffer", "binding framebuffer");
     }
 
-    /**
-     * Unbind this framebuffer
-     */
-    public unbind() {
-        GlFramebuffer.unbind(this.gl);
-    }
 
     /**
      * Bind the color buffer of this framebuffer as a texture to the given texture unit
+     * @param attachmentName the name of the attachment to bind as a texture
      * @param textureUnit the target texture unit
      */
-    public bindTexture(textureUnit: number) {
-        if (!this.colorHandle) {
-            throw new Error("Framebuffer has no color attachment");
+    public bindTexture(attachmentName: string, textureUnit: number) {
+        const attachment = this.attachments[this.attachmentMapping.get(attachmentName) ?? -1];
+        if (!attachment) {
+            throw new Error(`Framebuffer has no attachment with name: '${attachmentName}'`);
         }
+        if (attachment.type !== "color") {
+            throw new Error(`Only binding color attachments is supported`);
+        }
+
         this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
         GlError.check(this.gl, "activeTexture", "set active texture unit");
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.colorHandle);
-        GlError.check(this.gl, "bindTexture", "binding texture");
-        this.lastBoundUnit = textureUnit;
-    }
 
-    /**
-     * @return the texture unit this framebuffer color buffer was last bound to. Note: this might no longer be correct if another texture was bound to the same unit more recently.
-     */
-    public getLastBoundTextureUnit(): number {
-        return this.lastBoundUnit;
+        this.gl.bindTexture(this.gl.TEXTURE_2D, attachment.handle);
+        GlError.check(this.gl, "bindTexture", "binding texture");
     }
 
     public dispose(): void {
         this.gl.deleteFramebuffer(this.handle);
         GlError.check(this.gl, "deleteFramebuffer", "disposing framebuffer");
-        if (this.colorHandle) {
-            this.gl.deleteTexture(this.colorHandle);
-            GlError.check(this.gl, "deleteTexture", "disposing framebuffer-texture");
-        }
-        if (this.depthHandle) {
-            this.gl.deleteRenderbuffer(this.depthHandle);
-            GlError.check(this.gl, "deleteRenderbuffer", "disposing framebuffer-depth-renderbuffer");
-        }
+        this.attachments.forEach(attachment => {
+            this.gl.deleteTexture(attachment.handle);
+            GlError.check(this.gl, "deleteTexture", `disposing framebuffer attachment: ${attachment.config.name}`);
+        });
     }
-
 }
+
+export default GlFramebuffer;

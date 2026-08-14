@@ -8,6 +8,7 @@ import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.w
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 
 
 export function gameGraphPassCoastline(
@@ -16,7 +17,7 @@ export function gameGraphPassCoastline(
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
+        dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
     },
 ) {
 
@@ -129,16 +130,16 @@ export function gameGraphPassCoastline(
     const dataDebugHexOffsetScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.randomHexOffsetScale
-        })
-    )
+            func: (data) => data.renderer.randomHexOffsetScale,
+        }),
+    );
 
     const dataDebugScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.terrainMask.scale
-        })
-    )
+            func: (data) => data.renderer.terrainMask.scale,
+        }),
+    );
 
     const draw = g.draw({
         shader: shader,
@@ -156,9 +157,12 @@ export function gameGraphPassCoastline(
     const rendertarget = g.rendertarget({
         size: canvasSize,
         renderPasses: [draw],
-        colorBuffer: true,
-        depthBuffer: false,
-        depthTesting: false,
+        attachments: {
+            color: {
+                type: "color",
+                format: GLColorStoreFormat.RGBA_8,
+            },
+        },
         clearColor: [0, 0, 0, 0],
     });
 

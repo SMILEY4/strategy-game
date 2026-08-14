@@ -1,7 +1,5 @@
 import type { GlDisposable } from "./gl-disposable.ts";
 import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
-import {GlTexture} from "@modules/rendergraph/webgl/gl-texture.ts";
-import {GlFramebuffer} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 
 /**
  * The type of individual webgl shader program
@@ -65,7 +63,7 @@ export class GlAttributeType {
 /**
  * Available (js) types for shader uniforms
  */
-export type GLUniformValueType = boolean | number | number[] | Float32Array | GlTexture | GlFramebuffer;
+export type GLUniformValueType = boolean | number | number[] | Float32Array;
 
 /**
  * Available webgl data types for uniform values.
@@ -569,10 +567,6 @@ export class GlProgram implements GlDisposable {
             return values;
         } else if (values instanceof Float32Array) {
             return values;
-        } else if (values instanceof GlTexture) {
-            return [values.getLastBoundTextureUnit()];
-        } else if (values instanceof GlFramebuffer) {
-            return [values.getLastBoundTextureUnit()];
         } else if(typeof values == "boolean") {
             return values ? [1] : [0]
         } else {

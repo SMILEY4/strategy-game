@@ -18,8 +18,15 @@ import type {WebGlResource, WebGlVertexArrayAttributeResource} from "@modules/re
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
-import {KEY_CANVAS_SIZE, cameraProjectionKey, cameraViewKey, cameraViewProjectionKey, wasmVertexDataKey, subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
-import type {WebGlCommand, ValueEntry} from "@modules/rendergraph/compile/webgl/webgl-command.ts";
+import {
+    cameraProjectionKey,
+    cameraViewKey,
+    cameraViewProjectionKey,
+    KEY_CANVAS_SIZE,
+    subResourceKey,
+    wasmVertexDataKey,
+} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
+import type {ValueEntry, WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-command.ts";
 
 interface CompileContext {
     nodes: RenderGraphNode[]
@@ -27,7 +34,7 @@ interface CompileContext {
     resources: WebGlResource[]
     activeShader: ShaderRenderGraphNode | null,
     activeGeometry: GeometryRenderGraphNode | null,
-    activeRenderTarget: RendertargetRenderGraphNode | CanvasRenderGraphNode | null,
+    activeRenderTarget: RendertargetRenderGraphNode<any> | CanvasRenderGraphNode | null,
     relevantVisitedNodeIds: Set<string>;
     textureUnits: (string | null)[]
 }
@@ -43,7 +50,7 @@ export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDra
         activeRenderTarget: null,
         activeGeometry: null,
         relevantVisitedNodeIds: new Set<string>(),
-        textureUnits: Array.from({ length: availableTextureUnits }, () => null),
+        textureUnits: Array.from({length: availableTextureUnits}, () => null),
     };
 
     const drawCallInfos = sortedDrawCalls.map(drawCall => {
@@ -92,18 +99,17 @@ function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext
         bindVAO(drawCallInfo.geometry, drawCallInfo.shader, context);
     }
 
-
     // bind textures and set sampler uniforms
     const requiredTextureIds = [
         ...drawCallInfo.uniforms.textures.map(it => it.node.id),
-        ...drawCallInfo.uniforms.renderTargetTextures.map(it => it.node.id),
+        ...drawCallInfo.uniforms.renderTargetTextures.map(it => it.node.id + "#" + it.attachmentName),
         ...drawCallInfo.uniforms.selectTextures.map(it => it.node.id),
     ];
     drawCallInfo.uniforms.textures.forEach(entry => {
         setUniformTexture(entry.node, entry.name, requiredTextureIds, context);
     });
     drawCallInfo.uniforms.renderTargetTextures.forEach(entry => {
-        setUniformFramebufferTexture(entry.node, entry.name, requiredTextureIds, context);
+        setUniformFramebufferTexture(entry.node, entry.attachmentName, entry.name, requiredTextureIds, context);
     });
     drawCallInfo.uniforms.selectTextures.forEach(entry => {
         setUniformSelectTexture(entry.node, entry.name, requiredTextureIds, context);
@@ -132,7 +138,7 @@ function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext
 
 function switchToCanvasRenderTarget(canvas: CanvasRenderGraphNode, context: CompileContext) {
     context.commands.push({type: "UNBIND_FRAMEBUFFER"});
-        context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: KEY_CANVAS_SIZE}});
+    context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: KEY_CANVAS_SIZE}});
     if (canvas.clearColor) {
         context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: canvas.clearColor}});
     }
@@ -140,7 +146,7 @@ function switchToCanvasRenderTarget(canvas: CanvasRenderGraphNode, context: Comp
 }
 
 
-function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode, context: CompileContext) {
+function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode<any>, context: CompileContext) {
 
     ifNotYetVisited(node, context, () => {
         context.resources.push({
@@ -149,8 +155,7 @@ function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode, contex
             initialSize: (node.size.type === "data" && node.size.source.type === "constant")
                 ? node.size.source.value
                 : [1, 1],
-            color: node.colorBuffer,
-            depth: node.depthBuffer,
+            attachments: node.attachments,
             resource: null,
         });
     });
@@ -214,10 +219,15 @@ function setUniformTexture(node: TextureRenderGraphNode, bindAs: string, lockedT
     });
 }
 
-function setUniformFramebufferTexture(node: RendertargetRenderGraphNode, bindAs: string, lockedTextureIds: string[], context: CompileContext) {
+function setUniformFramebufferTexture(node: RendertargetRenderGraphNode<any>, attachmentName: string, bindAs: string, lockedTextureIds: string[], context: CompileContext) {
     const {unit, alreadyBound} = findTextureUnit(node.id, lockedTextureIds, context);
     if (!alreadyBound) {
-        context.commands.push({type: "BIND_TEXTURE_FRAMEBUFFER", framebufferId: node.id, textureUnit: unit});
+        context.commands.push({
+            type: "BIND_TEXTURE_FRAMEBUFFER",
+            framebufferId: node.id,
+            attachmentName: attachmentName,
+            textureUnit: unit,
+        });
     }
     context.commands.push({
         type: "SET_UNIFORM",
@@ -285,9 +295,9 @@ function generateDrawCall(drawCallInfo: DrawCallInfo, context: CompileContext) {
     let instanceCountRef: string | null = null;
     drawCallInfo.geometry.sources.forEach(source => {
         const dataSource = source.source;
-        if(source.sourceType === "transformer") {
-            if(dataSource.type !== "transform-vertex-out") {
-                throw new Error("Unexpected source type")
+        if (source.sourceType === "transformer") {
+            if (dataSource.type !== "transform-vertex-out") {
+                throw new Error("Unexpected source type");
             }
             const out = dataSource.outputs[source.output];
             if (out.content === "vertices") {
@@ -298,16 +308,16 @@ function generateDrawCall(drawCallInfo: DrawCallInfo, context: CompileContext) {
             }
             return;
         }
-        if(source.sourceType === "wasm") {
+        if (source.sourceType === "wasm") {
             if (source.content === "vertices") {
                 vertexCountRef = wasmVertexDataKey(dataSource.id);
             }
             if (source.content === "instances") {
                 instanceCountRef = wasmVertexDataKey(dataSource.id);
             }
-            return
+            return;
         }
-        assertExhaustive(source)
+        assertExhaustive(source);
     });
     let mode: GLenum = null!;
     if (drawCallInfo.geometry.primitiveTypes === "triangles") {
@@ -321,7 +331,13 @@ function generateDrawCall(drawCallInfo: DrawCallInfo, context: CompileContext) {
         context.commands.push({type: "DRAW", vertexCountRef: vertexCountRef, mode: mode, blend: drawCallInfo.drawNode.blend});
     }
     if (vertexCountRef !== null && instanceCountRef !== null) {
-        context.commands.push({type: "DRAW_INSTANCED", vertexCountRef: vertexCountRef, instanceCountRef: instanceCountRef, mode: mode, blend: drawCallInfo.drawNode.blend});
+        context.commands.push({
+            type: "DRAW_INSTANCED",
+            vertexCountRef: vertexCountRef,
+            instanceCountRef: instanceCountRef,
+            mode: mode,
+            blend: drawCallInfo.drawNode.blend,
+        });
     }
 }
 
@@ -440,7 +456,12 @@ function resolveDataNodeExternal(node: DataRenderGraphNode<unknown>, context: Co
             key: node.id,
             resource: null,
         });
-        context.commands.push({type: "LOAD_EXTERNAL_DATA", outputRef: node.id, fetch: node.source.fetch, checkChanged: node.source.checkChanged});
+        context.commands.push({
+            type: "LOAD_EXTERNAL_DATA",
+            outputRef: node.id,
+            fetch: node.source.fetch,
+            checkChanged: node.source.checkChanged,
+        });
     });
     return {type: "ref", ref: node.id};
 }
@@ -485,7 +506,13 @@ function resolveTransformer(node: TransformRenderGraphNode<unknown[], unknown>, 
             resource: null,
         });
         const args = node.inputs.map(inputNode => resolveDataNode(inputNode, context));
-        context.commands.push({type: "TRANSFORM_DATA", inputRefs: args, outputRef: node.id, func: node.func, checkChanged: node.checkChanged});
+        context.commands.push({
+            type: "TRANSFORM_DATA",
+            inputRefs: args,
+            outputRef: node.id,
+            func: node.func,
+            checkChanged: node.checkChanged,
+        });
     });
     return {type: "ref", ref: node.id};
 }
@@ -527,7 +554,7 @@ function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNo
 
         const attributes: WebGlVertexArrayAttributeResource[] = [];
         node.sources.forEach(source => {
-            if(source.sourceType === "transformer") {
+            if (source.sourceType === "transformer") {
                 const bufferContent = source.source.outputs[source.output].content;
                 const bufferLayout = source.source.outputs[source.output].layout;
                 bufferLayout.forEach(entry => {
@@ -540,11 +567,11 @@ function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNo
                         divisor: bufferContent === "vertices" ? 0 : 1,
                     });
                 });
-               return
+                return;
             }
-            if(source.sourceType === "wasm") {
-                const bufferContent = source.content
-                const bufferLayout = source.layout
+            if (source.sourceType === "wasm") {
+                const bufferContent = source.content;
+                const bufferLayout = source.layout;
                 bufferLayout.forEach(entry => {
                     attributes.push({
                         bufferResourceKey: wasmVertexDataKey(source.source.id),
@@ -555,9 +582,9 @@ function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNo
                         divisor: bufferContent === "vertices" ? 0 : 1,
                     });
                 });
-                return
+                return;
             }
-            assertExhaustive(source)
+            assertExhaustive(source);
         });
 
         context.resources.push({
@@ -569,15 +596,15 @@ function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNo
         });
 
         node.sources.forEach(source => {
-            if(source.sourceType === "transformer") {
+            if (source.sourceType === "transformer") {
                 resolveTransformerVertexOut(source.source, context);
                 return;
             }
-            if(source.sourceType === "wasm") {
-                resolveWasmGeometrySource(source, context)
-                return
+            if (source.sourceType === "wasm") {
+                resolveWasmGeometrySource(source, context);
+                return;
             }
-            assertExhaustive(source)
+            assertExhaustive(source);
         });
     });
     context.commands.push({type: "BIND_VAO", vaoId: node.id});
@@ -585,7 +612,7 @@ function bindVAO(node: GeometryRenderGraphNode, nodeProgram: ShaderRenderGraphNo
 
 
 function resolveWasmGeometrySource(source: WasmGeometrySource, context: CompileContext) {
-    resolveWasmDataNode(source.source, context)
+    resolveWasmDataNode(source.source, context);
     context.resources.push({
         type: "vertexbuffer",
         key: wasmVertexDataKey(source.source.id),
@@ -595,8 +622,8 @@ function resolveWasmGeometrySource(source: WasmGeometrySource, context: CompileC
         type: "DOWNLOAD_WASM_VERTEX_DATA",
         wasmDataRef: source.source.id,
         outputRef: wasmVertexDataKey(source.source.id),
-        fetch: source.download
-    })
+        fetch: source.download,
+    });
 }
 
 /**
@@ -637,7 +664,13 @@ function updateAndResolveCamera(node: CameraRenderGraphNode, context: CompileCon
                 near: near,
                 far: far,
             });
-            context.commands.push({type: "CALCULATE_3D_VIEW", outputRef: cameraViewKey(node.id), up: up, position: position, direction: direction});
+            context.commands.push({
+                type: "CALCULATE_3D_VIEW",
+                outputRef: cameraViewKey(node.id),
+                up: up,
+                position: position,
+                direction: direction,
+            });
             context.commands.push({
                 type: "CALCULATE_VIEW_PROJECTION",
                 outputRef: cameraViewProjectionKey(node.id),
@@ -654,8 +687,20 @@ function updateAndResolveCamera(node: CameraRenderGraphNode, context: CompileCon
             const size = node.renderTargetSize.type === "canvas-size"
                 ? resolveCanvasSize(node.renderTargetSize, context)
                 : resolveDataNode(node.renderTargetSize, context) as ValueEntry<[number, number]>;
-            context.commands.push({type: "CALCULATE_ORTHOGRAPHIC_PROJECTION", outputRef: cameraProjectionKey(node.id), size: size, near: near, far: far});
-            context.commands.push({type: "CALCULATE_3D_VIEW", outputRef: cameraViewKey(node.id), up: up, position: position, direction: direction});
+            context.commands.push({
+                type: "CALCULATE_ORTHOGRAPHIC_PROJECTION",
+                outputRef: cameraProjectionKey(node.id),
+                size: size,
+                near: near,
+                far: far,
+            });
+            context.commands.push({
+                type: "CALCULATE_3D_VIEW",
+                outputRef: cameraViewKey(node.id),
+                up: up,
+                position: position,
+                direction: direction,
+            });
             context.commands.push({
                 type: "CALCULATE_VIEW_PROJECTION",
                 outputRef: cameraViewProjectionKey(node.id),
@@ -701,11 +746,11 @@ interface DrawCallInfo {
     drawNode: DrawRenderGraphNode,
     shader: ShaderRenderGraphNode,
     geometry: GeometryRenderGraphNode,
-    renderTarget: RendertargetRenderGraphNode | CanvasRenderGraphNode,
+    renderTarget: RendertargetRenderGraphNode<any> | CanvasRenderGraphNode,
     uniforms: {
         textures: ({ name: string, node: TextureRenderGraphNode })[],
         selectTextures: ({ name: string, node: SelectTextureRenderGraphNode<unknown[], string> })[],
-        renderTargetTextures: ({ name: string, node: RendertargetRenderGraphNode })[],
+        renderTargetTextures: ({ name: string, node: RendertargetRenderGraphNode<any>, attachmentName: string })[],
         generic: ({ name: string, node: DataRenderGraphNode<unknown> | CameraRenderGraphNode | CanvasSizeRenderGraphNode })[]
     }
 }
@@ -719,7 +764,7 @@ function collectDrawCallInfo(drawNode: DrawRenderGraphNode, nodes: RenderGraphNo
     const nodeGeometry = drawNode.geometry;
 
     // get render target
-    const nodesRenderTarget: (RendertargetRenderGraphNode | CanvasRenderGraphNode)[] = [];
+    const nodesRenderTarget: (RendertargetRenderGraphNode<any> | CanvasRenderGraphNode)[] = [];
     nodes.forEach(node => {
         if (node.type === "canvas" && node.renderPasses.includes(drawNode)) {
             nodesRenderTarget.push(node);
@@ -736,7 +781,7 @@ function collectDrawCallInfo(drawNode: DrawRenderGraphNode, nodes: RenderGraphNo
     // get uniforms
     const nodesTextures: ({ name: string, node: TextureRenderGraphNode })[] = [];
     const nodesSelectTextures: ({ name: string, node: SelectTextureRenderGraphNode<unknown[], string> })[] = [];
-    const nodesRenderTargetTextures: ({ name: string, node: RendertargetRenderGraphNode })[] = [];
+    const nodesRenderTargetTextures: ({ name: string, node: RendertargetRenderGraphNode<any>, attachmentName: string })[] = [];
     const nodesGeneric: ({ name: string, node: DataRenderGraphNode<unknown> | CameraRenderGraphNode | CanvasSizeRenderGraphNode })[] = [];
     Object.entries(drawNode.inputs).forEach(([name, node]) => {
         if (node.type === "texture") {
@@ -745,8 +790,8 @@ function collectDrawCallInfo(drawNode: DrawRenderGraphNode, nodes: RenderGraphNo
         if (node.type === "select-texture") {
             nodesSelectTextures.push({name: name, node: node});
         }
-        if (node.type === "rendertarget") {
-            nodesRenderTargetTextures.push({name: name, node: node});
+        if (node.type === "pick-rendertarget-attachment") {
+            nodesRenderTargetTextures.push({name: name, node: node.rendertarget, attachmentName: node.attachment});
         }
         if (node.type === "camera" || node.type === "data" || node.type === "canvas-size") {
             nodesGeneric.push({name: name, node: node});

@@ -30,8 +30,8 @@ export type WebGlCommand =
     /** Bind a texture whose key is stored in the data resource at {@link textureIdRef}. */
     | { type: "BIND_TEXTURE_REF", textureIdRef: string, textureUnit: number }
 
-    /** Bind a framebuffer's color attachment as a texture on the given unit. */
-    | { type: "BIND_TEXTURE_FRAMEBUFFER", framebufferId: string, textureUnit: number }
+    /** Bind a framebuffer's attachment as a texture on the given unit. */
+    | { type: "BIND_TEXTURE_FRAMEBUFFER", framebufferId: string, attachmentName: string, textureUnit: number }
 
     /** Set a uniform on the active shader program. */
     | { type: "SET_UNIFORM", shaderId: string, name: string, value: ValueEntry }

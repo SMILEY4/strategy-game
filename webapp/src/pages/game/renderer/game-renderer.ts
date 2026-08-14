@@ -5,6 +5,7 @@ import {gameRendererDataProvider, type GameRendererDataProvider} from "@pages/ga
 import {type GameGraphWasmApi, gameGraphWasmApiJsImplementation} from "@pages/game/renderer/graph/game-graph.wasm-api.ts";
 import {DI} from "@app/app.ts";
 
+
 export class GameRenderer {
 
     private readonly dataProvider: GameRendererDataProvider;
@@ -26,6 +27,7 @@ export class GameRenderer {
 
     public initialize(canvas: HTMLCanvasElement): void {
         this.renderGraph.initializeCanvas(canvas);
+        this.wasmApi.configureRenderer()
     }
 
     public update(): void {

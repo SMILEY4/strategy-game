@@ -10,10 +10,10 @@ import type {DebugData} from "@app/features/game/database/debug.database.ts";
 export function gameGraphPassCompose(
     g: RenderGraphBuilder,
     inputs: {
-        layerBaseTerrain: RendertargetRenderGraphNode,
-        layerCoastlineMask: RendertargetRenderGraphNode,
-        layerFogOfWar: RendertargetRenderGraphNode,
-        layerMapDetails: RendertargetRenderGraphNode,
+        layerBaseTerrain: RendertargetRenderGraphNode<"color">,
+        layerCoastlineMask: RendertargetRenderGraphNode<"color">,
+        layerFogOfWar: RendertargetRenderGraphNode<"color">,
+        layerMapDetails: RendertargetRenderGraphNode<"color">,
         dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
     },
 ) {
@@ -93,10 +93,22 @@ export function gameGraphPassCompose(
         shader: shader,
         geometry: geometry,
         inputs: {
-            "layerBaseTerrain": inputs.layerBaseTerrain,
-            "layerCoastlineMask": inputs.layerCoastlineMask,
-            "layerFogOfWar": inputs.layerFogOfWar,
-            "layerMapDetails": inputs.layerMapDetails,
+            "layerBaseTerrain": g.pickRendertargetAttachment({
+                rendertarget: inputs.layerBaseTerrain,
+                attachment: "color"
+            }),
+            "layerCoastlineMask": g.pickRendertargetAttachment({
+                rendertarget: inputs.layerCoastlineMask,
+                attachment: "color"
+            }),
+            "layerFogOfWar": g.pickRendertargetAttachment({
+                rendertarget: inputs.layerFogOfWar,
+                attachment: "color"
+            }),
+            "layerMapDetails": g.pickRendertargetAttachment({
+                rendertarget: inputs.layerMapDetails,
+                attachment: "color"
+            }),
             "dbg_terrainCutoff": dataDebugTerrainCutoff as DataRenderGraphNode<unknown>
         },
     });

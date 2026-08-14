@@ -1,4 +1,4 @@
-use crate::js::models::{Entity, HexPosition, Tile};
+use crate::js::models::{Entity, HexPosition, SpriteSheetEntry, Tile};
 use crate::render::{creator_map_detail_instances, creator_terrain_tile_instances};
 use crate::render::models::chunk::Chunk;
 use crate::render::models::config::RenderConfig;
@@ -16,11 +16,16 @@ pub struct Renderer {
 impl Renderer {
     pub fn new() -> Renderer {
         Renderer {
-            config: RenderConfig {},
+            config: RenderConfig::default(),
             state: RenderState::default(),
             tile_instance_data: TileInstanceData::default(),
             map_detail_vertex_data: MapDetailsVertexData::default(),
         }
+    }
+
+    /// add the sprite sheet entries with the given group id
+    pub fn set_spritesheet_entries(&mut self, group_id: u8, entries: Vec<SpriteSheetEntry>) {
+        self.config.spritesheet_entries.insert(group_id as i32, entries);
     }
 
     /// Set the complete list of tiles for this renderer
@@ -104,7 +109,7 @@ impl Renderer {
 
     pub fn calculate_instances(&mut self) {
         creator_terrain_tile_instances::build(&self.state, &mut self.tile_instance_data);
-        creator_map_detail_instances::build(&self.state, &mut self.map_detail_vertex_data);
+        creator_map_detail_instances::build(&self.config, &self.state, &mut self.map_detail_vertex_data);
     }
 
     pub fn get_terrain_tile_instances_land(&self) -> &Vec<TileTerrainLandInstance> {

@@ -7,13 +7,13 @@ import type {DrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.draw.
 
 export interface WebGlDrawCallNode {
     node: DrawRenderGraphNode,
-    rendertarget: RendertargetRenderGraphNode | null,
+    rendertarget: RendertargetRenderGraphNode<any> | null,
     dependsOn: WebGlDrawCallNode[],
     requiresResources: {
         shader: ShaderRenderGraphNode | null,
         geometry: GeometryRenderGraphNode | null,
-        textures: (TextureRenderGraphNode | RendertargetRenderGraphNode)[],
+        textures: (TextureRenderGraphNode | RendertargetRenderGraphNode<any>)[],
         texturesSelect: SelectTextureRenderGraphNode<any, any>[],
-        rendertargets: RendertargetRenderGraphNode[],
+        rendertargets: RendertargetRenderGraphNode<any>[],
     }
 }
