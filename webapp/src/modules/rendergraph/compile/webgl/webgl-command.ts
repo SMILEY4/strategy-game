@@ -19,7 +19,7 @@ export type WebGlCommand =
     | { type: "UNBIND_FRAMEBUFFER" }
 
     /** Resize a framebuffer if the referenced size value is dirty. */
-    | { type: "RESIZE_FRAMEBUFFER", framebufferId: string, sizeRef: string }
+    | { type: "RESIZE_FRAMEBUFFER", framebufferId: string, sizeRef: string, scale: ValueEntry<number> }
 
     /** Bind a vertex array object for subsequent draw calls. */
     | { type: "BIND_VAO", vaoId: string }
@@ -102,7 +102,7 @@ export type WebGlCommand =
     | { type: "CALCULATE_VIEW_PROJECTION", outputRef: string, projectionRef: string, viewRef: string }
 
     /** Set the viewport to the given size. */
-    | { type: "SET_VIEWPORT", size: ValueEntry<[number, number]> }
+    | { type: "SET_VIEWPORT", size: ValueEntry<[number, number]>, scale: ValueEntry<number>}
 
     /** Clear the color and depth buffers of the currently bound framebuffer. */
     | { type: "CLEAR_BUFFER", clearColor: ValueEntry<[number, number, number, number]> }

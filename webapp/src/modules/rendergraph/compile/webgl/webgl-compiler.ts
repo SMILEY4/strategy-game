@@ -138,7 +138,7 @@ function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext
 
 function switchToCanvasRenderTarget(canvas: CanvasRenderGraphNode, context: CompileContext) {
     context.commands.push({type: "UNBIND_FRAMEBUFFER"});
-    context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: KEY_CANVAS_SIZE}});
+    context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: KEY_CANVAS_SIZE}, scale: { type: "const", value: 1}});
     if (canvas.clearColor) {
         context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: canvas.clearColor}});
     }
@@ -146,15 +146,28 @@ function switchToCanvasRenderTarget(canvas: CanvasRenderGraphNode, context: Comp
 }
 
 
+function getConstantOrDefault<T>(node: DataRenderGraphNode<T> | null | undefined, defaultValue: T): T {
+    if (node && node.source.type === "constant") {
+        return node.source.value;
+    } else {
+        return defaultValue;
+    }
+}
+
 function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode<any>, context: CompileContext) {
 
     ifNotYetVisited(node, context, () => {
+        const initialSize: [number, number] = [1, 1];
+        if (node.size.type === "data") {
+            const size = getConstantOrDefault<[number, number]>(node.size, [1, 1]);
+            const scale = getConstantOrDefault<number>(node.sizeScale, 1);
+            initialSize[0] = size[0] * scale;
+            initialSize[1] = size[1] * scale;
+        }
         context.resources.push({
             type: "framebuffer",
             key: node.id,
-            initialSize: (node.size.type === "data" && node.size.source.type === "constant")
-                ? node.size.source.value
-                : [1, 1],
+            initialSize: initialSize,
             attachments: node.attachments,
             resource: null,
         });
@@ -162,16 +175,23 @@ function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode<any>, c
 
     context.commands.push({type: "BIND_FRAMEBUFFER", framebufferId: node.id});
 
+    const scale: ValueEntry<number> = node.sizeScale
+        ? resolveDataNode(node.sizeScale, context) as ValueEntry<number>
+        : {type: "const", value: 1};
+
     if (node.size.type === "canvas-size") {
-        context.commands.push({type: "RESIZE_FRAMEBUFFER", framebufferId: node.id, sizeRef: KEY_CANVAS_SIZE});
-        context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: KEY_CANVAS_SIZE}});
+        context.commands.push({type: "RESIZE_FRAMEBUFFER", framebufferId: node.id, sizeRef: KEY_CANVAS_SIZE, scale: scale});
+        context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: KEY_CANVAS_SIZE}, scale: scale});
     }
+
     if (node.size.type === "data") {
-        const dataResult = resolveDataNode(node.size, context) as ValueEntry<[number, number]>;
-        if (dataResult.type === "ref") {
-            context.commands.push({type: "RESIZE_FRAMEBUFFER", framebufferId: node.id, sizeRef: dataResult.ref});
+        const size = resolveDataNode(node.size, context) as ValueEntry<[number, number]>;
+        if (size.type === "ref") {
+            context.commands.push({type: "RESIZE_FRAMEBUFFER", framebufferId: node.id, sizeRef: size.ref, scale: scale});
         }
-        context.commands.push({type: "SET_VIEWPORT", size: dataResult});
+        if (size.type === "const") {
+            context.commands.push({type: "SET_VIEWPORT", size: size, scale: scale});
+        }
     }
 
     if (node.clearColor) {

@@ -14,6 +14,9 @@ export type DebugData = {
         fogOfWar: {
             scale: number,
         },
+        mapDetails: {
+            msaa: number,
+        }
         selectedTile: {
             thickness: number,
             softness: number,
@@ -34,6 +37,9 @@ export const initialDebugDataValues: DebugData = {
         },
         fogOfWar: {
             scale: 1.32,
+        },
+        mapDetails: {
+            msaa: 2,
         },
         selectedTile: {
             thickness: 0.1,

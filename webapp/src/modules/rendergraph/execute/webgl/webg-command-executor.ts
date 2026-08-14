@@ -39,10 +39,13 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
         }
 
         case "RESIZE_FRAMEBUFFER": {
-            if (context.isDirty(command.sizeRef)) {
+            if (context.isDirty(command.sizeRef) || (command.scale.type === "ref" && context.isDirty(command.scale.ref))) {
                 const framebuffer = context.getFramebuffer(command.framebufferId);
                 const size = context.getData<[number, number]>(command.sizeRef);
-                framebuffer.resize(size[0], size[1], false);
+                const scale = command.scale.type === "const"
+                    ? command.scale.value
+                    : context.getData<number>(command.scale.ref)
+                framebuffer.resize(size[0] * scale, size[1] * scale, false);
             }
             return;
         }
@@ -304,7 +307,10 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
             const size = command.size.type === "const"
                 ? command.size.value
                 : context.getData<[number, number]>(command.size.ref);
-            gl.viewport(0, 0, size[0], size[1]);
+            const scale = command.scale.type === "const"
+                ? command.scale.value
+                : context.getData<number>(command.scale.ref)
+            gl.viewport(0, 0, size[0] * scale, size[1] * scale);
             return;
         }
 

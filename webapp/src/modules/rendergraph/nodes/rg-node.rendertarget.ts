@@ -6,6 +6,7 @@ import {type GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/
 
 export interface RendertargetRenderGraphNode<TKeys extends string> extends RenderGraphNodeBase<"rendertarget"> {
     readonly size: DataRenderGraphNode<[number, number]> | CanvasSizeRenderGraphNode;
+    readonly sizeScale: DataRenderGraphNode<number> | null,
     readonly renderPasses: DrawRenderGraphNode[],
     readonly attachments: Record<TKeys, RendertargetAttachment>
     readonly clearColor: [number, number, number, number] | null,

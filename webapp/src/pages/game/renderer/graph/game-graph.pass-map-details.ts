@@ -86,8 +86,16 @@ export function gameGraphPassMapDetails(
 
     const canvasSize = g.canvasSize();
 
+    const dataDebugMsaaFactor = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.mapDetails.msaa
+        })
+    )
+
     const rendertarget = g.rendertarget({
         size: canvasSize,
+        sizeScale: dataDebugMsaaFactor,
         renderPasses: [draw],
         attachments: {
             color: {

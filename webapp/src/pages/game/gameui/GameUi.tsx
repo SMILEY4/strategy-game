@@ -109,6 +109,23 @@ function useDevOverlay() {
                 }))
             },
         }),
+        "map details": folder({
+            msaaFactor: {
+                label: "msaa",
+                value: initialDebugDataValues.renderer.mapDetails.msaa,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        mapDetails: {
+                            ...data.renderer.mapDetails,
+                            msaa: it
+                        }
+                    }
+                }))
+            }
+        }),
         "selected tile": folder({
             thicknessSelectedTile: {
                 label: "thickness",

@@ -157,6 +157,7 @@ export class RenderGraphBuilder {
 
     public rendertarget<TKeys extends string>(options: {
         size: DataRenderGraphNode<[number, number]> | CanvasSizeRenderGraphNode
+        sizeScale?: DataRenderGraphNode<number>,
         renderPasses: DrawRenderGraphNode[],
         attachments: Record<TKeys, RendertargetAttachment>,
         depthTesting?: boolean,
@@ -166,6 +167,7 @@ export class RenderGraphBuilder {
             type: "rendertarget",
             id: RenderGraphBuilder.generateNodeId(),
             size: options.size,
+            sizeScale: options.sizeScale ?? null,
             renderPasses: options.renderPasses,
             attachments: options.attachments,
             depthTesting: options.depthTesting ?? false,
