@@ -7,6 +7,9 @@ import {WebGlExecutionContext} from "@modules/rendergraph/execute/webgl/webgl-ex
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import {subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
 
+/** Matrix that negates the clip-space Y axis (see CALCULATE_VIEW_PROJECTION). */
+const MATRIX_FLIP_Y = mat4.fromScaling(mat4.create(), vec3.fromValues(1, -1, 1));
+
 
 /** Execute a list of compiled WebGL commands against the given execution context. */
 export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExecutionContext) {
@@ -297,6 +300,10 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 const matrixView = context.getData<mat4>(command.viewRef);
                 const matrixProjection = context.getData<mat4>(command.projectionRef);
                 mat4.multiply(matrixViewProjection, matrixProjection, matrixView);
+                // This project uses image-style Y-down screen coordinates: negate clip-space Y here
+                // so every shader can use the plain `u_camera * vertex` transform. Keep the picking
+                // unprojection in camera-utils in sync with this flip.
+                mat4.multiply(matrixViewProjection, MATRIX_FLIP_Y, matrixViewProjection);
                 context.setDirty(command.outputRef);
             }
             return;
