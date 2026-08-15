@@ -1,11 +1,12 @@
 import type {CameraDatabase} from "@app/features/game/database/camera.database.ts";
 import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
-import {mat4, quat, vec3, vec4} from "gl-matrix";
+import {screenToGroundPoint} from "@modules/utilities/camera-utils.ts";
+import {worldToHex} from "@modules/utilities/hex-geometry.ts";
+import {quat, vec3} from "gl-matrix";
 
 const MOVE_SPEED = 0.5;
 const MOUSE_SENSITIVITY = 0.002;
 const UP = vec3.fromValues(0, 1, 0);
-const SQRT3 = Math.sqrt(3);
 
 interface Dependencies {
     cameraDb: CameraDatabase;
@@ -121,75 +122,16 @@ export const cameraControllerFreecam = ({cameraDb}: Dependencies): CameraControl
 
         transformScreenToHex: (x: number, y: number) => {
             const cam = cameraDb.get();
-
-            const ndcX = (2 * x) / canvasWidth - 1;
-            const ndcY = 1 - (2 * y) / canvasHeight;
-
-            const projection = mat4.create();
-            mat4.perspective(projection, cam.fov, cam.aspect, cam.near, cam.far);
-
-            const view = mat4.create();
-            const target = vec3.add(vec3.create(), cam.position, cam.direction);
-            mat4.lookAt(view, cam.position, target, cam.up);
-
-            const vp = mat4.create();
-            mat4.multiply(vp, projection, view);
-
-            const flipY = mat4.fromValues(
-                1, 0, 0, 0,
-                0, -1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1,
+            const world = screenToGroundPoint(
+                x, y,
+                cam,
+                canvasWidth, canvasHeight,
             );
-            mat4.multiply(vp, flipY, vp);
-
-            const invVp = mat4.create();
-            mat4.invert(invVp, vp);
-
-            const nearClip = vec4.fromValues(ndcX, ndcY, -1, 1);
-            const farClip = vec4.fromValues(ndcX, ndcY, 1, 1);
-            vec4.transformMat4(nearClip, nearClip, invVp);
-            vec4.transformMat4(farClip, farClip, invVp);
-
-            vec4.scale(nearClip, nearClip, 1 / nearClip[3]);
-            vec4.scale(farClip, farClip, 1 / farClip[3]);
-
-            const rayDir = vec3.fromValues(
-                farClip[0] - nearClip[0],
-                farClip[1] - nearClip[1],
-                farClip[2] - nearClip[2],
-            );
-            vec3.normalize(rayDir, rayDir);
-
-            if (Math.abs(rayDir[1]) < 0.0001) {
+            if (!world) {
                 throw new Error("Could not transform to world coordinates");
             }
 
-            const t = -cam.position[1] / rayDir[1];
-            const worldX = cam.position[0] + t * rayDir[0];
-            const worldZ = cam.position[2] + t * rayDir[2];
-
-            const rFrac = worldZ / 1.5;
-            const qFrac = (worldX - SQRT3 / 2 * rFrac) / SQRT3;
-
-            const rq = Math.round(qFrac);
-            const rr = Math.round(rFrac);
-            const rs = Math.round(-qFrac - rFrac);
-
-            const qDiff = Math.abs(rq - qFrac);
-            const rDiff = Math.abs(rr - rFrac);
-            const sDiff = Math.abs(rs - (-qFrac - rFrac));
-
-            let hexQ = rq;
-            let hexR = rr;
-
-            if (qDiff > rDiff && qDiff > sDiff) {
-                hexQ = -rr - rs;
-            } else if (rDiff > sDiff) {
-                hexR = -rq - rs;
-            }
-
-            return {q: hexQ, r: hexR};
+            return worldToHex(world[0], world[2]);
         },
 
         onResize: (width: number, height: number) => {

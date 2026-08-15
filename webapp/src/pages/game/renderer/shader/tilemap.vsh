@@ -11,11 +11,9 @@ uniform float u_dbg_hexOffsetScale;
 flat out vec2 v_tilePosition;
 out vec2 v_textureCoordinates;
 
-const float SQRT_3 = 1.732050;
-
-
 #include "utils/random.glsl"
 #include "utils/wireframe-vsh.glsl"
+#include "utils/hex-to-world.glsl"
 
 // calculate random offset.
 // seed is the world position of the vertex to make the random offset "seamless" between tiles
@@ -35,13 +33,7 @@ void main() {
     computeBarycentricCoordinates();
 
     // tile coordinates
-    float q = in_tilePosition.x;
-    float r = in_tilePosition.y;
-
-    // transform tile coordinates to world coordinates
-    float worldX = SQRT_3 * q + SQRT_3 / 2.0 * r;
-    float worldZ = 3.0 / 2.0 * r;
-    vec3 tileWorldCenter = vec3(worldX, 0.0, worldZ);
+    vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition);
 
     // calculate world coordinate of each vertex
     float scale = u_dbg_scale;
@@ -52,5 +44,5 @@ void main() {
     vertexWorldPos  = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
 
     // project to screen coordinates
-    gl_Position = u_camera * vec4(vertexWorldPos, 1.0) * vec4(1.0, -1.0, 1.0, 1.0);
+    gl_Position = u_camera * vec4(vertexWorldPos, 1.0);
 }

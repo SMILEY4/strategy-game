@@ -44,7 +44,9 @@ fn construct_sprite(
     sprite: &SpriteSheetEntry
 ) {
 
-    // todo: note: texture y inverted here for testing: correct would be to switch v_min <> v_max
+    // texture coordinates use the atlas-native V (v_min = sprite top). The fragment shader
+    // inverts V (`1.0 - v`) and textures are uploaded with UNPACK_FLIP_Y_WEBGL, so emitting the
+    // native V here makes the sprite render upright.
 
     let h_width = (sprite.n_size.width * sprite.scale) / 2.0;
     let height = sprite.n_size.height * sprite.scale;
