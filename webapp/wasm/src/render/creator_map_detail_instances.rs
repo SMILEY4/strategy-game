@@ -46,24 +46,27 @@ fn construct_sprite(
 
     // todo: note: texture y inverted here for testing: correct would be to switch v_min <> v_max
 
+    let h_width = (sprite.n_size.width * sprite.scale) / 2.0;
+    let height = sprite.n_size.height * sprite.scale;
+
     // triangle a
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
-        vertex: [0.0, 0.0, 0.0],
+        vertex: [0.0, 0.0, -h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_min, sprite.uv_coords.v_max],
         color: [0.0, 0.0, 0.0],
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
-        vertex: [0.0, 0.0, 1.0],
+        vertex: [0.0, 0.0, h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_max, sprite.uv_coords.v_max],
         color: [0.0, 0.0, 0.0],
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
-        vertex: [0.0, 1.0, 1.0],
+        vertex: [0.0, height, h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_max, sprite.uv_coords.v_min],
         color: [0.0, 0.0, 0.0],
@@ -72,21 +75,21 @@ fn construct_sprite(
     // triangle b
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
-        vertex: [0.0, 0.0, 0.0],
+        vertex: [0.0, 0.0, -h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_min, sprite.uv_coords.v_max],
         color: [0.0, 0.0, 0.0],
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
-        vertex: [0.0, 1.0, 0.0],
+        vertex: [0.0, height, -h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_min, sprite.uv_coords.v_min],
         color: [0.0, 0.0, 0.0],
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
-        vertex: [0.0, 1.0, 1.0],
+        vertex: [0.0, height, h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_max, sprite.uv_coords.v_min],
         color: [0.0, 0.0, 0.0],

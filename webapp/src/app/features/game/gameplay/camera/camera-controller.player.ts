@@ -15,61 +15,6 @@ interface Dependencies {
     cameraDb: CameraDatabase;
 }
 
-function screenToWorld(
-    x: number, y: number,
-    position: vec3, direction: vec3, up: vec3,
-    fov: number, aspect: number, near: number, far: number,
-    canvasWidth: number, canvasHeight: number,
-): vec3 | null {
-    const ndcX = (2 * x) / canvasWidth - 1;
-    const ndcY = 1 - (2 * y) / canvasHeight;
-
-    const projection = mat4.create();
-    mat4.perspective(projection, fov, aspect, near, far);
-
-    const view = mat4.create();
-    const target = vec3.add(vec3.create(), position, direction);
-    mat4.lookAt(view, position, target, up);
-
-    const vp = mat4.create();
-    mat4.multiply(vp, projection, view);
-
-    const flipY = mat4.fromValues(
-        1, 0, 0, 0,
-        0, -1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1,
-    );
-    mat4.multiply(vp, flipY, vp);
-
-    const invVp = mat4.create();
-    mat4.invert(invVp, vp);
-
-    const nearClip = vec4.fromValues(ndcX, ndcY, -1, 1);
-    const farClip = vec4.fromValues(ndcX, ndcY, 1, 1);
-    vec4.transformMat4(nearClip, nearClip, invVp);
-    vec4.transformMat4(farClip, farClip, invVp);
-
-    vec4.scale(nearClip, nearClip, 1 / nearClip[3]);
-    vec4.scale(farClip, farClip, 1 / farClip[3]);
-
-    const rayDir = vec3.fromValues(
-        farClip[0] - nearClip[0],
-        farClip[1] - nearClip[1],
-        farClip[2] - nearClip[2],
-    );
-    vec3.normalize(rayDir, rayDir);
-
-    if (Math.abs(rayDir[1]) < 0.0001) return null;
-
-    const t = -position[1] / rayDir[1];
-    return vec3.fromValues(
-        position[0] + t * rayDir[0],
-        0,
-        position[2] + t * rayDir[2],
-    );
-}
-
 export const cameraControllerPlayer = ({cameraDb}: Dependencies): CameraController => {
 
     const pivot = vec3.fromValues(0, 0, 0);
@@ -281,3 +226,58 @@ export const cameraControllerPlayer = ({cameraDb}: Dependencies): CameraControll
         },
     };
 };
+
+function screenToWorld(
+    x: number, y: number,
+    position: vec3, direction: vec3, up: vec3,
+    fov: number, aspect: number, near: number, far: number,
+    canvasWidth: number, canvasHeight: number,
+): vec3 | null {
+    const ndcX = (2 * x) / canvasWidth - 1;
+    const ndcY = 1 - (2 * y) / canvasHeight;
+
+    const projection = mat4.create();
+    mat4.perspective(projection, fov, aspect, near, far);
+
+    const view = mat4.create();
+    const target = vec3.add(vec3.create(), position, direction);
+    mat4.lookAt(view, position, target, up);
+
+    const vp = mat4.create();
+    mat4.multiply(vp, projection, view);
+
+    const flipY = mat4.fromValues(
+        1, 0, 0, 0,
+        0, -1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1,
+    );
+    mat4.multiply(vp, flipY, vp);
+
+    const invVp = mat4.create();
+    mat4.invert(invVp, vp);
+
+    const nearClip = vec4.fromValues(ndcX, ndcY, -1, 1);
+    const farClip = vec4.fromValues(ndcX, ndcY, 1, 1);
+    vec4.transformMat4(nearClip, nearClip, invVp);
+    vec4.transformMat4(farClip, farClip, invVp);
+
+    vec4.scale(nearClip, nearClip, 1 / nearClip[3]);
+    vec4.scale(farClip, farClip, 1 / farClip[3]);
+
+    const rayDir = vec3.fromValues(
+        farClip[0] - nearClip[0],
+        farClip[1] - nearClip[1],
+        farClip[2] - nearClip[2],
+    );
+    vec3.normalize(rayDir, rayDir);
+
+    if (Math.abs(rayDir[1]) < 0.0001) return null;
+
+    const t = -position[1] / rayDir[1];
+    return vec3.fromValues(
+        position[0] + t * rayDir[0],
+        0,
+        position[2] + t * rayDir[2],
+    );
+}

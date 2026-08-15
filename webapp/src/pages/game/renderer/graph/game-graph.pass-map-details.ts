@@ -8,6 +8,7 @@ import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.cam
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import type {RenderCamera} from "@pages/game/renderer/data/models.ts";
 
 
 export function gameGraphPassMapDetails(
@@ -15,6 +16,7 @@ export function gameGraphPassMapDetails(
     wasmApi: GameGraphWasmApi,
     inputs: {
         wasmMapDetailVertices: WasmDataRenderGraphNode,
+        cameraData: DataRenderGraphNode<RenderCamera>,
         camera: CameraRenderGraphNode,
         dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
     },
@@ -60,12 +62,29 @@ export function gameGraphPassMapDetails(
 
 
     const textureSpritesColor = g.texture({
-        url: "/sprites/tileset_color.png",
+        url: "/sprites/mountains.color.png",
     });
 
     const textureSpritesOutline = g.texture({
-        url: "/sprites/tileset_outline.png",
+        url: "/sprites/mountains.outline.png",
     });
+
+    const dataDebugMsaaFactor = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.mapDetails.msaa
+        })
+    )
+
+    const cameraDirection = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.cameraData],
+            func: (data) => {
+                console.log(data.direction)
+                return data.direction
+            }
+        })
+    )
 
     const shader = g.shader({
         srcVertex: SHADER_MAP_DETAILS_VERT,
@@ -78,6 +97,7 @@ export function gameGraphPassMapDetails(
         shader: shader,
         geometry: geometry,
         inputs: {
+            "cameraDirection": cameraDirection as DataRenderGraphNode<unknown>,
             "camera": inputs.camera,
             "spritesColor": textureSpritesColor,
             "spritesOutline": textureSpritesOutline,
@@ -85,13 +105,6 @@ export function gameGraphPassMapDetails(
     });
 
     const canvasSize = g.canvasSize();
-
-    const dataDebugMsaaFactor = g.dataTransformer(
-        g.transform({
-            inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.mapDetails.msaa
-        })
-    )
 
     const rendertarget = g.rendertarget({
         size: canvasSize,

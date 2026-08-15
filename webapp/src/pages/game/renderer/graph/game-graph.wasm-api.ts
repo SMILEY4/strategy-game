@@ -5,8 +5,10 @@ import type {Tile} from "@app/features/game/models/tile.ts";
 import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
 import type {Entity} from "@app/features/game/models/entity.ts";
 
-import spritesheetRocks from "./../spritesheets/spritesheet_rocks.json";
-import spritesheetTrees from "./../spritesheets/spritesheet_trees.json";
+// import spritesheetRocksOld from "./../spritesheets/spritesheet_rocks.json";
+// import spritesheetTreesOld from "./../spritesheets/spritesheet_trees.json";
+// import spritesheetTrees from "./../spritesheets/trees.atlas.json";
+import spritesheetMountains from "./../spritesheets/mountains.atlas.json";
 
 export interface GameGraphWasmApi {
     configureRenderer: () => Promise<void>,
@@ -88,8 +90,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
         configureRenderer: async () => {
             console.log("[wasm-api]: configuring renderer");
 
-            const rocksAttributeIdWeight = spritesheetRocks.parameters.find(it => it.name === "weight")?.id ?? ""
-            wasmApp.add_spritesheet_entries(0, spritesheetRocks.sprites.map(entry => ({
+            wasmApp.add_spritesheet_entries(1, spritesheetMountains.sprites.map(entry => ({
                 id: entry.id,
                 uvCoords: {
                     uMin: entry.uv.uMin,
@@ -101,27 +102,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
                     width: entry.normalized.width,
                     height: entry.normalized.height,
                 },
-                weight: (typeof entry.attributes[rocksAttributeIdWeight as keyof typeof entry.attributes] === "number")
-                    ? entry.attributes[rocksAttributeIdWeight as keyof typeof entry.attributes] as number
-                    : 0,
-            } satisfies SpriteSheetEntry)));
-
-            const treesAttributeIdWeight = spritesheetTrees.parameters.find(it => it.name === "weight")?.id ?? ""
-            wasmApp.add_spritesheet_entries(1, spritesheetTrees.sprites.map(entry => ({
-                id: entry.id,
-                uvCoords: {
-                    uMin: entry.uv.uMin,
-                    vMin: entry.uv.vMin,
-                    uMax: entry.uv.uMax,
-                    vMax: entry.uv.vMax,
-                },
-                nSize: {
-                    width: entry.normalized.width,
-                    height: entry.normalized.height,
-                },
-                weight: (typeof entry.attributes[treesAttributeIdWeight as keyof typeof entry.attributes] === "number")
-                    ? entry.attributes[treesAttributeIdWeight as keyof typeof entry.attributes] as number
-                    : 0,
+                scale: 2,
             } satisfies SpriteSheetEntry)));
         },
 

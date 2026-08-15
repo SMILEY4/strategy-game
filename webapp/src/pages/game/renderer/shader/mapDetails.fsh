@@ -23,7 +23,7 @@ void main() {
     vec4 sprite = spriteColor;
     sprite = mix(sprite, spriteOutline, spriteOutline.a);
 
-    if (sprite.a < 0.9) {
+    if (sprite.a < 0.0001) {
         discard;
     }
 

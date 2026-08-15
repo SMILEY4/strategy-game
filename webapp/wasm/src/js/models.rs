@@ -58,5 +58,5 @@ pub struct SpriteSheetEntry {
     pub id: String,
     pub uv_coords: UvRectangle,
     pub n_size: Size,
-    pub weight: f32,
+    pub scale: f32,
 }

@@ -44,6 +44,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const {layerMapDetails} = gameGraphPassMapDetails(g, wasmApi, {
         wasmMapDetailVertices: wasmMapDetailVertices,
+        cameraData: dataCamera,
         camera: camera,
         dataDebug: dataDebug,
     });
