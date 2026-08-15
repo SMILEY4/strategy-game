@@ -10,5 +10,5 @@ void main() {
 
     vec3 finalWorldPos = in_worldPosition + (in_vertexPosition * in_radius);
 
-    gl_Position = u_camera * vec4(finalWorldPos, 1.0);
+    gl_Position = u_camera * vec4(finalWorldPos, 1.0) * vec4(1.0, -1.0, 1.0, 1.0);
 }

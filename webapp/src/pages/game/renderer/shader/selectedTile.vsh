@@ -21,5 +21,5 @@ void main() {
     vec3 vertexWorldPos = tileWorldCenter + (in_vertexPosition * vec3(scale, 1.0, scale));
 
     // project to screen coordinates
-    gl_Position = u_camera * vec4(vertexWorldPos, 1.0);
+    gl_Position = u_camera * vec4(vertexWorldPos, 1.0) * vec4(1.0, -1.0, 1.0, 1.0);
 }

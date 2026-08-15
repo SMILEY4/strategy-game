@@ -24,7 +24,7 @@ export function screenToGroundPoint(
     canvasHeight: number,
 ): vec3 | null {
     const ndcX = (2 * x) / canvasWidth - 1;
-    const ndcY = 1 - (2 * y) / canvasHeight;
+    const ndcY = (2 * y) / canvasHeight - 1;
 
     const projection = mat4.create();
     mat4.perspective(projection, camera.fov, camera.aspect, camera.near, camera.far);

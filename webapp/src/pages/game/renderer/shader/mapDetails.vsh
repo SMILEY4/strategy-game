@@ -32,5 +32,5 @@ void main() {
     vertexWorldPos += vec3(-tilt * vertexWorldPos.y, 0.0, 0.0);
 
     // project to screen coordinates
-    gl_Position = u_camera * vec4(vertexWorldPos, 1.0);
+    gl_Position = u_camera * vec4(vertexWorldPos, 1.0) * vec4(1.0, -1.0, 1.0, 1.0);
 }
