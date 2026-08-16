@@ -54,19 +54,45 @@ export function gameGraphPassMapDetails(
                         type: GlAttributeType.FLOAT,
                         amountComponents: 3,
                     },
-
+                    {
+                        name: "atlasId",
+                        type: GlAttributeType.U_INT,
+                        amountComponents: 1,
+                    },
                 ],
             }),
         ],
     });
 
 
-    const textureSpritesColor = g.texture({
+    const textureAtlasMountainsColor = g.texture({
         url: "/sprites/mountains.color.png",
     });
-
-    const textureSpritesOutline = g.texture({
+    const textureAtlasMountainsOutline = g.texture({
         url: "/sprites/mountains.outline.png",
+    });
+    const textureAtlasMountainsMask = g.texture({
+        url: "/sprites/empty8x8.png",
+    });
+
+    const textureAtlasHillsColor = g.texture({
+        url: "/sprites/hills.color.png",
+    });
+    const textureAtlasHillsOutline = g.texture({
+        url: "/sprites/hills.outline.png",
+    });
+    const textureAtlasHillsMask = g.texture({
+        url: "/sprites/hills.mask.png",
+    });
+
+    const textureAtlasTreesColor = g.texture({
+        url: "/sprites/trees.color.png",
+    });
+    const textureAtlasTreesOutline = g.texture({
+        url: "/sprites/trees.outline.png",
+    });
+    const textureAtlasTreesMask = g.texture({
+        url: "/sprites/empty8x8.png",
     });
 
     const dataDebugMsaaFactor = g.dataTransformer(
@@ -98,8 +124,19 @@ export function gameGraphPassMapDetails(
         inputs: {
             "cameraDirection": cameraDirection as DataRenderGraphNode<unknown>,
             "camera": inputs.camera,
-            "spritesColor": textureSpritesColor,
-            "spritesOutline": textureSpritesOutline,
+
+            "atlasMountainsColor": textureAtlasMountainsColor,
+            "atlasMountainsOutline": textureAtlasMountainsOutline,
+            "atlasMountainsMask": textureAtlasMountainsMask,
+
+            "atlasHillsColor": textureAtlasHillsColor,
+            "atlasHillsOutline": textureAtlasHillsOutline,
+            "atlasHillsMask": textureAtlasHillsMask,
+
+            "atlasTreesColor": textureAtlasTreesColor,
+            "atlasTreesOutline": textureAtlasTreesOutline,
+            "atlasTreesMask": textureAtlasTreesMask,
+
         },
     });
 

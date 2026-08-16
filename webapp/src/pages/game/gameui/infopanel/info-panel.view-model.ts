@@ -23,7 +23,6 @@ export function useInfoPanelViewModel(): InfoPanelViewModel {
 
     const selectedTileRef = useQuerySingleton(DI.selectedTileDatabase).selected;
     const selectedTile = useQuerySingle(DI.tileDatabase, TileQueries.BY_ID, selectedTileRef?.id);
-    console.log("selected", selectedTileRef, selectedTile)
 
     return {
         tile: selectedTileRef

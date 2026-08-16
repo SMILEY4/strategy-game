@@ -30,18 +30,26 @@ export function useQueryPartialSingleton<ENTITY, T>(db: SingletonDatabase<ENTITY
  * @return the current entity or null
  */
 export function useQueryEntity<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>, ENTITY, ID>(db: Database<STORAGE, ENTITY, ID>, id: ID): ENTITY | null {
-    const [entity, setEntity] = useState<ENTITY | null>(() => db.queryById(id));
+    const [snapshot, setSnapshot] = useState<{ id: ID, entity: ENTITY | null }>(() => ({
+        id,
+        entity: db.queryById(id),
+    }));
+
+    if (snapshot.id !== id) {
+        setSnapshot({id, entity: db.queryById(id)});
+    }
+
     useEffect(() => {
-        const [subscription, _] = db.subscribeOnEntity(id, (entity, operation) => {
+        const [subscription] = db.subscribeOnEntity(id, (entity, operation) => {
             if (operation === DatabaseOperation.DELETE) {
-                setEntity(null);
+                setSnapshot({id, entity: null});
             } else {
-                setEntity(entity);
+                setSnapshot({id, entity});
             }
         });
         return () => db.unsubscribe(subscription);
     }, [db, id]);
-    return entity;
+    return snapshot.entity;
 }
 
 /**
@@ -56,14 +64,22 @@ export function useQuerySingle<STORAGE extends DatabaseStorageUnitMapping<ENTITY
     query: Query<STORAGE, ENTITY, ID, ARGS>,
     args: ARGS,
 ): ENTITY | null {
-    const [entity, setEntity] = useState<ENTITY | null>(() => db.querySingle(query, args));
+    const [snapshot, setSnapshot] = useState<{ args: ARGS, entity: ENTITY | null }>(() => ({
+        args,
+        entity: db.querySingle(query, args),
+    }));
+
+    if (snapshot.args !== args) {
+        setSnapshot({args, entity: db.querySingle(query, args)});
+    }
+
     useEffect(() => {
-        const [subscription, _] = db.subscribeOnQuerySingle(query, args, entity => {
-            setEntity(entity);
+        const [subscription] = db.subscribeOnQuerySingle(query, args, entity => {
+            setSnapshot({args, entity});
         });
         return () => db.unsubscribe(subscription);
     }, [db, query, args]);
-    return entity;
+    return snapshot.entity;
 }
 
 
@@ -100,15 +116,22 @@ export function useQueryMultiple<STORAGE extends DatabaseStorageUnitMapping<ENTI
     args: ARGS,
 ): ENTITY[] {
 
-    const [entities, setEntities] = useState<ENTITY[]>(() => db.queryMany(query, args));
+    const [snapshot, setSnapshot] = useState<{ args: ARGS, entities: ENTITY[] }>(() => ({
+        args,
+        entities: db.queryMany(query, args),
+    }));
+
+    if (snapshot.args !== args) {
+        setSnapshot({args, entities: db.queryMany(query, args)});
+    }
 
     useEffect(() => {
-        const [subscription, _] = db.subscribeOnQuery(query, args, entities => {
-            setEntities(entities);
+        const [subscription] = db.subscribeOnQuery(query, args, entities => {
+            setSnapshot({args, entities});
         });
         return () => db.unsubscribe(subscription);
     }, [db, query, args]);
 
-    return entities;
+    return snapshot.entities;
 }
 

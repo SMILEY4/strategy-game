@@ -5,8 +5,6 @@ use crate::render::models::config::RenderConfig;
 use crate::render::models::render_state::RenderState;
 use crate::render::models::tile_instance_data::{MapDetailVertex, MapDetailsVertexData, TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
 use std::collections::{HashMap, HashSet};
-use std::fmt::format;
-use crate::js::imported::console_log;
 
 pub struct Renderer {
     config: RenderConfig,
@@ -27,7 +25,6 @@ impl Renderer {
 
     /// add the sprite sheet entries with the given group id
     pub fn set_spritesheet_entries(&mut self, group_id: u8, entries: Vec<SpriteSheetEntry>) {
-        console_log(&format!("received spritesheet entries for {}", group_id));
         self.config.spritesheet_entries.insert(group_id as i32, entries);
     }
 

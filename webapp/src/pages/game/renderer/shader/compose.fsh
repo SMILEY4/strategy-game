@@ -12,6 +12,10 @@ uniform float u_dbg_terrainCutoff;
 
 out vec4 outColor;
 
+vec3 unpremultiply(vec4 color) {
+    return color.a > 0.0001 ? color.rgb / color.a : vec3(0.0);
+}
+
 void main() {
 
     float TERRAIN_CUTOFF = u_dbg_terrainCutoff;
@@ -41,7 +45,7 @@ void main() {
     float waves = wave0 + wave1;
 
     // final terrain
-    vec4 colorTerrain = vec4(layerBaseTerrain.rgb, layerBaseTerrain.a * terrainMask);
+    vec4 colorTerrain = vec4(unpremultiply(layerBaseTerrain), layerBaseTerrain.a * terrainMask);
     colorTerrain = mix(colorTerrain, vec4(vec3(0.0), 1.0), terrainOutline);
     colorTerrain = mix(colorTerrain, vec4(vec3(1.0), 1.0), waves);
 
@@ -49,7 +53,7 @@ void main() {
     finalColor = mix(finalColor, colorTerrain.rgb, colorTerrain.a);
 
     // map details
-    finalColor = mix(finalColor, layerMapDetails.rgb, layerMapDetails.a);
+    finalColor = mix(finalColor, unpremultiply(layerMapDetails), layerMapDetails.a);
 
     // fog of war
     float maskUndiscovered = 1.0 - clamp(layerFogOfWar.r - (layerFogOfWar.g + layerFogOfWar.b), 0.0, 1.0);

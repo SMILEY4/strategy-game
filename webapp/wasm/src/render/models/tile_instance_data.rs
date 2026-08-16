@@ -39,4 +39,5 @@ pub struct MapDetailVertex {
     pub offset: [f32; 2],
     pub texture_coords: [f32; 2],
     pub color: [f32; 3],
+    pub atlas: u32,
 }

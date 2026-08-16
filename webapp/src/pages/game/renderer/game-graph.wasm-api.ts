@@ -6,7 +6,7 @@ import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
 import type {Entity} from "@app/features/game/models/entity.ts";
 
 import spritesheetMountains from "./spritesheets/mountains.atlas.json";
-import spritesheetHills from "./spritesheets/mountains.atlas.json";
+import spritesheetHills from "./spritesheets/hills.atlas.json";
 import spritesheetTrees from "./spritesheets/trees.atlas.json";
 
 export interface GameGraphWasmApi {

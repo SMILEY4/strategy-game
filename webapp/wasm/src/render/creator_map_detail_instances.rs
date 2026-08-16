@@ -47,12 +47,12 @@ fn build_tile_details(rng: &mut Random, tile: &Tile, config: &RenderConfig, vert
 
 }
 
-fn splatter_details(rng: &mut Random, config: &RenderConfig, vertex_data: &mut MapDetailsVertexData, atlas: i32, amount: [usize; 2], position: &HexPosition) {
-    let atlas = config.spritesheet_entries.get(&atlas).unwrap();
+fn splatter_details(rng: &mut Random, config: &RenderConfig, vertex_data: &mut MapDetailsVertexData, atlas_id: i32, amount: [usize; 2], position: &HexPosition) {
+    let atlas = config.spritesheet_entries.get(&atlas_id).unwrap();
     for _ in 0..rng.usize_range(amount[0], amount[1]) {
         let entry = rng.pick(atlas).unwrap();
         let offset = [rng.f32_signed(), rng.f32_signed()];
-        construct_sprite(vertex_data, position, offset, entry);
+        construct_sprite(vertex_data, position, offset, entry, atlas_id as u32);
     }
 }
 
@@ -61,7 +61,8 @@ fn construct_sprite(
     vertex_data: &mut MapDetailsVertexData,
     position: &HexPosition,
     offset: [f32; 2],
-    sprite: &SpriteSheetEntry
+    sprite: &SpriteSheetEntry,
+    atlas_id: u32,
 ) {
 
     // texture coordinates use the atlas-native V (v_min = sprite top). The fragment shader
@@ -78,6 +79,7 @@ fn construct_sprite(
         offset: offset,
         texture_coords: [sprite.uv_coords.u_min, sprite.uv_coords.v_max],
         color: [0.0, 0.0, 0.0],
+        atlas: atlas_id
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
@@ -85,6 +87,7 @@ fn construct_sprite(
         offset: offset,
         texture_coords: [sprite.uv_coords.u_max, sprite.uv_coords.v_max],
         color: [0.0, 0.0, 0.0],
+        atlas: atlas_id
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
@@ -92,6 +95,7 @@ fn construct_sprite(
         offset: offset,
         texture_coords: [sprite.uv_coords.u_max, sprite.uv_coords.v_min],
         color: [0.0, 0.0, 0.0],
+        atlas: atlas_id
     });
 
     // triangle b
@@ -101,6 +105,7 @@ fn construct_sprite(
         offset: offset,
         texture_coords: [sprite.uv_coords.u_min, sprite.uv_coords.v_max],
         color: [0.0, 0.0, 0.0],
+        atlas: atlas_id
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
@@ -108,6 +113,7 @@ fn construct_sprite(
         offset: offset,
         texture_coords: [sprite.uv_coords.u_min, sprite.uv_coords.v_min],
         color: [0.0, 0.0, 0.0],
+        atlas: atlas_id
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
         position: [position.q as f32, position.r as f32],
@@ -115,6 +121,7 @@ fn construct_sprite(
         offset: offset,
         texture_coords: [sprite.uv_coords.u_max, sprite.uv_coords.v_min],
         color: [0.0, 0.0, 0.0],
+        atlas: atlas_id
     });
 
 }
