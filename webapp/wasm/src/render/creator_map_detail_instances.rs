@@ -37,7 +37,7 @@ fn build_tile_details(rng: &mut Random, tile: &Tile, config: &RenderConfig, vert
     match tile.terrain.elevation {
         TILE_ELEVATION_FLAT => {}
         TILE_ELEVATION_HILLS => {
-            splatter_details(rng, config, vertex_data, SPRITE_ATLAS_HILLS, [2, 3], &tile.tile_position)
+            splatter_details(rng, config, vertex_data, SPRITE_ATLAS_HILLS, [1, 2], &tile.tile_position)
         }
         TILE_ELEVATION_MOUNTAINS => {
             splatter_details(rng, config, vertex_data, SPRITE_ATLAS_MOUNTAINS, [2, 3], &tile.tile_position)

@@ -153,7 +153,7 @@ export function gameGraphPassMapDetails(
             },
             depth: {
                 type: "depth",
-                format: GLDepthStoreFormat.DEPTH_COMPONENT24,
+                format: GLDepthStoreFormat.DEPTH_COMPONENT32F,
             },
         },
         depthTesting: true,

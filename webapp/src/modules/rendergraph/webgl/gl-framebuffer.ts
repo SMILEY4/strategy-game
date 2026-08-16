@@ -39,6 +39,7 @@ export class GLColorStoreFormat {
 
 export class GLDepthStoreFormat {
     public static readonly DEPTH_COMPONENT24 = new GLDepthStoreFormat(WebGL2RenderingContext.DEPTH_COMPONENT24);
+    public static readonly DEPTH_COMPONENT32F = new GLDepthStoreFormat(WebGL2RenderingContext.DEPTH_COMPONENT32F);
     public static readonly DEPTH24_STENCIL8 = new GLDepthStoreFormat(WebGL2RenderingContext.DEPTH24_STENCIL8);
 
     readonly id: GLint;

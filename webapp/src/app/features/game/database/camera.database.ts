@@ -13,8 +13,8 @@ export function cameraDatabase(): CameraDatabase {
             position: vec3.fromValues(-50, 40, 0),
             direction: vec3.fromValues(2, -1, 0),
             fov: 50,
-            near: 0.01,
-            far: 1000,
+            near: 0.1,
+            far: 400,
             aspect: 1,
         })
         .build();
