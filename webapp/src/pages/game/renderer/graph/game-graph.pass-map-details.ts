@@ -1,6 +1,6 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph.wasm-api.ts";
+import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
 import SHADER_MAP_DETAILS_VERT from "./../shader/mapDetails.vsh";
 import SHADER_MAP_DETAILS_FRAG from "./../shader/mapDetails.fsh";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
@@ -80,7 +80,6 @@ export function gameGraphPassMapDetails(
         g.transform({
             inputs: [inputs.cameraData],
             func: (data) => {
-                console.log(data.direction)
                 return data.direction
             }
         })

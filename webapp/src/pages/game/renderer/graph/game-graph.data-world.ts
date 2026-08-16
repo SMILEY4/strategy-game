@@ -1,7 +1,7 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import type {EntityCollection, RenderCamera, TileCollection} from "@pages/game/renderer/data/models.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph.wasm-api.ts";
+import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 
 

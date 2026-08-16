@@ -1,4 +1,4 @@
-use crate::js::models::{HexPosition, SpriteSheetEntry};
+use crate::js::models::{HexPosition, SpriteSheetEntry, Tile, SPRITE_ATLAS_HILLS, SPRITE_ATLAS_MOUNTAINS, TILE_BIOME_OCEAN, TILE_ELEVATION_FLAT, TILE_ELEVATION_HILLS, TILE_ELEVATION_MOUNTAINS, TILE_VISIBILITY_UNDISCOVERED};
 use crate::math::random::Random;
 use crate::render::models::config::RenderConfig;
 use crate::render::models::render_state::RenderState;
@@ -15,18 +15,10 @@ pub fn build(config: &RenderConfig, state: &RenderState, vertex_data: &mut MapDe
         // tile details
         chunk.tiles.iter().for_each(|tile_index| {
             let tile = state.tiles[*tile_index];
-            if (tile.visibility == 0) {
+            if (tile.visibility == TILE_VISIBILITY_UNDISCOVERED || tile.terrain.biome == TILE_BIOME_OCEAN) {
                 return;
             }
-            if(tile.terrain == 0) {
-                return;
-            }
-            rng.set_seed(tile.rng_seed as u64);
-            for _ in 0..rng.usize_range(2, 5) {
-                let entry = rng.pick(config.spritesheet_entries.get(&1).unwrap()).unwrap();
-                let offset = [rng.f32_signed(), rng.f32_signed()];
-                construct_sprite(vertex_data, tile.tile_position, offset, entry);
-            }
+            build_tile_details(&mut rng, &tile, config, vertex_data);
         });
 
         // entity details
@@ -37,9 +29,37 @@ pub fn build(config: &RenderConfig, state: &RenderState, vertex_data: &mut MapDe
     });
 }
 
+
+fn build_tile_details(rng: &mut Random, tile: &Tile, config: &RenderConfig, vertex_data: &mut MapDetailsVertexData) {
+
+    rng.set_seed(tile.rng_seed as u64);
+
+    match tile.terrain.elevation {
+        TILE_ELEVATION_FLAT => {}
+        TILE_ELEVATION_HILLS => {
+            splatter_details(rng, config, vertex_data, SPRITE_ATLAS_HILLS, [2, 3], &tile.tile_position)
+        }
+        TILE_ELEVATION_MOUNTAINS => {
+            splatter_details(rng, config, vertex_data, SPRITE_ATLAS_MOUNTAINS, [2, 3], &tile.tile_position)
+        }
+        _ => {}
+    };
+
+}
+
+fn splatter_details(rng: &mut Random, config: &RenderConfig, vertex_data: &mut MapDetailsVertexData, atlas: i32, amount: [usize; 2], position: &HexPosition) {
+    let atlas = config.spritesheet_entries.get(&atlas).unwrap();
+    for _ in 0..rng.usize_range(amount[0], amount[1]) {
+        let entry = rng.pick(atlas).unwrap();
+        let offset = [rng.f32_signed(), rng.f32_signed()];
+        construct_sprite(vertex_data, position, offset, entry);
+    }
+}
+
+
 fn construct_sprite(
     vertex_data: &mut MapDetailsVertexData,
-    position: HexPosition,
+    position: &HexPosition,
     offset: [f32; 2],
     sprite: &SpriteSheetEntry
 ) {

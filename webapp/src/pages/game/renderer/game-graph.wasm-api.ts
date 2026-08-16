@@ -5,10 +5,9 @@ import type {Tile} from "@app/features/game/models/tile.ts";
 import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
 import type {Entity} from "@app/features/game/models/entity.ts";
 
-// import spritesheetRocksOld from "./../spritesheets/spritesheet_rocks.json";
-// import spritesheetTreesOld from "./../spritesheets/spritesheet_trees.json";
-// import spritesheetTrees from "./../spritesheets/trees.atlas.json";
-import spritesheetMountains from "./../spritesheets/mountains.atlas.json";
+import spritesheetMountains from "./spritesheets/mountains.atlas.json";
+import spritesheetHills from "./spritesheets/mountains.atlas.json";
+import spritesheetTrees from "./spritesheets/trees.atlas.json";
 
 export interface GameGraphWasmApi {
     configureRenderer: () => Promise<void>,
@@ -44,20 +43,20 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             provider: tile => tile.position.chunkR,
             type: "i32",
         },
-        "world_position.x": {
-            provider: () => 0,
-            type: "f32",
-        },
-        "world_position.y": {
-            provider: () => 0,
-            type: "f32",
-        },
         "visibility": {
             provider: tile => tile.visibility,
             type: "u8",
         },
-        "terrain": {
-            provider: tile => tile.world.visible ? (tile.world.value.biome === "OCEAN" ? 0 : 1) : 0,
+        "terrain_elevation": {
+            provider: tile => tile.world.visible ? (tileElevationSerialisationMapping[tile.world.value.elevation] ?? 0): 0,
+            type: "u8",
+        },
+        "terrain_biome": {
+            provider: tile => tile.world.visible ? (tileBiomeSerialisationMapping[tile.world.value.biome] ?? 0): 0,
+            type: "u8",
+        },
+        "terrain_feature": {
+            provider: tile => tile.world.visible ? (tileFeatureSerialisationMapping[tile.world.value.feature] ?? 0): 0,
             type: "u8",
         },
         "meta.seed": {
@@ -65,6 +64,24 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             type: "u32",
         },
     });
+
+    const tileElevationSerialisationMapping: Record<string, number> = {
+        undefined: 0,
+        "FLAT": 1,
+        "HILLS": 2,
+        "MOUNTAINS": 3,
+    }
+
+    const tileBiomeSerialisationMapping: Record<string, number> = {
+        undefined: 0,
+        "OCEAN": 1,
+        "GRASSLAND": 2,
+    }
+
+    const tileFeatureSerialisationMapping: Record<string, number> = {
+        undefined: 0,
+        "FOREST": 1,
+    }
 
     const entitySerializer = wasmSerializer<Entity>({
         "tile_position.q": {
@@ -89,7 +106,6 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
         configureRenderer: async () => {
             console.log("[wasm-api]: configuring renderer");
-
             wasmApp.add_spritesheet_entries(1, spritesheetMountains.sprites.map(entry => ({
                 id: entry.id,
                 uvCoords: {
@@ -103,6 +119,34 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
                     height: entry.normalized.height,
                 },
                 scale: 2,
+            } satisfies SpriteSheetEntry)));
+            wasmApp.add_spritesheet_entries(2, spritesheetHills.sprites.map(entry => ({
+                id: entry.id,
+                uvCoords: {
+                    uMin: entry.uv.uMin,
+                    vMin: entry.uv.vMin,
+                    uMax: entry.uv.uMax,
+                    vMax: entry.uv.vMax,
+                },
+                nSize: {
+                    width: entry.normalized.width,
+                    height: entry.normalized.height,
+                },
+                scale: 2,
+            } satisfies SpriteSheetEntry)));
+            wasmApp.add_spritesheet_entries(3, spritesheetTrees.sprites.map(entry => ({
+                id: entry.id,
+                uvCoords: {
+                    uMin: entry.uv.uMin,
+                    vMin: entry.uv.vMin,
+                    uMax: entry.uv.uMax,
+                    vMax: entry.uv.vMax,
+                },
+                nSize: {
+                    width: entry.normalized.width,
+                    height: entry.normalized.height,
+                },
+                scale: 1,
             } satisfies SpriteSheetEntry)));
         },
 

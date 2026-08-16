@@ -60,6 +60,9 @@ function InfoSelectedTile(props: InfoPanelViewModel) {
             <VerticalLayout verticalStart horizontalStretch fillFlex fillWidth paddingM>
                 <Txt.Line><Txt.String>Id: </Txt.String><Txt.String>{`${props.tile.id}`}</Txt.String></Txt.Line>
                 <Txt.Line><Txt.String>Position: </Txt.String><Txt.String>{`${props.tile.position.q},${props.tile.position.r}`}</Txt.String></Txt.Line>
+                <Txt.Line><Txt.String>Elevation: </Txt.String><Txt.String>{`${props.tile.terrain?.elevation}`}</Txt.String></Txt.Line>
+                <Txt.Line><Txt.String>Biome: </Txt.String><Txt.String>{`${props.tile.terrain?.biome}`}</Txt.String></Txt.Line>
+                <Txt.Line><Txt.String>Feature: </Txt.String><Txt.String>{`${props.tile.terrain?.feature}`}</Txt.String></Txt.Line>
                 <Button disabled={!props.foundCapital.available} onClick={props.foundCapital.execute}>Found Capital</Button>
             </VerticalLayout>
         );

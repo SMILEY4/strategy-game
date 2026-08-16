@@ -1,16 +1,43 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use tsify::Tsify;
+
+pub const SPRITE_ATLAS_MOUNTAINS: i32 = 1;
+pub const SPRITE_ATLAS_HILLS: i32 = 2;
+pub const SPRITE_ATLAS_TREES: i32 = 3;
 
 #[repr(C, packed)]
 #[derive(Copy, Clone, Debug)]
 pub struct Tile {
     pub tile_position: HexPosition,
     pub chunk_position: HexPosition,
-    pub world_position: WorldPosition,
     pub visibility: u8, // 0 = not discovered, 1 = discovered not visible, 2 = visible
-    pub terrain: u8,    // 0 = water, 1 = land
+    pub terrain: TileTerrain,
     pub rng_seed: u32,
 }
+
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
+pub struct TileTerrain {
+    pub elevation: u8,
+    pub biome: u8,
+    pub feature: u8,
+}
+
+pub const TILE_VISIBILITY_UNDISCOVERED: u8 = 0;
+pub const TILE_VISIBILITY_DISCOVERED: u8 = 1;
+pub const TILE_VISIBILITY_VISIBLE: u8 = 2;
+
+pub const TILE_ELEVATION_UNDEF: u8 = 0;
+pub const TILE_ELEVATION_FLAT: u8 = 1;
+pub const TILE_ELEVATION_HILLS: u8 = 2;
+pub const TILE_ELEVATION_MOUNTAINS: u8 = 3;
+
+pub const TILE_BIOME_UNDEF: u8 = 0;
+pub const TILE_BIOME_OCEAN: u8 = 1;
+pub const TILE_BIOME_GRASSLAND: u8 = 2;
+
+pub const TILE_FEATURE_UNDEF: u8 = 0;
+pub const TILE_FEATURE_FOREST: u8 = 1;
 
 #[repr(C, packed)]
 #[derive(Copy, Clone, Debug)]
@@ -43,7 +70,7 @@ pub struct UvRectangle {
     pub v_max: f32,
 }
 
-#[derive(Tsify,  Deserialize)]
+#[derive(Tsify, Deserialize)]
 #[tsify(from_wasm_abi)]
 #[serde(rename_all = "camelCase")]
 pub struct Size {

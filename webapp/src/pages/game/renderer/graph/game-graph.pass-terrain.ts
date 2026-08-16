@@ -1,6 +1,6 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph.wasm-api.ts";
+import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
 import SHADER_TILEMAP_VERT from "./../shader/tilemap.vsh";
 import SHADER_TILEMAP_FRAG from "./../shader/tilemap.fsh";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";

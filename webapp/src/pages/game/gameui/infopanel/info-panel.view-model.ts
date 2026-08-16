@@ -1,11 +1,17 @@
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
-import {useQuerySingleton} from "@modules/gamedb/adapters/use-database.ts";
+import {useQuerySingle, useQuerySingleton} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
+import {TileQueries} from "@app/features/game/database/tile.database.ts";
 
 export interface InfoPanelViewModel {
     tile: null | {
         id: string,
         position: HexPosition,
+        terrain: null | {
+            elevation: string,
+            biome: string,
+            feature: string,
+        }
     },
     foundCapital: {
         available: boolean,
@@ -15,20 +21,29 @@ export interface InfoPanelViewModel {
 
 export function useInfoPanelViewModel(): InfoPanelViewModel {
 
-    const selectedTile = useQuerySingleton(DI.selectedTileDatabase).selected;
+    const selectedTileRef = useQuerySingleton(DI.selectedTileDatabase).selected;
+    const selectedTile = useQuerySingle(DI.tileDatabase, TileQueries.BY_ID, selectedTileRef?.id);
+    console.log("selected", selectedTileRef, selectedTile)
 
     return {
-        tile: selectedTile
+        tile: selectedTileRef
             ? {
-                id: selectedTile.id,
-                position: {q: selectedTile.q, r: selectedTile.r},
+                id: selectedTileRef.id,
+                position: {q: selectedTileRef.q, r: selectedTileRef.r},
+                terrain: (selectedTile && selectedTile.world.visible)
+                    ? {
+                        elevation: selectedTile.world.value.elevation,
+                        biome: selectedTile.world.value.biome,
+                        feature: selectedTile.world.value.feature,
+                    }
+                    : null,
             }
             : null,
         foundCapital: {
-            available: selectedTile ? DI.gameActionFoundCapital.validate(selectedTile) : false,
+            available: selectedTileRef ? DI.gameActionFoundCapital.validate(selectedTileRef) : false,
             execute: () => {
-                if (selectedTile) {
-                    DI.gameActionFoundCapital.execute(selectedTile);
+                if (selectedTileRef) {
+                    DI.gameActionFoundCapital.execute(selectedTileRef);
                 }
             },
         },

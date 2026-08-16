@@ -174,7 +174,6 @@ export function gameGraphPassSelectedTile(
         g.transform({
             inputs: [inputs.dataDebug],
             func: (data) => {
-                console.log(data.renderer.selectedTile.color)
                 return data.renderer.selectedTile.color
             }
         })

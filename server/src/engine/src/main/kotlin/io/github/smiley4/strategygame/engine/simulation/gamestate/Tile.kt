@@ -22,22 +22,22 @@ data class Tile(
     fun ref() = Ref(id = this.id, position = this.position)
 
     data class WorldData(
-        val biome: Biome,
         val elevation: Elevation,
+        val biome: Biome,
         val feature: Feature?,
         val resources: List<ResourceDeposit>,
     )
-
-    enum class Biome {
-        OCEAN, COAST, GRASSLAND, PLAINS, DESERT, TUNDRA, SNOW
-    }
 
     enum class Elevation {
         FLAT, HILLS, MOUNTAINS
     }
 
+    enum class Biome {
+        OCEAN, GRASSLAND
+    }
+
     enum class Feature {
-        FOREST, JUNGLE, MARSH
+        FOREST
     }
 
     data class ResourceDeposit(

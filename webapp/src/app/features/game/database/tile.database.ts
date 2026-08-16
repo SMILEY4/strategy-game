@@ -37,6 +37,19 @@ export const TileQueries = {
         }
     },
 
+    BY_ID: {
+        run: (storage: TileStorageMapping, args: string | null | undefined) => {
+            if(args) {
+                console.log("find by id", args)
+                const x = storage.primary.get(args)
+                console.log("found", x)
+                return x;
+            } else {
+                return null;
+            }
+        }
+    },
+
     BY_POSITION: {
         run: (storage: TileStorageMapping, args: { q: number, r: number }) => {
             return storage.byPosition.getByKey(`${args.q};${args.r}`);
@@ -46,4 +59,5 @@ export const TileQueries = {
 } satisfies {
     ALL: TileQuery<never>,
     BY_POSITION: TileQuery<{ q: number, r: number }>
+    BY_ID: TileQuery<string | null | undefined>
 }

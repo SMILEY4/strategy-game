@@ -1,6 +1,6 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph.wasm-api.ts";
+import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
 import SHADER_FOW_VERT from "./../shader/fogOfWar.vsh";
 import SHADER_FOW_FRAG from "./../shader/fogOfWar.fsh";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";

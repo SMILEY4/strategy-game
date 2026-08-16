@@ -2,7 +2,7 @@ import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_COASTLINE_VERT from "./../shader/coastline.vsh";
 import SHADER_COASTLINE_FRAG from "./../shader/coastline.fsh";
-import type {GameGraphWasmApi} from "@pages/game/renderer/graph/game-graph.wasm-api.ts";
+import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
