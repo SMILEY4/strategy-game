@@ -16,7 +16,11 @@ export interface GameGraphWasmApi {
     uploadEntities: (entities: RenderEntity[]) => void,
     collectChunks: () => { allChunks: boolean }
     cullChunks: () => { visibleChunks: boolean }
-    buildTileInstances: () => { tileInstances: boolean },
+    buildTileInstances: () => {
+        tileTerrainInstances: boolean,
+        tileFogOfWarInstances: boolean,
+        mapDetailVertices: boolean
+    },
     downloadTileLandInstances: () => VertexDataResult
     downloadTileWaterInstances: () => VertexDataResult
     downloadTileFogOfWarInstances: () => VertexDataResult
@@ -204,7 +208,11 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
         buildTileInstances: () => {
             console.log("[wasm-api]: building tile instances");
             const changed = wasmApp.calculate_terrain_tile_instances();
-            return {tileInstances: changed};
+            return {
+                tileTerrainInstances: changed,
+                tileFogOfWarInstances: changed,
+                mapDetailVertices: changed,
+            }
         },
 
         downloadTileLandInstances: () => {

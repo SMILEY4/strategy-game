@@ -74,6 +74,7 @@ export const gameRendererDataProvider = ({tileDb, entityDb, selectedTileDb, came
                 entities: entityDb
                     .queryMany(EntityQueries.ALL, undefined)
                     .map(entity => {
+                        console.log("entity", entity, EntityUtils.hasComponent(entity, "settlement"))
                         if(EntityUtils.hasComponent(entity, "settlement")) {
                             return {
                                 ...entity,

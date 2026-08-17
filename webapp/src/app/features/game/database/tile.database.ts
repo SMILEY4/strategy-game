@@ -40,7 +40,6 @@ export const TileQueries = {
     BY_ID: {
         run: (storage: TileStorageMapping, args: string | null | undefined) => {
             if(args) {
-                console.log("find by id", args)
                 const x = storage.primary.get(args)
                 console.log("found", x)
                 return x;

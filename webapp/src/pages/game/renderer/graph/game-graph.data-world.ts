@@ -73,7 +73,7 @@ export function gameGraphDataWorld(
     const buildTileInstances = g.wasmOperation({
         wasmInputs: [wasmVisibleChunks, wasmAllTiles],
         dataInputs: [],
-        outputs: ["tileInstances"],
+        outputs: ["tileTerrainInstances", "tileFogOfWarInstances", "mapDetailVertices",],
         func: () => wasmApi.buildTileInstances(),
     });
 

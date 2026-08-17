@@ -47,17 +47,17 @@ class PlayerStateBuilder {
         "components" to arr[
             entity.components.map { component ->
                 when (component) {
-                    is EntityComponent.Position -> {
+                    is EntityComponent.Position -> obj {
                         "type" to "position"
                         "tileId" to component.tile.id
                         "q" to component.tile.position.q
                         "r" to component.tile.position.r
                     }
-                    is EntityComponent.PlayerSpawn -> {
+                    is EntityComponent.PlayerSpawn -> obj {
                         "type" to "player-spawn"
                         "radius" to component.radius
                     }
-                    is EntityComponent.Settlement -> {
+                    is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
                         "isRealmCapital" to component.isRealmCapital
                     }
@@ -111,25 +111,25 @@ class PlayerStateBuilder {
 
 
     private fun getVisibilityAt(gameState: GameStateContext, entity: Entity, player: UserId): Int {
-        return 1;
-//        val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
-//        if (position == null) return 0
-//        return getVisibilityAt(gameState, position, player)
+//        return 1;
+        val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
+        if (position == null) return 0
+        return getVisibilityAt(gameState, position, player)
     }
 
     private fun getVisibilityAt(gameState: GameStateContext, positions: HexPosition, player: UserId): Int {
-        return 1;
-//        val tile = gameState.tiles.find { it.position == positions }
-//        if (tile == null) return 0
-//        return getVisibilityAt(tile, player)
+//        return 1;
+        val tile = gameState.tiles.find { it.position == positions }
+        if (tile == null) return 0
+        return getVisibilityAt(tile, player)
     }
 
     private fun getVisibilityAt(tile: Tile, player: UserId): Int {
-        return 1;
-//        return when {
-//            tile.discoveredBy.contains(player) -> 1
-//            else -> 0
-//        }
+//        return 1;
+        return when {
+            tile.discoveredBy.contains(player) -> 1
+            else -> 0
+        }
     }
 
 }
