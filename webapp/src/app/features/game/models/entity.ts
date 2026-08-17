@@ -9,3 +9,12 @@ export interface Entity {
         | { type: "settlement", isRealmCapital: boolean }
         )[]
 }
+
+
+export const EntityUtils = {
+
+    hasComponent: (entity: Entity, type: string): boolean => {
+        return entity.components.some(it => it.type === type);
+    }
+
+}

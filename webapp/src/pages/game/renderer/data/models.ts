@@ -9,8 +9,12 @@ export interface TileCollection {
 }
 
 export interface EntityCollection {
-    entities: Entity[],
+    entities: RenderEntity[],
     revId: string
+}
+
+export type RenderEntity = Entity & {
+    renderType: "settlement"
 }
 
 export type RenderCamera = Camera & { revId: string }

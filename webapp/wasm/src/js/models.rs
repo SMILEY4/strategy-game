@@ -39,11 +39,14 @@ pub const TILE_BIOME_GRASSLAND: u8 = 2;
 pub const TILE_FEATURE_UNDEF: u8 = 0;
 pub const TILE_FEATURE_FOREST: u8 = 1;
 
+pub const ENTITY_TYPE_SETTLEMENT: u8 = 1;
+
 #[repr(C, packed)]
 #[derive(Copy, Clone, Debug)]
 pub struct Entity {
     pub tile_position: HexPosition,
     pub chunk_position: HexPosition,
+    pub render_type: u8
 }
 
 #[repr(C, packed)]

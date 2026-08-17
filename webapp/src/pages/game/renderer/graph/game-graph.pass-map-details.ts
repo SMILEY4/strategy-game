@@ -95,6 +95,16 @@ export function gameGraphPassMapDetails(
         url: "/sprites/empty8x8.png",
     });
 
+    const textureAtlasBuildingsColor = g.texture({
+        url: "/sprites/buildings.color.png",
+    });
+    const textureAtlasBuildingsOutline = g.texture({
+        url: "/sprites/buildings.outline.png",
+    });
+    const textureAtlasBuildingsMask = g.texture({
+        url: "/sprites/empty8x8.png",
+    });
+
     const dataDebugMsaaFactor = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
@@ -136,6 +146,10 @@ export function gameGraphPassMapDetails(
             "atlasTreesColor": textureAtlasTreesColor,
             "atlasTreesOutline": textureAtlasTreesOutline,
             "atlasTreesMask": textureAtlasTreesMask,
+
+            "atlasBuildingsColor": textureAtlasBuildingsColor,
+            "atlasBuildingsOutline": textureAtlasBuildingsOutline,
+            "atlasBuildingsMask": textureAtlasBuildingsMask,
 
         },
     });

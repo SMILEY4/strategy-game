@@ -8,12 +8,18 @@ flat in uint v_atlasId;
 uniform sampler2D u_atlasMountainsColor;
 uniform sampler2D u_atlasMountainsOutline;
 uniform sampler2D u_atlasMountainsMask;
+
 uniform sampler2D u_atlasHillsColor;
 uniform sampler2D u_atlasHillsOutline;
 uniform sampler2D u_atlasHillsMask;
+
 uniform sampler2D u_atlasTreesColor;
 uniform sampler2D u_atlasTreesOutline;
 uniform sampler2D u_atlasTreesMask;
+
+uniform sampler2D u_atlasBuildingsColor;
+uniform sampler2D u_atlasBuildingsOutline;
+uniform sampler2D u_atlasBuildingsMask;
 
 out vec4 outColor;
 
@@ -42,6 +48,11 @@ void main() {
         spriteRawColor = texture(u_atlasTreesColor, uv);
         spriteOutline = texture(u_atlasTreesOutline, uv);
         spriteMask = texture(u_atlasTreesMask, uv);
+    }
+    if(v_atlasId == 4u) {
+        spriteRawColor = texture(u_atlasBuildingsColor, uv);
+        spriteOutline = texture(u_atlasBuildingsOutline, uv);
+        spriteMask = texture(u_atlasBuildingsMask, uv);
     }
 
     vec3 terrainColor = vec3(112.0/255.0, 112.0/255.0, 86.0/255.0);

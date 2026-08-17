@@ -1,3 +1,6 @@
+use std::f32::consts as f32_consts;
+use std::f64::consts as f64_consts;
+
 /// simple random number generator
 pub struct Random {
     seed_internal: u64,
@@ -271,5 +274,31 @@ impl Random {
             let j = self.usize_range(0, i);
             slice.swap(i, j);
         }
+    }
+
+    /// Generates a random point inside a 2D circle with controllable spread and distribution.
+    /// - `radius`: Maximum spread of the points
+    /// - `distribution`: Power exponent controlling radial density:
+    ///     - `= 1.0`: Uniform spatial distribution across the area.
+    ///     - `< 1.0`: Concentrates points heavily toward the center.
+    ///     - `> 1.0`: Pushes points out toward the outer perimeter.
+    pub fn point_in_circle_f64(&mut self, radius: f64, distribution: f64) -> [f64; 2] {
+        let theta: f64 = self.f64_range(0.0, f64_consts::TAU);
+        let u: f64 = self.f64();
+        let r = radius * u.powf(0.5 / distribution);
+        [r * theta.cos(), r * theta.sin()]
+    }
+
+    /// Generates a random point inside a 2D circle with controllable spread and distribution.
+    /// - `radius`: Maximum spread of the points
+    /// - `distribution`: Power exponent controlling radial density:
+    ///     - `= 1.0`: Uniform spatial distribution across the area.
+    ///     - `< 1.0`: Concentrates points heavily toward the center.
+    ///     - `> 1.0`: Pushes points out toward the outer perimeter.
+    pub fn point_in_circle_f32(&mut self, radius: f32, distribution: f32) -> [f32; 2] {
+        let theta: f32 = self.f32_range(0.0, f32_consts::TAU);
+        let u: f32 = self.f32();
+        let r = radius * u.powf(0.5 / distribution);
+        [r * theta.cos(), r * theta.sin()]
     }
 }

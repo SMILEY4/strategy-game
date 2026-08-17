@@ -3,16 +3,17 @@ import {type SpriteSheetEntry, WasmRenderApp} from "wasm";
 import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
 import type {Tile} from "@app/features/game/models/tile.ts";
 import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
-import type {Entity} from "@app/features/game/models/entity.ts";
 
 import spritesheetMountains from "./spritesheets/mountains.atlas.json";
 import spritesheetHills from "./spritesheets/hills.atlas.json";
 import spritesheetTrees from "./spritesheets/trees.atlas.json";
+import spritesheetBuildings from "./spritesheets/buildings.atlas.json";
+import type {RenderEntity} from "@pages/game/renderer/data/models.ts";
 
 export interface GameGraphWasmApi {
     configureRenderer: () => Promise<void>,
     uploadTiles: (tiles: Tile[]) => void,
-    uploadEntities: (entities: Entity[]) => void,
+    uploadEntities: (entities: RenderEntity[]) => void,
     collectChunks: () => { allChunks: boolean }
     cullChunks: () => { visibleChunks: boolean }
     buildTileInstances: () => { tileInstances: boolean },
@@ -48,15 +49,15 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             type: "u8",
         },
         "terrain_elevation": {
-            provider: tile => tile.world.visible ? (tileElevationSerialisationMapping[tile.world.value.elevation] ?? 0): 0,
+            provider: tile => tile.world.visible ? (tileElevationSerialisationMapping[tile.world.value.elevation] ?? 0) : 0,
             type: "u8",
         },
         "terrain_biome": {
-            provider: tile => tile.world.visible ? (tileBiomeSerialisationMapping[tile.world.value.biome] ?? 0): 0,
+            provider: tile => tile.world.visible ? (tileBiomeSerialisationMapping[tile.world.value.biome] ?? 0) : 0,
             type: "u8",
         },
         "terrain_feature": {
-            provider: tile => tile.world.visible ? (tileFeatureSerialisationMapping[tile.world.value.feature] ?? 0): 0,
+            provider: tile => tile.world.visible ? (tileFeatureSerialisationMapping[tile.world.value.feature] ?? 0) : 0,
             type: "u8",
         },
         "meta.seed": {
@@ -70,20 +71,20 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
         "FLAT": 1,
         "HILLS": 2,
         "MOUNTAINS": 3,
-    }
+    };
 
     const tileBiomeSerialisationMapping: Record<string, number> = {
         undefined: 0,
         "OCEAN": 1,
         "GRASSLAND": 2,
-    }
+    };
 
     const tileFeatureSerialisationMapping: Record<string, number> = {
         undefined: 0,
         "FOREST": 1,
-    }
+    };
 
-    const entitySerializer = wasmSerializer<Entity>({
+    const entitySerializer = wasmSerializer<RenderEntity>({
         "tile_position.q": {
             provider: entity => entity.position.q,
             type: "i32",
@@ -100,7 +101,16 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             provider: entity => entity.position.chunkR,
             type: "i32",
         },
+        "render_type": {
+            provider: entity => entityRenderTypeSerialisationMapping[entity.renderType],
+            type: "u8",
+        },
     });
+
+    const entityRenderTypeSerialisationMapping: Record<string, number> = {
+        undefined: 0,
+        "settlement": 1,
+    };
 
     return {
 
@@ -118,7 +128,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
                     width: entry.normalized.width,
                     height: entry.normalized.height,
                 },
-                scale: 2,
+                scale: 1.5,
             } satisfies SpriteSheetEntry)));
             wasmApp.add_spritesheet_entries(2, spritesheetHills.sprites.map(entry => ({
                 id: entry.id,
@@ -132,7 +142,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
                     width: entry.normalized.width,
                     height: entry.normalized.height,
                 },
-                scale: 2,
+                scale: 1.4,
             } satisfies SpriteSheetEntry)));
             wasmApp.add_spritesheet_entries(3, spritesheetTrees.sprites.map(entry => ({
                 id: entry.id,
@@ -146,7 +156,21 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
                     width: entry.normalized.width,
                     height: entry.normalized.height,
                 },
-                scale: 1,
+                scale: 0.7,
+            } satisfies SpriteSheetEntry)));
+            wasmApp.add_spritesheet_entries(4, spritesheetBuildings.sprites.map(entry => ({
+                id: entry.id,
+                uvCoords: {
+                    uMin: entry.uv.uMin,
+                    vMin: entry.uv.vMin,
+                    uMax: entry.uv.uMax,
+                    vMax: entry.uv.vMax,
+                },
+                nSize: {
+                    width: entry.normalized.width,
+                    height: entry.normalized.height,
+                },
+                scale: 0.8,
             } satisfies SpriteSheetEntry)));
         },
 
@@ -158,8 +182,8 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             wasmApp.tiles_upload(memory.ptr, memory.len);
         },
 
-        uploadEntities: (entities: Entity[]) => {
-            console.log("[wasm-api]: uploading entities (" + entities.length + ")");
+        uploadEntities: (entities: RenderEntity[]) => {
+            console.log("[wasm-api]: uploading entities (" + entities.length + ")", entities);
             const memory = wasmApp.entities_reserve_memory(entities.length);
             const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
             entitySerializer(buffer, entities);

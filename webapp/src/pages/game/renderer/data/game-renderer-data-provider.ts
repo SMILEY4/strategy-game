@@ -1,10 +1,11 @@
-import type {EntityCollection, RenderCamera, TileCollection} from "@pages/game/renderer/data/models.ts";
+import type {EntityCollection, RenderCamera, RenderEntity, TileCollection} from "@pages/game/renderer/data/models.ts";
 import {type TileDatabase, TileQueries} from "@app/features/game/database/tile.database.ts";
 import type {CameraDatabase} from "@app/features/game/database/camera.database.ts";
 import type {DebugData, DebugDatabase} from "@app/features/game/database/debug.database.ts";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import type {SelectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
 import {type EntityDatabase, EntityQueries} from "@app/features/game/database/entity.database.ts";
+import {EntityUtils} from "@app/features/game/models/entity.ts";
 
 /** Data provider interface for the game renderer, supplying tiles and camera state. */
 export interface GameRendererDataProvider {
@@ -70,7 +71,18 @@ export const gameRendererDataProvider = ({tileDb, entityDb, selectedTileDb, came
         getEntities: () => {
             return {
                 revId: entityDb.getRevId(),
-                entities: entityDb.queryMany(EntityQueries.ALL, undefined),
+                entities: entityDb
+                    .queryMany(EntityQueries.ALL, undefined)
+                    .map(entity => {
+                        if(EntityUtils.hasComponent(entity, "settlement")) {
+                            return {
+                                ...entity,
+                                renderType: "settlement",
+                            } as RenderEntity
+                        }
+                        return null
+                    })
+                    .filter(it => !!it),
             };
         },
 
