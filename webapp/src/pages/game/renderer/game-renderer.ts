@@ -14,10 +14,11 @@ export class GameRenderer {
 
 
     constructor() {
-        this.dataProvider = gameRendererDataProvider({
+        this.dataProvider = gameRendererDataProvider({ // todo: tech-dept: temporary bypass of actual DI system
             tileDb: DI.tileDatabase,
             cameraDb: DI.cameraDatabase,
             entityDb: DI.entityDatabase,
+            commandDb: DI.commandDatabase,
             debugDb: DI.debugDatabase,
             selectedTileDb: DI.selectedTileDatabase,
         });

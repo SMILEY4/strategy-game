@@ -51,6 +51,7 @@ fn build_entity_details(
             vertex_data,
             &entity.tile_position,
             &SPRITE_GROUP_CONFIG_BUILDINGS,
+            entity.is_pending,
         );
     }
 }
@@ -71,6 +72,7 @@ fn build_tile_details(
                 vertex_data,
                 &tile.tile_position,
                 &SPRITE_GROUP_CONFIG_HILLS,
+                false,
             );
         }
         TILE_ELEVATION_MOUNTAINS => {
@@ -80,6 +82,7 @@ fn build_tile_details(
                 vertex_data,
                 &tile.tile_position,
                 &SPRITE_GROUP_CONFIG_MOUNTAINS,
+                false,
             );
         }
         _ => {}
@@ -93,6 +96,7 @@ fn build_tile_details(
                 vertex_data,
                 &tile.tile_position,
                 &SPRITE_GROUP_CONFIG_TREES,
+                false,
             );
         }
         _ => {}
@@ -105,6 +109,7 @@ fn splatter_details(
     vertex_data: &mut MapDetailsVertexData,
     position: &HexPosition,
     group_config: &MapDetailSpriteGroupConfig,
+    is_pending: bool,
 ) {
     let atlas = config
         .spritesheet_entries
@@ -123,6 +128,7 @@ fn splatter_details(
             offset,
             entry,
             group_config.atlas_id as u32,
+            is_pending
         );
     }
 }
@@ -133,6 +139,7 @@ fn construct_sprite(
     offset: [f32; 2],
     sprite: &SpriteSheetEntry,
     atlas_id: u32,
+    is_pending: bool
 ) {
     // texture coordinates use the atlas-native V (v_min = sprite top). The fragment shader
     // inverts V (`1.0 - v`) and textures are uploaded with UNPACK_FLIP_Y_WEBGL, so emitting the
@@ -148,7 +155,7 @@ fn construct_sprite(
         vertex: [0.0, 0.0, -h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_min, sprite.uv_coords.v_max],
-        color: [0.0, 0.0, 0.0],
+        is_pending: if is_pending { 1 } else { 0 },
         atlas: atlas_id,
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
@@ -156,7 +163,7 @@ fn construct_sprite(
         vertex: [0.0, 0.0, h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_max, sprite.uv_coords.v_max],
-        color: [0.0, 0.0, 0.0],
+        is_pending: if is_pending { 1 } else { 0 },
         atlas: atlas_id,
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
@@ -164,7 +171,7 @@ fn construct_sprite(
         vertex: [0.0, height, h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_max, sprite.uv_coords.v_min],
-        color: [0.0, 0.0, 0.0],
+        is_pending: if is_pending { 1 } else { 0 },
         atlas: atlas_id,
     });
 
@@ -174,7 +181,7 @@ fn construct_sprite(
         vertex: [0.0, 0.0, -h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_min, sprite.uv_coords.v_max],
-        color: [0.0, 0.0, 0.0],
+        is_pending: if is_pending { 1 } else { 0 },
         atlas: atlas_id,
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
@@ -182,7 +189,7 @@ fn construct_sprite(
         vertex: [0.0, height, -h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_min, sprite.uv_coords.v_min],
-        color: [0.0, 0.0, 0.0],
+        is_pending: if is_pending { 1 } else { 0 },
         atlas: atlas_id,
     });
     vertex_data.map_detail_vertices.push(MapDetailVertex {
@@ -190,7 +197,7 @@ fn construct_sprite(
         vertex: [0.0, height, h_width],
         offset: offset,
         texture_coords: [sprite.uv_coords.u_max, sprite.uv_coords.v_min],
-        color: [0.0, 0.0, 0.0],
+        is_pending: if is_pending { 1 } else { 0 },
         atlas: atlas_id,
     });
 }

@@ -46,7 +46,8 @@ pub const ENTITY_TYPE_SETTLEMENT: u8 = 1;
 pub struct Entity {
     pub tile_position: HexPosition,
     pub chunk_position: HexPosition,
-    pub render_type: u8
+    pub render_type: u8,
+    pub is_pending: bool,
 }
 
 #[repr(C, packed)]

@@ -50,12 +50,12 @@ export function gameGraphPassMapDetails(
                         amountComponents: 2,
                     },
                     {
-                        name: "color",
-                        type: GlAttributeType.FLOAT,
-                        amountComponents: 3,
+                        name: "atlasId",
+                        type: GlAttributeType.U_INT,
+                        amountComponents: 1,
                     },
                     {
-                        name: "atlasId",
+                        name: "isPending",
                         type: GlAttributeType.U_INT,
                         amountComponents: 1,
                     },

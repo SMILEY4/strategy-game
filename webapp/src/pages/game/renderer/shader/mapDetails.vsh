@@ -4,22 +4,22 @@ in vec2 in_tilePosition;
 in vec3 in_vertexPosition;
 in vec2 in_offset;
 in vec2 in_textureCoordinates;
-in vec3 in_color;
 in uint in_atlasId;
+in uint in_isPending;
 
 uniform mat4 u_camera;
 uniform vec3 u_cameraDirection;
 
 out vec2 v_textureCoordinates;
-out vec3 v_color;
 flat out uint v_atlasId;
+flat out uint v_isPending;
 
 #include "utils/hex-to-world.glsl"
 
 void main() {
     v_textureCoordinates = in_textureCoordinates;
-    v_color = in_color;
     v_atlasId = in_atlasId;
+    v_isPending = in_isPending;
 
     // tile coordinates
     vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition);

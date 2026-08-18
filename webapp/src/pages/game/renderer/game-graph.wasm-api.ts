@@ -109,6 +109,10 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             provider: entity => entityRenderTypeSerialisationMapping[entity.renderType],
             type: "u8",
         },
+        "is_pending": {
+            provider: entity => entity.isPending,
+            type: "bool",
+        },
     });
 
     const entityRenderTypeSerialisationMapping: Record<string, number> = {
@@ -212,7 +216,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
                 tileTerrainInstances: changed,
                 tileFogOfWarInstances: changed,
                 mapDetailVertices: changed,
-            }
+            };
         },
 
         downloadTileLandInstances: () => {

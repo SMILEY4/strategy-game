@@ -2,8 +2,8 @@
 precision mediump float;
 
 in vec2 v_textureCoordinates;
-in vec3 v_color;
 flat in uint v_atlasId;
+flat in uint v_isPending;
 
 uniform sampler2D u_atlasMountainsColor;
 uniform sampler2D u_atlasMountainsOutline;
@@ -53,6 +53,10 @@ void main() {
         spriteRawColor = texture(u_atlasBuildingsColor, uv);
         spriteOutline = texture(u_atlasBuildingsOutline, uv);
         spriteMask = texture(u_atlasBuildingsMask, uv);
+    }
+
+    if(v_isPending == 1u) {
+        spriteRawColor = vec4(vec3(1.0), spriteRawColor.a);
     }
 
     vec3 terrainColor = vec3(112.0/255.0, 112.0/255.0, 86.0/255.0);

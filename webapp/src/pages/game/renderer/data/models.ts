@@ -1,6 +1,8 @@
 import type {Tile} from "@app/features/game/models/tile.ts";
 import type {Camera} from "@app/features/game/models/camera.ts";
 import type {Entity} from "@app/features/game/models/entity.ts";
+import type {Command} from "@app/features/game/models/command.ts";
+import type {ExtendedHexPosition} from "@app/features/game/models/hex-position.ts";
 
 
 export interface TileCollection {
@@ -9,12 +11,19 @@ export interface TileCollection {
 }
 
 export interface EntityCollection {
-    entities: RenderEntity[],
+    entities: Entity[],
     revId: string
 }
 
-export type RenderEntity = Entity & {
-    renderType: "settlement"
+export interface CommandCollection {
+    commands: Command[],
+    revId: string
+}
+
+export interface RenderEntity {
+    position: ExtendedHexPosition,
+    renderType: "settlement",
+    isPending: boolean
 }
 
 export type RenderCamera = Camera & { revId: string }

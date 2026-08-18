@@ -1,8 +1,9 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {EntityCollection, RenderCamera, TileCollection} from "@pages/game/renderer/data/models.ts";
+import type {CommandCollection, EntityCollection, RenderCamera, RenderEntity, TileCollection} from "@pages/game/renderer/data/models.ts";
 import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
+import {EntityUtils} from "@app/features/game/models/entity.ts";
 
 
 export function gameGraphDataWorld(
@@ -16,7 +17,7 @@ export function gameGraphDataWorld(
 
     const dataAllTiles = g.dataExternal<TileCollection>(
         () => dataProvider.getTiles(),
-        prev => prev?.revId !== dataProvider.getTilesRevId()
+        prev => prev?.revId !== dataProvider.getTilesRevId(),
     );
 
     const wasmAllTiles = g.wasmData({
@@ -32,11 +33,46 @@ export function gameGraphDataWorld(
         prev => prev?.revId !== dataProvider.getEntitiesRevId(),
     );
 
+    const dataAllCommands = g.dataExternal<CommandCollection>(
+        () => dataProvider.getCommands(),
+        prev => prev?.revId !== dataProvider.getCommandsRevId(),
+    );
+
+    const renderEntityTransformer = g.transform<[EntityCollection, CommandCollection], RenderEntity[]>({
+        inputs: [dataAllEntities, dataAllCommands],
+        func: (entities, commands) => {
+            return [
+                ...entities.entities.map(entity => {
+                    if(EntityUtils.hasComponent(entity, "settlement")) {
+                        return {
+                            ...entity,
+                            renderType: "settlement",
+                            isPending: false,
+                        } as RenderEntity
+                    }
+                    return null;
+                }),
+                ...commands.commands.map(command => {
+                    if (command.type === "found-capital") {
+                        return {
+                            position: command.location,
+                            renderType: "settlement",
+                            isPending: true,
+                        } as RenderEntity;
+                    }
+                    return null;
+                }),
+            ].filter(it => !!it);
+        },
+    });
+
+    const dataRenderEntities = g.dataTransformer(renderEntityTransformer);
+
     const wasmAllEntities = g.wasmData({
         source: {
             type: "js",
-            data: dataAllEntities,
-            upload: (entities: EntityCollection) => wasmApi.uploadEntities(entities.entities),
+            data: dataRenderEntities,
+            upload: (entities: RenderEntity[]) => wasmApi.uploadEntities(entities),
         },
     });
 
@@ -73,7 +109,7 @@ export function gameGraphDataWorld(
     const buildTileInstances = g.wasmOperation({
         wasmInputs: [wasmVisibleChunks, wasmAllTiles],
         dataInputs: [],
-        outputs: ["tileTerrainInstances", "tileFogOfWarInstances", "mapDetailVertices",],
+        outputs: ["tileTerrainInstances", "tileFogOfWarInstances", "mapDetailVertices"],
         func: () => wasmApi.buildTileInstances(),
     });
 
@@ -104,6 +140,6 @@ export function gameGraphDataWorld(
     return {
         wasmTileTerrainInstances: wasmTileTerrainInstances,
         wasmTileFogOfWarInstances: wasmTileFogOfWarInstances,
-        wasmMapDetailVertices: wasmMapDetailVertices
+        wasmMapDetailVertices: wasmMapDetailVertices,
     };
 }
