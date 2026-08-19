@@ -13,7 +13,7 @@ export function gameGraphPassCompose(
         layerBaseTerrain: RendertargetRenderGraphNode<"color">,
         layerCoastlineMask: RendertargetRenderGraphNode<"color">,
         layerFogOfWar: RendertargetRenderGraphNode<"color">,
-        layerMapDetails: RendertargetRenderGraphNode<"color">,
+        layerMapDetails: RendertargetRenderGraphNode<"color" | "depth">,
         dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
     },
 ) {

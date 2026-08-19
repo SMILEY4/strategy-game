@@ -278,7 +278,7 @@ function setUniformTexture(node: TextureRenderGraphNode, bindAs: string, lockedT
 }
 
 function setUniformFramebufferTexture(node: RendertargetRenderGraphNode<any>, attachmentName: string, bindAs: string, lockedTextureIds: string[], context: CompileContext) {
-    const {unit, alreadyBound} = findTextureUnit(node.id, lockedTextureIds, context);
+    const {unit, alreadyBound} = findTextureUnit(`${node.id}/${attachmentName}`, lockedTextureIds, context);
     if (!alreadyBound) {
         context.commands.push({
             type: "BIND_TEXTURE_FRAMEBUFFER",

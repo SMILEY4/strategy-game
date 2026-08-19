@@ -52,12 +52,12 @@ void main() {
     vec3 finalColor = vec3(159.0 / 255.0, 183.0 / 255.0, 187.0 / 255.0);
     finalColor = mix(finalColor, colorTerrain.rgb, colorTerrain.a);
 
-    // map details
-    finalColor = mix(finalColor, unpremultiply(layerMapDetails), layerMapDetails.a);
-
     // fog of war
     float maskUndiscovered = 1.0 - clamp(layerFogOfWar.r - (layerFogOfWar.g + layerFogOfWar.b), 0.0, 1.0);
     finalColor = finalColor * maskUndiscovered;
+
+    // map details
+    finalColor = mix(finalColor, unpremultiply(layerMapDetails), layerMapDetails.a);
 
     // final color
     outColor = vec4(finalColor, 1.0);

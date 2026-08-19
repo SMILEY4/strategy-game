@@ -112,8 +112,9 @@ class GlFramebuffer implements GlDisposable {
             gl.bindTexture(gl.TEXTURE_2D, textureHandle);
             GlError.check(gl, "bindTexture", "binding framebuffer attachment");
 
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            const filter = attachment.type === "depth" ? gl.NEAREST : gl.LINEAR;
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             GlError.check(gl, "texParameteri", "setting parameters of framebuffer attachment");
@@ -150,9 +151,12 @@ class GlFramebuffer implements GlDisposable {
         const drawBuffers: GLenum[] = fbAttachments
             .filter((att): att is GLFramebufferColorAttachment => att.type === "color")
             .map(att => gl.COLOR_ATTACHMENT0 + att.attachmentSlot);
+
         if (drawBuffers.length > 0) {
             gl.drawBuffers(drawBuffers);
             GlError.check(gl, "drawBuffers", "set target color buffers");
+        } else {
+            gl.drawBuffers([gl.NONE]);
         }
 
         // Check status
@@ -216,9 +220,10 @@ class GlFramebuffer implements GlDisposable {
                 throw new Error("Failed to re-allocate texture during framebuffer resize");
             }
 
+            const filter = attachment.type === "depth" ? this.gl.NEAREST : this.gl.LINEAR;
             this.gl.bindTexture(this.gl.TEXTURE_2D, newTexture);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, filter);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, filter);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
 
@@ -256,9 +261,8 @@ class GlFramebuffer implements GlDisposable {
         GlError.check(this.gl, "bindFramebuffer", "binding framebuffer");
     }
 
-
     /**
-     * Bind the color buffer of this framebuffer as a texture to the given texture unit
+     * Bind an attachment (color or depth) of this framebuffer as a texture to the given texture unit
      * @param attachmentName the name of the attachment to bind as a texture
      * @param textureUnit the target texture unit
      */
@@ -266,9 +270,6 @@ class GlFramebuffer implements GlDisposable {
         const attachment = this.attachments[this.attachmentMapping.get(attachmentName) ?? -1];
         if (!attachment) {
             throw new Error(`Framebuffer has no attachment with name: '${attachmentName}'`);
-        }
-        if (attachment.type !== "color") {
-            throw new Error(`Only binding color attachments is supported`);
         }
 
         this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
