@@ -10,6 +10,7 @@ import {gameGraphPassFogOfWar} from "@pages/game/renderer/graph/game-graph.pass-
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {gameGraphPassSelectedTile} from "@pages/game/renderer/graph/game-graph.pass-selected-tile.ts";
 import {gameGraphPassMapDetails} from "@pages/game/renderer/graph/game-graph.pass-map-details.ts";
+import {gameGraphHtml} from "@pages/game/renderer/graph/game-graph.html.ts";
 
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: GameGraphWasmApi) {
@@ -62,19 +63,22 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         dataDebug: dataDebug,
     });
 
+    const {htmlDraw} = gameGraphHtml(g, dataProvider, {
+        dataCamera: dataCamera,
+    });
+
     g.canvas({
         renderPasses: [drawCompose, drawSelectedTile],
         depthTesting: false,
         clearColor: [0, 0, 0, 1],
     });
 
-
-    const drawEntityLabels = g.htmlDraw({});
-
     g.htmlContainer({
         elementId: "game-overlay",
-        renderPasses: [drawEntityLabels],
+        renderPasses: [htmlDraw],
     });
+
+    console.log("RG_NODES", g.getNodes())
 
     return g.getNodes();
 }

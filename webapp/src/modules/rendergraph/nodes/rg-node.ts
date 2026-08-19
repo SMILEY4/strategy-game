@@ -36,7 +36,7 @@ export type RenderGraphNode =
     | WasmOperationRenderGraphNode<any, any>
     | PickRenderTargetAttachmentRenderGraphNode<any>
     | HtmlContainerRenderGraphNode
-    | HtmlDrawRenderGraphNode<any>
+    | HtmlDrawRenderGraphNode
 
 /** Unique identifier for a render graph node. */
 export type RenderGraphNodeId = string

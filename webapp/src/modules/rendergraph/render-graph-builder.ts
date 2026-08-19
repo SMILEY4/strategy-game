@@ -21,7 +21,7 @@ import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-n
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {PickRenderTargetAttachmentRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.pick-attachment.ts";
 import type {HtmlContainerRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-container.ts";
-import type {HtmlDrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
+import type {HtmlDrawElement, HtmlDrawInstance, HtmlDrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 
 /** Builder for constructing a render graph by declaring nodes and their connections. */
 export class RenderGraphBuilder {
@@ -56,7 +56,7 @@ export class RenderGraphBuilder {
 
     public htmlContainer(options: {
         elementId: string,
-        renderPasses: HtmlDrawRenderGraphNode<any>[],
+        renderPasses: HtmlDrawRenderGraphNode[],
     }): HtmlContainerRenderGraphNode {
         const node: HtmlContainerRenderGraphNode = {
             type: "html-container",
@@ -69,15 +69,15 @@ export class RenderGraphBuilder {
     }
 
 
-    public htmlDraw<TIn extends any[]>(options: {
-        inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
-        func: (...args: TIn) => string | HTMLElement
-    }): HtmlDrawRenderGraphNode<TIn> {
-        const node: HtmlDrawRenderGraphNode<TIn> = {
+    public htmlDraw(options: {
+        elements: DataRenderGraphNode<HtmlDrawElement[]>;
+        instances: DataRenderGraphNode<HtmlDrawInstance[]>;
+    }): HtmlDrawRenderGraphNode {
+        const node: HtmlDrawRenderGraphNode = {
             type: "html-draw",
             id: RenderGraphBuilder.generateNodeId(),
-            inputs: options.inputs,
-            func: options.func,
+            elements: options.elements,
+            instances: options.instances,
         };
         this.nodes.push(node);
         return node;

@@ -48,7 +48,7 @@ export function gameGraphDataWorld(
                             ...entity,
                             renderType: "settlement",
                             isPending: false,
-                        } as RenderEntity
+                        } satisfies RenderEntity
                     }
                     return null;
                 }),
@@ -58,7 +58,7 @@ export function gameGraphDataWorld(
                             position: command.location,
                             renderType: "settlement",
                             isPending: true,
-                        } as RenderEntity;
+                        } satisfies  RenderEntity;
                     }
                     return null;
                 }),

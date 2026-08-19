@@ -1,4 +1,4 @@
-import type {HexPosition} from "@app/features/game/models/hex-position.ts";
+import type {ExtendedHexPosition, HexPosition} from "@app/features/game/models/hex-position.ts";
 import type {CommandDatabase} from "@app/features/game/database/command.database.ts";
 import {genCommandId} from "@app/features/game/models/command.ts";
 import {gameAudio} from "@app/audio/gameAudio.ts";
@@ -6,7 +6,7 @@ import {type TileDatabase, TileQueries} from "@app/features/game/database/tile.d
 
 export interface GameActionFoundCapital {
     validate: (pos: HexPosition) => boolean;
-    execute: (pos: HexPosition) => void;
+    execute: (pos: ExtendedHexPosition) => void;
 }
 
 interface Dependencies {
@@ -27,7 +27,7 @@ export const gameActionFoundCapital = ({commandDb, tileDb}: Dependencies): GameA
         return true;
     },
 
-    execute: (pos: HexPosition) => {
+    execute: (pos: ExtendedHexPosition) => {
         commandDb.insert({
             type: "found-capital",
             id: genCommandId(),

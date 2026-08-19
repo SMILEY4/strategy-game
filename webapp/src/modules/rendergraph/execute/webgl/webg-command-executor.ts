@@ -7,6 +7,7 @@ import {WebGlExecutionContext} from "@modules/rendergraph/execute/webgl/webgl-ex
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import {subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
+import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 
 /** Matrix that negates the clip-space Y axis (see CALCULATE_VIEW_PROJECTION). */
 const MATRIX_FLIP_Y = mat4.fromScaling(mat4.create(), vec3.fromValues(1, -1, 1));
@@ -33,7 +34,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
         case "BIND_FRAMEBUFFER": {
             const framebuffer = context.getFramebuffer(command.framebufferId);
-            framebuffer.bind()
+            framebuffer.bind();
             return;
         }
 
@@ -48,7 +49,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 const size = context.getData<[number, number]>(command.sizeRef);
                 const scale = command.scale.type === "const"
                     ? command.scale.value
-                    : context.getData<number>(command.scale.ref)
+                    : context.getData<number>(command.scale.ref);
                 framebuffer.resize(size[0] * scale, size[1] * scale, false);
             }
             return;
@@ -317,7 +318,7 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 : context.getData<[number, number]>(command.size.ref);
             const scale = command.scale.type === "const"
                 ? command.scale.value
-                : context.getData<number>(command.scale.ref)
+                : context.getData<number>(command.scale.ref);
             gl.viewport(0, 0, size[0] * scale, size[1] * scale);
             return;
         }
@@ -374,6 +375,114 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                         }
                     }
                 });
+            }
+            return;
+        }
+
+        case "UPDATE_HTML_ELEMENTS": {
+            if (isAnyDirty(context, command.elements)) {
+
+                const elements = command.elements.type === "const"
+                    ? command.elements.value
+                    : context.getData<HtmlDrawElement[]>(command.elements.ref);
+
+                const wrappers = context.getData<Map<string, {
+                    wrapper: HTMLDivElement,
+                    status: "add" | "keep" | "remove"
+                }>>(command.cacheRef);
+
+                for (const wrapper of wrappers.values()) {
+                    wrapper.status = "remove";
+                }
+
+                for (let i = 0, n = elements.length; i < n; i++) {
+                    const element = elements[i];
+                    let wrapper = wrappers.get(element.key);
+                    if (!wrapper) {
+                        const wrapperDiv = document.createElement("div");
+                        wrapperDiv.style.position = "absolute";
+                        wrapperDiv.style.top = "0";
+                        wrapperDiv.style.left = "0";
+                        wrapperDiv.style.willChange = "transform";
+                        wrapperDiv.appendChild(element.element);
+
+                        wrapper = {
+                            wrapper: wrapperDiv,
+                            status: "add",
+                        } satisfies { wrapper: HTMLDivElement, status: "add" | "keep" | "remove" };
+                        wrappers.set(element.key, wrapper);
+                    } else {
+                        wrapper.wrapper.replaceChildren(element.element);
+                        wrapper.status = "keep";
+                    }
+
+                }
+
+            }
+            return;
+        }
+
+        case "RENDER_HTML_ELEMENTS": {
+            if (isAnyDirty(context, command.instances)) {
+
+                const instances = command.instances.type === "const"
+                    ? command.instances.value
+                    : context.getData<HtmlDrawInstance[]>(command.instances.ref);
+
+                const wrappers = context.getData<Map<string, {
+                    wrapper: HTMLDivElement,
+                    status: "add" | "keep" | "remove"
+                }>>(command.cacheRef);
+
+                const containerId = command.containerId;
+                const container = document.getElementById(containerId);
+                if (!container) {
+                    throw new Error("Could not find html container by id " + containerId);
+                }
+                const viewportWidth = container.clientWidth;
+                const viewportHeight = container.clientHeight;
+
+                for (let i = 0, n = instances.length; i < n; i++) {
+                    const instance = instances[i];
+                    const x = (instance.x + 1.0) / 2.0 * viewportWidth;
+                    const y = (instance.y + 1.0) / 2.0 * viewportHeight;
+
+                    const wrapper = wrappers.get(instance.key);
+                    if (!wrapper || wrapper.status === "remove") {
+                        continue;
+                    }
+
+                    const isVisible =
+                        x >= 0
+                        && x <= viewportWidth
+                        && y >= 0
+                        && y <= viewportHeight;
+
+                    if (isVisible) {
+                        wrapper.wrapper.style.display = "block";
+                        wrapper.wrapper.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+                        if (instance.positioning === "centered") {
+                            wrapper.wrapper.style.translate = `-50% -50%`;
+                        }
+                        if (instance.positioning === "top-left") {
+                            wrapper.wrapper.style.translate = `0 0`;
+                        }
+                    } else {
+                        wrapper.wrapper.style.display = "none";
+                    }
+
+                }
+
+                for (const [key, wrapper] of wrappers.entries()) {
+                    if (wrapper.status === "remove") {
+                        wrapper.wrapper.remove();
+                        wrappers.delete(key);
+                    } else if (wrapper.status === "add") {
+                        container.appendChild(wrapper.wrapper);
+                        wrapper.status = "keep";
+                    }
+                }
+
             }
             return;
         }

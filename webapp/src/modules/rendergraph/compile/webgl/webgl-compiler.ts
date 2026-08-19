@@ -28,6 +28,8 @@ import {
 } from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
 import type {WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-command.ts";
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
+import type {HtmlDrawElement, HtmlDrawInstance, HtmlDrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
+import type {HtmlContainerRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-container.ts";
 
 interface CompileContext {
     nodes: RenderGraphNode[]
@@ -69,10 +71,45 @@ export function webglCompile(nodes: RenderGraphNode[], sortedDrawCalls: WebGlDra
         compileDrawCallInfo(drawCallInfo, context);
     });
 
+    nodes.filter(it => it.type === "html-container").forEach(containerNode => {
+        containerNode.renderPasses.forEach(htmlNode => {
+            compileHtmlDraw(htmlNode, containerNode, context);
+        });
+    });
+
     return {
         commands: context.commands,
         resources: context.resources,
     };
+}
+
+function compileHtmlDraw(node: HtmlDrawRenderGraphNode, containerNode: HtmlContainerRenderGraphNode, context: CompileContext) {
+    ifNotYetVisited(node, context, () => {
+        const elements = resolveDataNode(node.elements, context);
+        const instances = resolveDataNode(node.instances, context);
+
+        const cacheResourceKey = node.id
+
+        context.resources.push({
+            type: "data",
+            key: node.id,
+            resource: new Map<string, { wrapper: HTMLDivElement, markedForKeep: boolean }>,
+        });
+
+        context.commands.push({
+            type: "UPDATE_HTML_ELEMENTS",
+            elements: elements as ValueEntry<HtmlDrawElement[]>,
+            cacheRef: cacheResourceKey
+        });
+
+        context.commands.push({
+            type: "RENDER_HTML_ELEMENTS",
+            instances: instances as ValueEntry<HtmlDrawInstance[]>,
+            cacheRef: cacheResourceKey,
+            containerId: containerNode.elementId
+        });
+
+    });
 }
 
 function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext) {
@@ -139,7 +176,7 @@ function compileDrawCallInfo(drawCallInfo: DrawCallInfo, context: CompileContext
 
 function switchToCanvasRenderTarget(canvas: CanvasRenderGraphNode, context: CompileContext) {
     context.commands.push({type: "UNBIND_FRAMEBUFFER"});
-    context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: KEY_CANVAS_SIZE}, scale: { type: "const", value: 1}});
+    context.commands.push({type: "SET_VIEWPORT", size: {type: "ref", ref: KEY_CANVAS_SIZE}, scale: {type: "const", value: 1}});
     if (canvas.clearColor) {
         context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: canvas.clearColor}});
     }

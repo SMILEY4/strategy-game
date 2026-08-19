@@ -42,7 +42,7 @@ export function useInfoPanelViewModel(): InfoPanelViewModel {
             available: selectedTileRef ? DI.gameActionFoundCapital.validate(selectedTileRef) : false,
             execute: () => {
                 if (selectedTileRef) {
-                    DI.gameActionFoundCapital.execute(selectedTileRef);
+                    DI.gameActionFoundCapital.execute(selectedTile!.position);
                 }
             },
         },

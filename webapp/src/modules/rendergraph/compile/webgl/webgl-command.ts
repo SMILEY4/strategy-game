@@ -1,6 +1,7 @@
 import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
 import type {vec3} from "gl-matrix";
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
+import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 
 /** A compiled WebGL command emitted by the render-graph compiler. */
 export type WebGlCommand =
@@ -124,4 +125,17 @@ export type WebGlCommand =
         wasmDataRef: string,
         outputRef: string,
         fetch: () => VertexDataResult
+    }
+
+    | {
+        type: "UPDATE_HTML_ELEMENTS",
+        elements: ValueEntry<HtmlDrawElement[]>,
+        cacheRef: string
+    }
+
+    | {
+        type: "RENDER_HTML_ELEMENTS",
+        instances: ValueEntry<HtmlDrawInstance[]>,
+        cacheRef: string,
+        containerId: string,
     }

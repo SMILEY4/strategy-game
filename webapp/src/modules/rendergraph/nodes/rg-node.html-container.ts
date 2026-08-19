@@ -3,5 +3,5 @@ import type {HtmlDrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.h
 
 export interface HtmlContainerRenderGraphNode extends RenderGraphNodeBase<"html-container"> {
     elementId: string,
-    renderPasses: HtmlDrawRenderGraphNode<any>[]
+    renderPasses: HtmlDrawRenderGraphNode[]
 }

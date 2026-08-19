@@ -21,6 +21,8 @@ export function GamePlayingPage() {
                 onMouseScroll={(delta, x, y) => viewModel.onMouseScroll(delta, x, y)}
             />
 
+            <div className="game-overlay" id="game-overlay"/>
+
             <div className="game-interface">
                 <GameUi/>
             </div>
