@@ -2,10 +2,11 @@ import {type GLUniformValueType} from "@modules/rendergraph/webgl/gl-program.ts"
 import GlFramebuffer from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {mat4, vec3} from "gl-matrix";
 import {GlError} from "@modules/rendergraph/webgl/gl-error.ts";
-import type {ValueEntry, WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-command.ts";
+import type {WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-command.ts";
 import {WebGlExecutionContext} from "@modules/rendergraph/execute/webgl/webgl-execution-context.ts";
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import {subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
+import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
 
 /** Matrix that negates the clip-space Y axis (see CALCULATE_VIEW_PROJECTION). */
 const MATRIX_FLIP_Y = mat4.fromScaling(mat4.create(), vec3.fromValues(1, -1, 1));

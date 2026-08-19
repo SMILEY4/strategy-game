@@ -20,7 +20,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
 
-    const {wasmTileTerrainInstances, wasmTileFogOfWarInstances, wasmMapDetailVertices } = gameGraphDataWorld(g, dataProvider, wasmApi, {
+    const {wasmTileTerrainInstances, wasmTileFogOfWarInstances, wasmMapDetailVertices} = gameGraphDataWorld(g, dataProvider, wasmApi, {
         dataCamera: dataCamera,
     });
 
@@ -68,7 +68,13 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         clearColor: [0, 0, 0, 1],
     });
 
-    console.log(g.getNodes());
+
+    const drawEntityLabels = g.htmlDraw({});
+
+    g.htmlContainer({
+        elementId: "game-overlay",
+        renderPasses: [drawEntityLabels],
+    });
 
     return g.getNodes();
 }

@@ -14,6 +14,8 @@ import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node
 import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {PickRenderTargetAttachmentRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.pick-attachment.ts";
+import type {HtmlContainerRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-container.ts";
+import type {HtmlDrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 
 /** Union of all render graph node types. */
 export type RenderGraphNode =
@@ -33,6 +35,8 @@ export type RenderGraphNode =
     | WasmDataRenderGraphNode
     | WasmOperationRenderGraphNode<any, any>
     | PickRenderTargetAttachmentRenderGraphNode<any>
+    | HtmlContainerRenderGraphNode
+    | HtmlDrawRenderGraphNode<any>
 
 /** Unique identifier for a render graph node. */
 export type RenderGraphNodeId = string

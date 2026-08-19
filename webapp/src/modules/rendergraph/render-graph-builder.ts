@@ -20,6 +20,8 @@ import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node
 import type {WasmOperationRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-operation.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {PickRenderTargetAttachmentRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.pick-attachment.ts";
+import type {HtmlContainerRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-container.ts";
+import type {HtmlDrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 
 /** Builder for constructing a render graph by declaring nodes and their connections. */
 export class RenderGraphBuilder {
@@ -47,6 +49,35 @@ export class RenderGraphBuilder {
         const node: CanvasSizeRenderGraphNode = {
             type: "canvas-size",
             id: RenderGraphBuilder.generateNodeId(),
+        };
+        this.nodes.push(node);
+        return node;
+    }
+
+    public htmlContainer(options: {
+        elementId: string,
+        renderPasses: HtmlDrawRenderGraphNode<any>[],
+    }): HtmlContainerRenderGraphNode {
+        const node: HtmlContainerRenderGraphNode = {
+            type: "html-container",
+            id: RenderGraphBuilder.generateNodeId(),
+            elementId: options.elementId,
+            renderPasses: options.renderPasses,
+        };
+        this.nodes.push(node);
+        return node;
+    }
+
+
+    public htmlDraw<TIn extends any[]>(options: {
+        inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
+        func: (...args: TIn) => string | HTMLElement
+    }): HtmlDrawRenderGraphNode<TIn> {
+        const node: HtmlDrawRenderGraphNode<TIn> = {
+            type: "html-draw",
+            id: RenderGraphBuilder.generateNodeId(),
+            inputs: options.inputs,
+            func: options.func,
         };
         this.nodes.push(node);
         return node;

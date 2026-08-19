@@ -26,7 +26,8 @@ import {
     subResourceKey,
     wasmVertexDataKey,
 } from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
-import type {ValueEntry, WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-command.ts";
+import type {WebGlCommand} from "@modules/rendergraph/compile/webgl/webgl-command.ts";
+import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
 
 interface CompileContext {
     nodes: RenderGraphNode[]
