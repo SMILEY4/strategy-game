@@ -7,6 +7,7 @@ import {EntityUtils} from "@app/features/game/models/entity.ts";
 import {mat4, vec3, vec4} from "gl-matrix";
 import type {Camera} from "@app/features/game/models/camera.ts";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
+import {SettlementLabel} from "@pages/game/overlay/SettlementLabel.ts";
 
 
 export function gameGraphHtml(
@@ -35,7 +36,7 @@ export function gameGraphHtml(
                     if (EntityUtils.hasComponent(entity, "settlement")) {
                         return {
                             key: "entity/" + entity.id,
-                            element: buildLabel("entity/settlement"),
+                            element: SettlementLabel({ name: "entity/settlement", pending: false }),
                         } satisfies HtmlDrawElement;
                     }
                     return null;
@@ -44,7 +45,7 @@ export function gameGraphHtml(
                     if (command.type === "found-capital") {
                         return {
                             key: "command/" + command.id,
-                            element: buildLabel("cmd/found-capital"),
+                            element: SettlementLabel({ name: "cmd/found-capital", pending: true }),
                         } satisfies  HtmlDrawElement;
                     }
                     return null;
@@ -133,19 +134,4 @@ function hexToWorld(hex: HexPosition, radius: number, height: number): vec3 {
     const y = height;
     const z = radius * (1.5 * hex.r);
     return vec3.fromValues(x, y, z);
-}
-
-function buildLabel(text: string): HTMLElement {
-    const box = document.createElement("div");
-    box.textContent = text;
-    box.style.display = "block";
-    box.style.fontFamily = "sans-serif";
-    box.style.fontSize = "14px";
-    box.style.backgroundColor = "white";
-    box.style.border = "1px solid black";
-    box.style.color = "black";
-    box.style.borderRadius = "4px";
-    box.style.padding = "4px";
-    return box;
-
 }

@@ -15,6 +15,9 @@ import {openWindow} from "@modules/uicomponents/window/useWindow.ts";
 import {ANCHOR_CENTER_POINT} from "@modules/uicomponents/window/window-system.ts";
 import {SimpleWindow} from "@modules/uicomponents/window/simple/SimpleWindow.tsx";
 import {Tabbar} from "@modules/uicomponents/tabbar/Tabbar.tsx";
+import {DomElement} from "@pages/dev/componentsshowcase/DomElement.tsx";
+import {SettlementLabel} from "@pages/game/overlay/SettlementLabel.ts";
+import "../../game/overlay/world-overlay.less"
 
 type LanguageItem = {
     key: string,
@@ -73,13 +76,48 @@ export function ComponentsPage(): ReactElement {
         "Resources",
         "Settlement",
         "Units",
-        "Roads"
-    ]
+        "Roads",
+    ];
     const [selectedTab, setSelectedTab] = useState(tabs[0]);
 
 
     return (
         <VerticalLayout className="components-page" center spacing3xl padding2xl fillWidth>
+
+            {/*==========  WORLD OVERLAY ==========*/}
+
+            <>
+
+                <VerticalLayout>
+                    <Txt.Heading h1>World Overlay Elements</Txt.Heading>
+                    <Txt.Body>
+                        Elements for overlaying over the game world.
+                    </Txt.Body>
+                </VerticalLayout>
+
+                <HorizontalLayout spacing3xl horizontalStart verticalCenter>
+                    <VerticalLayout spacingS verticalStart horizontalCenter className="game-overlay">
+
+                        <DomElement
+                            create={SettlementLabel}
+                            props={{
+                                name: "Settlement",
+                                pending: false
+                            }}
+                        />
+
+                        <DomElement
+                            create={SettlementLabel}
+                            props={{
+                                name: "Settlement",
+                                pending: true
+                            }}
+                        />
+
+                    </VerticalLayout>
+                </HorizontalLayout>
+
+            </>
 
             {/*==========  TEXT ==========*/}
 
@@ -772,8 +810,8 @@ export function ComponentsPage(): ReactElement {
                                 <SimpleWindow windowId={windowId} title={"Test Window"} withCloseButton={true}>
                                     <Txt.Line><Txt.String>{windowId}</Txt.String></Txt.Line>
                                 </SimpleWindow>
-                            )
-                        }
+                            );
+                        },
                     });
                 }}>
                     Open window

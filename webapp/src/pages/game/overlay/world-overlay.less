@@ -1,0 +1,74 @@
+@import "@modules/uicomponents/styles/variables.color.less";
+@import "@modules/uicomponents/styles/variables.layout.less";
+@import "@modules/uicomponents/styles/variables.typography.less";
+
+
+.game-overlay {
+
+
+	.settlement-label {
+
+		box-sizing:        border-box;
+		position:          relative;
+
+		user-select:       none;
+		overflow:          hidden;
+
+		height:            @size-s;
+		border-radius:     @radius-inf;
+
+		border:            1px solid transparent;
+		background:        @border-strong-gradient;
+		background-origin: border-box;
+		background-clip:   border-box;
+		box-shadow:        @shadow-element-drop;
+
+		> .settlement-label__inner {
+
+			box-sizing:      border-box;
+			position:        relative;
+
+			width:           100%;
+			height:          100%;
+
+			display:         flex;
+			justify-content: center;
+			align-items:     center;
+
+			font-family:     @font-type-title;
+			white-space:     nowrap;
+
+			padding:         0 @space-s;
+			gap:             @space-2xs;
+			font-size:       @font-size-0;
+			font-weight:     @font-weight-m;
+
+			border-radius:   @radius-inf;
+
+			box-shadow:      @shadow-element-inset;
+			color:           @content-on-dark;
+			text-shadow:     @shadow-content-on-dark;
+
+			background:      @element-fill-blue-gradient;
+
+			svg {
+				height: 70%;
+				fill:   @content-on-dark;
+				stroke: @content-on-dark;
+				filter: drop-shadow(@shadow-content-on-dark);
+			}
+
+			> .settlement-label__title {
+				color: white;
+			}
+
+		}
+
+		&.settlement-label--pending {
+			filter: saturate(20%) brightness(150%);
+		}
+
+	}
+
+
+}
