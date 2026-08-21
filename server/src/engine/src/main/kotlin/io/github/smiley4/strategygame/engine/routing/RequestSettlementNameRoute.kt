@@ -9,6 +9,7 @@ import io.github.smiley4.ktorplus.get
 import io.github.smiley4.strategygame.engine.routing.RequestSettlementNameRoute.RouteRequest
 import io.github.smiley4.strategygame.engine.routing.RequestSettlementNameRoute.RouteResponse
 import io.github.smiley4.strategygame.engine.routing.RequestSettlementNameRoute.RouteResponse.Success.SettlementNameData
+import io.github.smiley4.strategygame.engine.simulation.generation.NameGenerator
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.utils.HttpErrorResponse
 import io.github.smiley4.strategygame.shared.utils.internalError
@@ -17,11 +18,12 @@ import io.github.smiley4.strategygame.shared.values.UserId
 import io.ktor.server.routing.Route
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 
 internal fun Route.routeRequestSettlementName() {
     get<RouteRequest, RouteResponse>("", {
-        description = "Generate a random new settlement name.."
+        description = "Generate a random new settlement name."
     }) { request ->
         RequestSettlementNameRoute.handle(request)
     }
@@ -30,10 +32,13 @@ internal fun Route.routeRequestSettlementName() {
 
 private object RequestSettlementNameRoute : KoinComponent {
 
+    private val service by inject<NameGenerator>()
+
     fun handle(request: RouteRequest): RouteResponse {
         try {
+            val name = service.generateSettlementName();
             return RouteResponse.Success(
-                SettlementNameData("todo") // TODO
+                SettlementNameData(name)
             )
         } catch (_: Exception) {
             return RouteResponse.InternalError()
@@ -60,17 +65,6 @@ private object RequestSettlementNameRoute : KoinComponent {
             )
 
         }
-
-
-        @Response(HttpStatusCode.NOT_FOUND, "No game with the provided id was found.")
-        class MatchNotFound(
-            @Body val body: HttpErrorResponse = HttpErrorResponse(
-                status = HttpStatusCode.NOT_FOUND,
-                errorCode = "NOT_FOUND",
-                title = "Not Found",
-                detail = "No game with the provided id was found.",
-            )
-        ) : RouteResponse()
 
 
         @Response(HttpStatusCode.INTERNAL_SERVER_ERROR, "An internal error occurred.")

@@ -25,7 +25,7 @@ class FoundRealmCapitalCommandHandler : CommandHandler<PlayerCommand.FoundRealmC
                 owner = command.playerId,
                 components = listOf(
                     EntityComponent.Position(tile.ref()),
-                    EntityComponent.Settlement(true)
+                    EntityComponent.Settlement(command.name.trim(), true)
                 )
             )
         )

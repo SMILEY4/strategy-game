@@ -16,6 +16,7 @@ import io.github.smiley4.strategygame.engine.routing.routeGameWebsocket
 import io.github.smiley4.strategygame.engine.routing.routeRequestSettlementName
 import io.github.smiley4.strategygame.engine.simulation.GameStateRepository
 import io.github.smiley4.strategygame.engine.simulation.SimulationService
+import io.github.smiley4.strategygame.engine.simulation.generation.NameGenerator
 import io.github.smiley4.strategygame.engine.simulation.generation.WorldGenerator
 import io.github.smiley4.strategygame.engine.simulation.infrastructure.InMemoryGameStateRepository
 import io.github.smiley4.strategygame.engine.simulation.playerstate.PlayerStateBuilder
@@ -45,8 +46,11 @@ fun Module.dependenciesEngine() {
     single<TurnService> { TurnService() }
     single<SimulationService> { SimulationService(get(), get(), get(), get()) }
     single<GameStateRepository> { InMemoryGameStateRepository() }
+
     single<PlayerStateBuilder> { PlayerStateBuilder() }
+
     single<WorldGenerator> { WorldGenerator() }
+    single<NameGenerator> { NameGenerator() }
 
 }
 

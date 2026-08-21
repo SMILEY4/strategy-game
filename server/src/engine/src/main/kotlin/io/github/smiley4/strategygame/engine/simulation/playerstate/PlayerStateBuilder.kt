@@ -54,7 +54,7 @@ class PlayerStateBuilder {
                     }
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
-                        "name" to "placeholder" // todo
+                        "name" to component.name
                         "isRealmCapital" to component.isRealmCapital
                     }
                 }

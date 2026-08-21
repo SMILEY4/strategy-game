@@ -32,7 +32,7 @@ sealed interface EntityComponent {
 
     data class PlayerSpawn(val radius: Int) : EntityComponent
 
-    data class Settlement(val isRealmCapital: Boolean) : EntityComponent
+    data class Settlement(val name: String, val isRealmCapital: Boolean) : EntityComponent
 
 }
 
