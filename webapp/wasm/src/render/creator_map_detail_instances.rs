@@ -22,9 +22,7 @@ pub fn build(config: &RenderConfig, state: &RenderState, vertex_data: &mut MapDe
         // tile details
         chunk.tiles.iter().for_each(|tile_index| {
             let tile = state.tiles[*tile_index];
-            if (tile.visibility == TILE_VISIBILITY_UNDISCOVERED
-                || tile.terrain.biome == TILE_BIOME_OCEAN)
-            {
+            if tile.visibility == TILE_VISIBILITY_UNDISCOVERED || tile.terrain.biome == TILE_BIOME_OCEAN {
                 return;
             }
             build_tile_details(&mut rng, &tile, config, vertex_data);
@@ -128,7 +126,7 @@ fn splatter_details(
             offset,
             entry,
             group_config.atlas_id as u32,
-            is_pending
+            is_pending,
         );
     }
 }
@@ -139,7 +137,7 @@ fn construct_sprite(
     offset: [f32; 2],
     sprite: &SpriteSheetEntry,
     atlas_id: u32,
-    is_pending: bool
+    is_pending: bool,
 ) {
     // texture coordinates use the atlas-native V (v_min = sprite top). The fragment shader
     // inverts V (`1.0 - v`) and textures are uploaded with UNPACK_FLIP_Y_WEBGL, so emitting the

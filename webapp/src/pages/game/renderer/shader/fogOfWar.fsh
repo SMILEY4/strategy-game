@@ -28,10 +28,4 @@ void main() {
 
     // final color
     outColor = vec4(idColor, texture.a);
-
-//    if(computeWireframe() > 0.5) {
-//        discard;
-//    } else {
-//        outColor = vec4(0.5, 0.5, 0.5, 1.0);
-//    }
 }

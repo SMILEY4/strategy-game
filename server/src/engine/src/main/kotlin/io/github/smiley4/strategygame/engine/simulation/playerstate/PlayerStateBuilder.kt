@@ -8,8 +8,10 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponen
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
+import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
 import io.github.smiley4.strategygame.shared.values.UserId
+import kotlin.math.min
 
 /**
  * Builds the game state snapshot visible to a specific player.
@@ -26,7 +28,7 @@ class PlayerStateBuilder {
             ]
             "entities" to arr[
                 game.entities
-                    .filter { getVisibilityAt(game, it, player) != 0 }
+                    .filter { getVisibilityAt(game, it, player) != Visibility.UNDISCOVERED }
                     .filter { it.components.any { component -> component is EntityComponent.Position } }
                     .map { entity(game, it) }
             ]
@@ -48,6 +50,7 @@ class PlayerStateBuilder {
             entity.components.map { component ->
                 when (component) {
                     is EntityComponent.Position -> Unit
+                    is EntityComponent.Vision -> Unit
                     is EntityComponent.PlayerSpawn -> obj {
                         "type" to "player-spawn"
                         "radius" to component.radius
@@ -63,16 +66,16 @@ class PlayerStateBuilder {
     }
 
     fun tile(game: GameStateContext, tile: Tile, player: UserId) = obj {
-        val visibility = getVisibilityAt(tile, player)
+        val visibility = getVisibilityAt(game, tile, player)
         "id" to tile.id.id.toString()
-        "visibility" to visibility
+        "visibility" to visibility.name
         "position" to obj {
             "q" to tile.position.q
             "r" to tile.position.r
             "chunkQ" to tile.meta.chunk.q
             "chunkR" to tile.meta.chunk.r
         }
-        "world" to hidden(visibility == 1) {
+        "world" to hidden(visibility != Visibility.UNDISCOVERED) {
             obj {
                 "biome" to tile.world.biome.name
                 "elevation" to tile.world.elevation
@@ -106,22 +109,36 @@ class PlayerStateBuilder {
     }
 
 
-    private fun getVisibilityAt(gameState: GameStateContext, entity: Entity, player: UserId): Int {
+    private fun getVisibilityAt(gameState: GameStateContext, entity: Entity, player: UserId): Visibility {
         val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
-        if (position == null) return 0
+        if (position == null) return Visibility.UNDISCOVERED
         return getVisibilityAt(gameState, position, player)
     }
 
-    private fun getVisibilityAt(gameState: GameStateContext, positions: HexPosition, player: UserId): Int {
+    private fun getVisibilityAt(gameState: GameStateContext, positions: HexPosition, player: UserId): Visibility {
         val tile = gameState.tiles.find { it.position == positions }
-        if (tile == null) return 0
-        return getVisibilityAt(tile, player)
+        if (tile == null) return Visibility.UNDISCOVERED
+        return getVisibilityAt(gameState, tile, player)
     }
 
-    private fun getVisibilityAt(tile: Tile, player: UserId): Int {
+    private fun getVisibilityAt(gameState: GameStateContext, tile: Tile, player: UserId): Visibility {
+
+        val hasDirectVision = gameState.entities
+            .asSequence()
+            .filter { it.owner == player }
+            .filter { it.hasComponent<EntityComponent.Vision>() }
+            .filter { it.hasComponent<EntityComponent.Position>() }
+            .any {
+                val range = it.getComponent<EntityComponent.Vision>().radius
+                val position = it.getComponent<EntityComponent.Position>().tile.position
+                position.distance(tile.position) <= range
+            }
+
+
         return when {
-            tile.discoveredBy.contains(player) -> 1
-            else -> 0
+            hasDirectVision -> Visibility.VISIBLE
+            tile.discoveredBy.contains(player) -> Visibility.DISCOVERED
+            else -> Visibility.UNDISCOVERED
         }
     }
 

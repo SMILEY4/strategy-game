@@ -33,7 +33,7 @@ interface GameState extends GameWebsocketServerMessageBase {
         },
         tiles: ({
             id: string,
-            visibility: 0 | 1
+            visibility: "VISIBLE" | "DISCOVERED" | "UNDISCOVERED"
             position: {
                 q: number,
                 r: number,

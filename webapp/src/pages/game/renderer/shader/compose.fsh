@@ -27,11 +27,13 @@ void main() {
     float WAVE_0_POSITION = u_dbg_terrainCutoff - OUTLINE_THICKNESS - 0.25;
     float WAVE_1_POSITION = WAVE_0_POSITION - WAVE_THICKNESS - 0.25;
 
-    // sample layers
-    vec4 layerBaseTerrain = texture(u_layerBaseTerrain, v_textureCoordinates);
+    // coastline mask
     vec4 layerCoastlineMask = texture(u_layerCoastlineMask, v_textureCoordinates);
-    vec4 layerFogOfWar = texture(u_layerFogOfWar, v_textureCoordinates);
-    vec4 layerMapDetails = texture(u_layerMapDetails, v_textureCoordinates);
+
+    // waves
+    float wave0 = step(WAVE_0_POSITION-WAVE_THICKNESS*0.5, layerCoastlineMask.a) - step(WAVE_0_POSITION+WAVE_THICKNESS*0.5, layerCoastlineMask.a);
+    float wave1 = step(WAVE_1_POSITION-WAVE_THICKNESS*0.5, layerCoastlineMask.a) - step(WAVE_1_POSITION+WAVE_THICKNESS*0.5, layerCoastlineMask.a);
+    float waves = wave0 + wave1;
 
     // terrain mask
     float terrainMask = step(TERRAIN_CUTOFF, layerCoastlineMask.a);
@@ -39,26 +41,26 @@ void main() {
     // terrain outline
     float terrainOutline = step(OUTLINE_POSITION-OUTLINE_THICKNESS*0.5, layerCoastlineMask.a) - step(OUTLINE_POSITION+OUTLINE_THICKNESS*0.5, layerCoastlineMask.a);
 
-    // waves
-    float wave0 = step(WAVE_0_POSITION-WAVE_THICKNESS*0.5, layerCoastlineMask.a) - step(WAVE_0_POSITION+WAVE_THICKNESS*0.5, layerCoastlineMask.a);
-    float wave1 = step(WAVE_1_POSITION-WAVE_THICKNESS*0.5, layerCoastlineMask.a) - step(WAVE_1_POSITION+WAVE_THICKNESS*0.5, layerCoastlineMask.a);
-    float waves = wave0 + wave1;
-
-    // final terrain
+    // base terrain
+    vec4 layerBaseTerrain = texture(u_layerBaseTerrain, v_textureCoordinates);
     vec4 colorTerrain = vec4(unpremultiply(layerBaseTerrain), layerBaseTerrain.a * terrainMask);
     colorTerrain = mix(colorTerrain, vec4(vec3(0.0), 1.0), terrainOutline);
     colorTerrain = mix(colorTerrain, vec4(vec3(1.0), 1.0), waves);
 
-    vec3 finalColor = vec3(159.0 / 255.0, 183.0 / 255.0, 187.0 / 255.0);
-    finalColor = mix(finalColor, colorTerrain.rgb, colorTerrain.a);
+    // map details
+    vec4 layerMapDetails = texture(u_layerMapDetails, v_textureCoordinates);
+    vec4 colorMapDetails = vec4(unpremultiply(layerMapDetails), layerMapDetails.a);
 
     // fog of war
-    float maskUndiscovered = 1.0 - clamp(layerFogOfWar.r - (layerFogOfWar.g + layerFogOfWar.b), 0.0, 1.0);
-    finalColor = finalColor * maskUndiscovered;
-
-    // map details
-    finalColor = mix(finalColor, unpremultiply(layerMapDetails), layerMapDetails.a);
+    vec4 layerFogOfWar = texture(u_layerFogOfWar, v_textureCoordinates);
+    float visibilityTerrain = clamp(layerFogOfWar.g * 0.5 + layerFogOfWar.b, 0.0, 1.0);
+    float visibilityDetails = clamp(layerFogOfWar.b + (1.0 - layerFogOfWar.b) * 0.5, 0.0, 1.0);
+    colorTerrain.rgb = colorTerrain.rgb * visibilityTerrain;
+    colorMapDetails.rgb = colorMapDetails.rgb * visibilityDetails;
 
     // final color
-    outColor = vec4(finalColor, 1.0);
-}
+    vec3 finalColor = vec3(159.0 / 255.0, 183.0 / 255.0, 187.0 / 255.0) * visibilityTerrain;
+    finalColor = mix(finalColor, colorTerrain.rgb, colorTerrain.a);
+    finalColor = mix(finalColor, colorMapDetails.rgb, colorMapDetails.a);
+
+    outColor = vec4(finalColor.rgb, 1.0);}

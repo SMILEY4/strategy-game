@@ -49,7 +49,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             type: "i32",
         },
         "visibility": {
-            provider: tile => tile.visibility,
+            provider: tile => visibilitySerialisationMapping[tile.visibility],
             type: "u8",
         },
         "terrain_elevation": {
@@ -69,6 +69,13 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             type: "u32",
         },
     });
+
+    const visibilitySerialisationMapping: Record<string, number> = {
+        undefined: 0,
+        "UNDISCOVERED": 0,
+        "DISCOVERED": 1,
+        "VISIBLE": 2,
+    };
 
     const tileElevationSerialisationMapping: Record<string, number> = {
         undefined: 0,

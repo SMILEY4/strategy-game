@@ -10,7 +10,7 @@ pub const SPRITE_ATLAS_TREES: i32 = 3;
 pub struct Tile {
     pub tile_position: HexPosition,
     pub chunk_position: HexPosition,
-    pub visibility: u8, // 0 = not discovered, 1 = discovered not visible, 2 = visible
+    pub visibility: u8,
     pub terrain: TileTerrain,
     pub rng_seed: u32,
 }

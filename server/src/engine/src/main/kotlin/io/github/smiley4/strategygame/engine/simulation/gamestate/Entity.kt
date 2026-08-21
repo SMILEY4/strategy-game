@@ -38,5 +38,7 @@ sealed interface EntityComponent {
 
     data class Settlement(val name: String, val isRealmCapital: Boolean) : EntityComponent
 
+    data class Vision(val radius: Int) : EntityComponent
+
 }
 

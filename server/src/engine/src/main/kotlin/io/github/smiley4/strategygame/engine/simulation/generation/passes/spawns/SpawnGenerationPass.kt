@@ -121,6 +121,7 @@ internal class SpawnGenerationPass : GenerationPass {
 }
 
 
+// todo technical dept: move this to some other file and remove duplicates
 fun positionsCircle(centerQ: Int, centerR: Int, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
     for (iq in (centerQ - radius)..(centerQ + radius)) {
         for (ir in (centerR - radius)..(centerR + radius)) {
