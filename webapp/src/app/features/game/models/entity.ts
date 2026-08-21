@@ -16,7 +16,7 @@ export type ExtractComponent<T extends EntityComponent['type']> = Extract<Entity
 
 export const EntityUtils = {
 
-    hasComponent: (entity: Entity, type: string): boolean => {
+    hasComponent: <T extends EntityComponent["type"]>(entity: Entity, type: T): boolean => {
         return entity.components.some(it => it.type === type);
     },
 

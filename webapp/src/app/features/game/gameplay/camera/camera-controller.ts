@@ -8,4 +8,5 @@ export interface CameraController {
     transformScreenToHex: (x: number, y: number) => HexPosition;
     onScroll: (delta: number, x: number, y: number) => void;
     onResize: (width: number, height: number) => void;
+    lookAt: (position: HexPosition) => void,
 }

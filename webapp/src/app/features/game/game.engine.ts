@@ -7,6 +7,7 @@ import type {CameraController} from "@app/features/game/gameplay/camera/camera-c
 import type {GameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
 import {type EntityDatabase} from "@app/features/game/database/entity.database.ts";
 import {databaseBatch} from "@modules/gamedb/subscribers/batch.ts";
+import {type GameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
 
 /** Orchestrates the game lifecycle: connecting via WebSocket and routing messages to the database. */
 export interface GameEngine {
@@ -27,10 +28,23 @@ interface Dependencies {
     tileDb: TileDatabase,
     entityDb: EntityDatabase,
     cameraController: CameraController
-    actionClickTile: GameActionClickTile
+    actionClickTile: GameActionClickTile,
+    actionJoinedGame: GameActionJoinedGame
 }
 
-export const gameEngine = ({client, wsClient, repository, tileDb, entityDb, cameraController, actionClickTile}: Dependencies): GameEngine => {
+export const gameEngine = (dependencies: Dependencies): GameEngine => {
+
+    const {
+        client,
+        wsClient,
+        repository,
+        tileDb,
+        entityDb,
+        cameraController,
+        actionClickTile,
+        actionJoinedGame,
+    } = dependencies;
+
     const instance = {
 
         start: async (gameId: string) => {
@@ -46,23 +60,24 @@ export const gameEngine = ({client, wsClient, repository, tileDb, entityDb, came
         },
 
         onMessage: (message: GameWebsocketServerMessage) => {
-            console.log("received message", message)
+            console.log("received message", message);
             if (message.type === "ServerGameMessage.GameState") {
                 databaseBatch([tileDb, entityDb], () => {
                     tileDb.deleteAll();
                     tileDb.insertMany(message.state.tiles);
-                    entityDb.deleteAll()
+                    entityDb.deleteAll();
                     entityDb.insertMany(message.state.entities);
-                })
+                });
                 if (repository.getState() === "loading") {
                     repository.setState("playing");
                     cameraController.initialize();
+                    actionJoinedGame.execute();
                 }
             }
         },
 
         onUpdate: () => {
-            cameraController.update()
+            cameraController.update();
         },
 
         onResize: (width: number, height: number) => {
@@ -75,12 +90,12 @@ export const gameEngine = ({client, wsClient, repository, tileDb, entityDb, came
 
         onCanvasClick: (x: number, y: number) => {
             const hexPosition = cameraController.transformScreenToHex(x, y);
-            actionClickTile.click(hexPosition)
+            actionClickTile.click(hexPosition);
         },
 
         onScroll: (delta: number, x: number, y: number) => {
             cameraController.onScroll(delta, x, y);
-        }
+        },
 
     };
     return instance;

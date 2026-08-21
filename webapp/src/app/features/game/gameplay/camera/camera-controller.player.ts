@@ -1,7 +1,7 @@
 import type {CameraDatabase} from "@app/features/game/database/camera.database.ts";
 import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
 import {screenToGroundPoint} from "@modules/utilities/camera-utils.ts";
-import {worldToHex} from "@modules/utilities/hex-geometry.ts";
+import {hexToWorld, worldToHex} from "@modules/utilities/hex-geometry.ts";
 import {vec3} from "gl-matrix";
 
 const MIN_DIST = 20;
@@ -199,6 +199,14 @@ export const cameraControllerPlayer = ({cameraDb}: Dependencies): CameraControll
             cameraDb.update(() => ({
                 aspect: width / height,
             }));
+        },
+
+        lookAt: ({q, r}) => {
+            const world = hexToWorld(q, r);
+            pivot[0] = world.x;
+            pivot[2] = world.z;
+            applyCamera(distance);
+            dirty = false;
         },
     };
 };

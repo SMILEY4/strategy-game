@@ -29,6 +29,7 @@ import {gameActionFoundCapital} from "@app/features/game/gameplay/game-action.fo
 import {commandDatabase} from "@app/features/game/database/command.database.ts";
 import {gameActionEndTurn} from "@app/features/game/gameplay/game-action.end-turn.ts";
 import {entityDatabase} from "@app/features/game/database/entity.database.ts";
+import {gameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
 
 
 interface EnvShape {
@@ -85,6 +86,7 @@ interface DIShape {
     gameActionEndTurn: ReturnType<typeof gameActionEndTurn>
     gameActionClickTile: ReturnType<typeof gameActionClickTile>
     gameActionFoundCapital: ReturnType<typeof gameActionFoundCapital>
+    gameActionJoinedGame: ReturnType<typeof gameActionJoinedGame>
 }
 
 /** DI container configuration. Each entry specifies singleton or transient scope and its factory. */
@@ -185,13 +187,14 @@ export const DIConfig = {
             entityDb: resolve.entityDatabase,
             cameraController: resolve.cameraController,
             actionClickTile: resolve.gameActionClickTile,
+            actionJoinedGame: resolve.gameActionJoinedGame
         }),
     },
     cameraController: {
-        scope: "transient",
+        scope: "singleton",
         create: resolve => cameraControllerPlayer({
             cameraDb: resolve.cameraDatabase,
-        }),
+            }),
         // create: resolve => cameraControllerFreecam(y{
         //     cameraDb: resolve.cameraDatabase,
         // }),
@@ -232,6 +235,10 @@ export const DIConfig = {
         scope: "singleton",
         create: resolve => gameActionFoundCapital({commandDb: resolve.commandDatabase, tileDb: resolve.tileDatabase, gameClient: resolve.gameClient}),
     },
+    gameActionJoinedGame: {
+        scope: "singleton",
+        create: resolve => gameActionJoinedGame({ entityDb: resolve.entityDatabase, cameraController: resolve.cameraController})
+    }
 } satisfies FactoryMap<DIShape>;
 
 

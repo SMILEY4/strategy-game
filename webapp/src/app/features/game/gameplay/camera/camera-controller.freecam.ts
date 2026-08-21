@@ -145,5 +145,9 @@ export const cameraControllerFreecam = ({cameraDb}: Dependencies): CameraControl
         },
 
         onScroll: () => undefined,
+
+        lookAt: () => {
+            throw new Error("look-at not supported by freecam.")
+        }
     };
 };
