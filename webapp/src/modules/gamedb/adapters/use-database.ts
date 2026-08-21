@@ -1,6 +1,6 @@
 import type {Database} from "@modules/gamedb/database/database.ts";
 import type {DatabaseStorageUnitMapping} from "@modules/gamedb/storage/database-storage.ts";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {DatabaseOperation} from "@modules/gamedb/database/database-operation.ts";
 import type {Query} from "@modules/gamedb/database/query.ts";
 import type {SingletonDatabase} from "@modules/gamedb/singleton/singleton-database.ts";
@@ -115,22 +115,23 @@ export function useQuerySingle<STORAGE extends DatabaseStorageUnitMapping<ENTITY
     query: Query<STORAGE, ENTITY, ID, ARGS>,
     args: ARGS,
 ): ENTITY | null {
-    const [snapshot, setSnapshot] = useState<{ args: ARGS, entity: ENTITY | null }>(() => ({
-        args,
-        entity: db.querySingle(query, args),
-    }));
+    const [entity, setEntity] = useState<ENTITY | null>(() => db.querySingle(query, args));
+    const previousInputs = useRef<{ query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS }>({query, args});
+    const inputsChanged = previousInputs.current.query !== query || previousInputs.current.args !== args;
 
-    if (snapshot.args !== args) {
-        setSnapshot({args, entity: db.querySingle(query, args)});
+    if (inputsChanged) {
+        previousInputs.current = {query, args};
     }
+
+    const currentEntity = inputsChanged ? db.querySingle(query, args) : entity;
 
     useEffect(() => {
         const [subscription] = db.subscribeOnQuerySingle(query, args, entity => {
-            setSnapshot({args, entity});
+            setEntity(entity);
         });
         return () => db.unsubscribe(subscription);
     }, [db, query, args]);
-    return snapshot.entity;
+    return currentEntity;
 }
 
 
