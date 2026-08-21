@@ -33,10 +33,11 @@ export function gameGraphHtml(
         func: (entities, commands) => {
             return [
                 ...entities.entities.map(entity => {
-                    if (EntityUtils.hasComponent(entity, "settlement")) {
+                    const settlementComponent = EntityUtils.getComponent(entity, "settlement")
+                    if (settlementComponent) {
                         return {
                             key: "entity/" + entity.id,
-                            element: SettlementLabel({ name: "entity/settlement", pending: false }),
+                            element: SettlementLabel({ name: settlementComponent.name, pending: false }),
                         } satisfies HtmlDrawElement;
                     }
                     return null;
@@ -45,7 +46,7 @@ export function gameGraphHtml(
                     if (command.type === "found-capital") {
                         return {
                             key: "command/" + command.id,
-                            element: SettlementLabel({ name: "cmd/found-capital", pending: true }),
+                            element: SettlementLabel({ name: command.name, pending: true }),
                         } satisfies  HtmlDrawElement;
                     }
                     return null;
@@ -129,6 +130,9 @@ function worldToView(worldPoint: vec3, camera: Camera): { x: number, y: number }
     return {x: ndcX, y: ndcY};
 }
 
+/**
+ * Transforms given point in hex to world space
+ */
 function hexToWorld(hex: HexPosition, radius: number, height: number): vec3 {
     const x = radius * (Math.sqrt(3) * hex.q + (Math.sqrt(3) / 2) * hex.r);
     const y = height;

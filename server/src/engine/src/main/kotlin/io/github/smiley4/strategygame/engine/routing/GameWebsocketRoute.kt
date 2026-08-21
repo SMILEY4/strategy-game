@@ -10,6 +10,8 @@ import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.GameConn
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleOpen
+import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
+import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
@@ -34,7 +36,7 @@ internal fun Route.routeGameWebsocket(context: WebSocketContext<GameConnection, 
  * WebSocket route handler for real-time game communication.
  * Exposes [GameConnection], [ClientGameMessage], and [ServerGameMessage] types.
  */
-object GameWebsocketRoute : KoinComponent {
+internal object GameWebsocketRoute : KoinComponent {
 
     private val service by inject<GameService>()
 
@@ -87,6 +89,32 @@ object GameWebsocketRoute : KoinComponent {
         @Serializable
         @SerialName("ServerGameMessage.GameState")
         class GameState(val state: JsonElement) : ServerGameMessage
+    }
+
+}
+
+@Serializable
+internal sealed interface PlayerCommandDto {
+
+    fun toDomain(user: UserId): PlayerCommand
+
+
+    @Serializable
+    @SerialName("FoundRealmCapital")
+    class FoundRealmCapital(
+        val q: Int,
+        val r: Int,
+        val name: String
+    ) : PlayerCommandDto {
+
+        override fun toDomain(user: UserId) = PlayerCommand.FoundRealmCapital(
+            playerId = user,
+            location = HexPosition(
+                q = this.q,
+                r = this.r,
+            ),
+            name = this.name
+        )
     }
 
 }

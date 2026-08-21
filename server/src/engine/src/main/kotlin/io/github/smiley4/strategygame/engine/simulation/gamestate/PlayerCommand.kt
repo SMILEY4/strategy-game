@@ -6,7 +6,11 @@ sealed interface PlayerCommand {
 
     val playerId: UserId
 
-    class FoundRealmCapital(val location: HexPosition, override val playerId: UserId) : PlayerCommand
+    class FoundRealmCapital(
+        override val playerId: UserId,
+        val location: HexPosition,
+        val name: String,
+    ) : PlayerCommand
 }
 
 

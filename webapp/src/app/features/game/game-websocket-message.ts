@@ -14,7 +14,7 @@ interface SubmitTurn extends GameWebsocketClientMessageBase {
 }
 
 type MessageCommand =
-    | { type: "FoundRealmCapital", q: number, r: number }
+    | { type: "FoundRealmCapital", q: number, r: number, name: string }
 
 
 /** Messages sent from server to client over the game WebSocket. */
@@ -70,7 +70,7 @@ interface GameState extends GameWebsocketServerMessageBase {
             },
             components: (
                 | { type: "player-spawn", radius: number }
-                | { type: "settlement", isRealmCapital: boolean }
+                | { type: "settlement", name: string, isRealmCapital: boolean }
                 )[]
         })[]
     }

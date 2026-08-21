@@ -230,7 +230,7 @@ export const DIConfig = {
     },
     gameActionFoundCapital: {
         scope: "singleton",
-        create: resolve => gameActionFoundCapital({commandDb: resolve.commandDatabase, tileDb: resolve.tileDatabase}),
+        create: resolve => gameActionFoundCapital({commandDb: resolve.commandDatabase, tileDb: resolve.tileDatabase, gameClient: resolve.gameClient}),
     },
 } satisfies FactoryMap<DIShape>;
 

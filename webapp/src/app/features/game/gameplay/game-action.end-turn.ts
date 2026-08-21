@@ -21,7 +21,8 @@ export const gameActionEndTurn = ({commandDb, wsClient}: Dependencies): GameActi
                     return {
                         type: "FoundRealmCapital",
                         q: command.location.q,
-                        r: command.location.r
+                        r: command.location.r,
+                        name: command.name
                     }
                 }
                 assertExhaustive(command.type)

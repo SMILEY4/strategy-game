@@ -47,18 +47,14 @@ class PlayerStateBuilder {
         "components" to arr[
             entity.components.map { component ->
                 when (component) {
-                    is EntityComponent.Position -> obj {
-                        "type" to "position"
-                        "tileId" to component.tile.id
-                        "q" to component.tile.position.q
-                        "r" to component.tile.position.r
-                    }
+                    is EntityComponent.Position -> Unit
                     is EntityComponent.PlayerSpawn -> obj {
                         "type" to "player-spawn"
                         "radius" to component.radius
                     }
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
+                        "name" to "placeholder" // todo
                         "isRealmCapital" to component.isRealmCapital
                     }
                 }

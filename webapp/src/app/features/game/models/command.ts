@@ -12,6 +12,7 @@ export interface CommandFoundCapital extends CommandBase {
     id: string,
     type: "found-capital";
     location: ExtendedHexPosition;
+    name: string,
 }
 
 export function genCommandId() {
