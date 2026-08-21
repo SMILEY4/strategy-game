@@ -1,0 +1,122 @@
+{
+  "atlas": {
+    "name": "atlas",
+    "imageSize": {
+      "width": 5000,
+      "height": 2999
+    }
+  },
+  "parameters": [],
+  "sprites": [
+    {
+      "id": "0ebe2ad6-f10f-49fa-b28d-959e3c8427e4",
+      "name": "sprite-5",
+      "size": {
+        "x": 3180,
+        "y": 850,
+        "width": 405,
+        "height": 281
+      },
+      "uv": {
+        "uMin": 0.636,
+        "vMin": 0.2834278092697566,
+        "uMax": 0.717,
+        "vMax": 0.37712570856952315
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.6938271604938272
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "7d17d6a4-752c-48a1-a742-2125fe8ec0d3",
+      "name": "sprite-6",
+      "size": {
+        "x": 2554,
+        "y": 897,
+        "width": 366,
+        "height": 215
+      },
+      "uv": {
+        "uMin": 0.5108,
+        "vMin": 0.29909969989996665,
+        "uMax": 0.584,
+        "vMax": 0.37079026342114035
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.587431693989071
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "9dc26359-c225-4b8a-8b19-b94556004f52",
+      "name": "sprite-7",
+      "size": {
+        "x": 1939,
+        "y": 876,
+        "width": 430,
+        "height": 270
+      },
+      "uv": {
+        "uMin": 0.3878,
+        "vMin": 0.2920973657885962,
+        "uMax": 0.4738,
+        "vMax": 0.3821273757919306
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.627906976744186
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "f6cb54f3-0ac9-41bb-87c3-f4243a4c79dd",
+      "name": "sprite-10",
+      "size": {
+        "x": 1308,
+        "y": 1252,
+        "width": 420,
+        "height": 227
+      },
+      "uv": {
+        "uMin": 0.2616,
+        "vMin": 0.41747249083027677,
+        "uMax": 0.3456,
+        "vMax": 0.49316438812937646
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.5404761904761904
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "a34a9313-e58a-41c8-8213-82d27b127f70",
+      "name": "sprite-11",
+      "size": {
+        "x": 1270,
+        "y": 828,
+        "width": 447,
+        "height": 298
+      },
+      "uv": {
+        "uMin": 0.254,
+        "vMin": 0.2760920306768923,
+        "uMax": 0.3434,
+        "vMax": 0.375458486162054
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.6666666666666666
+      },
+      "locked": false,
+      "attributes": {}
+    }
+  ]
+}

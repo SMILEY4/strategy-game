@@ -10,13 +10,15 @@ import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.GameConn
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleOpen
+import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
+import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
+import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
-import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
 import io.ktor.server.routing.Route
 import io.ktor.websocket.CloseReason
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlinx.serialization.json.JsonElement
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -29,11 +31,12 @@ internal fun Route.routeGameWebsocket(context: WebSocketContext<GameConnection, 
     }
 }
 
+
 /**
  * WebSocket route handler for real-time game communication.
  * Exposes [GameConnection], [ClientGameMessage], and [ServerGameMessage] types.
  */
-object GameWebsocketRoute : KoinComponent {
+internal object GameWebsocketRoute : KoinComponent {
 
     private val service by inject<GameService>()
 
@@ -47,8 +50,12 @@ object GameWebsocketRoute : KoinComponent {
     }
 
     suspend fun handleMessage(connection: GameConnection, message: ClientGameMessage) {
-        when(message) {
-            is ClientGameMessage.SubmitTurn -> service.submitTurn(connection.userId, GameId(connection.gameId), listOf())
+        when (message) {
+            is ClientGameMessage.SubmitTurn -> service.submitTurn(
+                connection.userId,
+                GameId(connection.gameId),
+                message.commands.map { it.toDomain(connection.userId) }
+            )
         }
     }
 
@@ -62,14 +69,17 @@ object GameWebsocketRoute : KoinComponent {
         @AuthenticatedUserId val userId: UserId
     )
 
+
     /**
      * Messages sent from the client to the server over the WebSocket.
      */
     @Serializable
     sealed interface ClientGameMessage {
         @Serializable
-        class SubmitTurn : ClientGameMessage
+        @SerialName("ClientGameMessage.SubmitTurn")
+        class SubmitTurn(val commands: List<PlayerCommandDto>) : ClientGameMessage
     }
+
 
     /**
      * Messages sent from the server to the client over the WebSocket.
@@ -77,7 +87,34 @@ object GameWebsocketRoute : KoinComponent {
     @Serializable
     sealed interface ServerGameMessage {
         @Serializable
-        class GameState(val stateJson: JsonElement) : ServerGameMessage
+        @SerialName("ServerGameMessage.GameState")
+        class GameState(val state: JsonElement) : ServerGameMessage
+    }
+
+}
+
+@Serializable
+internal sealed interface PlayerCommandDto {
+
+    fun toDomain(user: UserId): PlayerCommand
+
+
+    @Serializable
+    @SerialName("FoundRealmCapital")
+    class FoundRealmCapital(
+        val q: Int,
+        val r: Int,
+        val name: String
+    ) : PlayerCommandDto {
+
+        override fun toDomain(user: UserId) = PlayerCommand.FoundRealmCapital(
+            playerId = user,
+            location = HexPosition(
+                q = this.q,
+                r = this.r,
+            ),
+            name = this.name
+        )
     }
 
 }

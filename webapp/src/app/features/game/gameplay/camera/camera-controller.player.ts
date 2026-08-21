@@ -1,8 +1,8 @@
 import type {CameraDatabase} from "@app/features/game/database/camera.database.ts";
-import type {TileDatabase} from "@app/features/game/database/tile.database.ts";
-import {TileQueries} from "@app/features/game/database/tile.database.ts";
 import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
-import {mat4, vec3, vec4} from "gl-matrix";
+import {screenToGroundPoint} from "@modules/utilities/camera-utils.ts";
+import {hexToWorld, worldToHex} from "@modules/utilities/hex-geometry.ts";
+import {vec3} from "gl-matrix";
 
 const MIN_DIST = 20;
 const MAX_DIST = 300;
@@ -11,69 +11,12 @@ const PITCH_AT_MAX = 75 * Math.PI / 180;
 const MOVE_SPEED = 0.3;
 const ZOOM_SPEED = 0.03;
 const UP = vec3.fromValues(0, 1, 0);
-const SQRT3 = Math.sqrt(3);
 
 interface Dependencies {
     cameraDb: CameraDatabase;
-    tileDb: TileDatabase;
 }
 
-function screenToWorld(
-    x: number, y: number,
-    position: vec3, direction: vec3, up: vec3,
-    fov: number, aspect: number, near: number, far: number,
-    canvasWidth: number, canvasHeight: number,
-): vec3 | null {
-    const ndcX = (2 * x) / canvasWidth - 1;
-    const ndcY = 1 - (2 * y) / canvasHeight;
-
-    const projection = mat4.create();
-    mat4.perspective(projection, fov, aspect, near, far);
-
-    const view = mat4.create();
-    const target = vec3.add(vec3.create(), position, direction);
-    mat4.lookAt(view, position, target, up);
-
-    const vp = mat4.create();
-    mat4.multiply(vp, projection, view);
-
-    const flipY = mat4.fromValues(
-        1, 0, 0, 0,
-        0, -1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1,
-    );
-    mat4.multiply(vp, flipY, vp);
-
-    const invVp = mat4.create();
-    mat4.invert(invVp, vp);
-
-    const nearClip = vec4.fromValues(ndcX, ndcY, -1, 1);
-    const farClip = vec4.fromValues(ndcX, ndcY, 1, 1);
-    vec4.transformMat4(nearClip, nearClip, invVp);
-    vec4.transformMat4(farClip, farClip, invVp);
-
-    vec4.scale(nearClip, nearClip, 1 / nearClip[3]);
-    vec4.scale(farClip, farClip, 1 / farClip[3]);
-
-    const rayDir = vec3.fromValues(
-        farClip[0] - nearClip[0],
-        farClip[1] - nearClip[1],
-        farClip[2] - nearClip[2],
-    );
-    vec3.normalize(rayDir, rayDir);
-
-    if (Math.abs(rayDir[1]) < 0.0001) return null;
-
-    const t = -position[1] / rayDir[1];
-    return vec3.fromValues(
-        position[0] + t * rayDir[0],
-        0,
-        position[2] + t * rayDir[2],
-    );
-}
-
-export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): CameraController => {
+export const cameraControllerPlayer = ({cameraDb}: Dependencies): CameraController => {
 
     const pivot = vec3.fromValues(0, 0, 0);
     let distance = 40;
@@ -187,16 +130,14 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
             if ((buttons & 1) !== 1) return;
 
             const cam = cameraDb.get();
-            const prevWorld = screenToWorld(
+            const prevWorld = screenToGroundPoint(
                 x - mx, y - my,
-                cam.position, cam.direction, cam.up,
-                cam.fov, cam.aspect, cam.near, cam.far,
+                cam,
                 canvasWidth, canvasHeight,
             );
-            const currWorld = screenToWorld(
+            const currWorld = screenToGroundPoint(
                 x, y,
-                cam.position, cam.direction, cam.up,
-                cam.fov, cam.aspect, cam.near, cam.far,
+                cam,
                 canvasWidth, canvasHeight,
             );
 
@@ -208,50 +149,25 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
             dirty = true;
         },
 
-        onCanvasClick: (x: number, y: number) => {
+        transformScreenToHex: (x: number, y: number) => {
             const cam = cameraDb.get();
-            const world = screenToWorld(
+            const world = screenToGroundPoint(
                 x, y,
-                cam.position, cam.direction, cam.up,
-                cam.fov, cam.aspect, cam.near, cam.far,
+                cam,
                 canvasWidth, canvasHeight,
             );
-            if (!world) return;
-
-            const rFrac = world[2] / 1.5;
-            const qFrac = (world[0] - SQRT3 / 2 * rFrac) / SQRT3;
-
-            const rq = Math.round(qFrac);
-            const rr = Math.round(rFrac);
-            const rs = Math.round(-qFrac - rFrac);
-
-            const qDiff = Math.abs(rq - qFrac);
-            const rDiff = Math.abs(rr - rFrac);
-            const sDiff = Math.abs(rs - (-qFrac - rFrac));
-
-            let hexQ = rq;
-            let hexR = rr;
-
-            if (qDiff > rDiff && qDiff > sDiff) {
-                hexQ = -rr - rs;
-            } else if (rDiff > sDiff) {
-                hexR = -rq - rs;
+            if (!world) {
+                throw new Error("Could not transform to world coordinates");
             }
 
-            const tile = tileDb.querySingle(TileQueries.BY_POSITION, {q: hexQ, r: hexR});
-            if (tile) {
-                console.log(`Clicked tile q=${hexQ} r=${hexR} id=${tile.id}`);
-            } else {
-                console.log(`Clicked empty hex q=${hexQ} r=${hexR}`);
-            }
+            return worldToHex(world[0], world[2]);
         },
 
         onScroll: (delta: number, x: number, y: number) => {
             const cam = cameraDb.get();
-            const preZoomWorld = screenToWorld(
+            const preZoomWorld = screenToGroundPoint(
                 x, y,
-                cam.position, cam.direction, cam.up,
-                cam.fov, cam.aspect, cam.near, cam.far,
+                cam,
                 canvasWidth, canvasHeight,
             );
 
@@ -262,10 +178,9 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
             if (!preZoomWorld) return;
 
             const newCam = cameraDb.get();
-            const postZoomWorld = screenToWorld(
+            const postZoomWorld = screenToGroundPoint(
                 x, y,
-                newCam.position, newCam.direction, newCam.up,
-                newCam.fov, newCam.aspect, newCam.near, newCam.far,
+                newCam,
                 canvasWidth, canvasHeight,
             );
 
@@ -284,6 +199,14 @@ export const cameraControllerPlayer = ({cameraDb, tileDb}: Dependencies): Camera
             cameraDb.update(() => ({
                 aspect: width / height,
             }));
+        },
+
+        lookAt: ({q, r}) => {
+            const world = hexToWorld(q, r);
+            pivot[0] = world.x;
+            pivot[2] = world.z;
+            applyCamera(distance);
+            dirty = false;
         },
     };
 };

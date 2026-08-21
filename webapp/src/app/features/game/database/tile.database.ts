@@ -7,7 +7,6 @@ import {MapSupportingStorage} from "@modules/gamedb/storage/implementations/data
 import {MapUniqueSupportingStorage} from "@modules/gamedb/storage/implementations/database-storage-unit.supporting.map-unique.ts";
 
 
-/** Database type alias for tile storage with primary, by-position, and by-chunk indexes. */
 export type TileDatabase = Database<TileStorageMapping, Tile, string>
 
 type TileStorageMapping = {
@@ -22,12 +21,11 @@ export function tileDatabase(): TileDatabase {
         .withStorage(idProvider => ({
             primary: new MapPrimaryDatabaseStorageUnit<Tile, string>(idProvider),
             byPosition: new MapUniqueSupportingStorage<Tile, string>(e => `${e.position.q};${e.position.r}`),
-            byChunk: new MapSupportingStorage<Tile, string>(e => `${e.chunk.q};${e.chunk.r}`)
+            byChunk: new MapSupportingStorage<Tile, string>(e => `${e.position.chunkQ};${e.position.chunkR}`)
         }))
         .build()
 }
 
-/** Query type alias for tile database queries. */
 export type TileQuery<ARGS> = Query<TileStorageMapping, Tile, string, ARGS>
 
 
@@ -36,6 +34,16 @@ export const TileQueries = {
     ALL: {
         run: (storage: TileStorageMapping) => {
             return storage.primary.getAll()
+        }
+    },
+
+    BY_ID: {
+        run: (storage: TileStorageMapping, args: string | null | undefined) => {
+            if(args) {
+                return storage.primary.get(args)
+            } else {
+                return null;
+            }
         }
     },
 
@@ -48,4 +56,5 @@ export const TileQueries = {
 } satisfies {
     ALL: TileQuery<never>,
     BY_POSITION: TileQuery<{ q: number, r: number }>
+    BY_ID: TileQuery<string | null | undefined>
 }

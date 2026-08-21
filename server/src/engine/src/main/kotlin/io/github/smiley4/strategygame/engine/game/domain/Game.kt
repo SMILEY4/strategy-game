@@ -1,9 +1,10 @@
 package io.github.smiley4.strategygame.engine.game.domain
 
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
-import io.github.smiley4.strategygame.engine.shared.PlayerCommand
+import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
+import net.logstash.logback.stacktrace.StackElementFilter.any
 
 /**
  * Aggregate for a single game instance. Tracks players and pending turn commands.
@@ -32,6 +33,9 @@ class Game private constructor(
         }
         if (pendingCommands.containsKey(player)) {
             throw SubmitTurnError.AlreadySubmitted()
+        }
+        if (commands.any { it.playerId != player }) {
+            throw SubmitTurnError.InvalidCommandUser()
         }
         pendingCommands[player] = commands
     }

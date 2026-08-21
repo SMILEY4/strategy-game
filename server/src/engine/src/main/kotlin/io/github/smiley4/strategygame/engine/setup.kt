@@ -13,16 +13,17 @@ import io.github.smiley4.strategygame.engine.game.infrastructure.WebsocketNotifi
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.GameConnection
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage
 import io.github.smiley4.strategygame.engine.routing.routeGameWebsocket
+import io.github.smiley4.strategygame.engine.routing.routeRequestSettlementName
 import io.github.smiley4.strategygame.engine.simulation.GameStateRepository
 import io.github.smiley4.strategygame.engine.simulation.SimulationService
+import io.github.smiley4.strategygame.engine.simulation.generation.NameGenerator
 import io.github.smiley4.strategygame.engine.simulation.generation.WorldGenerator
 import io.github.smiley4.strategygame.engine.simulation.infrastructure.InMemoryGameStateRepository
 import io.github.smiley4.strategygame.engine.simulation.playerstate.PlayerStateBuilder
+import io.github.smiley4.strategygame.engine.simulation.turn.TurnService
 import io.github.smiley4.strategygame.shared.infrastructure.RoutingAuthConstants
 import io.ktor.server.auth.authenticate
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
@@ -42,12 +43,17 @@ fun Module.dependenciesEngine() {
     single { GameGenerationRequestedEventHandler(get(), get()) }.withOptions { createdAtStart() }
     single { MatchDeletedEventHandler(get(), get()) }.withOptions { createdAtStart() }
 
-    single<SimulationService> { SimulationService(get(), get(), get()) }
+    single<TurnService> { TurnService() }
+    single<SimulationService> { SimulationService(get(), get(), get(), get()) }
     single<GameStateRepository> { InMemoryGameStateRepository() }
+
     single<PlayerStateBuilder> { PlayerStateBuilder() }
+
     single<WorldGenerator> { WorldGenerator() }
+    single<NameGenerator> { NameGenerator() }
 
 }
+
 
 /**
  * Configure engine-related routes under the /api/engine prefix.
@@ -57,9 +63,15 @@ fun Route.routingEngine() {
         description = "Gameplay handling"
         tags("engine")
     }) {
+
         val context by inject<WebSocketContext<GameConnection, ServerGameMessage>>()
         authenticate(RoutingAuthConstants.AUTHKEY_USER_OTT_WEBSOCKET) {
             route("/game/{gameId}") { routeGameWebsocket(context) }
         }
+
+        authenticate(RoutingAuthConstants.AUTHKEY_USER_SESSION) {
+            route("/game/{gameId}/settlementname") { routeRequestSettlementName() }
+        }
+
     }
 }

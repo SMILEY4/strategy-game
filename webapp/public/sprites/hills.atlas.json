@@ -1,0 +1,100 @@
+{
+  "atlas": {
+    "name": "atlas",
+    "imageSize": {
+      "width": 2000,
+      "height": 1000
+    }
+  },
+  "parameters": [],
+  "sprites": [
+    {
+      "id": "e5b95cad-63bc-45ad-92e5-88ea8edf51bf",
+      "name": "sprite-1",
+      "size": {
+        "x": 1314,
+        "y": 282,
+        "width": 525,
+        "height": 146
+      },
+      "uv": {
+        "uMin": 0.657,
+        "vMin": 0.282,
+        "uMax": 0.9195,
+        "vMax": 0.428
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.2780952380952381
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "a227aef7-0df2-45f5-a216-f09e7d5441c4",
+      "name": "sprite-4",
+      "size": {
+        "x": 127,
+        "y": 716,
+        "width": 537,
+        "height": 169
+      },
+      "uv": {
+        "uMin": 0.0635,
+        "vMin": 0.716,
+        "uMax": 0.332,
+        "vMax": 0.885
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.31471135940409684
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "50f6e295-7702-4400-bd76-5cb553bc6be1",
+      "name": "sprite-2",
+      "size": {
+        "x": 1386,
+        "y": 681,
+        "width": 541,
+        "height": 157
+      },
+      "uv": {
+        "uMin": 0.693,
+        "vMin": 0.681,
+        "uMax": 0.9635,
+        "vMax": 0.838
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.2902033271719039
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "85e66810-7a45-4457-9fdd-b2c97cd25df0",
+      "name": "sprite-3",
+      "size": {
+        "x": 728,
+        "y": 600,
+        "width": 600,
+        "height": 254
+      },
+      "uv": {
+        "uMin": 0.364,
+        "vMin": 0.6,
+        "uMax": 0.664,
+        "vMax": 0.854
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.42333333333333334
+      },
+      "locked": false,
+      "attributes": {}
+    }
+  ]
+}

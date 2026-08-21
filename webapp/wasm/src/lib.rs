@@ -1,14 +1,14 @@
 mod js;
-mod render;
 mod math;
+mod render;
 
-use js_sys::Uint8Array;
+use crate::js::direct_buffer;
 use crate::js::direct_buffer::DirectBuffer;
-use crate::js::models::Tile;
+use crate::js::models::{Entity, SpriteSheetEntry, Tile};
 use crate::render::renderer::Renderer;
 use js::direct_buffer::DirectMemoryHandle;
+use js_sys::Uint8Array;
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::js::{direct_buffer};
 
 #[wasm_bindgen]
 pub struct WasmRenderApp {
@@ -25,6 +25,10 @@ impl WasmRenderApp {
         }
     }
 
+    pub fn add_spritesheet_entries(&mut self, group_id: u8, entries: Vec<SpriteSheetEntry>) {
+        self.renderer.set_spritesheet_entries(group_id, entries);
+    }
+
     pub fn tiles_reserve_memory(&self, len: usize) -> DirectMemoryHandle {
         DirectBuffer::reserve::<Tile>(len)
     }
@@ -32,6 +36,15 @@ impl WasmRenderApp {
     pub fn tiles_upload(&mut self, ptr: usize, len: usize) {
         let tiles = unsafe { DirectBuffer::upload::<Tile>(ptr, len) };
         self.renderer.set_tiles(tiles)
+    }
+
+    pub fn entities_reserve_memory(&self, len: usize) -> DirectMemoryHandle {
+        DirectBuffer::reserve::<Entity>(len)
+    }
+
+    pub fn entities_upload(&mut self, ptr: usize, len: usize) {
+        let entities = unsafe { DirectBuffer::upload::<Entity>(ptr, len) };
+        self.renderer.set_entities(entities)
     }
 
     pub fn calculate_all_chunks(&mut self) -> bool {
@@ -43,7 +56,7 @@ impl WasmRenderApp {
     }
 
     pub fn calculate_terrain_tile_instances(&mut self) -> bool {
-        self.renderer.calculate_terrain_tile_instances();
+        self.renderer.calculate_instances();
         true
     }
 
@@ -63,4 +76,19 @@ impl WasmRenderApp {
         self.renderer.get_terrain_tile_instances_water().len()
     }
 
+    pub fn get_fog_of_war_tile_instances(&self) -> Uint8Array {
+        direct_buffer::as_js_buffer(self.renderer.get_fog_of_war_tile_instances())
+    }
+
+    pub fn get_fog_of_war_tile_instances_count(&self) -> usize {
+        self.renderer.get_fog_of_war_tile_instances().len()
+    }
+
+    pub fn get_map_detail_vertices(&self) -> Uint8Array {
+        direct_buffer::as_js_buffer(self.renderer.get_map_detail_vertices())
+    }
+
+    pub fn get_map_detail_vertex_count(&self) -> usize {
+        self.renderer.get_map_detail_vertices().len()
+    }
 }

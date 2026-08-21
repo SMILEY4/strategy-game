@@ -1,0 +1,76 @@
+@import "./atlas.variables.less";
+
+.headerRow {
+	display:         flex;
+	align-items:     center;
+	justify-content: space-between;
+	gap:             8px;
+
+	.title {
+		.strong();
+		font-size: 13px;
+
+		.note {
+			.text(@atlas-text-dim, @atlas-font-size-xs);
+			font-weight: normal;
+		}
+	}
+
+	.addButton {
+		.ghost-button();
+		.ghost-button-disabled();
+		font-size:   16px;
+		line-height: 1;
+		padding:     0 6px;
+	}
+}
+
+.list {
+	list-style: none;
+	margin:     0;
+	padding:    0;
+
+	.item {
+		display:     flex;
+		align-items: center;
+		gap:         4px;
+		margin-bottom: 4px;
+
+		&.itemInvalid {
+			.name {
+				border-color: fade(@atlas-danger, 60%);
+			}
+		}
+	}
+
+	.name {
+		.input();
+		flex:      1;
+		min-width: 0;
+		width:     auto;
+		font-size: @atlas-font-size-sm;
+	}
+
+	.type {
+		.input();
+		flex-shrink: 0;
+		font-size:   @atlas-font-size-xs;
+		padding:     4px 4px;
+		width:       auto;
+	}
+
+	.remove {
+		.ghost-button();
+		.ghost-button-disabled();
+		padding: 4px 6px;
+	}
+}
+
+.warning {
+	padding:          4px 8px;
+	margin-top:       4px;
+	border-radius:    @atlas-radius;
+	background-color: fade(@atlas-danger, 12%);
+	border:           1px solid fade(@atlas-danger, 35%);
+	.text(@atlas-danger, @atlas-font-size-sm);
+}

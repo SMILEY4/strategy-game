@@ -1,8 +1,8 @@
 import type {HttpClient} from "@modules/client/http-client.ts";
 
-/** Game API client for fetching one-time WebSocket tokens. */
 export interface GameClient {
     getGameWebsocketToken(): Promise<string>;
+    getSettlementName(gameId: string): Promise<string>;
 }
 
 interface Dependencies {
@@ -17,6 +17,13 @@ export const gameClient = ({httpClient}: Dependencies): GameClient => ({
             url: "/api/identity/onetimegrant",
             authenticated: true,
         }).then(response => response.token);
+    },
+
+    getSettlementName: (gameId: string) => {
+        return httpClient.get<{ name: string }>({
+            url: `/api/engine/game/${gameId}/settlementname`,
+            authenticated: true,
+        }).then(response => response.name);
     },
 
 });

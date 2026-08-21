@@ -1,11 +1,13 @@
 package io.github.smiley4.strategygame.engine.simulation.gamestate
 
+import io.github.smiley4.strategygame.shared.values.UserId
 import kotlin.uuid.Uuid
 
 data class Tile(
     val id: Id,
     val position: HexPosition,
     val world: WorldData,
+    val discoveredBy: MutableSet<UserId>,
     val meta: Metadata,
 ) {
 
@@ -17,23 +19,25 @@ data class Tile(
         val position: HexPosition,
     )
 
+    fun ref() = Ref(id = this.id, position = this.position)
+
     data class WorldData(
-        val biome: Biome,
         val elevation: Elevation,
+        val biome: Biome,
         val feature: Feature?,
         val resources: List<ResourceDeposit>,
     )
-
-    enum class Biome {
-        OCEAN, COAST, GRASSLAND, PLAINS, DESERT, TUNDRA, SNOW
-    }
 
     enum class Elevation {
         FLAT, HILLS, MOUNTAINS
     }
 
+    enum class Biome {
+        OCEAN, GRASSLAND
+    }
+
     enum class Feature {
-        FOREST, JUNGLE, MARSH
+        FOREST
     }
 
     data class ResourceDeposit(

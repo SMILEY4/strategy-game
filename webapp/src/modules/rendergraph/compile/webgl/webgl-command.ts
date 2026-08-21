@@ -1,10 +1,7 @@
 import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
 import type {vec3} from "gl-matrix";
-
-/** A typed value reference: either a compile-time constant or a runtime reference to a data resource. */
-export type ValueEntry<T = unknown> =
-    | { type: "const", value: T }
-    | { type: "ref", ref: string }
+import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
+import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 
 /** A compiled WebGL command emitted by the render-graph compiler. */
 export type WebGlCommand =
@@ -19,7 +16,7 @@ export type WebGlCommand =
     | { type: "UNBIND_FRAMEBUFFER" }
 
     /** Resize a framebuffer if the referenced size value is dirty. */
-    | { type: "RESIZE_FRAMEBUFFER", framebufferId: string, sizeRef: string }
+    | { type: "RESIZE_FRAMEBUFFER", framebufferId: string, sizeRef: string, scale: ValueEntry<number> }
 
     /** Bind a vertex array object for subsequent draw calls. */
     | { type: "BIND_VAO", vaoId: string }
@@ -30,8 +27,8 @@ export type WebGlCommand =
     /** Bind a texture whose key is stored in the data resource at {@link textureIdRef}. */
     | { type: "BIND_TEXTURE_REF", textureIdRef: string, textureUnit: number }
 
-    /** Bind a framebuffer's color attachment as a texture on the given unit. */
-    | { type: "BIND_TEXTURE_FRAMEBUFFER", framebufferId: string, textureUnit: number }
+    /** Bind a framebuffer's attachment as a texture on the given unit. */
+    | { type: "BIND_TEXTURE_FRAMEBUFFER", framebufferId: string, attachmentName: string, textureUnit: number }
 
     /** Set a uniform on the active shader program. */
     | { type: "SET_UNIFORM", shaderId: string, name: string, value: ValueEntry }
@@ -40,10 +37,10 @@ export type WebGlCommand =
     | { type: "SET_DEPTH_TESTING", enabled: boolean }
 
     /** Issue a non-instanced draw call. */
-    | { type: "DRAW", vertexCountRef: string, mode: GLenum }
+    | { type: "DRAW", vertexCountRef: string, mode: GLenum, blend: null | ((gl: WebGL2RenderingContext) => void) }
 
     /** Issue an instanced draw call. */
-    | { type: "DRAW_INSTANCED", vertexCountRef: string, instanceCountRef: string, mode: GLenum }
+    | { type: "DRAW_INSTANCED", vertexCountRef: string, instanceCountRef: string, mode: GLenum, blend: null | ((gl: WebGL2RenderingContext) => void) }
 
     /** Fetch external data and store it in the {@link outputRef} resource. */
     | { type: "LOAD_EXTERNAL_DATA", outputRef: string, fetch: () => unknown, checkChanged: (prev: unknown) => boolean }
@@ -102,7 +99,7 @@ export type WebGlCommand =
     | { type: "CALCULATE_VIEW_PROJECTION", outputRef: string, projectionRef: string, viewRef: string }
 
     /** Set the viewport to the given size. */
-    | { type: "SET_VIEWPORT", size: ValueEntry<[number, number]> }
+    | { type: "SET_VIEWPORT", size: ValueEntry<[number, number]>, scale: ValueEntry<number>}
 
     /** Clear the color and depth buffers of the currently bound framebuffer. */
     | { type: "CLEAR_BUFFER", clearColor: ValueEntry<[number, number, number, number]> }
@@ -128,4 +125,17 @@ export type WebGlCommand =
         wasmDataRef: string,
         outputRef: string,
         fetch: () => VertexDataResult
+    }
+
+    | {
+        type: "UPDATE_HTML_ELEMENTS",
+        elements: ValueEntry<HtmlDrawElement[]>,
+        cacheRef: string
+    }
+
+    | {
+        type: "RENDER_HTML_ELEMENTS",
+        instances: ValueEntry<HtmlDrawInstance[]>,
+        cacheRef: string,
+        containerId: string,
     }

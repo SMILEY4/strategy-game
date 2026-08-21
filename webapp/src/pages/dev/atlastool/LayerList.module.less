@@ -1,0 +1,125 @@
+@import "./atlas.variables.less";
+
+.headerRow {
+	display:        flex;
+	align-items:    center;
+	justify-content: space-between;
+	gap:            8px;
+
+	.title {
+		.strong();
+		font-size: 13px;
+
+		.note {
+			.text(@atlas-text-dim, @atlas-font-size-xs);
+			font-weight: normal;
+		}
+	}
+
+	.addButton {
+		.ghost-button();
+		.ghost-button-disabled();
+		font-size:   16px;
+		line-height: 1;
+		padding:     0 6px;
+	}
+}
+
+.controls {
+	display:        flex;
+	align-items:    center;
+	gap:            4px;
+	margin-top:     8px;
+	margin-bottom:  8px;
+
+	.controlButton {
+		.button();
+		padding:     3px 8px;
+		line-height: 1;
+		font-size:   @atlas-font-size-xs;
+	}
+
+	.counter {
+		.text(@atlas-text-dim, @atlas-font-size-sm);
+		.tabular();
+		margin-left: 4px;
+	}
+}
+
+.list {
+	list-style: none;
+	margin:     0;
+	padding:    0;
+	max-height: 320px;
+	overflow-y: auto;
+
+	.item {
+		display:       flex;
+		align-items:   center;
+		margin-bottom: 4px;
+
+		&.itemActive .select {
+			background-color: @atlas-accent;
+			color:            @atlas-text-on-accent;
+
+			.meta {
+				color: rgba(255, 255, 255, 0.7);
+			}
+		}
+	}
+
+	.select {
+		flex:             1;
+		display:          flex;
+		align-items:      center;
+		gap:              8px;
+		text-align:       left;
+		padding:          5px 8px;
+		border-radius:    @atlas-radius;
+		background-color: @atlas-bg;
+		border:           1px solid @atlas-border-soft;
+		cursor:           pointer;
+		min-width:        0;
+
+		&:hover {
+			border-color: @atlas-accent;
+		}
+
+		.thumb {
+			width:         32px;
+			height:        32px;
+			object-fit:    cover;
+			border-radius: @atlas-radius;
+			flex-shrink:   0;
+			background:    @atlas-bg-input;
+		}
+
+		.texts {
+			display:        flex;
+			flex-direction: column;
+			align-items:    flex-start;
+			min-width:      0;
+		}
+
+		.name {
+			max-width:   100%;
+			overflow:    hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			.strong();
+		}
+
+		.meta {
+			.text(@atlas-text-dim, @atlas-font-size-xs);
+			.tabular();
+			white-space: nowrap;
+		}
+	}
+
+	.delete {
+		.ghost-button();
+		.ghost-button-disabled();
+		margin-left: 4px;
+		padding:     4px 6px;
+	}
+}

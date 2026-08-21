@@ -388,6 +388,18 @@ describe("database", () => {
 
     describe("subscribers", () => {
 
+        test("subscriber sees updated revision id", () => {
+            const db = createDb();
+            const initialRevId = db.getRevId();
+            const revIds: string[] = [];
+            db.subscribe(() => revIds.push(db.getRevId()));
+
+            db.insert({id: "1", size: 1, nested: {value: "a"}});
+
+            expect(revIds).toEqual([db.getRevId()]);
+            expect(revIds[0]).not.toBe(initialRevId);
+        });
+
         test("subscribe on entity", () => {
             const db = createDb()
             const callback = vi.fn();

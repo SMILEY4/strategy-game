@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.engine.game.domain
 
-import io.github.smiley4.strategygame.engine.shared.PlayerCommand
+import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
 

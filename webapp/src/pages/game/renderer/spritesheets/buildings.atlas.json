@@ -1,0 +1,100 @@
+{
+  "atlas": {
+    "name": "atlas",
+    "imageSize": {
+      "width": 3000,
+      "height": 2000
+    }
+  },
+  "parameters": [],
+  "sprites": [
+    {
+      "id": "3fd2d4d8-dad9-410a-8080-9ccc8ba50957",
+      "name": "sprite-1",
+      "size": {
+        "x": 1198,
+        "y": 103,
+        "width": 460,
+        "height": 295
+      },
+      "uv": {
+        "uMin": 0.3993333333333333,
+        "vMin": 0.0515,
+        "uMax": 0.5526666666666666,
+        "vMax": 0.199
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.6413043478260869
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "6f06070c-ccaf-496b-ac1a-87bfc35c1523",
+      "name": "sprite-2",
+      "size": {
+        "x": 1805,
+        "y": 165,
+        "width": 390,
+        "height": 240
+      },
+      "uv": {
+        "uMin": 0.6016666666666667,
+        "vMin": 0.0825,
+        "uMax": 0.7316666666666667,
+        "vMax": 0.2025
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.6153846153846154
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "88b3505f-9eb1-44e0-9232-2e14b21dfcee",
+      "name": "sprite-3",
+      "size": {
+        "x": 2371,
+        "y": 1195,
+        "width": 500,
+        "height": 254
+      },
+      "uv": {
+        "uMin": 0.7903333333333333,
+        "vMin": 0.5975,
+        "uMax": 0.957,
+        "vMax": 0.7245
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.508
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "0e9b3733-5f75-4105-839c-82faa3c1b301",
+      "name": "sprite-4",
+      "size": {
+        "x": 1840,
+        "y": 1160,
+        "width": 318,
+        "height": 286
+      },
+      "uv": {
+        "uMin": 0.6133333333333333,
+        "vMin": 0.58,
+        "uMax": 0.7193333333333334,
+        "vMax": 0.723
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.89937106918239
+      },
+      "locked": false,
+      "attributes": {}
+    }
+  ]
+}

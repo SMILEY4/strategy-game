@@ -4,7 +4,8 @@ import type {GameWebsocketClientMessage, GameWebsocketServerMessage} from "@app/
 /** WebSocket client for game connections, using one-time token auth. */
 export interface GameWebsocketClient {
     connect: (gameId: string, token: string, onMessage: (message: GameWebsocketServerMessage) => void) => void
-    disconnect: () => void
+    disconnect: () => void,
+    send: (message: GameWebsocketClientMessage) => void
 }
 
 interface Dependencies {
@@ -12,7 +13,7 @@ interface Dependencies {
 }
 
 
-const GAME_CONNECTION_KEY = "game"
+const GAME_CONNECTION_KEY = "game";
 
 export const gameWebsocketClient = ({wsClient}: Dependencies): GameWebsocketClient => ({
 
@@ -20,18 +21,22 @@ export const gameWebsocketClient = ({wsClient}: Dependencies): GameWebsocketClie
         wsClient.open<GameWebsocketServerMessage, GameWebsocketClientMessage>({
             url: `/api/engine/game/${gameId}`,
             queryParams: {
-                token: token
+                token: token,
             },
             key: GAME_CONNECTION_KEY,
-            onOpen: () => {},
-            onClose: () => {},
-            onError: () => {},
+            onOpen: () => undefined,
+            onClose: () => undefined,
+            onError: () => undefined,
             onMessage: (message, _handle) => onMessage(message),
-        })
+        });
     },
 
     disconnect: () => {
-        wsClient.close(GAME_CONNECTION_KEY)
-    }
+        wsClient.close(GAME_CONNECTION_KEY);
+    },
+
+    send: (message: GameWebsocketClientMessage) => {
+        wsClient.send(GAME_CONNECTION_KEY, message);
+    },
 
 });

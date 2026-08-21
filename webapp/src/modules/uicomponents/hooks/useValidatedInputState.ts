@@ -31,7 +31,6 @@ export function useValidatedInput<TReason extends string>(
     }
 
     function handleCommit(value: string) {
-        console.log("on commit", value)
         setValidation(validate(value));
     }
 

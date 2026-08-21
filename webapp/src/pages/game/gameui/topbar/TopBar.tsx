@@ -5,9 +5,12 @@ import {HorizontalLayout} from "@modules/uicomponents/layout/horizontal/Horizont
 import {Spacer} from "@modules/uicomponents/layout/spacer/Spacer.tsx";
 import {Button} from "@modules/uicomponents/controls/button/Button.tsx";
 import {Icon} from "@modules/uicomponents/icon/Icon.tsx";
+import {useTopBarViewModel} from "@pages/game/gameui/topbar/top-bar.view-model.ts";
 
 
 export function TopBar(): ReactElement {
+
+    const viewModel = useTopBarViewModel();
 
     return (
         <Panel.Decorated
@@ -21,7 +24,7 @@ export function TopBar(): ReactElement {
 
                 <Spacer/>
 
-                <Button>
+                <Button disabled={!viewModel.submitTurn.available} onClick={viewModel.submitTurn.execute}>
                     End Turn
                     <Icon.ChevronRight/>
                 </Button>

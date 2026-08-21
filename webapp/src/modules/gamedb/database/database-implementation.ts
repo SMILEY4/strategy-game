@@ -223,12 +223,12 @@ export class DatabaseImpl<STORAGE extends DatabaseStorageUnitMapping<ENTITY, ID>
                 }
             }
         } else {
-            this.checkSubscribersQuery(operation === DatabaseOperation.MODIFY);
-            this.checkSubscribersEntity(entities, ids, operation);
-            this.checkSubscribersDb(entities, operation);
             if (ids.length > 0) {
                 this.updateRevId();
             }
+            this.checkSubscribersQuery(operation === DatabaseOperation.MODIFY);
+            this.checkSubscribersEntity(entities, ids, operation);
+            this.checkSubscribersDb(entities, operation);
         }
     }
 

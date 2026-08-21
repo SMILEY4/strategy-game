@@ -1,0 +1,208 @@
+@import "./atlas.variables.less";
+
+.page {
+	display:        flex;
+	flex-direction: column;
+	height:         100vh;
+	overflow:       hidden;
+
+	background-color: @atlas-bg;
+	color:            @atlas-text;
+	font-family:      @atlas-font-family;
+	font-size:        @atlas-font-size;
+
+	button {
+		.button();
+	}
+
+	input[type="text"],
+	input[type="number"],
+	select {
+		.input();
+	}
+}
+
+.openPanel {
+	flex:          1;
+	display:       flex;
+	flex-direction: column;
+	align-items:   center;
+	justify-content: center;
+	gap:           12px;
+	max-width:     560px;
+	width:         100%;
+	margin:        0 auto;
+	padding:       24px;
+
+	.openTitle {
+		.text(@atlas-text, 18px);
+		.strong();
+	}
+
+	.openDescription {
+		.text(@atlas-text-muted, @atlas-font-size);
+		text-align: center;
+		margin:     0;
+	}
+
+	.openDropzone {
+		.input();
+		width:        100%;
+		padding:      28px 16px;
+		cursor:       pointer;
+		text-align:   center;
+		border-style: dashed;
+		color:        @atlas-text-muted;
+
+		display:        flex;
+		flex-direction: column;
+		gap:            6px;
+		align-items:    center;
+
+		&:hover:not(:disabled) {
+			border-color: @atlas-accent;
+			color:        @atlas-text;
+		}
+
+		.openDropHint {
+			.text(@atlas-text-faint, @atlas-font-size-sm);
+		}
+	}
+
+	.fileList {
+		list-style: none;
+		width:      100%;
+		margin:     0;
+		padding:    0;
+		display:    flex;
+		flex-direction: column;
+		gap:        4px;
+		max-height: 220px;
+		overflow-y: auto;
+
+		.fileItem {
+			display:        flex;
+			align-items:    center;
+			gap:            8px;
+			padding:        4px 8px;
+			background-color: @atlas-bg-panel;
+			border:         1px solid @atlas-border-soft;
+			border-radius:  @atlas-radius;
+
+			.thumb {
+				width:         40px;
+				height:        40px;
+				object-fit:    cover;
+				border-radius: @atlas-radius;
+				flex-shrink:   0;
+				background:    @atlas-bg-input;
+			}
+
+			.thumbPlaceholder {
+				width:          40px;
+				height:         40px;
+				flex-shrink:    0;
+				display:        flex;
+				align-items:    center;
+				justify-content: center;
+				.text(@atlas-text-faint, @atlas-font-size-xs);
+				background-color: @atlas-bg-input;
+				border-radius:  @atlas-radius;
+			}
+
+			.fileName {
+				flex:       1;
+				min-width:  0;
+				overflow:   hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				.text(@atlas-text, @atlas-font-size);
+			}
+
+			.fileMeta {
+				.text(@atlas-text-dim, @atlas-font-size-sm);
+				.tabular();
+				white-space: nowrap;
+			}
+
+			.removeFile {
+				.ghost-button();
+				.ghost-button-disabled();
+				padding: 2px 6px;
+				flex-shrink: 0;
+			}
+		}
+	}
+
+	.openError {
+		width:       100%;
+		padding:     8px 10px;
+		border-radius: @atlas-radius;
+		background-color: fade(@atlas-danger, 12%);
+		border:      1px solid fade(@atlas-danger, 35%);
+		.text(@atlas-danger, @atlas-font-size-sm);
+		display:     flex;
+		flex-direction: column;
+		gap:         2px;
+	}
+
+	.openActions {
+		display:    flex;
+		align-items: center;
+		gap:        8px;
+
+		.openButton {
+			.button();
+			background-color: @atlas-accent;
+			border-color:     @atlas-accent;
+			color:            @atlas-text-on-accent;
+
+			&:hover:not(:disabled) {
+				background-color: lighten(@atlas-accent, 6%);
+			}
+		}
+	}
+}
+
+.main {
+	flex:     1;
+	display:  flex;
+	overflow: hidden;
+}
+
+.wrap {
+	position: relative;
+	flex:     1;
+	overflow: hidden;
+
+	.hint {
+		position:       absolute;
+		top:            8px;
+		left:           8px;
+		right:          8px;
+		pointer-events: none;
+
+		.text(@atlas-text-dim, @atlas-font-size-xs);
+		text-align:     right;
+	}
+}
+
+.side {
+	width:           300px;
+	flex-shrink:     0;
+	display:         flex;
+	flex-direction:  column;
+	overflow:        hidden;
+
+	.panel(left);
+}
+
+.sideLeft {
+	width:           260px;
+	flex-shrink:     0;
+	display:         flex;
+	flex-direction:  column;
+	overflow-y:      auto;
+
+	.panel(right);
+}

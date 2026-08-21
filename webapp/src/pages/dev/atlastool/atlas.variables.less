@@ -1,0 +1,155 @@
+// ============================
+//  Variables
+// ============================
+
+@atlas-font-family: "Segoe UI", Tahoma, sans-serif;
+
+@atlas-bg:                #2b2d31;
+@atlas-bg-panel:          #232428;
+@atlas-bg-input:          #1b1d21;
+@atlas-bg-button:         #3b3f46;
+@atlas-bg-button-hover:   #474c55;
+
+@atlas-border:            #4a4e57;
+@atlas-border-soft:       #3b3f46;
+@atlas-divider:           #1a1b1e;
+
+@atlas-text:              #e4e6eb;
+@atlas-text-muted:        #9aa0ab;
+@atlas-text-dim:          #8b93a1;
+@atlas-text-faint:        #7a8290;
+@atlas-text-on-accent:    #0b0c0e;
+
+@atlas-accent:            #2ea6ff;
+@atlas-danger:            #ff6b6b;
+
+@atlas-status-bg:         rgba(0, 0, 0, 0.55);
+@atlas-status-text:       #c8cdd5;
+
+@atlas-font-size:         13px;
+@atlas-font-size-sm:      12px;
+@atlas-font-size-xs:      11px;
+
+@atlas-radius:            4px;
+
+
+// ============================
+//  Mixins
+// ============================
+
+.text(@color, @size) {
+	color:     @color;
+	font-size: @size;
+}
+
+.strong() {
+	font-weight: 600;
+}
+
+.tabular() {
+	font-variant-numeric: tabular-nums;
+}
+
+.panel(@side: bottom) {
+	background-color: @atlas-bg-panel;
+	border-@{side}:   1px solid @atlas-divider;
+}
+
+.input() {
+	background-color: @atlas-bg-input;
+	color:            @atlas-text;
+	border:           1px solid @atlas-border;
+	border-radius:    @atlas-radius;
+	padding:          4px 8px;
+	font-size:        @atlas-font-size;
+
+	&:focus {
+		outline: 1px solid @atlas-accent;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor:  not-allowed;
+	}
+}
+
+.button() {
+	background-color: @atlas-bg-button;
+	color:            @atlas-text;
+	border:           1px solid @atlas-border;
+	border-radius:    @atlas-radius;
+	padding:          5px 12px;
+	font-size:        @atlas-font-size;
+	cursor:           pointer;
+
+	&:hover {
+		background-color: @atlas-bg-button-hover;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor:  not-allowed;
+
+		&:hover {
+			background-color: @atlas-bg-button;
+		}
+	}
+}
+
+.ghost-button() {
+	background-color: transparent !important;
+	border:           none !important;
+	color:            @atlas-text-dim !important;
+	cursor:           pointer;
+
+	&:hover {
+		color: @atlas-danger !important;
+	}
+}
+
+.ghost-button-disabled() {
+	&:disabled {
+		color:  @atlas-text-faint !important;
+		cursor: default;
+
+		&:hover {
+			color: @atlas-text-faint !important;
+		}
+	}
+}
+
+.segmented() {
+	display:        flex;
+	align-items:    center;
+	border:         1px solid @atlas-border;
+	border-radius:  @atlas-radius;
+	overflow:       hidden;
+}
+
+.segmented-button() {
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	width:           30px;
+	height:          26px;
+	padding:         0;
+	border:          none;
+	border-radius:   0;
+	background:      transparent;
+	color:           @atlas-text-dim;
+
+	&:hover {
+		background-color: @atlas-bg-button;
+		color:            @atlas-text;
+	}
+
+	&:not(:first-child) {
+		border-left: 1px solid @atlas-border;
+	}
+}
+
+.bottom-overlay() {
+	position:       absolute;
+	bottom:         8px;
+	pointer-events: none;
+}

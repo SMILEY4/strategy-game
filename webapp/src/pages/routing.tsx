@@ -1,11 +1,12 @@
-import {Navigate, type RouteObject, useMatches, useNavigate} from "react-router";
+import {matchPath, Navigate, type RouteObject, useMatches, useNavigate} from "react-router";
 import {LoginPage} from "@pages/login/Login.page.tsx";
 import {RegisterPage} from "@pages/register/Register.page.tsx";
 import {MatchPage} from "@pages/match/Match.page.tsx";
 import {MatchListPage} from "@pages/matchList/Match-list.page.tsx";
 import {GamePage} from "@pages/game/Game.page.tsx";
 import {StrictMode} from "react";
-import {ComponentsPage} from "@pages/dev/Components.page.tsx";
+import {ComponentsPage} from "@pages/dev/componentsshowcase/Components.page.tsx";
+import {AtlasPage} from "@pages/dev/atlastool/AtlasPage.tsx";
 
 type RouteInfo = {
     id: string,
@@ -103,6 +104,13 @@ export const routing: RouteObject[] = [
                     <ComponentsPage/>
                 ),
             },
+            {
+                id: "atlas",
+                path: "atlas",
+                element: (
+                    <AtlasPage/>
+                ),
+            },
         ],
     },
 ];
@@ -126,4 +134,10 @@ export function useRouting() {
 export function useRouteIds(): string[] {
     const matches = useMatches();
     return matches.map(it => it.id);
+}
+
+export function getParameterGameId(): string {
+    const pattern = "/" + Routes.GAME.path(Routes.GAME.propGameId);
+    const match = matchPath({path: pattern}, window.location.pathname);
+    return match?.params.gameId ?? "err";
 }

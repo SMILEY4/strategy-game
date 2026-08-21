@@ -1,11 +1,11 @@
-import type {HexPosition} from "@app/features/game/models/hex-position.ts";
+import type {ExtendedHexPosition} from "@app/features/game/models/hex-position.ts";
+import type {HiddenType} from "@app/features/game/models/hidden-type.ts";
 
-/** A tile entity from the server game state. */
 export interface Tile {
     id: string,
-    position: HexPosition,
-    chunk: HexPosition,
-    world: {
+    position: ExtendedHexPosition,
+    visibility: "VISIBLE" | "DISCOVERED" | "UNDISCOVERED"
+    world: HiddenType<{
         biome: string,
         elevation: string,
         feature: string,
@@ -16,7 +16,10 @@ export interface Tile {
             changeRate: number,
             removeOnDeplete: number
         })[]
-    },
+    }>
+    createCapital: {
+        allowed: boolean
+    }
     meta: {
         seed: number,
     }

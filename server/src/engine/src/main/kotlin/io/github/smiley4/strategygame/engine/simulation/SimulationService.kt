@@ -1,30 +1,25 @@
 package io.github.smiley4.strategygame.engine.simulation
 
 import com.lectra.koson.ObjectType
-import io.github.smiley4.strategygame.engine.shared.PlayerCommand
+import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.generation.WorldGenerator
-import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.playerstate.PlayerStateBuilder
+import io.github.smiley4.strategygame.engine.simulation.turn.TurnService
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
-import kotlin.random.Random
 
 /**
  * Handles world generation, turn processing, and player state building.
  */
-class SimulationService(
+internal class SimulationService(
     private val gameStateRepository: GameStateRepository,
     private val worldGenerator: WorldGenerator,
     private val playerStateBuilder: PlayerStateBuilder,
+    private val turnService: TurnService
 ) {
 
-    fun generateGame(gameId: GameId) {
-        val tiles = worldGenerator.generate(50, Random.nextInt())
-        val gameState = GameStateContext(
-            id = gameId,
-            turn = 0,
-            tiles = tiles
-        )
+    fun generateGame(gameId: GameId, players: Collection<UserId>) {
+        val gameState = worldGenerator.generate(gameId, players)
         gameStateRepository.save(gameId, gameState)
     }
 
@@ -43,11 +38,7 @@ class SimulationService(
         val gameState = gameStateRepository.load(gameId)
             ?: throw ProcessTurnError.NotFound(gameId.id.toString())
 
-        commands.forEach { command ->
-            // todo: apply command
-        }
-
-        gameState.turn++
+        turnService.execute(gameState, commands)
 
         gameStateRepository.save(gameId, gameState)
 

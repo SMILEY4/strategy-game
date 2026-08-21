@@ -1,0 +1,145 @@
+@import "./atlas.variables.less";
+
+.section {
+	flex:           0 0 auto;
+	height:         460px;
+	overflow-y:     auto;
+	border-bottom:  none;
+}
+
+.lockedNote {
+	display:          flex;
+	align-items:      center;
+	gap:              6px;
+	padding:          6px 8px;
+	margin-bottom:    8px;
+	border-radius:    @atlas-radius;
+	background-color: @atlas-bg-input;
+	border:           1px solid @atlas-border-soft;
+	.text(@atlas-text-dim, @atlas-font-size-sm);
+}
+
+.field {
+	display:        flex;
+	flex-direction: column;
+	gap:            4px;
+	margin-bottom:  8px;
+
+	.text(@atlas-text-muted, @atlas-font-size-sm);
+
+	input {
+		width:      100%;
+		min-width:  0;
+		box-sizing: border-box;
+	}
+}
+
+.id {
+	.input();
+	user-select:    all;
+	font-family:    "Consolas", "Menlo", monospace;
+	font-size:      @atlas-font-size-xs;
+	color:          @atlas-text-dim;
+	word-break:     break-all;
+	line-height:    1.6;
+}
+
+.warning {
+	padding:          4px 8px;
+	border-radius:    @atlas-radius;
+	background-color: fade(@atlas-danger, 12%);
+	border:           1px solid fade(@atlas-danger, 35%);
+	.text(@atlas-danger, @atlas-font-size-sm);
+}
+
+.grid {
+	display:               grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap:            8px;
+}
+
+.expand {
+	width:       100%;
+	margin-top:  8px;
+	box-sizing:  border-box;
+}
+
+.multiActions {
+	display:        flex;
+	flex-direction: column;
+	gap:            8px;
+}
+
+.parameters {
+	display:        flex;
+	flex-direction: column;
+	gap:            6px;
+}
+
+.paramHeader {
+	.strong();
+	display:         flex;
+	align-items:     center;
+	justify-content: space-between;
+	gap:             8px;
+	font-size:       13px;
+	margin-top:      12px;
+	margin-bottom:   8px;
+
+	.paramActions {
+		display: flex;
+		gap:     4px;
+
+		button {
+			.button();
+			padding:     2px 8px;
+			line-height: 1.2;
+			font-size:   @atlas-font-size-xs;
+		}
+	}
+}
+
+.paramRow {
+	display:        flex;
+	align-items:    center;
+	gap:            8px;
+
+	.paramLabel {
+		.text(@atlas-text-muted, @atlas-font-size-sm);
+		flex:        0 0 92px;
+		min-width:   0;
+		overflow:    hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.paramInput {
+		flex:        1;
+		min-width:   0;
+		width:       auto;
+		font-family: "Consolas", "Menlo", monospace;
+	}
+}
+
+.annotation {
+	display:       flex;
+	gap:           4px;
+	margin-bottom: 6px;
+
+	.key {
+		flex:      1;
+		min-width: 0;
+	}
+
+	.value {
+		flex:        1.4;
+		min-width:   0;
+		font-family: "Consolas", "Menlo", monospace;
+	}
+
+	.remove {
+		.ghost-button();
+		.ghost-button-disabled();
+		padding: 0 6px;
+	}
+}

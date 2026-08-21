@@ -20,6 +20,8 @@ export class WebGlRenderGraph implements RenderGraph {
         const drawCalls = buildWebglDrawCallGraph(nodes);
         const sortedDrawCalls = sortWebGlDrawCallNodes(drawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
         const {commands, resources} = webglCompile(nodes, sortedDrawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+        console.log("RG_COMMAND", commands)
+        console.log("RG_RESOURCES", resources)
         return new WebGlRenderGraph(commands, canvas => WebGlExecutionContext.build(canvas, resources));
     }
 

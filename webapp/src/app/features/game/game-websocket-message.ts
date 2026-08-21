@@ -1,9 +1,20 @@
+import type {HiddenType} from "@app/features/game/models/hidden-type.ts";
+
 /** Messages sent from client to server over the game WebSocket. */
-export type GameWebsocketClientMessage = null
+export type GameWebsocketClientMessage =
+    | SubmitTurn
 
 export interface GameWebsocketClientMessageBase {
     type: string;
 }
+
+interface SubmitTurn extends GameWebsocketClientMessageBase {
+    type: "ClientGameMessage.SubmitTurn",
+    commands: MessageCommand[]
+}
+
+type MessageCommand =
+    | { type: "FoundRealmCapital", q: number, r: number, name: string }
 
 
 /** Messages sent from server to client over the game WebSocket. */
@@ -15,22 +26,21 @@ interface GameWebsocketServerMessageBase {
 }
 
 interface GameState extends GameWebsocketServerMessageBase {
-    type: "io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage.GameState",
-    stateJson: {
+    type: "ServerGameMessage.GameState",
+    state: {
         game: {
             turn: number
         },
         tiles: ({
             id: string,
+            visibility: "VISIBLE" | "DISCOVERED" | "UNDISCOVERED"
             position: {
                 q: number,
-                r: number
+                r: number,
+                chunkQ: number,
+                chunkR: number,
             },
-            chunk: {
-                q: number,
-                r: number
-            },
-            world: {
+            world: HiddenType<{
                 biome: string,
                 elevation: string,
                 feature: string,
@@ -41,10 +51,27 @@ interface GameState extends GameWebsocketServerMessageBase {
                     changeRate: number,
                     removeOnDeplete: number
                 })[]
-            },
+            }>
+            createCapital: {
+                allowed: boolean
+            }
             meta: {
                 seed: number,
-            }
+            },
+        })[],
+        entities: ({
+            id: string,
+            owner: string,
+            position: {
+                q: number,
+                r: number,
+                chunkQ: number,
+                chunkR: number,
+            },
+            components: (
+                | { type: "player-spawn", radius: number }
+                | { type: "settlement", name: string, isRealmCapital: boolean }
+                )[]
         })[]
     }
 }

@@ -52,8 +52,8 @@ export function buildWebglDrawCallGraph(renderGraphNodes: RenderGraphNode[]): We
                 if (input.type === "texture") {
                     drawCallNode.requiresResources.textures.push(input);
                 }
-                if (input.type === "rendertarget") {
-                    drawCallNode.requiresResources.rendertargets.push(input);
+                if (input.type === "pick-rendertarget-attachment") {
+                    drawCallNode.requiresResources.rendertargets.push(input.rendertarget);
                 }
                 if (input.type === "select-texture") {
                     drawCallNode.requiresResources.texturesSelect.push(input);
