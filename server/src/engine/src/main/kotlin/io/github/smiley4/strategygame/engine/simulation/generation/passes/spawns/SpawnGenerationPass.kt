@@ -5,9 +5,11 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponen
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
+import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
 import io.github.smiley4.strategygame.engine.simulation.generation.GenerationContext
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.GenerationPass
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
+import net.logstash.logback.argument.StructuredArguments.r
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -84,8 +86,8 @@ internal class SpawnGenerationPass : GenerationPass {
         var countLand = 0
         var countValid = 0;
 
-        positionsCircle(spawnLocation.position.q, spawnLocation.position.r, radius) { q, r ->
-            val tile = gameState.tiles.find { it.position.q == q && it.position.r == r }
+        spawnLocation.position.iterateCircle(radius) { pos ->
+            val tile = gameState.tiles.find { it.position == pos }
             if (tile == null) {
                 countOutOfBounds++
             } else {
@@ -118,36 +120,4 @@ internal class SpawnGenerationPass : GenerationPass {
     }
 
 
-}
-
-
-// todo technical dept: move this to some other file and remove duplicates
-fun positionsCircle(centerQ: Int, centerR: Int, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
-    for (iq in (centerQ - radius)..(centerQ + radius)) {
-        for (ir in (centerR - radius)..(centerR + radius)) {
-            if (hexDistance(centerQ, centerR, iq, ir) <= radius) {
-                consumer(iq, ir)
-            }
-        }
-    }
-}
-
-fun hexDistance(q0: Int, r0: Int, q1: Int, r1: Int): Int {
-    val d = hexSub(q0, r0, q1, r1)
-    return hexLength(d.first, d.second)
-}
-
-fun hexLength(q: Int, r: Int): Int {
-    return (abs(q) + abs(r) + abs(hexS(q, r))) / 2
-}
-
-fun hexSub(q0: Int, r0: Int, q1: Int, r1: Int): Pair<Int, Int> {
-    return Pair(
-        q0 - q1,
-        r0 - r1
-    )
-}
-
-fun hexS(q: Int, r: Int): Int {
-    return -q - r
 }
