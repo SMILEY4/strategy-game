@@ -14,6 +14,10 @@ data class Entity(
     @JvmInline
     value class Id(val id: Uuid = Uuid.random())
 
+    inline fun <reified T : EntityComponent> hasComponent(): Boolean {
+        return components.any { it is T }
+    }
+
     inline fun <reified T : EntityComponent> getComponentOrNull(): T? {
         return components.filterIsInstance<T>().firstOrNull()
     }
@@ -30,7 +34,7 @@ sealed interface EntityComponent {
 
     data class  Position(val tile: Tile.Ref) : EntityComponent
 
-    data class PlayerSpawn(val radius: Int) : EntityComponent
+    data class PlayerSpawn(val radius: Int, var foundedCapital: Boolean) : EntityComponent
 
     data class Settlement(val name: String, val isRealmCapital: Boolean) : EntityComponent
 

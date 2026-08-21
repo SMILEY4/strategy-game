@@ -5,6 +5,51 @@ import {DatabaseOperation} from "@modules/gamedb/database/database-operation.ts"
 import type {Query} from "@modules/gamedb/database/query.ts";
 import type {SingletonDatabase} from "@modules/gamedb/singleton/singleton-database.ts";
 
+export interface RevisionDatabase {
+    getRevId: () => string;
+    subscribe: (callback: () => void) => string;
+    unsubscribe: (subscriberId: string) => void;
+}
+
+/**
+ * Watch a database revision and re-render when its contents change.
+ * @param db the database to watch
+ * @return the current database revision id
+ */
+export function useDatabaseRevId(db: RevisionDatabase): string {
+    const [revId, setRevId] = useState<string>(() => db.getRevId());
+
+    useEffect(() => {
+        const subscription = db.subscribe(() => setRevId(db.getRevId()));
+        return () => db.unsubscribe(subscription);
+    }, [db]);
+
+    return revId;
+}
+
+/**
+ * Watch multiple databases and trigger re-render when any of them changes.
+ * @param databases the databases to watch
+ */
+export function useWatchDatabases(databases: RevisionDatabase[]): void {
+    const [, setRevision] = useState(0);
+
+    useEffect(() => {
+        const subscriptions = databases.map(db => db.subscribe(() => {
+            setRevision(revision => revision + 1);
+        }));
+
+        return () => {
+            databases.forEach((db, index) => db.unsubscribe(subscriptions[index]));
+        };
+    }, [databases]);
+}
+
+/**
+ * Access (and watch) the content of the given singleton database
+ * @param db the database
+ * @return the current content
+ */
 export function useQuerySingleton<ENTITY>(db: SingletonDatabase<ENTITY>): ENTITY {
     const [entity, setEntity] = useState<ENTITY>(() => db.get());
     useEffect(() => {
@@ -14,6 +59,12 @@ export function useQuerySingleton<ENTITY>(db: SingletonDatabase<ENTITY>): ENTITY
     return entity;
 }
 
+/**
+ * Access (and watch) the partial content of the given singleton database
+ * @param db the database
+ * @param selector function taking the full db content and returns only the relevant part
+ * @return the current partial content
+ */
 export function useQueryPartialSingleton<ENTITY, T>(db: SingletonDatabase<ENTITY>, selector: (entity: ENTITY) => T): T {
     const [value, setValue] = useState<T>(() => selector(db.get()));
     useEffect(() => {
@@ -134,4 +185,3 @@ export function useQueryMultiple<STORAGE extends DatabaseStorageUnitMapping<ENTI
 
     return snapshot.entities;
 }
-

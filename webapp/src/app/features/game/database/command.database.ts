@@ -31,6 +31,13 @@ export const CommandQueries = {
         },
     },
 
+    BY_TYPE: {
+        run: (storage: CommandStorageMapping, type: Command["type"]) => {
+            return storage.primary.getAll().filter(it => it.type === type); // todo: dedicated storage?
+        },
+    },
+
 } satisfies {
     ALL: CommandQuery<never>,
+    BY_TYPE: CommandQuery<Command["type"]>
 };

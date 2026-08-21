@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.engine.simulation.turn.tools
 
+import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
@@ -35,6 +36,29 @@ object SettlementValidation {
         }
 
         return true
+    }
+
+    fun validateCapital(gameState: GameStateContext, location: HexPosition, player: UserId): Boolean {
+
+        // spawn entity must exist and not have founded a capital yet
+        val spawn = gameState.entities.find { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == player }
+        if (spawn == null || spawn.getComponent<EntityComponent.PlayerSpawn>().foundedCapital) {
+            return false
+        }
+
+        return validate(gameState, location, player)
+    }
+
+
+    fun validateCapital(gameState: GameStateContext, tile: Tile, player: UserId): Boolean {
+
+        // spawn entity must exist and not have founded a capital yet
+        val spawn = gameState.entities.find { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == player }
+        if (spawn == null || spawn.getComponent<EntityComponent.PlayerSpawn>().foundedCapital) {
+            return false
+        }
+
+        return validate(gameState, tile, player)
     }
 
 }

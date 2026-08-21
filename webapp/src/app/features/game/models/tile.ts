@@ -17,7 +17,7 @@ export interface Tile {
             removeOnDeplete: number
         })[]
     }>
-    createSettlement: {
+    createCapital: {
         allowed: boolean
     }
     meta: {

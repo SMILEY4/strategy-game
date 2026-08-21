@@ -52,7 +52,7 @@ interface GameState extends GameWebsocketServerMessageBase {
                     removeOnDeplete: number
                 })[]
             }>
-            createSettlement: {
+            createCapital: {
                 allowed: boolean
             }
             meta: {

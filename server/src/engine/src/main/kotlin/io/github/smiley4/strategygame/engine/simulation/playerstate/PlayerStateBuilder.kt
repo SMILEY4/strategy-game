@@ -90,8 +90,8 @@ class PlayerStateBuilder {
                 ]
             }
         }
-        "createSettlement" to obj {
-            "allowed" to SettlementValidation.validate(game, tile, player)
+        "createCapital" to obj {
+            "allowed" to SettlementValidation.validateCapital(game, tile, player)
         }
         "meta" to obj {
             "seed" to tile.meta.seed
@@ -107,21 +107,18 @@ class PlayerStateBuilder {
 
 
     private fun getVisibilityAt(gameState: GameStateContext, entity: Entity, player: UserId): Int {
-//        return 1;
         val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
         if (position == null) return 0
         return getVisibilityAt(gameState, position, player)
     }
 
     private fun getVisibilityAt(gameState: GameStateContext, positions: HexPosition, player: UserId): Int {
-//        return 1;
         val tile = gameState.tiles.find { it.position == positions }
         if (tile == null) return 0
         return getVisibilityAt(tile, player)
     }
 
     private fun getVisibilityAt(tile: Tile, player: UserId): Int {
-//        return 1;
         return when {
             tile.discoveredBy.contains(player) -> 1
             else -> 0
