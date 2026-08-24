@@ -95,6 +95,9 @@ internal class MatchServiceImpl(
     override fun getMatchDetails(user: UserId, matchId: MatchId): MatchSnapshot {
         val match = matchRepository.findById(matchId)
             ?: throw GetMatchDetailsError.NotFound(matchId.value.toString())
+        if(!match.isParticipant(user)) {
+            throw GetMatchDetailsError.NotFound(matchId.value.toString())
+        }
         return match.toSnapshot()
     }
 
