@@ -58,6 +58,9 @@ internal class GameServiceImpl(
 
             val game = gameRepository.findById(gameId)
                 ?: throw ConnectToGameError.NotFound(gameId.id.toString())
+            if(!game.isParticipant(player)) {
+                throw ConnectToGameError.NotFound(gameId.id.toString())
+            }
 
             val playerState = simulationService.buildInitialGameState(game.getId(), player)
             notificationService.sendGameState(gameId, player, playerState)

@@ -48,6 +48,10 @@ class Game private constructor(
         return pendingCommands.size == players.size
     }
 
+    fun isParticipant(user: UserId): Boolean {
+        return user in players
+    }
+
     fun getPendingCommands(): List<PlayerCommand> {
         return this.pendingCommands.flatMap { it.value }
     }
