@@ -49,8 +49,13 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
 
         start: async (gameId: string) => {
             repository.setState("loading");
-            const token = await client.getGameWebsocketToken();
-            wsClient.connect(gameId, token, instance.onMessage);
+            try {
+                const token = await client.getGameWebsocketToken();
+                wsClient.connect(gameId, token, instance.onMessage);
+            } catch (e) {
+                console.error("Failed to start game", e);
+                repository.setState("error");
+            }
         },
 
         stop: () => {

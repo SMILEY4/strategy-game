@@ -6,10 +6,6 @@ import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 
 export function GamePage() {
 
-    // return (
-    //     <GamePlayingPage/>
-    // );
-
     const gameId = useGameId()
     const viewModel = useGameViewModel(gameId);
 
@@ -23,5 +19,4 @@ export function GamePage() {
         <GameErrorPage/>
     );
     assertExhaustive(viewModel.state);
-
 }

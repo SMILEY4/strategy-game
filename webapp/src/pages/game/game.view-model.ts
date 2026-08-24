@@ -22,8 +22,8 @@ export function useGameViewModel(gameId: string): GameViewModel {
 
     useEffect(() => {
         DI.gameEngine.start(gameId);
-        return () => DI.gameEngine.stop()
-    }, [gameId])
+        return () => DI.gameEngine.stop();
+    }, [gameId]);
 
     return {
         state: state.status === "available" || state.status === "updating" ? state.data : "loading",
