@@ -1,5 +1,6 @@
 import type {StoreApi} from "zustand/vanilla";
 
+/** Lifecycle states exposed to UI and other session consumers. */
 export type InteractionStatus = "running" | "completed" | "failed" | "cancelled";
 
 /** Observable state of the interaction currently running in a session. */
@@ -62,15 +63,19 @@ export interface InteractionHandle<State, Event, Step extends string = string> {
 }
 
 /** Session-scoped coordinator enforcing the single-active-interaction rule. */
-export interface InteractionManager<State = unknown, Event = unknown, Step extends string = string> {
-    start: (definition: InteractionDefinition<Step, State, Event>) => InteractionHandle<State, Event, Step>;
-    dispatch: (interactionId: string, event: Event) => boolean;
-    getSnapshot: () => InteractionSnapshot<State, Step> | null;
-    subscribe: StoreApi<InteractionStoreState<State, Step>>["subscribe"];
+export interface InteractionManager {
+    /** Each started definition keeps its own state, event, and step types. */
+    start: <State, Event, Step extends string>(
+        definition: InteractionDefinition<Step, State, Event>,
+    ) => InteractionHandle<State, Event, Step>;
+    /** Prefer a typed handle when possible; this form is for generic event sources. */
+    dispatch: (interactionId: string, event: unknown) => boolean;
+    getSnapshot: () => InteractionSnapshot<unknown, string> | null;
+    subscribe: StoreApi<InteractionStoreState<unknown, string>>["subscribe"];
     cancelActive: () => void;
-    store: StoreApi<InteractionStoreState<State, Step>>;
 }
 
+/** Internal store shape used by the manager's subscription API. */
 export interface InteractionStoreState<State, Step extends string = string> {
     active: InteractionSnapshot<State, Step> | null;
 }

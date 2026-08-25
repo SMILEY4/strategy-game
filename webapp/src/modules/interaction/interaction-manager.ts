@@ -10,23 +10,32 @@ import type {
     InteractionStoreState,
 } from "./interaction.types.ts";
 
-export function createInteractionManager<State = unknown, Event = unknown, Step extends string = string>(): InteractionManager<State, Event, Step> {
-    const store = createStore<InteractionStoreState<State, Step>>(() => ({active: null}));
-    let active: RuntimeInteraction<State, Event, Step> | null = null;
+interface ActiveRuntime {
+    readonly id: string;
+    snapshot: () => InteractionSnapshot<unknown, string>;
+    dispatch: (event: unknown) => boolean;
+    cancel: () => void;
+}
 
-    function publish(runtime: RuntimeInteraction<State, Event, Step>): void {
+/** Creates the session-scoped coordinator for independent interaction types. */
+export function createInteractionManager(): InteractionManager {
+    const store = createStore<InteractionStoreState<unknown, string>>(() => ({active: null}));
+    let active: ActiveRuntime | null = null;
+
+    function publish(runtime: ActiveRuntime): void {
         store.setState({active: runtime.snapshot()});
     }
 
-    function clear(runtime: RuntimeInteraction<State, Event, Step>): void {
+    function clear(runtime: ActiveRuntime): void {
         if (active?.id === runtime.id) {
             active = null;
             store.setState({active: null});
         }
     }
 
-    function start(definition: InteractionDefinition<Step, State, Event>): InteractionHandle<State, Event, Step> {
-        // Reserve the session slot before entering the first step.
+    function start<State, Event, Step extends string>(
+        definition: InteractionDefinition<Step, State, Event>,
+    ): InteractionHandle<State, Event, Step> {
         if (active) {
             throw new InteractionBusyError();
         }
@@ -40,8 +49,8 @@ export function createInteractionManager<State = unknown, Event = unknown, Step 
             definition,
             crypto.randomUUID(),
             initialStep,
-            publish,
-            clear,
+            () => publish(runtime),
+            () => clear(runtime),
         );
         active = runtime;
         publish(runtime);
@@ -55,27 +64,27 @@ export function createInteractionManager<State = unknown, Event = unknown, Step 
         getSnapshot: () => store.getState().active,
         subscribe: store.subscribe,
         cancelActive: () => active?.cancel(),
-        store,
     };
 }
 
-class RuntimeInteraction<State, Event, Step extends string> implements InteractionHandle<State, Event, Step> {
+class RuntimeInteraction<State, Event, Step extends string> implements InteractionHandle<State, Event, Step>, ActiveRuntime {
     readonly id: string;
     private readonly definition: InteractionDefinition<Step, State, Event>;
-    private readonly publishSnapshot: (runtime: RuntimeInteraction<State, Event, Step>) => void;
-    private readonly clearSnapshot: (runtime: RuntimeInteraction<State, Event, Step>) => void;
+    private readonly publishSnapshot: () => void;
+    private readonly clearSnapshot: () => void;
     private status: "running" | "completed" | "failed" | "cancelled" = "running";
     private error: unknown | null = null;
     private state: State;
     private stepName: Step;
     private step: InteractionStep<State, Event, Step>;
+    private stepExited = false;
 
     constructor(
         definition: InteractionDefinition<Step, State, Event>,
         id: string,
         step: InteractionStep<State, Event, Step>,
-        publishSnapshot: (runtime: RuntimeInteraction<State, Event, Step>) => void,
-        clearSnapshot: (runtime: RuntimeInteraction<State, Event, Step>) => void,
+        publishSnapshot: () => void,
+        clearSnapshot: () => void,
     ) {
         this.definition = definition;
         this.id = id;
@@ -87,10 +96,18 @@ class RuntimeInteraction<State, Event, Step extends string> implements Interacti
     }
 
     getSnapshot(): InteractionSnapshot<State, Step> {
-        return this.snapshot();
+        return this.typedSnapshot();
     }
 
-    dispatch(event: Event): boolean {
+    snapshot(): InteractionSnapshot<unknown, string> {
+        return this.typedSnapshot() as InteractionSnapshot<unknown, string>;
+    }
+
+    dispatch(event: unknown): boolean {
+        return this.dispatchTyped(event as Event);
+    }
+
+    private dispatchTyped(event: Event): boolean {
         if (this.status !== "running") {
             return false;
         }
@@ -107,7 +124,7 @@ class RuntimeInteraction<State, Event, Step extends string> implements Interacti
             if (transition.to !== undefined) {
                 this.transitionTo(transition.to);
             } else {
-                this.publishSnapshot(this);
+                this.publishSnapshot();
             }
             return true;
         } catch (error) {
@@ -121,15 +138,21 @@ class RuntimeInteraction<State, Event, Step extends string> implements Interacti
             return;
         }
         this.status = "cancelled";
-        this.publishSnapshot(this);
-        this.clearSnapshot(this);
+        // Cancellation must remain safe even if cleanup code itself fails.
+        try {
+            this.exitCurrentStep();
+        } catch {
+            // The interaction is already cancelled; there is no recovery path here.
+        }
+        this.publishSnapshot();
+        this.clearSnapshot();
     }
 
     enter(): void {
         try {
             this.step.enter?.(this.context());
             if (this.status === "running") {
-                this.publishSnapshot(this);
+                this.publishSnapshot();
             }
             if (this.status === "running" && this.step.terminal) {
                 this.complete();
@@ -139,7 +162,7 @@ class RuntimeInteraction<State, Event, Step extends string> implements Interacti
         }
     }
 
-    snapshot(): InteractionSnapshot<State, Step> {
+    private typedSnapshot(): InteractionSnapshot<State, Step> {
         return {
             id: this.id,
             key: this.definition.key,
@@ -150,18 +173,19 @@ class RuntimeInteraction<State, Event, Step extends string> implements Interacti
         };
     }
 
-    private transitionTo(stepName: string): void {
-        if (!(stepName in this.definition.steps)) {
+    private transitionTo(stepName: Step): void {
+        const nextStep = this.definition.steps[stepName];
+        if (!nextStep) {
             throw new InteractionDefinitionError(`Missing step: ${stepName}`);
         }
-        const nextStepName = stepName as Step;
-        this.step.exit?.(this.context());
-        this.step = this.definition.steps[nextStepName];
-        this.stepName = nextStepName;
-        this.publishSnapshot(this);
+        this.exitCurrentStep();
+        this.step = nextStep;
+        this.stepName = stepName;
+        this.stepExited = false;
+        this.publishSnapshot();
         this.step.enter?.(this.context());
         if (this.status === "running") {
-            this.publishSnapshot(this);
+            this.publishSnapshot();
         }
         if (this.status === "running" && this.step.terminal) {
             this.complete();
@@ -172,8 +196,16 @@ class RuntimeInteraction<State, Event, Step extends string> implements Interacti
         return {
             id: this.id,
             state: this.state,
-            dispatch: event => this.dispatch(event),
+            dispatch: event => this.dispatchTyped(event),
         };
+    }
+
+    private exitCurrentStep(): void {
+        if (this.stepExited) {
+            return;
+        }
+        this.stepExited = true;
+        this.step.exit?.(this.context());
     }
 
     private fail(error: unknown): void {
@@ -182,8 +214,14 @@ class RuntimeInteraction<State, Event, Step extends string> implements Interacti
         }
         this.status = "failed";
         this.error = error;
-        this.publishSnapshot(this);
-        this.clearSnapshot(this);
+        // Preserve the original failure if cleanup itself is faulty.
+        try {
+            this.exitCurrentStep();
+        } catch {
+            // Cleanup is best-effort once the interaction has failed.
+        }
+        this.publishSnapshot();
+        this.clearSnapshot();
     }
 
     private complete(): void {
@@ -191,7 +229,8 @@ class RuntimeInteraction<State, Event, Step extends string> implements Interacti
             return;
         }
         this.status = "completed";
-        this.publishSnapshot(this);
-        this.clearSnapshot(this);
+        this.exitCurrentStep();
+        this.publishSnapshot();
+        this.clearSnapshot();
     }
 }
