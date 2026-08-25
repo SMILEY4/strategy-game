@@ -1,55 +1,45 @@
-import {describe, expect, it, vi} from "vitest";
+import {describe, expect, it} from "vitest";
 import {InteractionBusyError} from "./interaction-errors.ts";
 import {createInteractionManager} from "./interaction-manager.ts";
-import type {InteractionDefinition, InteractionWindow} from "./interaction.types.ts";
+import {defineInteraction} from "./interaction.types.ts";
 
-type State = {
-    value: string;
-};
-
+type State = { value: string };
 type Event =
     | { type: "change"; value: string }
     | { type: "finish" }
     | { type: "success" };
 
-function definition(overrides: Partial<InteractionDefinition<State, Event>> = {}): InteractionDefinition<State, Event> {
-    return {
-        key: "test",
-        initialStep: "editing",
-        initialState: {value: ""},
-        steps: {
-            editing: {
-                handle: (_state, event) => {
-                    if (event.type === "change") {
-                        return {state: {value: event.value}};
-                    }
-                    if (event.type === "finish") {
-                        return {to: "completed"};
-                    }
-                    return undefined;
-                },
-            },
-            completed: {
-                terminal: true,
-                handle: () => undefined,
+const basicDefinition = defineInteraction({
+    key: "test",
+    initialStep: "editing",
+    initialState: {value: ""},
+    steps: {
+        editing: {
+            handle: (_state: State, event: Event) => {
+                if (event.type === "change") return {state: {value: event.value}};
+                if (event.type === "finish") return {to: "completed"};
+                return undefined;
             },
         },
-        ...overrides,
-    };
-}
+        completed: {
+            terminal: true,
+            handle: () => undefined,
+        },
+    },
+});
 
 describe("createInteractionManager", () => {
     it("allows only one active interaction", () => {
         const manager = createInteractionManager<State, Event>();
 
-        manager.start(definition());
+        manager.start(basicDefinition);
 
-        expect(() => manager.start(definition())).toThrow(InteractionBusyError);
+        expect(() => manager.start(basicDefinition)).toThrow(InteractionBusyError);
     });
 
     it("dispatches events through graph steps and completes terminal steps", () => {
         const manager = createInteractionManager<State, Event>();
-        const handle = manager.start(definition());
+        const handle = manager.start(basicDefinition);
 
         handle.dispatch({type: "change", value: "draft"});
         expect(handle.getSnapshot().state.value).toBe("draft");
@@ -59,97 +49,53 @@ describe("createInteractionManager", () => {
         expect(handle.getSnapshot().status).toBe("completed");
     });
 
-    it("opens and closes nested windows owned by the interaction", () => {
-        const opened: string[] = [];
-        const closed: string[] = [];
-        const manager = createInteractionManager<State, Event>({
-            host: {
-                openWindow: (window, interactionId) => {
-                    opened.push(`${window.id}:${interactionId}`);
-                },
-                closeWindow: (window, interactionId) => {
-                    closed.push(`${window.id}:${interactionId}`);
-                },
-            },
-        });
-        const windowA: InteractionWindow = {id: "a", open: vi.fn()};
-        const windowB: InteractionWindow = {id: "b", open: vi.fn()};
-        const handle = manager.start(definition({
-            steps: {
-                editing: {
-                    enter: context => {
-                        context.openWindow(windowA);
-                        context.openWindow(windowB);
-                    },
-                    handle: state => ({state}),
-                },
-                completed: {terminal: true, handle: () => undefined},
-            },
-        }));
-
-        expect(handle.getSnapshot().windowIds).toEqual(["a", "b"]);
-        handle.cancel();
-        expect(opened).toHaveLength(2);
-        expect(closed).toHaveLength(2);
-        expect(handle.getSnapshot().status).toBe("cancelled");
-    });
-
-    it("dispatches async operation results back into the graph", async () => {
+    it("runs enter hooks after moving to a new step", () => {
         const manager = createInteractionManager<State, Event>();
-        const handle = manager.start(definition({
+        let enteredState = "";
+        const handle = manager.start(defineInteraction({
+            key: "effects",
+            initialStep: "editing",
+            initialState: {value: "initial"},
             steps: {
                 editing: {
-                    handle: (_state, event, context) => {
-                        if (event.type === "finish") {
-                            context.startOperation({
-                                run: async () => "ok",
-                                onSuccess: () => ({type: "success"}),
-                                onFailure: () => ({type: "change", value: "error"}),
-                            });
-                            return {to: "submitting"};
-                        }
-                        return undefined;
-                    },
+                    handle: (_state: State, event: Event) => event.type === "finish"
+                        ? {to: "submitting"}
+                        : undefined,
                 },
                 submitting: {
-                    handle: (_state, event) => event.type === "success" ? {to: "completed"} : undefined,
+                    enter: context => {
+                        enteredState = context.state.value;
+                        context.dispatch({type: "success"});
+                    },
+                    handle: (_state: State, event: Event) => event.type === "success"
+                        ? {to: "completed"}
+                        : undefined,
                 },
                 completed: {terminal: true, handle: () => undefined},
             },
         }));
 
         handle.dispatch({type: "finish"});
-        await vi.waitFor(() => expect(handle.getSnapshot().status).toBe("completed"));
+        expect(enteredState).toBe("initial");
+        expect(handle.getSnapshot().status).toBe("completed");
     });
 
-    it("aborts active operations when cancelled", async () => {
+    it("ignores events dispatched after cancellation", () => {
         const manager = createInteractionManager<State, Event>();
-        let signal: AbortSignal | undefined;
-        const handle = manager.start(definition({
+        const handle = manager.start(defineInteraction({
+            key: "cancel",
+            initialStep: "waiting",
+            initialState: {value: ""},
             steps: {
-                editing: {
-                    handle: (_state, event, context) => {
-                        if (event.type === "finish") {
-                            context.startOperation({
-                                run: currentSignal => new Promise(() => {
-                                    signal = currentSignal;
-                                }),
-                                onSuccess: () => ({type: "success"}),
-                                onFailure: () => ({type: "change", value: "error"}),
-                            });
-                            return {to: "submitting"};
-                        }
-                        return undefined;
-                    },
+                waiting: {
+                    handle: () => undefined,
                 },
-                submitting: {handle: () => undefined},
             },
         }));
 
-        handle.dispatch({type: "finish"});
-        await vi.waitFor(() => expect(signal).toBeDefined());
         handle.cancel();
-        expect(signal?.aborted).toBe(true);
+        handle.dispatch({type: "change", value: "late"});
+        expect(handle.getSnapshot().state.value).toBe("");
         expect(handle.getSnapshot().status).toBe("cancelled");
     });
 });

@@ -1,41 +1,32 @@
 import {createStore} from "zustand/vanilla";
-import {InteractionBusyError, InteractionCancelledError, InteractionDefinitionError} from "./interaction-errors.ts";
+import {InteractionBusyError, InteractionDefinitionError} from "./interaction-errors.ts";
 import type {
-    InteractionCancelReason,
     InteractionContext,
     InteractionDefinition,
     InteractionHandle,
-    InteractionHost,
     InteractionManager,
-    InteractionOperation,
     InteractionSnapshot,
     InteractionStep,
     InteractionStoreState,
-    InteractionWindow,
 } from "./interaction.types.ts";
 
-export function createInteractionManager<State = unknown, Event = unknown>(options: {
-    host?: InteractionHost;
-} = {}): InteractionManager<State, Event> {
-    const store = createStore<InteractionStoreState<State>>(() => ({active: null}));
-    let active: RuntimeInteraction<State, Event> | null = null;
+export function createInteractionManager<State = unknown, Event = unknown, Step extends string = string>(): InteractionManager<State, Event, Step> {
+    const store = createStore<InteractionStoreState<State, Step>>(() => ({active: null}));
+    let active: RuntimeInteraction<State, Event, Step> | null = null;
 
-    function getSnapshot(): InteractionSnapshot<State> | null {
-        return store.getState().active;
-    }
-
-    function publish(runtime: RuntimeInteraction<State, Event>): void {
+    function publish(runtime: RuntimeInteraction<State, Event, Step>): void {
         store.setState({active: runtime.snapshot()});
     }
 
-    function clear(runtime: RuntimeInteraction<State, Event>): void {
+    function clear(runtime: RuntimeInteraction<State, Event, Step>): void {
         if (active?.id === runtime.id) {
             active = null;
             store.setState({active: null});
         }
     }
 
-    function start(definition: InteractionDefinition<State, Event>): InteractionHandle<State, Event> {
+    function start(definition: InteractionDefinition<Step, State, Event>): InteractionHandle<State, Event, Step> {
+        // Reserve the session slot before entering the first step.
         if (active) {
             throw new InteractionBusyError();
         }
@@ -49,7 +40,6 @@ export function createInteractionManager<State = unknown, Event = unknown>(optio
             definition,
             crypto.randomUUID(),
             initialStep,
-            options.host,
             publish,
             clear,
         );
@@ -62,47 +52,41 @@ export function createInteractionManager<State = unknown, Event = unknown>(optio
     return {
         start,
         dispatch: (interactionId, event) => active?.id === interactionId ? active.dispatch(event) : false,
-        getSnapshot,
+        getSnapshot: () => store.getState().active,
         subscribe: store.subscribe,
-        cancelActive: reason => active?.cancel(reason),
+        cancelActive: () => active?.cancel(),
         store,
     };
 }
 
-class RuntimeInteraction<State, Event> implements InteractionHandle<State, Event> {
+class RuntimeInteraction<State, Event, Step extends string> implements InteractionHandle<State, Event, Step> {
     readonly id: string;
-    private readonly controller = new AbortController();
-    private readonly windows = new Map<string, InteractionWindow>();
-    private readonly definition: InteractionDefinition<State, Event>;
-    private readonly host: InteractionHost | undefined;
-    private readonly publishSnapshot: (runtime: RuntimeInteraction<State, Event>) => void;
-    private readonly clearSnapshot: (runtime: RuntimeInteraction<State, Event>) => void;
+    private readonly definition: InteractionDefinition<Step, State, Event>;
+    private readonly publishSnapshot: (runtime: RuntimeInteraction<State, Event, Step>) => void;
+    private readonly clearSnapshot: (runtime: RuntimeInteraction<State, Event, Step>) => void;
     private status: "running" | "completed" | "failed" | "cancelled" = "running";
     private error: unknown | null = null;
     private state: State;
-    private stepName: string;
+    private stepName: Step;
+    private step: InteractionStep<State, Event, Step>;
 
     constructor(
-        definition: InteractionDefinition<State, Event>,
+        definition: InteractionDefinition<Step, State, Event>,
         id: string,
-        step: InteractionStep<State, Event>,
-        host: InteractionHost | undefined,
-        publishSnapshot: (runtime: RuntimeInteraction<State, Event>) => void,
-        clearSnapshot: (runtime: RuntimeInteraction<State, Event>) => void,
+        step: InteractionStep<State, Event, Step>,
+        publishSnapshot: (runtime: RuntimeInteraction<State, Event, Step>) => void,
+        clearSnapshot: (runtime: RuntimeInteraction<State, Event, Step>) => void,
     ) {
         this.definition = definition;
         this.id = id;
         this.step = step;
-        this.host = host;
+        this.stepName = definition.initialStep;
+        this.state = definition.initialState;
         this.publishSnapshot = publishSnapshot;
         this.clearSnapshot = clearSnapshot;
-        this.state = definition.initialState;
-        this.stepName = definition.initialStep;
     }
 
-    private step: InteractionStep<State, Event>;
-
-    getSnapshot(): InteractionSnapshot<State> {
+    getSnapshot(): InteractionSnapshot<State, Step> {
         return this.snapshot();
     }
 
@@ -112,12 +96,11 @@ class RuntimeInteraction<State, Event> implements InteractionHandle<State, Event
         }
 
         try {
-            const context = this.context();
-            const transition = this.step.handle(this.state, event, context);
+            // Events are synchronous; entering the next step performs its work.
+            const transition = this.step.handle(this.state, event);
             if (!transition) {
                 return true;
             }
-
             if (transition.state !== undefined) {
                 this.state = transition.state;
             }
@@ -133,14 +116,11 @@ class RuntimeInteraction<State, Event> implements InteractionHandle<State, Event
         }
     }
 
-    cancel(reason: InteractionCancelReason = {type: "user", source: "button"}): void {
+    cancel(): void {
         if (this.status !== "running") {
             return;
         }
         this.status = "cancelled";
-        this.error = new InteractionCancelledError(reason);
-        this.controller.abort(this.error);
-        this.closeWindows();
         this.publishSnapshot(this);
         this.clearSnapshot(this);
     }
@@ -148,8 +128,10 @@ class RuntimeInteraction<State, Event> implements InteractionHandle<State, Event
     enter(): void {
         try {
             this.step.enter?.(this.context());
-            this.publishSnapshot(this);
-            if (this.step.terminal) {
+            if (this.status === "running") {
+                this.publishSnapshot(this);
+            }
+            if (this.status === "running" && this.step.terminal) {
                 this.complete();
             }
         } catch (error) {
@@ -157,7 +139,7 @@ class RuntimeInteraction<State, Event> implements InteractionHandle<State, Event
         }
     }
 
-    snapshot(): InteractionSnapshot<State> {
+    snapshot(): InteractionSnapshot<State, Step> {
         return {
             id: this.id,
             key: this.definition.key,
@@ -165,24 +147,23 @@ class RuntimeInteraction<State, Event> implements InteractionHandle<State, Event
             step: this.stepName,
             state: this.state,
             error: this.error,
-            windowIds: [...this.windows.keys()],
         };
     }
 
     private transitionTo(stepName: string): void {
-        const nextStep = this.definition.steps[stepName];
-        if (!nextStep) {
+        if (!(stepName in this.definition.steps)) {
             throw new InteractionDefinitionError(`Missing step: ${stepName}`);
         }
-
-        const previousContext = this.context();
-        this.step.exit?.(previousContext);
-        this.step = nextStep;
-        this.stepName = stepName;
+        const nextStepName = stepName as Step;
+        this.step.exit?.(this.context());
+        this.step = this.definition.steps[nextStepName];
+        this.stepName = nextStepName;
         this.publishSnapshot(this);
         this.step.enter?.(this.context());
-        this.publishSnapshot(this);
-        if (this.step.terminal) {
+        if (this.status === "running") {
+            this.publishSnapshot(this);
+        }
+        if (this.status === "running" && this.step.terminal) {
             this.complete();
         }
     }
@@ -190,66 +171,9 @@ class RuntimeInteraction<State, Event> implements InteractionHandle<State, Event
     private context(): InteractionContext<State, Event> {
         return {
             id: this.id,
-            signal: this.controller.signal,
             state: this.state,
             dispatch: event => this.dispatch(event),
-            openWindow: window => this.openWindow(window),
-            closeWindow: windowId => this.closeWindow(windowId),
-            startOperation: operation => this.startOperation(operation),
         };
-    }
-
-    private openWindow(window: InteractionWindow): void {
-        if (this.status !== "running" || this.windows.has(window.id)) {
-            return;
-        }
-        this.windows.set(window.id, window);
-        try {
-            if (this.host) {
-                this.host.openWindow(window, this.id);
-            } else {
-                window.open(this.id);
-            }
-            this.publishSnapshot(this);
-        } catch (error) {
-            this.windows.delete(window.id);
-            throw error;
-        }
-    }
-
-    private closeWindow(windowId: string): void {
-        const window = this.windows.get(windowId);
-        if (!window) {
-            return;
-        }
-        this.windows.delete(windowId);
-        if (this.host) {
-            this.host.closeWindow(window, this.id);
-        } else {
-            window.close?.(this.id);
-        }
-        this.publishSnapshot(this);
-    }
-
-    private closeWindows(): void {
-        for (const windowId of [...this.windows.keys()]) {
-            this.closeWindow(windowId);
-        }
-    }
-
-    private startOperation<T>(operation: InteractionOperation<T, Event>): void {
-        if (this.status !== "running") {
-            return;
-        }
-        void operation.run(this.controller.signal).then(value => {
-            if (this.status === "running") {
-                this.dispatch(operation.onSuccess(value));
-            }
-        }).catch(error => {
-            if (this.status === "running") {
-                this.dispatch(operation.onFailure(error));
-            }
-        });
     }
 
     private fail(error: unknown): void {
@@ -258,8 +182,6 @@ class RuntimeInteraction<State, Event> implements InteractionHandle<State, Event
         }
         this.status = "failed";
         this.error = error;
-        this.controller.abort(error);
-        this.closeWindows();
         this.publishSnapshot(this);
         this.clearSnapshot(this);
     }
@@ -269,7 +191,6 @@ class RuntimeInteraction<State, Event> implements InteractionHandle<State, Event
             return;
         }
         this.status = "completed";
-        this.closeWindows();
         this.publishSnapshot(this);
         this.clearSnapshot(this);
     }

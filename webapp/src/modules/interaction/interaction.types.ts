@@ -2,89 +2,75 @@ import type {StoreApi} from "zustand/vanilla";
 
 export type InteractionStatus = "running" | "completed" | "failed" | "cancelled";
 
-export type InteractionCancelReason =
-    | { type: "user"; source: "button" | "window-close" | "escape" }
-    | { type: "navigation" }
-    | { type: "system"; message?: string };
-
-export interface InteractionWindow {
-    id: string;
-    closePolicy?: "ignore" | "close-window" | "cancel-interaction";
-    open: (interactionId: string) => void;
-    close?: (interactionId: string) => void;
-}
-
-export interface InteractionHost {
-    openWindow: (window: InteractionWindow, interactionId: string) => void;
-    closeWindow: (window: InteractionWindow, interactionId: string) => void;
-}
-
-export interface InteractionSnapshot<State> {
+/** Observable state of the interaction currently running in a session. */
+export interface InteractionSnapshot<State, Step extends string = string> {
     id: string;
     key: string;
     status: InteractionStatus;
-    step: string;
+    step: Step;
     state: State;
     error: unknown | null;
-    windowIds: readonly string[];
 }
 
-export interface InteractionDefinition<State, Event> {
+/** A directed graph of typed steps making up one workflow. */
+export interface InteractionDefinition<Step extends string, State, Event> {
     key: string;
-    initialStep: string;
+    initialStep: Step;
     initialState: State;
-    steps: Record<string, InteractionStep<State, Event>>;
+    steps: Record<Step, InteractionStep<State, Event, Step>>;
 }
 
-export interface InteractionStep<State, Event> {
+/** Infers the graph's step-name union and validates graph transitions. */
+export function defineInteraction<const Step extends string, State, Event>(
+    definition: InteractionDefinition<Step, State, Event>,
+): InteractionDefinition<Step, State, Event> {
+    return definition;
+}
+
+/** One vertex in an interaction graph. */
+export interface InteractionStep<State, Event, Step extends string = string> {
+    /** Entering this step completes the interaction. */
     terminal?: boolean;
+    /** Open windows or start asynchronous work from this hook. */
     enter?: (context: InteractionContext<State, Event>) => void;
-    handle: (
-        state: State,
-        event: Event,
-        context: InteractionContext<State, Event>,
-    ) => InteractionTransition<State> | void;
+    /** Handle an event and optionally update state or move to another step. */
+    handle: (state: State, event: Event) => InteractionTransition<State, Step> | void;
+    /** Runs immediately before leaving the step. */
     exit?: (context: InteractionContext<State, Event>) => void;
 }
 
-export interface InteractionTransition<State> {
+/** Synchronous result of handling one event. */
+export interface InteractionTransition<State, Step extends string = string> {
     state?: State;
-    to?: string;
+    to?: Step;
 }
 
-export interface InteractionOperation<T, Event> {
-    run: (signal: AbortSignal) => Promise<T>;
-    onSuccess: (value: T) => Event;
-    onFailure: (error: unknown) => Event;
-}
-
+/** Services available to lifecycle hooks. */
 export interface InteractionContext<State, Event> {
     readonly id: string;
-    readonly signal: AbortSignal;
     readonly state: State;
-
+    /** Delivers a later UI or asynchronous event to this interaction. */
     dispatch: (event: Event) => void;
-    openWindow: (window: InteractionWindow) => void;
-    closeWindow: (windowId: string) => void;
-    startOperation: <T>(operation: InteractionOperation<T, Event>) => void;
 }
 
-export interface InteractionHandle<State, Event> {
+/** Stable reference UI code uses to interact with a running workflow. */
+export interface InteractionHandle<State, Event, Step extends string = string> {
     readonly id: string;
-    getSnapshot: () => InteractionSnapshot<State>;
+    getSnapshot: () => InteractionSnapshot<State, Step>;
     dispatch: (event: Event) => void;
-    cancel: (reason?: InteractionCancelReason) => void;
+    cancel: () => void;
 }
 
-export interface InteractionManager<State = unknown, Event = unknown> {
-    start: (definition: InteractionDefinition<State, Event>) => InteractionHandle<State, Event>;
+/** Session-scoped coordinator enforcing the single-active-interaction rule. */
+export interface InteractionManager<State = unknown, Event = unknown, Step extends string = string> {
+    start: (definition: InteractionDefinition<Step, State, Event>) => InteractionHandle<State, Event, Step>;
     dispatch: (interactionId: string, event: Event) => boolean;
-    getSnapshot: () => InteractionSnapshot<State> | null;
-    subscribe: StoreApi<InteractionStoreState<State>>["subscribe"];
-    cancelActive: (reason?: InteractionCancelReason) => void;
-    store: StoreApi<InteractionStoreState<State>>;
+    getSnapshot: () => InteractionSnapshot<State, Step> | null;
+    subscribe: StoreApi<InteractionStoreState<State, Step>>["subscribe"];
+    cancelActive: () => void;
+    store: StoreApi<InteractionStoreState<State, Step>>;
 }
 
-export interface InteractionStoreState<State> {
-    active: InteractionSnapshot<State> | null;
+export interface InteractionStoreState<State, Step extends string = string> {
+    active: InteractionSnapshot<State, Step> | null;
 }
