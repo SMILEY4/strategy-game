@@ -4,11 +4,12 @@ import type {InteractionRuntime, InteractionState} from "@modules/interaction/in
 export interface InteractionManager {
     start: <State, Event, Step extends string>(definition: InteractionDefinition<State, Event, Step>, initialEvent: Event) => void;
     dispatch: <Event>(event: Event) => void;
+    stop: () => void;
 }
 
 interface Dependencies {
-    setState: (state: InteractionState<any, any, string>) => void,
     getState: () => InteractionState<any, any, string>
+    setState: (state: InteractionState<any, any, string>) => void,
 }
 
 export const interactionManager = ({setState, getState}: Dependencies): InteractionManager => {
@@ -20,55 +21,82 @@ export const interactionManager = ({setState, getState}: Dependencies): Interact
                 throw new Error("Can not start interaction - another one is already active.");
             }
 
-            const runtime: InteractionRuntime<State, Event, Step> = {
-                definition: definition,
-                state: {...definition.initialState},
-                step: definition.steps[definition.initialStep],
-            };
-
-            const modifiedState = runtime.step.onEnter?.(runtime.state, initialEvent);
-            if (modifiedState) {
-                runtime.state = modifiedState;
+            const initialStep = definition.steps[definition.initialStep];
+            if (!initialStep) {
+                throw new Error(`Can not start interaction - unknown initial step: ${definition.initialStep}`);
             }
 
-            setState({
-                ...state,
-                active: runtime,
-            });
+            const runtime: InteractionRuntime<State, Event, Step> = {
+                definition,
+                state: definition.initialState,
+                step: initialStep,
+            };
+
+            if (initialStep.onEnter) {
+                runtime.state = initialStep.onEnter(runtime.state, initialEvent);
+            }
+
+            if (initialStep.terminal) {
+                initialStep.onExit?.(runtime.state, initialEvent);
+                setState({...state, active: null});
+                return;
+            }
+
+            setState({...state, active: runtime});
         },
 
-        dispatch: <State, Event, Step extends string>(event: Event) => {
+        dispatch: <Event>(event: Event) => {
             const state = getState();
             if (!state.active) {
                 throw new Error("Can not dispatch interaction event - no interaction active.");
             }
 
-            const runtime: InteractionRuntime<State, Event, Step> = state.active as InteractionRuntime<State, Event, Step>;
+            const runtime = state.active as InteractionRuntime<any, Event, string>;
+            const activeStep = runtime.step;
 
-            const transition = state.active.step.onHandle?.(runtime.state, event);
-
-            if (transition && transition.state) {
-                runtime.state = transition.state;
+            const transition = activeStep.onHandle?.(runtime.state, event);
+            if (!transition) {
+                return;
             }
-            if (transition && transition.to) {
-                const stateExit = runtime.step.onExit?.(runtime.state, event);
-                if (stateExit) {
-                    runtime.state = stateExit;
+
+            const nextStep = runtime.definition.steps[transition.to];
+            if (!nextStep) {
+                throw new Error(`Can not dispatch interaction event - unknown step: ${transition.to}`);
+            }
+
+            let nextState = Object.hasOwn(transition, "state") ? transition.state : runtime.state;
+            if (activeStep !== nextStep) {
+                if (activeStep.onExit) {
+                    nextState = activeStep.onExit(nextState, event);
                 }
-                runtime.step = runtime.definition.steps[transition.to as Step];
-                const stateEnter = runtime.step.onEnter?.(runtime.state, event);
-                if (stateEnter) {
-                    runtime.state = stateEnter;
+                if (nextStep.onEnter) {
+                    nextState = nextStep.onEnter(nextState, event);
                 }
             }
 
-            if (transition) {
-                setState({
-                    ...state,
-                    active: runtime,
-                });
+            if (nextStep.terminal) {
+                nextStep.onExit?.(nextState, event);
+                setState({...state, active: null});
+            } else {
+                const nextRuntime: InteractionRuntime<any, Event, string> = {
+                    ...runtime,
+                    state: nextState,
+                    step: nextStep,
+                };
+                setState({...state, active: nextRuntime});
             }
 
+        },
+
+        stop: (): void => {
+            const state = getState();
+            if (!state.active) {
+                return;
+            }
+            setState({
+                ...state,
+                active: null,
+            });
         },
     };
 };

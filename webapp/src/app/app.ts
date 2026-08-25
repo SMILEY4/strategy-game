@@ -30,6 +30,8 @@ import {commandDatabase} from "@app/features/game/database/command.database.ts";
 import {gameActionEndTurn} from "@app/features/game/gameplay/game-action.end-turn.ts";
 import {entityDatabase} from "@app/features/game/database/entity.database.ts";
 import {gameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
+import {interactionManager} from "@modules/interaction/interaction.manager.ts";
+import {interactionDatabase} from "@app/features/game/database/interaction.database.ts";
 
 
 interface EnvShape {
@@ -72,6 +74,8 @@ interface DIShape {
     deleteMatchUseCase: ReturnType<typeof deleteMatchUseCase>,
     createGameUseCase: ReturnType<typeof createGameUseCase>,
     // game
+    interactionDatabase: ReturnType<typeof interactionDatabase>,
+    interactionManager: ReturnType<typeof interactionManager>,
     gameClient: ReturnType<typeof gameClient>
     gameWebsocketClient: ReturnType<typeof gameWebsocketClient>
     gameRepository: ReturnType<typeof gameRepository>
@@ -165,6 +169,20 @@ export const DIConfig = {
         create: resolve => createGameUseCase({client: resolve.matchClient, repository: resolve.matchRepository}),
     },
     // game
+    interactionDatabase: {
+        scope: "singleton",
+        create: () => interactionDatabase(),
+    },
+    interactionManager: {
+        scope: "singleton",
+        create: resolve => {
+            const db = resolve.interactionDatabase;
+            return interactionManager({
+                getState: () => db.get(),
+                setState: state => db.set(state),
+            });
+        },
+    },
     gameClient: {
         scope: "transient",
         create: resolve => gameClient({httpClient: resolve.httpClient}),
@@ -187,14 +205,14 @@ export const DIConfig = {
             entityDb: resolve.entityDatabase,
             cameraController: resolve.cameraController,
             actionClickTile: resolve.gameActionClickTile,
-            actionJoinedGame: resolve.gameActionJoinedGame
+            actionJoinedGame: resolve.gameActionJoinedGame,
         }),
     },
     cameraController: {
         scope: "singleton",
         create: resolve => cameraControllerPlayer({
             cameraDb: resolve.cameraDatabase,
-            }),
+        }),
         // create: resolve => cameraControllerFreecam(y{
         //     cameraDb: resolve.cameraDatabase,
         // }),
@@ -233,12 +251,16 @@ export const DIConfig = {
     },
     gameActionFoundCapital: {
         scope: "singleton",
-        create: resolve => gameActionFoundCapital({commandDb: resolve.commandDatabase, tileDb: resolve.tileDatabase, gameClient: resolve.gameClient}),
+        create: resolve => gameActionFoundCapital({
+            commandDb: resolve.commandDatabase,
+            tileDb: resolve.tileDatabase,
+            gameClient: resolve.gameClient,
+        }),
     },
     gameActionJoinedGame: {
         scope: "singleton",
-        create: resolve => gameActionJoinedGame({ entityDb: resolve.entityDatabase, cameraController: resolve.cameraController})
-    }
+        create: resolve => gameActionJoinedGame({entityDb: resolve.entityDatabase, cameraController: resolve.cameraController}),
+    },
 } satisfies FactoryMap<DIShape>;
 
 
