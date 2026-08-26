@@ -11,18 +11,18 @@ export type InteractionInitEvent = { type: "__INIT__" };
 /**
  * The complete configuration for an interaction
  */
-export interface InteractionConfig<TInput, TContext, TEvent extends InteractionBaseEvent, TStateName extends string> {
+export interface InteractionDefinition<TInput, TContext, TEvent extends InteractionBaseEvent, TStateName extends string> {
     initialContext: (input: TInput) => TContext;
     initialState: (input: TInput) => TStateName;
     states: {
-        [K in TStateName]: InteractionStateConfig<TContext, TEvent, TStateName>;
+        [K in TStateName]: InteractionStateDefinition<TContext, TEvent, TStateName>;
     };
 }
 
 /**
  * The configuration for a single state of an interaction
  */
-export type InteractionStateConfig<TContext, TEvent extends InteractionBaseEvent, TStateName extends string> =
+export type InteractionStateDefinition<TContext, TEvent extends InteractionBaseEvent, TStateName extends string> =
     {
         /** whether this state is an end state */
         terminal?: boolean;
@@ -32,13 +32,13 @@ export type InteractionStateConfig<TContext, TEvent extends InteractionBaseEvent
         onExit?: HookFn<TContext, TEvent>;
     } &
     {
-        [E in TEvent as E["type"]]?: InteractionTransitionConfig<TContext, Extract<TEvent, { type: E["type"] }>, TStateName>;
+        [E in TEvent as E["type"]]?: InteractionTransitionDefinition<TContext, Extract<TEvent, { type: E["type"] }>, TStateName>;
     };
 
 /**
  * The configuration for a transition from a specific state to a given target state
  */
-export type InteractionTransitionConfig<TContext, TEvent extends InteractionBaseEvent, TStateName extends string> =
+export type InteractionTransitionDefinition<TContext, TEvent extends InteractionBaseEvent, TStateName extends string> =
     {
         /** The target state to transition to */
         target: TStateName;
@@ -53,22 +53,22 @@ export type InteractionTransitionConfig<TContext, TEvent extends InteractionBase
 /**
  * The type for the transition guard function.
  */
-type GuardFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionContext<TContext, TEvent>) => boolean;
+type GuardFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => boolean;
 
 /**
  * The type for the transition action function
  */
-type ActionFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionContext<TContext, TEvent>) => Partial<TContext> | void;
+type ActionFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => Partial<TContext> | void;
 
 /**
  * The type for the state hook functions (enter and exit)
  */
-type HookFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionContext<TContext, TEvent>) => Partial<TContext> | void;
+type HookFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => Partial<TContext> | void;
 
 /**
  * The parameters/data provided to state and transition actions
  */
-interface ActionContext<TContext, TEvent extends InteractionBaseEvent> {
+interface ActionParameter<TContext, TEvent extends InteractionBaseEvent> {
     context: TContext;
     event: TEvent;
 }
@@ -77,13 +77,13 @@ interface ActionContext<TContext, TEvent extends InteractionBaseEvent> {
  * The builder for a typesafe interaction config.
  * @param config the config to build
  */
-export function createInteraction<
+export function createInteractionDefinition<
     const TStateName extends string,
     TEvent extends InteractionBaseEvent,
     TContext,
     TInput = undefined,
 >(
-    config: InteractionConfig<TInput, TContext, TEvent, TStateName>,
-): InteractionConfig<TInput, TContext, TEvent, TStateName> {
+    config: InteractionDefinition<TInput, TContext, TEvent, TStateName>,
+): InteractionDefinition<TInput, TContext, TEvent, TStateName> {
     return config;
 }

@@ -1,4 +1,4 @@
-import {createInteraction} from "@modules/interaction/interaction.definition.ts";
+import {createInteractionDefinition} from "@modules/interaction/interaction.definition.ts";
 
 interface CreateSettlementInteractionInput {
     position: [number, number];
@@ -23,7 +23,7 @@ type CreateSettlementInteractionState =
     | "ConfiguringHouse"
     | "Finalizing"
 
-createInteraction<CreateSettlementInteractionState, CreateSettlementInteractionEvent, CreateSettlementInteractionContext, CreateSettlementInteractionInput>({
+createInteractionDefinition<CreateSettlementInteractionState, CreateSettlementInteractionEvent, CreateSettlementInteractionContext, CreateSettlementInteractionInput>({
     initialState: () => "ConfiguringSettlement",
     initialContext: input => ({
         position: input.position,
