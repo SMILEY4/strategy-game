@@ -1,24 +1,89 @@
-export interface InteractionDefinition<State, Event, Step extends string> {
-    initialState: State,
-    initialStep: Step,
-    steps: Record<Step, InteractionStep<State, Event, Step>>,
+/**
+ * the base for an interaction event
+ */
+export type InteractionBaseEvent = { type: string };
+
+/**
+ * the event triggered when initializing the first state
+ */
+export type InteractionInitEvent = { type: "__INIT__" };
+
+/**
+ * The complete configuration for an interaction
+ */
+export interface InteractionConfig<TInput, TContext, TEvent extends InteractionBaseEvent, TStateName extends string> {
+    initialContext: (input: TInput) => TContext;
+    initialState: (input: TInput) => TStateName;
+    states: {
+        [K in TStateName]: InteractionStateConfig<TContext, TEvent, TStateName>;
+    };
 }
 
-export interface InteractionStep<State, Event, Step extends string> {
-    terminal?: boolean,
-    onEnter?: (state: State, event: Event) => State;
-    onHandle?: (state: State, event: Event) => InteractionTransition<State, Step> | undefined;
-    onExit?: (state: State, event: Event) => State;
+/**
+ * The configuration for a single state of an interaction
+ */
+export type InteractionStateConfig<TContext, TEvent extends InteractionBaseEvent, TStateName extends string> =
+    {
+        /** whether this state is an end state */
+        terminal?: boolean;
+        /** triggered when transitioning to this state with the associated event. Return a partial context to update the interaction context.  */
+        onEnter?: HookFn<TContext, TEvent | InteractionInitEvent>;
+        /** triggered when transitioning away from this state with the associated event. Return a partial context to update the interaction context.  */
+        onExit?: HookFn<TContext, TEvent>;
+    } &
+    {
+        [E in TEvent as E["type"]]?: InteractionTransitionConfig<TContext, Extract<TEvent, { type: E["type"] }>, TStateName>;
+    };
+
+/**
+ * The configuration for a transition from a specific state to a given target state
+ */
+export type InteractionTransitionConfig<TContext, TEvent extends InteractionBaseEvent, TStateName extends string> =
+    {
+        /** The target state to transition to */
+        target: TStateName;
+        /** Whether to trigger the exit and enter functions of the state when this is a self-transition */
+        reenter?: boolean,
+        /** A condition checking whether the transition should be executed. Return true to allow the transition */
+        guard?: GuardFn<TContext, TEvent>;
+        /** Triggered when this transition is executed with the associated event. Return a partial context to update the interaction context. */
+        action?: ActionFn<TContext, TEvent>;
+    };
+
+/**
+ * The type for the transition guard function.
+ */
+type GuardFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionContext<TContext, TEvent>) => boolean;
+
+/**
+ * The type for the transition action function
+ */
+type ActionFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionContext<TContext, TEvent>) => Partial<TContext> | void;
+
+/**
+ * The type for the state hook functions (enter and exit)
+ */
+type HookFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionContext<TContext, TEvent>) => Partial<TContext> | void;
+
+/**
+ * The parameters/data provided to state and transition actions
+ */
+interface ActionContext<TContext, TEvent extends InteractionBaseEvent> {
+    context: TContext;
+    event: TEvent;
 }
 
-export interface InteractionTransition<State, Step extends string> {
-    to: Step,
-    state?: State
+/**
+ * The builder for a typesafe interaction config.
+ * @param config the config to build
+ */
+export function createInteraction<
+    const TStateName extends string,
+    TEvent extends InteractionBaseEvent,
+    TContext,
+    TInput = undefined,
+>(
+    config: InteractionConfig<TInput, TContext, TEvent, TStateName>,
+): InteractionConfig<TInput, TContext, TEvent, TStateName> {
+    return config;
 }
-
-export const createInteractionDefinition = <State, Event>() =>
-    <const Steps extends Record<string, unknown>>(definition: {
-        initialState: State,
-        initialStep: NoInfer<keyof Steps & string>,
-        steps: {[Step in keyof Steps]: InteractionStep<State, Event, keyof Steps & string>},
-    }): InteractionDefinition<State, Event, keyof Steps & string> => definition;
