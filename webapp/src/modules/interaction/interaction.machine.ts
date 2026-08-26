@@ -5,7 +5,7 @@ import type {
     InteractionTransitionDefinition,
 } from "@modules/interaction/interaction.definition.ts";
 
-interface InteractionState<TContext, TStateName extends string> {
+export interface InteractionMachineState<TContext, TStateName extends string> {
     id: string,
     context: TContext,
     stateName: TStateName
@@ -19,13 +19,13 @@ export function createInteractionMachine<
 >(
     definition: InteractionDefinition<TInput, TContext, TEvent, TStateName>,
     input: TInput,
-    setState: (state: InteractionState<TContext, TStateName>) => void,
-    getState: () => InteractionState<TContext, TStateName>,
+    setMachineState: (state: InteractionMachineState<TContext, TStateName>) => void,
+    getMachineState: () => InteractionMachineState<TContext, TStateName>,
 ) {
     const id = crypto.randomUUID();
 
-    function loadState(): InteractionState<TContext, TStateName> {
-        const state = getState();
+    function loadState(): InteractionMachineState<TContext, TStateName> {
+        const state = getMachineState();
         if (state.id !== id) {
             throw new Error("Could not load state: state was modified by another interaction");
         }
@@ -40,6 +40,9 @@ export function createInteractionMachine<
         };
 
         const activeStateDefinition = definition.states[interactionState.stateName];
+        if (activeStateDefinition == null) {
+            throw new Error(`Could not initialize interaction: unknown state '${interactionState.stateName}'`);
+        }
 
         let context = interactionState.context;
         if (activeStateDefinition.onEnter) {
@@ -49,7 +52,7 @@ export function createInteractionMachine<
             };
         }
 
-        setState({
+        setMachineState({
             ...interactionState,
             context: context,
         });
@@ -60,13 +63,19 @@ export function createInteractionMachine<
         const interactionState = loadState();
 
         const activeStateDefinition = definition.states[interactionState.stateName];
+        if (activeStateDefinition == null) {
+            throw new Error(`Could not send event: unknown state '${interactionState.stateName}'`);
+        }
 
         const transitionDefinition = getTransition(activeStateDefinition, event.type);
-        if (!allowTransition(activeStateDefinition, transitionDefinition, event, interactionState.context)) {
+        if (transitionDefinition == null || !allowTransition(activeStateDefinition, transitionDefinition, event, interactionState.context)) {
             return;
         }
 
         const targetStateDefinition = definition.states[transitionDefinition.target];
+        if (targetStateDefinition == null) {
+            throw new Error(`Could not transition interaction: unknown state '${transitionDefinition.target}'`);
+        }
 
         const runStateHooks = shouldExecuteStateHooks(interactionState.stateName, transitionDefinition);
 
@@ -74,23 +83,23 @@ export function createInteractionMachine<
         if (activeStateDefinition.onExit && runStateHooks) {
             context = {
                 ...context,
-                ...activeStateDefinition.onExit({context: interactionState.context, event: event}),
+                ...activeStateDefinition.onExit({context: context, event: event}),
             };
         }
         if (transitionDefinition.action) {
             context = {
                 ...context,
-                ...transitionDefinition.action({context: interactionState.context, event: event}),
+                ...transitionDefinition.action({context: context, event: event}),
             };
         }
         if (targetStateDefinition.onEnter && runStateHooks) {
             context = {
                 ...context,
-                ...targetStateDefinition.onEnter({context: interactionState.context, event: event}),
+                ...targetStateDefinition.onEnter({context: context, event: event}),
             };
         }
 
-        setState({
+        setMachineState({
             ...interactionState,
             context: context,
             stateName: transitionDefinition.target,
@@ -104,17 +113,20 @@ export function createInteractionMachine<
         event: TEvent,
         context: TContext,
     ) {
-        return state.terminal !== false && transition.guard?.({context: context, event: event as TEvent});
+        return state.terminal !== true && (transition.guard == null || transition.guard({context: context, event: event}));
     }
 
     function shouldExecuteStateHooks(prevState: TStateName, transition: InteractionTransitionDefinition<TContext, TEvent, TStateName>) {
-        return prevState === transition.target && transition.reenter;
+        return prevState !== transition.target || transition.reenter === true;
     }
 
-    function getTransition(state: InteractionStateDefinition<TContext, TEvent, TStateName>, eventType: string): InteractionTransitionDefinition<TContext, TEvent, TStateName> {
+    function getTransition(
+        state: InteractionStateDefinition<TContext, TEvent, TStateName>,
+        eventType: string,
+    ): InteractionTransitionDefinition<TContext, TEvent, TStateName> | undefined {
         const untypedState = state as unknown as Record<string, unknown>;
         const untypedTransition = untypedState[eventType];
-        return untypedTransition as InteractionTransitionDefinition<TContext, TEvent, TStateName>;
+        return untypedTransition as InteractionTransitionDefinition<TContext, TEvent, TStateName> | undefined;
     }
 
     initialize();
