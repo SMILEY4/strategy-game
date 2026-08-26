@@ -5,6 +5,17 @@ import type {
     InteractionTransitionDefinition,
 } from "@modules/interaction/interaction.definition.ts";
 
+export interface InteractionMachine<
+    TStateName extends string,
+    TEvent extends InteractionBaseEvent,
+    TContext,
+> {
+    send: (event: TEvent) => void,
+    getContext: () => TContext,
+    getCurrentState: () => TStateName
+    stop: () => void
+}
+
 export interface InteractionMachineState<TContext, TStateName extends string> {
     id: string,
     context: TContext,
@@ -19,13 +30,17 @@ export function createInteractionMachine<
 >(
     definition: InteractionDefinition<TInput, TContext, TEvent, TStateName>,
     input: TInput,
-    setMachineState: (state: InteractionMachineState<TContext, TStateName>) => void,
-    getMachineState: () => InteractionMachineState<TContext, TStateName>,
-) {
+    setMachineState: (state: InteractionMachineState<TContext, TStateName> | null) => void,
+    getMachineState: () => InteractionMachineState<TContext, TStateName> | null,
+): InteractionMachine<TStateName, TEvent, TContext> {
+
     const id = crypto.randomUUID();
 
     function loadState(): InteractionMachineState<TContext, TStateName> {
         const state = getMachineState();
+        if(!state) {
+            throw new Error("Could not load state: missing state");
+        }
         if (state.id !== id) {
             throw new Error("Could not load state: state was modified by another interaction");
         }
@@ -129,9 +144,16 @@ export function createInteractionMachine<
         return untypedTransition as InteractionTransitionDefinition<TContext, TEvent, TStateName> | undefined;
     }
 
+    function stop() {
+        setMachineState(null)
+    }
+
     initialize();
 
     return {
         send: send,
+        stop: stop,
+        getContext: () => loadState().context,
+        getCurrentState: () => loadState().stateName,
     };
 }
