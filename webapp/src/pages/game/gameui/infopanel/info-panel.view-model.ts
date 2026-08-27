@@ -2,7 +2,8 @@ import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import {useQuerySingle, useQuerySingleton} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
 import {TileQueries} from "@app/features/game/database/tile.database.ts";
-import {InteractionCreateSettlement} from "@app/features/game/interactions/interaction.create-settlement.ts";
+import {CreateSettlementInteraction} from "@app/features/game/gameplay/create-settlement.interaction.ts";
+import {useCreateSettlementValidation} from "@app/features/game/gameplay/create-settlement.validation.ts";
 
 export interface InfoPanelViewModel {
     tile: null | {
@@ -22,6 +23,8 @@ export interface InfoPanelViewModel {
 
 export function useInfoPanelViewModel(): InfoPanelViewModel {
 
+    const validate = useCreateSettlementValidation();
+
     const selectedTileRef = useQuerySingleton(DI.selectedTileDatabase).selected;
     const selectedTile = useQuerySingle(DI.tileDatabase, TileQueries.BY_ID, selectedTileRef?.id);
 
@@ -40,10 +43,10 @@ export function useInfoPanelViewModel(): InfoPanelViewModel {
             }
             : null,
         foundCapital: {
-            available: true,
+            available: selectedTile ? validate.firstSettlement(selectedTile.position) : false,
             execute: () => {
                 if (selectedTileRef) {
-                    void DI.interactionManager.start(InteractionCreateSettlement, {position: selectedTile!.position});
+                    void DI.interactionManager.start(CreateSettlementInteraction, {position: selectedTile!.position});
                 }
             },
         },

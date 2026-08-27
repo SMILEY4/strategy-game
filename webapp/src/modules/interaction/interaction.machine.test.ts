@@ -23,7 +23,7 @@ function createMachine(
     const getState = () => state;
     const machine = createInteractionMachine(definition, undefined, nextState => {
         state = nextState!;
-    }, getState);
+    }, getState, () => undefined);
     return {machine, getState};
 }
 

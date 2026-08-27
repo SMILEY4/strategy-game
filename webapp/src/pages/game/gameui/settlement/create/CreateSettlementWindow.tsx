@@ -1,4 +1,4 @@
-import {type ReactElement, useState} from "react";
+import {type ReactElement} from "react";
 import {SimpleWindow} from "@modules/uicomponents/window/simple/SimpleWindow.tsx";
 import {openWindow} from "@modules/uicomponents/window/useWindow.ts";
 import {ANCHOR_CENTER_POINT} from "@modules/uicomponents/window/window-system.ts";
@@ -6,8 +6,8 @@ import {TextField} from "@modules/uicomponents/controls/textfield/TextField.tsx"
 import {HorizontalLayout} from "@modules/uicomponents/layout/horizontal/HorizontalLayout.tsx";
 import {Button} from "@modules/uicomponents/controls/button/Button.tsx";
 import {VerticalLayout} from "@modules/uicomponents/layout/vertical/VerticalLayout.tsx";
-import {useInteractionContext, useInteractionEvents} from "@modules/interaction/interaction.tools.ts";
-import {InteractionCreateSettlement} from "@app/features/game/interactions/interaction.create-settlement.ts";
+import {useInteraction} from "@modules/interaction/interaction.tools.ts";
+import {CreateSettlementInteraction} from "@app/features/game/gameplay/create-settlement.interaction.ts";
 
 
 export function openWindowCreateSettlement(): string {
@@ -41,16 +41,27 @@ export function CreateSettlementWindow(props: CreateSettlementWindowProps): Reac
 
             <VerticalLayout paddingS spacingM fillFlex fillWidth verticalStart horizontalStretch>
 
-                <TextField.Root>
-                    <TextField.Control sizeL>
-                        <TextField.Input
-                            placeholder={"settlement.name.placeholder"}
-                            value={viewModel.name.value}
-                            onValueChange={viewModel.name.onChange}
-                            onConfirm={viewModel.name.onCommit}
-                        />
-                    </TextField.Control>
-                </TextField.Root>
+
+                <HorizontalLayout>
+                    <TextField.Root>
+                        <TextField.Control sizeM>
+                            <TextField.Input
+                                placeholder={"settlement.name.placeholder"}
+                                value={viewModel.name.value}
+                                onValueChange={viewModel.name.onChange}
+                                onConfirm={viewModel.name.onCommit}
+                            />
+                        </TextField.Control>
+                    </TextField.Root>
+                    <Button
+                        neutral
+                        sizeM
+                        onClick={viewModel.name.randomize}
+                    >
+                        Random
+                    </Button>
+                </HorizontalLayout>
+
 
                 <HorizontalLayout verticalCenter horizontalEnd spacingXs>
 
@@ -81,6 +92,7 @@ export function CreateSettlementWindow(props: CreateSettlementWindowProps): Reac
 
 interface CreateSettlementWindowViewModel {
     name: {
+        randomize: () => void,
         onChange: (value: string) => void,
         onCommit: (value: string) => void,
         value: string,
@@ -96,24 +108,21 @@ interface CreateSettlementWindowViewModel {
 
 function useCreateSettlementWindowViewModel(): CreateSettlementWindowViewModel {
 
-    const interactionContext = useInteractionContext(InteractionCreateSettlement)
-
-    const interactionEvents = useInteractionEvents(InteractionCreateSettlement)
-
-    interactionEvents.SELECT_NAME({})
+    const [interactionContext, interactionEvents] = useInteraction(CreateSettlementInteraction);
 
     return {
         name: {
-            onChange: setName,
-            onCommit: setName,
-            value: interaction.name ?? "",
+            randomize: () => interactionEvents.RANDOMIZE_NAME({}),
+            onChange: name => interactionEvents.SELECT_NAME({name: name}),
+            onCommit: name => interactionEvents.SELECT_NAME({name: name}),
+            value: interactionContext.name ?? "",
         },
         cancel: {
-            execute: () => undefined,
+            execute: () => interactionEvents.ABORT({}),
         },
         create: {
             disabled: false,
-            execute: () => undefined,
+            execute: () => interactionEvents.CONFIRM({}),
         },
     };
 }

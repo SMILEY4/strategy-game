@@ -34,6 +34,7 @@ export async function createInteractionMachine<
     input: TInput,
     setMachineState: (state: InteractionMachineState<TContext, TStateName> | null) => void,
     getMachineState: () => InteractionMachineState<TContext, TStateName> | null,
+    terminatedFn: () => void,
 ): Promise<InteractionMachine<TStateName, TEvent, TContext>> {
 
     const id = crypto.randomUUID();
@@ -44,7 +45,7 @@ export async function createInteractionMachine<
 
     function loadState(): InteractionMachineState<TContext, TStateName> {
         const state = getMachineState();
-        if(!state) {
+        if (!state) {
             throw new Error("Could not load state: missing state");
         }
         if (state.id !== id) {
@@ -73,6 +74,11 @@ export async function createInteractionMachine<
             const resultEnter = await activeStateDefinition.onEnter({context: interactionState.context, event: {type: "__INIT__"}});
             ({context, event} = resolveEntryResult(context, resultEnter));
             debug("initial enter hook finished", {event: event?.type});
+        }
+
+        if (activeStateDefinition.terminal) {
+            terminatedFn();
+            return;
         }
 
         setMachineState({
@@ -106,8 +112,8 @@ export async function createInteractionMachine<
             return;
         }
 
-        const stateNameFrom = interactionState.stateName
-        const stateNameTo = transitionDefinition.target
+        const stateNameFrom = interactionState.stateName;
+        const stateNameTo = transitionDefinition.target;
 
         const targetStateDefinition = definition.states[transitionDefinition.target];
         if (targetStateDefinition == null) {
@@ -119,16 +125,16 @@ export async function createInteractionMachine<
         let context = interactionState.context;
         let eventFromEnter: TEvent | undefined;
         if (activeStateDefinition.onExit && runStateHooks) {
-            const resultExit = await activeStateDefinition.onExit({context: context, event: event})
-            debug("Exit hook finished", { state: stateNameFrom, event: event.type});
+            const resultExit = await activeStateDefinition.onExit({context: context, event: event});
+            debug("Exit hook finished", {state: stateNameFrom, event: event.type, result: resultExit});
             context = {
                 ...context,
                 ...resultExit,
             };
         }
         if (transitionDefinition.action) {
-            const resultAction = await transitionDefinition.action({context: context, event: event})
-            debug("Transition Action finished", { from: stateNameFrom, to: stateNameTo, event: event.type});
+            const resultAction = await transitionDefinition.action({context: context, event: event});
+            debug("Transition Action finished", {from: stateNameFrom, to: stateNameTo, event: event.type, result: resultAction});
             context = {
                 ...context,
                 ...resultAction,
@@ -137,7 +143,12 @@ export async function createInteractionMachine<
         if (targetStateDefinition.onEnter && runStateHooks) {
             const resultEnter = await targetStateDefinition.onEnter({context: context, event: event});
             ({context, event: eventFromEnter} = resolveEntryResult(context, resultEnter));
-            debug("Enter hook finished", { state: stateNameTo, event: event.type});
+            debug("Enter hook finished", {state: stateNameTo, event: event.type, result: resultEnter});
+        }
+
+        if (targetStateDefinition.terminal) {
+            terminatedFn();
+            return;
         }
 
         setMachineState({
@@ -154,8 +165,8 @@ export async function createInteractionMachine<
 
     function resolveEntryResult(
         context: TContext,
-        result: Partial<TContext> | {context?: Partial<TContext>; event?: TEvent} | void,
-    ): {context: TContext; event?: TEvent} {
+        result: Partial<TContext> | { context?: Partial<TContext>; event?: TEvent } | void,
+    ): { context: TContext; event?: TEvent } {
         if (result != null && typeof result === "object" && ("context" in result || "event" in result)) {
             return {
                 context: {...context, ...result.context},
@@ -191,7 +202,7 @@ export async function createInteractionMachine<
 
     function stop() {
         debug("Stopped", {state: getMachineState()?.stateName});
-        setMachineState(null)
+        setMachineState(null);
     }
 
     await initialize();
@@ -201,6 +212,6 @@ export async function createInteractionMachine<
         stop: stop,
         getContext: () => loadState().context,
         getCurrentState: () => loadState().stateName,
-        getDefinition: () => definition
+        getDefinition: () => definition,
     };
 }

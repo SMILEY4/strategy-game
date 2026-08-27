@@ -25,13 +25,13 @@ import {cameraDatabase} from "@app/features/game/database/camera.database.ts";
 import {debugDatabase} from "@app/features/game/database/debug.database.ts";
 import {gameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
 import {selectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
-import {gameActionFoundSettlement} from "@app/features/game/gameplay/game-action-found.settlement.ts";
 import {commandDatabase} from "@app/features/game/database/command.database.ts";
 import {gameActionEndTurn} from "@app/features/game/gameplay/game-action.end-turn.ts";
 import {entityDatabase} from "@app/features/game/database/entity.database.ts";
 import {gameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
 import {interactionDatabase} from "@app/features/game/database/interaction.database.ts";
 import {interactionManager} from "@modules/interaction/interaction.manager.ts";
+import {createSettlementValidation} from "@app/features/game/gameplay/create-settlement.validation.ts";
 
 
 interface EnvShape {
@@ -89,8 +89,8 @@ interface DIShape {
     selectedTileDatabase: ReturnType<typeof selectedTileDatabase>
     gameActionEndTurn: ReturnType<typeof gameActionEndTurn>
     gameActionClickTile: ReturnType<typeof gameActionClickTile>
-    gameActionFoundSettlement: ReturnType<typeof gameActionFoundSettlement>
     gameActionJoinedGame: ReturnType<typeof gameActionJoinedGame>
+    createSettlementValidation: ReturnType<typeof createSettlementValidation>
 }
 
 /** DI container configuration. Each entry specifies singleton or transient scope and its factory. */
@@ -179,7 +179,7 @@ export const DIConfig = {
             const db = resolve.interactionDatabase;
             return interactionManager({
                 getMachineState: () => db.get().state,
-                setMachineState: state => db.set({ state: state }),
+                setMachineState: state => db.set({state: state}),
             });
         },
     },
@@ -249,13 +249,13 @@ export const DIConfig = {
         scope: "singleton",
         create: resolve => gameActionClickTile({tileDb: resolve.tileDatabase, selectedTileDb: resolve.selectedTileDatabase}),
     },
-    gameActionFoundSettlement: {
-        scope: "singleton",
-        create: () => gameActionFoundSettlement(),
-    },
     gameActionJoinedGame: {
         scope: "singleton",
         create: resolve => gameActionJoinedGame({entityDb: resolve.entityDatabase, cameraController: resolve.cameraController}),
+    },
+    createSettlementValidation: {
+        scope: "singleton",
+        create: () => createSettlementValidation(),
     },
 } satisfies FactoryMap<DIShape>;
 
