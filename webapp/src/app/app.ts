@@ -30,8 +30,8 @@ import {commandDatabase} from "@app/features/game/database/command.database.ts";
 import {gameActionEndTurn} from "@app/features/game/gameplay/game-action.end-turn.ts";
 import {entityDatabase} from "@app/features/game/database/entity.database.ts";
 import {gameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
-import {interactionManager} from "@modules/interaction-v1/interaction.manager.ts";
 import {interactionDatabase} from "@app/features/game/database/interaction.database.ts";
+import {interactionManager} from "@modules/interaction/interaction.manager.ts";
 
 
 interface EnvShape {
@@ -178,8 +178,8 @@ export const DIConfig = {
         create: resolve => {
             const db = resolve.interactionDatabase;
             return interactionManager({
-                getState: () => db.get(),
-                setState: state => db.set(state),
+                getMachineState: () => db.get().state,
+                setMachineState: state => db.set({ state: state }),
             });
         },
     },
