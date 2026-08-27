@@ -60,18 +60,20 @@ export async function createInteractionMachine<
         }
 
         let context = interactionState.context;
+        let event: TEvent | undefined;
         if (activeStateDefinition.onEnter) {
-            const resultEnter = await activeStateDefinition.onEnter({context: interactionState.context, event: {type: "__INIT__"}})
-            context = {
-                ...context,
-                ...resultEnter,
-            };
+            const resultEnter = await activeStateDefinition.onEnter({context: interactionState.context, event: {type: "__INIT__"}});
+            ({context, event} = resolveEntryResult(context, resultEnter));
         }
 
         setMachineState({
             ...interactionState,
             context: context,
         });
+
+        if (event) {
+            await send(event);
+        }
     }
 
 
@@ -96,6 +98,7 @@ export async function createInteractionMachine<
         const runStateHooks = shouldExecuteStateHooks(interactionState.stateName, transitionDefinition);
 
         let context = interactionState.context;
+        let eventFromEnter: TEvent | undefined;
         if (activeStateDefinition.onExit && runStateHooks) {
             const resultExit = await activeStateDefinition.onExit({context: context, event: event})
             context = {
@@ -111,11 +114,8 @@ export async function createInteractionMachine<
             };
         }
         if (targetStateDefinition.onEnter && runStateHooks) {
-            const resultEnter = await targetStateDefinition.onEnter({context: context, event: event})
-                context = {
-                ...context,
-                ...resultEnter
-            };
+            const resultEnter = await targetStateDefinition.onEnter({context: context, event: event});
+            ({context, event: eventFromEnter} = resolveEntryResult(context, resultEnter));
         }
 
         setMachineState({
@@ -124,6 +124,24 @@ export async function createInteractionMachine<
             stateName: transitionDefinition.target,
         });
 
+        if (eventFromEnter) {
+            await send(eventFromEnter);
+        }
+    }
+
+    function resolveEntryResult(
+        context: TContext,
+        result: Partial<TContext> | {context?: Partial<TContext>; event?: TEvent} | void,
+    ): {context: TContext; event?: TEvent} {
+        if (result != null && typeof result === "object" && ("context" in result || "event" in result)) {
+            return {
+                context: {...context, ...result.context},
+                event: result.event,
+            };
+        }
+        return {
+            context: {...context, ...(result ?? {})},
+        };
     }
 
     function allowTransition(

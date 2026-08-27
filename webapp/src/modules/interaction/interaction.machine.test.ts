@@ -22,7 +22,7 @@ function createMachine(
     let state: InteractionMachineState<Context, State>;
     const getState = () => state;
     const machine = createInteractionMachine(definition, undefined, nextState => {
-        state = nextState;
+        state = nextState!;
     }, getState);
     return {machine, getState};
 }
@@ -53,7 +53,7 @@ function createDefinition() {
 }
 
 describe("createInteractionMachine", () => {
-    test("initializes the machine and runs a normal transition", () => {
+    test("initializes the machine and runs a normal transition", async () => {
         const entered = vi.fn(({event}: {event: {type: string}}) => {
             if (event.type === "__INIT__") {
                 return {value: 1};
@@ -65,7 +65,7 @@ describe("createInteractionMachine", () => {
         definition.states.idle.onExit = exited;
 
         const {machine, getState} = createMachine(definition);
-        machine.send({type: "START"});
+        await (await machine).send({type: "START"});
 
         expect(entered).toHaveBeenCalledOnce();
         expect(exited).toHaveBeenCalledOnce();
@@ -73,7 +73,7 @@ describe("createInteractionMachine", () => {
         expect(getState().context).toEqual({value: 2, allowed: true});
     });
 
-    test("runs exit, action, and enter hooks with updated context", () => {
+    test("runs exit, action, and enter hooks with updated context", async () => {
         const calls: string[] = [];
         const definition = createDefinition();
         definition.states.idle.onExit = ({context}) => {
@@ -89,54 +89,91 @@ describe("createInteractionMachine", () => {
         };
 
         const {machine} = createMachine(definition);
-        machine.send({type: "START"});
-        machine.send({type: "SET_VALUE", value: 10});
+        const initializedMachine = await machine;
+        await initializedMachine.send({type: "START"});
+        await initializedMachine.send({type: "SET_VALUE", value: 10});
 
         expect(calls).toEqual(["exit:0", "enter:1", "action:1"]);
     });
 
-    test("supports guarded transitions and ignores unknown transitions", () => {
+    test("dispatches an event returned by the enter hook after updating context", async () => {
+        const calls: string[] = [];
+        const definition = createDefinition();
+        definition.states.active.onEnter = ({context}) => {
+            calls.push(`enter:${context.value}`);
+            return {
+                context: {value: 3},
+                event: {type: "SET_VALUE", value: 8},
+            };
+        };
+        definition.states.active.SET_VALUE!.action = ({context, event}) => {
+            calls.push(`action:${context.value}`);
+            return {value: event.value};
+        };
+
+        const machine = await createMachine(definition).machine;
+        await machine.send({type: "START"});
+
+        expect(calls).toEqual(["enter:0", "action:3"]);
+        expect(machine.getContext().value).toBe(8);
+    });
+
+    test("dispatches an enter-hook event without a context update", async () => {
+        const definition = createDefinition();
+        definition.states.active.onEnter = () => ({event: {type: "SET_VALUE", value: 8}});
+
+        const machine = await createMachine(definition).machine;
+        await machine.send({type: "START"});
+
+        expect(machine.getContext()).toEqual({value: 8, allowed: true});
+    });
+
+    test("supports guarded transitions and ignores unknown transitions", async () => {
         const {machine, getState} = createMachine(createDefinition());
 
-        machine.send({type: "IGNORED"});
-        machine.send({type: "START"});
+        const initializedMachine = await machine;
+        await initializedMachine.send({type: "IGNORED"});
+        await initializedMachine.send({type: "START"});
         getState().context.allowed = false;
-        machine.send({type: "FINISH"});
+        await initializedMachine.send({type: "FINISH"});
 
         expect(getState().stateName).toBe("active");
     });
 
-    test("does not reenter a self-transition unless requested", () => {
+    test("does not reenter a self-transition unless requested", async () => {
         const entered = vi.fn();
         const definition = createDefinition();
         definition.states.active.onEnter = entered;
         const {machine} = createMachine(definition);
 
-        machine.send({type: "START"});
-        machine.send({type: "SET_VALUE", value: 5});
+        const initializedMachine = await machine;
+        await initializedMachine.send({type: "START"});
+        await initializedMachine.send({type: "SET_VALUE", value: 5});
 
         expect(entered).toHaveBeenCalledOnce();
     });
 
-    test("reenters a self-transition when requested", () => {
+    test("reenters a self-transition when requested", async () => {
         const entered = vi.fn();
         const definition = createDefinition();
         definition.states.active.onEnter = entered;
         definition.states.active.SET_VALUE!.reenter = true;
         const {machine} = createMachine(definition);
 
-        machine.send({type: "START"});
-        machine.send({type: "SET_VALUE", value: 5});
+        const initializedMachine = await machine;
+        await initializedMachine.send({type: "START"});
+        await initializedMachine.send({type: "SET_VALUE", value: 5});
 
         expect(entered).toHaveBeenCalledTimes(2);
     });
 
-    test("does not process events in a terminal state", () => {
+    test("does not process events in a terminal state", async () => {
         const {machine, getState} = createMachine(createDefinition());
 
-        machine.send({type: "START"});
-        machine.send({type: "FINISH"});
-        machine.send({type: "START"});
+        const initializedMachine = await machine;
+        await initializedMachine.send({type: "START"});
+        await initializedMachine.send({type: "FINISH"});
+        await initializedMachine.send({type: "START"});
 
         expect(getState().stateName).toBe("done");
     });

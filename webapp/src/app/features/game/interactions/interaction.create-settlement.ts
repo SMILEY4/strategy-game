@@ -41,8 +41,10 @@ export const InteractionCreateSettlement = createInteractionDefinition<
         Prepare: {
             onEnter: async () => {
                 const name = await DI.gameClient.getSettlementName(getParameterGameId());
-                return {name: name};
-                // todo: auto send event
+                return {
+                    context: { name: name },
+                    event: { type: "PREPARATION_DONE" }
+                };
             },
             PREPARATION_DONE: {
                 target: "ConfiguringSettlement",

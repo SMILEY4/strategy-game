@@ -26,8 +26,8 @@ export type InteractionStateDefinition<TContext, TEvent extends InteractionBaseE
     {
         /** whether this state is an end state */
         terminal?: boolean;
-        /** triggered when transitioning to this state with the associated event. Return a partial context to update the interaction context.  */
-        onEnter?: EntryFn<TContext, TEvent | InteractionInitEvent>;
+        /** triggered when transitioning to this state with the associated event. Return a partial context, or a partial context and event to dispatch.  */
+        onEnter?: EntryFn<TContext, TEvent, TEvent | InteractionInitEvent>;
         /** triggered when transitioning away from this state with the associated event. Return a partial context to update the interaction context.  */
         onExit?: ExitFn<TContext, TEvent>;
     } &
@@ -63,7 +63,16 @@ type ActionFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionPara
 /**
  * The type for the state entry hook function
  */
-type EntryFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => | Partial<TContext> | Promise<Partial<TContext>> | void | Promise<void>;
+type EntryResult<TContext, TEvent extends InteractionBaseEvent> =
+    | Partial<TContext>
+    | {context?: Partial<TContext>; event?: TEvent}
+    | void;
+
+type EntryFn<
+    TContext,
+    TEvent extends InteractionBaseEvent,
+    TTriggerEvent extends InteractionBaseEvent = TEvent,
+> = (args: ActionParameter<TContext, TTriggerEvent>) => EntryResult<TContext, TEvent> | Promise<EntryResult<TContext, TEvent>>;
 
 /**
  * The type for the state exit hook function
