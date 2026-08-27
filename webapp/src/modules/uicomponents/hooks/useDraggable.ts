@@ -26,8 +26,8 @@ export function useDraggable(
             relY.current = (e.pageY - draggableRef.current.getBoundingClientRect().y);
             lastX.current = e.pageX - relX.current;
             lastY.current = e.pageY - relY.current;
-            document.addEventListener("mousemove", onMouseMove);
-            document.addEventListener("mouseup", onMouseUp);
+            document.addEventListener("mousemove", onMouseMove, true);
+            document.addEventListener("mouseup", onMouseUp, true);
             e.stopPropagation();
             e.preventDefault();
             onDragPrepare()
@@ -36,8 +36,8 @@ export function useDraggable(
 
     function onMouseUp(e: MouseEvent) {
         setIsDragging(false);
-        document.removeEventListener("mousemove", onMouseMove);
-        document.removeEventListener("mouseup", onMouseUp);
+        document.removeEventListener("mousemove", onMouseMove, true);
+        document.removeEventListener("mouseup", onMouseUp, true);
         e.stopPropagation();
         e.preventDefault();
     }
