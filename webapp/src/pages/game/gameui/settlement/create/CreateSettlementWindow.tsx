@@ -13,6 +13,10 @@ export function openWindowCreateSettlement(): string {
     openWindow({
         id: windowId,
         anchor: ANCHOR_CENTER_POINT,
+        resizable: {
+            horizontal: true,
+            vertical: false,
+        },
         content: windowId => (
             <CreateSettlementWindow windowId={windowId}/>
         ),

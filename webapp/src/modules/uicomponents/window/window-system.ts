@@ -7,9 +7,15 @@ export interface WindowProperties {
     groupId?: string,
     anchor: string,
     blockOthers?: boolean
+    resizable?: WindowResizeOptions
     preferredHeight?: CssValue,
     preferredWidth?: CssValue,
     content: (windowId: string) => ReactNode,
+}
+
+export interface WindowResizeOptions {
+    horizontal?: boolean,
+    vertical?: boolean,
 }
 
 export interface WindowData {
@@ -19,6 +25,7 @@ export interface WindowData {
     isPinned: boolean,
     content: ReactNode,
     blockOthers: boolean,
+    resizable: Required<WindowResizeOptions>,
     position: WindowPosition
 }
 
@@ -291,6 +298,10 @@ export const windowSystem = {
             stackIndex: 999999,
             isPinned: false,
             blockOthers: properties.blockOthers === true,
+            resizable: {
+                horizontal: properties.resizable?.horizontal !== false,
+                vertical: properties.resizable?.vertical !== false,
+            },
             content: properties.content(windowId),
             position: position,
         };
