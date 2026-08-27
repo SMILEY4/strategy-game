@@ -2,6 +2,7 @@ import "./game-playing.less";
 import {GameUi} from "@pages/game/gameui/GameUi.tsx";
 import {useGamePlayingViewModel} from "@pages/game/game-playing.view-model.ts";
 import {Canvas} from "@modules/uicomponents/canvas/Canvas.tsx";
+import {WindowStack} from "@modules/uicomponents/window/WindowStack.tsx";
 
 export function GamePlayingPage() {
 
@@ -26,6 +27,8 @@ export function GamePlayingPage() {
             <div className="game-interface">
                 <GameUi/>
             </div>
+
+            <WindowStack className={"game-window-stack"}/>
 
         </div>
     );

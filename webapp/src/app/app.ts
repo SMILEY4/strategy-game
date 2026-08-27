@@ -89,7 +89,7 @@ interface DIShape {
     selectedTileDatabase: ReturnType<typeof selectedTileDatabase>
     gameActionEndTurn: ReturnType<typeof gameActionEndTurn>
     gameActionClickTile: ReturnType<typeof gameActionClickTile>
-    gameActionFoundCapital: ReturnType<typeof gameActionFoundSettlement>
+    gameActionFoundSettlement: ReturnType<typeof gameActionFoundSettlement>
     gameActionJoinedGame: ReturnType<typeof gameActionJoinedGame>
 }
 

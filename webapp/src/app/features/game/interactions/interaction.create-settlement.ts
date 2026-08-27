@@ -25,6 +25,7 @@ export type CreateSettlementInteractionEvent =
     | { type: "SELECT_NAME", name: string }
     | { type: "CONFIRM" }
 
+
 export const InteractionCreateSettlement = createInteractionDefinition<
     CreateSettlementInteractionState,
     CreateSettlementInteractionEvent,

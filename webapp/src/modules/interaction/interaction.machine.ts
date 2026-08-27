@@ -36,6 +36,10 @@ export async function createInteractionMachine<
 
     const id = crypto.randomUUID();
 
+    function debug(message: string, details?: Record<string, unknown>) {
+        console.debug(`[InteractionMachine:${id}] ${message}`, details);
+    }
+
     function loadState(): InteractionMachineState<TContext, TStateName> {
         const state = getMachineState();
         if(!state) {
@@ -53,6 +57,7 @@ export async function createInteractionMachine<
             context: definition.initialContext(input),
             stateName: definition.initialState(input),
         };
+        debug("Initializing", {state: interactionState.stateName});
 
         const activeStateDefinition = definition.states[interactionState.stateName];
         if (activeStateDefinition == null) {
@@ -64,6 +69,7 @@ export async function createInteractionMachine<
         if (activeStateDefinition.onEnter) {
             const resultEnter = await activeStateDefinition.onEnter({context: interactionState.context, event: {type: "__INIT__"}});
             ({context, event} = resolveEntryResult(context, resultEnter));
+            debug("initial enter hook finished", {event: event?.type});
         }
 
         setMachineState({
@@ -72,6 +78,7 @@ export async function createInteractionMachine<
         });
 
         if (event) {
+            debug("Dispatching event returned by initial enter hook", {event: event.type});
             await send(event);
         }
     }
@@ -79,6 +86,7 @@ export async function createInteractionMachine<
 
     async function send(event: TEvent): Promise<void> {
         const interactionState = loadState();
+        debug("Event received", {state: interactionState.stateName, event: event.type});
 
         const activeStateDefinition = definition.states[interactionState.stateName];
         if (activeStateDefinition == null) {
@@ -86,9 +94,17 @@ export async function createInteractionMachine<
         }
 
         const transitionDefinition = getTransition(activeStateDefinition, event.type);
-        if (transitionDefinition == null || !allowTransition(activeStateDefinition, transitionDefinition, event, interactionState.context)) {
+        if (transitionDefinition == null) {
+            debug("Event ignored: no transition", {state: interactionState.stateName, event: event.type});
             return;
         }
+        if (!allowTransition(activeStateDefinition, transitionDefinition, event, interactionState.context)) {
+            debug("Event ignored: transition guard rejected it", {state: interactionState.stateName, event: event.type});
+            return;
+        }
+
+        const stateNameFrom = interactionState.stateName
+        const stateNameTo = transitionDefinition.target
 
         const targetStateDefinition = definition.states[transitionDefinition.target];
         if (targetStateDefinition == null) {
@@ -101,6 +117,7 @@ export async function createInteractionMachine<
         let eventFromEnter: TEvent | undefined;
         if (activeStateDefinition.onExit && runStateHooks) {
             const resultExit = await activeStateDefinition.onExit({context: context, event: event})
+            debug("Exit hook finished", { state: stateNameFrom, event: event.type});
             context = {
                 ...context,
                 ...resultExit,
@@ -108,6 +125,7 @@ export async function createInteractionMachine<
         }
         if (transitionDefinition.action) {
             const resultAction = await transitionDefinition.action({context: context, event: event})
+            debug("Transition Action finished", { from: stateNameFrom, to: stateNameTo, event: event.type});
             context = {
                 ...context,
                 ...resultAction,
@@ -116,6 +134,7 @@ export async function createInteractionMachine<
         if (targetStateDefinition.onEnter && runStateHooks) {
             const resultEnter = await targetStateDefinition.onEnter({context: context, event: event});
             ({context, event: eventFromEnter} = resolveEntryResult(context, resultEnter));
+            debug("Enter hook finished", { state: stateNameTo, event: event.type});
         }
 
         setMachineState({
@@ -125,6 +144,7 @@ export async function createInteractionMachine<
         });
 
         if (eventFromEnter) {
+            debug("Dispatching event returned by enter hook", {event: eventFromEnter.type});
             await send(eventFromEnter);
         }
     }
@@ -167,6 +187,7 @@ export async function createInteractionMachine<
     }
 
     function stop() {
+        debug("Stopped", {state: getMachineState()?.stateName});
         setMachineState(null)
     }
 
