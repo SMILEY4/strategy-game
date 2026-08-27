@@ -6,6 +6,8 @@ import {TextField} from "@modules/uicomponents/controls/textfield/TextField.tsx"
 import {HorizontalLayout} from "@modules/uicomponents/layout/horizontal/HorizontalLayout.tsx";
 import {Button} from "@modules/uicomponents/controls/button/Button.tsx";
 import {VerticalLayout} from "@modules/uicomponents/layout/vertical/VerticalLayout.tsx";
+import {useInteractionContext, useInteractionEvents} from "@modules/interaction/interaction.tools.ts";
+import {InteractionCreateSettlement} from "@app/features/game/interactions/interaction.create-settlement.ts";
 
 
 export function openWindowCreateSettlement(): string {
@@ -35,7 +37,7 @@ export function CreateSettlementWindow(props: CreateSettlementWindowProps): Reac
     const viewModel = useCreateSettlementWindowViewModel();
 
     return (
-        <SimpleWindow windowId={windowId} title={"Test Window"} withCloseButton={false}>
+        <SimpleWindow windowId={windowId} title={"Found Settlement"} withCloseButton={false}>
 
             <VerticalLayout paddingS spacingM fillFlex fillWidth verticalStart horizontalStretch>
 
@@ -94,13 +96,17 @@ interface CreateSettlementWindowViewModel {
 
 function useCreateSettlementWindowViewModel(): CreateSettlementWindowViewModel {
 
-    const [name, setName] = useState("");
+    const interactionContext = useInteractionContext(InteractionCreateSettlement)
+
+    const interactionEvents = useInteractionEvents(InteractionCreateSettlement)
+
+    interactionEvents.SELECT_NAME({})
 
     return {
         name: {
             onChange: setName,
             onCommit: setName,
-            value: name,
+            value: interaction.name ?? "",
         },
         cancel: {
             execute: () => undefined,

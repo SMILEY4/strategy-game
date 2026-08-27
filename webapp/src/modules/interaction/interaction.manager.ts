@@ -11,7 +11,7 @@ export interface InteractionManager {
 
     stop: () => void;
 
-    send: <TEvent extends InteractionBaseEvent>(event: TEvent) => Promise<void>;
+    send: <TEvent extends InteractionBaseEvent>(interaction: InteractionDefinition<any, any, TEvent, any>, event: TEvent) => Promise<void>;
 }
 
 interface Dependencies {
@@ -42,7 +42,11 @@ export const interactionManager = ({getMachineState, setMachineState}: Dependenc
         activeMachine = null;
     }
 
-    async function send<TEvent extends InteractionBaseEvent>(event: TEvent) {
+    async function send<TEvent extends InteractionBaseEvent>(interaction: InteractionDefinition<any, any, TEvent, any>, event: TEvent) {
+        if(activeMachine?.getDefinition() !== interaction) {
+            console.warn("Could not send event: no (matching) interaction")
+            return
+        }
         await activeMachine?.send(event);
     }
 

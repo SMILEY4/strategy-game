@@ -11,13 +11,15 @@ export interface InteractionMachine<
     TContext,
 > {
     send: (event: TEvent) => Promise<void>,
+    stop: () => void
     getContext: () => TContext,
     getCurrentState: () => TStateName
-    stop: () => void
+    getDefinition: () => InteractionDefinition<any, TContext, TEvent, TStateName>
 }
 
 export interface InteractionMachineState<TContext, TStateName extends string> {
     id: string,
+    definition: InteractionDefinition<any, TContext, any, TStateName>
     context: TContext,
     stateName: TStateName
 }
@@ -54,6 +56,7 @@ export async function createInteractionMachine<
     async function initialize() {
         const interactionState = {
             id: id,
+            definition: definition,
             context: definition.initialContext(input),
             stateName: definition.initialState(input),
         };
@@ -198,5 +201,6 @@ export async function createInteractionMachine<
         stop: stop,
         getContext: () => loadState().context,
         getCurrentState: () => loadState().stateName,
+        getDefinition: () => definition
     };
 }
