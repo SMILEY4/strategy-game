@@ -27,9 +27,9 @@ export type InteractionStateDefinition<TContext, TEvent extends InteractionBaseE
         /** whether this state is an end state */
         terminal?: boolean;
         /** triggered when transitioning to this state with the associated event. Return a partial context to update the interaction context.  */
-        onEnter?: HookFn<TContext, TEvent | InteractionInitEvent>;
+        onEnter?: EntryFn<TContext, TEvent | InteractionInitEvent>;
         /** triggered when transitioning away from this state with the associated event. Return a partial context to update the interaction context.  */
-        onExit?: HookFn<TContext, TEvent>;
+        onExit?: ExitFn<TContext, TEvent>;
     } &
     {
         [E in TEvent as E["type"]]?: InteractionTransitionDefinition<TContext, Extract<TEvent, { type: E["type"] }>, TStateName>;
@@ -53,17 +53,23 @@ export type InteractionTransitionDefinition<TContext, TEvent extends Interaction
 /**
  * The type for the transition guard function.
  */
-type GuardFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => boolean;
+type GuardFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => boolean | Promise<boolean>;
 
 /**
  * The type for the transition action function
  */
-type ActionFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => Partial<TContext> | void;
+type ActionFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => Partial<TContext> | Promise<Partial<TContext>> | void | Promise<void>;
 
 /**
- * The type for the state hook functions (enter and exit)
+ * The type for the state entry hook function
  */
-type HookFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => Partial<TContext> | void;
+type EntryFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => | Partial<TContext> | Promise<Partial<TContext>> | void | Promise<void>;
+
+/**
+ * The type for the state exit hook function
+ */
+type ExitFn<TContext, TEvent extends InteractionBaseEvent> = (args: ActionParameter<TContext, TEvent>) => Partial<TContext> | Promise<Partial<TContext>> | void | Promise<void>;
+
 
 /**
  * The parameters/data provided to state and transition actions

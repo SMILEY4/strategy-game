@@ -25,7 +25,7 @@ import {cameraDatabase} from "@app/features/game/database/camera.database.ts";
 import {debugDatabase} from "@app/features/game/database/debug.database.ts";
 import {gameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
 import {selectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
-import {gameActionFoundCapital} from "@app/features/game/gameplay/game-action.found-capital.ts";
+import {gameActionFoundSettlement} from "@app/features/game/gameplay/game-action-found.settlement.ts";
 import {commandDatabase} from "@app/features/game/database/command.database.ts";
 import {gameActionEndTurn} from "@app/features/game/gameplay/game-action.end-turn.ts";
 import {entityDatabase} from "@app/features/game/database/entity.database.ts";
@@ -89,7 +89,7 @@ interface DIShape {
     selectedTileDatabase: ReturnType<typeof selectedTileDatabase>
     gameActionEndTurn: ReturnType<typeof gameActionEndTurn>
     gameActionClickTile: ReturnType<typeof gameActionClickTile>
-    gameActionFoundCapital: ReturnType<typeof gameActionFoundCapital>
+    gameActionFoundCapital: ReturnType<typeof gameActionFoundSettlement>
     gameActionJoinedGame: ReturnType<typeof gameActionJoinedGame>
 }
 
@@ -249,13 +249,9 @@ export const DIConfig = {
         scope: "singleton",
         create: resolve => gameActionClickTile({tileDb: resolve.tileDatabase, selectedTileDb: resolve.selectedTileDatabase}),
     },
-    gameActionFoundCapital: {
+    gameActionFoundSettlement: {
         scope: "singleton",
-        create: resolve => gameActionFoundCapital({
-            commandDb: resolve.commandDatabase,
-            tileDb: resolve.tileDatabase,
-            gameClient: resolve.gameClient,
-        }),
+        create: () => gameActionFoundSettlement(),
     },
     gameActionJoinedGame: {
         scope: "singleton",

@@ -2,6 +2,7 @@ import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import {useQuerySingle, useQuerySingleton, useWatchDatabases} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
 import {TileQueries} from "@app/features/game/database/tile.database.ts";
+import {InteractionCreateSettlement} from "@app/features/game/interactions/interaction.create-settlement.ts";
 
 export interface InfoPanelViewModel {
     tile: null | {
@@ -46,7 +47,7 @@ export function useInfoPanelViewModel(): InfoPanelViewModel {
             available: selectedTileRef ? DI.gameActionFoundCapital.validate(selectedTileRef) : false,
             execute: () => {
                 if (selectedTileRef) {
-                    DI.gameActionFoundCapital.execute(selectedTile!.position);
+                    DI.interactionManager.start(InteractionCreateSettlement, {position: selectedTile!.position});
                 }
             },
         },

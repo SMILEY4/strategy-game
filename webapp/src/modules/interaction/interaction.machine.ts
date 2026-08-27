@@ -10,7 +10,7 @@ export interface InteractionMachine<
     TEvent extends InteractionBaseEvent,
     TContext,
 > {
-    send: (event: TEvent) => void,
+    send: (event: TEvent) => Promise<void>,
     getContext: () => TContext,
     getCurrentState: () => TStateName
     stop: () => void
@@ -22,7 +22,7 @@ export interface InteractionMachineState<TContext, TStateName extends string> {
     stateName: TStateName
 }
 
-export function createInteractionMachine<
+export async function createInteractionMachine<
     TStateName extends string,
     TEvent extends InteractionBaseEvent,
     TContext,
@@ -32,7 +32,7 @@ export function createInteractionMachine<
     input: TInput,
     setMachineState: (state: InteractionMachineState<TContext, TStateName> | null) => void,
     getMachineState: () => InteractionMachineState<TContext, TStateName> | null,
-): InteractionMachine<TStateName, TEvent, TContext> {
+): Promise<InteractionMachine<TStateName, TEvent, TContext>> {
 
     const id = crypto.randomUUID();
 
@@ -47,7 +47,7 @@ export function createInteractionMachine<
         return state;
     }
 
-    function initialize() {
+    async function initialize() {
         const interactionState = {
             id: id,
             context: definition.initialContext(input),
@@ -61,9 +61,10 @@ export function createInteractionMachine<
 
         let context = interactionState.context;
         if (activeStateDefinition.onEnter) {
+            const resultEnter = await activeStateDefinition.onEnter({context: interactionState.context, event: {type: "__INIT__"}})
             context = {
                 ...context,
-                ...activeStateDefinition.onEnter({context: interactionState.context, event: {type: "__INIT__"}}),
+                ...resultEnter,
             };
         }
 
@@ -74,7 +75,7 @@ export function createInteractionMachine<
     }
 
 
-    function send(event: TEvent): void {
+    async function send(event: TEvent): Promise<void> {
         const interactionState = loadState();
 
         const activeStateDefinition = definition.states[interactionState.stateName];
@@ -96,21 +97,24 @@ export function createInteractionMachine<
 
         let context = interactionState.context;
         if (activeStateDefinition.onExit && runStateHooks) {
+            const resultExit = await activeStateDefinition.onExit({context: context, event: event})
             context = {
                 ...context,
-                ...activeStateDefinition.onExit({context: context, event: event}),
+                ...resultExit,
             };
         }
         if (transitionDefinition.action) {
+            const resultAction = await transitionDefinition.action({context: context, event: event})
             context = {
                 ...context,
-                ...transitionDefinition.action({context: context, event: event}),
+                ...resultAction,
             };
         }
         if (targetStateDefinition.onEnter && runStateHooks) {
-            context = {
+            const resultEnter = await targetStateDefinition.onEnter({context: context, event: event})
+                context = {
                 ...context,
-                ...targetStateDefinition.onEnter({context: context, event: event}),
+                ...resultEnter
             };
         }
 
@@ -148,7 +152,7 @@ export function createInteractionMachine<
         setMachineState(null)
     }
 
-    initialize();
+    await initialize();
 
     return {
         send: send,
