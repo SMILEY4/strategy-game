@@ -1,5 +1,5 @@
 import {TopBar} from "@pages/game/gameui/topbar/TopBar.tsx";
-import {InfoPanel} from "@pages/game/gameui/infopanel/InfoPanel.tsx";
+import {QuickInfo} from "@pages/game/gameui/quickinfo/QuickInfo.tsx";
 import {folder, useControls} from "leva";
 import {DI} from "@app/app.ts";
 import {initialDebugDataValues} from "@app/features/game/database/debug.database.ts";
@@ -10,7 +10,7 @@ export function GameUi() {
     return (
         <>
             <TopBar/>
-            <InfoPanel/>
+            <QuickInfo/>
         </>
     );
 
