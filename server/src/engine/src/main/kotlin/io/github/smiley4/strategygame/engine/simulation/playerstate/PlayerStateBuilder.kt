@@ -39,7 +39,7 @@ class PlayerStateBuilder {
         val position = entity.getComponent<EntityComponent.Position>()
         val tile = game.tiles.first { it.id == position.tile.id }
         "id" to entity.id
-        "owner" to entity.owner
+        "owner" to entity.owner?.id?.toHexString()
         "position" to obj {
             "q" to position.tile.position.q
             "r" to position.tile.position.r
@@ -54,6 +54,7 @@ class PlayerStateBuilder {
                     is EntityComponent.PlayerSpawn -> obj {
                         "type" to "player-spawn"
                         "radius" to component.radius
+                        "foundedFirstSettlement" to component.foundedCapital
                     }
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"

@@ -8,7 +8,7 @@ export interface Entity {
 }
 
 export type EntityComponent =
-    | { type: "player-spawn", radius: number }
+    | { type: "player-spawn", radius: number, foundedFirstSettlement: boolean }
     | { type: "settlement", name: string, isRealmCapital: boolean }
 
 
@@ -22,6 +22,15 @@ export const EntityUtils = {
 
     getComponent: <T extends EntityComponent["type"]>(entity: Entity, type: T): ExtractComponent<T> | null => {
         return (entity.components.find(it => it.type === type) ?? null) as (ExtractComponent<T> | null);
+    },
+
+    getComponentOrThrow: <T extends EntityComponent["type"]>(entity: Entity, type: T): ExtractComponent<T> => {
+        const component = (entity.components.find(it => it.type === type) ?? null) as (ExtractComponent<T> | null);
+        if(component) {
+           return component;
+        } else {
+            throw new Error(`Could not find component '${type}' for entity '${entity.id}'.`)
+        }
     },
 
 };

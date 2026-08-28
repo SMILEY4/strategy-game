@@ -4,9 +4,14 @@ import {type TileDatabase, TileQueries} from "@app/features/game/database/tile.d
 import {useWatchDatabases} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
 import {useHasInteraction} from "@modules/interaction/interaction.tools.ts";
+import {type EntityDatabase, EntityQueries} from "@app/features/game/database/entity.database.ts";
+import {EntityUtils} from "@app/features/game/models/entity.ts";
 
 export interface CreateSettlementValidation {
-    validateFirstTurn: (args: {
+    availableFirst: (args: {
+        entityDb: EntityDatabase
+    }) => boolean;
+    validateFirst: (args: {
         position: HexPosition,
         hasInteraction: boolean,
         commandDb: CommandDatabase,
@@ -18,7 +23,21 @@ export interface CreateSettlementValidation {
 
 export const createSettlementValidation = (): CreateSettlementValidation => ({
 
-    validateFirstTurn: (args) => {
+    availableFirst: (args) => {
+
+        const {entityDb} = args;
+
+        // check spawn entity exists
+        const entities = entityDb.queryMany(EntityQueries.ALL, undefined);
+        const spawnEntity = entities.find(it => EntityUtils.hasComponent(it, "player-spawn"));
+        if (!spawnEntity || EntityUtils.getComponentOrThrow(spawnEntity, "player-spawn").foundedFirstSettlement) {
+            return false;
+        }
+
+        return true;
+    },
+
+    validateFirst: (args) => {
 
         const {hasInteraction, commandDb, tileDb, position} = args;
 
@@ -75,6 +94,7 @@ export function useCreateSettlementValidation() {
     useWatchDatabases([
         DI.tileDatabase,
         DI.commandDatabase,
+        DI.entityDatabase
     ]);
 
     const hasInteraction = useHasInteraction();
@@ -86,11 +106,14 @@ export function useCreateSettlementValidation() {
             commandDb: DI.commandDatabase,
             hasInteraction: hasInteraction,
         }),
-        firstSettlement: (position: HexPosition) => DI.createSettlementValidation.validateFirstTurn({
+        firstSettlement: (position: HexPosition) => DI.createSettlementValidation.validateFirst({
             position: position,
             tileDb: DI.tileDatabase,
             commandDb: DI.commandDatabase,
             hasInteraction: hasInteraction,
         }),
-    }
+        firstSettlementAvailable: () => DI.createSettlementValidation.availableFirst({
+            entityDb: DI.entityDatabase,
+        }),
+    };
 }

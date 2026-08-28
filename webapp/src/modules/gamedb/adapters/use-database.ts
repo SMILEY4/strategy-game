@@ -118,12 +118,13 @@ export function useQuerySingle<STORAGE extends DatabaseStorageUnitMapping<ENTITY
     const [entity, setEntity] = useState<ENTITY | null>(() => db.querySingle(query, args));
     const previousInputs = useRef<{ query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS }>({query, args});
     const inputsChanged = previousInputs.current.query !== query || previousInputs.current.args !== args;
+    let currentEntity = entity;
 
     if (inputsChanged) {
         previousInputs.current = {query, args};
+        currentEntity = db.querySingle(query, args);
+        setEntity(currentEntity);
     }
-
-    const currentEntity = inputsChanged ? db.querySingle(query, args) : entity;
 
     useEffect(() => {
         const [subscription] = db.subscribeOnQuerySingle(query, args, entity => {

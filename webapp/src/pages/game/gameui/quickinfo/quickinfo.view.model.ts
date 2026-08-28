@@ -1,9 +1,11 @@
-import type {HexPosition} from "@app/features/game/models/hex-position.ts";
-import {useQuerySingle, useQuerySingleton} from "@modules/gamedb/adapters/use-database.ts";
+import {type HexPosition, INVALID_HEX_POSITION} from "@app/features/game/models/hex-position.ts";
+import {useQueryMultiple, useQuerySingle, useQuerySingleton} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
 import {TileQueries} from "@app/features/game/database/tile.database.ts";
 import {CreateSettlementInteraction} from "@app/features/game/gameplay/create-settlement.interaction.ts";
 import {useCreateSettlementValidation} from "@app/features/game/gameplay/create-settlement.validation.ts";
+import {EntityQueries} from "@app/features/game/database/entity.database.ts";
+import {EntityUtils} from "@app/features/game/models/entity.ts";
 
 export interface QuickinfoViewModel {
     availableInfo: ("tile" | "settlement")[];
@@ -20,8 +22,15 @@ export interface QuickInfoTileViewModel {
         feature: string,
     }
     actions: {
-        foundCapital: {
+        focusCamera: () => void,
+        foundSettlementFirst: {
             available: boolean,
+            possible: boolean,
+            execute: () => void
+        }
+        foundSettlement: {
+            available: boolean,
+            possible: boolean,
             execute: () => void
         }
     }
@@ -30,42 +39,86 @@ export interface QuickInfoTileViewModel {
 
 export interface QuickInfoSettlementViewModel {
     id: string;
+    owner: string,
+    name: string,
+    isRealmCapital: boolean,
+    actions: {
+        focusCamera: () => void,
+    }
 }
 
 export function useQuickInfoViewModel(): QuickinfoViewModel {
 
-    const validate = useCreateSettlementValidation();
-
     const selectedTileRef = useQuerySingleton(DI.selectedTileDatabase).selected;
-    const selectedTile = useQuerySingle(DI.tileDatabase, TileQueries.BY_ID, selectedTileRef?.id);
+
+    const tileQuickInfo = useBuildTileQuickInfo(selectedTileRef);
+    const settlementQuickInfo = useBuildSettlementQuickInfo(selectedTileRef);
+
+    const availableInfo: ("tile" | "settlement")[] = [];
+    if (tileQuickInfo) availableInfo.push("tile");
+    if (settlementQuickInfo) availableInfo.push("settlement");
 
     return {
-        availableInfo: selectedTileRef
-            ? ["tile"]
-            : [],
-        tile: selectedTileRef
+        availableInfo: availableInfo,
+        tile: tileQuickInfo,
+        settlement: settlementQuickInfo,
+    };
+}
+
+
+function useBuildTileQuickInfo(tileRef: HexPosition & { id: string } | null): QuickInfoTileViewModel | null {
+
+    const tile = useQuerySingle(DI.tileDatabase, TileQueries.BY_ID, tileRef?.id);
+
+    const validate = useCreateSettlementValidation();
+
+    if (!tile) {
+        return null;
+    }
+    return {
+        id: tile.id,
+        position: tile.position,
+        terrain: tile.world.visible
             ? {
-                id: selectedTileRef.id,
-                position: {q: selectedTileRef.q, r: selectedTileRef.r},
-                terrain: (selectedTile && selectedTile.world.visible)
-                    ? {
-                        elevation: selectedTile.world.value.elevation,
-                        biome: selectedTile.world.value.biome,
-                        feature: selectedTile.world.value.feature,
-                    }
-                    : null,
-                actions: {
-                    foundCapital: {
-                        available: selectedTile ? validate.firstSettlement(selectedTile.position) : false,
-                        execute: () => {
-                            if (selectedTileRef) {
-                                void DI.interactionManager.start(CreateSettlementInteraction, {position: selectedTile!.position});
-                            }
-                        },
-                    },
-                },
+                elevation: tile.world.value.elevation,
+                biome: tile.world.value.biome,
+                feature: tile.world.value.feature,
             }
             : null,
-        settlement: null,
+        actions: {
+            focusCamera: () => DI.cameraController.lookAt(tile.position),
+            foundSettlementFirst: {
+                available: validate.firstSettlementAvailable(),
+                possible: validate.firstSettlement(tile.position),
+                execute: () => void DI.interactionManager.start(CreateSettlementInteraction, {position: tile.position}),
+            },
+            foundSettlement: {
+                available: !validate.firstSettlementAvailable(),
+                possible: false,
+                execute: () => undefined,
+            },
+        },
+    };
+}
+
+function useBuildSettlementQuickInfo(tileRef: HexPosition & { id: string } | null): QuickInfoSettlementViewModel | null {
+
+    const settlementEntity = useQueryMultiple(DI.entityDatabase, EntityQueries.BY_POSITION, tileRef ?? INVALID_HEX_POSITION)
+        .find(it => EntityUtils.hasComponent(it, "settlement"));
+
+    if (!tileRef || !settlementEntity) {
+        return null;
+    }
+
+    const settlementComponent = EntityUtils.getComponent(settlementEntity, "settlement")!;
+
+    return {
+        id: settlementEntity.id,
+        owner: settlementEntity.owner,
+        name: settlementComponent.name,
+        isRealmCapital: settlementComponent.isRealmCapital,
+        actions: {
+            focusCamera: () => DI.cameraController.lookAt(settlementEntity.position),
+        },
     };
 }

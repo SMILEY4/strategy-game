@@ -25,7 +25,15 @@ export function QuickInfo(): ReactElement {
 
 function InfoSelected(props: QuickinfoViewModel) {
 
-    const [selectedTab, setSelectedTab] = useState(props.availableInfo.length > 0 ? props.availableInfo[0] : "");
+    type QuickInfoTab = QuickinfoViewModel["availableInfo"][number];
+    const firstAvailableTab: QuickInfoTab | "" = props.availableInfo[0] ?? "";
+    const [selectedTab, setSelectedTab] = useState<QuickInfoTab | "">(firstAvailableTab);
+
+    const selectedTabIsAvailable = selectedTab !== "" && props.availableInfo.some(tab => tab === selectedTab);
+    if (!selectedTabIsAvailable && selectedTab !== firstAvailableTab) {
+        setSelectedTab(firstAvailableTab);
+    }
+    const activeTab = selectedTabIsAvailable ? selectedTab : firstAvailableTab;
 
     if (props.availableInfo.length == 0) {
         return (
@@ -36,15 +44,15 @@ function InfoSelected(props: QuickinfoViewModel) {
     } else {
         return (
             <VerticalLayout verticalStart horizontalStretch fillFlex fillWidth>
-                <Tabbar.Root selectedTab={selectedTab} onSelectTab={it => setSelectedTab(it as any)}>
+                <Tabbar.Root selectedTab={activeTab} onSelectTab={it => setSelectedTab(it as QuickInfoTab)}>
                     {props.availableInfo.map(tab => (
-                        <Tabbar.Tab value={tab}>
+                        <Tabbar.Tab value={tab} key={tab}>
                             <Txt.Heading h6><Txt.String>{tab}</Txt.String></Txt.Heading>
                         </Tabbar.Tab>
                     ))}
                 </Tabbar.Root>
-                {selectedTab === "tile" && (<QuickInfo_Tile {...props.tile!}/>)}
-                {selectedTab === "settlement" && (<QuickInfo_Settlement {...props.settlement!}/>)}
+                {activeTab === "tile" && (<QuickInfo_Tile {...props.tile!}/>)}
+                {activeTab === "settlement" && (<QuickInfo_Settlement {...props.settlement!}/>)}
             </VerticalLayout>
         );
     }

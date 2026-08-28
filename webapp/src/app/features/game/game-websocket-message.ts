@@ -69,7 +69,7 @@ interface GameState extends GameWebsocketServerMessageBase {
                 chunkR: number,
             },
             components: (
-                | { type: "player-spawn", radius: number }
+                | { type: "player-spawn", radius: number, foundedFirstSettlement: boolean }
                 | { type: "settlement", name: string, isRealmCapital: boolean }
                 )[]
         })[]
