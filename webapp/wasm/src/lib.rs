@@ -4,7 +4,7 @@ mod render;
 
 use crate::js::direct_buffer;
 use crate::js::direct_buffer::DirectBuffer;
-use crate::js::models::{Entity, SpriteSheetEntry, Tile};
+use crate::js::models::{Control, Entity, SpriteSheetEntry, Tile};
 use crate::render::renderer::Renderer;
 use js::direct_buffer::DirectMemoryHandle;
 use js_sys::Uint8Array;
@@ -36,6 +36,19 @@ impl WasmRenderApp {
     pub fn tiles_upload(&mut self, ptr: usize, len: usize) {
         let tiles = unsafe { DirectBuffer::upload::<Tile>(ptr, len) };
         self.renderer.set_tiles(tiles)
+    }
+
+    pub fn controls_reserve_memory(&self, len: usize) -> DirectMemoryHandle {
+        DirectBuffer::reserve::<Control>(len)
+    }
+
+    pub fn controls_upload(&mut self, ptr: usize, len: usize) {
+        let controls = unsafe { DirectBuffer::upload::<Control>(ptr, len) };
+        self.renderer.set_controls(controls)
+    }
+
+    pub fn set_control_id_mapping(&mut self, player_ids: Vec<String>, settlement_ids: Vec<String>) {
+        self.renderer.set_control_id_mapping(player_ids, settlement_ids)
     }
 
     pub fn entities_reserve_memory(&self, len: usize) -> DirectMemoryHandle {

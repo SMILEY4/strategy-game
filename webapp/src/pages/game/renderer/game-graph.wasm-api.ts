@@ -10,6 +10,15 @@ import spritesheetTrees from "./spritesheets/trees.atlas.json";
 import spritesheetBuildings from "./spritesheets/buildings.atlas.json";
 import type {RenderEntity} from "@pages/game/renderer/data/models.ts";
 
+const numericId = (ids: Map<string, number>, values: string[], uuid: string): number => {
+    const existing = ids.get(uuid);
+    if (existing !== undefined) return existing;
+    const id = ids.size;
+    ids.set(uuid, id);
+    values.push(uuid);
+    return id;
+};
+
 export interface GameGraphWasmApi {
     configureRenderer: () => Promise<void>,
     uploadTiles: (tiles: Tile[]) => void,
@@ -32,43 +41,63 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
     const wasmApp: WasmRenderApp = new WasmRenderApp();
 
-    const tileSerializer = wasmSerializer<Tile>({
+    type TileUpload = {
+        tile: Tile,
+        controlOffset: number,
+        controlCount: number,
+    };
+
+    type ControlUpload = {
+        playerId: number,
+        settlementId: number,
+        amount: number,
+    };
+
+    const tileSerializer = wasmSerializer<TileUpload>({
         "tile_position.q": {
-            provider: tile => tile.position.q,
+            provider: tile => tile.tile.position.q,
             type: "i32",
         },
         "tile_position.r": {
-            provider: tile => tile.position.r,
+            provider: tile => tile.tile.position.r,
             type: "i32",
         },
         "chunk_position.q": {
-            provider: tile => tile.position.chunkQ,
+            provider: tile => tile.tile.position.chunkQ,
             type: "i32",
         },
         "chunk_position.r": {
-            provider: tile => tile.position.chunkR,
+            provider: tile => tile.tile.position.chunkR,
             type: "i32",
         },
         "visibility": {
-            provider: tile => visibilitySerialisationMapping[tile.visibility],
+            provider: tile => visibilitySerialisationMapping[tile.tile.visibility],
             type: "u8",
         },
         "terrain_elevation": {
-            provider: tile => tile.world.visible ? (tileElevationSerialisationMapping[tile.world.value.elevation] ?? 0) : 0,
+            provider: tile => tile.tile.world.visible ? (tileElevationSerialisationMapping[tile.tile.world.value.elevation] ?? 0) : 0,
             type: "u8",
         },
         "terrain_biome": {
-            provider: tile => tile.world.visible ? (tileBiomeSerialisationMapping[tile.world.value.biome] ?? 0) : 0,
+            provider: tile => tile.tile.world.visible ? (tileBiomeSerialisationMapping[tile.tile.world.value.biome] ?? 0) : 0,
             type: "u8",
         },
         "terrain_feature": {
-            provider: tile => tile.world.visible ? (tileFeatureSerialisationMapping[tile.world.value.feature] ?? 0) : 0,
+            provider: tile => tile.tile.world.visible ? (tileFeatureSerialisationMapping[tile.tile.world.value.feature] ?? 0) : 0,
             type: "u8",
         },
         "meta.seed": {
-            provider: tile => tile.meta.seed,
+            provider: tile => tile.tile.meta.seed,
             type: "u32",
         },
+        "control_offset": { provider: tile => tile.controlOffset, type: "u32" },
+        "control_count": { provider: tile => tile.controlCount, type: "u32" },
+    });
+
+    const controlSerializer = wasmSerializer<ControlUpload>({
+        "player_id": { provider: control => control.playerId, type: "u32" },
+        "settlement_id": { provider: control => control.settlementId, type: "u32" },
+        "amount": { provider: control => control.amount, type: "f32" },
     });
 
     const visibilitySerialisationMapping: Record<string, number> = {
@@ -192,10 +221,35 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
         uploadTiles: (tiles: Tile[]) => {
             console.log("[wasm-api]: uploading tiles (" + tiles.length + ")");
-            const memory = wasmApp.tiles_reserve_memory(tiles.length);
-            const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
-            tileSerializer(buffer, tiles);
-            wasmApp.tiles_upload(memory.ptr, memory.len);
+
+            const playerIds = new Map<string, number>();
+            const settlementIds = new Map<string, number>();
+            const playerUuids: string[] = [];
+            const settlementUuids: string[] = [];
+
+            const controls: ControlUpload[] = [];
+
+            const serializedTiles: TileUpload[] = tiles.map(tile => {
+                const tileControls = tile.political.visible ? tile.political.value.control : [];
+                const controlOffset = controls.length;
+                controls.push(...tileControls.map(control => ({
+                    playerId: numericId(playerIds, playerUuids, control.player),
+                    settlementId: numericId(settlementIds, settlementUuids, control.settlement),
+                    amount: control.amount,
+                })));
+                return {tile, controlOffset, controlCount: tileControls.length};
+            });
+
+            const tilesMemory = wasmApp.tiles_reserve_memory(tiles.length);
+            const tilesBuffer = new Uint8Array(wasmMemory.buffer, tilesMemory.ptr, tilesMemory.len * tilesMemory.item_size);
+            tileSerializer(tilesBuffer, serializedTiles);
+            wasmApp.tiles_upload(tilesMemory.ptr, tilesMemory.len);
+
+            const controlsMemory = wasmApp.controls_reserve_memory(controls.length);
+            const controlsBuffer = new Uint8Array(wasmMemory.buffer, controlsMemory.ptr, controlsMemory.len * controlsMemory.item_size);
+            controlSerializer(controlsBuffer, controls);
+            wasmApp.controls_upload(controlsMemory.ptr, controlsMemory.len);
+            wasmApp.set_control_id_mapping(playerUuids, settlementUuids);
         },
 
         uploadEntities: (entities: RenderEntity[]) => {

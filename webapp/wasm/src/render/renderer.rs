@@ -1,4 +1,4 @@
-use crate::js::models::{Entity, HexPosition, SpriteSheetEntry, Tile};
+use crate::js::models::{Control, Entity, HexPosition, SpriteSheetEntry, Tile};
 use crate::render::{creator_map_detail_instances, creator_overlay_instances, creator_terrain_tile_instances};
 use crate::render::models::chunk::Chunk;
 use crate::render::models::config::RenderConfig;
@@ -41,6 +41,15 @@ impl Renderer {
         self.state.tiles.sort_by_key(|it| it.rng_seed);
         self.state.chunks.clear();
         self.state.visible_chunks.clear();
+    }
+
+    pub fn set_controls(&mut self, controls: Vec<Control>) {
+        self.state.controls = controls;
+    }
+
+    pub fn set_control_id_mapping(&mut self, player_ids: Vec<String>, settlement_ids: Vec<String>) {
+        self.state.player_ids = player_ids;
+        self.state.settlement_ids = settlement_ids;
     }
 
     /// Set the complete list of entities for this renderer

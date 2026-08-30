@@ -13,6 +13,16 @@ pub struct Tile {
     pub visibility: u8,
     pub terrain: TileTerrain,
     pub rng_seed: u32,
+    pub control_offset: u32,
+    pub control_count: u32,
+}
+
+#[repr(C, packed)]
+#[derive(Copy, Clone, Debug)]
+pub struct Control {
+    pub player_id: u32,
+    pub settlement_id: u32,
+    pub amount: f32,
 }
 
 #[repr(C, packed)]
