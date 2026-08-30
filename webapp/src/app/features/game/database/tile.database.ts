@@ -7,26 +7,26 @@ import {MapSupportingStorage} from "@modules/gamedb/storage/implementations/data
 import {MapUniqueSupportingStorage} from "@modules/gamedb/storage/implementations/database-storage-unit.supporting.map-unique.ts";
 
 
-export type TileDatabase = Database<TileStorageMapping, Tile, string>
+export type TileDatabase = Database<TileStorageMapping, Tile, number>
 
 type TileStorageMapping = {
-    primary: MapPrimaryDatabaseStorageUnit<Tile, string>,
+    primary: MapPrimaryDatabaseStorageUnit<Tile, number>,
     byPosition: MapUniqueSupportingStorage<Tile, string>,
     byChunk: MapSupportingStorage<Tile, string>
 }
 
 export function tileDatabase(): TileDatabase {
-    return DatabaseBuilder.create<Tile, string, TileStorageMapping>()
+    return DatabaseBuilder.create<Tile, number, TileStorageMapping>()
         .withIdProvider(e => e.id)
         .withStorage(idProvider => ({
-            primary: new MapPrimaryDatabaseStorageUnit<Tile, string>(idProvider),
+            primary: new MapPrimaryDatabaseStorageUnit<Tile, number>(idProvider),
             byPosition: new MapUniqueSupportingStorage<Tile, string>(e => `${e.position.q};${e.position.r}`),
             byChunk: new MapSupportingStorage<Tile, string>(e => `${e.position.chunkQ};${e.position.chunkR}`)
         }))
         .build()
 }
 
-export type TileQuery<ARGS> = Query<TileStorageMapping, Tile, string, ARGS>
+export type TileQuery<ARGS> = Query<TileStorageMapping, Tile, number, ARGS>
 
 
 export const TileQueries = {
@@ -38,7 +38,7 @@ export const TileQueries = {
     },
 
     BY_ID: {
-        run: (storage: TileStorageMapping, args: string | null | undefined) => {
+        run: (storage: TileStorageMapping, args: number | null | undefined) => {
             if(args) {
                 return storage.primary.get(args)
             } else {
@@ -56,5 +56,5 @@ export const TileQueries = {
 } satisfies {
     ALL: TileQuery<never>,
     BY_POSITION: TileQuery<{ q: number, r: number }>
-    BY_ID: TileQuery<string | null | undefined>
+    BY_ID: TileQuery<number | null | undefined>
 }

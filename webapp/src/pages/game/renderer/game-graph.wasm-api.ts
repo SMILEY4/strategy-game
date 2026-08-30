@@ -15,7 +15,7 @@ export interface GameGraphWasmApi {
     uploadTiles: (tiles: Tile[]) => void,
     uploadEntities: (entities: RenderEntity[]) => void,
     setMapMode: (mapMode: number) => void,
-    setSelectedEntityId: (entityId: string | null) => void,
+    setSelectedEntityId: (entityId: number | null) => void,
     buildOverlayInstances: () => void,
     collectChunks: () => { allChunks: boolean }
     cullChunks: () => { visibleChunks: boolean }
@@ -36,8 +36,6 @@ export interface GameGraphWasmApi {
 export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
     const wasmApp: WasmRenderApp = new WasmRenderApp();
-    const playerIds = new Map<string, number>();
-    const entityIds = new Map<string, number>();
 
     type TileUpload = {
         tile: Tile,
@@ -46,7 +44,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
     };
 
     type ControlUpload = {
-        playerId: number,
+        realmId: number,
         entityId: number,
         amount: number,
     };
@@ -93,7 +91,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
     });
 
     const controlSerializer = wasmSerializer<ControlUpload>({
-        "player_id": { provider: control => control.playerId, type: "u32" },
+        "realm_id": { provider: control => control.realmId, type: "u32" },
         "entity_id": { provider: control => control.entityId, type: "u32" },
         "amount": { provider: control => control.amount, type: "f32" },
     });
@@ -226,8 +224,8 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
                 const tileControls = tile.political.visible ? tile.political.value.control : [];
                 const controlOffset = controls.length;
                 controls.push(...tileControls.map(control => ({
-                    playerId: numericId(playerIds, control.player),
-                    entityId: numericId(entityIds, control.settlement),
+                    realmId: control.realm,
+                    entityId: control.entity,
                     amount: control.amount,
                 })));
                 return {tile, controlOffset, controlCount: tileControls.length};
@@ -254,9 +252,8 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
         setMapMode: (mapMode: number) => wasmApp.set_map_mode(mapMode),
 
-        setSelectedEntityId: (entityId: string | null) => {
-            const numericEntityId = entityId === null ? null : entityIds.ids.get(entityId);
-            wasmApp.set_selected_entity_id(numericEntityId ?? null);
+        setSelectedEntityId: (entityId: number | null) => {
+            wasmApp.set_selected_entity_id(entityId);
         },
 
         buildOverlayInstances: () => wasmApp.build_overlay_instances(),

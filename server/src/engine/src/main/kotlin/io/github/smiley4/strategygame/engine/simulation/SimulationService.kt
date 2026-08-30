@@ -7,6 +7,7 @@ import io.github.smiley4.strategygame.engine.simulation.playerstate.PlayerStateB
 import io.github.smiley4.strategygame.engine.simulation.turn.TurnService
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
+import kotlin.collections.associateWith
 
 /**
  * Handles world generation, turn processing, and player state building.

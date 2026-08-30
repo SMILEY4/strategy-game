@@ -32,7 +32,7 @@ interface GameState extends GameWebsocketServerMessageBase {
             turn: number
         },
         tiles: ({
-            id: string,
+            id: number,
             visibility: "VISIBLE" | "DISCOVERED" | "UNDISCOVERED"
             position: {
                 q: number,
@@ -54,8 +54,8 @@ interface GameState extends GameWebsocketServerMessageBase {
             }>
             political: HiddenType<{
                 control: ({
-                    player: string,
-                    settlement: string,
+                    realm: number,
+                    entity: number,
                     amount: number
                 })[]
             }>
@@ -70,8 +70,8 @@ interface GameState extends GameWebsocketServerMessageBase {
             },
         })[],
         entities: ({
-            id: string,
-            owner: string,
+            id: number,
+            owner: number | null,
             position: {
                 q: number,
                 r: number,

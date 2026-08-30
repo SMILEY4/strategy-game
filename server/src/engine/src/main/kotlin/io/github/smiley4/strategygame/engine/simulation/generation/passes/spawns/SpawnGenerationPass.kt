@@ -9,13 +9,11 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
 import io.github.smiley4.strategygame.engine.simulation.generation.GenerationContext
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.GenerationPass
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
-import net.logstash.logback.argument.StructuredArguments.r
-import kotlin.math.abs
 import kotlin.math.min
 
 
 /**
- * Picks player spawn locations
+ * Picks realm spawn locations
  */
 internal class SpawnGenerationPass : GenerationPass {
 
@@ -26,7 +24,7 @@ internal class SpawnGenerationPass : GenerationPass {
     }
 
     override fun execute(gameState: GameStateContext, generationContext: GenerationContext) {
-        generationContext.players.forEach { player ->
+        gameState.realms.forEach { realm ->
 
             var spawnLocation: Tile.Ref? = null
             for (i in 1..MAX_ATTEMPTS_HIGH_QUALITY) {
@@ -53,7 +51,7 @@ internal class SpawnGenerationPass : GenerationPass {
 
             val spawn = Entity(
                 id = Entity.Id(),
-                owner = player,
+                owner = realm.id,
                 components = listOf(
                     EntityComponent.Position(spawnLocation),
                     EntityComponent.PlayerSpawn(SPAWN_RADIUS, false)
@@ -65,7 +63,7 @@ internal class SpawnGenerationPass : GenerationPass {
             gameState.tiles
                 .asSequence()
                 .filter { it.position.distance(spawn.getComponent<EntityComponent.Position>().tile.position) <= spawn.getComponent<EntityComponent.PlayerSpawn>().radius }
-                .forEach { tile -> tile.political.discoveredBy.add(player) }
+                .forEach { tile -> tile.political.discoveredBy.add(realm.id) }
 
         }
     }

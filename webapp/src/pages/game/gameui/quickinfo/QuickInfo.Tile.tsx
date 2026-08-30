@@ -51,7 +51,7 @@ export function QuickInfo_Tile(props: QuickInfoTileViewModel) {
                 <Txt.Line><Txt.String>Control: </Txt.String></Txt.Line>
                 {props.control.map(control => (
                     <Txt.Line>
-                        <Txt.String>{`- ${control.source}:` }</Txt.String>
+                        <Txt.String>{`* ${control.source}:` }</Txt.String>
                         <Txt.String>{`${control.amount}`}</Txt.String>
                     </Txt.Line>
                 ))}

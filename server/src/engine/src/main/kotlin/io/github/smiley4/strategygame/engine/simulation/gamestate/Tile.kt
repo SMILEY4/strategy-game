@@ -1,8 +1,5 @@
 package io.github.smiley4.strategygame.engine.simulation.gamestate
 
-import io.github.smiley4.strategygame.shared.values.UserId
-import kotlin.uuid.Uuid
-
 data class Tile(
     val id: Id,
     val position: HexPosition,
@@ -12,7 +9,7 @@ data class Tile(
 ) {
 
     @JvmInline
-    value class Id(val id: Uuid = Uuid.random())
+    value class Id(val id: Int)
 
     data class Ref(
         val id: Id,
@@ -29,18 +26,14 @@ data class Tile(
     )
 
     data class PoliticalData(
-        val discoveredBy: MutableSet<UserId>,
+        val discoveredBy: MutableSet<Realm.Id>,
         val control: MutableSet<ControlEntry>
-    ) {
-        fun res() {
-            TODO("Not yet implemented")
-        }
-    }
+    )
 
     data class ControlEntry(
         val amount: Float,
-        val player: UserId,
-        val settlement: Entity.Id
+        val realm: Realm.Id,
+        val entity: Entity.Id
     )
 
     enum class Elevation {

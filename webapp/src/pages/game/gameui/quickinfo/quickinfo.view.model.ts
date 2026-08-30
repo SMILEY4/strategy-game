@@ -14,7 +14,7 @@ export interface QuickinfoViewModel {
 }
 
 export interface QuickInfoTileViewModel {
-    id: string,
+    id: number,
     position: HexPosition,
     terrain: null | {
         elevation: string,
@@ -39,8 +39,8 @@ export interface QuickInfoTileViewModel {
 
 
 export interface QuickInfoSettlementViewModel {
-    id: string;
-    owner: string,
+    id: number;
+    owner: number | null,
     name: string,
     isRealmCapital: boolean,
     actions: {
@@ -67,7 +67,7 @@ export function useQuickInfoViewModel(): QuickinfoViewModel {
 }
 
 
-function useBuildTileQuickInfo(tileRef: HexPosition & { id: string } | null): QuickInfoTileViewModel | null {
+function useBuildTileQuickInfo(tileRef: HexPosition & { id: number } | null): QuickInfoTileViewModel | null {
 
     const tile = useQuerySingle(DI.tileDatabase, TileQueries.BY_ID, tileRef?.id);
 
@@ -88,7 +88,7 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: string } | null): Qu
             : null,
         control: tile.political.visible
             ? tile.political.value.control.map(it => ({
-                source: it.player.substring(0, 4) + "/" + it.settlement.substring(0, 4),
+                source: it.realm + "/" + it.entity,
                 amount: it.amount,
             }))
             : [],
@@ -108,7 +108,7 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: string } | null): Qu
     };
 }
 
-function useBuildSettlementQuickInfo(tileRef: HexPosition & { id: string } | null): QuickInfoSettlementViewModel | null {
+function useBuildSettlementQuickInfo(tileRef: HexPosition & { id: number } | null): QuickInfoSettlementViewModel | null {
 
     const settlementEntity = useQueryMultiple(DI.entityDatabase, EntityQueries.BY_POSITION, tileRef ?? INVALID_HEX_POSITION)
         .find(it => EntityUtils.hasComponent(it, "settlement"));

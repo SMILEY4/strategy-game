@@ -2,7 +2,7 @@ import {DatabaseBuilder} from "@modules/gamedb/database-builder.ts";
 import type {SingletonDatabase} from "@modules/gamedb/singleton/singleton-database.ts";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 
-export type SelectedTile = HexPosition & { id: string }
+export type SelectedTile = HexPosition & { id: number }
 
 export type SelectedTileDatabase = SingletonDatabase<{ selected: SelectedTile | null }>
 

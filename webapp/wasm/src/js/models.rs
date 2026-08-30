@@ -20,7 +20,7 @@ pub struct Tile {
 #[repr(C, packed)]
 #[derive(Copy, Clone, Debug)]
 pub struct Control {
-    pub player_id: u32,
+    pub realm_id: u32,
     pub entity_id: u32,
     pub amount: f32,
 }

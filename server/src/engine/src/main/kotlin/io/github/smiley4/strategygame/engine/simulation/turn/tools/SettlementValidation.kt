@@ -3,27 +3,27 @@ package io.github.smiley4.strategygame.engine.simulation.turn.tools
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
+import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
-import io.github.smiley4.strategygame.shared.values.UserId
 
 internal object SettlementValidation {
 
     const val SETTLEMENT_REQUIRED_CONTROL = 3f
 
-    fun validateFirst(gameState: GameStateContext, location: HexPosition, player: UserId): Boolean {
+    fun validateFirst(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
 
         // tile must exist
         val tile = gameState.tiles
             .find { it.position == location }
             ?: return false
 
-        return validateFirst(gameState, tile, player)
+        return validateFirst(gameState, tile, realm)
     }
 
-    fun validateFirst(gameState: GameStateContext, tile: Tile, player: UserId): Boolean {
+    fun validateFirst(gameState: GameStateContext, tile: Tile, realm: Realm.Id): Boolean {
 
         // player must have discovered tile
-        if (player !in tile.political.discoveredBy) {
+        if (realm !in tile.political.discoveredBy) {
             return false
         }
 
@@ -45,26 +45,26 @@ internal object SettlementValidation {
         return true
     }
 
-    fun validate(gameState: GameStateContext, location: HexPosition, player: UserId): Boolean {
+    fun validate(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
 
         // tile must exist
         val tile = gameState.tiles
             .find { it.position == location }
             ?: return false
 
-        return validate(gameState, tile, player)
+        return validate(gameState, tile, realm)
     }
 
 
-    fun validate(gameState: GameStateContext, tile: Tile, player: UserId): Boolean {
+    fun validate(gameState: GameStateContext, tile: Tile, realm: Realm.Id): Boolean {
 
         // player must have discovered tile
-        if (player !in tile.political.discoveredBy) {
+        if (realm !in tile.political.discoveredBy) {
             return false
         }
 
         // player must have control in tile
-        val control = tile.political.control.filter { it.player == player }.sumOf { it.amount.toDouble() }
+        val control = tile.political.control.filter { it.realm == realm }.sumOf { it.amount.toDouble() }
         if (control < SETTLEMENT_REQUIRED_CONTROL) {
             return false
         }

@@ -2,7 +2,7 @@ import type {ExtendedHexPosition} from "@app/features/game/models/hex-position.t
 import type {HiddenType} from "@app/features/game/models/hidden-type.ts";
 
 export interface Tile {
-    id: string,
+    id: number,
     position: ExtendedHexPosition,
     visibility: "VISIBLE" | "DISCOVERED" | "UNDISCOVERED"
     world: HiddenType<{
@@ -19,8 +19,8 @@ export interface Tile {
     }>
     political: HiddenType<{
         control: ({
-            player: string,
-            settlement: string,
+            realm: number,
+            entity: number,
             amount: number
         })[]
     }>

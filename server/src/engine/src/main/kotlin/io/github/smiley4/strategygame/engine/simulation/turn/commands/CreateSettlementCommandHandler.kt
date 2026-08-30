@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.engine.simulation.turn.commands
 
-import com.sun.media.sound.EmergencySoundbank.toFloat
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Entity
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
@@ -16,14 +15,16 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
 
     override fun handle(gameState: GameStateContext, command: PlayerCommand.CreateSettlement) {
 
+        val realm = gameState.realms.first { it.user == command.playerId }
+
         // find spawn entity -> whether it is the first, realm-founding settlement
-        val spawnEntity = gameState.entities.first { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == command.playerId }
+        val spawnEntity = gameState.entities.first { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == realm.id }
 
         // validate
         val valid = if (spawnEntity.getComponent<EntityComponent.PlayerSpawn>().foundedRealm) {
-            SettlementValidation.validate(gameState, command.location, command.playerId)
+            SettlementValidation.validate(gameState, command.location, realm.id)
         } else {
-            SettlementValidation.validateFirst(gameState, command.location, command.playerId)
+            SettlementValidation.validateFirst(gameState, command.location, realm.id)
         }
         if (!valid) {
             throw IllegalArgumentException("Invalid settlement command")
@@ -33,7 +34,7 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
         val tile = gameState.tiles.first { it.position == command.location }
         val settlement = Entity(
             id = Entity.Id(),
-            owner = command.playerId,
+            owner = realm.id,
             components = listOf(
                 EntityComponent.Position(tile = tile.ref()),
                 EntityComponent.Settlement(name = command.name.trim(), isRealmCapital = true),
@@ -49,7 +50,7 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
         // mark tiles as discovered
         tile.position.iterateCircle(2) { pos ->
             gameState.tiles.find { it.position == pos }?.also {
-                it.political.discoveredBy.add(command.playerId)
+                it.political.discoveredBy.add(realm.id)
             }
         }
 
@@ -59,8 +60,8 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
             gameState.tiles.find { it.position == pos }?.also {
                 it.political.control.add(
                     Tile.ControlEntry(
-                        player = command.playerId,
-                        settlement = settlement.id,
+                        realm = realm.id,
+                        entity = settlement.id,
                         amount = control.amount * (1f - (it.position.distance(tile.position).toFloat() / control.radius.toFloat())),
                     )
                 )

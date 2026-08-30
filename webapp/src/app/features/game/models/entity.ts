@@ -1,8 +1,8 @@
 import type {ExtendedHexPosition} from "@app/features/game/models/hex-position.ts";
 
 export interface Entity {
-    id: string,
-    owner: string,
+    id: number,
+    owner: number | null,
     position: ExtendedHexPosition,
     components: EntityComponent[]
 }
