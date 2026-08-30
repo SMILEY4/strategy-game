@@ -8,6 +8,8 @@ import io.github.smiley4.strategygame.shared.values.UserId
 
 internal object SettlementValidation {
 
+    const val SETTLEMENT_REQUIRED_CONTROL = 3f
+
     fun validateFirst(gameState: GameStateContext, location: HexPosition, player: UserId): Boolean {
 
         // tile must exist
@@ -21,7 +23,7 @@ internal object SettlementValidation {
     fun validateFirst(gameState: GameStateContext, tile: Tile, player: UserId): Boolean {
 
         // player must have discovered tile
-        if (player !in tile.discoveredBy) {
+        if (player !in tile.political.discoveredBy) {
             return false
         }
 
@@ -57,7 +59,13 @@ internal object SettlementValidation {
     fun validate(gameState: GameStateContext, tile: Tile, player: UserId): Boolean {
 
         // player must have discovered tile
-        if (player !in tile.discoveredBy) {
+        if (player !in tile.political.discoveredBy) {
+            return false
+        }
+
+        // player must have control in tile
+        val control = tile.political.control.filter { it.player == player }.sumOf { it.amount.toDouble() }
+        if (control < SETTLEMENT_REQUIRED_CONTROL) {
             return false
         }
 

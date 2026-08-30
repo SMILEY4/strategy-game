@@ -21,6 +21,7 @@ export interface QuickInfoTileViewModel {
         biome: string,
         feature: string,
     }
+    control: ({ source: string, amount: number })[]
     actions: {
         focusCamera: () => void,
         foundSettlementFirst: {
@@ -85,6 +86,12 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: string } | null): Qu
                 feature: tile.world.value.feature,
             }
             : null,
+        control: tile.political.visible
+            ? tile.political.value.control.map(it => ({
+                source: it.player.substring(0, 4) + "/" + it.settlement.substring(0, 4),
+                amount: it.amount,
+            }))
+            : [],
         actions: {
             focusCamera: () => DI.cameraController.lookAt(tile.position),
             foundSettlementFirst: {

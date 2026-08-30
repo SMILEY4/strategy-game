@@ -17,6 +17,13 @@ export interface Tile {
             removeOnDeplete: number
         })[]
     }>
+    political: HiddenType<{
+        control: ({
+            player: string,
+            settlement: string,
+            amount: number
+        })[]
+    }>
     createSettlement: {
         firstAvailable?: boolean,
         firstAllowed?: boolean,

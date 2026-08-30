@@ -47,7 +47,6 @@ internal class TerrainGenerationPass : GenerationPass {
             Tile(
                 id = Tile.Id(),
                 position = tilePositions,
-                discoveredBy = mutableSetOf(),
                 world = Tile.WorldData(
                     biome = if (height < 0) Tile.Biome.OCEAN
                     else Tile.Biome.entries.filter { b -> b != Tile.Biome.OCEAN }[random.nextInt(Tile.Biome.entries.size - 1)],
@@ -62,6 +61,10 @@ internal class TerrainGenerationPass : GenerationPass {
                             removeOnDeplete = false
                         )
                     },
+                ),
+                political = Tile.PoliticalData(
+                    discoveredBy = mutableSetOf(),
+                    control = mutableSetOf()
                 ),
                 meta = Tile.Metadata(
                     seed = random.nextInt(),

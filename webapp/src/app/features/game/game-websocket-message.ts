@@ -52,6 +52,13 @@ interface GameState extends GameWebsocketServerMessageBase {
                     removeOnDeplete: number
                 })[]
             }>
+            political: HiddenType<{
+                control: ({
+                    player: string,
+                    settlement: string,
+                    amount: number
+                })[]
+            }>
             createSettlement: {
                 firstAvailable?: boolean,
                 firstAllowed?: boolean,

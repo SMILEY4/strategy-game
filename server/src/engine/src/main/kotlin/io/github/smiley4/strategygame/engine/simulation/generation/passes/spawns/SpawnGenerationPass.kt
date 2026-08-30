@@ -65,7 +65,7 @@ internal class SpawnGenerationPass : GenerationPass {
             gameState.tiles
                 .asSequence()
                 .filter { it.position.distance(spawn.getComponent<EntityComponent.Position>().tile.position) <= spawn.getComponent<EntityComponent.PlayerSpawn>().radius }
-                .forEach { tile -> tile.discoveredBy.add(player) }
+                .forEach { tile -> tile.political.discoveredBy.add(player) }
 
         }
     }

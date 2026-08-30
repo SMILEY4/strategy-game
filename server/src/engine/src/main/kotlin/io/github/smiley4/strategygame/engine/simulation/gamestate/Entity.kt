@@ -40,5 +40,7 @@ sealed interface EntityComponent {
 
     data class Vision(val radius: Int) : EntityComponent
 
+    data class Control(val radius: Int, val amount: Float) : EntityComponent
+
 }
 

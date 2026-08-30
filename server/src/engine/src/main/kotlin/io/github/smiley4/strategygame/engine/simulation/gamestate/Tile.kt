@@ -7,7 +7,7 @@ data class Tile(
     val id: Id,
     val position: HexPosition,
     val world: WorldData,
-    val discoveredBy: MutableSet<UserId>,
+    val political: PoliticalData,
     val meta: Metadata,
 ) {
 
@@ -26,6 +26,21 @@ data class Tile(
         val biome: Biome,
         val feature: Feature?,
         val resources: List<ResourceDeposit>,
+    )
+
+    data class PoliticalData(
+        val discoveredBy: MutableSet<UserId>,
+        val control: MutableSet<ControlEntry>
+    ) {
+        fun res() {
+            TODO("Not yet implemented")
+        }
+    }
+
+    data class ControlEntry(
+        val amount: Float,
+        val player: UserId,
+        val settlement: Entity.Id
     )
 
     enum class Elevation {

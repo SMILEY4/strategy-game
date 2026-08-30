@@ -41,7 +41,7 @@ class PlayerStateBuilder {
         val position = entity.getComponent<EntityComponent.Position>()
         val tile = game.tiles.first { it.id == position.tile.id }
         "id" to entity.id
-        "owner" to entity.owner?.id?.toHexString()
+        "owner" to entity.owner?.id?.toString()
         "position" to obj {
             "q" to position.tile.position.q
             "r" to position.tile.position.r
@@ -62,6 +62,11 @@ class PlayerStateBuilder {
                         "type" to "settlement"
                         "name" to component.name
                         "isRealmCapital" to component.isRealmCapital
+                    }
+                    is EntityComponent.Control -> obj {
+                        "type" to "control"
+                        "radius" to component.radius
+                        "amount" to component.amount
                     }
                 }
             }
@@ -91,6 +96,19 @@ class PlayerStateBuilder {
                             "maxAmount" to resource.maxAmount
                             "changeRate" to resource.changeRate
                             "removeOnDeplete" to resource.removeOnDeplete
+                        }
+                    }
+                ]
+            }
+        }
+        "political" to hidden(visibility != Visibility.UNDISCOVERED) {
+            obj {
+                "control" to arr[ // todo: if source is not discovered -> show entries as unknown source
+                    tile.political.control.map {
+                        obj {
+                            "player" to it.player.id.toString()
+                            "settlement" to it.settlement.id.toString()
+                            "amount" to it.amount
                         }
                     }
                 ]
@@ -131,7 +149,6 @@ class PlayerStateBuilder {
     }
 
     private fun getVisibilityAt(gameState: GameStateContext, tile: Tile, player: UserId): Visibility {
-
         val hasDirectVision = gameState.entities
             .asSequence()
             .filter { it.owner == player }
@@ -142,11 +159,9 @@ class PlayerStateBuilder {
                 val position = it.getComponent<EntityComponent.Position>().tile.position
                 position.distance(tile.position) <= range
             }
-
-
         return when {
             hasDirectVision -> Visibility.VISIBLE
-            tile.discoveredBy.contains(player) -> Visibility.DISCOVERED
+            tile.political.discoveredBy.contains(player) -> Visibility.DISCOVERED
             else -> Visibility.UNDISCOVERED
         }
     }
