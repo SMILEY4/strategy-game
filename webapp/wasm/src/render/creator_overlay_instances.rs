@@ -1,4 +1,3 @@
-use rustc_hash::FxHashMap;
 use crate::js::models::{
     HexPosition, Tile, TILE_VISIBILITY_UNDISCOVERED,
 };
@@ -20,15 +19,10 @@ pub fn build_overlay(
     state: &RenderState,
     instance_data: &mut OverlayVertexData,
     create_fill_func: impl Fn(&RenderState, &Tile, &mut Vec<GenericFillOverlayInstance>),
-    create_edge_func: impl Fn(&RenderState, &Tile, &FxHashMap<HexPosition, usize>, &mut Vec<GenericEdgeOverlayInstance>),
+    create_edge_func: impl Fn(&RenderState, &Tile, &rustc_hash::FxHashMap<HexPosition, usize>, &mut Vec<GenericEdgeOverlayInstance>),
 ) {
     instance_data.fill_instances.clear();
     instance_data.edge_instances.clear();
-
-    let mut tiles_by_pos = FxHashMap::with_capacity_and_hasher(state.tiles.len(), Default::default());
-    for (index, tile) in state.tiles.iter().enumerate() {
-        tiles_by_pos.insert(tile.tile_position, index);
-    }
 
     state.visible_chunks.iter().for_each(|chunk_key| {
         let chunk = state.chunks.get(chunk_key).unwrap();
@@ -40,7 +34,7 @@ pub fn build_overlay(
             }
 
             create_fill_func(state, &tile, &mut instance_data.fill_instances);
-            create_edge_func(state, &tile, &tiles_by_pos, &mut instance_data.edge_instances);
+            create_edge_func(state, &tile, &state.tiles_by_position, &mut instance_data.edge_instances);
 
         })
     });
@@ -49,7 +43,15 @@ pub fn build_overlay(
 pub fn no_overlay_fill(_: &RenderState, _: &Tile, _: &mut Vec<GenericFillOverlayInstance>) {
 }
 
-pub fn settlement_control_edges(settlement_id: u32) -> impl Fn(&RenderState, &Tile, &FxHashMap<HexPosition, usize>, &mut Vec<GenericEdgeOverlayInstance>) {
+pub fn no_overlay_edges(
+    _: &RenderState,
+    _: &Tile,
+    _: &rustc_hash::FxHashMap<HexPosition, usize>,
+    _: &mut Vec<GenericEdgeOverlayInstance>,
+) {
+}
+
+pub fn settlement_control_edges(settlement_id: u32) -> impl Fn(&RenderState, &Tile, &rustc_hash::FxHashMap<HexPosition, usize>, &mut Vec<GenericEdgeOverlayInstance>) {
     move |state, tile, tiles_by_pos, output| {
         if control_amount(state, tile, settlement_id) <= 0.0 {
             return;

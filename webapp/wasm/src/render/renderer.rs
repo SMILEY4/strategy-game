@@ -3,7 +3,7 @@ use crate::render::{creator_map_detail_instances, creator_overlay_instances, cre
 use crate::render::models::chunk::Chunk;
 use crate::render::models::config::RenderConfig;
 use crate::render::models::render_state::RenderState;
-use crate::render::models::tile_instance_data::{GridOverlayInstance, MapDetailVertex, MapDetailsVertexData, OverlayVertexData, TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
+use crate::render::models::tile_instance_data::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, MapDetailVertex, MapDetailsVertexData, OverlayVertexData, TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
 use std::collections::HashSet;
 use rustc_hash::FxHashMap;
 
@@ -40,17 +40,27 @@ impl Renderer {
     pub fn set_tiles(&mut self, tiles: Vec<Tile>) {
         self.state.tiles = tiles;
         self.state.tiles.sort_by_key(|it| it.rng_seed);
+
+        self.state.tiles_by_position.clear();
+        self.state.tiles_by_position.reserve(self.state.tiles.len());
+        for (index, tile) in self.state.tiles.iter().enumerate() {
+            self.state.tiles_by_position.insert(tile.tile_position, index);
+        }
+
         self.state.chunks.clear();
         self.state.visible_chunks.clear();
     }
 
-    pub fn set_controls(&mut self, controls: Vec<Control>) {
+    pub fn set_tile_control_values(&mut self, controls: Vec<Control>) {
         self.state.controls = controls;
     }
 
-    pub fn set_control_id_mapping(&mut self, player_ids: Vec<String>, settlement_ids: Vec<String>) {
-        self.state.player_ids = player_ids;
-        self.state.settlement_ids = settlement_ids;
+    pub fn set_map_mode(&mut self, map_mode: u32) {
+        self.state.map_mode = map_mode;
+    }
+
+    pub fn set_selected_settlement_id(&mut self, settlement_id: Option<u32>) {
+        self.state.selected_settlement_id = settlement_id;
     }
 
     /// Set the complete list of entities for this renderer
@@ -124,6 +134,38 @@ impl Renderer {
         changed
     }
 
+    pub fn build_overlay_instances(&mut self) {
+        let map_mode = self.state.map_mode;
+        let settlement_edges = self
+            .state
+            .selected_settlement_id
+            .map(creator_overlay_instances::settlement_control_edges);
+
+        creator_overlay_instances::build_overlay(
+            &self.state,
+            &mut self.overlay_vertex_data,
+            move |state, tile, output| {
+                match map_mode {
+                    _ => creator_overlay_instances::no_overlay_fill(state, tile, output),
+                }
+            },
+            move |state, tile, tiles_by_position, output| {
+                match map_mode {
+                    _ => creator_overlay_instances::no_overlay_edges(
+                        state,
+                        tile,
+                        tiles_by_position,
+                        output,
+                    ),
+                }
+
+                if let Some(create_settlement_edges) = &settlement_edges {
+                    create_settlement_edges(state, tile, tiles_by_position, output);
+                }
+            },
+        );
+    }
+
     pub fn calculate_instances(&mut self) {
         creator_terrain_tile_instances::build(&self.state, &mut self.tile_instance_data);
         creator_map_detail_instances::build(&self.config, &self.state, &mut self.map_detail_vertex_data);
@@ -147,6 +189,14 @@ impl Renderer {
 
     pub fn get_grid_instances(&self) -> &Vec<GridOverlayInstance> {
         &self.overlay_vertex_data.grid_instances
+    }
+
+    pub fn get_overlay_fill_instances(&self) -> &Vec<GenericFillOverlayInstance> {
+        &self.overlay_vertex_data.fill_instances
+    }
+
+    pub fn get_overlay_edge_instances(&self) -> &Vec<GenericEdgeOverlayInstance> {
+        &self.overlay_vertex_data.edge_instances
     }
 
 }
