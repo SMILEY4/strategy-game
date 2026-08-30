@@ -1,4 +1,5 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
+use rustc_hash::FxHashMap;
 use crate::js::models::{Control, Entity, HexPosition, Tile};
 use crate::render::models::chunk::Chunk;
 
@@ -9,6 +10,6 @@ pub struct RenderState {
     pub player_ids: Vec<String>,
     pub settlement_ids: Vec<String>,
     pub entities: Vec<Entity>,
-    pub chunks: HashMap<HexPosition, Chunk>,
+    pub chunks: FxHashMap<HexPosition, Chunk>,
     pub visible_chunks: HashSet<HexPosition>,
 }

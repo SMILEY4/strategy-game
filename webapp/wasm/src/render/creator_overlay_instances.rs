@@ -1,9 +1,11 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 use crate::js::models::{
     HexPosition, Tile, TILE_VISIBILITY_UNDISCOVERED,
 };
 use crate::render::models::render_state::RenderState;
-use crate::render::models::tile_instance_data::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, OverlayVertexData};
+use crate::render::models::tile_instance_data::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, OverlayVertexData, OVERLAY_EDGE_STYLE_DASHED};
+
+const SETTLEMENT_CONTROL_COLOR: [f32; 4] = [1.0, 0.85, 0.2, 1.0];
 
 pub fn build_tile_grid(state: &RenderState, instance_data: &mut OverlayVertexData) {
     instance_data.grid_instances.clear();
@@ -17,13 +19,13 @@ pub fn build_tile_grid(state: &RenderState, instance_data: &mut OverlayVertexDat
 pub fn build_overlay(
     state: &RenderState,
     instance_data: &mut OverlayVertexData,
-    create_fill_func: impl Fn(&RenderState, &Tile) -> Vec<GenericFillOverlayInstance>,
-    create_edge_func: impl Fn(&RenderState, &Tile, &HashMap<HexPosition, usize>) -> Vec<GenericEdgeOverlayInstance>,
+    create_fill_func: impl Fn(&RenderState, &Tile, &mut Vec<GenericFillOverlayInstance>),
+    create_edge_func: impl Fn(&RenderState, &Tile, &FxHashMap<HexPosition, usize>, &mut Vec<GenericEdgeOverlayInstance>),
 ) {
     instance_data.fill_instances.clear();
     instance_data.edge_instances.clear();
 
-    let mut tiles_by_pos = HashMap::with_capacity(state.tiles.len());
+    let mut tiles_by_pos = FxHashMap::with_capacity_and_hasher(state.tiles.len(), Default::default());
     for (index, tile) in state.tiles.iter().enumerate() {
         tiles_by_pos.insert(tile.tile_position, index);
     }
@@ -37,13 +39,60 @@ pub fn build_overlay(
                 return;
             }
 
-            let fills = create_fill_func(&state, &tile);
-            instance_data.fill_instances.extend(fills);
-
-            let edges = create_edge_func(&state, &tile, &tiles_by_pos);
-            instance_data.edge_instances.extend(edges);
+            create_fill_func(state, &tile, &mut instance_data.fill_instances);
+            create_edge_func(state, &tile, &tiles_by_pos, &mut instance_data.edge_instances);
 
         })
     });
 }
 
+pub fn no_overlay_fill(_: &RenderState, _: &Tile, _: &mut Vec<GenericFillOverlayInstance>) {
+}
+
+pub fn settlement_control_edges(settlement_id: u32) -> impl Fn(&RenderState, &Tile, &FxHashMap<HexPosition, usize>, &mut Vec<GenericEdgeOverlayInstance>) {
+    move |state, tile, tiles_by_pos, output| {
+        if control_amount(state, tile, settlement_id) <= 0.0 {
+            return;
+        }
+
+        for (direction, neighbour_position) in neighbour_directions(tile.tile_position) {
+            let neighbour_amount = tiles_by_pos
+                .get(&neighbour_position)
+                .map(|index| control_amount(state, &state.tiles[*index], settlement_id))
+                .unwrap_or(0.0);
+
+            if neighbour_amount <= 0.0 {
+                output.push(GenericEdgeOverlayInstance {
+                    position: [tile.tile_position.q as f32, tile.tile_position.r as f32],
+                    direction,
+                    color: SETTLEMENT_CONTROL_COLOR,
+                    style: OVERLAY_EDGE_STYLE_DASHED,
+                });
+            }
+        }
+    }
+}
+
+fn control_amount(state: &RenderState, tile: &Tile, settlement_id: u32) -> f32 {
+    let start = tile.control_offset as usize;
+    let end = start
+        .saturating_add(tile.control_count as usize)
+        .min(state.controls.len());
+
+    state.controls[start.min(end)..end]
+        .iter()
+        .filter(|control| control.settlement_id == settlement_id)
+        .map(|control| control.amount)
+        .sum()
+}
+
+fn neighbour_directions(position: HexPosition) -> [(u32, HexPosition); 6] {
+    [
+        (0, HexPosition { q: position.q + 1, r: position.r }),
+        (1, HexPosition { q: position.q + 1, r: position.r - 1 }),
+        (2, HexPosition { q: position.q, r: position.r - 1 }),
+        (3, HexPosition { q: position.q - 1, r: position.r }),
+        (4, HexPosition { q: position.q - 1, r: position.r + 1 }),
+        (5, HexPosition { q: position.q, r: position.r + 1 }),
+    ]
+}

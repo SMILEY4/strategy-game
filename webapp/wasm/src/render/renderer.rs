@@ -4,7 +4,8 @@ use crate::render::models::chunk::Chunk;
 use crate::render::models::config::RenderConfig;
 use crate::render::models::render_state::RenderState;
 use crate::render::models::tile_instance_data::{GridOverlayInstance, MapDetailVertex, MapDetailsVertexData, OverlayVertexData, TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
+use rustc_hash::FxHashMap;
 
 pub struct Renderer {
     config: RenderConfig,
@@ -63,7 +64,7 @@ impl Renderer {
     /// Returns whether the list of chunks changed (independent of order or contained tiles)
     pub fn calculate_all_chunks(&mut self) -> bool {
         
-        let mut new_chunks: HashMap<HexPosition, Chunk> = HashMap::new();
+        let mut new_chunks: FxHashMap<HexPosition, Chunk> = FxHashMap::default();
         
         for (index, tile) in self.state.tiles.iter().enumerate() {
             new_chunks
