@@ -1,9 +1,9 @@
 use crate::js::models::{Entity, HexPosition, SpriteSheetEntry, Tile};
-use crate::render::{creator_map_detail_instances, creator_terrain_tile_instances};
+use crate::render::{creator_map_detail_instances, creator_overlay_instances, creator_terrain_tile_instances};
 use crate::render::models::chunk::Chunk;
 use crate::render::models::config::RenderConfig;
 use crate::render::models::render_state::RenderState;
-use crate::render::models::tile_instance_data::{MapDetailVertex, MapDetailsVertexData, TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
+use crate::render::models::tile_instance_data::{GridOverlayInstance, MapDetailVertex, MapDetailsVertexData, OverlayVertexData, TileFogOfWarInstance, TileInstanceData, TileTerrainLandInstance, TileTerrainWaterInstance};
 use std::collections::{HashMap, HashSet};
 
 pub struct Renderer {
@@ -11,6 +11,7 @@ pub struct Renderer {
     state: RenderState,
     tile_instance_data: TileInstanceData,
     map_detail_vertex_data: MapDetailsVertexData,
+    overlay_vertex_data: OverlayVertexData,
 }
 
 impl Renderer {
@@ -20,9 +21,15 @@ impl Renderer {
             state: RenderState::default(),
             tile_instance_data: TileInstanceData::default(),
             map_detail_vertex_data: MapDetailsVertexData::default(),
+            overlay_vertex_data: OverlayVertexData::default(),
         }
     }
 
+    /// initialize renderer once at startup/creation
+    pub fn initialize(&mut self) {
+        creator_overlay_instances::build_tile_grid(&self.state, &mut self.overlay_vertex_data);
+    }
+    
     /// add the sprite sheet entries with the given group id
     pub fn set_spritesheet_entries(&mut self, group_id: u8, entries: Vec<SpriteSheetEntry>) {
         self.config.spritesheet_entries.insert(group_id as i32, entries);
@@ -126,6 +133,10 @@ impl Renderer {
 
     pub fn get_map_detail_vertices(&self) -> &Vec<MapDetailVertex> {
         &self.map_detail_vertex_data.map_detail_vertices
+    }
+
+    pub fn get_grid_instances(&self) -> &Vec<GridOverlayInstance> {
+        &self.overlay_vertex_data.grid_instances
     }
 
 }

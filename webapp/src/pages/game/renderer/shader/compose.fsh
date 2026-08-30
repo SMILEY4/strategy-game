@@ -7,6 +7,7 @@ uniform sampler2D u_layerBaseTerrain;
 uniform sampler2D u_layerCoastlineMask;
 uniform sampler2D u_layerFogOfWar;
 uniform sampler2D u_layerMapDetails;
+uniform sampler2D u_layerOverlay;
 
 uniform float u_dbg_terrainCutoff;
 
@@ -62,5 +63,10 @@ void main() {
     vec3 finalColor = vec3(159.0 / 255.0, 183.0 / 255.0, 187.0 / 255.0) * visibilityTerrain;
     finalColor = mix(finalColor, colorTerrain.rgb, colorTerrain.a);
     finalColor = mix(finalColor, colorMapDetails.rgb, colorMapDetails.a);
+
+    // overlay
+    vec4 layerOverlay = texture(u_layerOverlay, v_textureCoordinates);
+    vec4 colorOverlay = vec4(unpremultiply(layerOverlay), layerOverlay.a);
+    finalColor = mix(finalColor, colorOverlay.rgb, colorOverlay.a);
 
     outColor = vec4(finalColor.rgb, 1.0);}

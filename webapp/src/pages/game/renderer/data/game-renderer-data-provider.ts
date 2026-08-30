@@ -6,10 +6,13 @@ import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import type {SelectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
 import {type EntityDatabase, EntityQueries} from "@app/features/game/database/entity.database.ts";
 import {type CommandDatabase, CommandQueries} from "@app/features/game/database/command.database.ts";
+import type {PointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
 
 /** Data provider interface for the game renderer, supplying tiles and camera state. */
 export interface GameRendererDataProvider {
     getDebugData: () => DebugData & { revId: string }
+    getPointerWorldPosition: () => [number, number]
+    getPointerHexPosition: () => [number, number]
     getCameraRevId: () => string,
     getCamera: () => RenderCamera,
     getTilesRevId: () => string;
@@ -27,6 +30,7 @@ interface Dependencies {
     commandDb: CommandDatabase,
     selectedTileDb: SelectedTileDatabase,
     cameraDb: CameraDatabase;
+    pointerPositionDb: PointerPositionDatabase
     debugDb: DebugDatabase;
 }
 
@@ -36,6 +40,7 @@ export const gameRendererDataProvider = ({
                                              commandDb,
                                              selectedTileDb,
                                              cameraDb,
+                                             pointerPositionDb,
                                              debugDb,
                                          }: Dependencies): GameRendererDataProvider => {
 
@@ -46,6 +51,14 @@ export const gameRendererDataProvider = ({
                 ...debugDb.get(),
                 revId: debugDb.getRevId(),
             };
+        },
+
+        getPointerWorldPosition: () => {
+            return pointerPositionDb.get().world
+        },
+
+        getPointerHexPosition: () => {
+            return pointerPositionDb.get().hex
         },
 
         getCameraRevId: () => {

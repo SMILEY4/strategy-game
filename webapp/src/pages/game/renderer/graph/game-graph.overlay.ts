@@ -1,27 +1,26 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
-import SHADER_FOW_VERT from "./../shader/fogOfWar.vsh";
-import SHADER_FOW_FRAG from "./../shader/fogOfWar.fsh";
-import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
+import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import SHADER_COMPOSE_VERT from "./../shader/overlayGrid.vsh";
+import SHADER_COMPOSE_FRAG from "./../shader/overlayGrid.fsh";
 
-
-export function gameGraphPassFogOfWar(
+export function gameGraphPassOverlay(
     g: RenderGraphBuilder,
     wasmApi: GameGraphWasmApi,
     inputs: {
-        wasmTileInstances: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
+        dataPointerWorld: DataRenderGraphNode<[number, number]>,
+        dataPointerHex: DataRenderGraphNode<[number, number]>,
+        dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
     },
 ) {
 
-    const meshTransformer = g.transformVertexOut({
+    const gridMeshTransformer = g.transformVertexOut({
         inputs: [],
         outputs: {
             mesh: {
@@ -33,9 +32,9 @@ export function gameGraphPassFogOfWar(
                         amountComponents: 3,
                     },
                     {
-                        name: "textureCoordinates",
+                        name: "center",
                         type: GlAttributeType.FLOAT,
-                        amountComponents: 2,
+                        amountComponents: 1,
                     },
                 ],
             },
@@ -43,22 +42,38 @@ export function gameGraphPassFogOfWar(
         func: () => {
             return {
                 "mesh": {
-                    data: createUnitHexagonMesh(true, false),
+                    data: createUnitHexagonMesh(false, true),
                     count: 6 * 3,
                 },
             };
         },
     });
 
+
+    const buildGridInstances = g.wasmOperation({
+        wasmInputs: [],
+        dataInputs: [],
+        outputs: ["gridInstances"],
+        func: () => ({ gridInstances: true }),
+    });
+
+    const wasmGridInstances = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: buildGridInstances,
+            key: "gridInstances",
+        },
+    });
+
     const geometry = g.geometry({
         sources: [
             g.geometrySource({
-                source: meshTransformer,
+                source: gridMeshTransformer,
                 output: "mesh",
             }),
             g.wasmGeometrySource({
-                source: inputs.wasmTileInstances,
-                download: () => wasmApi.downloadTileFogOfWarInstances(),
+                source: wasmGridInstances,
+                download: () => wasmApi.downloadOverlayGridInstances(),
                 content: "instances",
                 layout: [
                     {
@@ -66,28 +81,15 @@ export function gameGraphPassFogOfWar(
                         type: GlAttributeType.FLOAT,
                         amountComponents: 2,
                     },
-                    {
-                        name: "visibility",
-                        type: GlAttributeType.U_BYTE,
-                        amountComponents: 1,
-                    },
-                    {
-                        name: "_padding",
-                        type: GlAttributeType.PADDING,
-                        amountComponents: 3,
-                    },
                 ],
             }),
         ],
     });
 
-    const textureStamp = g.texture({
-        url: "/sprites/base_terrain_shape.png",
-    });
 
     const shader = g.shader({
-        srcVertex: SHADER_FOW_VERT,
-        srcFragment: SHADER_FOW_FRAG,
+        srcVertex: SHADER_COMPOSE_VERT,
+        srcFragment: SHADER_COMPOSE_FRAG,
         prefixUniforms: "u_",
         prefixVertexAttributes: "in_",
     });
@@ -99,10 +101,17 @@ export function gameGraphPassFogOfWar(
         })
     )
 
-    const dataDebugScale = g.dataTransformer(
+    const dataDebugColor = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.fogOfWar.scale
+            func: (data) => data.renderer.grid.color
+        })
+    )
+
+    const dataDebugThickness = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDebug],
+            func: (data) => data.renderer.grid.thickness
         })
     )
 
@@ -111,17 +120,11 @@ export function gameGraphPassFogOfWar(
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
-            "baseTerrain": textureStamp,
-            "dbg_scale": dataDebugScale as DataRenderGraphNode<unknown>,
+            "pointerHexPosition": inputs.dataPointerHex as DataRenderGraphNode<unknown>,
+            "pointerWorldPosition": inputs.dataPointerWorld as DataRenderGraphNode<unknown>,
             "dbg_hexOffsetScale": dataDebugHexOffsetScale as DataRenderGraphNode<unknown>,
-        },
-        blend: gl => {
-            gl.blendFuncSeparate(
-                gl.SRC_ALPHA,
-                gl.ONE,
-                gl.ONE,
-                gl.ONE_MINUS_SRC_ALPHA,
-            );
+            "thickness": dataDebugThickness as DataRenderGraphNode<unknown>,
+            "color": dataDebugColor as DataRenderGraphNode<unknown>,
         },
     });
 
@@ -136,8 +139,10 @@ export function gameGraphPassFogOfWar(
                 format: GLColorStoreFormat.RGBA_8,
             },
         },
-        clearColor: [1, 0, 0, 1],
+        clearColor: [0, 0, 0, 0],
     });
 
-    return {layerFogOfWar: rendertarget};
+    return {
+        layerOverlay: rendertarget
+    };
 }

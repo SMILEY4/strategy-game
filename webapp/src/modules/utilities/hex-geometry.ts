@@ -56,7 +56,7 @@ const VERTEX_COUNT = 6 * 3;
  * The mesh has radius 1, is pointy-top and matches the `hexToWorld` orientation.
  * Interleaved float32 attributes per vertex: `[x, y, z, u, v]`.
  */
-export function createUnitHexagonMesh(): ArrayBuffer {
+export function createUnitHexagonMesh(withUv: boolean, withCenter: boolean): ArrayBuffer {
     const buffer = new ArrayBuffer(VERTEX_COUNT * VERTEX_FLOAT_COUNT * Float32Array.BYTES_PER_ELEMENT);
     const view = new DataView(buffer);
     let viewCounter = 0;
@@ -66,13 +66,25 @@ export function createUnitHexagonMesh(): ArrayBuffer {
         viewCounter += Float32Array.BYTES_PER_ELEMENT;
     }
 
-    function pushVertex(x: number, z: number, u: number, v: number): void {
+    function pushPosition(x: number, z: number): void {
         pushFloat32(x);
         pushFloat32(0);
         pushFloat32(z);
+    }
+
+    function pushUV(u: number, v: number): void {
+        if(withUv) {
         pushFloat32(u);
         pushFloat32(v);
+        }
     }
+
+    function pushCenter(center: number): void {
+        if(withCenter) {
+            pushFloat32(center);
+        }
+    }
+
 
     const center = vec2.fromValues(0, 0);
     const pointerA = vec2.fromValues(0, 1);
@@ -80,12 +92,22 @@ export function createUnitHexagonMesh(): ArrayBuffer {
     vec2.rotate(pointerB, pointerB, center, deg2rad(60));
 
     for (let i = 0; i < 6; i++) {
+
         // center
-        pushVertex(0, 0, 0.5, 0.5);
+        pushPosition(0,0)
+        pushUV(0.5, 0.5)
+        pushCenter(1)
+
         // corner a
-        pushVertex(pointerA[0], pointerA[1], 0.5 + pointerA[0] * 0.5, 0.5 + pointerA[1] * 0.5);
+        pushPosition(pointerA[0], pointerA[1])
+        pushUV(0.5 + pointerA[0] * 0.5, 0.5 + pointerA[1] * 0.5)
+        pushCenter(0)
+
         // corner b
-        pushVertex(pointerB[0], pointerB[1], 0.5 + pointerB[0] * 0.5, 0.5 + pointerB[1] * 0.5);
+        pushPosition(pointerB[0], pointerB[1])
+        pushUV(0.5 + pointerB[0] * 0.5, 0.5 + pointerB[1] * 0.5)
+        pushCenter(0)
+
         // rotate triangle
         vec2.rotate(pointerA, pointerA, center, deg2rad(60));
         vec2.rotate(pointerB, pointerB, center, deg2rad(60));

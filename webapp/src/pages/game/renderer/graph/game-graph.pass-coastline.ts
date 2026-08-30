@@ -43,7 +43,7 @@ export function gameGraphPassCoastline(
         func: () => {
             return {
                 "mesh": {
-                    data: createUnitHexagonMesh(),
+                    data: createUnitHexagonMesh(true, false),
                     count: 6 * 3,
                 },
             };

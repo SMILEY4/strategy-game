@@ -11,6 +11,7 @@ import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {gameGraphPassSelectedTile} from "@pages/game/renderer/graph/game-graph.pass-selected-tile.ts";
 import {gameGraphPassMapDetails} from "@pages/game/renderer/graph/game-graph.pass-map-details.ts";
 import {gameGraphHtml} from "@pages/game/renderer/graph/game-graph.html.ts";
+import {gameGraphPassOverlay} from "@pages/game/renderer/graph/game-graph.overlay.ts";
 
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: GameGraphWasmApi) {
@@ -18,6 +19,14 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     const dataDebug = g.dataExternal<DebugData & { revId: string }>(() => dataProvider.getDebugData(), (prev) => {
         return prev?.revId !== dataProvider.getDebugData().revId;
     });
+
+    const dataPointerWorld = g.dataExternal<[number, number]>(() => dataProvider.getPointerWorldPosition(), (prev => {
+        return prev[0] !== dataProvider.getPointerWorldPosition()[0] || prev[1] !== dataProvider.getPointerWorldPosition()[1]
+    }))
+
+    const dataPointerHex = g.dataExternal<[number, number]>(() => dataProvider.getPointerHexPosition(), (prev => {
+        return prev[0] !== dataProvider.getPointerHexPosition()[0] || prev[1] !== dataProvider.getPointerHexPosition()[1]
+    }))
 
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
 
@@ -50,11 +59,19 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         dataDebug: dataDebug,
     });
 
+    const {layerOverlay} = gameGraphPassOverlay(g, wasmApi, {
+        camera: camera,
+        dataPointerHex: dataPointerHex,
+        dataPointerWorld: dataPointerWorld,
+        dataDebug: dataDebug
+    });
+
     const {drawCompose} = gameGraphPassCompose(g, {
         layerBaseTerrain: layerBaseTerrain,
         layerCoastlineMask: layerCoastlineMask,
         layerFogOfWar: layerFogOfWar,
         layerMapDetails: layerMapDetails,
+        layerOverlay: layerOverlay,
         dataDebug: dataDebug,
     });
 

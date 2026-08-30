@@ -20,9 +20,9 @@ impl WasmRenderApp {
     #[wasm_bindgen(constructor)]
     pub fn new() -> WasmRenderApp {
         console_error_panic_hook::set_once();
-        WasmRenderApp {
-            renderer: Renderer::new(),
-        }
+        let mut renderer = Renderer::new();
+        renderer.initialize();
+        WasmRenderApp { renderer }
     }
 
     pub fn add_spritesheet_entries(&mut self, group_id: u8, entries: Vec<SpriteSheetEntry>) {
@@ -90,5 +90,13 @@ impl WasmRenderApp {
 
     pub fn get_map_detail_vertex_count(&self) -> usize {
         self.renderer.get_map_detail_vertices().len()
+    }
+
+    pub fn get_overlay_grid_instances(&self) -> Uint8Array {
+        direct_buffer::as_js_buffer(self.renderer.get_grid_instances())
+    }
+
+    pub fn get_overlay_grid_instance_count(&self) -> usize {
+        self.renderer.get_grid_instances().len()
     }
 }

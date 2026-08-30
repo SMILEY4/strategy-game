@@ -134,6 +134,19 @@ export const cameraControllerFreecam = ({cameraDb}: Dependencies): CameraControl
             return worldToHex(world[0], world[2]);
         },
 
+        transformScreenToWorld: (x: number, y: number) => {
+            const cam = cameraDb.get();
+            const world = screenToGroundPoint(
+                x, y,
+                cam,
+                canvasWidth, canvasHeight,
+            );
+            if (!world) {
+                throw new Error("Could not transform to world coordinates");
+            }
+            return [world[0], world[2]]
+        },
+
         onResize: (width: number, height: number) => {
             canvasWidth = width;
             canvasHeight = height;

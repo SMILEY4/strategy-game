@@ -25,6 +25,7 @@ export interface GameGraphWasmApi {
     downloadTileWaterInstances: () => VertexDataResult
     downloadTileFogOfWarInstances: () => VertexDataResult
     downloadMapDetailVertices: () => VertexDataResult
+    downloadOverlayGridInstances: () => VertexDataResult
 }
 
 export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
@@ -261,6 +262,15 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             console.log("[wasm-api]: downloading map detail vertices (" + data.count + ")");
             return data;
         },
+
+        downloadOverlayGridInstances: () => {
+            const data = {
+                data: wasmApp.get_overlay_grid_instances(),
+                count: wasmApp.get_overlay_grid_instance_count(),
+            };
+            console.log("[wasm-api]: downloading overlay grid instances (" + data.count + ")");
+            return data;
+        }
 
     };
 

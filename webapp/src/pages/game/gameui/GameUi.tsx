@@ -186,7 +186,53 @@ function useDevOverlay() {
                     }
                 }))
             },
+        }),
+
+        "grid": folder({
+            thicknessGrid: {
+                label: "thickness",
+                value: initialDebugDataValues.renderer.grid.thickness,
+                min: 0,
+                max: 0.2,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        grid: {
+                            ...data.renderer.grid,
+                            thickness: it
+                        }
+                    }
+                }))
+            },
+            colorGrid: {
+                label: "color",
+                value: {
+                    r: initialDebugDataValues.renderer.grid.color[0] * 255,
+                    g: initialDebugDataValues.renderer.grid.color[1] * 255,
+                    b: initialDebugDataValues.renderer.grid.color[2] * 255,
+                    a: initialDebugDataValues.renderer.grid.color[3],
+                },
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        grid: {
+                            ...data.renderer.grid,
+                            color: [
+                                it.r / 255,
+                                it.g / 255,
+                                it.b / 255,
+                                it.a
+                            ]
+                        }
+                    }
+                }))
+            },
         })
+
     });
 
 }

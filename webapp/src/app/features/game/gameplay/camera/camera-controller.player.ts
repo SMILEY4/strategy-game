@@ -163,6 +163,19 @@ export const cameraControllerPlayer = ({cameraDb}: Dependencies): CameraControll
             return worldToHex(world[0], world[2]);
         },
 
+        transformScreenToWorld: (x: number, y: number) => {
+            const cam = cameraDb.get();
+            const world = screenToGroundPoint(
+                x, y,
+                cam,
+                canvasWidth, canvasHeight,
+            );
+            if (!world) {
+                throw new Error("Could not transform to world coordinates");
+            }
+            return [world[0], world[2]]
+        },
+
         onScroll: (delta: number, x: number, y: number) => {
             const cam = cameraDb.get();
             const preZoomWorld = screenToGroundPoint(

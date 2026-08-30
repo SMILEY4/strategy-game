@@ -41,3 +41,15 @@ pub struct MapDetailVertex {
     pub atlas: u32,
     pub is_pending: u32,
 }
+
+
+#[derive(Default)]
+pub struct OverlayVertexData {
+    pub grid_instances: Vec<GridOverlayInstance>
+}
+
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy)]
+pub struct GridOverlayInstance {
+    pub position: [f32; 2],
+}

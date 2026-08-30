@@ -6,6 +6,7 @@ export interface CameraController {
     update: () => void;
     onMouseMove: (mx: number, my: number, x: number, y: number, buttons: number) => void;
     transformScreenToHex: (x: number, y: number) => HexPosition;
+    transformScreenToWorld: (x: number, y: number) => [number,number],
     onScroll: (delta: number, x: number, y: number) => void;
     onResize: (width: number, height: number) => void;
     lookAt: (position: HexPosition) => void,

@@ -1,15 +1,16 @@
 #version 300 es
 
 in vec3 in_vertexPosition;
-in vec2 in_textureCoordinates;
+in float in_center;
 in vec2 in_tilePosition;
 
-uniform mat4 u_camera;
-uniform float u_dbg_scale;
 uniform float u_dbg_hexOffsetScale;
+uniform mat4 u_camera;
+uniform vec2 u_pointerHexPosition;
 
-flat out vec2 v_tilePosition;
-out vec2 v_textureCoordinates;
+out float v_center;
+out vec2 v_worldPosition;
+
 
 #include "utils/random.glsl"
 #include "utils/hex-to-world.glsl"
@@ -25,19 +26,19 @@ vec2 offsetVertexPosition(vec3 worldPosition, float strength) {
 }
 
 void main() {
-    v_tilePosition = in_tilePosition;
-    v_textureCoordinates = in_textureCoordinates;
 
     // tile coordinates
-    vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition);
+    vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition + u_pointerHexPosition);
 
     // calculate world coordinate of each vertex
-    float scale = u_dbg_scale;
-    vec3 vertexWorldPos = tileWorldCenter + (in_vertexPosition * vec3(scale, 1.0, scale));
+    vec3 vertexWorldPos = tileWorldCenter + in_vertexPosition;
 
     // introduce random offset (based on unscaled world position)
-    vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_dbg_hexOffsetScale);
-    vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
+//    vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_dbg_hexOffsetScale);
+//    vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
+
+    v_worldPosition = vertexWorldPos.xz;
+    v_center = in_center;
 
     // project to screen coordinates
     gl_Position = u_camera * vec4(vertexWorldPos, 1.0);

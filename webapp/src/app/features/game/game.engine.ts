@@ -8,6 +8,7 @@ import type {GameActionClickTile} from "@app/features/game/gameplay/game-action.
 import {type EntityDatabase} from "@app/features/game/database/entity.database.ts";
 import {databaseBatch} from "@modules/gamedb/subscribers/batch.ts";
 import {type GameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
+import type {PointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
 
 /** Orchestrates the game lifecycle: connecting via WebSocket and routing messages to the database. */
 export interface GameEngine {
@@ -25,6 +26,7 @@ interface Dependencies {
     client: GameClient,
     wsClient: GameWebsocketClient;
     repository: GameRepository;
+    pointerPositionDb: PointerPositionDatabase,
     tileDb: TileDatabase,
     entityDb: EntityDatabase,
     cameraController: CameraController
@@ -38,6 +40,7 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
         client,
         wsClient,
         repository,
+        pointerPositionDb,
         tileDb,
         entityDb,
         cameraController,
@@ -90,6 +93,13 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
         },
 
         onMouseMove: (mx: number, my: number, x: number, y: number, buttons: number) => {
+            const worldPosition = cameraController.transformScreenToWorld(x, y)
+            const hexPosition = cameraController.transformScreenToHex(x, y)
+            pointerPositionDb.set({
+                screen: [x, y],
+                world: worldPosition,
+                hex: [hexPosition.q, hexPosition.r]
+            })
             cameraController.onMouseMove(mx, my, x, y, buttons);
         },
 
