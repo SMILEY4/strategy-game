@@ -51,8 +51,8 @@ impl WasmRenderApp {
         self.renderer.set_map_mode(map_mode)
     }
 
-    pub fn set_selected_settlement_id(&mut self, settlement_id: Option<u32>) {
-        self.renderer.set_selected_settlement_id(settlement_id)
+    pub fn set_selected_entity_id(&mut self, entity_id: Option<u32>) {
+        self.renderer.set_selected_entity_id(entity_id)
     }
 
     pub fn build_overlay_instances(&mut self) {

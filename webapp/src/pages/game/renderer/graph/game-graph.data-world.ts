@@ -42,10 +42,12 @@ export function gameGraphDataWorld(
         inputs: [dataAllEntities, dataAllCommands],
         func: (entities, commands) => {
             return [
-                ...entities.entities.map(entity => {
+                ...entities.entities.map((entity, index) => {
                     if(EntityUtils.hasComponent(entity, "settlement")) {
                         return {
                             ...entity,
+                            idNumeric: index,
+                            ownerNumeric: 0,
                             renderType: "settlement",
                             isPending: false,
                         } satisfies RenderEntity
@@ -55,6 +57,8 @@ export function gameGraphDataWorld(
                 ...commands.commands.map(command => {
                     if (command.type === "create-settlement") {
                         return {
+                            idNumeric: 0,
+                            ownerNumeric: 0,
                             position: command.location,
                             renderType: "settlement",
                             isPending: true,

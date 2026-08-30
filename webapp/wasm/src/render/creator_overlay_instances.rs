@@ -51,16 +51,16 @@ pub fn no_overlay_edges(
 ) {
 }
 
-pub fn settlement_control_edges(settlement_id: u32) -> impl Fn(&RenderState, &Tile, &rustc_hash::FxHashMap<HexPosition, usize>, &mut Vec<GenericEdgeOverlayInstance>) {
+pub fn entity_control_edges(entity_id: u32) -> impl Fn(&RenderState, &Tile, &rustc_hash::FxHashMap<HexPosition, usize>, &mut Vec<GenericEdgeOverlayInstance>) {
     move |state, tile, tiles_by_pos, output| {
-        if control_amount(state, tile, settlement_id) <= 0.0 {
+        if control_amount(state, tile, entity_id) <= 0.0 {
             return;
         }
 
         for (direction, neighbour_position) in neighbour_directions(tile.tile_position) {
             let neighbour_amount = tiles_by_pos
                 .get(&neighbour_position)
-                .map(|index| control_amount(state, &state.tiles[*index], settlement_id))
+                .map(|index| control_amount(state, &state.tiles[*index], entity_id))
                 .unwrap_or(0.0);
 
             if neighbour_amount <= 0.0 {
@@ -75,7 +75,7 @@ pub fn settlement_control_edges(settlement_id: u32) -> impl Fn(&RenderState, &Ti
     }
 }
 
-fn control_amount(state: &RenderState, tile: &Tile, settlement_id: u32) -> f32 {
+fn control_amount(state: &RenderState, tile: &Tile, entity_id: u32) -> f32 {
     let start = tile.control_offset as usize;
     let end = start
         .saturating_add(tile.control_count as usize)
@@ -83,7 +83,7 @@ fn control_amount(state: &RenderState, tile: &Tile, settlement_id: u32) -> f32 {
 
     state.controls[start.min(end)..end]
         .iter()
-        .filter(|control| control.settlement_id == settlement_id)
+        .filter(|control| control.entity_id == entity_id)
         .map(|control| control.amount)
         .sum()
 }

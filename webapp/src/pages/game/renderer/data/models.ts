@@ -21,6 +21,10 @@ export interface CommandCollection {
 }
 
 export interface RenderEntity {
+    id?: string,
+    idNumeric: number,
+    owner?: string,
+    ownerNumeric: number,
     position: ExtendedHexPosition,
     renderType: "settlement",
     isPending: boolean

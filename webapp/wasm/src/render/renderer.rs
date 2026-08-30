@@ -59,8 +59,8 @@ impl Renderer {
         self.state.map_mode = map_mode;
     }
 
-    pub fn set_selected_settlement_id(&mut self, settlement_id: Option<u32>) {
-        self.state.selected_settlement_id = settlement_id;
+    pub fn set_selected_entity_id(&mut self, entity_id: Option<u32>) {
+        self.state.selected_entity_id = entity_id;
     }
 
     /// Set the complete list of entities for this renderer
@@ -136,10 +136,10 @@ impl Renderer {
 
     pub fn build_overlay_instances(&mut self) {
         let map_mode = self.state.map_mode;
-        let settlement_edges = self
+        let entity_edges = self
             .state
-            .selected_settlement_id
-            .map(creator_overlay_instances::settlement_control_edges);
+            .selected_entity_id
+            .map(creator_overlay_instances::entity_control_edges);
 
         creator_overlay_instances::build_overlay(
             &self.state,
@@ -159,8 +159,8 @@ impl Renderer {
                     ),
                 }
 
-                if let Some(create_settlement_edges) = &settlement_edges {
-                    create_settlement_edges(state, tile, tiles_by_position, output);
+                if let Some(create_entity_edges) = &entity_edges {
+                    create_entity_edges(state, tile, tiles_by_position, output);
                 }
             },
         );

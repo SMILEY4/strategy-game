@@ -10,19 +10,13 @@ import spritesheetTrees from "./spritesheets/trees.atlas.json";
 import spritesheetBuildings from "./spritesheets/buildings.atlas.json";
 import type {RenderEntity} from "@pages/game/renderer/data/models.ts";
 
-const numericId = (ids: Map<string, number>, values: string[], uuid: string): number => {
-    const existing = ids.get(uuid);
-    if (existing !== undefined) return existing;
-    const id = ids.size;
-    ids.set(uuid, id);
-    values.push(uuid);
-    return id;
-};
-
 export interface GameGraphWasmApi {
     configureRenderer: () => Promise<void>,
     uploadTiles: (tiles: Tile[]) => void,
     uploadEntities: (entities: RenderEntity[]) => void,
+    setMapMode: (mapMode: number) => void,
+    setSelectedEntityId: (entityId: string | null) => void,
+    buildOverlayInstances: () => void,
     collectChunks: () => { allChunks: boolean }
     cullChunks: () => { visibleChunks: boolean }
     buildTileInstances: () => {
@@ -35,11 +29,15 @@ export interface GameGraphWasmApi {
     downloadTileFogOfWarInstances: () => VertexDataResult
     downloadMapDetailVertices: () => VertexDataResult
     downloadOverlayGridInstances: () => VertexDataResult
+    downloadOverlayFillInstances: () => VertexDataResult
+    downloadOverlayEdgeInstances: () => VertexDataResult
 }
 
 export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
     const wasmApp: WasmRenderApp = new WasmRenderApp();
+    const playerIds = new Map<string, number>();
+    const entityIds = new Map<string, number>();
 
     type TileUpload = {
         tile: Tile,
@@ -49,7 +47,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
     type ControlUpload = {
         playerId: number,
-        settlementId: number,
+        entityId: number,
         amount: number,
     };
 
@@ -96,7 +94,7 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
 
     const controlSerializer = wasmSerializer<ControlUpload>({
         "player_id": { provider: control => control.playerId, type: "u32" },
-        "settlement_id": { provider: control => control.settlementId, type: "u32" },
+        "entity_id": { provider: control => control.entityId, type: "u32" },
         "amount": { provider: control => control.amount, type: "f32" },
     });
 
@@ -222,19 +220,14 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
         uploadTiles: (tiles: Tile[]) => {
             console.log("[wasm-api]: uploading tiles (" + tiles.length + ")");
 
-            const playerIds = new Map<string, number>();
-            const settlementIds = new Map<string, number>();
-            const playerUuids: string[] = [];
-            const settlementUuids: string[] = [];
-
             const controls: ControlUpload[] = [];
 
             const serializedTiles: TileUpload[] = tiles.map(tile => {
                 const tileControls = tile.political.visible ? tile.political.value.control : [];
                 const controlOffset = controls.length;
                 controls.push(...tileControls.map(control => ({
-                    playerId: numericId(playerIds, playerUuids, control.player),
-                    settlementId: numericId(settlementIds, settlementUuids, control.settlement),
+                    playerId: numericId(playerIds, control.player),
+                    entityId: numericId(entityIds, control.settlement),
                     amount: control.amount,
                 })));
                 return {tile, controlOffset, controlCount: tileControls.length};
@@ -245,11 +238,10 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             tileSerializer(tilesBuffer, serializedTiles);
             wasmApp.tiles_upload(tilesMemory.ptr, tilesMemory.len);
 
-            const controlsMemory = wasmApp.controls_reserve_memory(controls.length);
+            const controlsMemory = wasmApp.tile_control_values_reserve_memory(controls.length);
             const controlsBuffer = new Uint8Array(wasmMemory.buffer, controlsMemory.ptr, controlsMemory.len * controlsMemory.item_size);
             controlSerializer(controlsBuffer, controls);
-            wasmApp.controls_upload(controlsMemory.ptr, controlsMemory.len);
-            wasmApp.set_control_id_mapping(playerUuids, settlementUuids);
+            wasmApp.tile_control_values_upload(controlsMemory.ptr, controlsMemory.len);
         },
 
         uploadEntities: (entities: RenderEntity[]) => {
@@ -259,6 +251,15 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             entitySerializer(buffer, entities);
             wasmApp.entities_upload(memory.ptr, memory.len);
         },
+
+        setMapMode: (mapMode: number) => wasmApp.set_map_mode(mapMode),
+
+        setSelectedEntityId: (entityId: string | null) => {
+            const numericEntityId = entityId === null ? null : entityIds.ids.get(entityId);
+            wasmApp.set_selected_entity_id(numericEntityId ?? null);
+        },
+
+        buildOverlayInstances: () => wasmApp.build_overlay_instances(),
 
         collectChunks: () => {
             const changed = wasmApp.calculate_all_chunks();
@@ -324,7 +325,17 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             };
             console.log("[wasm-api]: downloading overlay grid instances (" + data.count + ")");
             return data;
-        }
+        },
+
+        downloadOverlayFillInstances: () => ({
+            data: wasmApp.get_overlay_fill_instances(),
+            count: wasmApp.get_overlay_fill_instance_count(),
+        }),
+
+        downloadOverlayEdgeInstances: () => ({
+            data: wasmApp.get_overlay_edge_instances(),
+            count: wasmApp.get_overlay_edge_instance_count(),
+        }),
 
     };
 
