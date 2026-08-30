@@ -17,9 +17,9 @@ export const gameActionEndTurn = ({commandDb, wsClient}: Dependencies): GameActi
         wsClient.send({
             type: "ClientGameMessage.SubmitTurn",
             commands: pendingCommands.map(command => {
-                if(command.type === "found-capital") {
+                if(command.type === "create-settlement") {
                     return {
-                        type: "FoundRealmCapital",
+                        type: "CreateSettlement",
                         q: command.location.q,
                         r: command.location.r,
                         name: command.name

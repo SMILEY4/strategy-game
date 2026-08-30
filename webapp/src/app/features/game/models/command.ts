@@ -6,11 +6,11 @@ export interface CommandBase {
 }
 
 export type Command =
-    | CommandFoundCapital
+    | CommandCreateSettlement
 
-export interface CommandFoundCapital extends CommandBase {
+export interface CommandCreateSettlement extends CommandBase {
     id: string,
-    type: "found-capital";
+    type: "create-settlement";
     location: ExtendedHexPosition;
     name: string,
 }

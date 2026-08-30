@@ -53,7 +53,7 @@ export function gameGraphDataWorld(
                     return null;
                 }),
                 ...commands.commands.map(command => {
-                    if (command.type === "found-capital") {
+                    if (command.type === "create-settlement") {
                         return {
                             position: command.location,
                             renderType: "settlement",

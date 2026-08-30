@@ -11,7 +11,6 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
 import io.github.smiley4.strategygame.shared.values.UserId
-import kotlin.math.min
 
 /**
  * Builds the game state snapshot visible to a specific player.
@@ -19,12 +18,15 @@ import kotlin.math.min
 class PlayerStateBuilder {
 
     fun build(game: GameStateContext, player: UserId): ObjectType {
+        val foundedFirstSettlement = game.entities.any {
+            it.owner == player && it.getComponentOrNull<EntityComponent.PlayerSpawn>()?.foundedRealm == true
+        }
         return obj {
             "game" to obj {
                 "turn" to game.turn
             }
             "tiles" to arr[
-                game.tiles.map { tile(game, it, player) }
+                game.tiles.map { tile(game, it, player, foundedFirstSettlement) }
             ]
             "entities" to arr[
                 game.entities
@@ -54,7 +56,7 @@ class PlayerStateBuilder {
                     is EntityComponent.PlayerSpawn -> obj {
                         "type" to "player-spawn"
                         "radius" to component.radius
-                        "foundedFirstSettlement" to component.foundedCapital
+                        "foundedFirstSettlement" to component.foundedRealm
                     }
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
@@ -66,7 +68,7 @@ class PlayerStateBuilder {
         ]
     }
 
-    fun tile(game: GameStateContext, tile: Tile, player: UserId) = obj {
+    fun tile(game: GameStateContext, tile: Tile, player: UserId, foundedFirstSettlement: Boolean) = obj {
         val visibility = getVisibilityAt(game, tile, player)
         "id" to tile.id.id.toString()
         "visibility" to visibility.name
@@ -94,8 +96,14 @@ class PlayerStateBuilder {
                 ]
             }
         }
-        "createCapital" to obj {
-            "allowed" to SettlementValidation.validateCapital(game, tile, player)
+        "createSettlement" to obj {
+            if (foundedFirstSettlement) {
+                "available" to true
+                "allowed" to SettlementValidation.validate(game, tile, player)
+            } else {
+                "firstAvailable" to true
+                "firstAllowed" to SettlementValidation.validateFirst(game, tile, player)
+            }
         }
         "meta" to obj {
             "seed" to tile.meta.seed

@@ -95,7 +95,7 @@ export const CreateSettlementInteraction = createInteractionDefinition<
                     closeWindow(context.createSettlementWindowId);
                 }
                 DI.commandDatabase.insert({
-                    type: "found-capital",
+                    type: "create-settlement",
                     id: genCommandId(),
                     location: context.position,
                     name: context.name ?? ""

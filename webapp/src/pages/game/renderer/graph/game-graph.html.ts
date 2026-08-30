@@ -43,7 +43,7 @@ export function gameGraphHtml(
                     return null;
                 }),
                 ...commands.commands.map(command => {
-                    if (command.type === "found-capital") {
+                    if (command.type === "create-settlement") {
                         return {
                             key: "command/" + command.id,
                             element: SettlementLabel({ name: command.name, pending: true }),
@@ -70,7 +70,7 @@ export function gameGraphHtml(
                     return null;
                 }),
                 ...commands.commands.map(command => {
-                    if (command.type === "found-capital") {
+                    if (command.type === "create-settlement") {
                         return {
                             key: "command/" + command.id,
                             ...worldToView(hexToWorld(command.location, 1, 1), camera)!,

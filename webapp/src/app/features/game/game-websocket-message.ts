@@ -14,7 +14,7 @@ interface SubmitTurn extends GameWebsocketClientMessageBase {
 }
 
 type MessageCommand =
-    | { type: "FoundRealmCapital", q: number, r: number, name: string }
+    | { type: "CreateSettlement", q: number, r: number, name: string }
 
 
 /** Messages sent from server to client over the game WebSocket. */
@@ -52,8 +52,11 @@ interface GameState extends GameWebsocketServerMessageBase {
                     removeOnDeplete: number
                 })[]
             }>
-            createCapital: {
-                allowed: boolean
+            createSettlement: {
+                firstAvailable?: boolean,
+                firstAllowed?: boolean,
+                available?: boolean
+                allowed?: boolean
             }
             meta: {
                 seed: number,

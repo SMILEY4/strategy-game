@@ -17,8 +17,11 @@ export interface Tile {
             removeOnDeplete: number
         })[]
     }>
-    createCapital: {
-        allowed: boolean
+    createSettlement: {
+        firstAvailable?: boolean,
+        firstAllowed?: boolean,
+        available?: boolean
+        allowed?: boolean
     }
     meta: {
         seed: number,

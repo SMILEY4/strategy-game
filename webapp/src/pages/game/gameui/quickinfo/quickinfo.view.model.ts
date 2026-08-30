@@ -93,9 +93,9 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: string } | null): Qu
                 execute: () => void DI.interactionManager.start(CreateSettlementInteraction, {position: tile.position}),
             },
             foundSettlement: {
-                available: !validate.firstSettlementAvailable(),
-                possible: false,
-                execute: () => undefined,
+                available: validate.settlementAvailable(),
+                possible: validate.settlement(tile.position),
+                execute: () => void DI.interactionManager.start(CreateSettlementInteraction, {position: tile.position}),
             },
         },
     };

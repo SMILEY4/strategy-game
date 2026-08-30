@@ -7,15 +7,23 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
 
-class FoundRealmCapitalCommandHandler : CommandHandler<PlayerCommand.FoundRealmCapital> {
+internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.CreateSettlement> {
 
-    override val commandType = PlayerCommand.FoundRealmCapital::class
+    override val commandType = PlayerCommand.CreateSettlement::class
 
-    override fun handle(gameState: GameStateContext, command: PlayerCommand.FoundRealmCapital) {
+    override fun handle(gameState: GameStateContext, command: PlayerCommand.CreateSettlement) {
+
+        // find spawn entity -> whether it is the first, realm-founding settlement
+        val spawnEntity = gameState.entities.first { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == command.playerId }
 
         // validate
-        if (!SettlementValidation.validateCapital(gameState, command.location, command.playerId)) {
-            throw IllegalArgumentException("Invalid settlement location")
+        val valid = if (spawnEntity.getComponent<EntityComponent.PlayerSpawn>().foundedRealm) {
+            SettlementValidation.validate(gameState, command.location, command.playerId)
+        } else {
+            SettlementValidation.validateFirst(gameState, command.location, command.playerId)
+        }
+        if (!valid) {
+            throw IllegalArgumentException("Invalid settlement command")
         }
 
         // create settlement
@@ -32,10 +40,8 @@ class FoundRealmCapitalCommandHandler : CommandHandler<PlayerCommand.FoundRealmC
             )
         )
 
-        // mark spawn as "founded capital"
-        gameState.entities.find { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == command.playerId }?.also {
-            it.getComponent<EntityComponent.PlayerSpawn>().foundedCapital = true
-        }
+        // mark spawn as has "founded realm"
+        spawnEntity.getComponent<EntityComponent.PlayerSpawn>().foundedRealm = true
 
         // mark tiles as discovered
         tile.position.iterateCircle(2) { pos ->

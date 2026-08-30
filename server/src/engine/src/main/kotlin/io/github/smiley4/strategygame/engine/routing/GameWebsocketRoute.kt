@@ -100,14 +100,14 @@ internal sealed interface PlayerCommandDto {
 
 
     @Serializable
-    @SerialName("FoundRealmCapital")
-    class FoundRealmCapital(
+    @SerialName("CreateSettlement")
+    class CreateSettlement(
         val q: Int,
         val r: Int,
         val name: String
     ) : PlayerCommandDto {
 
-        override fun toDomain(user: UserId) = PlayerCommand.FoundRealmCapital(
+        override fun toDomain(user: UserId) = PlayerCommand.CreateSettlement(
             playerId = user,
             location = HexPosition(
                 q = this.q,
