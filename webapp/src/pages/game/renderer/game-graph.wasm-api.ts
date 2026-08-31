@@ -9,14 +9,19 @@ import spritesheetHills from "./spritesheets/hills.atlas.json";
 import spritesheetTrees from "./spritesheets/trees.atlas.json";
 import spritesheetBuildings from "./spritesheets/buildings.atlas.json";
 import type {RenderEntity} from "@pages/game/renderer/data/models.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {Entity} from "@app/features/game/models/entity.ts";
 
 export interface GameGraphWasmApi {
     configureRenderer: () => Promise<void>,
     uploadTiles: (tiles: Tile[]) => void,
     uploadEntities: (entities: RenderEntity[]) => void,
-    setMapMode: (mapMode: number) => void,
-    setSelectedEntityId: (entityId: number | null) => void,
-    buildOverlayInstances: () => void,
+    setMapMode: (mapMode: MapMode) => void,
+    setSelectedEntityId: (entity: Entity | null) => void,
+    buildOverlayInstances: () => {
+        overlayFillInstances: boolean,
+        overlayEdgeInstances: boolean
+    },
     collectChunks: () => { allChunks: boolean }
     cullChunks: () => { visibleChunks: boolean }
     buildTileInstances: () => {
@@ -250,13 +255,22 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             wasmApp.entities_upload(memory.ptr, memory.len);
         },
 
-        setMapMode: (mapMode: number) => wasmApp.set_map_mode(mapMode),
-
-        setSelectedEntityId: (entityId: number | null) => {
-            wasmApp.set_selected_entity_id(entityId);
+        setMapMode: (mapMode: MapMode) => {
+            wasmApp.set_map_mode(mapMode.numericId)
         },
 
-        buildOverlayInstances: () => wasmApp.build_overlay_instances(),
+        setSelectedEntityId: (entity: Entity | null) => {
+            wasmApp.set_selected_entity_id(entity ? entity.id : null);
+        },
+
+        buildOverlayInstances: () => {
+            console.log("[wasm-api]: building overlay instances");
+            const changed = wasmApp.build_overlay_instances()
+            return {
+                overlayEdgeInstances: changed,
+                overlayFillInstances: changed
+            }
+        },
 
         collectChunks: () => {
             const changed = wasmApp.calculate_all_chunks();

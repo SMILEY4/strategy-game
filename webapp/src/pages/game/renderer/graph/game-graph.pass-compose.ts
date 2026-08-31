@@ -14,6 +14,7 @@ export function gameGraphPassCompose(
         layerCoastlineMask: RendertargetRenderGraphNode<"color">,
         layerFogOfWar: RendertargetRenderGraphNode<"color">,
         layerMapDetails: RendertargetRenderGraphNode<"color" | "depth">,
+        layerTileGrid: RendertargetRenderGraphNode<"color">,
         layerOverlay: RendertargetRenderGraphNode<"color">,
         dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
     },
@@ -112,6 +113,10 @@ export function gameGraphPassCompose(
             }),
             "layerOverlay": g.pickRendertargetAttachment({
                 rendertarget: inputs.layerOverlay,
+                attachment: "color"
+            }),
+            "layerTileGrid": g.pickRendertargetAttachment({
+                rendertarget: inputs.layerTileGrid,
                 attachment: "color"
             }),
             "dbg_terrainCutoff": dataDebugTerrainCutoff as DataRenderGraphNode<unknown>

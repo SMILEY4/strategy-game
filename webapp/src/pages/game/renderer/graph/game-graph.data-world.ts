@@ -140,6 +140,7 @@ export function gameGraphDataWorld(
     });
 
     return {
+        wasmVisibleChunks: wasmVisibleChunks,
         wasmTileTerrainInstances: wasmTileTerrainInstances,
         wasmTileFogOfWarInstances: wasmTileFogOfWarInstances,
         wasmMapDetailVertices: wasmMapDetailVertices,

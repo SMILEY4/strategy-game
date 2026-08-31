@@ -55,8 +55,9 @@ impl WasmRenderApp {
         self.renderer.set_selected_entity_id(entity_id)
     }
 
-    pub fn build_overlay_instances(&mut self) {
-        self.renderer.build_overlay_instances()
+    pub fn build_overlay_instances(&mut self) -> bool {
+        self.renderer.build_overlay_instances();
+        true
     }
 
     pub fn entities_reserve_memory(&self, len: usize) -> DirectMemoryHandle {

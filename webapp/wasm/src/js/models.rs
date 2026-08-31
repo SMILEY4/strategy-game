@@ -101,3 +101,8 @@ pub struct SpriteSheetEntry {
     pub n_size: Size,
     pub scale: f32,
 }
+
+
+pub const MAP_MODE_TERRAIN: u32 = 1;
+pub const MAP_MODE_POLITICAL: u32 = 2;
+pub const MAP_MODE_SETTLEMENT_LOCATIONS: u32 = 3;

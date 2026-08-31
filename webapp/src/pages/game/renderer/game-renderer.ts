@@ -21,6 +21,7 @@ export class GameRenderer {
             commandDb: DI.commandDatabase,
             debugDb: DI.debugDatabase,
             selectedTileDb: DI.selectedTileDatabase,
+            mapModeDb: DI.mapModeDatabase,
             pointerPositionDb: DI.pointerPositionDatabase,
         });
         this.wasmApi = gameGraphWasmApiJsImplementation();

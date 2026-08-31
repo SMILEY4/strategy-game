@@ -7,6 +7,9 @@ import type {SelectedTileDatabase} from "@app/features/game/database/selected-ti
 import {type EntityDatabase, EntityQueries} from "@app/features/game/database/entity.database.ts";
 import {type CommandDatabase, CommandQueries} from "@app/features/game/database/command.database.ts";
 import type {PointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {Entity} from "@app/features/game/models/entity.ts";
+import type {MapModeDatabase} from "@app/features/game/database/mapmode.database.ts";
 
 /** Data provider interface for the game renderer, supplying tiles and camera state. */
 export interface GameRendererDataProvider {
@@ -22,6 +25,8 @@ export interface GameRendererDataProvider {
     getEntities: () => EntityCollection;
     getCommands: () => CommandCollection
     getCommandsRevId: () => string
+    getMapMode: () => MapMode,
+    getSelectedEntity: () => Entity | null
 }
 
 interface Dependencies {
@@ -29,6 +34,7 @@ interface Dependencies {
     entityDb: EntityDatabase,
     commandDb: CommandDatabase,
     selectedTileDb: SelectedTileDatabase,
+    mapModeDb: MapModeDatabase,
     cameraDb: CameraDatabase;
     pointerPositionDb: PointerPositionDatabase
     debugDb: DebugDatabase;
@@ -39,6 +45,7 @@ export const gameRendererDataProvider = ({
                                              entityDb,
                                              commandDb,
                                              selectedTileDb,
+                                             mapModeDb,
                                              cameraDb,
                                              pointerPositionDb,
                                              debugDb,
@@ -54,11 +61,11 @@ export const gameRendererDataProvider = ({
         },
 
         getPointerWorldPosition: () => {
-            return pointerPositionDb.get().world
+            return pointerPositionDb.get().world;
         },
 
         getPointerHexPosition: () => {
-            return pointerPositionDb.get().hex
+            return pointerPositionDb.get().hex;
         },
 
         getCameraRevId: () => {
@@ -107,6 +114,16 @@ export const gameRendererDataProvider = ({
 
         getCommandsRevId: () => {
             return commandDb.getRevId();
+        },
+
+        getMapMode: () => {
+            return mapModeDb.get();
+        },
+
+        getSelectedEntity: () => {
+            const selectedTile = selectedTileDb.get().selected;
+            if (!selectedTile) return null;
+            return entityDb.querySingle(EntityQueries.BY_POSITION, selectedTile);
         },
 
     };

@@ -46,8 +46,6 @@ export function worldToHex(x: number, z: number): HexAxialPosition {
     return {q: hexQ, r: hexR};
 }
 
-/** Number of floats per vertex in the unit hexagon mesh: 3 position + 2 UV. */
-const VERTEX_FLOAT_COUNT = 5;
 /** Unit hexagon mesh vertices: 6 triangles × 3 vertices. */
 const VERTEX_COUNT = 6 * 3;
 
@@ -57,7 +55,12 @@ const VERTEX_COUNT = 6 * 3;
  * Interleaved float32 attributes per vertex: `[x, y, z, u, v]`.
  */
 export function createUnitHexagonMesh(withUv: boolean, withCenter: boolean): ArrayBuffer {
-    const buffer = new ArrayBuffer(VERTEX_COUNT * VERTEX_FLOAT_COUNT * Float32Array.BYTES_PER_ELEMENT);
+
+    let floatCount = 3;
+    if(withUv) floatCount += 2
+    if(withCenter) floatCount += 1
+
+    const buffer = new ArrayBuffer(VERTEX_COUNT * floatCount * Float32Array.BYTES_PER_ELEMENT);
     const view = new DataView(buffer);
     let viewCounter = 0;
 
@@ -74,8 +77,8 @@ export function createUnitHexagonMesh(withUv: boolean, withCenter: boolean): Arr
 
     function pushUV(u: number, v: number): void {
         if(withUv) {
-        pushFloat32(u);
-        pushFloat32(v);
+            pushFloat32(u);
+            pushFloat32(v);
         }
     }
 

@@ -3,24 +3,136 @@ import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
+import type {Entity} from "@app/features/game/models/entity.ts";
+import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
 import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
-import SHADER_COMPOSE_VERT from "./../shader/overlayGrid.vsh";
-import SHADER_COMPOSE_FRAG from "./../shader/overlayGrid.fsh";
+import {vec2} from "gl-matrix";
+
+import SHADER_FILL_VERT from "./../shader/overlayFill.vsh";
+import SHADER_FILL_FRAG from "./../shader/overlayFill.fsh";
+import SHADER_EDGE_VERT from "./../shader/overlayEdge.vsh";
+import SHADER_EDGE_FRAG from "./../shader/overlayEdge.fsh";
 
 export function gameGraphPassOverlay(
     g: RenderGraphBuilder,
+    dataProvider: GameRendererDataProvider,
     wasmApi: GameGraphWasmApi,
     inputs: {
+        visibleChunks: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
-        dataPointerWorld: DataRenderGraphNode<[number, number]>,
-        dataPointerHex: DataRenderGraphNode<[number, number]>,
         dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
     },
 ) {
 
-    const gridMeshTransformer = g.transformVertexOut({
+    const dataMapMode = g.dataExternal<MapMode>(() => dataProvider.getMapMode(), (prev => {
+        return prev.id !== dataProvider.getMapMode().id;
+    }));
+
+
+    const dataSelectedEntity = g.dataExternal<Entity | null>(() => dataProvider.getSelectedEntity(), (prev => {
+        return prev?.id !== dataProvider.getSelectedEntity()?.id;
+    }));
+
+    const wasmMapMode = g.wasmData({
+        source: {
+            type: "js",
+            data: dataMapMode,
+            upload: (mode: MapMode) => wasmApi.setMapMode(mode),
+        },
+    });
+
+    const wasmSelectedEntity = g.wasmData({
+        source: {
+            type: "js",
+            data: dataSelectedEntity,
+            upload: (entity: Entity | null) => wasmApi.setSelectedEntityId(entity),
+        },
+    });
+
+    const buildOverlayInstances = g.wasmOperation({
+        wasmInputs: [inputs.visibleChunks, wasmMapMode, wasmSelectedEntity],
+        dataInputs: [],
+        outputs: ["overlayFillInstances", "overlayEdgeInstances"],
+        func: () => wasmApi.buildOverlayInstances(),
+    });
+
+
+    const wasmOverlayFillInstances = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: buildOverlayInstances,
+            key: "overlayFillInstances",
+        },
+    });
+
+    const meshTransformerFill = g.transformVertexOut({
+        inputs: [],
+        outputs: {
+            mesh: {
+                content: "vertices",
+                layout: [
+                    {
+                        name: "vertexPosition",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 3,
+                    },
+                ],
+            },
+        },
+        func: () => {
+            return {
+                "mesh": {
+                    data: createUnitHexagonMesh(false, false),
+                    count: 6 * 3,
+                },
+            };
+        },
+    });
+
+    const geometryFill = g.geometry({
+        sources: [
+            g.geometrySource({
+                source: meshTransformerFill,
+                output: "mesh",
+            }),
+            g.wasmGeometrySource({
+                source: wasmOverlayFillInstances,
+                download: () => wasmApi.downloadOverlayFillInstances(),
+                content: "instances",
+                layout: [ /*todo*/],
+            }),
+        ],
+    });
+
+    const shaderFill = g.shader({
+        srcVertex: SHADER_FILL_VERT,
+        srcFragment: SHADER_FILL_FRAG,
+        prefixUniforms: "u_",
+        prefixVertexAttributes: "in_",
+    });
+
+    const drawFill = g.draw({
+        shader: shaderFill,
+        geometry: geometryFill,
+        inputs: {
+            "camera": inputs.camera,
+        },
+    });
+
+
+    const wasmOverlayEdgeInstances = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: buildOverlayInstances,
+            key: "overlayEdgeInstances",
+        },
+    });
+
+    const meshTransformerEdge = g.transformVertexOut({
         inputs: [],
         outputs: {
             mesh: {
@@ -32,9 +144,9 @@ export function gameGraphPassOverlay(
                         amountComponents: 3,
                     },
                     {
-                        name: "center",
+                        name: "corner",
                         type: GlAttributeType.FLOAT,
-                        amountComponents: 1,
+                        amountComponents: 3,
                     },
                 ],
             },
@@ -42,97 +154,49 @@ export function gameGraphPassOverlay(
         func: () => {
             return {
                 "mesh": {
-                    data: createUnitHexagonMesh(false, true),
-                    count: 6 * 3,
+                    data: createUnitHexagonSlice(),
+                    count: 3,
                 },
             };
         },
     });
 
-
-    const buildGridInstances = g.wasmOperation({
-        wasmInputs: [],
-        dataInputs: [],
-        outputs: ["gridInstances"],
-        func: () => ({ gridInstances: true }),
-    });
-
-    const wasmGridInstances = g.wasmData({
-        source: {
-            type: "wasm",
-            operation: buildGridInstances,
-            key: "gridInstances",
-        },
-    });
-
-    const geometry = g.geometry({
+    const geometryEdge = g.geometry({
         sources: [
             g.geometrySource({
-                source: gridMeshTransformer,
+                source: meshTransformerEdge,
                 output: "mesh",
             }),
             g.wasmGeometrySource({
-                source: wasmGridInstances,
-                download: () => wasmApi.downloadOverlayGridInstances(),
+                source: wasmOverlayEdgeInstances,
+                download: () => wasmApi.downloadOverlayEdgeInstances(),
                 content: "instances",
-                layout: [
-                    {
-                        name: "tilePosition",
-                        type: GlAttributeType.FLOAT,
-                        amountComponents: 2,
-                    },
-                ],
+                layout: [ /*todo*/],
             }),
         ],
     });
 
-
-    const shader = g.shader({
-        srcVertex: SHADER_COMPOSE_VERT,
-        srcFragment: SHADER_COMPOSE_FRAG,
+    const shaderEdge = g.shader({
+        srcVertex: SHADER_EDGE_VERT,
+        srcFragment: SHADER_EDGE_FRAG,
         prefixUniforms: "u_",
         prefixVertexAttributes: "in_",
     });
 
-    const dataDebugHexOffsetScale = g.dataTransformer(
-        g.transform({
-            inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.randomHexOffsetScale
-        })
-    )
-
-    const dataDebugColor = g.dataTransformer(
-        g.transform({
-            inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.grid.color
-        })
-    )
-
-    const dataDebugThickness = g.dataTransformer(
-        g.transform({
-            inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.grid.thickness
-        })
-    )
-
-    const draw = g.draw({
-        shader: shader,
-        geometry: geometry,
+    const drawEdge = g.draw({
+        shader: shaderEdge,
+        geometry: geometryEdge,
         inputs: {
             "camera": inputs.camera,
-            "pointerHexPosition": inputs.dataPointerHex as DataRenderGraphNode<unknown>,
-            "pointerWorldPosition": inputs.dataPointerWorld as DataRenderGraphNode<unknown>,
-            "dbg_hexOffsetScale": dataDebugHexOffsetScale as DataRenderGraphNode<unknown>,
-            "thickness": dataDebugThickness as DataRenderGraphNode<unknown>,
-            "color": dataDebugColor as DataRenderGraphNode<unknown>,
         },
     });
+
 
     const canvasSize = g.canvasSize();
 
     const rendertarget = g.rendertarget({
         size: canvasSize,
-        renderPasses: [draw],
+        renderPasses: [drawFill, drawEdge],
         attachments: {
             color: {
                 type: "color",
@@ -142,7 +206,53 @@ export function gameGraphPassOverlay(
         clearColor: [0, 0, 0, 0],
     });
 
-    return {
-        layerOverlay: rendertarget
-    };
+    return {layerOverlay: rendertarget};
+
+}
+
+
+export function createUnitHexagonSlice(): ArrayBuffer {
+    const buffer = new ArrayBuffer(3 * 6 * Float32Array.BYTES_PER_ELEMENT);
+    const view = new DataView(buffer);
+    let viewCounter = 0;
+
+    function pushFloat32(value: number): void {
+        view.setFloat32(viewCounter, value, true);
+        viewCounter += Float32Array.BYTES_PER_ELEMENT;
+    }
+
+    function pushPosition(x: number, z: number): void {
+        pushFloat32(x);
+        pushFloat32(0);
+        pushFloat32(z);
+    }
+
+    function pushCorner(a: number, b: number, c: number): void {
+        pushFloat32(a);
+        pushFloat32(b);
+        pushFloat32(c);
+    }
+
+    const center = vec2.fromValues(0, 0);
+    const pointerA = vec2.fromValues(0, 1);
+    const pointerB = vec2.fromValues(0, 1);
+    vec2.rotate(pointerB, pointerB, center, deg2rad(60));
+
+    // center
+    pushPosition(0, 0)
+    pushCorner(0, 0, 1)
+
+    // corner a
+    pushPosition(pointerA[0], pointerA[1]);
+    pushCorner(1, 0, 0)
+
+    // corner b
+    pushPosition(pointerB[0], pointerB[1]);
+    pushCorner(0, 1, 0)
+
+    return buffer;
+}
+
+function deg2rad(degrees: number): number {
+    return degrees * (Math.PI / 180);
 }

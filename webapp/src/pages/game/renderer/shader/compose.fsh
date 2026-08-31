@@ -8,6 +8,7 @@ uniform sampler2D u_layerCoastlineMask;
 uniform sampler2D u_layerFogOfWar;
 uniform sampler2D u_layerMapDetails;
 uniform sampler2D u_layerOverlay;
+uniform sampler2D u_layerTileGrid;
 
 uniform float u_dbg_terrainCutoff;
 
@@ -68,5 +69,10 @@ void main() {
     vec4 layerOverlay = texture(u_layerOverlay, v_textureCoordinates);
     vec4 colorOverlay = vec4(unpremultiply(layerOverlay), layerOverlay.a);
     finalColor = mix(finalColor, colorOverlay.rgb, colorOverlay.a);
+
+    // tile grid
+    vec4 layerTileGrid = texture(u_layerTileGrid, v_textureCoordinates);
+    vec4 colorTileGrid = vec4(unpremultiply(layerTileGrid), layerTileGrid.a);
+    finalColor = mix(finalColor, colorTileGrid.rgb, colorTileGrid.a);
 
     outColor = vec4(finalColor.rgb, 1.0);}
