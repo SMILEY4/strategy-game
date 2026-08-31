@@ -1,5 +1,6 @@
 import type {WebGlDrawCallNode} from "@modules/rendergraph/compile/webgl/webgl-draw-call-graph.node.ts";
 import type {RenderGraphNode} from "@modules/rendergraph/nodes/rg-node.ts";
+import {tracer} from "@modules/monitoring/tracer.ts";
 
 
 interface WebGlState {
@@ -32,58 +33,59 @@ export function sortWebGlDrawCallNodes(nodes: WebGlDrawCallNode[], maxAmountActi
 }
 
 function step(currentState: WebGlState, openDrawCalls: WebGlDrawCallNode[]): StepResult {
+    return tracer.span({ name: "sort-step"}, () => {
 
-    // no more open calls to sort
-    if (openDrawCalls.length === 0) {
-        return {order: [], cost: 0};
-    }
-
-
-    // find candidates, i.e. draw calls that do not depend on any other remaining draw call
-    const candidates = openDrawCalls.filter(open => {
-        return !open.dependsOn.some(dep => openDrawCalls.includes(dep))
-    })
-
-    // no candidates, but open draw calls remaining => invalid graph
-    if (candidates.length == 0) {
-        throw new Error("Invalid graph: no candidates found, but open draw calls remaining (possible cycle detected).");
-    }
-
-    // evaluate candidates
-    const candidateData = candidates.map(candidate => {
-        const {nextState, transitionCost} = computeNextWebGlState(currentState, candidate);
-        return { candidate, nextState, transitionCost}
-    })
-    const candidateEstimationsSorted = candidateData.sort((a, b) => a.transitionCost - b.transitionCost);
-
-    // explore top n candidates
-    let bestResult: { candidate: WebGlDrawCallNode, cost: number, order: WebGlDrawCallNode[] } | null = null
-    for (let i = 0; i < Math.min(MAX_CANDIDATE_WIDTH_TO_EXPLORE, candidateEstimationsSorted.length); i++) {
-        const {candidate, nextState, transitionCost} = candidateEstimationsSorted[i];
-
-        const remaining = openDrawCalls.filter(it => it != candidate)
-
-        const subResult = step(nextState, remaining);
-
-        const totalCost = transitionCost + subResult.cost
-
-        if (bestResult == null || totalCost < bestResult.cost) {
-            bestResult = {
-                candidate,
-                cost: subResult.cost + transitionCost,
-                order: subResult.order
-            };
+        // no more open calls to sort
+        if (openDrawCalls.length === 0) {
+            return {order: [], cost: 0};
         }
-    }
 
-    if (bestResult === null) {
-        throw new Error("Illegal state: no best result found")
-    }
+        // find candidates, i.e. draw calls that do not depend on any other remaining draw call
+        const candidates = openDrawCalls.filter(open => {
+            return !open.dependsOn.some(dep => openDrawCalls.includes(dep))
+        })
 
-    return {
-        order: [bestResult.candidate, ...bestResult.order],
-        cost: bestResult.cost,
-    }
+        // no candidates, but open draw calls remaining => invalid graph
+        if (candidates.length == 0) {
+            throw new Error("Invalid graph: no candidates found, but open draw calls remaining (possible cycle detected).");
+        }
+
+        // evaluate candidates
+        const candidateData = candidates.map(candidate => {
+            const {nextState, transitionCost} = computeNextWebGlState(currentState, candidate);
+            return { candidate, nextState, transitionCost}
+        })
+        const candidateEstimationsSorted = candidateData.sort((a, b) => a.transitionCost - b.transitionCost);
+
+        // explore top n candidates
+        let bestResult: { candidate: WebGlDrawCallNode, cost: number, order: WebGlDrawCallNode[] } | null = null
+        for (let i = 0; i < Math.min(MAX_CANDIDATE_WIDTH_TO_EXPLORE, candidateEstimationsSorted.length); i++) {
+            const {candidate, nextState, transitionCost} = candidateEstimationsSorted[i];
+
+            const remaining = openDrawCalls.filter(it => it != candidate)
+
+            const subResult = step(nextState, remaining);
+
+            const totalCost = transitionCost + subResult.cost
+
+            if (bestResult == null || totalCost < bestResult.cost) {
+                bestResult = {
+                    candidate,
+                    cost: subResult.cost + transitionCost,
+                    order: subResult.order
+                };
+            }
+        }
+
+        if (bestResult === null) {
+            throw new Error("Illegal state: no best result found")
+        }
+
+        return {
+            order: [bestResult.candidate, ...bestResult.order],
+            cost: bestResult.cost,
+        }
+    })
 }
 
 

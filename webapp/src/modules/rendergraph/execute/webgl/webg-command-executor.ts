@@ -8,6 +8,7 @@ import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 import {subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
 import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
+import {tracer} from "@modules/monitoring/tracer.ts";
 
 /** Matrix that negates the clip-space Y axis (see CALCULATE_VIEW_PROJECTION). */
 const MATRIX_FLIP_Y = mat4.fromScaling(mat4.create(), vec3.fromValues(1, -1, 1));
@@ -17,7 +18,8 @@ const MATRIX_FLIP_Y = mat4.fromScaling(mat4.create(), vec3.fromValues(1, -1, 1))
 export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExecutionContext) {
     for (let i = 0, n = commands.length; i < n; i++) {
         try {
-            execute(commands[i], context);
+            const command = commands[i]
+            tracer.span({ name: `webglcmd-${command.type}`}, () => execute(command, context));
         } catch (error) {
             console.error("Failed to execute webgl command", commands[i], context.getResources());
             throw error;

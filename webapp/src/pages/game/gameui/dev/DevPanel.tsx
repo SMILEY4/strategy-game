@@ -1,9 +1,11 @@
-import {folder, useControls} from "leva";
+import {button, folder, useControls} from "leva";
 import {initialDebugDataValues} from "@app/features/game/database/debug.database.ts";
 import {DI} from "@app/app.ts";
+import {tracer} from "@modules/monitoring/tracer.ts";
 
 export function useDevPanel() {
     useControls("rendering", {
+        "Download Trace": button(() => tracer.downloadJSON()),
         randomHexOffsetScale: {
             label: "rnd hex offset",
             value: initialDebugDataValues.renderer.randomHexOffsetScale,

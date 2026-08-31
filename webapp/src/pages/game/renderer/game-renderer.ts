@@ -4,6 +4,7 @@ import {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import {gameRendererDataProvider, type GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import {type GameGraphWasmApi, gameGraphWasmApiJsImplementation} from "@pages/game/renderer/game-graph.wasm-api.ts";
 import {DI} from "@app/app.ts";
+import {tracer} from "@modules/monitoring/tracer.ts";
 
 
 export class GameRenderer {
@@ -25,16 +26,21 @@ export class GameRenderer {
             pointerPositionDb: DI.pointerPositionDatabase,
         });
         this.wasmApi = gameGraphWasmApiJsImplementation();
-        this.renderGraph = WebGlRenderGraph.build(gameGraph(new RenderGraphBuilder(), this.dataProvider, this.wasmApi));
+        this.renderGraph = tracer.span({ name: "rendergraph"}, () => WebGlRenderGraph.build(gameGraph(new RenderGraphBuilder(), this.dataProvider, this.wasmApi)));
     }
 
     public initialize(canvas: HTMLCanvasElement): void {
-        this.renderGraph.initializeCanvas(canvas);
-        this.wasmApi.configureRenderer()
+        void tracer.span({name: "render-init"}, () => {
+            this.renderGraph.initializeCanvas(canvas);
+            return this.wasmApi.configureRenderer();
+        });
     }
 
     public update(): void {
-        this.renderGraph.execute();
+        tracer.span(
+            {name: "render-frame"},
+            () => this.renderGraph.execute(),
+        );
     }
 
     public resize(canvas: HTMLCanvasElement): void {
