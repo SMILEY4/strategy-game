@@ -11,7 +11,6 @@ uniform mat4 u_camera;
 uniform float u_dbg_hexOffsetScale;
 
 out vec3 v_corner;
-flat out uint v_direction;
 out vec4 v_color;
 flat out uint v_style;
 
@@ -30,18 +29,28 @@ vec2 offsetVertexPosition(vec3 worldPosition, float strength) {
 
 void main() {
     v_corner = in_corner;
-    v_direction = in_direction;
     v_color = in_color;
     v_style = in_style;
+
+    // The unit slice is the edge facing the fourth neighbour direction
+    // (q - 1, r + 1). Rotate it around the tile center to the requested edge.
+    // Keep y unchanged: the mesh lies on the ground plane, while x/z are the
+    // horizontal axes in world space.
+    float rotation = radians((4.0 - float(in_direction)) * 60.0);
+    float sine = sin(rotation);
+    float cosine = cos(rotation);
+    vec3 rotatedVertexPosition = in_vertexPosition;
+    rotatedVertexPosition.x = cosine * in_vertexPosition.x - sine * in_vertexPosition.z;
+    rotatedVertexPosition.z = sine * in_vertexPosition.x + cosine * in_vertexPosition.z;
 
     // tile coordinates
     vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition);
 
     // calculate world coordinate of each vertex
-    vec3 vertexWorldPos = tileWorldCenter + in_vertexPosition;
+    vec3 vertexWorldPos = tileWorldCenter + rotatedVertexPosition;
 
     // introduce random offset (based on unscaled world position)
-    vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_dbg_hexOffsetScale);
+    vec2 offset = offsetVertexPosition(tileWorldCenter + rotatedVertexPosition, u_dbg_hexOffsetScale);
     vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
 
     // project to screen coordinates

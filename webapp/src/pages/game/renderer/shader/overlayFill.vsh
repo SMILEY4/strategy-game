@@ -10,6 +10,7 @@ uniform float u_dbg_hexOffsetScale;
 
 out vec4 v_color;
 flat out uint v_style;
+out vec3 v_vertexPosition;
 
 #include "utils/random.glsl"
 #include "utils/hex-to-world.glsl"
@@ -27,6 +28,7 @@ vec2 offsetVertexPosition(vec3 worldPosition, float strength) {
 void main() {
     v_color = in_color;
     v_style = in_style;
+    v_vertexPosition = in_vertexPosition;
 
     // tile coordinates
     vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition);

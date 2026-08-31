@@ -171,7 +171,7 @@ export function gameGraphPassOverlay(
             return {
                 "mesh": {
                     data: createUnitHexagonSlice(),
-                    count: 3,
+                    count: 3 * 3,
                 },
             };
         },
@@ -249,7 +249,9 @@ export function gameGraphPassOverlay(
 
 
 export function createUnitHexagonSlice(): ArrayBuffer {
-    const buffer = new ArrayBuffer(3 * 6 * Float32Array.BYTES_PER_ELEMENT);
+    const numTriangles = 3;
+    const numVertices = numTriangles * 3;
+    const buffer = new ArrayBuffer(numVertices * 6 * Float32Array.BYTES_PER_ELEMENT);
     const view = new DataView(buffer);
     let viewCounter = 0;
 
@@ -271,21 +273,49 @@ export function createUnitHexagonSlice(): ArrayBuffer {
     }
 
     const center = vec2.fromValues(0, 0);
+
+    // Main edge points (0° to 60°)
     const pointerA = vec2.fromValues(0, 1);
     const pointerB = vec2.fromValues(0, 1);
     vec2.rotate(pointerB, pointerB, center, deg2rad(60));
 
-    // center
-    pushPosition(0, 0)
-    pushCorner(0, 0, 1)
+    // Left wing point (-60°)
+    const pointerLeft = vec2.fromValues(0, 1);
+    vec2.rotate(pointerLeft, pointerLeft, center, deg2rad(-60));
 
-    // corner a
+    // Right wing point (120°)
+    const pointerRight = vec2.fromValues(0, 1);
+    vec2.rotate(pointerRight, pointerRight, center, deg2rad(120));
+
+    // --- Triangle 1: Main (Center) Slice ---
+    pushPosition(0, 0);
+    pushCorner(0, 0, 1);
+
     pushPosition(pointerA[0], pointerA[1]);
-    pushCorner(1, 0, 0)
+    pushCorner(1, 0, 0);
 
-    // corner b
     pushPosition(pointerB[0], pointerB[1]);
-    pushCorner(0, 1, 0)
+    pushCorner(0, 1, 0);
+
+    // --- Triangle 2: Left Wing (-60° to 0°) ---
+    pushPosition(0, 0);
+    pushCorner(0, 0, 1);
+
+    pushPosition(pointerLeft[0], pointerLeft[1]);
+    pushCorner(1, 0, 1);
+
+    pushPosition(pointerA[0], pointerA[1]);
+    pushCorner(1, 0, 0);
+
+    // --- Triangle 3: Right Wing (60° to 120°) ---
+    pushPosition(0, 0);
+    pushCorner(0, 0, 1);
+
+    pushPosition(pointerB[0], pointerB[1]);
+    pushCorner(0, 1, 0);
+
+    pushPosition(pointerRight[0], pointerRight[1]);
+    pushCorner(0, 1, 1);
 
     return buffer;
 }
