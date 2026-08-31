@@ -1,8 +1,11 @@
 #version 300 es
 precision mediump float;
 
+in vec4 v_color;
+flat in uint v_style;
+
 out vec4 outColor;
 
 void main() {
-    outColor = vec4(1.0);
+    outColor = v_color;
 }

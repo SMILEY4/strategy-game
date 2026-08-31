@@ -3,11 +3,17 @@
 in vec3 in_vertexPosition;
 in vec3 in_corner;
 in vec2 in_tilePosition;
+in uint in_direction;
+in vec4 in_color;
+in uint in_style;
 
 uniform mat4 u_camera;
 uniform float u_dbg_hexOffsetScale;
 
 out vec3 v_corner;
+flat out uint v_direction;
+out vec4 v_color;
+flat out uint v_style;
 
 #include "utils/random.glsl"
 #include "utils/hex-to-world.glsl"
@@ -24,6 +30,9 @@ vec2 offsetVertexPosition(vec3 worldPosition, float strength) {
 
 void main() {
     v_corner = in_corner;
+    v_direction = in_direction;
+    v_color = in_color;
+    v_style = in_style;
 
     // tile coordinates
     vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition);

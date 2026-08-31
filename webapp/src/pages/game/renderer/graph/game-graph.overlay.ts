@@ -103,7 +103,23 @@ export function gameGraphPassOverlay(
                 source: wasmOverlayFillInstances,
                 download: () => wasmApi.downloadOverlayFillInstances(),
                 content: "instances",
-                layout: [ /*todo*/],
+                layout: [
+                    {
+                        name: "tilePosition",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    },
+                    {
+                        name: "color",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 4,
+                    },
+                    {
+                        name: "style",
+                        type: GlAttributeType.U_INT,
+                        amountComponents: 1,
+                    },
+                ],
             }),
         ],
     });
@@ -171,7 +187,28 @@ export function gameGraphPassOverlay(
                 source: wasmOverlayEdgeInstances,
                 download: () => wasmApi.downloadOverlayEdgeInstances(),
                 content: "instances",
-                layout: [ /*todo*/],
+                layout: [
+                    {
+                        name: "tilePosition",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    },
+                    {
+                        name: "direction",
+                        type: GlAttributeType.U_INT,
+                        amountComponents: 1,
+                    },
+                    {
+                        name: "color",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 4,
+                    },
+                    {
+                        name: "style",
+                        type: GlAttributeType.U_INT,
+                        amountComponents: 1,
+                    },
+                ],
             }),
         ],
     });
