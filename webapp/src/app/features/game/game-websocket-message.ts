@@ -60,14 +60,9 @@ interface GameState extends GameWebsocketServerMessageBase {
                 })[]
             }>
             createSettlement: {
-                // first
-                firstAvailable?: boolean,
-                firstValidLocation?: boolean,
-                firstValidRealm?: boolean,
-                // after first
-                available?: boolean,
-                validLocation?: boolean,
-                validRealm?: boolean,
+                phase: "FOUNDING" | "ESTABLISHED",
+                validLocation: boolean,
+                validRealm: boolean,
             }
             meta: {
                 seed: number,
@@ -83,7 +78,7 @@ interface GameState extends GameWebsocketServerMessageBase {
                 chunkR: number,
             },
             components: (
-                | { type: "player-spawn", radius: number, foundedFirstSettlement: boolean }
+                | { type: "player-spawn", radius: number, hasSettlement: boolean }
                 | { type: "settlement", name: string, isRealmCapital: boolean }
                 )[]
         })[]

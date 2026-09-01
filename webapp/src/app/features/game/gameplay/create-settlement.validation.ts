@@ -9,42 +9,42 @@ import {EntityUtils} from "@app/features/game/models/entity.ts";
 
 export interface CreateSettlementValidation {
 
-    availableFirst: (args: {
+    availableFounding: (args: {
         entityDb: EntityDatabase
     }) => boolean;
 
-    validateFirst: (args: {
+    validateFounding: (args: {
         position: HexPosition,
         hasInteraction: boolean,
         commandDb: CommandDatabase,
         tileDb: TileDatabase
     }) => boolean;
 
-    available: (args: {
+    availableEstablished: (args: {
         entityDb: EntityDatabase
     }) => boolean;
 
-    validate: (args: { position: HexPosition, hasInteraction: boolean, commandDb: CommandDatabase, tileDb: TileDatabase }) => boolean;
+    validateEstablished: (args: { position: HexPosition, hasInteraction: boolean, commandDb: CommandDatabase, tileDb: TileDatabase }) => boolean;
 }
 
 
 export const createSettlementValidation = (): CreateSettlementValidation => ({
 
-    availableFirst: (args) => {
+    availableFounding: (args) => {
 
         const {entityDb} = args;
 
         // check spawn entity exists
         const entities = entityDb.queryMany(EntityQueries.ALL, undefined);
         const spawnEntity = entities.find(it => EntityUtils.hasComponent(it, "player-spawn"));
-        if (!spawnEntity || EntityUtils.getComponentOrThrow(spawnEntity, "player-spawn").foundedFirstSettlement) {
+        if (!spawnEntity || EntityUtils.getComponentOrThrow(spawnEntity, "player-spawn").hasSettlement) {
             return false;
         }
 
         return true;
     },
 
-    validateFirst: (args) => {
+    validateFounding: (args) => {
 
         const {hasInteraction, commandDb, tileDb, position} = args;
 
@@ -56,7 +56,7 @@ export const createSettlementValidation = (): CreateSettlementValidation => ({
 
         // check base game state
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
-        const validGameState = !!tile && tile.createSettlement.firstAvailable && tile.createSettlement.firstValidLocation && tile.createSettlement.firstValidRealm;
+        const validGameState = !!tile && tile.createSettlement.phase === "FOUNDING" && tile.createSettlement.validLocation && tile.createSettlement.validRealm;
         if (!validGameState) {
             return false;
         }
@@ -69,21 +69,21 @@ export const createSettlementValidation = (): CreateSettlementValidation => ({
         return true;
     },
 
-    available: (args) => {
+    availableEstablished: (args) => {
 
         const {entityDb} = args;
 
         // check spawn entity exists but was used to found realm
         const entities = entityDb.queryMany(EntityQueries.ALL, undefined);
         const spawnEntity = entities.find(it => EntityUtils.hasComponent(it, "player-spawn"));
-        if (spawnEntity && !EntityUtils.getComponentOrThrow(spawnEntity, "player-spawn").foundedFirstSettlement) {
+        if (spawnEntity && !EntityUtils.getComponentOrThrow(spawnEntity, "player-spawn").hasSettlement) {
             return false;
         }
 
         return true;
     },
 
-    validate: (args) => {
+    validateEstablished: (args) => {
 
         const {hasInteraction, commandDb, tileDb, position} = args;
 
@@ -95,7 +95,7 @@ export const createSettlementValidation = (): CreateSettlementValidation => ({
 
         // check base game state
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
-        const validGameState = !!tile && tile.createSettlement.available && tile.createSettlement.validLocation && tile.createSettlement.validRealm;
+        const validGameState = !!tile && tile.createSettlement.phase === "ESTABLISHED" && tile.createSettlement.validLocation && tile.createSettlement.validRealm;
         if (!validGameState) {
             return false;
         }
@@ -124,19 +124,19 @@ export function useCreateSettlementValidation() {
     const hasInteraction = useHasInteraction();
 
     return {
-        settlementAvailable: () => DI.createSettlementValidation.available({
+        settlementEstablishedAvailable: () => DI.createSettlementValidation.availableEstablished({
             entityDb: DI.entityDatabase,
         }),
-        settlement: (position: HexPosition) => DI.createSettlementValidation.validate({
+        settlementEstablished: (position: HexPosition) => DI.createSettlementValidation.validateEstablished({
             position: position,
             tileDb: DI.tileDatabase,
             commandDb: DI.commandDatabase,
             hasInteraction: hasInteraction,
         }),
-        firstSettlementAvailable: () => DI.createSettlementValidation.availableFirst({
+        settlementFoundingAvailable: () => DI.createSettlementValidation.availableFounding({
             entityDb: DI.entityDatabase,
         }),
-        firstSettlement: (position: HexPosition) => DI.createSettlementValidation.validateFirst({
+        settlementFounding: (position: HexPosition) => DI.createSettlementValidation.validateFounding({
             position: position,
             tileDb: DI.tileDatabase,
             commandDb: DI.commandDatabase,

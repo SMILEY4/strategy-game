@@ -26,13 +26,9 @@ export interface Tile {
     }>
     createSettlement: {
         // first
-        firstAvailable?: boolean,
-        firstValidLocation?: boolean,
-        firstValidRealm?: boolean,
-        // after first
-        available?: boolean,
-        validLocation?: boolean,
-        validRealm?: boolean,
+        phase: "FOUNDING" | "ESTABLISHED",
+        validLocation: boolean,
+        validRealm: boolean,
     }
     meta: {
         seed: number,

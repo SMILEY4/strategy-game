@@ -19,19 +19,19 @@ export function QuickInfo_Tile(props: QuickInfoTileViewModel) {
 
             <HorizontalLayout spacingXs horizontalStart verticalCenter>
 
-                {props.actions.foundSettlementFirst.available && (
+                {props.actions.foundSettlementFounding.available && (
                     <Button
-                        disabled={!props.actions.foundSettlementFirst.possible}
-                        onClick={props.actions.foundSettlementFirst.execute}
+                        disabled={!props.actions.foundSettlementFounding.possible}
+                        onClick={props.actions.foundSettlementFounding.execute}
                     >
                         Found Capital
                     </Button>
                 )}
 
-                {props.actions.foundSettlement.available && (
+                {props.actions.foundSettlementEstablished.available && (
                     <Button
-                        disabled={!props.actions.foundSettlement.possible}
-                        onClick={props.actions.foundSettlement.execute}
+                        disabled={!props.actions.foundSettlementEstablished.possible}
+                        onClick={props.actions.foundSettlementEstablished.execute}
                     >
                         Found Settlement
                     </Button>

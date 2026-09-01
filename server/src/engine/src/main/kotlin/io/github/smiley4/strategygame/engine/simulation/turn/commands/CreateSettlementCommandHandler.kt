@@ -17,26 +17,20 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
 
         val realm = gameState.realms.first { it.user == command.playerId }
 
-        // find spawn entity -> whether it is the first, realm-founding settlement
         val spawnEntity = gameState.entities.first { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == realm.id }
 
-        // validate
-        val valid = if (spawnEntity.getComponent<EntityComponent.PlayerSpawn>().foundedRealm) {
-            SettlementValidation.validate(gameState, command.location, realm.id)
-        } else {
-            SettlementValidation.validateFirst(gameState, command.location, realm.id)
-        }
-        if (!valid) {
+        val validation = SettlementValidation.evaluate(gameState, command.location, realm.id)
+        if (validation == null || !validation.valid) {
             throw IllegalArgumentException("Invalid settlement command")
         }
 
         // create settlement
-        val tile = gameState.tiles.first { it.position == command.location }
+        val targetTile = validation.tile
         val settlement = Entity(
             id = Entity.Id(),
             owner = realm.id,
             components = listOf(
-                EntityComponent.Position(tile = tile.ref()),
+                EntityComponent.Position(tile = targetTile.ref()),
                 EntityComponent.Settlement(name = command.name.trim(), isRealmCapital = true),
                 EntityComponent.Vision(radius = 2),
                 EntityComponent.Control(radius = 4, amount = 10f)
@@ -44,11 +38,11 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
         )
         gameState.entities.add(settlement)
 
-        // mark spawn as has "founded realm"
-        spawnEntity.getComponent<EntityComponent.PlayerSpawn>().foundedRealm = true
+        // The realm now follows the established-settlement rules.
+        spawnEntity.getComponent<EntityComponent.PlayerSpawn>().hasSettlement = true
 
         // mark tiles as discovered
-        tile.position.iterateCircle(2) { pos ->
+        targetTile.position.iterateCircle(2) { pos ->
             gameState.tiles.find { it.position == pos }?.also {
                 it.political.discoveredBy.add(realm.id)
             }
@@ -56,13 +50,13 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
 
         // add control to tiles
         val control = settlement.getComponent<EntityComponent.Control>();
-        tile.position.iterateCircle(control.radius) { pos ->
+        targetTile.position.iterateCircle(control.radius) { pos ->
             gameState.tiles.find { it.position == pos }?.also {
                 it.political.control.add(
                     Tile.ControlEntry(
                         realm = realm.id,
                         entity = settlement.id,
-                        amount = control.amount * (1f - (it.position.distance(tile.position).toFloat() / control.radius.toFloat())),
+                        amount = control.amount * (1f - (it.position.distance(targetTile.position).toFloat() / control.radius.toFloat())),
                     )
                 )
             }

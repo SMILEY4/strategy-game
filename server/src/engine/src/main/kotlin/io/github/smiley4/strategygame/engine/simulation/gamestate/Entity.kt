@@ -33,7 +33,7 @@ sealed interface EntityComponent {
 
     data class Position(val tile: Tile.Ref) : EntityComponent
 
-    data class PlayerSpawn(val radius: Int, var foundedRealm: Boolean) : EntityComponent
+    data class PlayerSpawn(val radius: Int, var hasSettlement: Boolean) : EntityComponent
 
     data class Settlement(val name: String, val isRealmCapital: Boolean) : EntityComponent
 
@@ -42,4 +42,3 @@ sealed interface EntityComponent {
     data class Control(val radius: Int, val amount: Float) : EntityComponent
 
 }
-

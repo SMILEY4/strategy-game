@@ -6,122 +6,81 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 
+internal enum class SettlementPhase {
+    FOUNDING,
+    ESTABLISHED,
+}
+
+internal data class SettlementValidationResult(
+    val tile: Tile,
+    val phase: SettlementPhase,
+    val validLocation: Boolean,
+    val validRealm: Boolean,
+) {
+    val valid: Boolean
+        get() = validLocation && validRealm
+}
+
 internal object SettlementValidation {
 
     const val SETTLEMENT_REQUIRED_CONTROL = 3f
 
-    fun validateFirst(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
-
-        // tile must exist
-        val tile = gameState.tiles
-            .find { it.position == location }
-            ?: return false
-
-        return validateFirst(gameState, tile, realm)
+    fun phase(gameState: GameStateContext, realm: Realm.Id): SettlementPhase {
+        val hasSettlement = gameState.entities
+            .firstOrNull { it.owner == realm && it.hasComponent<EntityComponent.PlayerSpawn>() }
+            ?.getComponent<EntityComponent.PlayerSpawn>()
+            ?.hasSettlement == true
+        return if (hasSettlement) SettlementPhase.ESTABLISHED else SettlementPhase.FOUNDING
     }
 
-    fun validateFirst(gameState: GameStateContext, tile: Tile, realm: Realm.Id): Boolean {
-
-        // player must have discovered tile
-        if (realm !in tile.political.discoveredBy) {
-            return false
-        }
-
-        // tile must be valid terrain (no ocean or mountains)
-        if (tile.world.biome == Tile.Biome.OCEAN || tile.world.elevation == Tile.Elevation.MOUNTAINS) {
-            return false
-        }
-
-        return true
+    fun evaluate(
+        gameState: GameStateContext,
+        location: HexPosition,
+        realm: Realm.Id,
+    ): SettlementValidationResult? {
+        val tile = gameState.tiles.find { it.position == location } ?: return null
+        return evaluate(gameState, tile, realm)
     }
 
-    fun validateFirst(gameState: GameStateContext, tile: Tile): Boolean {
-
-        // tile must be valid terrain (no ocean or mountains)
-        if (tile.world.biome == Tile.Biome.OCEAN || tile.world.elevation == Tile.Elevation.MOUNTAINS) {
-            return false
-        }
-
-        return true
+    fun evaluate(
+        gameState: GameStateContext,
+        tile: Tile,
+        realm: Realm.Id,
+    ): SettlementValidationResult {
+        val phase = phase(gameState, realm)
+        return SettlementValidationResult(
+            tile = tile,
+            phase = phase,
+            validLocation = isValidLocation(gameState, tile),
+            validRealm = isValidRealm(tile, realm, phase),
+        )
     }
 
-    fun validate(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
-
-        // tile must exist
-        val tile = gameState.tiles
-            .find { it.position == location }
-            ?: return false
-
-        return validate(gameState, tile, realm)
+    /** Returns whether a tile can be used as a settlement site independently of a realm. */
+    fun isSuitableSite(tile: Tile): Boolean {
+        return tile.world.biome != Tile.Biome.OCEAN && tile.world.elevation != Tile.Elevation.MOUNTAINS
     }
 
+    private fun isValidLocation(gameState: GameStateContext, tile: Tile): Boolean {
+        if (!isSuitableSite(tile)) return false
 
-    fun validate(gameState: GameStateContext, tile: Tile, realm: Realm.Id): Boolean {
-
-        // player must have discovered tile
-        if (realm !in tile.political.discoveredBy) {
-            return false
+        return gameState.entities.none {
+            it.hasComponent<EntityComponent.Settlement>() &&
+                it.getComponentOrNull<EntityComponent.Position>()?.tile?.id == tile.id
         }
-
-        // player must have control in tile
-        val control = tile.political.control.filter { it.realm == realm }.sumOf { it.amount.toDouble() }
-        if (control < SETTLEMENT_REQUIRED_CONTROL) {
-            return false
-        }
-
-        // tile must be valid terrain (no ocean or mountains)
-        if (tile.world.biome == Tile.Biome.OCEAN || tile.world.elevation == Tile.Elevation.MOUNTAINS) {
-            return false
-        }
-
-        // tile must not have settlement on it already
-        val occupied = gameState.entities.any {
-            it.hasComponent<EntityComponent.Settlement>() && it.getComponentOrNull<EntityComponent.Position>()?.tile?.id == tile.id
-        }
-        if (occupied) {
-            return false
-        }
-
-        return true
     }
 
-    fun validateLocation(gameState: GameStateContext, tile: Tile, realm: Realm.Id): Boolean {
+    private fun isValidRealm(
+        tile: Tile,
+        realm: Realm.Id,
+        phase: SettlementPhase,
+    ): Boolean {
+        if (realm !in tile.political.discoveredBy) return false
+        if (phase == SettlementPhase.FOUNDING) return true
 
-        // player must have discovered tile
-        if (realm !in tile.political.discoveredBy) {
-            return false
-        }
-
-        // tile must be valid terrain (no ocean or mountains)
-        if (tile.world.biome == Tile.Biome.OCEAN || tile.world.elevation == Tile.Elevation.MOUNTAINS) {
-            return false
-        }
-
-        // tile must not have settlement on it already
-        val occupied = gameState.entities.any {
-            it.hasComponent<EntityComponent.Settlement>() && it.getComponentOrNull<EntityComponent.Position>()?.tile?.id == tile.id
-        }
-        if (occupied) {
-            return false
-        }
-
-        return true
+        val control = tile.political.control
+            .filter { it.realm == realm }
+            .sumOf { it.amount.toDouble() }
+        return control >= SETTLEMENT_REQUIRED_CONTROL
     }
-
-    fun validateRealm(tile: Tile, realm: Realm.Id): Boolean {
-
-        // player must have discovered tile
-        if (realm !in tile.political.discoveredBy) {
-            return false
-        }
-
-        // player must have control in tile
-        val control = tile.political.control.filter { it.realm == realm }.sumOf { it.amount.toDouble() }
-        if (control < SETTLEMENT_REQUIRED_CONTROL) {
-            return false
-        }
-
-        return true
-    }
-
 }

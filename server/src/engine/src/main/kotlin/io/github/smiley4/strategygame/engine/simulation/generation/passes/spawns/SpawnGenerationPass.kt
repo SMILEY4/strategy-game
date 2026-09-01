@@ -93,7 +93,7 @@ internal class SpawnGenerationPass : GenerationPass {
                 if (tile.world.biome != Tile.Biome.OCEAN) {
                     countLand++
                 }
-                if (SettlementValidation.validateFirst(gameState, tile)) {
+                if (SettlementValidation.isSuitableSite(tile)) {
                     countValid++
                 }
             }

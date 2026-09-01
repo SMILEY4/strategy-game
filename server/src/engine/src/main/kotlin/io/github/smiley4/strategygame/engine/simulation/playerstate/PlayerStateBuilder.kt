@@ -22,15 +22,12 @@ class PlayerStateBuilder {
 
         val realm = game.realms.first { it.user == player }
 
-        val foundedFirstSettlement = game.entities.any {
-            it.owner == realm.id && it.getComponentOrNull<EntityComponent.PlayerSpawn>()?.foundedRealm == true
-        }
         return obj {
             "game" to obj {
                 "turn" to game.turn
             }
             "tiles" to arr[
-                game.tiles.map { tile(game, it, realm.id, foundedFirstSettlement) }
+                    game.tiles.map { tile(game, it, realm.id) }
             ]
             "entities" to arr[
                 game.entities
@@ -41,7 +38,8 @@ class PlayerStateBuilder {
         }
     }
 
-    fun tile(game: GameStateContext, tile: Tile, realm: Realm.Id, foundedFirstSettlement: Boolean) = obj {
+    fun tile(game: GameStateContext, tile: Tile, realm: Realm.Id) = obj {
+        val settlementValidation = SettlementValidation.evaluate(game, tile, realm)
         val visibility = getVisibilityAt(game, tile, realm)
         "id" to tile.id.id
         "visibility" to visibility.name
@@ -83,15 +81,9 @@ class PlayerStateBuilder {
             }
         }
         "createSettlement" to obj {
-            if (foundedFirstSettlement) {
-                "available" to true
-                "validLocation" to SettlementValidation.validateLocation(game, tile, realm)
-                "validRealm" to SettlementValidation.validateRealm(tile, realm)
-            } else {
-                "firstAvailable" to true
-                "firstValidLocation" to SettlementValidation.validateFirst(game, tile, realm)
-                "firstValidRealm" to SettlementValidation.validateFirst(game, tile, realm)
-            }
+            "phase" to settlementValidation.phase.name
+            "validLocation" to settlementValidation.validLocation
+            "validRealm" to settlementValidation.validRealm
         }
         "meta" to obj {
             "seed" to tile.meta.seed
@@ -117,7 +109,7 @@ class PlayerStateBuilder {
                     is EntityComponent.PlayerSpawn -> obj {
                         "type" to "player-spawn"
                         "radius" to component.radius
-                        "foundedFirstSettlement" to component.foundedRealm
+                        "hasSettlement" to component.hasSettlement
                     }
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
