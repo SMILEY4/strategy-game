@@ -24,14 +24,9 @@ export interface QuickInfoTileViewModel {
     control: ({ source: string, amount: number })[]
     actions: {
         focusCamera: () => void,
-        foundSettlementFounding: {
+        foundSettlement: {
             available: boolean,
-            possible: boolean,
-            execute: () => void
-        }
-        foundSettlementEstablished: {
-            available: boolean,
-            possible: boolean,
+            valid: boolean,
             execute: () => void
         }
     }
@@ -94,14 +89,9 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: number } | null): Qu
             : [],
         actions: {
             focusCamera: () => DI.cameraController.lookAt(tile.position),
-            foundSettlementFounding: {
-                available: validate.settlementFoundingAvailable(),
-                possible: validate.settlementFounding(tile.position),
-                execute: () => void DI.interactionManager.start(CreateSettlementInteraction, {position: tile.position}),
-            },
-            foundSettlementEstablished: {
-                available: validate.settlementEstablishedAvailable(),
-                possible: validate.settlementEstablished(tile.position),
+            foundSettlement: {
+                available: true,
+                valid: validate.settlement(tile.position),
                 execute: () => void DI.interactionManager.start(CreateSettlementInteraction, {position: tile.position}),
             },
         },

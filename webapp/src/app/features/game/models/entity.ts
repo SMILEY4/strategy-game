@@ -8,7 +8,6 @@ export interface Entity {
 }
 
 export type EntityComponent =
-    | { type: "player-spawn", radius: number, hasSettlement: boolean }
     | { type: "settlement", name: string, isRealmCapital: boolean }
 
 

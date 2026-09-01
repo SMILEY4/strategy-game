@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.Entity
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
+import io.github.smiley4.strategygame.engine.simulation.gamestate.RealmPhase
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
@@ -16,16 +17,14 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
     override fun handle(gameState: GameStateContext, command: PlayerCommand.CreateSettlement) {
 
         val realm = gameState.realms.first { it.user == command.playerId }
+        val targetTile = gameState.tiles.first { it.position == command.location }
 
-        val spawnEntity = gameState.entities.first { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == realm.id }
-
-        val validation = SettlementValidation.evaluate(gameState, command.location, realm.id)
-        if (validation == null || !validation.valid) {
+        // validate
+        if (!SettlementValidation.validate(gameState, command.location, realm.id)) {
             throw IllegalArgumentException("Invalid settlement command")
         }
 
         // create settlement
-        val targetTile = validation.tile
         val settlement = Entity(
             id = Entity.Id(),
             owner = realm.id,
@@ -38,8 +37,8 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
         )
         gameState.entities.add(settlement)
 
-        // The realm now follows the established-settlement rules.
-        spawnEntity.getComponent<EntityComponent.PlayerSpawn>().hasSettlement = true
+        // set realm phase
+        realm.phase = RealmPhase.ESTABLISHED
 
         // mark tiles as discovered
         targetTile.position.iterateCircle(2) { pos ->

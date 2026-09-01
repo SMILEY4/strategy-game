@@ -20,26 +20,39 @@ class PlayerStateBuilder {
 
     fun build(game: GameStateContext, player: UserId): ObjectType {
 
-        val realm = game.realms.first { it.user == player }
+        val povRealm = game.realms.first { it.user == player }
 
         return obj {
             "game" to obj {
                 "turn" to game.turn
             }
+            "realms" to arr[
+                game.realms.map { realm(it, povRealm.id) }
+            ]
             "tiles" to arr[
-                    game.tiles.map { tile(game, it, realm.id) }
+                    game.tiles.map { tile(game, it, povRealm.id) }
             ]
             "entities" to arr[
                 game.entities
-                    .filter { getVisibilityAt(game, it, realm.id) != Visibility.UNDISCOVERED }
+                    .filter { getVisibilityAt(game, it, povRealm.id) != Visibility.UNDISCOVERED }
                     .filter { it.components.any { component -> component is EntityComponent.Position } }
                     .map { entity(game, it) }
             ]
         }
     }
 
+    fun realm(realm: Realm, povRealmId: Realm.Id) = obj {
+        "id" to realm.id.id
+        "owned" to (realm.id == povRealmId)
+        "phase" to realm.phase.name
+        "spawnLocation" to obj {
+            "q" to realm.spawnLocation.q
+            "r" to realm.spawnLocation.r
+        }
+    }
+
     fun tile(game: GameStateContext, tile: Tile, realm: Realm.Id) = obj {
-        val settlementValidation = SettlementValidation.evaluate(game, tile, realm)
+        val settlementValidation = SettlementValidation.inspect(game, tile, realm)
         val visibility = getVisibilityAt(game, tile, realm)
         "id" to tile.id.id
         "visibility" to visibility.name
@@ -80,10 +93,11 @@ class PlayerStateBuilder {
                 ]
             }
         }
-        "createSettlement" to obj {
-            "phase" to settlementValidation.phase.name
-            "validLocation" to settlementValidation.validLocation
-            "validRealm" to settlementValidation.validRealm
+        "createSettlement" to hidden(visibility != Visibility.UNDISCOVERED) {
+            obj {
+                "validLocation" to settlementValidation.validLocation
+                "validRealm" to settlementValidation.validRealm
+            }
         }
         "meta" to obj {
             "seed" to tile.meta.seed
@@ -106,11 +120,6 @@ class PlayerStateBuilder {
                 when (component) {
                     is EntityComponent.Position -> Unit
                     is EntityComponent.Vision -> Unit
-                    is EntityComponent.PlayerSpawn -> obj {
-                        "type" to "player-spawn"
-                        "radius" to component.radius
-                        "hasSettlement" to component.hasSettlement
-                    }
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
                         "name" to component.name

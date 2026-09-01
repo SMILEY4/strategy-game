@@ -264,7 +264,7 @@ export const DIConfig = {
     },
     gameActionJoinedGame: {
         scope: "singleton",
-        create: resolve => gameActionJoinedGame({entityDb: resolve.entityDatabase, cameraController: resolve.cameraController}),
+        create: resolve => gameActionJoinedGame({cameraController: resolve.cameraController}),
     },
     createSettlementValidation: {
         scope: "singleton",

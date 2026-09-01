@@ -31,6 +31,12 @@ interface GameState extends GameWebsocketServerMessageBase {
         game: {
             turn: number
         },
+        realms: ({
+            id: number,
+            owned: boolean,
+            phase: "FOUNDING" | "ESTABLISHED",
+            spawnLocation: { q: number, r: number },
+        })[],
         tiles: ({
             id: number,
             visibility: "VISIBLE" | "DISCOVERED" | "UNDISCOVERED"
@@ -59,11 +65,10 @@ interface GameState extends GameWebsocketServerMessageBase {
                     amount: number
                 })[]
             }>
-            createSettlement: {
-                phase: "FOUNDING" | "ESTABLISHED",
+            createSettlement: HiddenType<{
                 validLocation: boolean,
                 validRealm: boolean,
-            }
+            }>
             meta: {
                 seed: number,
             },
@@ -78,7 +83,6 @@ interface GameState extends GameWebsocketServerMessageBase {
                 chunkR: number,
             },
             components: (
-                | { type: "player-spawn", radius: number, hasSettlement: boolean }
                 | { type: "settlement", name: string, isRealmCapital: boolean }
                 )[]
         })[]

@@ -79,7 +79,11 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
                 if (repository.getState() === "loading") {
                     repository.setState("playing");
                     cameraController.initialize();
-                    actionJoinedGame.execute();
+                    const realm = message.state.realms.find(it => it.owned);
+                    const initialLocation = realm?.startingLocation.q != null && realm.startingLocation.r != null
+                        ? {q: realm.startingLocation.q, r: realm.startingLocation.r}
+                        : {q: 0, r: 0};
+                    actionJoinedGame.execute(initialLocation);
                 }
             }
         },

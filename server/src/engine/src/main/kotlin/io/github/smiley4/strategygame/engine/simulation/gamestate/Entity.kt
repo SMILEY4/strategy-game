@@ -33,8 +33,6 @@ sealed interface EntityComponent {
 
     data class Position(val tile: Tile.Ref) : EntityComponent
 
-    data class PlayerSpawn(val radius: Int, var hasSettlement: Boolean) : EntityComponent
-
     data class Settlement(val name: String, val isRealmCapital: Boolean) : EntityComponent
 
     data class Vision(val radius: Int) : EntityComponent
