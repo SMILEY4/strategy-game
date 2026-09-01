@@ -102,10 +102,11 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
         },
         "create_settlement_validity": {
             provider: tile => {
+                if(!tile.tile.createSettlement.visible) return 0;
                 let validity = 0;
-                if(tile.tile.createSettlement.validLocation) {
+                if(tile.tile.createSettlement.value.validLocation) {
                     validity = 1;
-                    if(tile.tile.createSettlement.validRealm) {
+                    if(tile.tile.createSettlement.value.validRealm) {
                         validity = 2;
                     }
                 }

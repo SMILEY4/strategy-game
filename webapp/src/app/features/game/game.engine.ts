@@ -6,6 +6,7 @@ import {type TileDatabase} from "@app/features/game/database/tile.database.ts";
 import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
 import type {GameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
 import {type EntityDatabase} from "@app/features/game/database/entity.database.ts";
+import {RealmQueries, type RealmDatabase} from "@app/features/game/database/realm.database.ts";
 import {databaseBatch} from "@modules/gamedb/subscribers/batch.ts";
 import {type GameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
 import type {PointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
@@ -29,6 +30,7 @@ interface Dependencies {
     pointerPositionDb: PointerPositionDatabase,
     tileDb: TileDatabase,
     entityDb: EntityDatabase,
+    realmDb: RealmDatabase,
     cameraController: CameraController
     actionClickTile: GameActionClickTile,
     actionJoinedGame: GameActionJoinedGame
@@ -43,6 +45,7 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
         pointerPositionDb,
         tileDb,
         entityDb,
+        realmDb,
         cameraController,
         actionClickTile,
         actionJoinedGame,
@@ -70,7 +73,9 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
         onMessage: (message: GameWebsocketServerMessage) => {
             console.log("received message", message);
             if (message.type === "ServerGameMessage.GameState") {
-                databaseBatch([tileDb, entityDb], () => {
+                databaseBatch([tileDb, entityDb, realmDb], () => {
+                    realmDb.deleteAll();
+                    realmDb.insertMany(message.state.realms);
                     tileDb.deleteAll();
                     tileDb.insertMany(message.state.tiles);
                     entityDb.deleteAll();
@@ -79,10 +84,8 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
                 if (repository.getState() === "loading") {
                     repository.setState("playing");
                     cameraController.initialize();
-                    const realm = message.state.realms.find(it => it.owned);
-                    const initialLocation = realm?.startingLocation.q != null && realm.startingLocation.r != null
-                        ? {q: realm.startingLocation.q, r: realm.startingLocation.r}
-                        : {q: 0, r: 0};
+                    const realm = realmDb.querySingle(RealmQueries.OWNED, undefined);
+                    const initialLocation = realm?.spawnLocation ?? {q: 0, r: 0};
                     actionJoinedGame.execute(initialLocation);
                 }
             }

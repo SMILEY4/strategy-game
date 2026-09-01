@@ -24,12 +24,10 @@ export interface Tile {
             amount: number
         })[]
     }>
-    createSettlement: {
-        // first
-        phase: "FOUNDING" | "ESTABLISHED",
+    createSettlement: HiddenType<{
         validLocation: boolean,
         validRealm: boolean,
-    }
+    }>
     meta: {
         seed: number,
     }

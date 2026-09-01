@@ -4,27 +4,32 @@ import {type TileDatabase, TileQueries} from "@app/features/game/database/tile.d
 import {useWatchDatabases} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
 import {useHasInteraction} from "@modules/interaction/interaction.tools.ts";
+import {RealmQueries, type RealmDatabase} from "@app/features/game/database/realm.database.ts";
 
 export interface CreateSettlementValidation {
     validate: (args: {
         position: HexPosition,
         hasInteraction: boolean,
         commandDb: CommandDatabase,
-        tileDb: TileDatabase
+        tileDb: TileDatabase,
+        realmDb: RealmDatabase,
     }) => boolean;
 }
 
 export const createSettlementValidation = (): CreateSettlementValidation => ({
-    validate: ({hasInteraction, commandDb, tileDb, position}) => {
+    validate: ({hasInteraction, commandDb, tileDb, realmDb, position}) => {
         if (hasInteraction) return false;
 
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
-        if (!tile || !tile.createSettlement.validLocation || !tile.createSettlement.validRealm) {
+        if (!tile || !tile.createSettlement.visible || !tile.createSettlement.value.validLocation || !tile.createSettlement.value.validRealm) {
             return false;
         }
 
+        const realm = realmDb.querySingle(RealmQueries.OWNED, undefined);
+        if (!realm) return false;
+
         const commands = commandDb.queryMany(CommandQueries.BY_TYPE, "create-settlement");
-        return tile.createSettlement.phase === "FOUNDING"
+        return realm.phase === "FOUNDING"
             ? commands.length === 0
             : commands.every(cmd => cmd.location.q !== position.q || cmd.location.r !== position.r);
     },
@@ -34,6 +39,7 @@ export function useCreateSettlementValidation() {
     useWatchDatabases([
         DI.tileDatabase,
         DI.commandDatabase,
+        DI.realmDatabase,
     ]);
 
     const hasInteraction = useHasInteraction();
@@ -43,6 +49,7 @@ export function useCreateSettlementValidation() {
             position,
             tileDb: DI.tileDatabase,
             commandDb: DI.commandDatabase,
+            realmDb: DI.realmDatabase,
             hasInteraction,
         }),
     };

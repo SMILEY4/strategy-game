@@ -7,7 +7,7 @@ data class Realm(
     val id: Id,
     val user: UserId,
     var phase: RealmPhase = RealmPhase.FOUNDING,
-    val spawnLocation: HexPosition,
+    var spawnLocation: HexPosition,
 ) {
 
     @JvmInline

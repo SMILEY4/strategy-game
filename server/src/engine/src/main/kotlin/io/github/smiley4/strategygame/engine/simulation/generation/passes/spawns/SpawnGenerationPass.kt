@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.engine.simulation.generation.passes.spawns
 
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
+import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
@@ -55,6 +56,7 @@ internal class SpawnGenerationPass : GenerationPass {
             val selectedSpawn = spawnLocation ?: gameState.tiles.random().ref()
 
             spawnLocations.add(selectedSpawn)
+            realm.spawnLocation = HexPosition(selectedSpawn.position.q, selectedSpawn.position.r)
             gameState.tiles
                 .asSequence()
                 .filter { it.position.distance(selectedSpawn.position) <= SPAWN_RADIUS }

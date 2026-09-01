@@ -28,6 +28,7 @@ import {selectedTileDatabase} from "@app/features/game/database/selected-tile.da
 import {commandDatabase} from "@app/features/game/database/command.database.ts";
 import {gameActionEndTurn} from "@app/features/game/gameplay/game-action.end-turn.ts";
 import {entityDatabase} from "@app/features/game/database/entity.database.ts";
+import {realmDatabase} from "@app/features/game/database/realm.database.ts";
 import {gameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
 import {interactionDatabase} from "@app/features/game/database/interaction.database.ts";
 import {interactionManager} from "@modules/interaction/interaction.manager.ts";
@@ -87,6 +88,7 @@ interface DIShape {
     cameraController: ReturnType<typeof cameraControllerPlayer>
     tileDatabase: ReturnType<typeof tileDatabase>
     entityDatabase: ReturnType<typeof entityDatabase>
+    realmDatabase: ReturnType<typeof realmDatabase>
     commandDatabase: ReturnType<typeof commandDatabase>
     cameraDatabase: ReturnType<typeof cameraDatabase>
     debugDatabase: ReturnType<typeof debugDatabase>
@@ -207,6 +209,7 @@ export const DIConfig = {
             repository: resolve.gameRepository,
             tileDb: resolve.tileDatabase,
             entityDb: resolve.entityDatabase,
+            realmDb: resolve.realmDatabase,
             cameraController: resolve.cameraController,
             actionClickTile: resolve.gameActionClickTile,
             actionJoinedGame: resolve.gameActionJoinedGame,
@@ -237,6 +240,10 @@ export const DIConfig = {
     entityDatabase: {
         scope: "singleton",
         create: () => entityDatabase(),
+    },
+    realmDatabase: {
+        scope: "singleton",
+        create: () => realmDatabase(),
     },
     commandDatabase: {
         scope: "singleton",
