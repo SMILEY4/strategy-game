@@ -85,4 +85,43 @@ internal object SettlementValidation {
         return true
     }
 
+    fun validateLocation(gameState: GameStateContext, tile: Tile, realm: Realm.Id): Boolean {
+
+        // player must have discovered tile
+        if (realm !in tile.political.discoveredBy) {
+            return false
+        }
+
+        // tile must be valid terrain (no ocean or mountains)
+        if (tile.world.biome == Tile.Biome.OCEAN || tile.world.elevation == Tile.Elevation.MOUNTAINS) {
+            return false
+        }
+
+        // tile must not have settlement on it already
+        val occupied = gameState.entities.any {
+            it.hasComponent<EntityComponent.Settlement>() && it.getComponentOrNull<EntityComponent.Position>()?.tile?.id == tile.id
+        }
+        if (occupied) {
+            return false
+        }
+
+        return true
+    }
+
+    fun validateRealm(tile: Tile, realm: Realm.Id): Boolean {
+
+        // player must have discovered tile
+        if (realm !in tile.political.discoveredBy) {
+            return false
+        }
+
+        // player must have control in tile
+        val control = tile.political.control.filter { it.realm == realm }.sumOf { it.amount.toDouble() }
+        if (control < SETTLEMENT_REQUIRED_CONTROL) {
+            return false
+        }
+
+        return true
+    }
+
 }

@@ -25,10 +25,14 @@ export interface Tile {
         })[]
     }>
     createSettlement: {
+        // first
         firstAvailable?: boolean,
-        firstAllowed?: boolean,
-        available?: boolean
-        allowed?: boolean
+        firstValidLocation?: boolean,
+        firstValidRealm?: boolean,
+        // after first
+        available?: boolean,
+        validLocation?: boolean,
+        validRealm?: boolean,
     }
     meta: {
         seed: number,

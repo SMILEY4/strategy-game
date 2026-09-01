@@ -134,9 +134,14 @@ pub fn edges_mapmode_political(
 
 pub fn fill_mapmode_settlement_locations(
     _: &RenderState,
-    _: &Tile,
-    _: &mut Vec<GenericFillOverlayInstance>,
+    tile: &Tile,
+    output: &mut Vec<GenericFillOverlayInstance>,
 ) {
+    if tile.create_settlement_validity == 1 {
+        output.push(fill_instance(tile, [0.2, 0.6, 0.25, 0.35], OVERLAY_FILL_STYLE_STRIPED));
+    } else if tile.create_settlement_validity == 2 {
+        output.push(fill_instance(tile, [0.2, 0.6, 0.25, 0.35], OVERLAY_FILL_STYLE_FILLED));
+    }
 }
 
 pub fn edges_mapmode_settlement_locations(
@@ -146,6 +151,8 @@ pub fn edges_mapmode_settlement_locations(
     _: &mut Vec<GenericEdgeOverlayInstance>,
 ) {
 }
+
+//===== UTILITIES ==================================
 
 fn position(tile: &Tile) -> [f32; 2] {
     [tile.tile_position.q as f32, tile.tile_position.r as f32]

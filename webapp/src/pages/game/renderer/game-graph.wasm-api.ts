@@ -11,6 +11,7 @@ import spritesheetBuildings from "./spritesheets/buildings.atlas.json";
 import type {RenderEntity} from "@pages/game/renderer/data/models.ts";
 import type {MapMode} from "@app/features/game/models/map-mode.ts";
 import type {Entity} from "@app/features/game/models/entity.ts";
+import {tracer} from "@modules/monitoring/tracer.ts";
 
 export interface GameGraphWasmApi {
     configureRenderer: () => Promise<void>,
@@ -91,14 +92,33 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
             provider: tile => tile.tile.meta.seed,
             type: "u32",
         },
-        "control_offset": { provider: tile => tile.controlOffset, type: "u32" },
-        "control_count": { provider: tile => tile.controlCount, type: "u32" },
+        "control_offset": {
+            provider: tile => tile.controlOffset,
+            type: "u32"
+        },
+        "control_count": {
+            provider: tile => tile.controlCount,
+            type: "u32"
+        },
+        "create_settlement_validity": {
+            provider: tile => {
+                let validity = 0;
+                if(tile.tile.createSettlement.firstValidLocation || tile.tile.createSettlement.validLocation) {
+                    validity = 1;
+                    if(tile.tile.createSettlement.firstValidRealm || tile.tile.createSettlement.validRealm) {
+                        validity = 2;
+                    }
+                }
+                return validity;
+            },
+            type: "u8"
+        }
     });
 
     const controlSerializer = wasmSerializer<ControlUpload>({
-        "realm_id": { provider: control => control.realmId, type: "u32" },
-        "entity_id": { provider: control => control.entityId, type: "u32" },
-        "amount": { provider: control => control.amount, type: "f32" },
+        "realm_id": {provider: control => control.realmId, type: "u32"},
+        "entity_id": {provider: control => control.entityId, type: "u32"},
+        "amount": {provider: control => control.amount, type: "f32"},
     });
 
     const visibilitySerialisationMapping: Record<string, number> = {
@@ -161,192 +181,229 @@ export const gameGraphWasmApiJsImplementation = (): GameGraphWasmApi => {
     return {
 
         configureRenderer: async () => {
-            console.log("[wasm-api]: configuring renderer");
-            wasmApp.add_spritesheet_entries(1, spritesheetMountains.sprites.map(entry => ({
-                id: entry.id,
-                uvCoords: {
-                    uMin: entry.uv.uMin,
-                    vMin: entry.uv.vMin,
-                    uMax: entry.uv.uMax,
-                    vMax: entry.uv.vMax,
-                },
-                nSize: {
-                    width: entry.normalized.width,
-                    height: entry.normalized.height,
-                },
-                scale: 1.5,
-            } satisfies SpriteSheetEntry)));
-            wasmApp.add_spritesheet_entries(2, spritesheetHills.sprites.map(entry => ({
-                id: entry.id,
-                uvCoords: {
-                    uMin: entry.uv.uMin,
-                    vMin: entry.uv.vMin,
-                    uMax: entry.uv.uMax,
-                    vMax: entry.uv.vMax,
-                },
-                nSize: {
-                    width: entry.normalized.width,
-                    height: entry.normalized.height,
-                },
-                scale: 1.4,
-            } satisfies SpriteSheetEntry)));
-            wasmApp.add_spritesheet_entries(3, spritesheetTrees.sprites.map(entry => ({
-                id: entry.id,
-                uvCoords: {
-                    uMin: entry.uv.uMin,
-                    vMin: entry.uv.vMin,
-                    uMax: entry.uv.uMax,
-                    vMax: entry.uv.vMax,
-                },
-                nSize: {
-                    width: entry.normalized.width,
-                    height: entry.normalized.height,
-                },
-                scale: 0.7,
-            } satisfies SpriteSheetEntry)));
-            wasmApp.add_spritesheet_entries(4, spritesheetBuildings.sprites.map(entry => ({
-                id: entry.id,
-                uvCoords: {
-                    uMin: entry.uv.uMin,
-                    vMin: entry.uv.vMin,
-                    uMax: entry.uv.uMax,
-                    vMax: entry.uv.vMax,
-                },
-                nSize: {
-                    width: entry.normalized.width,
-                    height: entry.normalized.height,
-                },
-                scale: 0.8,
-            } satisfies SpriteSheetEntry)));
+            tracer.span({name: "wasmapi-configure"}, () => {
+                console.log("[wasm-api]: configuring renderer");
+                wasmApp.add_spritesheet_entries(1, spritesheetMountains.sprites.map(entry => ({
+                    id: entry.id,
+                    uvCoords: {
+                        uMin: entry.uv.uMin,
+                        vMin: entry.uv.vMin,
+                        uMax: entry.uv.uMax,
+                        vMax: entry.uv.vMax,
+                    },
+                    nSize: {
+                        width: entry.normalized.width,
+                        height: entry.normalized.height,
+                    },
+                    scale: 1.5,
+                } satisfies SpriteSheetEntry)));
+                wasmApp.add_spritesheet_entries(2, spritesheetHills.sprites.map(entry => ({
+                    id: entry.id,
+                    uvCoords: {
+                        uMin: entry.uv.uMin,
+                        vMin: entry.uv.vMin,
+                        uMax: entry.uv.uMax,
+                        vMax: entry.uv.vMax,
+                    },
+                    nSize: {
+                        width: entry.normalized.width,
+                        height: entry.normalized.height,
+                    },
+                    scale: 1.4,
+                } satisfies SpriteSheetEntry)));
+                wasmApp.add_spritesheet_entries(3, spritesheetTrees.sprites.map(entry => ({
+                    id: entry.id,
+                    uvCoords: {
+                        uMin: entry.uv.uMin,
+                        vMin: entry.uv.vMin,
+                        uMax: entry.uv.uMax,
+                        vMax: entry.uv.vMax,
+                    },
+                    nSize: {
+                        width: entry.normalized.width,
+                        height: entry.normalized.height,
+                    },
+                    scale: 0.7,
+                } satisfies SpriteSheetEntry)));
+                wasmApp.add_spritesheet_entries(4, spritesheetBuildings.sprites.map(entry => ({
+                    id: entry.id,
+                    uvCoords: {
+                        uMin: entry.uv.uMin,
+                        vMin: entry.uv.vMin,
+                        uMax: entry.uv.uMax,
+                        vMax: entry.uv.vMax,
+                    },
+                    nSize: {
+                        width: entry.normalized.width,
+                        height: entry.normalized.height,
+                    },
+                    scale: 0.8,
+                } satisfies SpriteSheetEntry)));
+            });
         },
 
         uploadTiles: (tiles: Tile[]) => {
-            console.log("[wasm-api]: uploading tiles (" + tiles.length + ")");
+            tracer.span({name: "wasmapi-uploadTiles"}, () => {
 
-            const controls: ControlUpload[] = [];
+                console.log("[wasm-api]: uploading tiles (" + tiles.length + ")");
 
-            const serializedTiles: TileUpload[] = tiles.map(tile => {
-                const tileControls = tile.political.visible ? tile.political.value.control : [];
-                const controlOffset = controls.length;
-                controls.push(...tileControls.map(control => ({
-                    realmId: control.realm,
-                    entityId: control.entity,
-                    amount: control.amount,
-                })));
-                return {tile, controlOffset, controlCount: tileControls.length};
+                const controls: ControlUpload[] = [];
+
+                const serializedTiles: TileUpload[] = tiles.map(tile => {
+                    const tileControls = tile.political.visible ? tile.political.value.control : [];
+                    const controlOffset = controls.length;
+                    controls.push(...tileControls.map(control => ({
+                        realmId: control.realm,
+                        entityId: control.entity,
+                        amount: control.amount,
+                    })));
+                    return {tile, controlOffset, controlCount: tileControls.length};
+                });
+
+                const tilesMemory = wasmApp.tiles_reserve_memory(tiles.length);
+                const tilesBuffer = new Uint8Array(wasmMemory.buffer, tilesMemory.ptr, tilesMemory.len * tilesMemory.item_size);
+                tileSerializer(tilesBuffer, serializedTiles);
+                wasmApp.tiles_upload(tilesMemory.ptr, tilesMemory.len);
+
+                const controlsMemory = wasmApp.tile_control_values_reserve_memory(controls.length);
+                const controlsBuffer = new Uint8Array(wasmMemory.buffer, controlsMemory.ptr, controlsMemory.len * controlsMemory.item_size);
+                controlSerializer(controlsBuffer, controls);
+                wasmApp.tile_control_values_upload(controlsMemory.ptr, controlsMemory.len);
             });
-
-            const tilesMemory = wasmApp.tiles_reserve_memory(tiles.length);
-            const tilesBuffer = new Uint8Array(wasmMemory.buffer, tilesMemory.ptr, tilesMemory.len * tilesMemory.item_size);
-            tileSerializer(tilesBuffer, serializedTiles);
-            wasmApp.tiles_upload(tilesMemory.ptr, tilesMemory.len);
-
-            const controlsMemory = wasmApp.tile_control_values_reserve_memory(controls.length);
-            const controlsBuffer = new Uint8Array(wasmMemory.buffer, controlsMemory.ptr, controlsMemory.len * controlsMemory.item_size);
-            controlSerializer(controlsBuffer, controls);
-            wasmApp.tile_control_values_upload(controlsMemory.ptr, controlsMemory.len);
         },
 
         uploadEntities: (entities: RenderEntity[]) => {
-            console.log("[wasm-api]: uploading entities (" + entities.length + ")", entities);
-            const memory = wasmApp.entities_reserve_memory(entities.length);
-            const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
-            entitySerializer(buffer, entities);
-            wasmApp.entities_upload(memory.ptr, memory.len);
+            tracer.span({name: "wasmapi-uploadEntities"}, () => {
+                console.log("[wasm-api]: uploading entities (" + entities.length + ")", entities);
+                const memory = wasmApp.entities_reserve_memory(entities.length);
+                const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
+                entitySerializer(buffer, entities);
+                wasmApp.entities_upload(memory.ptr, memory.len);
+            });
         },
 
         setMapMode: (mapMode: MapMode) => {
-            wasmApp.set_map_mode(mapMode.numericId)
+            tracer.span({name: "wasmapi-setMapMode"}, () => {
+                wasmApp.set_map_mode(mapMode.numericId);
+            });
         },
 
         setSelectedEntityId: (entity: Entity | null) => {
-            wasmApp.set_selected_entity_id(entity ? entity.id : null);
+            tracer.span({name: "wasmapi-setSelectedEntityId"}, () => {
+                wasmApp.set_selected_entity_id(entity ? entity.id : null);
+            });
         },
 
         buildOverlayInstances: () => {
-            console.log("[wasm-api]: building overlay instances");
-            const changed = wasmApp.build_overlay_instances()
-            return {
-                overlayEdgeInstances: changed,
-                overlayFillInstances: changed
-            }
+            return tracer.span({name: "wasmapi-buildOverlayInstances"}, () => {
+                console.log("[wasm-api]: building overlay instances");
+                const changed = wasmApp.build_overlay_instances();
+                return {
+                    overlayEdgeInstances: changed,
+                    overlayFillInstances: changed,
+                };
+            });
         },
 
         collectChunks: () => {
-            const changed = wasmApp.calculate_all_chunks();
-            console.log("[wasm-api]: collected chunks", changed);
-            return {allChunks: changed};
+            return tracer.span({name: "wasmapi-collectChunks"}, () => {
+                const changed = wasmApp.calculate_all_chunks();
+                console.log("[wasm-api]: collected chunks", changed);
+                return {allChunks: changed};
+            });
         },
 
         cullChunks: () => {
-            const changed = wasmApp.calculate_visible_chunks();
-            return {visibleChunks: changed};
+            return tracer.span({name: "wasmapi-cullChunks"}, () => {
+                const changed = wasmApp.calculate_visible_chunks();
+                return {visibleChunks: changed};
+            });
         },
 
         buildTileInstances: () => {
-            console.log("[wasm-api]: building tile instances");
-            const changed = wasmApp.calculate_terrain_tile_instances();
-            return {
-                tileTerrainInstances: changed,
-                tileFogOfWarInstances: changed,
-                mapDetailVertices: changed,
-            };
+            return tracer.span({name: "wasmapi-buildTileInstances"}, () => {
+                console.log("[wasm-api]: building tile instances");
+                const changed = wasmApp.calculate_terrain_tile_instances();
+                return {
+                    tileTerrainInstances: changed,
+                    tileFogOfWarInstances: changed,
+                    mapDetailVertices: changed,
+                };
+            });
         },
 
         downloadTileLandInstances: () => {
-            const data = {
-                data: wasmApp.get_terrain_tile_land_instances(),
-                count: wasmApp.get_terrain_tile_land_instance_count(),
-            };
-            console.log("[wasm-api]: downloading tile land instances (" + data.count + ")");
-            return data;
+            return tracer.span({name: "wasmapi-downloadTileLandInstances"}, () => {
+                const data = {
+                    data: wasmApp.get_terrain_tile_land_instances(),
+                    count: wasmApp.get_terrain_tile_land_instance_count(),
+                };
+                console.log("[wasm-api]: downloading tile land instances (" + data.count + ")");
+                return data;
+            });
         },
 
         downloadTileWaterInstances: () => {
-            const data = {
-                data: wasmApp.get_terrain_tile_water_instances(),
-                count: wasmApp.get_terrain_tile_water_instance_count(),
-            };
-            console.log("[wasm-api]: downloading tile water instances (" + data.count + ")");
-            return data;
+            return tracer.span({name: "wasmapi-downloadTileWaterInstances"}, () => {
+                const data = {
+                    data: wasmApp.get_terrain_tile_water_instances(),
+                    count: wasmApp.get_terrain_tile_water_instance_count(),
+                };
+                console.log("[wasm-api]: downloading tile water instances (" + data.count + ")");
+                return data;
+            });
         },
 
         downloadTileFogOfWarInstances: () => {
-            const data = {
-                data: wasmApp.get_fog_of_war_tile_instances(),
-                count: wasmApp.get_fog_of_war_tile_instances_count(),
-            };
-            console.log("[wasm-api]: downloading tile FoW instances (" + data.count + ")");
-            return data;
+            return tracer.span({name: "wasmapi-downloadTileFogOfWarInstances"}, () => {
+                const data = {
+                    data: wasmApp.get_fog_of_war_tile_instances(),
+                    count: wasmApp.get_fog_of_war_tile_instances_count(),
+                };
+                console.log("[wasm-api]: downloading tile FoW instances (" + data.count + ")");
+                return data;
+            });
         },
 
         downloadMapDetailVertices: () => {
-            const data = {
-                data: wasmApp.get_map_detail_vertices(),
-                count: wasmApp.get_map_detail_vertex_count(),
-            };
-            console.log("[wasm-api]: downloading map detail vertices (" + data.count + ")");
-            return data;
+            return tracer.span({name: "wasmapi-downloadMapDetailVertices"}, () => {
+                const data = {
+                    data: wasmApp.get_map_detail_vertices(),
+                    count: wasmApp.get_map_detail_vertex_count(),
+                };
+                console.log("[wasm-api]: downloading map detail vertices (" + data.count + ")");
+                return data;
+            });
         },
 
         downloadOverlayGridInstances: () => {
-            const data = {
-                data: wasmApp.get_overlay_grid_instances(),
-                count: wasmApp.get_overlay_grid_instance_count(),
-            };
-            console.log("[wasm-api]: downloading overlay grid instances (" + data.count + ")");
-            return data;
+            return tracer.span({name: "wasmapi-downloadOverlayGridInstances"}, () => {
+                const data = {
+                    data: wasmApp.get_overlay_grid_instances(),
+                    count: wasmApp.get_overlay_grid_instance_count(),
+                };
+                console.log("[wasm-api]: downloading overlay grid instances (" + data.count + ")");
+                return data;
+            });
         },
 
-        downloadOverlayFillInstances: () => ({
-            data: wasmApp.get_overlay_fill_instances(),
-            count: wasmApp.get_overlay_fill_instance_count(),
-        }),
+        downloadOverlayFillInstances: () => {
+            return tracer.span({name: "wasmapi-downloadOverlayFillInstances"}, () => {
+                return {
+                    data: wasmApp.get_overlay_fill_instances(),
+                    count: wasmApp.get_overlay_fill_instance_count(),
+                };
+            });
+        },
 
-        downloadOverlayEdgeInstances: () => ({
-            data: wasmApp.get_overlay_edge_instances(),
-            count: wasmApp.get_overlay_edge_instance_count(),
-        }),
+        downloadOverlayEdgeInstances: () => {
+            return tracer.span({name: "wasmapi-downloadOverlayEdgeInstances"}, () => {
+                return {
+                    data: wasmApp.get_overlay_edge_instances(),
+                    count: wasmApp.get_overlay_edge_instance_count(),
+                };
+            });
+        },
 
     };
 

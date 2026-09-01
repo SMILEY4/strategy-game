@@ -56,7 +56,7 @@ export const createSettlementValidation = (): CreateSettlementValidation => ({
 
         // check base game state
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
-        const validGameState = !!tile && tile.createSettlement.firstAvailable && tile.createSettlement.firstAllowed;
+        const validGameState = !!tile && tile.createSettlement.firstAvailable && tile.createSettlement.firstValidLocation && tile.createSettlement.firstValidRealm;
         if (!validGameState) {
             return false;
         }
@@ -95,7 +95,7 @@ export const createSettlementValidation = (): CreateSettlementValidation => ({
 
         // check base game state
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
-        const validGameState = !!tile && tile.createSettlement.available && tile.createSettlement.allowed;
+        const validGameState = !!tile && tile.createSettlement.available && tile.createSettlement.validLocation && tile.createSettlement.validRealm;
         if (!validGameState) {
             return false;
         }

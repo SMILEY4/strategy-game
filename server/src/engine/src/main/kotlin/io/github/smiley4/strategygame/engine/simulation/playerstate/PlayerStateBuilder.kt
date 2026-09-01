@@ -85,10 +85,12 @@ class PlayerStateBuilder {
         "createSettlement" to obj {
             if (foundedFirstSettlement) {
                 "available" to true
-                "allowed" to SettlementValidation.validate(game, tile, realm)
+                "validLocation" to SettlementValidation.validateLocation(game, tile, realm)
+                "validRealm" to SettlementValidation.validateRealm(tile, realm)
             } else {
                 "firstAvailable" to true
-                "firstAllowed" to SettlementValidation.validateFirst(game, tile, realm)
+                "firstValidLocation" to SettlementValidation.validateFirst(game, tile, realm)
+                "firstValidRealm" to SettlementValidation.validateFirst(game, tile, realm)
             }
         }
         "meta" to obj {

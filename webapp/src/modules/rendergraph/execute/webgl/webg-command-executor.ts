@@ -19,7 +19,7 @@ export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExe
     for (let i = 0, n = commands.length; i < n; i++) {
         try {
             const command = commands[i]
-            tracer.span({ name: `webglcmd-${command.type}`}, () => execute(command, context));
+            tracer.span({ name: `webglcmd-${command.type}`, args: command}, () => execute(command, context));
         } catch (error) {
             console.error("Failed to execute webgl command", commands[i], context.getResources());
             throw error;

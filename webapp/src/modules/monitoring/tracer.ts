@@ -26,9 +26,6 @@ interface ChromeTraceEvent {
     s?: "g" | "p" | "t";      // Instant event scope (global, process, thread)
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class NoOpTracer implements Tracer {
 
     span<T>(_options: SpanOptions, fn: () => T): T {
@@ -39,12 +36,15 @@ class NoOpTracer implements Tracer {
         return fn();
     }
 
-    downloadJSON(_filename: string | undefined): void {
+    downloadJSON(): void {
         // do nothing
     }
 
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class BrowserTracer implements Tracer {
     private events: ChromeTraceEvent[] = [];
 
@@ -165,5 +165,5 @@ class BrowserTracer implements Tracer {
     }
 }
 
-export const tracer = new BrowserTracer();
-// export const tracer = new NoOpTracer();
+// export const tracer = new BrowserTracer();
+export const tracer = new NoOpTracer();

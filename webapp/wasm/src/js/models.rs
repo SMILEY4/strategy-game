@@ -15,6 +15,7 @@ pub struct Tile {
     pub rng_seed: u32,
     pub control_offset: u32,
     pub control_count: u32,
+    pub create_settlement_validity: u8,
 }
 
 #[repr(C, packed)]
