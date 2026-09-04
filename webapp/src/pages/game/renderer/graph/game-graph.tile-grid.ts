@@ -1,5 +1,5 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
@@ -13,7 +13,7 @@ import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.
 
 export function gameGraphPassTileGrid(
     g: RenderGraphBuilder,
-    wasmApi: GameGraphWasmApi,
+    wasmApi: RenderWasmApi,
     inputs: {
         camera: CameraRenderGraphNode,
         dataPointerPosition: DataRenderGraphNode<VersionedContainer<PointerPosition>>,
@@ -74,7 +74,7 @@ export function gameGraphPassTileGrid(
             }),
             g.wasmGeometrySource({
                 source: wasmGridInstances,
-                download: () => wasmApi.downloadOverlayGridInstances(),
+                download: () => wasmApi.download.downloadOverlayGridInstances(),
                 content: "instances",
                 layout: [
                     {

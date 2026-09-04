@@ -1,6 +1,6 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import SHADER_FOW_VERT from "./../shader/fogOfWar.vsh";
 import SHADER_FOW_FRAG from "./../shader/fogOfWar.fsh";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
@@ -14,7 +14,7 @@ import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.
 
 export function gameGraphPassFogOfWar(
     g: RenderGraphBuilder,
-    wasmApi: GameGraphWasmApi,
+    wasmApi: RenderWasmApi,
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
@@ -59,7 +59,7 @@ export function gameGraphPassFogOfWar(
             }),
             g.wasmGeometrySource({
                 source: inputs.wasmTileInstances,
-                download: () => wasmApi.downloadTileFogOfWarInstances(),
+                download: () => wasmApi.download.downloadTileFogOfWarInstances(),
                 content: "instances",
                 layout: [
                     {

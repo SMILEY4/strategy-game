@@ -1,6 +1,6 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
 import type {Camera} from "@app/features/game/models/camera.ts";
@@ -13,7 +13,7 @@ import type {RenderEntity} from "@pages/game/renderer/data/render-entity.ts";
 export function gameGraphDataWorld(
     g: RenderGraphBuilder,
     dataProvider: GameRendererDataProvider,
-    wasmApi: GameGraphWasmApi,
+    wasmApi: RenderWasmApi,
     inputs: {
         dataCamera: DataRenderGraphNode<VersionedContainer<Camera>>
     },
@@ -28,7 +28,7 @@ export function gameGraphDataWorld(
         source: {
             type: "js",
             data: dataAllTiles,
-            upload: (tiles: VersionedContainer<Tile[]>) => wasmApi.uploadTiles(tiles.data),
+            upload: (tiles: VersionedContainer<Tile[]>) => wasmApi.upload.uploadTiles(tiles.data),
         },
     });
 
@@ -78,7 +78,7 @@ export function gameGraphDataWorld(
         source: {
             type: "js",
             data: dataRenderEntities,
-            upload: (entities: RenderEntity[]) => wasmApi.uploadEntities(entities),
+            upload: (entities: RenderEntity[]) => wasmApi.upload.uploadEntities(entities),
         },
     });
 
@@ -86,7 +86,7 @@ export function gameGraphDataWorld(
         wasmInputs: [wasmAllTiles, wasmAllEntities],
         dataInputs: [],
         outputs: ["allChunks"],
-        func: () => wasmApi.collectChunks(),
+        func: () => wasmApi.operations.collectChunks(),
     });
 
     const wasmAllChunks = g.wasmData({
@@ -101,7 +101,7 @@ export function gameGraphDataWorld(
         wasmInputs: [wasmAllChunks],
         dataInputs: [inputs.dataCamera],
         outputs: ["visibleChunks"],
-        func: (_) => wasmApi.cullChunks(),
+        func: (_) => wasmApi.operations.cullChunks(),
     });
 
     const wasmVisibleChunks = g.wasmData({
@@ -116,7 +116,7 @@ export function gameGraphDataWorld(
         wasmInputs: [wasmVisibleChunks, wasmAllTiles],
         dataInputs: [],
         outputs: ["tileTerrainInstances", "tileFogOfWarInstances", "mapDetailVertices"],
-        func: () => wasmApi.buildTileInstances(),
+        func: () => wasmApi.operations.buildTileInstances(),
     });
 
     const wasmTileTerrainInstances = g.wasmData({

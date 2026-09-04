@@ -1,6 +1,6 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import SHADER_MAP_DETAILS_VERT from "./../shader/mapDetails.vsh";
 import SHADER_MAP_DETAILS_FRAG from "./../shader/mapDetails.fsh";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
@@ -14,7 +14,7 @@ import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.
 
 export function gameGraphPassMapDetails(
     g: RenderGraphBuilder,
-    wasmApi: GameGraphWasmApi,
+    wasmApi: RenderWasmApi,
     inputs: {
         wasmMapDetailVertices: WasmDataRenderGraphNode,
         cameraData: DataRenderGraphNode<VersionedContainer<Camera>>,
@@ -27,7 +27,7 @@ export function gameGraphPassMapDetails(
         sources: [
             g.wasmGeometrySource({
                 source: inputs.wasmMapDetailVertices,
-                download: () => wasmApi.downloadMapDetailVertices(),
+                download: () => wasmApi.download.downloadMapDetailVertices(),
                 content: "vertices",
                 layout: [
                     {

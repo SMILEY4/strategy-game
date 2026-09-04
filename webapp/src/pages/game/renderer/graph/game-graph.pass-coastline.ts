@@ -2,7 +2,7 @@ import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_COASTLINE_VERT from "./../shader/coastline.vsh";
 import SHADER_COASTLINE_FRAG from "./../shader/coastline.fsh";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
@@ -14,7 +14,7 @@ import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.
 
 export function gameGraphPassCoastline(
     g: RenderGraphBuilder,
-    wasmApi: GameGraphWasmApi,
+    wasmApi: RenderWasmApi,
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
@@ -59,7 +59,7 @@ export function gameGraphPassCoastline(
             }),
             g.wasmGeometrySource({
                 source: inputs.wasmTileInstances,
-                download: () => wasmApi.downloadTileLandInstances(),
+                download: () => wasmApi.download.downloadTileLandInstances(),
                 content: "instances",
                 layout: [
                     {

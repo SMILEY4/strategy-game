@@ -1,5 +1,5 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
@@ -21,7 +21,7 @@ import SHADER_EDGE_FRAG from "./../shader/overlayEdge.fsh";
 export function gameGraphPassOverlay(
     g: RenderGraphBuilder,
     dataProvider: GameRendererDataProvider,
-    wasmApi: GameGraphWasmApi,
+    wasmApi: RenderWasmApi,
     inputs: {
         visibleChunks: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
@@ -43,7 +43,7 @@ export function gameGraphPassOverlay(
         source: {
             type: "js",
             data: dataMapMode,
-            upload: (mode: MapMode) => wasmApi.setMapMode(mode),
+            upload: (mode: MapMode) => wasmApi.upload.setMapMode(mode),
         },
     });
 
@@ -51,7 +51,7 @@ export function gameGraphPassOverlay(
         source: {
             type: "js",
             data: dataSelectedEntity,
-            upload: (entity: Entity | null) => wasmApi.setSelectedEntityId(entity),
+            upload: (entity: Entity | null) => wasmApi.upload.setSelectedEntityId(entity),
         },
     });
 
@@ -59,7 +59,7 @@ export function gameGraphPassOverlay(
         wasmInputs: [inputs.visibleChunks, wasmMapMode, wasmSelectedEntity],
         dataInputs: [],
         outputs: ["overlayFillInstances", "overlayEdgeInstances"],
-        func: () => wasmApi.buildOverlayInstances(),
+        func: () => wasmApi.operations.buildOverlayInstances(),
     });
 
 
@@ -103,7 +103,7 @@ export function gameGraphPassOverlay(
             }),
             g.wasmGeometrySource({
                 source: wasmOverlayFillInstances,
-                download: () => wasmApi.downloadOverlayFillInstances(),
+                download: () => wasmApi.download.downloadOverlayFillInstances(),
                 content: "instances",
                 layout: [
                     {
@@ -187,7 +187,7 @@ export function gameGraphPassOverlay(
             }),
             g.wasmGeometrySource({
                 source: wasmOverlayEdgeInstances,
-                download: () => wasmApi.downloadOverlayEdgeInstances(),
+                download: () => wasmApi.download.downloadOverlayEdgeInstances(),
                 content: "instances",
                 layout: [
                     {

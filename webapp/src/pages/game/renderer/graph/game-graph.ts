@@ -1,6 +1,6 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import {gameGraphPassCoastline} from "@pages/game/renderer/graph/game-graph.pass-coastline.ts";
 import {gameGraphPassTerrain} from "@pages/game/renderer/graph/game-graph.pass-terrain.ts";
 import {gameGraphPassCompose} from "@pages/game/renderer/graph/game-graph.pass-compose.ts";
@@ -17,7 +17,7 @@ import type {PointerPosition} from "@app/features/game/database/pointer-position
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 
-export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: GameGraphWasmApi) {
+export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
     const dataDebug = g.dataExternal<VersionedContainer<DebugData>>(
         (prev) => prev?.revId !== dataProvider.getDebugData().revId,
