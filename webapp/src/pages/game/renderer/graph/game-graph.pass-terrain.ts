@@ -59,7 +59,7 @@ export function gameGraphPassTerrain(
             }),
             g.wasmGeometrySource({
                 source: inputs.wasmTileInstances,
-                download: () => wasmApi.download.downloadTileLandInstances(),
+                download: () => wasmApi.download.getTileLandInstances(),
                 content: "instances",
                 layout: [
                     {

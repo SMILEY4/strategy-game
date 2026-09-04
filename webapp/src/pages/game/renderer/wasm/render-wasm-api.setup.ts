@@ -6,13 +6,13 @@ import spritesheetTrees from "@pages/game/renderer/spritesheets/trees.atlas.json
 import spritesheetBuildings from "@pages/game/renderer/spritesheets/buildings.atlas.json";
 
 export interface RenderWasmApiSetup {
-    configureRenderer: () => Promise<void>,
+    configure: () => Promise<void>,
 }
 
 export const renderWasmApiSetup = (wasm: WasmRenderApp): RenderWasmApiSetup => {
     return {
 
-        configureRenderer: async () => {
+        configure: async () => {
             tracer.span({name: "wasmapi-configure"}, () => {
                 console.log("[wasm-api]: configuring renderer");
                 wasm.add_spritesheet_entries(1, spritesheetMountains.sprites.map(entry => ({

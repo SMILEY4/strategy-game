@@ -2,17 +2,17 @@ import type {WasmRenderApp} from "wasm";
 import {tracer} from "@modules/monitoring/tracer.ts";
 
 export interface RenderWasmApiOperations {
-    buildOverlayInstances: () => {
+    calculateOverlayInstances: () => {
         overlayFillInstances: boolean,
         overlayEdgeInstances: boolean
     },
-    collectChunks: () => {
+    calculateAllChunks: () => {
         allChunks: boolean
     }
-    cullChunks: () => {
+    calculateVisibleChunks: () => {
         visibleChunks: boolean
     }
-    buildTileInstances: () => {
+    calculateTileInstances: () => {
         tileTerrainInstances: boolean,
         tileFogOfWarInstances: boolean,
         mapDetailVertices: boolean
@@ -22,9 +22,9 @@ export interface RenderWasmApiOperations {
 export const renderWasmApiOperations = (wasm: WasmRenderApp): RenderWasmApiOperations => {
     return {
 
-        buildOverlayInstances: () => {
-            return tracer.span({name: "wasmapi-buildOverlayInstances"}, () => {
-                const changed = wasm.build_overlay_instances();
+        calculateOverlayInstances: () => {
+            return tracer.span({name: "wasmapi-calculateOverlayInstances"}, () => {
+                const changed = wasm.calculate_overlay_instances();
                 return {
                     overlayEdgeInstances: changed,
                     overlayFillInstances: changed,
@@ -32,23 +32,23 @@ export const renderWasmApiOperations = (wasm: WasmRenderApp): RenderWasmApiOpera
             });
         },
 
-        collectChunks: () => {
-            return tracer.span({name: "wasmapi-collectChunks"}, () => {
+        calculateAllChunks: () => {
+            return tracer.span({name: "wasmapi-calculateAllChunks"}, () => {
                 const changed = wasm.calculate_all_chunks();
                 return {allChunks: changed};
             });
         },
 
-        cullChunks: () => {
-            return tracer.span({name: "wasmapi-cullChunks"}, () => {
+        calculateVisibleChunks: () => {
+            return tracer.span({name: "wasmapi-calculateVisibleChunks"}, () => {
                 const changed = wasm.calculate_visible_chunks();
                 return {visibleChunks: changed};
             });
         },
 
-        buildTileInstances: () => {
-            return tracer.span({name: "wasmapi-buildTileInstances"}, () => {
-                const changed = wasm.calculate_terrain_tile_instances();
+        calculateTileInstances: () => {
+            return tracer.span({name: "wasmapi-calculateTileInstances"}, () => {
+                const changed = wasm.calculate_tile_instances();
                 return {
                     tileTerrainInstances: changed,
                     tileFogOfWarInstances: changed,

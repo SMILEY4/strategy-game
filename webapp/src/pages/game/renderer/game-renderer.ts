@@ -32,7 +32,7 @@ export class GameRenderer {
     public initialize(canvas: HTMLCanvasElement): void {
         void tracer.span({name: "render-init"}, () => {
             this.renderGraph.initializeCanvas(canvas);
-            return this.wasmApi.setup.configureRenderer();
+            return this.wasmApi.setup.configure();
         });
     }
 

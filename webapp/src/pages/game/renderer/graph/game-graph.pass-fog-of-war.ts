@@ -59,7 +59,7 @@ export function gameGraphPassFogOfWar(
             }),
             g.wasmGeometrySource({
                 source: inputs.wasmTileInstances,
-                download: () => wasmApi.download.downloadTileFogOfWarInstances(),
+                download: () => wasmApi.download.getTileFogOfWarInstances(),
                 content: "instances",
                 layout: [
                     {

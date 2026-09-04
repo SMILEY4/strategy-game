@@ -74,7 +74,7 @@ export function gameGraphPassTileGrid(
             }),
             g.wasmGeometrySource({
                 source: wasmGridInstances,
-                download: () => wasmApi.download.downloadOverlayGridInstances(),
+                download: () => wasmApi.download.getOverlayGridInstances(),
                 content: "instances",
                 layout: [
                     {

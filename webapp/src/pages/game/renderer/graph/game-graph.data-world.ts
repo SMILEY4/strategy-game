@@ -82,47 +82,47 @@ export function gameGraphDataWorld(
         },
     });
 
-    const collectChunks = g.wasmOperation({
+    const calculateAllChunks = g.wasmOperation({
         wasmInputs: [wasmAllTiles, wasmAllEntities],
         dataInputs: [],
         outputs: ["allChunks"],
-        func: () => wasmApi.operations.collectChunks(),
+            func: () => wasmApi.operations.calculateAllChunks(),
     });
 
     const wasmAllChunks = g.wasmData({
         source: {
             type: "wasm",
-            operation: collectChunks,
+            operation: calculateAllChunks,
             key: "allChunks",
         },
     });
 
-    const cullChunks = g.wasmOperation({
+    const calculateVisibleChunks = g.wasmOperation({
         wasmInputs: [wasmAllChunks],
         dataInputs: [inputs.dataCamera],
         outputs: ["visibleChunks"],
-        func: (_) => wasmApi.operations.cullChunks(),
+            func: (_) => wasmApi.operations.calculateVisibleChunks(),
     });
 
     const wasmVisibleChunks = g.wasmData({
         source: {
             type: "wasm",
-            operation: cullChunks,
+            operation: calculateVisibleChunks,
             key: "visibleChunks",
         },
     });
 
-    const buildTileInstances = g.wasmOperation({
+    const calculateTileInstances = g.wasmOperation({
         wasmInputs: [wasmVisibleChunks, wasmAllTiles],
         dataInputs: [],
         outputs: ["tileTerrainInstances", "tileFogOfWarInstances", "mapDetailVertices"],
-        func: () => wasmApi.operations.buildTileInstances(),
+            func: () => wasmApi.operations.calculateTileInstances(),
     });
 
     const wasmTileTerrainInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: buildTileInstances,
+            operation: calculateTileInstances,
             key: "tileTerrainInstances",
         },
     });
@@ -130,7 +130,7 @@ export function gameGraphDataWorld(
     const wasmTileFogOfWarInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: buildTileInstances,
+            operation: calculateTileInstances,
             key: "tileFogOfWarInstances",
         },
     });
@@ -138,7 +138,7 @@ export function gameGraphDataWorld(
     const wasmMapDetailVertices = g.wasmData({
         source: {
             type: "wasm",
-            operation: buildTileInstances,
+            operation: calculateTileInstances,
             key: "mapDetailVertices",
         },
     });

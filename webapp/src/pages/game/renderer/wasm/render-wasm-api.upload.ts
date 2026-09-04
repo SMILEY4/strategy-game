@@ -3,7 +3,6 @@ import {tracer} from "@modules/monitoring/tracer.ts";
 import type {Tile} from "@app/features/game/models/tile.ts";
 import type {RenderEntity} from "@pages/game/renderer/data/render-entity.ts";
 import type {MapMode} from "@app/features/game/models/map-mode.ts";
-import type {Entity} from "@app/features/game/models/entity.ts";
 import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
 import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
 
@@ -11,7 +10,7 @@ export interface RenderWasmApiUpload {
     uploadTiles: (tiles: Tile[]) => void,
     uploadEntities: (entities: RenderEntity[]) => void,
     setMapMode: (mapMode: MapMode) => void,
-    setSelectedEntityId: (entity: Entity | null) => void,
+    setSelectedEntityId: (entityId: number | null) => void,
 }
 
 type TileUpload = {
@@ -170,24 +169,24 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
                     return {tile, controlOffset, controlCount: tileControls.length};
                 });
 
-                const tilesMemory = wasm.tiles_reserve_memory(tiles.length);
+                const tilesMemory = wasm.reserve_tiles_memory(tiles.length);
                 const tilesBuffer = new Uint8Array(wasmMemory.buffer, tilesMemory.ptr, tilesMemory.len * tilesMemory.item_size);
                 tileSerializer(tilesBuffer, serializedTiles);
-                wasm.tiles_upload(tilesMemory.ptr, tilesMemory.len);
+                wasm.upload_tiles(tilesMemory.ptr, tilesMemory.len);
 
-                const controlsMemory = wasm.tile_control_values_reserve_memory(controls.length);
+                const controlsMemory = wasm.reserve_tile_control_values_memory(controls.length);
                 const controlsBuffer = new Uint8Array(wasmMemory.buffer, controlsMemory.ptr, controlsMemory.len * controlsMemory.item_size);
                 controlSerializer(controlsBuffer, controls);
-                wasm.tile_control_values_upload(controlsMemory.ptr, controlsMemory.len);
+                wasm.upload_tile_control_values(controlsMemory.ptr, controlsMemory.len);
             });
         },
 
         uploadEntities: (entities: RenderEntity[]) => {
             tracer.span({name: "wasmapi-uploadEntities"}, () => {
-                const memory = wasm.entities_reserve_memory(entities.length);
+                const memory = wasm.reserve_entities_memory(entities.length);
                 const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
                 entitySerializer(buffer, entities);
-                wasm.entities_upload(memory.ptr, memory.len);
+                wasm.upload_entities(memory.ptr, memory.len);
             });
         },
 
@@ -197,9 +196,9 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
             });
         },
 
-        setSelectedEntityId: (entity: Entity | null) => {
+        setSelectedEntityId: (entityId: number | null) => {
             tracer.span({name: "wasmapi-setSelectedEntityId"}, () => {
-                wasm.set_selected_entity_id(entity ? entity.id : null);
+                wasm.set_selected_entity_id(entityId);
             });
         },
 

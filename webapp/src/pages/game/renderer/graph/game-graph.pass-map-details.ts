@@ -27,7 +27,7 @@ export function gameGraphPassMapDetails(
         sources: [
             g.wasmGeometrySource({
                 source: inputs.wasmMapDetailVertices,
-                download: () => wasmApi.download.downloadMapDetailVertices(),
+                download: () => wasmApi.download.getMapDetailVertices(),
                 content: "vertices",
                 layout: [
                     {

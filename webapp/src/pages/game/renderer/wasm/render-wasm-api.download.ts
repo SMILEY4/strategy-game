@@ -3,38 +3,38 @@ import {tracer} from "@modules/monitoring/tracer.ts";
 import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
 
 export interface RenderWasmApiDownload {
-    downloadTileLandInstances: () => VertexDataResult;
-    downloadTileWaterInstances: () => VertexDataResult;
-    downloadTileFogOfWarInstances: () => VertexDataResult;
-    downloadMapDetailVertices: () => VertexDataResult;
-    downloadOverlayGridInstances: () => VertexDataResult;
-    downloadOverlayFillInstances: () => VertexDataResult;
-    downloadOverlayEdgeInstances: () => VertexDataResult;
+    getTileLandInstances: () => VertexDataResult;
+    getTileWaterInstances: () => VertexDataResult;
+    getTileFogOfWarInstances: () => VertexDataResult;
+    getMapDetailVertices: () => VertexDataResult;
+    getOverlayGridInstances: () => VertexDataResult;
+    getOverlayFillInstances: () => VertexDataResult;
+    getOverlayEdgeInstances: () => VertexDataResult;
 }
 
 export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownload => {
     return {
 
-        downloadTileLandInstances: () => {
-            return tracer.span({name: "wasmapi-downloadTileLandInstances"}, () => {
+        getTileLandInstances: () => {
+            return tracer.span({name: "wasmapi-getTileLandInstances"}, () => {
                 return {
                     data: wasm.get_terrain_tile_land_instances(),
-                    count: wasm.get_terrain_tile_land_instance_count(),
+                    count: wasm.get_terrain_tile_land_instances_count(),
                 };
             });
         },
 
-        downloadTileWaterInstances: () => {
-            return tracer.span({name: "wasmapi-downloadTileWaterInstances"}, () => {
+        getTileWaterInstances: () => {
+            return tracer.span({name: "wasmapi-getTileWaterInstances"}, () => {
                 return {
                     data: wasm.get_terrain_tile_water_instances(),
-                    count: wasm.get_terrain_tile_water_instance_count(),
+                    count: wasm.get_terrain_tile_water_instances_count(),
                 };
             });
         },
 
-        downloadTileFogOfWarInstances: () => {
-            return tracer.span({name: "wasmapi-downloadTileFogOfWarInstances"}, () => {
+        getTileFogOfWarInstances: () => {
+            return tracer.span({name: "wasmapi-getTileFogOfWarInstances"}, () => {
                 return {
                     data: wasm.get_fog_of_war_tile_instances(),
                     count: wasm.get_fog_of_war_tile_instances_count(),
@@ -42,38 +42,38 @@ export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownloa
             });
         },
 
-        downloadMapDetailVertices: () => {
-            return tracer.span({name: "wasmapi-downloadMapDetailVertices"}, () => {
+        getMapDetailVertices: () => {
+            return tracer.span({name: "wasmapi-getMapDetailVertices"}, () => {
                 return {
                     data: wasm.get_map_detail_vertices(),
-                    count: wasm.get_map_detail_vertex_count(),
+                    count: wasm.get_map_detail_vertices_count(),
                 };
             });
         },
 
-        downloadOverlayGridInstances: () => {
-            return tracer.span({name: "wasmapi-downloadOverlayGridInstances"}, () => {
+        getOverlayGridInstances: () => {
+            return tracer.span({name: "wasmapi-getOverlayGridInstances"}, () => {
                 return {
                     data: wasm.get_overlay_grid_instances(),
-                    count: wasm.get_overlay_grid_instance_count(),
+                    count: wasm.get_overlay_grid_instances_count(),
                 };
             });
         },
 
-        downloadOverlayFillInstances: () => {
-            return tracer.span({name: "wasmapi-downloadOverlayFillInstances"}, () => {
+        getOverlayFillInstances: () => {
+            return tracer.span({name: "wasmapi-getOverlayFillInstances"}, () => {
                 return {
                     data: wasm.get_overlay_fill_instances(),
-                    count: wasm.get_overlay_fill_instance_count(),
+                    count: wasm.get_overlay_fill_instances_count(),
                 };
             });
         },
 
-        downloadOverlayEdgeInstances: () => {
-            return tracer.span({name: "wasmapi-downloadOverlayEdgeInstances"}, () => {
+        getOverlayEdgeInstances: () => {
+            return tracer.span({name: "wasmapi-getOverlayEdgeInstances"}, () => {
                 return {
                     data: wasm.get_overlay_edge_instances(),
-                    count: wasm.get_overlay_edge_instance_count(),
+                    count: wasm.get_overlay_edge_instances_count(),
                 };
             });
         },

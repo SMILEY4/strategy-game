@@ -51,22 +51,22 @@ export function gameGraphPassOverlay(
         source: {
             type: "js",
             data: dataSelectedEntity,
-            upload: (entity: Entity | null) => wasmApi.upload.setSelectedEntityId(entity),
+            upload: (entity: Entity | null) => wasmApi.upload.setSelectedEntityId(entity?.id ?? null),
         },
     });
 
-    const buildOverlayInstances = g.wasmOperation({
+    const calculateOverlayInstances = g.wasmOperation({
         wasmInputs: [inputs.visibleChunks, wasmMapMode, wasmSelectedEntity],
         dataInputs: [],
         outputs: ["overlayFillInstances", "overlayEdgeInstances"],
-        func: () => wasmApi.operations.buildOverlayInstances(),
+        func: () => wasmApi.operations.calculateOverlayInstances(),
     });
 
 
     const wasmOverlayFillInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: buildOverlayInstances,
+            operation: calculateOverlayInstances,
             key: "overlayFillInstances",
         },
     });
@@ -103,7 +103,7 @@ export function gameGraphPassOverlay(
             }),
             g.wasmGeometrySource({
                 source: wasmOverlayFillInstances,
-                download: () => wasmApi.download.downloadOverlayFillInstances(),
+                download: () => wasmApi.download.getOverlayFillInstances(),
                 content: "instances",
                 layout: [
                     {
@@ -145,7 +145,7 @@ export function gameGraphPassOverlay(
     const wasmOverlayEdgeInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: buildOverlayInstances,
+            operation: calculateOverlayInstances,
             key: "overlayEdgeInstances",
         },
     });
@@ -187,7 +187,7 @@ export function gameGraphPassOverlay(
             }),
             g.wasmGeometrySource({
                 source: wasmOverlayEdgeInstances,
-                download: () => wasmApi.download.downloadOverlayEdgeInstances(),
+                download: () => wasmApi.download.getOverlayEdgeInstances(),
                 content: "instances",
                 layout: [
                     {
