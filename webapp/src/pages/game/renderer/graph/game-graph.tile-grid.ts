@@ -8,15 +8,16 @@ import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
 import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import SHADER_COMPOSE_VERT from "./../shader/overlayGrid.vsh";
 import SHADER_COMPOSE_FRAG from "./../shader/overlayGrid.fsh";
+import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 export function gameGraphPassTileGrid(
     g: RenderGraphBuilder,
     wasmApi: GameGraphWasmApi,
     inputs: {
         camera: CameraRenderGraphNode,
-        dataPointerWorld: DataRenderGraphNode<[number, number]>,
-        dataPointerHex: DataRenderGraphNode<[number, number]>,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
+        dataPointerPosition: DataRenderGraphNode<VersionedContainer<PointerPosition>>,
+        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
     },
 ) {
 
@@ -97,21 +98,35 @@ export function gameGraphPassTileGrid(
     const dataDebugHexOffsetScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.randomHexOffsetScale,
+            func: (data) => data.data.renderer.randomHexOffsetScale,
         }),
     );
 
     const dataDebugColor = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.grid.color,
+            func: (data) => data.data.renderer.grid.color,
         }),
     );
 
     const dataDebugThickness = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.grid.thickness,
+            func: (data) => data.data.renderer.grid.thickness,
+        }),
+    );
+
+    const dataPointerHexPosition = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataPointerPosition],
+            func: (data) => data.data.hex,
+        }),
+    );
+
+    const dataPointerWorldPosition = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataPointerPosition],
+            func: (data) => data.data.world,
         }),
     );
 
@@ -120,8 +135,8 @@ export function gameGraphPassTileGrid(
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
-            "pointerHexPosition": inputs.dataPointerHex as DataRenderGraphNode<unknown>,
-            "pointerWorldPosition": inputs.dataPointerWorld as DataRenderGraphNode<unknown>,
+            "pointerHexPosition": dataPointerHexPosition as DataRenderGraphNode<unknown>,
+            "pointerWorldPosition": dataPointerWorldPosition as DataRenderGraphNode<unknown>,
             "dbg_hexOffsetScale": dataDebugHexOffsetScale as DataRenderGraphNode<unknown>,
             "thickness": dataDebugThickness as DataRenderGraphNode<unknown>,
             "color": dataDebugColor as DataRenderGraphNode<unknown>,

@@ -8,10 +8,10 @@ import spritesheetMountains from "./spritesheets/mountains.atlas.json";
 import spritesheetHills from "./spritesheets/hills.atlas.json";
 import spritesheetTrees from "./spritesheets/trees.atlas.json";
 import spritesheetBuildings from "./spritesheets/buildings.atlas.json";
-import type {RenderEntity} from "@pages/game/renderer/data/models.ts";
 import type {MapMode} from "@app/features/game/models/map-mode.ts";
 import type {Entity} from "@app/features/game/models/entity.ts";
 import {tracer} from "@modules/monitoring/tracer.ts";
+import type {RenderEntity} from "@pages/game/renderer/data/render-entity.ts";
 
 export interface GameGraphWasmApi {
     configureRenderer: () => Promise<void>,

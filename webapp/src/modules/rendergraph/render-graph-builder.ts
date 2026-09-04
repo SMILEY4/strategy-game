@@ -109,7 +109,7 @@ export class RenderGraphBuilder {
         });
     }
 
-    public dataExternal<TData>(fetch: () => TData, checkChanged?: (prev: TData) => boolean): DataRenderGraphNode<TData> {
+    public dataExternal<TData>(checkChanged: (prev: TData) => boolean, fetch: () => TData): DataRenderGraphNode<TData> {
         return this.data<TData>({
             source: {
                 type: "external",

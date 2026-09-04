@@ -1,52 +1,53 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {CommandCollection, EntityCollection, RenderCamera} from "@pages/game/renderer/data/models.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
-import {EntityUtils} from "@app/features/game/models/entity.ts";
+import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
 import {mat4, vec3, vec4} from "gl-matrix";
 import type {Camera} from "@app/features/game/models/camera.ts";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import {SettlementLabel} from "@pages/game/overlay/SettlementLabel.ts";
+import type {Command} from "@app/features/game/models/command.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraphHtml(
     g: RenderGraphBuilder,
     dataProvider: GameRendererDataProvider,
     inputs: {
-        dataCamera: DataRenderGraphNode<RenderCamera>
+        dataCamera: DataRenderGraphNode<VersionedContainer<Camera>>
     },
 ) {
 
-    const dataAllEntities = g.dataExternal<EntityCollection>(
-        () => dataProvider.getEntities(),
-        prev => prev?.revId !== dataProvider.getEntitiesRevId(),
+    const dataAllEntities = g.dataExternal<VersionedContainer<Entity[]>>(
+        prev => prev?.revId !== dataProvider.getEntities().revId,
+        () => dataProvider.getEntities().load(),
     );
 
-    const dataAllCommands = g.dataExternal<CommandCollection>(
-        () => dataProvider.getCommands(),
-        prev => prev?.revId !== dataProvider.getCommandsRevId(),
+    const dataAllCommands = g.dataExternal<VersionedContainer<Command[]>>(
+        prev => prev?.revId !== dataProvider.getCommands().revId,
+        () => dataProvider.getCommands().load(),
     );
 
-    const elementsTransformer = g.transform<[EntityCollection, CommandCollection], HtmlDrawElement[]>({
+    const elementsTransformer = g.transform<[VersionedContainer<Entity[]>, VersionedContainer<Command[]>], HtmlDrawElement[]>({
         inputs: [dataAllEntities, dataAllCommands],
         func: (entities, commands) => {
             return [
-                ...entities.entities.map(entity => {
-                    const settlementComponent = EntityUtils.getComponent(entity, "settlement")
+                ...entities.data.map(entity => {
+                    const settlementComponent = EntityUtils.getComponent(entity, "settlement");
                     if (settlementComponent) {
                         return {
                             key: "entity/" + entity.id,
-                            element: SettlementLabel({ name: settlementComponent.name, pending: false }),
+                            element: SettlementLabel({name: settlementComponent.name, pending: false}),
                         } satisfies HtmlDrawElement;
                     }
                     return null;
                 }),
-                ...commands.commands.map(command => {
+                ...commands.data.map(command => {
                     if (command.type === "create-settlement") {
                         return {
                             key: "command/" + command.id,
-                            element: SettlementLabel({ name: command.name, pending: true }),
+                            element: SettlementLabel({name: command.name, pending: true}),
                         } satisfies  HtmlDrawElement;
                     }
                     return null;
@@ -55,26 +56,26 @@ export function gameGraphHtml(
         },
     });
 
-    const instancesTransformer = g.transform<[EntityCollection, CommandCollection, RenderCamera], HtmlDrawInstance[]>({
+    const instancesTransformer = g.transform<[VersionedContainer<Entity[]>, VersionedContainer<Command[]>, VersionedContainer<Camera>], HtmlDrawInstance[]>({
         inputs: [dataAllEntities, dataAllCommands, inputs.dataCamera],
         func: (entities, commands, camera) => {
             return [
-                ...entities.entities.map(entity => {
+                ...entities.data.map(entity => {
                     if (EntityUtils.hasComponent(entity, "settlement")) {
                         return {
                             key: "entity/" + entity.id,
-                            ...worldToView(hexToWorld(entity.position, 1, 1), camera)!,
-                            positioning: "centered"
+                            ...worldToView(hexToWorld(entity.position, 1, 1), camera.data)!,
+                            positioning: "centered",
                         } satisfies HtmlDrawInstance;
                     }
                     return null;
                 }),
-                ...commands.commands.map(command => {
+                ...commands.data.map(command => {
                     if (command.type === "create-settlement") {
                         return {
                             key: "command/" + command.id,
-                            ...worldToView(hexToWorld(command.location, 1, 1), camera)!,
-                            positioning: "centered"
+                            ...worldToView(hexToWorld(command.location, 1, 1), camera.data)!,
+                            positioning: "centered",
                         } satisfies  HtmlDrawInstance;
                     }
                     return null;

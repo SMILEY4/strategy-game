@@ -11,6 +11,7 @@ import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
 import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {vec2} from "gl-matrix";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 import SHADER_FILL_VERT from "./../shader/overlayFill.vsh";
 import SHADER_FILL_FRAG from "./../shader/overlayFill.fsh";
@@ -24,18 +25,19 @@ export function gameGraphPassOverlay(
     inputs: {
         visibleChunks: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
+        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
     },
 ) {
 
-    const dataMapMode = g.dataExternal<MapMode>(() => dataProvider.getMapMode(), (prev => {
-        return prev.id !== dataProvider.getMapMode().id;
-    }));
+    const dataMapMode = g.dataExternal<MapMode>(
+        prev => prev.id !== dataProvider.getMapMode().id,
+        () => dataProvider.getMapMode(),
+    );
 
-
-    const dataSelectedEntity = g.dataExternal<Entity | null>(() => dataProvider.getSelectedEntity(), (prev => {
-        return prev?.id !== dataProvider.getSelectedEntity()?.id;
-    }));
+    const dataSelectedEntity = g.dataExternal<Entity | null>(
+        prev => prev?.id !== dataProvider.getSelectedEntity()?.id,
+        () => dataProvider.getSelectedEntity(),
+    );
 
     const wasmMapMode = g.wasmData({
         source: {

@@ -5,6 +5,7 @@ import SHADER_COMPOSE_FRAG from "./../shader/compose.fsh";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraphPassCompose(
@@ -16,7 +17,7 @@ export function gameGraphPassCompose(
         layerMapDetails: RendertargetRenderGraphNode<"color" | "depth">,
         layerTileGrid: RendertargetRenderGraphNode<"color">,
         layerOverlay: RendertargetRenderGraphNode<"color">,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
+        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
     },
 ) {
     const meshTransformer = g.transformVertexOut({
@@ -87,9 +88,9 @@ export function gameGraphPassCompose(
     const dataDebugTerrainCutoff = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.terrainMask.cutoff
-        })
-    )
+            func: (data) => data.data.renderer.terrainMask.cutoff,
+        }),
+    );
 
     const draw = g.draw({
         shader: shader,
@@ -97,29 +98,29 @@ export function gameGraphPassCompose(
         inputs: {
             "layerBaseTerrain": g.pickRendertargetAttachment({
                 rendertarget: inputs.layerBaseTerrain,
-                attachment: "color"
+                attachment: "color",
             }),
             "layerCoastlineMask": g.pickRendertargetAttachment({
                 rendertarget: inputs.layerCoastlineMask,
-                attachment: "color"
+                attachment: "color",
             }),
             "layerFogOfWar": g.pickRendertargetAttachment({
                 rendertarget: inputs.layerFogOfWar,
-                attachment: "color"
+                attachment: "color",
             }),
             "layerMapDetails": g.pickRendertargetAttachment({
                 rendertarget: inputs.layerMapDetails,
-                attachment: "color"
+                attachment: "color",
             }),
             "layerOverlay": g.pickRendertargetAttachment({
                 rendertarget: inputs.layerOverlay,
-                attachment: "color"
+                attachment: "color",
             }),
             "layerTileGrid": g.pickRendertargetAttachment({
                 rendertarget: inputs.layerTileGrid,
-                attachment: "color"
+                attachment: "color",
             }),
-            "dbg_terrainCutoff": dataDebugTerrainCutoff as DataRenderGraphNode<unknown>
+            "dbg_terrainCutoff": dataDebugTerrainCutoff as DataRenderGraphNode<unknown>,
         },
     });
 

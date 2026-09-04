@@ -8,7 +8,8 @@ import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.cam
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
-import type {RenderCamera} from "@pages/game/renderer/data/models.ts";
+import type {Camera} from "@app/features/game/models/camera.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraphPassMapDetails(
@@ -16,9 +17,9 @@ export function gameGraphPassMapDetails(
     wasmApi: GameGraphWasmApi,
     inputs: {
         wasmMapDetailVertices: WasmDataRenderGraphNode,
-        cameraData: DataRenderGraphNode<RenderCamera>,
+        cameraData: DataRenderGraphNode<VersionedContainer<Camera>>,
         camera: CameraRenderGraphNode,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
+        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
     },
 ) {
 
@@ -108,18 +109,16 @@ export function gameGraphPassMapDetails(
     const dataDebugMsaaFactor = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.mapDetails.msaa
-        })
-    )
+            func: (data) => data.data.renderer.mapDetails.msaa,
+        }),
+    );
 
     const cameraDirection = g.dataTransformer(
         g.transform({
             inputs: [inputs.cameraData],
-            func: (data) => {
-                return data.direction
-            }
-        })
-    )
+            func: (data) => data.data.direction,
+        }),
+    );
 
     const shader = g.shader({
         srcVertex: SHADER_MAP_DETAILS_VERT,

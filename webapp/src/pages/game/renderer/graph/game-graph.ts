@@ -13,21 +13,21 @@ import {gameGraphPassMapDetails} from "@pages/game/renderer/graph/game-graph.pas
 import {gameGraphHtml} from "@pages/game/renderer/graph/game-graph.html.ts";
 import {gameGraphPassTileGrid} from "@pages/game/renderer/graph/game-graph.tile-grid.ts";
 import {gameGraphPassOverlay} from "@pages/game/renderer/graph/game-graph.overlay.ts";
+import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: GameGraphWasmApi) {
 
-    const dataDebug = g.dataExternal<DebugData & { revId: string }>(() => dataProvider.getDebugData(), (prev) => {
-        return prev?.revId !== dataProvider.getDebugData().revId;
-    });
+    const dataDebug = g.dataExternal<VersionedContainer<DebugData>>(
+        (prev) => prev?.revId !== dataProvider.getDebugData().revId,
+        () => dataProvider.getDebugData().load(),
+    );
 
-    const dataPointerWorld = g.dataExternal<[number, number]>(() => dataProvider.getPointerWorldPosition(), (prev => {
-        return prev[0] !== dataProvider.getPointerWorldPosition()[0] || prev[1] !== dataProvider.getPointerWorldPosition()[1];
-    }));
-
-    const dataPointerHex = g.dataExternal<[number, number]>(() => dataProvider.getPointerHexPosition(), (prev => {
-        return prev[0] !== dataProvider.getPointerHexPosition()[0] || prev[1] !== dataProvider.getPointerHexPosition()[1];
-    }));
+    const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
+        prev => prev?.revId !== dataProvider.getPointerPosition().revId,
+        () => dataProvider.getPointerPosition().load(),
+    );
 
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
 
@@ -65,16 +65,15 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         dataDebug: dataDebug,
     });
 
-    const { layerOverlay} = gameGraphPassOverlay(g, dataProvider, wasmApi, {
+    const {layerOverlay} = gameGraphPassOverlay(g, dataProvider, wasmApi, {
         visibleChunks: wasmVisibleChunks,
         camera: camera,
-        dataDebug: dataDebug
-    })
+        dataDebug: dataDebug,
+    });
 
     const {layerTileGrid} = gameGraphPassTileGrid(g, wasmApi, {
         camera: camera,
-        dataPointerHex: dataPointerHex,
-        dataPointerWorld: dataPointerWorld,
+        dataPointerPosition: dataPointerPosition,
         dataDebug: dataDebug,
     });
 

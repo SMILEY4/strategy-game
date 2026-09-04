@@ -9,6 +9,7 @@ import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraphPassCoastline(
@@ -17,7 +18,7 @@ export function gameGraphPassCoastline(
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
+        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
     },
 ) {
 
@@ -85,14 +86,14 @@ export function gameGraphPassCoastline(
     const dataDebugHexOffsetScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.randomHexOffsetScale,
+            func: (data) => data.data.renderer.randomHexOffsetScale,
         }),
     );
 
     const dataDebugScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.terrainMask.scale,
+            func: (data) => data.data.renderer.terrainMask.scale,
         }),
     );
 
