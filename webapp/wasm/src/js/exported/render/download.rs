@@ -6,27 +6,27 @@ use wasm_bindgen::prelude::wasm_bindgen;
 #[wasm_bindgen]
 impl WasmRenderApp {
     pub fn get_terrain_tile_land_instances(&self) -> Uint8Array {
-        direct_buffer::as_js_buffer(self.renderer.get_terrain_tile_instances_land())
+        direct_buffer::as_js_buffer(self.renderer.get_terrain_land_instances())
     }
 
     pub fn get_terrain_tile_land_instances_count(&self) -> usize {
-        self.renderer.get_terrain_tile_instances_land().len()
+        self.renderer.get_terrain_land_instances().len()
     }
 
     pub fn get_terrain_tile_water_instances(&self) -> Uint8Array {
-        direct_buffer::as_js_buffer(self.renderer.get_terrain_tile_instances_water())
+        direct_buffer::as_js_buffer(self.renderer.get_terrain_water_instances())
     }
 
     pub fn get_terrain_tile_water_instances_count(&self) -> usize {
-        self.renderer.get_terrain_tile_instances_water().len()
+        self.renderer.get_terrain_water_instances().len()
     }
 
     pub fn get_fog_of_war_tile_instances(&self) -> Uint8Array {
-        direct_buffer::as_js_buffer(self.renderer.get_fog_of_war_tile_instances())
+        direct_buffer::as_js_buffer(self.renderer.get_fog_of_war_instances())
     }
 
     pub fn get_fog_of_war_tile_instances_count(&self) -> usize {
-        self.renderer.get_fog_of_war_tile_instances().len()
+        self.renderer.get_fog_of_war_instances().len()
     }
 
     pub fn get_map_detail_vertices(&self) -> Uint8Array {
@@ -38,11 +38,11 @@ impl WasmRenderApp {
     }
 
     pub fn get_overlay_grid_instances(&self) -> Uint8Array {
-        direct_buffer::as_js_buffer(self.renderer.get_grid_instances())
+        direct_buffer::as_js_buffer(self.renderer.get_overlay_grid_instances())
     }
 
     pub fn get_overlay_grid_instances_count(&self) -> usize {
-        self.renderer.get_grid_instances().len()
+        self.renderer.get_overlay_grid_instances().len()
     }
 
     pub fn get_overlay_fill_instances(&self) -> Uint8Array {

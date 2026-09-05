@@ -3,8 +3,8 @@ mod download;
 mod operations;
 mod upload;
 
-use crate::render::renderer::Renderer;
 use wasm_bindgen::prelude::wasm_bindgen;
+use crate::render::Renderer;
 
 #[wasm_bindgen]
 pub struct WasmRenderApp {

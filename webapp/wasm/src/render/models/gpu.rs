@@ -1,15 +1,3 @@
-#[derive(Default)]
-pub struct TileInstanceData {
-    pub terrain_land: Vec<TileTerrainLandInstance>,
-    pub terrain_water: Vec<TileTerrainWaterInstance>,
-    pub fog_of_war: Vec<TileFogOfWarInstance>,
-}
-
-#[derive(Default)]
-pub struct MapDetailsVertexData {
-    pub map_detail_vertices: Vec<MapDetailVertex>
-}
-
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
 pub struct TileTerrainLandInstance {
@@ -21,7 +9,6 @@ pub struct TileTerrainLandInstance {
 pub struct TileTerrainWaterInstance {
     pub position: [f32; 2],
 }
-
 
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
@@ -42,40 +29,33 @@ pub struct MapDetailVertex {
     pub is_pending: u32,
 }
 
-
-#[derive(Default)]
-pub struct OverlayVertexData {
-    pub grid_instances: Vec<GridOverlayInstance>,
-    pub fill_instances: Vec<GenericFillOverlayInstance>,
-    pub edge_instances: Vec<GenericEdgeOverlayInstance>
-}
-
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
 pub struct GridOverlayInstance {
     pub position: [f32; 2],
 }
 
-
-pub const OVERLAY_FILL_STYLE_FILLED: u32 = 0;
-pub const OVERLAY_FILL_STYLE_STRIPED: u32 = 1;
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy)]
+pub struct GenericFillOverlayInstance {
+    // instance of a hex-mesh filling in a complete tile
+    pub position: [f32; 2], // hex position (q,r)
+    pub color: [f32; 4],    //  color as rgba
+    pub style: u32,         // fill style: 0 = solid, 1 = striped
+}
 
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
-pub struct GenericFillOverlayInstance { // instance of a hex-mesh filling in a complete tile
+pub struct GenericEdgeOverlayInstance {
+    // instance of a triangle mesh with one vertex anchored to the hex center and the other vertices defining the edge.
     pub position: [f32; 2], // hex position (q,r)
-    pub color: [f32; 4], //  color as rgba
-    pub style: u32 // fill style: 0 = solid, 1 = striped
+    pub direction: u32, // the direction the edge/triangle is pointing (i.e. cw rotation, top-right = 0, right = 1, top-left = 7)
+    pub color: [f32; 4], // color as rgba
+    pub style: u32,     // edge style: 0 = solid, 1 = dashed
 }
 
 pub const OVERLAY_EDGE_STYLE_FILLED: u32 = 0;
 pub const OVERLAY_EDGE_STYLE_DASHED: u32 = 1;
 
-#[repr(C, packed)]
-#[derive(Debug, Clone, Copy)]
-pub struct GenericEdgeOverlayInstance { // instance of a triangle mesh with one vertex anchored to the hex center and the other vertices defining the edge.
-    pub position: [f32; 2], // hex position (q,r)
-    pub direction: u32, // the direction the edge/triangle is pointing (i.e. cw rotation, top-right = 0, right = 1, top-left = 7)
-    pub color: [f32; 4], // color as rgba
-    pub style: u32 // edge style: 0 = solid, 1 = dashed
-}
+pub const OVERLAY_FILL_STYLE_FILLED: u32 = 0;
+pub const OVERLAY_FILL_STYLE_STRIPED: u32 = 1;

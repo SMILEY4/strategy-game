@@ -2,11 +2,8 @@ use crate::js::models::{
     HexPosition, Tile, TILE_BIOME_GRASSLAND, TILE_BIOME_OCEAN, TILE_ELEVATION_MOUNTAINS,
     TILE_FEATURE_FOREST,
 };
-use crate::render::models::render_state::RenderState;
-use crate::render::models::tile_instance_data::{
-    GenericEdgeOverlayInstance, GenericFillOverlayInstance, OVERLAY_EDGE_STYLE_FILLED,
-    OVERLAY_EDGE_STYLE_DASHED, OVERLAY_FILL_STYLE_FILLED, OVERLAY_FILL_STYLE_STRIPED,
-};
+use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, OVERLAY_EDGE_STYLE_DASHED, OVERLAY_EDGE_STYLE_FILLED, OVERLAY_FILL_STYLE_FILLED, OVERLAY_FILL_STYLE_STRIPED};
+use crate::render::state_render::RenderState;
 
 const OCEAN_COLOR: [f32; 4] = [0.08, 0.35, 0.65, 0.35];
 const GRASSLAND_COLOR: [f32; 4] = [0.2, 0.6, 0.25, 0.35];
