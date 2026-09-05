@@ -25,13 +25,16 @@ import {cameraDatabase} from "@app/features/game/database/camera.database.ts";
 import {debugDatabase} from "@app/features/game/database/debug.database.ts";
 import {gameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
 import {selectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
-import {gameActionFoundCapital} from "@app/features/game/gameplay/game-action.found-capital.ts";
 import {commandDatabase} from "@app/features/game/database/command.database.ts";
 import {gameActionEndTurn} from "@app/features/game/gameplay/game-action.end-turn.ts";
 import {entityDatabase} from "@app/features/game/database/entity.database.ts";
+import {realmDatabase} from "@app/features/game/database/realm.database.ts";
 import {gameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
 import {interactionDatabase} from "@app/features/game/database/interaction.database.ts";
 import {interactionManager} from "@modules/interaction/interaction.manager.ts";
+import {createSettlementValidation} from "@app/features/game/gameplay/create-settlement.validation.ts";
+import {pointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
+import {mapModeDatabase} from "@app/features/game/database/mapmode.database.ts";
 
 
 interface EnvShape {
@@ -74,6 +77,8 @@ interface DIShape {
     deleteMatchUseCase: ReturnType<typeof deleteMatchUseCase>,
     createGameUseCase: ReturnType<typeof createGameUseCase>,
     // game
+    mapModeDatabase: ReturnType<typeof mapModeDatabase>,
+    pointerPositionDatabase: ReturnType<typeof pointerPositionDatabase>,
     interactionDatabase: ReturnType<typeof interactionDatabase>,
     interactionManager: ReturnType<typeof interactionManager>,
     gameClient: ReturnType<typeof gameClient>
@@ -83,14 +88,15 @@ interface DIShape {
     cameraController: ReturnType<typeof cameraControllerPlayer>
     tileDatabase: ReturnType<typeof tileDatabase>
     entityDatabase: ReturnType<typeof entityDatabase>
+    realmDatabase: ReturnType<typeof realmDatabase>
     commandDatabase: ReturnType<typeof commandDatabase>
     cameraDatabase: ReturnType<typeof cameraDatabase>
     debugDatabase: ReturnType<typeof debugDatabase>
     selectedTileDatabase: ReturnType<typeof selectedTileDatabase>
     gameActionEndTurn: ReturnType<typeof gameActionEndTurn>
     gameActionClickTile: ReturnType<typeof gameActionClickTile>
-    gameActionFoundCapital: ReturnType<typeof gameActionFoundCapital>
     gameActionJoinedGame: ReturnType<typeof gameActionJoinedGame>
+    createSettlementValidation: ReturnType<typeof createSettlementValidation>
 }
 
 /** DI container configuration. Each entry specifies singleton or transient scope and its factory. */
@@ -179,7 +185,7 @@ export const DIConfig = {
             const db = resolve.interactionDatabase;
             return interactionManager({
                 getMachineState: () => db.get().state,
-                setMachineState: state => db.set({ state: state }),
+                setMachineState: state => db.set({state: state}),
             });
         },
     },
@@ -203,9 +209,11 @@ export const DIConfig = {
             repository: resolve.gameRepository,
             tileDb: resolve.tileDatabase,
             entityDb: resolve.entityDatabase,
+            realmDb: resolve.realmDatabase,
             cameraController: resolve.cameraController,
             actionClickTile: resolve.gameActionClickTile,
             actionJoinedGame: resolve.gameActionJoinedGame,
+            pointerPositionDb: resolve.pointerPositionDatabase,
         }),
     },
     cameraController: {
@@ -217,6 +225,14 @@ export const DIConfig = {
         //     cameraDb: resolve.cameraDatabase,
         // }),
     },
+    mapModeDatabase: {
+        scope: "singleton",
+        create: () => mapModeDatabase(),
+    },
+    pointerPositionDatabase: {
+        scope: "singleton",
+        create: () => pointerPositionDatabase(),
+    },
     tileDatabase: {
         scope: "singleton",
         create: () => tileDatabase(),
@@ -224,6 +240,10 @@ export const DIConfig = {
     entityDatabase: {
         scope: "singleton",
         create: () => entityDatabase(),
+    },
+    realmDatabase: {
+        scope: "singleton",
+        create: () => realmDatabase(),
     },
     commandDatabase: {
         scope: "singleton",
@@ -249,17 +269,13 @@ export const DIConfig = {
         scope: "singleton",
         create: resolve => gameActionClickTile({tileDb: resolve.tileDatabase, selectedTileDb: resolve.selectedTileDatabase}),
     },
-    gameActionFoundCapital: {
-        scope: "singleton",
-        create: resolve => gameActionFoundCapital({
-            commandDb: resolve.commandDatabase,
-            tileDb: resolve.tileDatabase,
-            gameClient: resolve.gameClient,
-        }),
-    },
     gameActionJoinedGame: {
         scope: "singleton",
-        create: resolve => gameActionJoinedGame({entityDb: resolve.entityDatabase, cameraController: resolve.cameraController}),
+        create: resolve => gameActionJoinedGame({cameraController: resolve.cameraController}),
+    },
+    createSettlementValidation: {
+        scope: "singleton",
+        create: () => createSettlementValidation(),
     },
 } satisfies FactoryMap<DIShape>;
 

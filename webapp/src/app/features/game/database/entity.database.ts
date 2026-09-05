@@ -6,24 +6,24 @@ import {type Entity} from "@app/features/game/models/entity.ts";
 import {MapSupportingStorage} from "@modules/gamedb/storage/implementations/database-storage-unit.supporting.map.ts";
 
 
-export type EntityDatabase = Database<EntityStorageMapping, Entity, string>
+export type EntityDatabase = Database<EntityStorageMapping, Entity, number>
 
 type EntityStorageMapping = {
-    primary: MapPrimaryDatabaseStorageUnit<Entity, string>,
+    primary: MapPrimaryDatabaseStorageUnit<Entity, number>,
     byPosition: MapSupportingStorage<Entity, string>
 }
 
 export function entityDatabase(): EntityDatabase {
-    return DatabaseBuilder.create<Entity, string, EntityStorageMapping>()
+    return DatabaseBuilder.create<Entity, number, EntityStorageMapping>()
         .withIdProvider(e => e.id)
         .withStorage(idProvider => ({
-            primary: new MapPrimaryDatabaseStorageUnit<Entity, string>(idProvider),
+            primary: new MapPrimaryDatabaseStorageUnit<Entity, number>(idProvider),
             byPosition: new MapSupportingStorage<Entity, string>(e => `${e.position.q};${e.position.r}`),
         }))
         .build();
 }
 
-export type EntityQuery<ARGS> = Query<EntityStorageMapping, Entity, string, ARGS>
+export type EntityQuery<ARGS> = Query<EntityStorageMapping, Entity, number, ARGS>
 
 
 export const EntityQueries = {

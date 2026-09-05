@@ -1,4 +1,3 @@
-import type {CommandCollection, EntityCollection, RenderCamera, TileCollection} from "@pages/game/renderer/data/models.ts";
 import {type TileDatabase, TileQueries} from "@app/features/game/database/tile.database.ts";
 import type {CameraDatabase} from "@app/features/game/database/camera.database.ts";
 import type {DebugData, DebugDatabase} from "@app/features/game/database/debug.database.ts";
@@ -6,19 +5,25 @@ import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import type {SelectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
 import {type EntityDatabase, EntityQueries} from "@app/features/game/database/entity.database.ts";
 import {type CommandDatabase, CommandQueries} from "@app/features/game/database/command.database.ts";
+import type {PointerPosition, PointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {Entity} from "@app/features/game/models/entity.ts";
+import type {MapModeDatabase} from "@app/features/game/database/mapmode.database.ts";
+import type {Camera} from "@app/features/game/models/camera.ts";
+import type {Tile} from "@app/features/game/models/tile.ts";
+import type {Command} from "@app/features/game/models/command.ts";
+import {createVersionedLazy, type VersionedLazy} from "@pages/game/renderer/data/versioned-data.ts";
 
-/** Data provider interface for the game renderer, supplying tiles and camera state. */
 export interface GameRendererDataProvider {
-    getDebugData: () => DebugData & { revId: string }
-    getCameraRevId: () => string,
-    getCamera: () => RenderCamera,
-    getTilesRevId: () => string;
-    getTiles: () => TileCollection;
+    getDebugData: () => VersionedLazy<DebugData>
+    getCamera: () => VersionedLazy<Camera>,
+    getTiles: () => VersionedLazy<Tile[]>,
+    getEntities: () => VersionedLazy<Entity[]>,
+    getCommands: () => VersionedLazy<Command[]>,
+    getPointerPosition: () => VersionedLazy<PointerPosition>
     getSelectedTilePosition: () => HexPosition | null
-    getEntitiesRevId: () => string;
-    getEntities: () => EntityCollection;
-    getCommands: () => CommandCollection
-    getCommandsRevId: () => string
+    getSelectedEntity: () => Entity | null
+    getMapMode: () => MapMode,
 }
 
 interface Dependencies {
@@ -26,7 +31,9 @@ interface Dependencies {
     entityDb: EntityDatabase,
     commandDb: CommandDatabase,
     selectedTileDb: SelectedTileDatabase,
+    mapModeDb: MapModeDatabase,
     cameraDb: CameraDatabase;
+    pointerPositionDb: PointerPositionDatabase
     debugDb: DebugDatabase;
 }
 
@@ -35,65 +42,56 @@ export const gameRendererDataProvider = ({
                                              entityDb,
                                              commandDb,
                                              selectedTileDb,
+                                             mapModeDb,
                                              cameraDb,
+                                             pointerPositionDb,
                                              debugDb,
                                          }: Dependencies): GameRendererDataProvider => {
 
     return {
 
-        getDebugData: () => {
-            return {
-                ...debugDb.get(),
-                revId: debugDb.getRevId(),
-            };
-        },
+        getDebugData: () => createVersionedLazy<DebugData>(
+            debugDb.getRevId(),
+            () => debugDb.get(),
+        ),
 
-        getCameraRevId: () => {
-            return cameraDb.getRevId();
-        },
+        getCamera: () => createVersionedLazy<Camera>(
+            cameraDb.getRevId(),
+            () => cameraDb.get(),
+        ),
 
-        getCamera: () => {
-            return {
-                revId: cameraDb.getRevId(),
-                ...cameraDb.get(),
-            };
-        },
+        getTiles: () => createVersionedLazy<Tile[]>(
+            tileDb.getRevId(),
+            () => tileDb.queryMany(TileQueries.ALL, undefined),
+        ),
 
-        getTilesRevId: () => {
-            return tileDb.getRevId();
-        },
+        getEntities: () => createVersionedLazy<Entity[]>(
+            entityDb.getRevId(),
+            () => entityDb.queryMany(EntityQueries.ALL, undefined),
+        ),
 
-        getTiles: () => {
-            return {
-                revId: tileDb.getRevId(),
-                tiles: tileDb.queryMany(TileQueries.ALL, undefined),
-            };
-        },
+        getCommands: () => createVersionedLazy<Command[]>(
+            commandDb.getRevId(),
+            () => commandDb.queryMany(CommandQueries.ALL, undefined),
+        ),
+
+        getPointerPosition: () => createVersionedLazy<PointerPosition>(
+            pointerPositionDb.getRevId(),
+            () => pointerPositionDb.get(),
+        ),
 
         getSelectedTilePosition: () => {
             return selectedTileDb.get().selected;
         },
 
-        getEntitiesRevId: () => {
-            return entityDb.getRevId();
+        getSelectedEntity: () => {
+            const selectedTile = selectedTileDb.get().selected;
+            if (!selectedTile) return null;
+            return entityDb.querySingle(EntityQueries.BY_POSITION, selectedTile);
         },
 
-        getEntities: () => {
-            return {
-                revId: entityDb.getRevId(),
-                entities: entityDb.queryMany(EntityQueries.ALL, undefined),
-            };
-        },
-
-        getCommands: () => {
-            return {
-                revId: commandDb.getRevId(),
-                commands: commandDb.queryMany(CommandQueries.ALL, undefined),
-            };
-        },
-
-        getCommandsRevId: () => {
-            return commandDb.getRevId();
+        getMapMode: () => {
+            return mapModeDb.get();
         },
 
     };

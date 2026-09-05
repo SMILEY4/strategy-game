@@ -6,8 +6,10 @@ import {type TileDatabase} from "@app/features/game/database/tile.database.ts";
 import type {CameraController} from "@app/features/game/gameplay/camera/camera-controller.ts";
 import type {GameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
 import {type EntityDatabase} from "@app/features/game/database/entity.database.ts";
+import {RealmQueries, type RealmDatabase} from "@app/features/game/database/realm.database.ts";
 import {databaseBatch} from "@modules/gamedb/subscribers/batch.ts";
 import {type GameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
+import type {PointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
 
 /** Orchestrates the game lifecycle: connecting via WebSocket and routing messages to the database. */
 export interface GameEngine {
@@ -25,8 +27,10 @@ interface Dependencies {
     client: GameClient,
     wsClient: GameWebsocketClient;
     repository: GameRepository;
+    pointerPositionDb: PointerPositionDatabase,
     tileDb: TileDatabase,
     entityDb: EntityDatabase,
+    realmDb: RealmDatabase,
     cameraController: CameraController
     actionClickTile: GameActionClickTile,
     actionJoinedGame: GameActionJoinedGame
@@ -38,8 +42,10 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
         client,
         wsClient,
         repository,
+        pointerPositionDb,
         tileDb,
         entityDb,
+        realmDb,
         cameraController,
         actionClickTile,
         actionJoinedGame,
@@ -67,7 +73,9 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
         onMessage: (message: GameWebsocketServerMessage) => {
             console.log("received message", message);
             if (message.type === "ServerGameMessage.GameState") {
-                databaseBatch([tileDb, entityDb], () => {
+                databaseBatch([tileDb, entityDb, realmDb], () => {
+                    realmDb.deleteAll();
+                    realmDb.insertMany(message.state.realms);
                     tileDb.deleteAll();
                     tileDb.insertMany(message.state.tiles);
                     entityDb.deleteAll();
@@ -76,7 +84,9 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
                 if (repository.getState() === "loading") {
                     repository.setState("playing");
                     cameraController.initialize();
-                    actionJoinedGame.execute();
+                    const realm = realmDb.querySingle(RealmQueries.OWNED, undefined);
+                    const initialLocation = realm?.spawnLocation ?? {q: 0, r: 0};
+                    actionJoinedGame.execute(initialLocation);
                 }
             }
         },
@@ -90,6 +100,13 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
         },
 
         onMouseMove: (mx: number, my: number, x: number, y: number, buttons: number) => {
+            const worldPosition = cameraController.transformScreenToWorld(x, y)
+            const hexPosition = cameraController.transformScreenToHex(x, y)
+            pointerPositionDb.set({
+                screen: [x, y],
+                world: worldPosition,
+                hex: [hexPosition.q, hexPosition.r]
+            })
             cameraController.onMouseMove(mx, my, x, y, buttons);
         },
 

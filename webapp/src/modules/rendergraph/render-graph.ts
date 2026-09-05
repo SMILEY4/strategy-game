@@ -6,6 +6,7 @@ import {webglCompile} from "@modules/rendergraph/compile/webgl/webgl-compiler.ts
 import {WebGlExecutionContext, type WebglExecutionContextFactory} from "@modules/rendergraph/execute/webgl/webgl-execution-context.ts";
 import {executeWebGlCommands} from "@modules/rendergraph/execute/webgl/webg-command-executor.ts";
 import {KEY_CANVAS_SIZE} from "@modules/rendergraph/execute/webgl/webgl-constants.ts";
+import {tracer} from "@modules/monitoring/tracer.ts";
 
 /** Compiled render graph that executes draw commands against a WebGL canvas. */
 export interface RenderGraph {
@@ -17,11 +18,9 @@ export interface RenderGraph {
 export class WebGlRenderGraph implements RenderGraph {
 
     public static build(nodes: RenderGraphNode[]): WebGlRenderGraph {
-        const drawCalls = buildWebglDrawCallGraph(nodes);
-        const sortedDrawCalls = sortWebGlDrawCallNodes(drawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-        const {commands, resources} = webglCompile(nodes, sortedDrawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-        console.log("RG_COMMAND", commands)
-        console.log("RG_RESOURCES", resources)
+        const drawCalls = tracer.span({name: "rendergraph-build-drawcalls"}, () => buildWebglDrawCallGraph(nodes))
+        const sortedDrawCalls = tracer.span({name: "rendergraph-sort-drawcalls"}, () => sortWebGlDrawCallNodes(drawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS))
+        const {commands, resources} = tracer.span({name: "rendergraph-webglcompile"}, () => webglCompile(nodes, sortedDrawCalls, WebGL2RenderingContext.MAX_COMBINED_TEXTURE_IMAGE_UNITS))
         return new WebGlRenderGraph(commands, canvas => WebGlExecutionContext.build(canvas, resources));
     }
 

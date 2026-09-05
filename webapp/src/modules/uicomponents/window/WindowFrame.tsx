@@ -17,10 +17,22 @@ export function WindowFrame(props: WindowFrameProps): ReactElement {
         bringToFront,
     } = useWindowFrame(props.windowId);
 
+    function handleMouseDown(event: React.MouseEvent): void {
+        bringToFront();
+        event.stopPropagation();
+    }
+
+    function stopPropagation(event: React.SyntheticEvent): void {
+        event.stopPropagation();
+    }
+
     return (
         <div
             {...elementProps}
-            onMouseDown={bringToFront}
+            onMouseDown={handleMouseDown}
+            onWheel={stopPropagation}
+            onKeyDown={stopPropagation}
+            onKeyUp={stopPropagation}
             className={classNames(styles["window-frame"], "window-frame", props.className)}
             data-blocked={isBlocked || undefined}
         >

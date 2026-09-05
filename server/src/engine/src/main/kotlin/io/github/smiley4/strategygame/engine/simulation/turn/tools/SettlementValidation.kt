@@ -3,68 +3,59 @@ package io.github.smiley4.strategygame.engine.simulation.turn.tools
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
+import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
+import io.github.smiley4.strategygame.engine.simulation.gamestate.RealmPhase
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
-import io.github.smiley4.strategygame.shared.values.UserId
 
-object SettlementValidation {
+internal data class SettlementValidationResult(
+    val validLocation: Boolean,
+    val validRealm: Boolean,
+) {
+    val valid: Boolean
+        get() = validLocation && validRealm
+}
 
+internal object SettlementValidation {
 
-    fun validateCapital(gameState: GameStateContext, location: HexPosition, player: UserId): Boolean {
+    const val SETTLEMENT_REQUIRED_CONTROL = 3f
 
-        // spawn entity must exist and not have founded a capital yet
-        val spawn = gameState.entities.find { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == player }
-        if (spawn == null || spawn.getComponent<EntityComponent.PlayerSpawn>().foundedCapital) {
-            return false
-        }
-
-        return validate(gameState, location, player)
+    fun validate(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
+        val tile = gameState.tiles.find { it.position == location } ?: return false
+        return inspect(gameState, tile, realm).valid
     }
 
-
-    fun validateCapital(gameState: GameStateContext, tile: Tile, player: UserId): Boolean {
-
-        // spawn entity must exist and not have founded a capital yet
-        val spawn = gameState.entities.find { it.hasComponent<EntityComponent.PlayerSpawn>() && it.owner == player }
-        if (spawn == null || spawn.getComponent<EntityComponent.PlayerSpawn>().foundedCapital) {
-            return false
-        }
-
-        return validate(gameState, tile, player)
+    fun inspect(gameState: GameStateContext, tile: Tile, realm: Realm.Id): SettlementValidationResult {
+        val phase = gameState.realms.first { it.id == realm }.phase
+        return SettlementValidationResult(
+            validLocation = isValidLocation(gameState, tile),
+            validRealm = isValidRealm(tile, realm, phase),
+        )
     }
 
-    fun validate(gameState: GameStateContext, location: HexPosition, player: UserId): Boolean {
-
-        // tile must exist
-        val tile = gameState.tiles
-            .find { it.position == location }
-            ?: return false
-
-        // remaining validations
-        if (!validate(gameState, tile, player)) {
-            return false
-        }
-
-        return validate(gameState, tile)
+    fun isTerrainSuitable(tile: Tile): Boolean {
+        return tile.world.biome != Tile.Biome.OCEAN && tile.world.elevation != Tile.Elevation.MOUNTAINS
     }
 
-    fun validate(gameState: GameStateContext, tile: Tile, player: UserId): Boolean {
+    private fun isValidLocation(gameState: GameStateContext, tile: Tile): Boolean {
+        if (!isTerrainSuitable(tile)) return false
 
-        // player must have discovered tile
-        if (player !in tile.discoveredBy) {
-            return false
+        return gameState.entities.none {
+            it.hasComponent<EntityComponent.Settlement>() &&
+                it.getComponentOrNull<EntityComponent.Position>()?.tile?.id == tile.id
         }
-
-        return validate(gameState, tile)
     }
 
-    fun validate(gameState: GameStateContext, tile: Tile): Boolean {
+    private fun isValidRealm(
+        tile: Tile,
+        realm: Realm.Id,
+        phase: RealmPhase,
+    ): Boolean {
+        if (realm !in tile.political.discoveredBy) return false
+        if (phase == RealmPhase.FOUNDING) return true
 
-        // tile must be valid terrain (no ocean or mountains)
-        if (tile.world.biome == Tile.Biome.OCEAN || tile.world.elevation == Tile.Elevation.MOUNTAINS) {
-            return false
-        }
-
-        return true
+        val control = tile.political.control
+            .filter { it.realm == realm }
+            .sumOf { it.amount.toDouble() }
+        return control >= SETTLEMENT_REQUIRED_CONTROL
     }
-
 }

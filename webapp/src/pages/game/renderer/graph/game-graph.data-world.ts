@@ -1,60 +1,66 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {CommandCollection, EntityCollection, RenderCamera, RenderEntity, TileCollection} from "@pages/game/renderer/data/models.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import {EntityUtils} from "@app/features/game/models/entity.ts";
+import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
+import type {Camera} from "@app/features/game/models/camera.ts";
+import type {Tile} from "@app/features/game/models/tile.ts";
+import type {Command} from "@app/features/game/models/command.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {RenderEntity} from "@pages/game/renderer/data/render-entity.ts";
 
 
 export function gameGraphDataWorld(
     g: RenderGraphBuilder,
     dataProvider: GameRendererDataProvider,
-    wasmApi: GameGraphWasmApi,
+    wasmApi: RenderWasmApi,
     inputs: {
-        dataCamera: DataRenderGraphNode<RenderCamera>
+        dataCamera: DataRenderGraphNode<VersionedContainer<Camera>>
     },
 ) {
 
-    const dataAllTiles = g.dataExternal<TileCollection>(
-        () => dataProvider.getTiles(),
-        prev => prev?.revId !== dataProvider.getTilesRevId(),
+    const dataAllTiles = g.dataExternal<VersionedContainer<Tile[]>>(
+        prev => prev?.revId !== dataProvider.getTiles().revId,
+        () => dataProvider.getTiles().load(),
     );
 
     const wasmAllTiles = g.wasmData({
         source: {
             type: "js",
             data: dataAllTiles,
-            upload: (tiles: TileCollection) => wasmApi.uploadTiles(tiles.tiles),
+            upload: (tiles: VersionedContainer<Tile[]>) => wasmApi.upload.uploadTiles(tiles.data),
         },
     });
 
-    const dataAllEntities = g.dataExternal<EntityCollection>(
-        () => dataProvider.getEntities(),
-        prev => prev?.revId !== dataProvider.getEntitiesRevId(),
+    const dataAllEntities = g.dataExternal<VersionedContainer<Entity[]>>(
+        prev => prev?.revId !== dataProvider.getEntities().revId,
+        () => dataProvider.getEntities().load(),
     );
 
-    const dataAllCommands = g.dataExternal<CommandCollection>(
-        () => dataProvider.getCommands(),
-        prev => prev?.revId !== dataProvider.getCommandsRevId(),
+    const dataAllCommands = g.dataExternal<VersionedContainer<Command[]>>(
+        prev => prev?.revId !== dataProvider.getCommands().revId,
+        () => dataProvider.getCommands().load(),
     );
 
-    const renderEntityTransformer = g.transform<[EntityCollection, CommandCollection], RenderEntity[]>({
+    const renderEntityTransformer = g.transform<[VersionedContainer<Entity[]>, VersionedContainer<Command[]>], RenderEntity[]>({
         inputs: [dataAllEntities, dataAllCommands],
         func: (entities, commands) => {
             return [
-                ...entities.entities.map(entity => {
-                    if(EntityUtils.hasComponent(entity, "settlement")) {
+                ...entities.data.map(entity => {
+                    if (EntityUtils.hasComponent(entity, "settlement")) {
                         return {
                             ...entity,
                             renderType: "settlement",
                             isPending: false,
-                        } satisfies RenderEntity
+                        } satisfies RenderEntity;
                     }
                     return null;
                 }),
-                ...commands.commands.map(command => {
-                    if (command.type === "found-capital") {
+                ...commands.data.map(command => {
+                    if (command.type === "create-settlement") {
                         return {
+                            id: 0,
+                            owner: null,
                             position: command.location,
                             renderType: "settlement",
                             isPending: true,
@@ -72,51 +78,51 @@ export function gameGraphDataWorld(
         source: {
             type: "js",
             data: dataRenderEntities,
-            upload: (entities: RenderEntity[]) => wasmApi.uploadEntities(entities),
+            upload: (entities: RenderEntity[]) => wasmApi.upload.uploadEntities(entities),
         },
     });
 
-    const collectChunks = g.wasmOperation({
+    const calculateAllChunks = g.wasmOperation({
         wasmInputs: [wasmAllTiles, wasmAllEntities],
         dataInputs: [],
         outputs: ["allChunks"],
-        func: () => wasmApi.collectChunks(),
+            func: () => wasmApi.operations.calculateAllChunks(),
     });
 
     const wasmAllChunks = g.wasmData({
         source: {
             type: "wasm",
-            operation: collectChunks,
+            operation: calculateAllChunks,
             key: "allChunks",
         },
     });
 
-    const cullChunks = g.wasmOperation({
+    const calculateVisibleChunks = g.wasmOperation({
         wasmInputs: [wasmAllChunks],
         dataInputs: [inputs.dataCamera],
         outputs: ["visibleChunks"],
-        func: (_camera: RenderCamera) => wasmApi.cullChunks(),
+            func: (_) => wasmApi.operations.calculateVisibleChunks(),
     });
 
     const wasmVisibleChunks = g.wasmData({
         source: {
             type: "wasm",
-            operation: cullChunks,
+            operation: calculateVisibleChunks,
             key: "visibleChunks",
         },
     });
 
-    const buildTileInstances = g.wasmOperation({
+    const calculateTileInstances = g.wasmOperation({
         wasmInputs: [wasmVisibleChunks, wasmAllTiles],
         dataInputs: [],
         outputs: ["tileTerrainInstances", "tileFogOfWarInstances", "mapDetailVertices"],
-        func: () => wasmApi.buildTileInstances(),
+            func: () => wasmApi.operations.calculateTileInstances(),
     });
 
     const wasmTileTerrainInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: buildTileInstances,
+            operation: calculateTileInstances,
             key: "tileTerrainInstances",
         },
     });
@@ -124,7 +130,7 @@ export function gameGraphDataWorld(
     const wasmTileFogOfWarInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: buildTileInstances,
+            operation: calculateTileInstances,
             key: "tileFogOfWarInstances",
         },
     });
@@ -132,12 +138,13 @@ export function gameGraphDataWorld(
     const wasmMapDetailVertices = g.wasmData({
         source: {
             type: "wasm",
-            operation: buildTileInstances,
+            operation: calculateTileInstances,
             key: "mapDetailVertices",
         },
     });
 
     return {
+        wasmVisibleChunks: wasmVisibleChunks,
         wasmTileTerrainInstances: wasmTileTerrainInstances,
         wasmTileFogOfWarInstances: wasmTileFogOfWarInstances,
         wasmMapDetailVertices: wasmMapDetailVertices,

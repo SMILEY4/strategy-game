@@ -10,19 +10,21 @@ export interface InteractionMachine<
     TEvent extends InteractionBaseEvent,
     TContext,
 > {
-    send: (event: TEvent) => void,
+    send: (event: TEvent) => Promise<void>,
+    stop: () => void
     getContext: () => TContext,
     getCurrentState: () => TStateName
-    stop: () => void
+    getDefinition: () => InteractionDefinition<any, TContext, TEvent, TStateName>
 }
 
 export interface InteractionMachineState<TContext, TStateName extends string> {
     id: string,
+    definition: InteractionDefinition<any, TContext, any, TStateName>
     context: TContext,
     stateName: TStateName
 }
 
-export function createInteractionMachine<
+export async function createInteractionMachine<
     TStateName extends string,
     TEvent extends InteractionBaseEvent,
     TContext,
@@ -32,13 +34,18 @@ export function createInteractionMachine<
     input: TInput,
     setMachineState: (state: InteractionMachineState<TContext, TStateName> | null) => void,
     getMachineState: () => InteractionMachineState<TContext, TStateName> | null,
-): InteractionMachine<TStateName, TEvent, TContext> {
+    terminatedFn: () => void,
+): Promise<InteractionMachine<TStateName, TEvent, TContext>> {
 
     const id = crypto.randomUUID();
 
+    function debug(message: string, details?: Record<string, unknown>) {
+        console.debug(`[InteractionMachine:${id}] ${message}`, details);
+    }
+
     function loadState(): InteractionMachineState<TContext, TStateName> {
         const state = getMachineState();
-        if(!state) {
+        if (!state) {
             throw new Error("Could not load state: missing state");
         }
         if (state.id !== id) {
@@ -47,12 +54,14 @@ export function createInteractionMachine<
         return state;
     }
 
-    function initialize() {
+    async function initialize() {
         const interactionState = {
             id: id,
+            definition: definition,
             context: definition.initialContext(input),
             stateName: definition.initialState(input),
         };
+        debug("Initializing", {state: interactionState.stateName});
 
         const activeStateDefinition = definition.states[interactionState.stateName];
         if (activeStateDefinition == null) {
@@ -60,22 +69,33 @@ export function createInteractionMachine<
         }
 
         let context = interactionState.context;
+        let event: TEvent | undefined;
         if (activeStateDefinition.onEnter) {
-            context = {
-                ...context,
-                ...activeStateDefinition.onEnter({context: interactionState.context, event: {type: "__INIT__"}}),
-            };
+            const resultEnter = await activeStateDefinition.onEnter({context: interactionState.context, event: {type: "__INIT__"}});
+            ({context, event} = resolveEntryResult(context, resultEnter));
+            debug("initial enter hook finished", {event: event?.type});
+        }
+
+        if (activeStateDefinition.terminal) {
+            terminatedFn();
+            return;
         }
 
         setMachineState({
             ...interactionState,
             context: context,
         });
+
+        if (event) {
+            debug("Dispatching event returned by initial enter hook", {event: event.type});
+            await send(event);
+        }
     }
 
 
-    function send(event: TEvent): void {
+    async function send(event: TEvent): Promise<void> {
         const interactionState = loadState();
+        debug("Event received", {state: interactionState.stateName, event: event.type});
 
         const activeStateDefinition = definition.states[interactionState.stateName];
         if (activeStateDefinition == null) {
@@ -83,9 +103,17 @@ export function createInteractionMachine<
         }
 
         const transitionDefinition = getTransition(activeStateDefinition, event.type);
-        if (transitionDefinition == null || !allowTransition(activeStateDefinition, transitionDefinition, event, interactionState.context)) {
+        if (transitionDefinition == null) {
+            debug("Event ignored: no transition", {state: interactionState.stateName, event: event.type});
             return;
         }
+        if (!allowTransition(activeStateDefinition, transitionDefinition, event, interactionState.context)) {
+            debug("Event ignored: transition guard rejected it", {state: interactionState.stateName, event: event.type});
+            return;
+        }
+
+        const stateNameFrom = interactionState.stateName;
+        const stateNameTo = transitionDefinition.target;
 
         const targetStateDefinition = definition.states[transitionDefinition.target];
         if (targetStateDefinition == null) {
@@ -95,23 +123,32 @@ export function createInteractionMachine<
         const runStateHooks = shouldExecuteStateHooks(interactionState.stateName, transitionDefinition);
 
         let context = interactionState.context;
+        let eventFromEnter: TEvent | undefined;
         if (activeStateDefinition.onExit && runStateHooks) {
+            const resultExit = await activeStateDefinition.onExit({context: context, event: event});
+            debug("Exit hook finished", {state: stateNameFrom, event: event.type, result: resultExit});
             context = {
                 ...context,
-                ...activeStateDefinition.onExit({context: context, event: event}),
+                ...resultExit,
             };
         }
         if (transitionDefinition.action) {
+            const resultAction = await transitionDefinition.action({context: context, event: event});
+            debug("Transition Action finished", {from: stateNameFrom, to: stateNameTo, event: event.type, result: resultAction});
             context = {
                 ...context,
-                ...transitionDefinition.action({context: context, event: event}),
+                ...resultAction,
             };
         }
         if (targetStateDefinition.onEnter && runStateHooks) {
-            context = {
-                ...context,
-                ...targetStateDefinition.onEnter({context: context, event: event}),
-            };
+            const resultEnter = await targetStateDefinition.onEnter({context: context, event: event});
+            ({context, event: eventFromEnter} = resolveEntryResult(context, resultEnter));
+            debug("Enter hook finished", {state: stateNameTo, event: event.type, result: resultEnter});
+        }
+
+        if (targetStateDefinition.terminal) {
+            terminatedFn();
+            return;
         }
 
         setMachineState({
@@ -120,6 +157,25 @@ export function createInteractionMachine<
             stateName: transitionDefinition.target,
         });
 
+        if (eventFromEnter) {
+            debug("Dispatching event returned by enter hook", {event: eventFromEnter.type});
+            await send(eventFromEnter);
+        }
+    }
+
+    function resolveEntryResult(
+        context: TContext,
+        result: Partial<TContext> | { context?: Partial<TContext>; event?: TEvent } | void,
+    ): { context: TContext; event?: TEvent } {
+        if (result != null && typeof result === "object" && ("context" in result || "event" in result)) {
+            return {
+                context: {...context, ...result.context},
+                event: result.event,
+            };
+        }
+        return {
+            context: {...context, ...(result ?? {})},
+        };
     }
 
     function allowTransition(
@@ -145,15 +201,17 @@ export function createInteractionMachine<
     }
 
     function stop() {
-        setMachineState(null)
+        debug("Stopped", {state: getMachineState()?.stateName});
+        setMachineState(null);
     }
 
-    initialize();
+    await initialize();
 
     return {
         send: send,
         stop: stop,
         getContext: () => loadState().context,
         getCurrentState: () => loadState().stateName,
+        getDefinition: () => definition,
     };
 }

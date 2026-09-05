@@ -12,7 +12,6 @@ flat out vec2 v_tilePosition;
 out vec2 v_textureCoordinates;
 
 #include "utils/random.glsl"
-#include "utils/wireframe-vsh.glsl"
 #include "utils/hex-to-world.glsl"
 
 // calculate random offset.
@@ -25,12 +24,9 @@ vec2 offsetVertexPosition(vec3 worldPosition, float strength) {
     return random2(seed) * vec2(strength);
 }
 
-
-
 void main() {
     v_tilePosition = in_tilePosition;
     v_textureCoordinates = in_textureCoordinates;
-    computeBarycentricCoordinates();
 
     // tile coordinates
     vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition);
@@ -41,7 +37,7 @@ void main() {
 
     // introduce random offset (based on unscaled world position)
     vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_dbg_hexOffsetScale);
-    vertexWorldPos  = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
+    vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
 
     // project to screen coordinates
     gl_Position = u_camera * vec4(vertexWorldPos, 1.0);

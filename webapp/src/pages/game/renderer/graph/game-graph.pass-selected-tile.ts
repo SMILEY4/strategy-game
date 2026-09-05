@@ -7,19 +7,20 @@ import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_SELECTED_TILE_VERT from "./../shader/selectedTile.vsh";
 import SHADER_SELECTED_TILE_FRAG from "./../shader/selectedTile.fsh";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 export function gameGraphPassSelectedTile(
     g: RenderGraphBuilder,
     dataProvider: GameRendererDataProvider,
     inputs: {
         camera: CameraRenderGraphNode,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
+        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
     },
 ) {
 
     const dataSelectedTile = g.dataExternal<HexPosition | null>(
-        () => dataProvider.getSelectedTilePosition(),
         prev => prev?.q != dataProvider.getSelectedTilePosition()?.q || prev?.r != dataProvider.getSelectedTilePosition()?.r,
+        () => dataProvider.getSelectedTilePosition(),
     );
 
     const meshTransformer = g.transformVertexOut({
@@ -159,14 +160,14 @@ export function gameGraphPassSelectedTile(
     const dataDebugThickness = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.selectedTile.thickness
+            func: (data) => data.data.renderer.selectedTile.thickness
         })
     )
 
     const dataDebugSoftness = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.selectedTile.softness
+            func: (data) => data.data.renderer.selectedTile.softness
         })
     )
 
@@ -174,7 +175,7 @@ export function gameGraphPassSelectedTile(
         g.transform({
             inputs: [inputs.dataDebug],
             func: (data) => {
-                return data.renderer.selectedTile.color
+                return data.data.renderer.selectedTile.color
             }
         })
     )

@@ -1,6 +1,6 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import {gameGraphPassCoastline} from "@pages/game/renderer/graph/game-graph.pass-coastline.ts";
 import {gameGraphPassTerrain} from "@pages/game/renderer/graph/game-graph.pass-terrain.ts";
 import {gameGraphPassCompose} from "@pages/game/renderer/graph/game-graph.pass-compose.ts";
@@ -11,17 +11,32 @@ import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {gameGraphPassSelectedTile} from "@pages/game/renderer/graph/game-graph.pass-selected-tile.ts";
 import {gameGraphPassMapDetails} from "@pages/game/renderer/graph/game-graph.pass-map-details.ts";
 import {gameGraphHtml} from "@pages/game/renderer/graph/game-graph.html.ts";
+import {gameGraphPassTileGrid} from "@pages/game/renderer/graph/game-graph.tile-grid.ts";
+import {gameGraphPassOverlay} from "@pages/game/renderer/graph/game-graph.overlay.ts";
+import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 
-export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: GameGraphWasmApi) {
+export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
-    const dataDebug = g.dataExternal<DebugData & { revId: string }>(() => dataProvider.getDebugData(), (prev) => {
-        return prev?.revId !== dataProvider.getDebugData().revId;
-    });
+    const dataDebug = g.dataExternal<VersionedContainer<DebugData>>(
+        (prev) => prev?.revId !== dataProvider.getDebugData().revId,
+        () => dataProvider.getDebugData().load(),
+    );
+
+    const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
+        prev => prev?.revId !== dataProvider.getPointerPosition().revId,
+        () => dataProvider.getPointerPosition().load(),
+    );
 
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
 
-    const {wasmTileTerrainInstances, wasmTileFogOfWarInstances, wasmMapDetailVertices} = gameGraphDataWorld(g, dataProvider, wasmApi, {
+    const {
+        wasmTileTerrainInstances,
+        wasmTileFogOfWarInstances,
+        wasmMapDetailVertices,
+        wasmVisibleChunks,
+    } = gameGraphDataWorld(g, dataProvider, wasmApi, {
         dataCamera: dataCamera,
     });
 
@@ -50,11 +65,25 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         dataDebug: dataDebug,
     });
 
+    const {layerOverlay} = gameGraphPassOverlay(g, dataProvider, wasmApi, {
+        visibleChunks: wasmVisibleChunks,
+        camera: camera,
+        dataDebug: dataDebug,
+    });
+
+    const {layerTileGrid} = gameGraphPassTileGrid(g, wasmApi, {
+        camera: camera,
+        dataPointerPosition: dataPointerPosition,
+        dataDebug: dataDebug,
+    });
+
     const {drawCompose} = gameGraphPassCompose(g, {
         layerBaseTerrain: layerBaseTerrain,
         layerCoastlineMask: layerCoastlineMask,
         layerFogOfWar: layerFogOfWar,
         layerMapDetails: layerMapDetails,
+        layerTileGrid: layerTileGrid,
+        layerOverlay: layerOverlay,
         dataDebug: dataDebug,
     });
 
@@ -78,7 +107,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         renderPasses: [htmlDraw],
     });
 
-    console.log("RG_NODES", g.getNodes())
+    console.log("RG_NODES", g.getNodes());
 
     return g.getNodes();
 }

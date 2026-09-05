@@ -1,6 +1,6 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import SHADER_FOW_VERT from "./../shader/fogOfWar.vsh";
 import SHADER_FOW_FRAG from "./../shader/fogOfWar.fsh";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
@@ -9,15 +9,16 @@ import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraphPassFogOfWar(
     g: RenderGraphBuilder,
-    wasmApi: GameGraphWasmApi,
+    wasmApi: RenderWasmApi,
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string}>
+        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
     },
 ) {
 
@@ -43,7 +44,7 @@ export function gameGraphPassFogOfWar(
         func: () => {
             return {
                 "mesh": {
-                    data: createUnitHexagonMesh(),
+                    data: createUnitHexagonMesh(true, false),
                     count: 6 * 3,
                 },
             };
@@ -58,7 +59,7 @@ export function gameGraphPassFogOfWar(
             }),
             g.wasmGeometrySource({
                 source: inputs.wasmTileInstances,
-                download: () => wasmApi.downloadTileFogOfWarInstances(),
+                download: () => wasmApi.download.getTileFogOfWarInstances(),
                 content: "instances",
                 layout: [
                     {
@@ -95,16 +96,16 @@ export function gameGraphPassFogOfWar(
     const dataDebugHexOffsetScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.randomHexOffsetScale
-        })
-    )
+            func: (data) => data.data.renderer.randomHexOffsetScale,
+        }),
+    );
 
     const dataDebugScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.fogOfWar.scale
-        })
-    )
+            func: (data) => data.data.renderer.fogOfWar.scale,
+        }),
+    );
 
     const draw = g.draw({
         shader: shader,

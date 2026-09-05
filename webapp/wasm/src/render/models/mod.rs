@@ -1,4 +1,3 @@
-pub mod render_state;
-pub mod config;
+pub mod gpu;
+pub mod sprite_sheet;
 pub mod chunk;
-pub mod tile_instance_data;

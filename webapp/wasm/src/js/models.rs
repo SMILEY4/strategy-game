@@ -13,6 +13,17 @@ pub struct Tile {
     pub visibility: u8,
     pub terrain: TileTerrain,
     pub rng_seed: u32,
+    pub control_offset: u32,
+    pub control_count: u32,
+    pub create_settlement_validity: u8,
+}
+
+#[repr(C, packed)]
+#[derive(Copy, Clone, Debug)]
+pub struct Control {
+    pub realm_id: u32,
+    pub entity_id: u32,
+    pub amount: f32,
 }
 
 #[repr(C, packed)]
@@ -91,3 +102,8 @@ pub struct SpriteSheetEntry {
     pub n_size: Size,
     pub scale: f32,
 }
+
+
+pub const MAP_MODE_TERRAIN: u32 = 1;
+pub const MAP_MODE_POLITICAL: u32 = 2;
+pub const MAP_MODE_SETTLEMENT_LOCATIONS: u32 = 3;

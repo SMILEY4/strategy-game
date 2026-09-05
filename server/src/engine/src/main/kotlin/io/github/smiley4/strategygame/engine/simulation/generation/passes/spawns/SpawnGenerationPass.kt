@@ -1,21 +1,18 @@
 package io.github.smiley4.strategygame.engine.simulation.generation.passes.spawns
 
-import io.github.smiley4.strategygame.engine.simulation.gamestate.Entity
-import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
+import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
 import io.github.smiley4.strategygame.engine.simulation.generation.GenerationContext
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.GenerationPass
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
-import net.logstash.logback.argument.StructuredArguments.r
-import kotlin.math.abs
-import kotlin.math.min
+import io.github.smiley4.strategygame.shared.utils.repeatUntil
 
 
 /**
- * Picks player spawn locations
+ * Picks realm spawn locations
  */
 internal class SpawnGenerationPass : GenerationPass {
 
@@ -26,60 +23,52 @@ internal class SpawnGenerationPass : GenerationPass {
     }
 
     override fun execute(gameState: GameStateContext, generationContext: GenerationContext) {
-        generationContext.players.forEach { player ->
+        val spawnLocations = mutableListOf<Tile.Ref>()
+        gameState.realms.forEach { realm ->
 
             var spawnLocation: Tile.Ref? = null
-            for (i in 1..MAX_ATTEMPTS_HIGH_QUALITY) {
-                val location = pickSpawnLocation(gameState)
-                val score = rankSpawn(location, SPAWN_RADIUS, gameState)
+
+            // attempt to find high quality location
+            repeatUntil(MAX_ATTEMPTS_HIGH_QUALITY) {
+                val location = gameState.tiles.random().ref()
+                val score = rankSpawn(location, SPAWN_RADIUS, gameState, spawnLocations)
                 if (score >= 5) {
                     spawnLocation = location
-                    break
+                    return@repeatUntil true
                 }
+                return@repeatUntil false
             }
+
+            // attempt to find low quality location
             if (spawnLocation == null) {
-                for (i in 1..MAX_ATTEMPTS_LOW_QUALITY) {
-                    val location = pickSpawnLocation(gameState)
-                    val score = rankSpawn(location, SPAWN_RADIUS, gameState)
+                repeatUntil(MAX_ATTEMPTS_LOW_QUALITY) {
+                    val location = gameState.tiles.random().ref()
+                    val score = rankSpawn(location, SPAWN_RADIUS, gameState, spawnLocations)
                     if (score >= 3) {
                         spawnLocation = location
-                        break
+                        return@repeatUntil true
                     }
+                    return@repeatUntil false
                 }
             }
-            if (spawnLocation == null) {
-                spawnLocation = pickSpawnLocation(gameState)
-            }
 
-            val spawn = Entity(
-                id = Entity.Id(),
-                owner = player,
-                components = listOf(
-                    EntityComponent.Position(spawnLocation),
-                    EntityComponent.PlayerSpawn(SPAWN_RADIUS, false)
-                )
-            )
+            // use random location as fallback
+            val selectedSpawn = spawnLocation ?: gameState.tiles.random().ref()
 
-            gameState.entities.add(spawn)
-
+            spawnLocations.add(selectedSpawn)
+            realm.spawnLocation = HexPosition(selectedSpawn.position.q, selectedSpawn.position.r)
             gameState.tiles
                 .asSequence()
-                .filter { it.position.distance(spawn.getComponent<EntityComponent.Position>().tile.position) <= spawn.getComponent<EntityComponent.PlayerSpawn>().radius }
-                .forEach { tile -> tile.discoveredBy.add(player) }
-
+                .filter { it.position.distance(selectedSpawn.position) <= SPAWN_RADIUS }
+                .forEach { tile -> tile.political.discoveredBy.add(realm.id) }
         }
-    }
-
-
-    fun pickSpawnLocation(gameState: GameStateContext): Tile.Ref {
-        return gameState.tiles.random().ref()
     }
 
 
     /**
      * Scores given player spawn location. max possible score = 5
      */
-    fun rankSpawn(spawnLocation: Tile.Ref, radius: Int, gameState: GameStateContext): Int {
+    fun rankSpawn(spawnLocation: Tile.Ref, radius: Int, gameState: GameStateContext, spawnLocations: Collection<Tile.Ref>): Int {
 
         var countOutOfBounds = 0
         var countTotal = 0
@@ -95,20 +84,13 @@ internal class SpawnGenerationPass : GenerationPass {
                 if (tile.world.biome != Tile.Biome.OCEAN) {
                     countLand++
                 }
-                if (SettlementValidation.validate(gameState, tile)) {
+                if (SettlementValidation.isTerrainSuitable(tile)) {
                     countValid++
                 }
             }
         }
 
-        var closestSpawn = Int.MAX_VALUE
-        gameState.entities.forEach { entity ->
-            val spawnComponent = entity.getComponentOrNull<EntityComponent.PlayerSpawn>()
-            val positionComponent = entity.getComponentOrNull<EntityComponent.Position>()
-            if (spawnComponent != null && positionComponent != null) {
-                closestSpawn = min(closestSpawn, positionComponent.tile.position.distance(spawnLocation.position))
-            }
-        }
+        val closestSpawn = spawnLocations.minOfOrNull { it.position.distance(spawnLocation.position) } ?: Int.MAX_VALUE
 
         var score = 0
         if (countOutOfBounds == 0) score++

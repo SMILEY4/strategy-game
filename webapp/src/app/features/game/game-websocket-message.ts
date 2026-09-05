@@ -14,7 +14,7 @@ interface SubmitTurn extends GameWebsocketClientMessageBase {
 }
 
 type MessageCommand =
-    | { type: "FoundRealmCapital", q: number, r: number, name: string }
+    | { type: "CreateSettlement", q: number, r: number, name: string }
 
 
 /** Messages sent from server to client over the game WebSocket. */
@@ -31,8 +31,14 @@ interface GameState extends GameWebsocketServerMessageBase {
         game: {
             turn: number
         },
+        realms: ({
+            id: number,
+            owned: boolean,
+            phase: "FOUNDING" | "ESTABLISHED",
+            spawnLocation: { q: number, r: number },
+        })[],
         tiles: ({
-            id: string,
+            id: number,
             visibility: "VISIBLE" | "DISCOVERED" | "UNDISCOVERED"
             position: {
                 q: number,
@@ -52,16 +58,24 @@ interface GameState extends GameWebsocketServerMessageBase {
                     removeOnDeplete: number
                 })[]
             }>
-            createCapital: {
-                allowed: boolean
-            }
+            political: HiddenType<{
+                control: ({
+                    realm: number,
+                    entity: number,
+                    amount: number
+                })[]
+            }>
+            createSettlement: HiddenType<{
+                validLocation: boolean,
+                validRealm: boolean,
+            }>
             meta: {
                 seed: number,
             },
         })[],
         entities: ({
-            id: string,
-            owner: string,
+            id: number,
+            owner: number | null,
             position: {
                 q: number,
                 r: number,
@@ -69,7 +83,6 @@ interface GameState extends GameWebsocketServerMessageBase {
                 chunkR: number,
             },
             components: (
-                | { type: "player-spawn", radius: number }
                 | { type: "settlement", name: string, isRealmCapital: boolean }
                 )[]
         })[]

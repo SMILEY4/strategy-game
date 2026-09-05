@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.engine.simulation.turn
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.turn.commands.CommandHandler
-import io.github.smiley4.strategygame.engine.simulation.turn.commands.FoundRealmCapitalCommandHandler
+import io.github.smiley4.strategygame.engine.simulation.turn.commands.CreateSettlementCommandHandler
 import io.github.smiley4.strategygame.engine.simulation.turn.systems.GameSystem
 
 /*
@@ -39,7 +39,7 @@ basis
 internal class TurnService {
 
     private val commandHandlers = listOf<CommandHandler<*>>(
-        FoundRealmCapitalCommandHandler()
+        CreateSettlementCommandHandler()
     )
 
     private val systems = listOf<GameSystem>()

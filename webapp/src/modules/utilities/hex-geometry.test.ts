@@ -40,12 +40,12 @@ describe("hex-geometry", () => {
     describe("createUnitHexagonMesh", () => {
 
         test("produces 18 vertices with 5 interleaved floats each", () => {
-            const buffer = createUnitHexagonMesh();
+            const buffer = createUnitHexagonMesh(true, false);
             expect(buffer.byteLength).toBe(18 * 5 * Float32Array.BYTES_PER_ELEMENT);
         });
 
         test("starts at origin and stays in the XZ-plane", () => {
-            const floats = new Float32Array(createUnitHexagonMesh());
+            const floats = new Float32Array(createUnitHexagonMesh(true, false));
             const vertexCount = 18;
             for (let i = 0; i < vertexCount; i++) {
                 const y = floats[i * 5 + 1];

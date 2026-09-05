@@ -3,6 +3,7 @@ import classNames from "classnames";
 import styles from "./icon.module.less";
 
 export const Icon = {
+    Question,
     Lock,
     User,
     Eye,
@@ -21,10 +22,29 @@ export const Icon = {
     Spinner,
     TrashCan,
     Gear,
+    ArrowUpRightFromSquare,
+    Mountain,
+    Flag,
+    HouseFlag
 };
 
 interface IconBaseProps {
     className?: string,
+}
+
+function Question(props: IconBaseProps): ReactElement {
+    return (
+        // https://fontawesome.com/icons/classic/solid/question
+        // Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+            className={classNames(styles.icon, styles["icon-question"], props.className)}
+        >
+            <path
+                d="M224 224C224 171 267 128 320 128C373 128 416 171 416 224C416 266.7 388.1 302.9 349.5 315.4C321.1 324.6 288 350.7 288 392L288 416C288 433.7 302.3 448 320 448C337.7 448 352 433.7 352 416L352 392C352 390.3 352.6 387.9 355.5 384.7C358.5 381.4 363.4 378.2 369.2 376.3C433.5 355.6 480 295.3 480 224C480 135.6 408.4 64 320 64C231.6 64 160 135.6 160 224C160 241.7 174.3 256 192 256C209.7 256 224 241.7 224 224zM320 576C342.1 576 360 558.1 360 536C360 513.9 342.1 496 320 496C297.9 496 280 513.9 280 536C280 558.1 297.9 576 320 576z"/>
+        </svg>
+    );
 }
 
 function User(props: IconBaseProps): ReactElement {
@@ -297,6 +317,66 @@ function Gear(props: IconBaseProps): ReactElement {
         >
             <path
                 d="M259.1 73.5C262.1 58.7 275.2 48 290.4 48L350.2 48C365.4 48 378.5 58.7 381.5 73.5L396 143.5C410.1 149.5 423.3 157.2 435.3 166.3L503.1 143.8C517.5 139 533.3 145 540.9 158.2L570.8 210C578.4 223.2 575.7 239.8 564.3 249.9L511 297.3C511.9 304.7 512.3 312.3 512.3 320C512.3 327.7 511.8 335.3 511 342.7L564.4 390.2C575.8 400.3 578.4 417 570.9 430.1L541 481.9C533.4 495 517.6 501.1 503.2 496.3L435.4 473.8C423.3 482.9 410.1 490.5 396.1 496.6L381.7 566.5C378.6 581.4 365.5 592 350.4 592L290.6 592C275.4 592 262.3 581.3 259.3 566.5L244.9 496.6C230.8 490.6 217.7 482.9 205.6 473.8L137.5 496.3C123.1 501.1 107.3 495.1 99.7 481.9L69.8 430.1C62.2 416.9 64.9 400.3 76.3 390.2L129.7 342.7C128.8 335.3 128.4 327.7 128.4 320C128.4 312.3 128.9 304.7 129.7 297.3L76.3 249.8C64.9 239.7 62.3 223 69.8 209.9L99.7 158.1C107.3 144.9 123.1 138.9 137.5 143.7L205.3 166.2C217.4 157.1 230.6 149.5 244.6 143.4L259.1 73.5zM320.3 400C364.5 399.8 400.2 363.9 400 319.7C399.8 275.5 363.9 239.8 319.7 240C275.5 240.2 239.8 276.1 240 320.3C240.2 364.5 276.1 400.2 320.3 400z"/>
+        </svg>
+    );
+}
+
+function ArrowUpRightFromSquare(props: IconBaseProps): ReactElement {
+    return (
+        // https://fontawesome.com/icons/classic/solid/up-right-from-square
+        // Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+            className={classNames(styles.icon, styles["icon-arrow-up-right-from-square"], props.className)}
+        >
+            <path
+                d="M354.4 83.8C359.4 71.8 371.1 64 384 64L544 64C561.7 64 576 78.3 576 96L576 256C576 268.9 568.2 280.6 556.2 285.6C544.2 290.6 530.5 287.8 521.3 278.7L464 221.3L310.6 374.6C298.1 387.1 277.8 387.1 265.3 374.6C252.8 362.1 252.8 341.8 265.3 329.3L418.7 176L361.4 118.6C352.2 109.4 349.5 95.7 354.5 83.7zM64 240C64 195.8 99.8 160 144 160L224 160C241.7 160 256 174.3 256 192C256 209.7 241.7 224 224 224L144 224C135.2 224 128 231.2 128 240L128 496C128 504.8 135.2 512 144 512L400 512C408.8 512 416 504.8 416 496L416 416C416 398.3 430.3 384 448 384C465.7 384 480 398.3 480 416L480 496C480 540.2 444.2 576 400 576L144 576C99.8 576 64 540.2 64 496L64 240z"/>
+        </svg>
+    );
+}
+
+function Mountain(props: IconBaseProps): ReactElement {
+    return (
+        // https://fontawesome.com/icons/classic/solid/mountain
+        // Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+            className={classNames(styles.icon, styles["icon-mountain"], props.className)}
+        >
+            <path
+                d="M320.5 64C335.2 64 348.7 72.1 355.7 85L571.7 485C578.4 497.4 578.1 512.4 570.9 524.5C563.7 536.6 550.6 544 536.6 544L104.6 544C90.5 544 77.5 536.6 70.3 524.5C63.1 512.4 62.8 497.4 69.5 485L285.5 85L288.4 80.4C295.7 70.2 307.6 64 320.5 64zM234.4 313.9L261.2 340.7C267.4 346.9 277.6 346.9 283.8 340.7L327.1 297.4C333.1 291.4 341.2 288 349.7 288L392.5 288L320.4 154.5L234.3 313.9z"/>
+        </svg>
+    );
+}
+
+function Flag(props: IconBaseProps): ReactElement {
+    return (
+        // https://fontawesome.com/icons/classic/solid/flag
+        // Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+            className={classNames(styles.icon, styles["icon-flag"], props.className)}
+        >
+            <path
+                d="M160 96C160 78.3 145.7 64 128 64C110.3 64 96 78.3 96 96L96 544C96 561.7 110.3 576 128 576C145.7 576 160 561.7 160 544L160 422.4L222.7 403.6C264.6 391 309.8 394.9 348.9 414.5C391.6 435.9 441.4 438.5 486.1 421.7L523.2 407.8C535.7 403.1 544 391.2 544 377.8L544 130.1C544 107.1 519.8 92.1 499.2 102.4L487.4 108.3C442.5 130.8 389.6 130.8 344.6 108.3C308.2 90.1 266.3 86.5 227.4 98.2L160 118.4L160 96z"/>
+        </svg>
+    );
+}
+
+function HouseFlag(props: IconBaseProps): ReactElement {
+    return (
+        // https://fontawesome.com/icons/classic/solid/house-flag
+        // Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+            className={classNames(styles.icon, styles["icon-house-flag"], props.className)}
+        >
+            <path
+                d="M472 64C489.7 64 504 78.3 504 96L600 96C617.7 96 632 110.3 632 128L632 224C632 241.7 617.7 256 600 256L504 256L504 544C504 561.7 489.7 576 472 576C454.3 576 440 561.7 440 544L440 96C440 78.3 454.3 64 472 64zM283.5 123.1L384 220L384 576L128 576C92.7 576 64 547.3 64 512L64 368L44.1 368C28.6 368 16 355.4 16 339.9C16 332.3 19.1 325 24.6 319.7L228.5 123.1C235.9 116 245.7 112 256 112C266.3 112 276.1 116 283.5 123.1zM232 320C218.7 320 208 330.7 208 344L208 392C208 405.3 218.7 416 232 416L280 416C293.3 416 304 405.3 304 392L304 344C304 330.7 293.3 320 280 320L232 320z"/>
         </svg>
     );
 }

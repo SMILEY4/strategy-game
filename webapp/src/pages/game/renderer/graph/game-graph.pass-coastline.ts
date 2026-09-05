@@ -2,22 +2,23 @@ import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_COASTLINE_VERT from "./../shader/coastline.vsh";
 import SHADER_COASTLINE_FRAG from "./../shader/coastline.fsh";
-import type {GameGraphWasmApi} from "@pages/game/renderer/game-graph.wasm-api.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraphPassCoastline(
     g: RenderGraphBuilder,
-    wasmApi: GameGraphWasmApi,
+    wasmApi: RenderWasmApi,
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
         camera: CameraRenderGraphNode,
-        dataDebug: DataRenderGraphNode<DebugData & { revId: string }>
+        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
     },
 ) {
 
@@ -43,7 +44,7 @@ export function gameGraphPassCoastline(
         func: () => {
             return {
                 "mesh": {
-                    data: createUnitHexagonMesh(),
+                    data: createUnitHexagonMesh(true, false),
                     count: 6 * 3,
                 },
             };
@@ -58,7 +59,7 @@ export function gameGraphPassCoastline(
             }),
             g.wasmGeometrySource({
                 source: inputs.wasmTileInstances,
-                download: () => wasmApi.downloadTileLandInstances(),
+                download: () => wasmApi.download.getTileLandInstances(),
                 content: "instances",
                 layout: [
                     {
@@ -85,14 +86,14 @@ export function gameGraphPassCoastline(
     const dataDebugHexOffsetScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.randomHexOffsetScale,
+            func: (data) => data.data.renderer.randomHexOffsetScale,
         }),
     );
 
     const dataDebugScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.renderer.terrainMask.scale,
+            func: (data) => data.data.renderer.terrainMask.scale,
         }),
     );
 

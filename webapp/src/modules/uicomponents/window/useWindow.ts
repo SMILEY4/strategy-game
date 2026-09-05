@@ -64,6 +64,7 @@ export function useWindowInteractions(id: string) {
     if (!data) {
         throw new Error("Could not find window with id " + id);
     }
+    const resizable = data.resizable;
 
     function onPrepareDragOrResize() {
         if (refContent.current) {
@@ -104,8 +105,12 @@ export function useWindowInteractions(id: string) {
     function onResize(_x: number, _y: number, dx: number, dy: number) {
         modifyPosition(id, prevPosition => ({
             ...prevPosition,
-            width: CssValueUtils.px((prevPosition.width?.value as number) + dx),
-            height: CssValueUtils.px((prevPosition.height?.value as number) + dy),
+            width: resizable.horizontal
+                ? CssValueUtils.px((prevPosition.width?.value as number) + dx)
+                : prevPosition.width,
+            height: resizable.vertical
+                ? CssValueUtils.px((prevPosition.height?.value as number) + dy)
+                : prevPosition.height,
         }));
     }
 
@@ -131,6 +136,7 @@ export function useWindowInteractions(id: string) {
             ref: refResize,
             onMouseDown: onMouseDownResize,
         },
+        resizable: resizable,
         dragProps: {
             ref: refDrag,
             onMouseDown: onMouseDownDrag,

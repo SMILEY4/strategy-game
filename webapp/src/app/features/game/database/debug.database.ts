@@ -21,6 +21,10 @@ export type DebugData = {
             thickness: number,
             softness: number,
             color: [number, number, number, number]
+        },
+        grid: {
+            thickness: number,
+            color: [number, number, number, number]
         }
     }
 }
@@ -45,6 +49,10 @@ export const initialDebugDataValues: DebugData = {
             thickness: 0.1,
             softness: 0.02,
             color: [ 0.9294117647058824, 0.7764705882352941, 0.39215686274509803, 0.77 ]
+        },
+        grid: {
+            thickness: 0.02,
+            color: [ 0.9294117647058824, 0.7764705882352941, 0.39215686274509803, 0.3 ]
         }
     }
 }

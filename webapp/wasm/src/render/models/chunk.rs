@@ -1,4 +1,4 @@
-use crate::js::models::{HexPosition};
+use crate::js::models::HexPosition;
 
 pub struct Chunk {
     pub chunk_position: HexPosition,

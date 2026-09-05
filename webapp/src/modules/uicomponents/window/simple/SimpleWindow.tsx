@@ -31,6 +31,7 @@ export function SimpleWindow(props: SimpleWindowProps): ReactElement {
 
     const {
         resizerProps,
+        resizable,
         dragProps,
         refContent,
         closeWindow,
@@ -58,10 +59,16 @@ export function SimpleWindow(props: SimpleWindowProps): ReactElement {
                     {children}
                 </div>
 
-                <div
-                    {...resizerProps}
-                    className={styles["resizer"]}
-                />
+                {(resizable.horizontal || resizable.vertical) && (
+                    <div
+                        {...resizerProps}
+                        className={classNames(
+                            styles["resizer"],
+                            resizable.horizontal && styles["resizer-horizontal"],
+                            resizable.vertical && styles["resizer-vertical"],
+                        )}
+                    />
+                )}
 
             </div>
         </Panel.Decorated>
