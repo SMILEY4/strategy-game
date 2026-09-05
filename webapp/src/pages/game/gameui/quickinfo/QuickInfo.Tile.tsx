@@ -24,7 +24,7 @@ export function QuickInfo_Tile(props: QuickInfoTileViewModel) {
                         disabled={!props.actions.foundSettlement.valid}
                         onClick={props.actions.foundSettlement.execute}
                     >
-                        Found Capital
+                        Found Settlement
                     </Button>
                 )}
 
