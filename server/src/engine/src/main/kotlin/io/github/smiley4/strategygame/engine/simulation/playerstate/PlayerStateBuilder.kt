@@ -11,6 +11,7 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementValidation
 import io.github.smiley4.strategygame.shared.values.UserId
 
 /**
@@ -30,7 +31,7 @@ class PlayerStateBuilder {
                 game.realms.map { realm(it, povRealm.id) }
             ]
             "tiles" to arr[
-                    game.tiles.map { tile(game, it, povRealm.id) }
+                game.tiles.map { tile(game, it, povRealm.id) }
             ]
             "entities" to arr[
                 game.entities
@@ -53,6 +54,7 @@ class PlayerStateBuilder {
 
     fun tile(game: GameStateContext, tile: Tile, realm: Realm.Id) = obj {
         val settlementValidation = SettlementValidation.inspect(game, tile, realm)
+        val tileImprovementValidation = TileImprovementValidation.inspect(game, tile, realm)
         val visibility = getVisibilityAt(game, tile, realm)
         "id" to tile.id.id
         "visibility" to visibility.name
@@ -86,6 +88,7 @@ class PlayerStateBuilder {
                     tile.political.control.map {
                         obj {
                             "realm" to it.realm.id
+                            "settlement" to it.settlement?.id
                             "entity" to it.entity.id
                             "amount" to it.amount
                         }
@@ -97,6 +100,12 @@ class PlayerStateBuilder {
             obj {
                 "validLocation" to settlementValidation.validLocation
                 "validRealm" to settlementValidation.validRealm
+            }
+        }
+        "createTileImprovement" to hidden(visibility != Visibility.UNDISCOVERED) {
+            obj {
+                "validLocation" to tileImprovementValidation.validLocation
+                "validRealm" to tileImprovementValidation.validRealm
             }
         }
         "meta" to obj {
@@ -120,15 +129,19 @@ class PlayerStateBuilder {
                 when (component) {
                     is EntityComponent.Position -> Unit
                     is EntityComponent.Vision -> Unit
+                    is EntityComponent.Control -> obj {
+                        "type" to "control"
+                        "radius" to component.radius
+                        "amount" to component.amount
+                    }
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
                         "name" to component.name
                         "isRealmCapital" to component.isRealmCapital
                     }
-                    is EntityComponent.Control -> obj {
-                        "type" to "control"
-                        "radius" to component.radius
-                        "amount" to component.amount
+                    is EntityComponent.TileImprovement -> obj {
+                        "type" to "tile-improvement"
+                        "administeringSettlement" to component.administeringSettlement
                     }
                 }
             }

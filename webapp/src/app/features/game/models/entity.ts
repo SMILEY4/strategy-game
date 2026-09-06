@@ -9,6 +9,7 @@ export interface Entity {
 
 export type EntityComponent =
     | { type: "settlement", name: string, isRealmCapital: boolean }
+    | { type: "tile-improvement", administeringSettlement: string }
 
 
 export type ExtractComponent<T extends EntityComponent['type']> = Extract<EntityComponent, { type: T }>;

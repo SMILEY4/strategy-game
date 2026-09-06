@@ -11,6 +11,12 @@ sealed interface PlayerCommand {
         val location: HexPosition,
         val name: String,
     ) : PlayerCommand
+
+    class CreateTileImprovement(
+        override val playerId: UserId,
+        val location: HexPosition,
+        val settlement: Entity.Id,
+    ) : PlayerCommand
 }
 
 

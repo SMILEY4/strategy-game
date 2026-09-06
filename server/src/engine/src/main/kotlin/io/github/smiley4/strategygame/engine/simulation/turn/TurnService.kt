@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateConte
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.turn.commands.CommandHandler
 import io.github.smiley4.strategygame.engine.simulation.turn.commands.CreateSettlementCommandHandler
+import io.github.smiley4.strategygame.engine.simulation.turn.commands.CreateTileImprovementCommandHandler
 import io.github.smiley4.strategygame.engine.simulation.turn.systems.GameSystem
 
 /*
@@ -38,8 +39,9 @@ basis
 
 internal class TurnService {
 
-    private val commandHandlers = listOf<CommandHandler<*>>(
-        CreateSettlementCommandHandler()
+    private val commandHandlers = listOf(
+        CreateSettlementCommandHandler(),
+        CreateTileImprovementCommandHandler()
     )
 
     private val systems = listOf<GameSystem>()

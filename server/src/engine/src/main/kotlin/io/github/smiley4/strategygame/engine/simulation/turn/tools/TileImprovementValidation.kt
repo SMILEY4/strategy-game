@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
 import io.github.smiley4.strategygame.engine.simulation.gamestate.RealmPhase
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 
-internal data class SettlementValidationResult(
+internal data class TileImprovementValidationResult(
     val validLocation: Boolean,
     val validRealm: Boolean,
 ) {
@@ -15,18 +15,18 @@ internal data class SettlementValidationResult(
         get() = validLocation && validRealm
 }
 
-internal object SettlementValidation {
+internal object TileImprovementValidation {
 
-    const val REQUIRED_CONTROL = 3f
+    const val REQUIRED_CONTROL = 0f
 
     fun validate(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
         val tile = gameState.tiles.find { it.position == location } ?: return false
         return inspect(gameState, tile, realm).valid
     }
 
-    fun inspect(gameState: GameStateContext, tile: Tile, realm: Realm.Id): SettlementValidationResult {
+    fun inspect(gameState: GameStateContext, tile: Tile, realm: Realm.Id): TileImprovementValidationResult {
         val phase = gameState.realms.first { it.id == realm }.phase
-        return SettlementValidationResult(
+        return TileImprovementValidationResult(
             validLocation = isValidLocation(gameState, tile),
             validRealm = isValidRealm(tile, realm, phase),
         )
@@ -41,7 +41,7 @@ internal object SettlementValidation {
     }
 
     fun isTerrainSuitable(tile: Tile): Boolean {
-        return tile.world.biome != Tile.Biome.OCEAN && tile.world.elevation != Tile.Elevation.MOUNTAINS
+        return tile.world.biome != Tile.Biome.OCEAN
     }
 
     private fun isValidRealm(
@@ -50,7 +50,7 @@ internal object SettlementValidation {
         phase: RealmPhase,
     ): Boolean {
         if (realm !in tile.political.discoveredBy) return false
-        if (phase == RealmPhase.FOUNDING) return true
+        if (phase != RealmPhase.ESTABLISHED) return false
 
         val control = tile.political.control
             .filter { it.realm == realm }
