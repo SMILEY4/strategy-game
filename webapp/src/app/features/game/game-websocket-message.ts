@@ -15,6 +15,7 @@ interface SubmitTurn extends GameWebsocketClientMessageBase {
 
 type MessageCommand =
     | { type: "CreateSettlement", q: number, r: number, name: string }
+    | { type: "CreateTileImprovement", q: number, r: number, settlementEntityId: number }
 
 
 /** Messages sent from server to client over the game WebSocket. */
@@ -61,12 +62,17 @@ interface GameState extends GameWebsocketServerMessageBase {
             political: HiddenType<{
                 control: ({
                     realm: number,
+                    settlement: number | null,
                     entity: number,
                     amount: number
                 })[]
             }>
             createSettlement: HiddenType<{
                 validLocation: boolean,
+                validRealm: boolean,
+            }>
+            createTileImprovement: HiddenType<{
+                validLocation: boolean
                 validRealm: boolean,
             }>
             meta: {

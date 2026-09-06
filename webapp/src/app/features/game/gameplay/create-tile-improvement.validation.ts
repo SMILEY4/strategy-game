@@ -4,9 +4,9 @@ import {type TileDatabase, TileQueries} from "@app/features/game/database/tile.d
 import {useWatchDatabases} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
 import {useHasInteraction} from "@modules/interaction/interaction.tools.ts";
-import {RealmQueries, type RealmDatabase} from "@app/features/game/database/realm.database.ts";
+import {type RealmDatabase, RealmQueries} from "@app/features/game/database/realm.database.ts";
 
-export interface CreateSettlementValidation {
+export interface CreateTileImprovementValidation {
     validate: (args: {
         position: HexPosition,
         hasInteraction: boolean,
@@ -16,12 +16,12 @@ export interface CreateSettlementValidation {
     }) => boolean;
 }
 
-export const createSettlementValidation = (): CreateSettlementValidation => ({
+export const createTileImprovementValidation = (): CreateTileImprovementValidation => ({
     validate: ({hasInteraction, commandDb, tileDb, realmDb, position}) => {
         if (hasInteraction) return false;
 
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
-        if (!tile || !tile.createSettlement.visible || !tile.createSettlement.value.validLocation || !tile.createSettlement.value.validRealm) {
+        if (!tile || !tile.createTileImprovement.visible || !tile.createTileImprovement.value.validLocation || !tile.createTileImprovement.value.validRealm) {
             return false;
         }
 
@@ -29,18 +29,20 @@ export const createSettlementValidation = (): CreateSettlementValidation => ({
         if (!realm) return false;
 
         const createTileImprovementCommands = commandDb.queryMany(CommandQueries.BY_TYPE, "create-tile-improvement");
-        if(createTileImprovementCommands.some(cmd => cmd.location.q === position.q || cmd.location.r === position.r)) {
-            return false
+        if (createTileImprovementCommands.some(cmd => cmd.location.q === position.q || cmd.location.r === position.r)) {
+            return false;
         }
 
         const createSettlementCommands = commandDb.queryMany(CommandQueries.BY_TYPE, "create-settlement");
-        return realm.phase === "FOUNDING"
-            ? createSettlementCommands.length === 0
-            : createSettlementCommands.every(cmd => cmd.location.q !== position.q || cmd.location.r !== position.r);
+        if (createSettlementCommands.some(cmd => cmd.location.q === position.q || cmd.location.r === position.r)) {
+            return false;
+        }
+
+        return true;
     },
 });
 
-export function useCreateSettlementValidation() {
+export function useCreateTileImprovementValidation() {
     useWatchDatabases([
         DI.tileDatabase,
         DI.commandDatabase,
@@ -50,7 +52,7 @@ export function useCreateSettlementValidation() {
     const hasInteraction = useHasInteraction();
 
     return {
-        settlement: (position: HexPosition) => DI.createSettlementValidation.validate({
+        tileImprovement: (position: HexPosition) => DI.createTileImprovementValidation.validate({
             position,
             tileDb: DI.tileDatabase,
             commandDb: DI.commandDatabase,

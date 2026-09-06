@@ -7,12 +7,20 @@ export interface CommandBase {
 
 export type Command =
     | CommandCreateSettlement
+    | CommandCreateTileImprovement
 
 export interface CommandCreateSettlement extends CommandBase {
     id: string,
     type: "create-settlement";
     location: ExtendedHexPosition;
     name: string,
+}
+
+export interface CommandCreateTileImprovement extends CommandBase {
+    id: string,
+    type: "create-tile-improvement";
+    location: ExtendedHexPosition;
+    settlementEntityId: number
 }
 
 export function genCommandId() {

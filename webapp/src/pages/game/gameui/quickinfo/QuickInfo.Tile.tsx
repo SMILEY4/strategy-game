@@ -28,6 +28,15 @@ export function QuickInfo_Tile(props: QuickInfoTileViewModel) {
                     </Button>
                 )}
 
+                {props.actions.createTileImprovement.available && (
+                    <Button
+                        disabled={!props.actions.createTileImprovement.valid}
+                        onClick={props.actions.createTileImprovement.execute}
+                    >
+                        Create Tile Improvement
+                    </Button>
+                )}
+
             </HorizontalLayout>
 
             <VerticalLayout spacing3xs verticalStart horizontalStretch>

@@ -35,6 +35,7 @@ import {interactionManager} from "@modules/interaction/interaction.manager.ts";
 import {createSettlementValidation} from "@app/features/game/gameplay/create-settlement.validation.ts";
 import {pointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
 import {mapModeDatabase} from "@app/features/game/database/mapmode.database.ts";
+import {createTileImprovementValidation} from "@app/features/game/gameplay/create-tile-improvement.validation.ts";
 
 
 interface EnvShape {
@@ -97,6 +98,7 @@ interface DIShape {
     gameActionClickTile: ReturnType<typeof gameActionClickTile>
     gameActionJoinedGame: ReturnType<typeof gameActionJoinedGame>
     createSettlementValidation: ReturnType<typeof createSettlementValidation>
+    createTileImprovementValidation: ReturnType<typeof createTileImprovementValidation>
 }
 
 /** DI container configuration. Each entry specifies singleton or transient scope and its factory. */
@@ -277,6 +279,10 @@ export const DIConfig = {
         scope: "singleton",
         create: () => createSettlementValidation(),
     },
+    createTileImprovementValidation: {
+        scope: "singleton",
+        create: () => createTileImprovementValidation()
+    }
 } satisfies FactoryMap<DIShape>;
 
 

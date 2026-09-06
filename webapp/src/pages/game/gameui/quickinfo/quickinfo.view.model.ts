@@ -6,6 +6,8 @@ import {CreateSettlementInteraction} from "@app/features/game/gameplay/create-se
 import {useCreateSettlementValidation} from "@app/features/game/gameplay/create-settlement.validation.ts";
 import {EntityQueries} from "@app/features/game/database/entity.database.ts";
 import {EntityUtils} from "@app/features/game/models/entity.ts";
+import {useCreateTileImprovementValidation} from "@app/features/game/gameplay/create-tile-improvement.validation.ts";
+import {CreateTileImprovementInteraction} from "@app/features/game/gameplay/create-tile-improvement.interaction.ts";
 
 export interface QuickinfoViewModel {
     availableInfo: ("tile" | "settlement")[];
@@ -29,6 +31,11 @@ export interface QuickInfoTileViewModel {
             valid: boolean,
             execute: () => void
         }
+        createTileImprovement: {
+            available: boolean,
+            valid: boolean,
+            execute: () => void
+        }
     }
 }
 
@@ -48,7 +55,7 @@ export function useQuickInfoViewModel(): QuickinfoViewModel {
     const selectedTileRef = useQuerySingleton(DI.selectedTileDatabase).selected;
 
     const tileQuickInfo = useBuildTileQuickInfo(selectedTileRef);
-    const settlementQuickInfo = useBuildSettlementQuickInfo(selectedTileRef);
+    const settlementQuickInfo = useSettlementQuickInfo(selectedTileRef);
 
     const availableInfo: ("tile" | "settlement")[] = [];
     if (tileQuickInfo) availableInfo.push("tile");
@@ -66,7 +73,8 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: number } | null): Qu
 
     const tile = useQuerySingle(DI.tileDatabase, TileQueries.BY_ID, tileRef?.id);
 
-    const validate = useCreateSettlementValidation();
+    const validateCreateSettlement = useCreateSettlementValidation();
+    const validateCreateTileImprovement = useCreateTileImprovementValidation();
 
     if (!tile) {
         return null;
@@ -91,14 +99,19 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: number } | null): Qu
             focusCamera: () => DI.cameraController.lookAt(tile.position),
             foundSettlement: {
                 available: true,
-                valid: validate.settlement(tile.position),
+                valid: validateCreateSettlement.settlement(tile.position),
                 execute: () => void DI.interactionManager.start(CreateSettlementInteraction, {position: tile.position}),
             },
+            createTileImprovement: {
+                available: true,
+                valid: validateCreateTileImprovement.tileImprovement(tile.position),
+                execute: () => void DI.interactionManager.start(CreateTileImprovementInteraction, { position: tile.position }),
+            }
         },
     };
 }
 
-function useBuildSettlementQuickInfo(tileRef: HexPosition & { id: number } | null): QuickInfoSettlementViewModel | null {
+function useSettlementQuickInfo(tileRef: HexPosition & { id: number } | null): QuickInfoSettlementViewModel | null {
 
     const settlementEntity = useQueryMultiple(DI.entityDatabase, EntityQueries.BY_POSITION, tileRef ?? INVALID_HEX_POSITION)
         .find(it => EntityUtils.hasComponent(it, "settlement"));

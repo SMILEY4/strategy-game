@@ -25,7 +25,15 @@ export const gameActionEndTurn = ({commandDb, wsClient}: Dependencies): GameActi
                         name: command.name
                     }
                 }
-                assertExhaustive(command.type)
+                if(command.type === "create-tile-improvement") {
+                    return {
+                        type: "CreateTileImprovement",
+                        q: command.location.q,
+                        r: command.location.r,
+                        settlementEntityId: command.settlementEntityId
+                    }
+                }
+                assertExhaustive(command)
             }),
         });
     },

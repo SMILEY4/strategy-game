@@ -2,7 +2,7 @@ import {type ReactNode} from "react";
 
 
 export type Selectbox_ItemProps = {
-    key: string
+    key: string | number
     children: ReactNode;
 }
 

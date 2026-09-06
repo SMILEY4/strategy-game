@@ -11,6 +11,7 @@ import {Selectbox} from "@modules/uicomponents/controls/selectbox/Selectbox.ts";
 
 type Selectbox_RootProps<TItem extends SelectboxItem> = {
     children: ReactNode;
+    className?: string,
     classNameFloating?: string,
 
     disabled?: boolean,
@@ -54,7 +55,7 @@ export function Selectbox_Root<TItem extends SelectboxItem>(props: Selectbox_Roo
             renderItem: renderItemFunc,
         }}>
 
-            <div className={styles.root}>
+            <div className={classNames(styles.root, props.className)}>
                 {trueChildren}
             </div>
 
