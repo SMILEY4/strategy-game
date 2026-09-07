@@ -50,8 +50,9 @@ pub struct GenericEdgeOverlayInstance {
     // instance of a triangle mesh with one vertex anchored to the hex center and the other vertices defining the edge.
     pub position: [f32; 2], // hex position (q,r)
     pub direction: u32, // the direction the edge/triangle is pointing (i.e. cw rotation, top-right = 0, right = 1, top-left = 7)
-    pub color: [f32; 4], // color as rgba
     pub style: u32,     // edge style: 0 = solid, 1 = dashed
+    pub color: [f32; 4], // color as rgba
+    pub thickness: f32, // thickness of the edge, 0 = none, 1 = completely filled up to center
 }
 
 pub const OVERLAY_EDGE_STYLE_FILLED: u32 = 0;

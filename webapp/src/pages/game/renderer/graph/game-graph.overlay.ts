@@ -6,6 +6,7 @@ import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import type {MapMode} from "@app/features/game/models/map-mode.ts";
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {Entity} from "@app/features/game/models/entity.ts";
+import {EntityUtils} from "@app/features/game/models/entity.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
@@ -51,7 +52,15 @@ export function gameGraphPassOverlay(
         source: {
             type: "js",
             data: dataSelectedEntity,
-            upload: (entity: Entity | null) => wasmApi.upload.setSelectedEntityId(entity?.id ?? null),
+            upload: (entity: Entity | null) => {
+                wasmApi.upload.setSelectedEntityId(entity?.id ?? null);
+                wasmApi.upload.setSelectedSettlementId(
+                    entity
+                        ? EntityUtils.getComponent(entity, "tile-improvement")?.administeringSettlement
+                            ?? (EntityUtils.hasComponent(entity, "settlement") ? entity.id : null)
+                        : null,
+                );
+            },
         },
     });
 
@@ -201,13 +210,18 @@ export function gameGraphPassOverlay(
                         amountComponents: 1,
                     },
                     {
+                        name: "style",
+                        type: GlAttributeType.U_INT,
+                        amountComponents: 1,
+                    },
+                    {
                         name: "color",
                         type: GlAttributeType.FLOAT,
                         amountComponents: 4,
                     },
                     {
-                        name: "style",
-                        type: GlAttributeType.U_INT,
+                        name: "thickness",
+                        type: GlAttributeType.FLOAT,
                         amountComponents: 1,
                     },
                 ],

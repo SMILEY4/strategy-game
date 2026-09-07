@@ -11,6 +11,7 @@ export interface RenderWasmApiUpload {
     uploadEntities: (entities: RenderEntity[]) => void,
     setMapMode: (mapMode: MapMode) => void,
     setSelectedEntityId: (entityId: number | null) => void,
+    setSelectedSettlementId: (settlementId: number | null) => void,
 }
 
 type TileUpload = {
@@ -21,6 +22,7 @@ type TileUpload = {
 
 type ControlUpload = {
     realmId: number,
+    settlementId: number | null
     entityId: number,
     amount: number,
 };
@@ -87,9 +89,22 @@ const tileSerializer = wasmSerializer<TileUpload>({
 });
 
 const controlSerializer = wasmSerializer<ControlUpload>({
-    "realm_id": {provider: control => control.realmId, type: "u32"},
-    "entity_id": {provider: control => control.entityId, type: "u32"},
-    "amount": {provider: control => control.amount, type: "f32"},
+    "realm_id": {
+        type: "u32",
+        provider: control => control.realmId,
+    },
+    "settlement_id": {
+        type: "u32",
+        provider: control => control.settlementId ?? -1,
+    },
+    "entity_id": {
+        type: "u32",
+        provider: control => control.entityId,
+    },
+    "amount": {
+        type: "f32",
+        provider: control => control.amount,
+    },
 });
 
 const visibilitySerialisationMapping: Record<string, number> = {
@@ -164,6 +179,7 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
                     const controlOffset = controls.length;
                     controls.push(...tileControls.map(control => ({
                         realmId: control.realm,
+                        settlementId: control.settlement,
                         entityId: control.entity,
                         amount: control.amount,
                     })));
@@ -200,6 +216,12 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
         setSelectedEntityId: (entityId: number | null) => {
             tracer.span({name: "wasmapi-setSelectedEntityId"}, () => {
                 wasm.set_selected_entity_id(entityId);
+            });
+        },
+
+        setSelectedSettlementId: (settlementId: number | null) => {
+            tracer.span({name: "wasmapi-setSelectedSettlementId"}, () => {
+                wasm.set_selected_settlement_id(settlementId);
             });
         },
 

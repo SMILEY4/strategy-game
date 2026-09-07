@@ -9,6 +9,7 @@ pub struct RenderState {
     pub controls: Vec<Control>,
     pub entities: Vec<Entity>,
     pub map_mode: u32,
+    pub selected_settlement_id: Option<u32>,
     pub selected_entity_id: Option<u32>,
     pub tiles_by_position: FxHashMap<HexPosition, usize>,
     pub chunks: FxHashMap<HexPosition, Chunk>,

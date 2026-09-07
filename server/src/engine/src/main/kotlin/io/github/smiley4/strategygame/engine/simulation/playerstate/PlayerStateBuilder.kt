@@ -142,7 +142,7 @@ class PlayerStateBuilder {
                     is EntityComponent.TileImprovement -> obj {
                         "type" to "tile-improvement"
                         "key" to component.key.value
-                        "administeringSettlement" to component.administeringSettlement
+                        "administeringSettlement" to component.administeringSettlement.id
                     }
                 }
             }

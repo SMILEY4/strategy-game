@@ -22,6 +22,7 @@ pub struct Tile {
 #[derive(Copy, Clone, Debug)]
 pub struct Control {
     pub realm_id: u32,
+    pub settlement_id: u32,
     pub entity_id: u32,
     pub amount: f32,
 }

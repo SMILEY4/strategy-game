@@ -30,6 +30,10 @@ impl Renderer {
         self.state.selected_entity_id = entity_id;
     }
 
+    pub fn set_selected_settlement_id(&mut self, settlement_id: Option<u32>) {
+        self.state.selected_settlement_id = settlement_id;
+    }
+
     pub fn set_entities(&mut self, entities: Vec<Entity>) {
         self.state.entities = entities;
         self.state.chunks.clear();

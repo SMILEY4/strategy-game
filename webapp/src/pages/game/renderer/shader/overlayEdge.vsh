@@ -6,6 +6,7 @@ in vec2 in_tilePosition;
 in uint in_direction;
 in vec4 in_color;
 in uint in_style;
+in float in_thickness;
 
 uniform mat4 u_camera;
 uniform float u_dbg_hexOffsetScale;
@@ -13,6 +14,7 @@ uniform float u_dbg_hexOffsetScale;
 out vec3 v_corner;
 out vec4 v_color;
 flat out uint v_style;
+out float v_thickness;
 
 #include "utils/random.glsl"
 #include "utils/hex-to-world.glsl"
@@ -31,6 +33,7 @@ void main() {
     v_corner = in_corner;
     v_color = in_color;
     v_style = in_style;
+    v_thickness = in_thickness;
 
     // The unit slice is the edge facing the fourth neighbour direction
     // (q - 1, r + 1). Rotate it around the tile center to the requested edge.

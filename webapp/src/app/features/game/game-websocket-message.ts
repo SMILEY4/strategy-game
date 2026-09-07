@@ -90,7 +90,7 @@ interface GameState extends GameWebsocketServerMessageBase {
             },
             components: (
                 | { type: "settlement", name: string, isRealmCapital: boolean }
-                | { type: "tile-improvement", key: string, administeringSettlement: string }
+                | { type: "tile-improvement", key: string, administeringSettlement: number }
                 )[]
         })[]
     }
