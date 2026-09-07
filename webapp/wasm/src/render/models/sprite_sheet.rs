@@ -44,7 +44,7 @@ pub const SPRITE_GROUP_CONFIG_BUILDINGS: MapDetailSpriteGroupConfig = MapDetailS
 };
 
 pub const SPRITE_GROUP_CONFIG_TILE_IMPROVEMENT: MapDetailSpriteGroupConfig = MapDetailSpriteGroupConfig {
-    atlas_id: 4,
+    atlas_id: 5,
     amount: [1, 1],
     radius: 0.2,
     distribution: 0.7,

@@ -49,7 +49,7 @@ void main() {
         spriteOutline = texture(u_atlasTreesOutline, uv);
         spriteMask = texture(u_atlasTreesMask, uv);
     }
-    if(v_atlasId == 4u) {
+    if(v_atlasId == 4u || v_atlasId == 5u) {
         spriteRawColor = texture(u_atlasBuildingsColor, uv);
         spriteOutline = texture(u_atlasBuildingsOutline, uv);
         spriteMask = texture(u_atlasBuildingsMask, uv);

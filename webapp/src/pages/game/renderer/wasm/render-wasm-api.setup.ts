@@ -4,6 +4,7 @@ import spritesheetMountains from "@pages/game/renderer/spritesheets/mountains.at
 import spritesheetHills from "@pages/game/renderer/spritesheets/hills.atlas.json";
 import spritesheetTrees from "@pages/game/renderer/spritesheets/trees.atlas.json";
 import spritesheetBuildings from "@pages/game/renderer/spritesheets/buildings.atlas.json";
+import spritesheetBuildingsTileImprovements from "@pages/game/renderer/spritesheets/buildings-tileimprovements.atlas.json";
 
 export interface RenderWasmApiSetup {
     configure: () => Promise<void>,
@@ -17,6 +18,7 @@ export const renderWasmApiSetup = (wasm: WasmRenderApp): RenderWasmApiSetup => {
                 console.log("[wasm-api]: configuring renderer");
                 wasm.add_spritesheet_entries(1, spritesheetMountains.sprites.map(entry => ({
                     id: entry.id,
+                    name: entry.name,
                     uvCoords: {
                         uMin: entry.uv.uMin,
                         vMin: entry.uv.vMin,
@@ -31,6 +33,7 @@ export const renderWasmApiSetup = (wasm: WasmRenderApp): RenderWasmApiSetup => {
                 } satisfies SpriteSheetEntry)));
                 wasm.add_spritesheet_entries(2, spritesheetHills.sprites.map(entry => ({
                     id: entry.id,
+                    name: entry.name,
                     uvCoords: {
                         uMin: entry.uv.uMin,
                         vMin: entry.uv.vMin,
@@ -45,6 +48,7 @@ export const renderWasmApiSetup = (wasm: WasmRenderApp): RenderWasmApiSetup => {
                 } satisfies SpriteSheetEntry)));
                 wasm.add_spritesheet_entries(3, spritesheetTrees.sprites.map(entry => ({
                     id: entry.id,
+                    name: entry.name,
                     uvCoords: {
                         uMin: entry.uv.uMin,
                         vMin: entry.uv.vMin,
@@ -59,6 +63,7 @@ export const renderWasmApiSetup = (wasm: WasmRenderApp): RenderWasmApiSetup => {
                 } satisfies SpriteSheetEntry)));
                 wasm.add_spritesheet_entries(4, spritesheetBuildings.sprites.map(entry => ({
                     id: entry.id,
+                    name: entry.name,
                     uvCoords: {
                         uMin: entry.uv.uMin,
                         vMin: entry.uv.vMin,
@@ -70,6 +75,21 @@ export const renderWasmApiSetup = (wasm: WasmRenderApp): RenderWasmApiSetup => {
                         height: entry.normalized.height,
                     },
                     scale: 0.8,
+                } satisfies SpriteSheetEntry)));
+                wasm.add_spritesheet_entries(5, spritesheetBuildingsTileImprovements.sprites.map(entry => ({
+                    id: entry.id,
+                    name: entry.name,
+                    uvCoords: {
+                        uMin: entry.uv.uMin,
+                        vMin: entry.uv.vMin,
+                        uMax: entry.uv.uMax,
+                        vMax: entry.uv.vMax,
+                    },
+                    nSize: {
+                        width: entry.normalized.width,
+                        height: entry.normalized.height,
+                    },
+                    scale: 0.9,
                 } satisfies SpriteSheetEntry)));
             });
         },

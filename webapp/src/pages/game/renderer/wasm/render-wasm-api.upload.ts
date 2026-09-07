@@ -157,6 +157,10 @@ const entitySerializer = wasmSerializer<RenderEntity>({
         provider: entity => entity.isPending,
         type: "bool",
     },
+    "improvement_key": {
+        provider: entity => entity.tileImprovementType ?? "",
+        type: "string64",
+    },
 });
 
 const entityRenderTypeSerialisationMapping: Record<string, number> = {

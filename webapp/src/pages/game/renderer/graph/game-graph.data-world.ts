@@ -47,11 +47,13 @@ export function gameGraphDataWorld(
         func: (entities, commands) => {
             return [
                 ...entities.data.map(entity => {
-                    if (EntityUtils.hasComponent(entity, "tile-improvement")) {
+                    const tileImprovement = EntityUtils.getComponent(entity, "tile-improvement");
+                    if (tileImprovement) {
                         return {
                             ...entity,
                             renderType: "tile-improvement",
                             isPending: false,
+                            tileImprovementType: tileImprovement.key,
                         } satisfies RenderEntity;
                     }
                     if (EntityUtils.hasComponent(entity, "settlement")) {
@@ -59,6 +61,7 @@ export function gameGraphDataWorld(
                             ...entity,
                             renderType: "settlement",
                             isPending: false,
+                            tileImprovementType: null,
                         } satisfies RenderEntity;
                     }
                     return null;
@@ -71,6 +74,7 @@ export function gameGraphDataWorld(
                             position: command.location,
                             renderType: "tile-improvement",
                             isPending: true,
+                            tileImprovementType: command.improvementKey,
                         } satisfies  RenderEntity;
                     }
                     if (command.type === "create-settlement") {
@@ -80,6 +84,7 @@ export function gameGraphDataWorld(
                             position: command.location,
                             renderType: "settlement",
                             isPending: true,
+                            tileImprovementType: null,
                         } satisfies  RenderEntity;
                     }
                     return null;

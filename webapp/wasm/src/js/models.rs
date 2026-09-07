@@ -61,6 +61,7 @@ pub struct Entity {
     pub chunk_position: HexPosition,
     pub render_type: u8,
     pub is_pending: bool,
+    pub improvement_key: [u8; 64],
 }
 
 #[repr(C, packed)]
@@ -100,6 +101,7 @@ pub struct Size {
 #[serde(rename_all = "camelCase")]
 pub struct SpriteSheetEntry {
     pub id: String,
+    pub name: String,
     pub uv_coords: UvRectangle,
     pub n_size: Size,
     pub scale: f32,
