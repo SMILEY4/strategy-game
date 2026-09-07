@@ -6,7 +6,7 @@ import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
 import {mat4, vec3, vec4} from "gl-matrix";
 import type {Camera} from "@app/features/game/models/camera.ts";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
-import {SettlementLabel} from "@pages/game/overlay/SettlementLabel.ts";
+import {SettlementLabel, TileImprovementLabel} from "@pages/game/overlay/SettlementLabel.ts";
 import type {Command} from "@app/features/game/models/command.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 
@@ -41,6 +41,13 @@ export function gameGraphHtml(
                             element: SettlementLabel({name: settlementComponent.name, pending: false}),
                         } satisfies HtmlDrawElement;
                     }
+                    const tileImprovementComponent = EntityUtils.getComponent(entity, "tile-improvement");
+                    if (tileImprovementComponent) {
+                        return {
+                            key: "entity/" + entity.id,
+                            element: TileImprovementLabel({name: tileImprovementComponent.key, pending: false}),
+                        } satisfies HtmlDrawElement;
+                    }
                     return null;
                 }),
                 ...commands.data.map(command => {
@@ -48,6 +55,12 @@ export function gameGraphHtml(
                         return {
                             key: "command/" + command.id,
                             element: SettlementLabel({name: command.name, pending: true}),
+                        } satisfies  HtmlDrawElement;
+                    }
+                    if (command.type === "create-tile-improvement") {
+                        return {
+                            key: "command/" + command.id,
+                            element: TileImprovementLabel({name: command.improvementKey, pending: true}),
                         } satisfies  HtmlDrawElement;
                     }
                     return null;
@@ -68,6 +81,13 @@ export function gameGraphHtml(
                             positioning: "centered",
                         } satisfies HtmlDrawInstance;
                     }
+                    if (EntityUtils.hasComponent(entity, "tile-improvement")) {
+                        return {
+                            key: "entity/" + entity.id,
+                            ...worldToView(hexToWorld(entity.position, 1, 0.8), camera.data)!,
+                            positioning: "centered",
+                        } satisfies HtmlDrawInstance;
+                    }
                     return null;
                 }),
                 ...commands.data.map(command => {
@@ -75,6 +95,13 @@ export function gameGraphHtml(
                         return {
                             key: "command/" + command.id,
                             ...worldToView(hexToWorld(command.location, 1, 1), camera.data)!,
+                            positioning: "centered",
+                        } satisfies  HtmlDrawInstance;
+                    }
+                    if (command.type === "create-tile-improvement") {
+                        return {
+                            key: "command/" + command.id,
+                            ...worldToView(hexToWorld(command.location, 1, 0.8), camera.data)!,
                             positioning: "centered",
                         } satisfies  HtmlDrawInstance;
                     }
