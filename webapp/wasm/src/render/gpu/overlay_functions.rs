@@ -98,45 +98,6 @@ pub fn edges_entity_control(
     }
 }
 
-//===== MAP MODE - TERRAIN =========================
-
-pub fn fill_mapmode_terrain(
-    _: &RenderState,
-    tile: &Tile,
-    output: &mut Vec<GenericFillOverlayInstance>,
-) {
-    let color = match tile.terrain.biome {
-        TILE_BIOME_OCEAN => OCEAN_COLOR,
-        TILE_BIOME_GRASSLAND => GRASSLAND_COLOR,
-        _ => return,
-    };
-
-    output.push(fill_instance(tile, color, OVERLAY_FILL_STYLE_FILLED));
-
-    if tile.terrain.elevation == TILE_ELEVATION_MOUNTAINS {
-        output.push(fill_instance(
-            tile,
-            MOUNTAINS_COLOR,
-            OVERLAY_FILL_STYLE_STRIPED,
-        ));
-    } else if tile.terrain.feature == TILE_FEATURE_FOREST {
-        output.push(fill_instance(
-            tile,
-            FOREST_COLOR,
-            OVERLAY_FILL_STYLE_STRIPED,
-        ));
-    }
-}
-
-pub fn edges_mapmode_terrain(
-    state: &RenderState,
-    tile: &Tile,
-    tiles_by_pos: &rustc_hash::FxHashMap<HexPosition, usize>,
-    output: &mut Vec<GenericEdgeOverlayInstance>,
-) {
-    edges_mapmode_political(state, tile, tiles_by_pos, output);
-}
-
 //===== MAP MODE - POLITICAL =======================
 
 pub fn fill_mapmode_political(

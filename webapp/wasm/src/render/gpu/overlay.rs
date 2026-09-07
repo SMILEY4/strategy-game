@@ -16,7 +16,7 @@ pub fn build_overlay_data(state: &RenderState, output: &mut OutputState) {
               output: &mut Vec<GenericFillOverlayInstance>| {
             match map_mode {
                 MAP_MODE_TERRAIN => {
-                    overlay_functions::fill_mapmode_terrain(state, tile, output)
+                    overlay_functions::fill_none(state, tile, output)
                 }
                 MAP_MODE_POLITICAL => {
                     overlay_functions::fill_mapmode_political(state, tile, output)
@@ -36,7 +36,7 @@ pub fn build_overlay_data(state: &RenderState, output: &mut OutputState) {
               output: &mut Vec<GenericEdgeOverlayInstance>| {
             match map_mode {
                 MAP_MODE_TERRAIN => {
-                    overlay_functions::edges_mapmode_terrain(state, tile, tiles_by_pos, output)
+                    overlay_functions::edges_none(state, tile, tiles_by_pos, output)
                 }
                 MAP_MODE_POLITICAL => overlay_functions::edges_mapmode_political(
                     state,
