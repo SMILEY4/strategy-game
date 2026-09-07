@@ -39,5 +39,8 @@ sealed interface EntityComponent {
 
     data class Settlement(val name: String, val isRealmCapital: Boolean) : EntityComponent
 
-    data class TileImprovement(val administeringSettlement: Entity.Id) : EntityComponent
+    data class TileImprovement(
+        val key: TileImprovementKey,
+        val administeringSettlement: Entity.Id,
+    ) : EntityComponent
 }

@@ -42,3 +42,12 @@ pub const SPRITE_GROUP_CONFIG_BUILDINGS: MapDetailSpriteGroupConfig = MapDetailS
     squish: 0.9,
     push: -0.1,
 };
+
+pub const SPRITE_GROUP_CONFIG_TILE_IMPROVEMENT: MapDetailSpriteGroupConfig = MapDetailSpriteGroupConfig {
+    atlas_id: 4,
+    amount: [1, 1],
+    radius: 0.2,
+    distribution: 0.7,
+    squish: 0.2,
+    push: -0.6,
+};

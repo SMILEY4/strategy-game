@@ -51,6 +51,7 @@ pub const TILE_FEATURE_UNDEF: u8 = 0;
 pub const TILE_FEATURE_FOREST: u8 = 1;
 
 pub const ENTITY_TYPE_SETTLEMENT: u8 = 1;
+pub const ENTITY_TYPE_TILE_IMPROVEMENT: u8 = 2;
 
 #[repr(C, packed)]
 #[derive(Copy, Clone, Debug)]

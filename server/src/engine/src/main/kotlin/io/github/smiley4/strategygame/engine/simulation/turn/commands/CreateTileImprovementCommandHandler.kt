@@ -20,7 +20,7 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
         val settlement = gameState.entities.first { it.id == command.settlement && it.hasComponent<EntityComponent.Settlement>() }
 
         // validate
-        if (!TileImprovementValidation.validate(gameState, command.location, realm.id)) {
+        if (!TileImprovementValidation.validate(gameState, command.location, realm.id, command.improvementKey)) {
             throw IllegalArgumentException("Invalid tile-improvement command")
         }
 
@@ -32,7 +32,10 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
                 EntityComponent.Position(tile = targetTile.ref()),
                 EntityComponent.Vision(radius = 1),
                 EntityComponent.Control(radius = 1, amount = 3f),
-                EntityComponent.TileImprovement(administeringSettlement = settlement.id),
+                EntityComponent.TileImprovement(
+                    key = command.improvementKey,
+                    administeringSettlement = settlement.id,
+                ),
             )
         )
         gameState.entities.add(tileImprovement)

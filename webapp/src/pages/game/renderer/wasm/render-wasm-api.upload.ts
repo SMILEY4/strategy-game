@@ -147,6 +147,7 @@ const entitySerializer = wasmSerializer<RenderEntity>({
 const entityRenderTypeSerialisationMapping: Record<string, number> = {
     undefined: 0,
     "settlement": 1,
+    "tile-improvement": 2,
 };
 
 

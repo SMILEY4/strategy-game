@@ -16,7 +16,6 @@ sealed interface PlayerCommand {
         override val playerId: UserId,
         val location: HexPosition,
         val settlement: Entity.Id,
+        val improvementKey: TileImprovementKey,
     ) : PlayerCommand
 }
-
-

@@ -104,8 +104,8 @@ class PlayerStateBuilder {
         }
         "createTileImprovement" to hidden(visibility != Visibility.UNDISCOVERED) {
             obj {
-                "validLocation" to tileImprovementValidation.validLocation
                 "validRealm" to tileImprovementValidation.validRealm
+                "availableImprovementKeys" to arr[tileImprovementValidation.availableImprovementKeys.map { it.value }]
             }
         }
         "meta" to obj {
@@ -141,6 +141,7 @@ class PlayerStateBuilder {
                     }
                     is EntityComponent.TileImprovement -> obj {
                         "type" to "tile-improvement"
+                        "key" to component.key.value
                         "administeringSettlement" to component.administeringSettlement
                     }
                 }

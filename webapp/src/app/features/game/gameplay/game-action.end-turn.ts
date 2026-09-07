@@ -30,7 +30,8 @@ export const gameActionEndTurn = ({commandDb, wsClient}: Dependencies): GameActi
                         type: "CreateTileImprovement",
                         q: command.location.q,
                         r: command.location.r,
-                        settlementEntityId: command.settlementEntityId
+                        settlementEntityId: command.settlementEntityId,
+                        improvementKey: command.improvementKey,
                     }
                 }
                 assertExhaustive(command)

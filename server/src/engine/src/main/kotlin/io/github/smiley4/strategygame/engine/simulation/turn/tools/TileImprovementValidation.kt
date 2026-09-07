@@ -6,42 +6,53 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
 import io.github.smiley4.strategygame.engine.simulation.gamestate.RealmPhase
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
+import io.github.smiley4.strategygame.engine.simulation.gamestate.TileImprovementKey
 
 internal data class TileImprovementValidationResult(
-    val validLocation: Boolean,
     val validRealm: Boolean,
+    val availableImprovementKeys: List<TileImprovementKey>,
 ) {
     val valid: Boolean
-        get() = validLocation && validRealm
+        get() = validRealm && availableImprovementKeys.isNotEmpty()
 }
 
 internal object TileImprovementValidation {
 
     const val REQUIRED_CONTROL = 0f
+    private val registry = TileImprovementRegistry()
 
-    fun validate(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
+    fun validate(
+        gameState: GameStateContext,
+        location: HexPosition,
+        realm: Realm.Id,
+        improvementKey: TileImprovementKey,
+    ): Boolean {
         val tile = gameState.tiles.find { it.position == location } ?: return false
-        return inspect(gameState, tile, realm).valid
+        return inspect(gameState, tile, realm).let { result ->
+            result.validRealm && improvementKey in result.availableImprovementKeys
+        }
     }
 
     fun inspect(gameState: GameStateContext, tile: Tile, realm: Realm.Id): TileImprovementValidationResult {
         val phase = gameState.realms.first { it.id == realm }.phase
+        val validRealm = isValidRealm(tile, realm, phase)
+        val availableImprovementKeys = if (isOccupied(gameState, tile)) {
+            emptyList()
+        } else {
+            registry.getAll()
+                .filter { it.isBuildableOn(tile) }
+                .map { it.key }
+        }
         return TileImprovementValidationResult(
-            validLocation = isValidLocation(gameState, tile),
-            validRealm = isValidRealm(tile, realm, phase),
+            validRealm = validRealm,
+            availableImprovementKeys = availableImprovementKeys,
         )
     }
 
-    private fun isValidLocation(gameState: GameStateContext, tile: Tile): Boolean {
-        if (!isTerrainSuitable(tile)) return false
-
-        return gameState.entities.none {
+    private fun isOccupied(gameState: GameStateContext, tile: Tile): Boolean {
+        return gameState.entities.any {
             it.getComponentOrNull<EntityComponent.Position>()?.tile?.id == tile.id
         }
-    }
-
-    fun isTerrainSuitable(tile: Tile): Boolean {
-        return tile.world.biome != Tile.Biome.OCEAN
     }
 
     private fun isValidRealm(

@@ -16,6 +16,8 @@ interface CreateTileImprovementInteractionContext {
     position: ExtendedHexPosition,
     availableSettlementEntityIds: number[],
     settlementEntityId: number | null
+    availableImprovementKeys: string[],
+    improvementKey: string | null,
     createTileImprovementWindowId: string | null
 }
 
@@ -30,6 +32,7 @@ export type CreateTileImprovementInteractionEvent =
     | { type: "PREPARATION_DONE" }
     | { type: "PICK_SETTLEMENT" }
     | { type: "SELECT_SETTLEMENT", settlementEntityId: number }
+    | { type: "SELECT_IMPROVEMENT", improvementKey: string }
     | { type: "CONFIRM" }
     | { type: "ABORT" }
 
@@ -43,19 +46,24 @@ export const CreateTileImprovementInteraction = createInteractionDefinition<
     initialState: () => "Prepare",
     initialContext: input => ({
         position: input.position,
-        availableSettlementEntityIds: [],
-        settlementEntityId: null,
-        createTileImprovementWindowId: null,
+            availableSettlementEntityIds: [],
+            settlementEntityId: null,
+            availableImprovementKeys: [],
+            improvementKey: null,
+            createTileImprovementWindowId: null,
     }),
     states: {
 
         Prepare: {
             onEnter: async ({context}) => {
                 const availableSettlements = selectAvailableAdministeringSettlements(context.position);
+                const availableImprovementKeys = selectAvailableImprovementKeys(context.position);
                 return {
                     context: {
                         availableSettlementEntityIds: availableSettlements.map(it => it.id),
                         settlementEntityId: chooseDefaultAdministeringSettlement(availableSettlements),
+                        availableImprovementKeys,
+                        improvementKey: availableImprovementKeys[0] ?? null,
                     },
                     event: {type: "PREPARATION_DONE"},
                 };
@@ -76,8 +84,12 @@ export const CreateTileImprovementInteraction = createInteractionDefinition<
                 target: "ConfiguringTileImprovement",
                 action: ({event}) => ({settlementEntityId: event.settlementEntityId}),
             },
+            SELECT_IMPROVEMENT: {
+                target: "ConfiguringTileImprovement",
+                action: ({event}) => ({improvementKey: event.improvementKey}),
+            },
             CONFIRM: {
-                guard: ({context}) => !!context.settlementEntityId,
+                guard: ({context}) => !!context.settlementEntityId && !!context.improvementKey,
                 target: "Finalizing",
             },
             ABORT: {
@@ -105,6 +117,7 @@ export const CreateTileImprovementInteraction = createInteractionDefinition<
                     id: genCommandId(),
                     location: context.position,
                     settlementEntityId: context.settlementEntityId ?? -1,
+                    improvementKey: context.improvementKey ?? "",
                 });
                 gameAudio.WRITING_ON_PAPER.play();
             },
@@ -163,4 +176,10 @@ function chooseDefaultAdministeringSettlement(available: { id: number, amount: n
     });
 
     return best.id;
+}
+
+function selectAvailableImprovementKeys(position: HexPosition): string[] {
+    const tile = DI.tileDatabase.querySingle(TileQueries.BY_POSITION, position);
+    if (!tile?.createTileImprovement.visible) return [];
+    return tile.createTileImprovement.value.availableImprovementKeys;
 }

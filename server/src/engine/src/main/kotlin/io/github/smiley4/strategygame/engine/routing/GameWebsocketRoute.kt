@@ -11,6 +11,7 @@ import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGa
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleOpen
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Entity
+import io.github.smiley4.strategygame.engine.simulation.gamestate.TileImprovementKey
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
@@ -126,6 +127,7 @@ internal sealed interface PlayerCommandDto {
         val q: Int,
         val r: Int,
         val settlementEntityId: Int,
+        val improvementKey: String,
     ) : PlayerCommandDto {
 
         override fun toDomain(user: UserId) = PlayerCommand.CreateTileImprovement(
@@ -134,7 +136,8 @@ internal sealed interface PlayerCommandDto {
                 q = this.q,
                 r = this.r,
             ),
-            settlement = Entity.Id(this.settlementEntityId)
+            settlement = Entity.Id(this.settlementEntityId),
+            improvementKey = TileImprovementKey(this.improvementKey),
         )
     }
 

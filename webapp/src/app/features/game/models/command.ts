@@ -20,7 +20,8 @@ export interface CommandCreateTileImprovement extends CommandBase {
     id: string,
     type: "create-tile-improvement";
     location: ExtendedHexPosition;
-    settlementEntityId: number
+    settlementEntityId: number,
+    improvementKey: string,
 }
 
 export function genCommandId() {

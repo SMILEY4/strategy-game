@@ -44,6 +44,16 @@ export function CreateTileImprovementWindow(props: CreateTileImprovementWindowPr
                 <HorizontalLayout verticalCenter horizontalStart>
 
                     <Selectbox.Root
+                        items={viewModel.improvement.available}
+                        selectedItem={viewModel.improvement.selected}
+                        onSelectedItemChange={viewModel.improvement.select}
+                        renderItem={item => (<Selectbox.Item key={item.key}>{item.key}</Selectbox.Item>)}
+                    >
+                        <Selectbox.Control sizeM stableSize box/>
+                        <Selectbox.List/>
+                    </Selectbox.Root>
+
+                    <Selectbox.Root
                         className={styles["select-administering-settlement"]}
                         items={viewModel.administeringSettlement.available}
                         selectedItem={viewModel.administeringSettlement.selected}
@@ -92,6 +102,11 @@ export function CreateTileImprovementWindow(props: CreateTileImprovementWindowPr
 
 
 interface CreateTileImprovementWindowViewModel {
+    improvement: {
+        available: { key: string }[]
+        selected: { key: string } | null,
+        select: (item: { key: string }) => void,
+    }
     administeringSettlement: {
         available: { key: number}[]
         selected: { key: number },
@@ -112,6 +127,11 @@ function useCreateTileImprovementWindowViewModel(): CreateTileImprovementWindowV
     const [interactionContext, interactionEvents] = useInteraction(CreateTileImprovementInteraction);
 
     return {
+        improvement: {
+            available: interactionContext.availableImprovementKeys.map(key => ({key})),
+            selected: interactionContext.improvementKey ? {key: interactionContext.improvementKey} : null,
+            select: entry => interactionEvents.SELECT_IMPROVEMENT({improvementKey: entry.key}),
+        },
         administeringSettlement: {
             available: interactionContext.availableSettlementEntityIds.map(id => ({key: id})),
             selected: {key: interactionContext.settlementEntityId ?? -1},

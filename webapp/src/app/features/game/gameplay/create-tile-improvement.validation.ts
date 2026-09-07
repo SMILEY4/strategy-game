@@ -21,7 +21,7 @@ export const createTileImprovementValidation = (): CreateTileImprovementValidati
         if (hasInteraction) return false;
 
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
-        if (!tile || !tile.createTileImprovement.visible || !tile.createTileImprovement.value.validLocation || !tile.createTileImprovement.value.validRealm) {
+        if (!tile || !tile.createTileImprovement.visible || !tile.createTileImprovement.value.validRealm || tile.createTileImprovement.value.availableImprovementKeys.length === 0) {
             return false;
         }
 

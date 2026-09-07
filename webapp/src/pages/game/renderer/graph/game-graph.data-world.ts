@@ -47,6 +47,13 @@ export function gameGraphDataWorld(
         func: (entities, commands) => {
             return [
                 ...entities.data.map(entity => {
+                    if (EntityUtils.hasComponent(entity, "tile-improvement")) {
+                        return {
+                            ...entity,
+                            renderType: "tile-improvement",
+                            isPending: false,
+                        } satisfies RenderEntity;
+                    }
                     if (EntityUtils.hasComponent(entity, "settlement")) {
                         return {
                             ...entity,
@@ -57,6 +64,15 @@ export function gameGraphDataWorld(
                     return null;
                 }),
                 ...commands.data.map(command => {
+                    if(command.type === "create-tile-improvement") {
+                        return {
+                            id: 0,
+                            owner: null,
+                            position: command.location,
+                            renderType: "tile-improvement",
+                            isPending: true,
+                        } satisfies  RenderEntity;
+                    }
                     if (command.type === "create-settlement") {
                         return {
                             id: 0,

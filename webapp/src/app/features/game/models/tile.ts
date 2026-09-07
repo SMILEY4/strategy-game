@@ -30,8 +30,8 @@ export interface Tile {
         validRealm: boolean,
     }>
     createTileImprovement: HiddenType<{
-        validLocation: boolean
         validRealm: boolean,
+        availableImprovementKeys: string[],
     }>
     meta: {
         seed: number,

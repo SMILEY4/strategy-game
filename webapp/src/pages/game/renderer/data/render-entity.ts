@@ -4,6 +4,6 @@ export interface RenderEntity {
     id: number,
     owner: number | null,
     position: ExtendedHexPosition,
-    renderType: "settlement",
+    renderType: "settlement" | "tile-improvement",
     isPending: boolean
 }
