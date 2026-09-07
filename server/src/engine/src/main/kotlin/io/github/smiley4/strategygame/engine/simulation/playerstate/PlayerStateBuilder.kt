@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponen
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
+import io.github.smiley4.strategygame.engine.simulation.gamestate.Route
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
@@ -38,6 +39,11 @@ class PlayerStateBuilder {
                     .filter { getVisibilityAt(game, it, povRealm.id) != Visibility.UNDISCOVERED }
                     .filter { it.components.any { component -> component is EntityComponent.Position } }
                     .map { entity(game, it) }
+            ]
+            "routes" to arr[
+                    game.routes
+                        .filter { it.tiles.any { t -> getVisibilityAt(game, t.position, povRealm.id) != Visibility.UNDISCOVERED } }
+                        .map { route(it) }
             ]
         }
     }
@@ -147,6 +153,20 @@ class PlayerStateBuilder {
                 }
             }
         ]
+    }
+
+    fun route(route: Route) = obj {
+        "id" to route.id.id
+        "from" to route.from.id
+        "to" to route.to.id
+        "cost" to route.cost
+        "path" to route.tiles.map { tile ->
+            obj {
+                "id" to tile.id.id
+                "q" to tile.position.q
+                "r" to tile.position.r
+            }
+        }
     }
 
     private fun hidden(visible: Boolean, value: () -> ObjectType?) = obj {

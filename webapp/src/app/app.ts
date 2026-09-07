@@ -36,6 +36,7 @@ import {createSettlementValidation} from "@app/features/game/gameplay/create-set
 import {pointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
 import {mapModeDatabase} from "@app/features/game/database/mapmode.database.ts";
 import {createTileImprovementValidation} from "@app/features/game/gameplay/create-tile-improvement.validation.ts";
+import {routeDatabase} from "@app/features/game/database/route.database.ts";
 
 
 interface EnvShape {
@@ -78,6 +79,7 @@ interface DIShape {
     deleteMatchUseCase: ReturnType<typeof deleteMatchUseCase>,
     createGameUseCase: ReturnType<typeof createGameUseCase>,
     // game
+    routeDatabase: ReturnType<typeof routeDatabase>,
     mapModeDatabase: ReturnType<typeof mapModeDatabase>,
     pointerPositionDatabase: ReturnType<typeof pointerPositionDatabase>,
     interactionDatabase: ReturnType<typeof interactionDatabase>,
@@ -212,6 +214,7 @@ export const DIConfig = {
             tileDb: resolve.tileDatabase,
             entityDb: resolve.entityDatabase,
             realmDb: resolve.realmDatabase,
+            routeDb: resolve.routeDatabase,
             cameraController: resolve.cameraController,
             actionClickTile: resolve.gameActionClickTile,
             actionJoinedGame: resolve.gameActionJoinedGame,
@@ -226,6 +229,10 @@ export const DIConfig = {
         // create: resolve => cameraControllerFreecam(y{
         //     cameraDb: resolve.cameraDatabase,
         // }),
+    },
+    routeDatabase: {
+        scope: "singleton",
+        create: () => routeDatabase(),
     },
     mapModeDatabase: {
         scope: "singleton",

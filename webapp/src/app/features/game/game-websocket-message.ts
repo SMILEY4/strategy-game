@@ -92,6 +92,13 @@ interface GameState extends GameWebsocketServerMessageBase {
                 | { type: "settlement", name: string, isRealmCapital: boolean }
                 | { type: "tile-improvement", key: string, administeringSettlement: number }
                 )[]
+        })[],
+        routes: ({
+            id: number,
+            from: number,
+            to: number,
+            cost: number,
+            path: ({ id: number, q: number, r: number })[]
         })[]
     }
 }

@@ -4,9 +4,11 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.Entity
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
+import io.github.smiley4.strategygame.engine.simulation.gamestate.Route
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.Pathfinder
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementValidation
 
 internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerCommand.CreateTileImprovement> {
@@ -24,6 +26,16 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
             throw IllegalArgumentException("Invalid tile-improvement command")
         }
 
+        // find route to settlement
+        val pathResult = Pathfinder({ _, _ -> 1f }).find(
+            gameState.tiles,
+            settlement.getComponent<EntityComponent.Position>().tile,
+            targetTile.ref()
+        )
+        if (pathResult == null) {
+            throw IllegalArgumentException("No valid route could be found.")
+        }
+
         // create tile improvement
         val tileImprovement = Entity(
             id = Entity.Id(),
@@ -39,6 +51,17 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
             )
         )
         gameState.entities.add(tileImprovement)
+
+        // create route
+        gameState.routes.add(
+            Route(
+                id = Route.Id(),
+                from = settlement.id,
+                to = tileImprovement.id,
+                tiles = pathResult.tiles.map { it.ref() },
+                cost = pathResult.cost,
+            )
+        )
 
         // mark tiles as discovered
         val vision = tileImprovement.getComponent<EntityComponent.Vision>();
@@ -62,6 +85,7 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
                 )
             }
         }
+
 
     }
 }
