@@ -11,10 +11,10 @@ import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {gameGraphPassSelectedTile} from "@pages/game/renderer/graph/game-graph.pass-selected-tile.ts";
 import {gameGraphPassMapDetails} from "@pages/game/renderer/graph/game-graph.pass-map-details.ts";
 import {gameGraphHtml} from "@pages/game/renderer/graph/game-graph.html.ts";
-import {gameGraphPassTileGrid} from "@pages/game/renderer/graph/game-graph.tile-grid.ts";
-import {gameGraphPassOverlay} from "@pages/game/renderer/graph/game-graph.overlay.ts";
 import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import {gameGraphPassOverlay} from "@pages/game/renderer/graph/game-graph.pass-overlay.ts";
+import {gameGraphPassTileGrid} from "@pages/game/renderer/graph/game-graph.pass-tile-grid.ts";
 
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
