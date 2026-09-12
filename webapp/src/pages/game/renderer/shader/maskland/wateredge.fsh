@@ -16,13 +16,8 @@ flat in vec2 v_extendedLand;  // [0]: Extended coastline ray at B, [1]: Extended
 
 out vec4 outColor;
 
-bool isTrue(float value) {
-    return value > 0.5;
-}
-
-bool isFalse(float value) {
-    return value < 0.5;
-}
+bool isTrue(float value) { return value > 0.5; }
+bool isFalse(float value) { return value < 0.5; }
 
 // Perpendicular distance from point P to line segment AB
 float distanceToSegment(vec2 p, vec2 a, vec2 b) {
@@ -30,6 +25,12 @@ float distanceToSegment(vec2 p, vec2 a, vec2 b) {
     vec2 ba = b - a;
     float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
     return length(pa - ba * h);
+}
+
+// Polynomial smooth minimum (k controls the rounding radius)
+float smin(float a, float b, float k) {
+    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+    return mix(b, a, h) - k * h * (1.0 - h);
 }
 
 void main() {
@@ -43,36 +44,52 @@ void main() {
     vec2 aw = v_worldPosAwing.xz;
     vec2 bw = v_worldPosBwing.xz;
 
+    float k = 0.15;
+
     float minDist = 1e5;
+    vec4 color = vec4(0.3, 0.3, 0.3, 1.0);
 
     if(isTrue(v_landDirection.x) && isTrue(v_extendedLand.x) && isTrue(v_extendedLand.y)) {
         // contact on ab-edge, bends away from a and b
+        minDist = min(minDist, distanceToSegment(p, a, b));
     }
 
     if(isTrue(v_landDirection.x) && isFalse(v_extendedLand.x) && isTrue(v_extendedLand.y)) {
         // contact on ab-edge, bends away from a and towards b
+        minDist = min(minDist, distanceToSegment(p, a, b));
     }
 
     if(isTrue(v_landDirection.x) && isTrue(v_extendedLand.x) && isFalse(v_extendedLand.y)) {
         // contact on ab-edge, bends towards a and away from b
+        minDist = min(minDist, distanceToSegment(p, a, b));
     }
 
     if(isTrue(v_landDirection.x) && isFalse(v_extendedLand.x) && isFalse(v_extendedLand.y)) {
         // contact on ab-edge, bends towards a and towards b
+        minDist = min(minDist, distanceToSegment(p, a, b));
+        color.r = 1.0;
     }
 
     if(isFalse(v_landDirection.x) && isTrue(v_landDirection.y) && isFalse(v_landDirection.z)) {
         // contact only on vertex a
+        minDist = min(minDist, distanceToSegment(p, a, aw));
     }
 
     if(isFalse(v_landDirection.x) && isFalse(v_landDirection.y) && isTrue(v_landDirection.z)) {
         // contact only on vertex b
+        minDist = min(minDist, distanceToSegment(p, b, bw));
     }
 
     if(isFalse(v_landDirection.x) && isTrue(v_landDirection.y) && isTrue(v_landDirection.z)) {
         // contact only on vertices a and b
+        minDist = min(minDist, distanceToSegment(p, b, bw));
+        minDist = min(minDist, distanceToSegment(p, a, aw));
     }
 
-    outColor = vec4(color, 1.0);
 
+    float normDist = 1.0 - clamp(minDist, 0.0, 1.0);
+
+    outColor = vec4(normDist, normDist, normDist, 1.0);
+
+//    outColor = color;
 }
