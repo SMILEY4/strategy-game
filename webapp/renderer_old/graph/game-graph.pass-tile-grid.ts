@@ -1,15 +1,15 @@
-import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
-import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
-import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
-import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
-import SHADER_COMPOSE_VERT from "./../shader/overlayGrid.vsh";
-import SHADER_COMPOSE_FRAG from "./../shader/overlayGrid.fsh";
-import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
-import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {RenderGraphBuilder} from "src/modules/rendergraph/render-graph-builder.ts";
+import type {RenderWasmApi} from "src/pages/game/renderer/wasm/render-wasm-api.ts";
+import type {CameraRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.camera.ts";
+import type {DataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "src/app/features/game/database/debug.database.ts";
+import {GlAttributeType} from "src/modules/rendergraph/webgl/gl-program.ts";
+import {createUnitHexagonMesh} from "src/modules/utilities/hex-geometry.ts";
+import {GLColorStoreFormat} from "src/modules/rendergraph/webgl/gl-framebuffer.ts";
+import SHADER_COMPOSE_VERT from "../shader/overlayGrid.vsh";
+import SHADER_COMPOSE_FRAG from "../shader/overlayGrid.fsh";
+import type {PointerPosition} from "src/app/features/game/database/pointer-position.database.ts";
+import type {VersionedContainer} from "src/pages/game/renderer/data/versioned-data.ts";
 
 export function gameGraphPassTileGrid(
     g: RenderGraphBuilder,

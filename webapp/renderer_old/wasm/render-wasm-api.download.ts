@@ -1,10 +1,10 @@
 import type {WasmRenderApp} from "wasm";
-import {tracer} from "@modules/monitoring/tracer.ts";
-import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
+import {tracer} from "src/modules/monitoring/tracer.ts";
+import type {VertexDataResult} from "src/modules/rendergraph/nodes/rg-node.transform-vertex-out.ts";
 
 export interface RenderWasmApiDownload {
     getTileLandInstances: () => VertexDataResult;
-    getWaterEdgeInstances: () => VertexDataResult;
+    getTileWaterInstances: () => VertexDataResult;
     getTileFogOfWarInstances: () => VertexDataResult;
     getMapDetailVertices: () => VertexDataResult;
     getOverlayGridInstances: () => VertexDataResult;
@@ -24,11 +24,11 @@ export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownloa
             });
         },
 
-        getWaterEdgeInstances: () => {
-            return tracer.span({name: "wasmapi-getWaterEdgeInstances"}, () => {
+        getTileWaterInstances: () => {
+            return tracer.span({name: "wasmapi-getTileWaterInstances"}, () => {
                 return {
-                    data: wasm.get_water_edge_instances(),
-                    count: wasm.get_water_edge_instances_count(),
+                    data: wasm.get_terrain_tile_water_instances(),
+                    count: wasm.get_terrain_tile_water_instances_count(),
                 };
             });
         },

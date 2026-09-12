@@ -1,14 +1,14 @@
-import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
-import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
-import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
+import type {GameRendererDataProvider} from "src/pages/game/renderer/data/game-renderer-data-provider.ts";
+import type {RenderGraphBuilder} from "src/modules/rendergraph/render-graph-builder.ts";
+import type {DataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.data.ts";
+import type {HtmlDrawElement, HtmlDrawInstance} from "src/modules/rendergraph/nodes/rg-node.html-draw.ts";
+import {type Entity, EntityUtils} from "src/app/features/game/models/entity.ts";
 import {mat4, vec3, vec4} from "gl-matrix";
-import type {Camera} from "@app/features/game/models/camera.ts";
-import type {HexPosition} from "@app/features/game/models/hex-position.ts";
-import {SettlementLabel, TileImprovementLabel} from "@pages/game/overlay/SettlementLabel.ts";
-import type {Command} from "@app/features/game/models/command.ts";
-import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {Camera} from "src/app/features/game/models/camera.ts";
+import type {HexPosition} from "src/app/features/game/models/hex-position.ts";
+import {SettlementLabel, TileImprovementLabel} from "src/pages/game/overlay/SettlementLabel.ts";
+import type {Command} from "src/app/features/game/models/command.ts";
+import type {VersionedContainer} from "src/pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraphHtml(

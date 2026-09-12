@@ -1,0 +1,233 @@
+import type {WasmRenderApp} from "wasm";
+import {tracer} from "src/modules/monitoring/tracer.ts";
+import type {Tile} from "src/app/features/game/models/tile.ts";
+import type {RenderEntity} from "src/pages/game/renderer/data/render-entity.ts";
+import type {MapMode} from "src/app/features/game/models/map-mode.ts";
+import {wasmSerializer} from "src/modules/utilities/wasm-serializer.ts";
+import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
+
+export interface RenderWasmApiUpload {
+    uploadTiles: (tiles: Tile[]) => void,
+    uploadEntities: (entities: RenderEntity[]) => void,
+    setMapMode: (mapMode: MapMode) => void,
+    setSelectedEntityId: (entityId: number | null) => void,
+    setSelectedSettlementId: (settlementId: number | null) => void,
+}
+
+type TileUpload = {
+    tile: Tile,
+    controlOffset: number,
+    controlCount: number,
+};
+
+type ControlUpload = {
+    realmId: number,
+    settlementId: number | null
+    entityId: number,
+    amount: number,
+};
+
+const tileSerializer = wasmSerializer<TileUpload>({
+    "tile_position.q": {
+        provider: tile => tile.tile.position.q,
+        type: "i32",
+    },
+    "tile_position.r": {
+        provider: tile => tile.tile.position.r,
+        type: "i32",
+    },
+    "chunk_position.q": {
+        provider: tile => tile.tile.position.chunkQ,
+        type: "i32",
+    },
+    "chunk_position.r": {
+        provider: tile => tile.tile.position.chunkR,
+        type: "i32",
+    },
+    "visibility": {
+        provider: tile => visibilitySerialisationMapping[tile.tile.visibility],
+        type: "u8",
+    },
+    "terrain_elevation": {
+        provider: tile => tile.tile.world.visible ? (tileElevationSerialisationMapping[tile.tile.world.value.elevation] ?? 0) : 0,
+        type: "u8",
+    },
+    "terrain_biome": {
+        provider: tile => tile.tile.world.visible ? (tileBiomeSerialisationMapping[tile.tile.world.value.biome] ?? 0) : 0,
+        type: "u8",
+    },
+    "terrain_feature": {
+        provider: tile => tile.tile.world.visible ? (tileFeatureSerialisationMapping[tile.tile.world.value.feature] ?? 0) : 0,
+        type: "u8",
+    },
+    "meta.seed": {
+        provider: tile => tile.tile.meta.seed,
+        type: "u32",
+    },
+    "control_offset": {
+        provider: tile => tile.controlOffset,
+        type: "u32",
+    },
+    "control_count": {
+        provider: tile => tile.controlCount,
+        type: "u32",
+    },
+    "create_settlement_validity": {
+        provider: tile => {
+            if (!tile.tile.createSettlement.visible) return 0;
+            let validity = 0;
+            if (tile.tile.createSettlement.value.validLocation) {
+                validity = 1;
+                if (tile.tile.createSettlement.value.validRealm) {
+                    validity = 2;
+                }
+            }
+            return validity;
+        },
+        type: "u8",
+    },
+});
+
+const controlSerializer = wasmSerializer<ControlUpload>({
+    "realm_id": {
+        type: "u32",
+        provider: control => control.realmId,
+    },
+    "settlement_id": {
+        type: "u32",
+        provider: control => control.settlementId ?? -1,
+    },
+    "entity_id": {
+        type: "u32",
+        provider: control => control.entityId,
+    },
+    "amount": {
+        type: "f32",
+        provider: control => control.amount,
+    },
+});
+
+const visibilitySerialisationMapping: Record<string, number> = {
+    undefined: 0,
+    "UNDISCOVERED": 0,
+    "DISCOVERED": 1,
+    "VISIBLE": 2,
+};
+
+const tileElevationSerialisationMapping: Record<string, number> = {
+    undefined: 0,
+    "FLAT": 1,
+    "HILLS": 2,
+    "MOUNTAINS": 3,
+};
+
+const tileBiomeSerialisationMapping: Record<string, number> = {
+    undefined: 0,
+    "OCEAN": 1,
+    "GRASSLAND": 2,
+};
+
+const tileFeatureSerialisationMapping: Record<string, number> = {
+    undefined: 0,
+    "FOREST": 1,
+};
+
+const entitySerializer = wasmSerializer<RenderEntity>({
+    "tile_position.q": {
+        provider: entity => entity.position.q,
+        type: "i32",
+    },
+    "tile_position.r": {
+        provider: entity => entity.position.r,
+        type: "i32",
+    },
+    "chunk_position.q": {
+        provider: entity => entity.position.chunkQ,
+        type: "i32",
+    },
+    "chunk_position.r": {
+        provider: entity => entity.position.chunkR,
+        type: "i32",
+    },
+    "render_type": {
+        provider: entity => entityRenderTypeSerialisationMapping[entity.renderType],
+        type: "u8",
+    },
+    "is_pending": {
+        provider: entity => entity.isPending,
+        type: "bool",
+    },
+    "improvement_key": {
+        provider: entity => entity.tileImprovementType ?? "",
+        type: "string64",
+    },
+});
+
+const entityRenderTypeSerialisationMapping: Record<string, number> = {
+    undefined: 0,
+    "settlement": 1,
+    "tile-improvement": 2,
+};
+
+
+export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload => {
+    return {
+
+        uploadTiles: (tiles: Tile[]) => {
+            tracer.span({name: "wasmapi-uploadTiles"}, () => {
+
+                const controls: ControlUpload[] = [];
+
+                const serializedTiles: TileUpload[] = tiles.map(tile => {
+                    const tileControls = tile.political.visible ? tile.political.value.control : [];
+                    const controlOffset = controls.length;
+                    controls.push(...tileControls.map(control => ({
+                        realmId: control.realm,
+                        settlementId: control.settlement,
+                        entityId: control.entity,
+                        amount: control.amount,
+                    })));
+                    return {tile, controlOffset, controlCount: tileControls.length};
+                });
+
+                const tilesMemory = wasm.reserve_tiles_memory(tiles.length);
+                const tilesBuffer = new Uint8Array(wasmMemory.buffer, tilesMemory.ptr, tilesMemory.len * tilesMemory.item_size);
+                tileSerializer(tilesBuffer, serializedTiles);
+                wasm.upload_tiles(tilesMemory.ptr, tilesMemory.len);
+
+                const controlsMemory = wasm.reserve_tile_control_values_memory(controls.length);
+                const controlsBuffer = new Uint8Array(wasmMemory.buffer, controlsMemory.ptr, controlsMemory.len * controlsMemory.item_size);
+                controlSerializer(controlsBuffer, controls);
+                wasm.upload_tile_control_values(controlsMemory.ptr, controlsMemory.len);
+            });
+        },
+
+        uploadEntities: (entities: RenderEntity[]) => {
+            tracer.span({name: "wasmapi-uploadEntities"}, () => {
+                const memory = wasm.reserve_entities_memory(entities.length);
+                const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
+                entitySerializer(buffer, entities);
+                wasm.upload_entities(memory.ptr, memory.len);
+            });
+        },
+
+        setMapMode: (mapMode: MapMode) => {
+            tracer.span({name: "wasmapi-setMapMode"}, () => {
+                wasm.set_map_mode(mapMode.numericId);
+            });
+        },
+
+        setSelectedEntityId: (entityId: number | null) => {
+            tracer.span({name: "wasmapi-setSelectedEntityId"}, () => {
+                wasm.set_selected_entity_id(entityId);
+            });
+        },
+
+        setSelectedSettlementId: (settlementId: number | null) => {
+            tracer.span({name: "wasmapi-setSelectedSettlementId"}, () => {
+                wasm.set_selected_settlement_id(settlementId);
+            });
+        },
+
+    };
+};

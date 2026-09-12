@@ -1,5 +1,5 @@
 import type {WasmRenderApp} from "wasm";
-import {tracer} from "@modules/monitoring/tracer.ts";
+import {tracer} from "src/modules/monitoring/tracer.ts";
 
 export interface RenderWasmApiOperations {
     calculateOverlayInstances: () => {
@@ -14,7 +14,6 @@ export interface RenderWasmApiOperations {
     }
     calculateTileInstances: () => {
         tileTerrainInstances: boolean,
-        waterEdgeInstances: boolean,
         tileFogOfWarInstances: boolean,
         mapDetailVertices: boolean
     },
@@ -52,7 +51,6 @@ export const renderWasmApiOperations = (wasm: WasmRenderApp): RenderWasmApiOpera
                 const changed = wasm.calculate_tile_instances();
                 return {
                     tileTerrainInstances: changed,
-                    waterEdgeInstances: changed,
                     tileFogOfWarInstances: changed,
                     mapDetailVertices: changed,
                 };

@@ -1,0 +1,100 @@
+{
+  "atlas": {
+    "name": "atlas",
+    "imageSize": {
+      "width": 3000,
+      "height": 2000
+    }
+  },
+  "parameters": [],
+  "sprites": [
+    {
+      "id": "0a1dbbb1-ca30-44c3-a409-b0e16c9ce8db",
+      "name": "mine",
+      "size": {
+        "x": 1170,
+        "y": 568,
+        "width": 461,
+        "height": 193
+      },
+      "uv": {
+        "uMin": 0.39,
+        "vMin": 0.284,
+        "uMax": 0.5436666666666666,
+        "vMax": 0.3805
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.41865509761388287
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "6fc365e6-ecec-4fae-9b20-32970dbce26b",
+      "name": "woodcutters-camp",
+      "size": {
+        "x": 117,
+        "y": 924,
+        "width": 401,
+        "height": 168
+      },
+      "uv": {
+        "uMin": 0.039,
+        "vMin": 0.462,
+        "uMax": 0.17266666666666666,
+        "vMax": 0.546
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.41895261845386533
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "13be06a5-8f52-465b-b40d-c483d9b2a38f",
+      "name": "farmstead",
+      "size": {
+        "x": 690,
+        "y": 213,
+        "width": 333,
+        "height": 173
+      },
+      "uv": {
+        "uMin": 0.23,
+        "vMin": 0.1065,
+        "uMax": 0.341,
+        "vMax": 0.193
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.5195195195195195
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "339a223a-27a7-4799-a375-641ec038928a",
+      "name": "quarry",
+      "size": {
+        "x": 1739,
+        "y": 577,
+        "width": 463,
+        "height": 178
+      },
+      "uv": {
+        "uMin": 0.5796666666666667,
+        "vMin": 0.2885,
+        "uMax": 0.734,
+        "vMax": 0.3775
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.38444924406047515
+      },
+      "locked": false,
+      "attributes": {}
+    }
+  ]
+}

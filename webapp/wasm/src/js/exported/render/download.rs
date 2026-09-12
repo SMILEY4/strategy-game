@@ -13,12 +13,12 @@ impl WasmRenderApp {
         self.renderer.get_terrain_land_instances().len()
     }
 
-    pub fn get_terrain_tile_water_instances(&self) -> Uint8Array {
-        direct_buffer::as_js_buffer(self.renderer.get_terrain_water_instances())
+    pub fn get_water_edge_instances(&self) -> Uint8Array {
+        direct_buffer::as_js_buffer(self.renderer.get_water_edge_instances())
     }
 
-    pub fn get_terrain_tile_water_instances_count(&self) -> usize {
-        self.renderer.get_terrain_water_instances().len()
+    pub fn get_water_edge_instances_count(&self) -> usize {
+        self.renderer.get_water_edge_instances().len()
     }
 
     pub fn get_fog_of_war_tile_instances(&self) -> Uint8Array {

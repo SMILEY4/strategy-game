@@ -1,18 +1,18 @@
-import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import SHADER_COASTLINE_VERT from "./../shader/coastline.vsh";
-import SHADER_COASTLINE_FRAG from "./../shader/coastline.fsh";
-import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
-import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
-import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
-import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
-import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
-import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {RenderGraphBuilder} from "src/modules/rendergraph/render-graph-builder.ts";
+import {GlAttributeType} from "src/modules/rendergraph/webgl/gl-program.ts";
+import type {RenderWasmApi} from "src/pages/game/renderer/wasm/render-wasm-api.ts";
+import SHADER_FOW_VERT from "../shader/fogOfWar.vsh";
+import SHADER_FOW_FRAG from "../shader/fogOfWar.fsh";
+import type {WasmDataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.wasm-data.ts";
+import type {CameraRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.camera.ts";
+import type {DataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "src/app/features/game/database/debug.database.ts";
+import {GLColorStoreFormat} from "src/modules/rendergraph/webgl/gl-framebuffer.ts";
+import {createUnitHexagonMesh} from "src/modules/utilities/hex-geometry.ts";
+import type {VersionedContainer} from "src/pages/game/renderer/data/versioned-data.ts";
 
 
-export function gameGraphPassCoastline(
+export function gameGraphPassFogOfWar(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
@@ -59,7 +59,7 @@ export function gameGraphPassCoastline(
             }),
             g.wasmGeometrySource({
                 source: inputs.wasmTileInstances,
-                download: () => wasmApi.download.getTileLandInstances(),
+                download: () => wasmApi.download.getTileFogOfWarInstances(),
                 content: "instances",
                 layout: [
                     {
@@ -67,18 +67,28 @@ export function gameGraphPassCoastline(
                         type: GlAttributeType.FLOAT,
                         amountComponents: 2,
                     },
+                    {
+                        name: "visibility",
+                        type: GlAttributeType.U_BYTE,
+                        amountComponents: 1,
+                    },
+                    {
+                        name: "_padding",
+                        type: GlAttributeType.PADDING,
+                        amountComponents: 3,
+                    },
                 ],
             }),
         ],
     });
 
     const textureStamp = g.texture({
-        url: "/sprites/coastline_shape.png",
+        url: "/sprites/base_terrain_shape.png",
     });
 
     const shader = g.shader({
-        srcVertex: SHADER_COASTLINE_VERT,
-        srcFragment: SHADER_COASTLINE_FRAG,
+        srcVertex: SHADER_FOW_VERT,
+        srcFragment: SHADER_FOW_FRAG,
         prefixUniforms: "u_",
         prefixVertexAttributes: "in_",
     });
@@ -93,7 +103,7 @@ export function gameGraphPassCoastline(
     const dataDebugScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.data.renderer.terrainMask.scale,
+            func: (data) => data.data.renderer.fogOfWar.scale,
         }),
     );
 
@@ -102,9 +112,17 @@ export function gameGraphPassCoastline(
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
-            "shape": textureStamp,
+            "baseTerrain": textureStamp,
             "dbg_scale": dataDebugScale as DataRenderGraphNode<unknown>,
             "dbg_hexOffsetScale": dataDebugHexOffsetScale as DataRenderGraphNode<unknown>,
+        },
+        blend: gl => {
+            gl.blendFuncSeparate(
+                gl.SRC_ALPHA,
+                gl.ONE,
+                gl.ONE,
+                gl.ONE_MINUS_SRC_ALPHA,
+            );
         },
     });
 
@@ -119,10 +137,8 @@ export function gameGraphPassCoastline(
                 format: GLColorStoreFormat.RGBA_8,
             },
         },
-        clearColor: [0, 0, 0, 0],
+        clearColor: [1, 0, 0, 1],
     });
 
-    return {
-        layerCoastlineMask: rendertarget,
-    };
+    return {layerFogOfWar: rendertarget};
 }

@@ -1,0 +1,144 @@
+{
+  "atlas": {
+    "name": "atlas",
+    "imageSize": {
+      "width": 3056,
+      "height": 1000
+    }
+  },
+  "parameters": [],
+  "sprites": [
+    {
+      "id": "266bfcb6-aead-406c-be09-74bf09e9af9d",
+      "name": "sprite-1",
+      "size": {
+        "x": 155,
+        "y": 141,
+        "width": 820,
+        "height": 279
+      },
+      "uv": {
+        "uMin": 0.05071989528795812,
+        "vMin": 0.141,
+        "uMax": 0.31904450261780104,
+        "vMax": 0.42
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.3402439024390244
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "51cee933-c0b3-4345-af75-7f210926af94",
+      "name": "sprite-2",
+      "size": {
+        "x": 100,
+        "y": 651,
+        "width": 719,
+        "height": 234
+      },
+      "uv": {
+        "uMin": 0.032722513089005235,
+        "vMin": 0.651,
+        "uMax": 0.26799738219895286,
+        "vMax": 0.885
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.325452016689847
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "869b9da7-1d8d-4502-8aef-a87aec56c9b5",
+      "name": "sprite-3",
+      "size": {
+        "x": 1084,
+        "y": 607,
+        "width": 703,
+        "height": 250
+      },
+      "uv": {
+        "uMin": 0.35471204188481675,
+        "vMin": 0.607,
+        "uMax": 0.5847513089005235,
+        "vMax": 0.857
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.35561877667140823
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "b4ff7154-6ca2-447f-ace1-976f25b9d626",
+      "name": "sprite-4",
+      "size": {
+        "x": 1358,
+        "y": 39,
+        "width": 697,
+        "height": 386
+      },
+      "uv": {
+        "uMin": 0.4443717277486911,
+        "vMin": 0.039,
+        "uMax": 0.6724476439790575,
+        "vMax": 0.425
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.5538020086083214
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "89b1a9f0-0e99-4557-951d-3e8a30d74233",
+      "name": "sprite-5",
+      "size": {
+        "x": 2228,
+        "y": 181,
+        "width": 731,
+        "height": 268
+      },
+      "uv": {
+        "uMin": 0.7290575916230366,
+        "vMin": 0.181,
+        "uMax": 0.9682591623036649,
+        "vMax": 0.449
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.36662106703146374
+      },
+      "locked": false,
+      "attributes": {}
+    },
+    {
+      "id": "6ed8b42e-82df-4214-a6f1-00abe9876e41",
+      "name": "sprite-6",
+      "size": {
+        "x": 2096,
+        "y": 519,
+        "width": 683,
+        "height": 409
+      },
+      "uv": {
+        "uMin": 0.6858638743455497,
+        "vMin": 0.519,
+        "uMax": 0.9093586387434555,
+        "vMax": 0.928
+      },
+      "normalized": {
+        "width": 1,
+        "height": 0.5988286969253295
+      },
+      "locked": false,
+      "attributes": {}
+    }
+  ]
+}

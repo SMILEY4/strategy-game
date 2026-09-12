@@ -1,13 +1,13 @@
-import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
-import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
-import type {HexPosition} from "@app/features/game/models/hex-position.ts";
-import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import SHADER_SELECTED_TILE_VERT from "./../shader/selectedTile.vsh";
-import SHADER_SELECTED_TILE_FRAG from "./../shader/selectedTile.fsh";
-import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {RenderGraphBuilder} from "src/modules/rendergraph/render-graph-builder.ts";
+import type {CameraRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.camera.ts";
+import type {DataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "src/app/features/game/database/debug.database.ts";
+import type {GameRendererDataProvider} from "src/pages/game/renderer/data/game-renderer-data-provider.ts";
+import type {HexPosition} from "src/app/features/game/models/hex-position.ts";
+import {GlAttributeType} from "src/modules/rendergraph/webgl/gl-program.ts";
+import SHADER_SELECTED_TILE_VERT from "../shader/selectedTile.vsh";
+import SHADER_SELECTED_TILE_FRAG from "../shader/selectedTile.fsh";
+import type {VersionedContainer} from "src/pages/game/renderer/data/versioned-data.ts";
 
 export function gameGraphPassSelectedTile(
     g: RenderGraphBuilder,

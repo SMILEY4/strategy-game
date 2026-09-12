@@ -1,15 +1,15 @@
-import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
-import SHADER_MAP_DETAILS_VERT from "./../shader/mapDetails.vsh";
-import SHADER_MAP_DETAILS_FRAG from "./../shader/mapDetails.fsh";
-import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
-import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
-import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
-import type {Camera} from "@app/features/game/models/camera.ts";
-import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {RenderGraphBuilder} from "src/modules/rendergraph/render-graph-builder.ts";
+import {GlAttributeType} from "src/modules/rendergraph/webgl/gl-program.ts";
+import type {RenderWasmApi} from "src/pages/game/renderer/wasm/render-wasm-api.ts";
+import SHADER_MAP_DETAILS_VERT from "../shader/mapDetails.vsh";
+import SHADER_MAP_DETAILS_FRAG from "../shader/mapDetails.fsh";
+import type {WasmDataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.wasm-data.ts";
+import type {CameraRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.camera.ts";
+import type {DataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "src/app/features/game/database/debug.database.ts";
+import {GLColorStoreFormat, GLDepthStoreFormat} from "src/modules/rendergraph/webgl/gl-framebuffer.ts";
+import type {Camera} from "src/app/features/game/models/camera.ts";
+import type {VersionedContainer} from "src/pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraphPassMapDetails(

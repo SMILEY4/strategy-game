@@ -1,23 +1,23 @@
-import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
-import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
-import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import type {MapMode} from "@app/features/game/models/map-mode.ts";
-import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
-import type {Entity} from "@app/features/game/models/entity.ts";
-import {EntityUtils} from "@app/features/game/models/entity.ts";
-import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
-import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
-import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import type {RenderGraphBuilder} from "src/modules/rendergraph/render-graph-builder.ts";
+import type {RenderWasmApi} from "src/pages/game/renderer/wasm/render-wasm-api.ts";
+import type {CameraRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.camera.ts";
+import type {DataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "src/app/features/game/database/debug.database.ts";
+import type {MapMode} from "src/app/features/game/models/map-mode.ts";
+import type {GameRendererDataProvider} from "src/pages/game/renderer/data/game-renderer-data-provider.ts";
+import type {Entity} from "src/app/features/game/models/entity.ts";
+import {EntityUtils} from "src/app/features/game/models/entity.ts";
+import type {WasmDataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.wasm-data.ts";
+import {GlAttributeType} from "src/modules/rendergraph/webgl/gl-program.ts";
+import {createUnitHexagonMesh} from "src/modules/utilities/hex-geometry.ts";
+import {GLColorStoreFormat} from "src/modules/rendergraph/webgl/gl-framebuffer.ts";
 import {vec2} from "gl-matrix";
-import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {VersionedContainer} from "src/pages/game/renderer/data/versioned-data.ts";
 
-import SHADER_FILL_VERT from "./../shader/overlayFill.vsh";
-import SHADER_FILL_FRAG from "./../shader/overlayFill.fsh";
-import SHADER_EDGE_VERT from "./../shader/overlayEdge.vsh";
-import SHADER_EDGE_FRAG from "./../shader/overlayEdge.fsh";
+import SHADER_FILL_VERT from "../shader/overlayFill.vsh";
+import SHADER_FILL_FRAG from "../shader/overlayFill.fsh";
+import SHADER_EDGE_VERT from "../shader/overlayEdge.vsh";
+import SHADER_EDGE_FRAG from "../shader/overlayEdge.fsh";
 
 export function gameGraphPassOverlay(
     g: RenderGraphBuilder,

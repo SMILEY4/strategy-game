@@ -1,11 +1,11 @@
-import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import SHADER_COMPOSE_VERT from "./../shader/compose.vsh";
-import SHADER_COMPOSE_FRAG from "./../shader/compose.fsh";
-import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
-import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {RenderGraphBuilder} from "src/modules/rendergraph/render-graph-builder.ts";
+import {GlAttributeType} from "src/modules/rendergraph/webgl/gl-program.ts";
+import SHADER_COMPOSE_VERT from "../shader/compose.vsh";
+import SHADER_COMPOSE_FRAG from "../shader/compose.fsh";
+import type {RendertargetRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.rendertarget.ts";
+import type {DataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "src/app/features/game/database/debug.database.ts";
+import type {VersionedContainer} from "src/pages/game/renderer/data/versioned-data.ts";
 
 
 export function gameGraphPassCompose(

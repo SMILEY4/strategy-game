@@ -1,23 +1,23 @@
-import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
-import SHADER_TILEMAP_VERT from "./../shader/tilemap.vsh";
-import SHADER_TILEMAP_FRAG from "./../shader/tilemap.fsh";
-import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
-import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
-import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
-import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
-import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {RenderGraphBuilder} from "src/modules/rendergraph/render-graph-builder.ts";
+import {GlAttributeType} from "src/modules/rendergraph/webgl/gl-program.ts";
+import SHADER_COASTLINE_VERT from "../shader/coastline.vsh";
+import SHADER_COASTLINE_FRAG from "../shader/coastline.fsh";
+import type {RenderWasmApi} from "src/pages/game/renderer/wasm/render-wasm-api.ts";
+import type {WasmDataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.wasm-data.ts";
+import type {CameraRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.camera.ts";
+import type {DataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.data.ts";
+import type {DebugData} from "src/app/features/game/database/debug.database.ts";
+import {GLColorStoreFormat} from "src/modules/rendergraph/webgl/gl-framebuffer.ts";
+import {createUnitHexagonMesh} from "src/modules/utilities/hex-geometry.ts";
+import type {VersionedContainer} from "src/pages/game/renderer/data/versioned-data.ts";
 
 
-export function gameGraphPassTerrain(
+export function gameGraphPassCoastline(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
         wasmTileInstances: WasmDataRenderGraphNode,
-        camera: CameraRenderGraphNode
+        camera: CameraRenderGraphNode,
         dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
     },
 ) {
@@ -72,14 +72,13 @@ export function gameGraphPassTerrain(
         ],
     });
 
-
     const textureStamp = g.texture({
-        url: "/sprites/base_terrain_shape.png",
+        url: "/sprites/coastline_shape.png",
     });
 
     const shader = g.shader({
-        srcVertex: SHADER_TILEMAP_VERT,
-        srcFragment: SHADER_TILEMAP_FRAG,
+        srcVertex: SHADER_COASTLINE_VERT,
+        srcFragment: SHADER_COASTLINE_FRAG,
         prefixUniforms: "u_",
         prefixVertexAttributes: "in_",
     });
@@ -94,7 +93,7 @@ export function gameGraphPassTerrain(
     const dataDebugScale = g.dataTransformer(
         g.transform({
             inputs: [inputs.dataDebug],
-            func: (data) => data.data.renderer.baseTerrain.scale,
+            func: (data) => data.data.renderer.terrainMask.scale,
         }),
     );
 
@@ -103,7 +102,7 @@ export function gameGraphPassTerrain(
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
-            "baseTerrain": textureStamp,
+            "shape": textureStamp,
             "dbg_scale": dataDebugScale as DataRenderGraphNode<unknown>,
             "dbg_hexOffsetScale": dataDebugHexOffsetScale as DataRenderGraphNode<unknown>,
         },
@@ -123,5 +122,7 @@ export function gameGraphPassTerrain(
         clearColor: [0, 0, 0, 0],
     });
 
-    return {layerBaseTerrain: rendertarget};
+    return {
+        layerCoastlineMask: rendertarget,
+    };
 }

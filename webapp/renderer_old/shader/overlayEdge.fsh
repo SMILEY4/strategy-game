@@ -23,3 +23,4 @@ void main() {
 
     outColor = v_color;
 }
+

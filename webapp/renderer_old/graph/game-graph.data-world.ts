@@ -1,13 +1,13 @@
-import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
-import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
-import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
-import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
-import type {Camera} from "@app/features/game/models/camera.ts";
-import type {Tile} from "@app/features/game/models/tile.ts";
-import type {Command} from "@app/features/game/models/command.ts";
-import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {RenderEntity} from "@pages/game/renderer/data/render-entity.ts";
+import type {GameRendererDataProvider} from "src/pages/game/renderer/data/game-renderer-data-provider.ts";
+import type {RenderGraphBuilder} from "src/modules/rendergraph/render-graph-builder.ts";
+import type {RenderWasmApi} from "src/pages/game/renderer/wasm/render-wasm-api.ts";
+import type {DataRenderGraphNode} from "src/modules/rendergraph/nodes/rg-node.data.ts";
+import {type Entity, EntityUtils} from "src/app/features/game/models/entity.ts";
+import type {Camera} from "src/app/features/game/models/camera.ts";
+import type {Tile} from "src/app/features/game/models/tile.ts";
+import type {Command} from "src/app/features/game/models/command.ts";
+import type {VersionedContainer} from "src/pages/game/renderer/data/versioned-data.ts";
+import type {RenderEntity} from "src/pages/game/renderer/data/render-entity.ts";
 
 
 export function gameGraphDataWorld(

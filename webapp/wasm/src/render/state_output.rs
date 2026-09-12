@@ -1,10 +1,10 @@
-use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, MapDetailVertex, TileFogOfWarInstance, TileTerrainLandInstance, TileTerrainWaterInstance};
+use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, MapDetailVertex, TileFogOfWarInstance, TileTerrainLandInstance, WaterEdgeInstance};
 
 #[derive(Default)]
 pub struct OutputState {
 
     pub terrain_land_instances: Vec<TileTerrainLandInstance>,
-    pub terrain_water_instances: Vec<TileTerrainWaterInstance>,
+    pub water_edge_instances: Vec<WaterEdgeInstance>,
     pub fog_of_war_instances: Vec<TileFogOfWarInstance>,
 
     pub map_detail_vertices: Vec<MapDetailVertex>,
