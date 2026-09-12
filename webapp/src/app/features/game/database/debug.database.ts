@@ -9,8 +9,8 @@ export type DebugData = {
         },
         coastline: {
             threshold: number,
-            cornerSize: number,
-            cornerBulge: number,
+            noiseScale: number,
+            noiseAmplitude: number,
         },
         terrainMask: {
             scale: number,
@@ -41,9 +41,9 @@ export const initialDebugDataValues: DebugData = {
             scale: 1.6,
         },
         coastline: {
-            threshold: 0.5,
-            cornerSize: 0.5,
-            cornerBulge: 0.5,
+            threshold: 0.73,
+            noiseScale: 1.45,
+            noiseAmplitude: 0.12,
         },
         terrainMask: {
             scale: 1.62,

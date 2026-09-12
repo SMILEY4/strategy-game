@@ -206,16 +206,16 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
                     func: (data) => data.data.renderer.coastline.threshold,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "dbg_cornerSize": g.dataTransformer(
+            "dbg_noiseScale": g.dataTransformer(
                 g.transform({
                     inputs: [dataDebug],
-                    func: (data) => data.data.renderer.coastline.cornerSize,
+                    func: (data) => data.data.renderer.coastline.noiseScale,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "dbg_cornerBulge": g.dataTransformer(
+            "dbg_noiseAmplitude": g.dataTransformer(
                 g.transform({
                     inputs: [dataDebug],
-                    func: (data) => data.data.renderer.coastline.cornerBulge,
+                    func: (data) => data.data.renderer.coastline.noiseAmplitude,
                 }),
             ) as DataRenderGraphNode<unknown>,
         },

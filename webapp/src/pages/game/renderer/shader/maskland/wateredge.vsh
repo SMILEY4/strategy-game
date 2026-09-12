@@ -69,12 +69,12 @@ void main() {
     vec3 vertexWorldPosBwing = tileWorldCenter + rotatedVertexPositionBwing;
 
     // introduce random offset (based on unscaled world position)
-//    vec2 offset = offsetVertexPosition(tileWorldCenter + rotatedVertexPosition, u_dbg_hexOffsetScale);
+    vec2 offset = offsetVertexPosition(tileWorldCenter + rotatedVertexPosition, u_dbg_hexOffsetScale);
 //    vec2 offsetA = offsetVertexPosition(tileWorldCenter + rotatedVertexPositionA, u_dbg_hexOffsetScale);
 //    vec2 offsetB = offsetVertexPosition(tileWorldCenter + rotatedVertexPositionB, u_dbg_hexOffsetScale);
 //    vec2 offsetAwing = offsetVertexPosition(tileWorldCenter + rotatedVertexPositionAwing, u_dbg_hexOffsetScale);
 //    vec2 offsetBwing = offsetVertexPosition(tileWorldCenter + rotatedVertexPositionBwing, u_dbg_hexOffsetScale);
-//    vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
+    vec3 vertexWorldPosOffset = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
 //    vertexWorldPosA = vertexWorldPosA + vec3(offsetA.x, 0.0, offsetA.y);
 //    vertexWorldPosB = vertexWorldPosB + vec3(offsetB.x, 0.0, offsetB.y);
 //    vertexWorldPosAwing = vertexWorldPosAwing + vec3(offsetAwing.x, 0.0, offsetAwing.y);
@@ -92,5 +92,5 @@ void main() {
     v_worldPosBwing = vertexWorldPosBwing;
 
     // project to screen coordinates
-    gl_Position = u_camera * vec4(vertexWorldPos, 1.0);
+    gl_Position = u_camera * vec4(vertexWorldPosOffset, 1.0);
 }

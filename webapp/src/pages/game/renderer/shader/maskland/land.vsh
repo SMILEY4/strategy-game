@@ -34,8 +34,8 @@ void main() {
     vec3 vertexWorldPos = tileWorldCenter + in_vertexPosition;
 
     // introduce random offset (based on unscaled world position)
-//    vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_dbg_hexOffsetScale);
-//    vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
+    vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_dbg_hexOffsetScale);
+    vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
 
     // project to screen coordinates
     gl_Position = u_camera * vec4(vertexWorldPos, 1.0);

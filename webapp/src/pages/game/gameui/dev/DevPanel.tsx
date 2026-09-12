@@ -22,10 +22,10 @@ export function useDevPanel() {
         },
         "coastline": folder({
             coastlineCornerSize: {
-                label: "corner size",
-                value: initialDebugDataValues.renderer.coastline.cornerSize,
+                label: "noise scale",
+                value: initialDebugDataValues.renderer.coastline.noiseScale,
                 min: 0,
-                max: 0.5,
+                max: 3,
                 transient: false,
                 onChange: it => DI.debugDatabase.update(data => ({
                     ...data,
@@ -33,16 +33,16 @@ export function useDevPanel() {
                         ...data.renderer,
                         coastline: {
                             ...data.renderer.coastline,
-                            cornerSize: it,
+                            noiseScale: it,
                         },
                     },
                 })),
             },
             coastlineCornerBulge: {
-                label: "corner bulge",
-                value: initialDebugDataValues.renderer.coastline.cornerBulge,
-                min: -1,
-                max: +1,
+                label: "noise amplitude",
+                value: initialDebugDataValues.renderer.coastline.noiseAmplitude,
+                min: 0,
+                max: 1,
                 transient: false,
                 onChange: it => DI.debugDatabase.update(data => ({
                     ...data,
@@ -50,7 +50,7 @@ export function useDevPanel() {
                         ...data.renderer,
                         coastline: {
                             ...data.renderer.coastline,
-                            cornerBulge: it,
+                            noiseAmplitude: it,
                         },
                     },
                 })),
