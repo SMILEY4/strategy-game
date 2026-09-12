@@ -19,19 +19,58 @@ out vec4 outColor;
 bool isTrue(float value) { return value > 0.5; }
 bool isFalse(float value) { return value < 0.5; }
 
-// Perpendicular distance from point P to line segment AB
-float distanceToSegment(vec2 p, vec2 a, vec2 b) {
-    vec2 pa = p - a;
-    vec2 ba = b - a;
-    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+
+float sdSegment(vec2 P, vec2 A, vec2 B) {
+    vec2 ba = B - A;
+    float d2 = dot(ba, ba);
+    if (d2 < 1e-12) return length(P - A); // degenerate segment
+    vec2 pa = P - A;
+    float h = clamp(dot(pa, ba) / d2, 0.0, 1.0);
     return length(pa - ba * h);
 }
 
-// Polynomial smooth minimum (k controls the rounding radius)
-float smin(float a, float b, float k) {
-    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
-    return mix(b, a, h) - k * h * (1.0 - h);
+// Distance from P to the circular arc that starts at A, ends at B,
+// and bulges away from the chord AB by signed amount "bulge"
+// (bulge = 0 means a straight line, i.e. just the segment A-B).
+float sdArcAB(vec2 A, vec2 B, vec2 P, float bulge) {
+    vec2 chord = B - A;
+    float c = 0.5 * length(chord);          // half chord length
+    if (c < 1e-6) return length(P - A);     // A == B
+
+    vec2 mid = 0.5 * (A + B);
+
+    if (abs(bulge) < 1e-5) {
+        return sdSegment(P, A, B);          // degenerate: straight line
+    }
+
+    vec2 tangent = chord / (2.0 * c);
+    vec2 perp = vec2(-tangent.y, tangent.x);
+
+    float s = bulge;
+    float r = (c * c + s * s) / (2.0 * s);  // signed radius
+    vec2 center = mid + perp * (s - r);
+    float ra = abs(r);
+
+    vec2 apex = mid + perp * s;          // arc's midpoint (on the circle)
+    vec2 apexDir = normalize(apex - center);
+    vec2 rightDir = vec2(apexDir.y, -apexDir.x);
+
+    // Local frame: y = toward apex, x = perpendicular to it
+    vec2 rel = P - center;
+    vec2 pp = vec2(abs(dot(rel, rightDir)), dot(rel, apexDir));
+
+    float sinAp = clamp(c / ra, -1.0, 1.0);
+    float cosAp = dot(normalize(A - center), apexDir);
+    vec2 sc = vec2(sinAp, cosAp);           // half-aperture sin/cos
+
+    // Classic IQ arc distance formula
+    if (sc.y * pp.x > sc.x * pp.y) {
+        return length(pp - sc * ra);        // closest to an endpoint
+    } else {
+        return abs(length(pp) - ra);        // closest to the circle body
+    }
 }
+
 
 void main() {
 
@@ -44,44 +83,49 @@ void main() {
     vec2 aw = v_worldPosAwing.xz;
     vec2 bw = v_worldPosBwing.xz;
 
-    float k = 0.15;
+    float cornerOffsetLength = 0.1;
+    vec2 dirAB = B - A;
+    float lenAB = length(dirAB);
+    vec2 ai = A + dir * cornerOffsetLength;
+    vec2 bi = b - dir * cornerOffsetLength;
+
 
     float minDist = 1e5;
     vec4 color = vec4(0.3, 0.3, 0.3, 1.0);
 
-    if(isTrue(v_landDirection.x) && isTrue(v_extendedLand.x) && isTrue(v_extendedLand.y)) {
-        // contact on ab-edge, bends away from a and b
+    // 1) contact on ab-edge, bends away from a and b
+    if (isTrue(v_landDirection.x) && isTrue(v_extendedLand.x) && isTrue(v_extendedLand.y)) {
         minDist = min(minDist, distanceToSegment(p, a, b));
     }
 
-    if(isTrue(v_landDirection.x) && isFalse(v_extendedLand.x) && isTrue(v_extendedLand.y)) {
-        // contact on ab-edge, bends away from a and towards b
+    // 2) contact on ab-edge, bends away from a and towards b
+    if (isTrue(v_landDirection.x) && isFalse(v_extendedLand.x) && isTrue(v_extendedLand.y)) {
         minDist = min(minDist, distanceToSegment(p, a, b));
     }
 
-    if(isTrue(v_landDirection.x) && isTrue(v_extendedLand.x) && isFalse(v_extendedLand.y)) {
-        // contact on ab-edge, bends towards a and away from b
+    // 3) contact on ab-edge, bends towards a and away from b
+    if (isTrue(v_landDirection.x) && isTrue(v_extendedLand.x) && isFalse(v_extendedLand.y)) {
         minDist = min(minDist, distanceToSegment(p, a, b));
     }
 
-    if(isTrue(v_landDirection.x) && isFalse(v_extendedLand.x) && isFalse(v_extendedLand.y)) {
-        // contact on ab-edge, bends towards a and towards b
+    // 4) contact on ab-edge, bends towards a and towards b
+    if (isTrue(v_landDirection.x) && isFalse(v_extendedLand.x) && isFalse(v_extendedLand.y)) {
         minDist = min(minDist, distanceToSegment(p, a, b));
         color.r = 1.0;
     }
 
-    if(isFalse(v_landDirection.x) && isTrue(v_landDirection.y) && isFalse(v_landDirection.z)) {
-        // contact only on vertex a
+    // 5) contact only on vertex a
+    if (isFalse(v_landDirection.x) && isTrue(v_landDirection.y) && isFalse(v_landDirection.z)) {
         minDist = min(minDist, distanceToSegment(p, a, aw));
     }
 
-    if(isFalse(v_landDirection.x) && isFalse(v_landDirection.y) && isTrue(v_landDirection.z)) {
-        // contact only on vertex b
+    // 6) contact only on vertex b
+    if (isFalse(v_landDirection.x) && isFalse(v_landDirection.y) && isTrue(v_landDirection.z)) {
         minDist = min(minDist, distanceToSegment(p, b, bw));
     }
 
-    if(isFalse(v_landDirection.x) && isTrue(v_landDirection.y) && isTrue(v_landDirection.z)) {
-        // contact only on vertices a and b
+    // 7) contact only on vertices a and b
+    if (isFalse(v_landDirection.x) && isTrue(v_landDirection.y) && isTrue(v_landDirection.z)) {
         minDist = min(minDist, distanceToSegment(p, b, bw));
         minDist = min(minDist, distanceToSegment(p, a, aw));
     }
@@ -91,5 +135,5 @@ void main() {
 
     outColor = vec4(normDist, normDist, normDist, 1.0);
 
-//    outColor = color;
+    //    outColor = color;
 }
