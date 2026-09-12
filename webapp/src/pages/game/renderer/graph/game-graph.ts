@@ -200,6 +200,24 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         inputs: {
             "camera": camera,
             "dbg_hexOffsetScale": dataDebugHexOffsetScale as DataRenderGraphNode<unknown>,
+            "dbg_threshold": g.dataTransformer(
+                g.transform({
+                    inputs: [dataDebug],
+                    func: (data) => data.data.renderer.coastline.threshold,
+                }),
+            ) as DataRenderGraphNode<unknown>,
+            "dbg_cornerSize": g.dataTransformer(
+                g.transform({
+                    inputs: [dataDebug],
+                    func: (data) => data.data.renderer.coastline.cornerSize,
+                }),
+            ) as DataRenderGraphNode<unknown>,
+            "dbg_cornerBulge": g.dataTransformer(
+                g.transform({
+                    inputs: [dataDebug],
+                    func: (data) => data.data.renderer.coastline.cornerBulge,
+                }),
+            ) as DataRenderGraphNode<unknown>,
         },
     });
 

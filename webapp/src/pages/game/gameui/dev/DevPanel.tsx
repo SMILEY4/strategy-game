@@ -16,10 +16,63 @@ export function useDevPanel() {
                 ...data,
                 renderer: {
                     ...data.renderer,
-                    randomHexOffsetScale: it
-                }
-            }))
+                    randomHexOffsetScale: it,
+                },
+            })),
         },
+        "coastline": folder({
+            coastlineCornerSize: {
+                label: "corner size",
+                value: initialDebugDataValues.renderer.coastline.cornerSize,
+                min: 0,
+                max: 0.5,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        coastline: {
+                            ...data.renderer.coastline,
+                            cornerSize: it,
+                        },
+                    },
+                })),
+            },
+            coastlineCornerBulge: {
+                label: "corner bulge",
+                value: initialDebugDataValues.renderer.coastline.cornerBulge,
+                min: -1,
+                max: +1,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        coastline: {
+                            ...data.renderer.coastline,
+                            cornerBulge: it,
+                        },
+                    },
+                })),
+            },
+            coastlineThreshold: {
+                label: "threshold",
+                value: initialDebugDataValues.renderer.coastline.threshold,
+                min: 0,
+                max: 1,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        coastline: {
+                            ...data.renderer.coastline,
+                            threshold: it,
+                        },
+                    },
+                })),
+            }
+        }),
         "base terrain": folder({
             scaleBaseTerrain: {
                 label: "scale",
@@ -33,10 +86,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         baseTerrain: {
                             ...data.renderer.baseTerrain,
-                            scale: it
-                        }
-                    }
-                }))
+                            scale: it,
+                        },
+                    },
+                })),
             },
         }),
         "terrain mask": folder({
@@ -52,10 +105,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         terrainMask: {
                             ...data.renderer.terrainMask,
-                            scale: it
-                        }
-                    }
-                }))
+                            scale: it,
+                        },
+                    },
+                })),
             },
             cutoffTerrainMask: {
                 label: "cutoff",
@@ -69,10 +122,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         terrainMask: {
                             ...data.renderer.terrainMask,
-                            cutoff: it
-                        }
-                    }
-                }))
+                            cutoff: it,
+                        },
+                    },
+                })),
             },
         }),
         "fog of war": folder({
@@ -88,10 +141,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         fogOfWar: {
                             ...data.renderer.fogOfWar,
-                            scale: it
-                        }
-                    }
-                }))
+                            scale: it,
+                        },
+                    },
+                })),
             },
         }),
         "map details": folder({
@@ -105,11 +158,11 @@ export function useDevPanel() {
                         ...data.renderer,
                         mapDetails: {
                             ...data.renderer.mapDetails,
-                            msaa: it
-                        }
-                    }
-                }))
-            }
+                            msaa: it,
+                        },
+                    },
+                })),
+            },
         }),
         "selected tile": folder({
             thicknessSelectedTile: {
@@ -124,10 +177,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         selectedTile: {
                             ...data.renderer.selectedTile,
-                            thickness: it
-                        }
-                    }
-                }))
+                            thickness: it,
+                        },
+                    },
+                })),
             },
             softnessSelectedTile: {
                 label: "softness",
@@ -141,10 +194,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         selectedTile: {
                             ...data.renderer.selectedTile,
-                            softness: it
-                        }
-                    }
-                }))
+                            softness: it,
+                        },
+                    },
+                })),
             },
             colorSelectedTile: {
                 label: "color",
@@ -165,11 +218,11 @@ export function useDevPanel() {
                                 it.r / 255,
                                 it.g / 255,
                                 it.b / 255,
-                                it.a
-                            ]
-                        }
-                    }
-                }))
+                                it.a,
+                            ],
+                        },
+                    },
+                })),
             },
         }),
 
@@ -186,10 +239,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         grid: {
                             ...data.renderer.grid,
-                            thickness: it
-                        }
-                    }
-                }))
+                            thickness: it,
+                        },
+                    },
+                })),
             },
             colorGrid: {
                 label: "color",
@@ -210,13 +263,13 @@ export function useDevPanel() {
                                 it.r / 255,
                                 it.g / 255,
                                 it.b / 255,
-                                it.a
-                            ]
-                        }
-                    }
-                }))
+                                it.a,
+                            ],
+                        },
+                    },
+                })),
             },
-        })
+        }),
 
     });
 

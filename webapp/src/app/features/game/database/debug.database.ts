@@ -7,6 +7,11 @@ export type DebugData = {
         baseTerrain: {
             scale: number,
         },
+        coastline: {
+            threshold: number,
+            cornerSize: number,
+            cornerBulge: number,
+        },
         terrainMask: {
             scale: number,
             cutoff: number
@@ -35,9 +40,14 @@ export const initialDebugDataValues: DebugData = {
         baseTerrain: {
             scale: 1.6,
         },
+        coastline: {
+            threshold: 0.5,
+            cornerSize: 0.5,
+            cornerBulge: 0.5,
+        },
         terrainMask: {
             scale: 1.62,
-            cutoff: 0.85
+            cutoff: 0.85,
         },
         fogOfWar: {
             scale: 1.32,
@@ -48,14 +58,14 @@ export const initialDebugDataValues: DebugData = {
         selectedTile: {
             thickness: 0.1,
             softness: 0.02,
-            color: [ 0.9294117647058824, 0.7764705882352941, 0.39215686274509803, 0.77 ]
+            color: [0.9294117647058824, 0.7764705882352941, 0.39215686274509803, 0.77],
         },
         grid: {
             thickness: 0.02,
-            color: [ 0.9294117647058824, 0.7764705882352941, 0.39215686274509803, 0.3 ]
-        }
-    }
-}
+            color: [0.9294117647058824, 0.7764705882352941, 0.39215686274509803, 0.3],
+        },
+    },
+};
 
 export type DebugDatabase = SingletonDatabase<DebugData>
 
