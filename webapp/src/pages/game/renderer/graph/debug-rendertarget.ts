@@ -4,6 +4,9 @@ import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import type {DrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import {buildFullscreenQuad} from "@pages/game/renderer/graph/build-fullscreen-quad.ts";
 
+import SHADER_VERT from "./../shader/debug/dbgRendertarget.vsh";
+import SHADER_FRAG from "./../shader/debug/dbgRendertarget.fsh";
+
 export function debugVisRendertarget(
     g: RenderGraphBuilder,
     rendertarget: RendertargetRenderGraphNode<any>,
@@ -40,31 +43,8 @@ export function debugVisRendertarget(
     });
 
     const shader = g.shader({
-        srcVertex:
-            "#version 300 es\n" +
-            "\n" +
-            "in vec2 in_vertexPosition;\n" +
-            "\n" +
-            "out vec2 v_textureCoordinates;\n" +
-            "\n" +
-            "void main() {\n" +
-            "    v_textureCoordinates = (in_vertexPosition + 1.0) * 0.5;\n" +
-            "    gl_Position = vec4(in_vertexPosition, 0.0, 1.0);\n" +
-            "}",
-        srcFragment:
-            "#version 300 es\n" +
-            "precision mediump float;\n" +
-            "\n" +
-            "in vec2 v_textureCoordinates;\n" +
-            "\n" +
-            "uniform sampler2D u_rendertarget;\n" +
-            "\n" +
-            "out vec4 outColor;\n" +
-            "\n" +
-            "void main() {\n" +
-            "    vec4 color = texture(u_rendertarget, v_textureCoordinates);\n" +
-            "    outColor = color;\n" +
-            "}",
+        srcVertex: SHADER_VERT,
+        srcFragment: SHADER_FRAG,
         prefixUniforms: "u_",
         prefixVertexAttributes: "in_",
     });
