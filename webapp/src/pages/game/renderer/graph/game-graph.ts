@@ -233,7 +233,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
                 format: GLColorStoreFormat.RGBA_8,
             },
         },
-        clearColor: [0, 0, 0, 1],
+        clearColor: [1, 1, 1, 1],
     });
 
     const drawDebugVis = debugVisRendertarget(g, rendertargetTileMask);

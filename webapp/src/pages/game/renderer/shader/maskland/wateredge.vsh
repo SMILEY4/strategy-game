@@ -12,13 +12,14 @@ in vec3 in_vertexPositionB; // vertex position of vertex b / 2
 uniform mat4 u_camera;
 uniform float u_dbg_hexOffsetScale;
 
+out vec2 v_worldPos;
+flat out vec2 v_worldPosA;
+flat out vec2 v_worldPosB;
+flat out vec2 v_worldPosC;
+flat out vec2 v_worldPosAwing;
+flat out vec2 v_worldPosBwing;
+
 out vec3 v_corner;
-out vec3 v_worldPos;
-flat out vec3 v_worldPosA;
-flat out vec3 v_worldPosB;
-flat out vec3 v_worldPosC;
-flat out vec3 v_worldPosAwing;
-flat out vec3 v_worldPosBwing;
 flat out vec3 v_landDirection;
 flat out vec2 v_extendedLand;
 
@@ -70,26 +71,18 @@ void main() {
 
     // introduce random offset (based on unscaled world position)
     vec2 offset = offsetVertexPosition(tileWorldCenter + rotatedVertexPosition, u_dbg_hexOffsetScale);
-//    vec2 offsetA = offsetVertexPosition(tileWorldCenter + rotatedVertexPositionA, u_dbg_hexOffsetScale);
-//    vec2 offsetB = offsetVertexPosition(tileWorldCenter + rotatedVertexPositionB, u_dbg_hexOffsetScale);
-//    vec2 offsetAwing = offsetVertexPosition(tileWorldCenter + rotatedVertexPositionAwing, u_dbg_hexOffsetScale);
-//    vec2 offsetBwing = offsetVertexPosition(tileWorldCenter + rotatedVertexPositionBwing, u_dbg_hexOffsetScale);
     vec3 vertexWorldPosOffset = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
-//    vertexWorldPosA = vertexWorldPosA + vec3(offsetA.x, 0.0, offsetA.y);
-//    vertexWorldPosB = vertexWorldPosB + vec3(offsetB.x, 0.0, offsetB.y);
-//    vertexWorldPosAwing = vertexWorldPosAwing + vec3(offsetAwing.x, 0.0, offsetAwing.y);
-//    vertexWorldPosBwing = vertexWorldPosBwing + vec3(offsetBwing.x, 0.0, offsetBwing.y);
 
     // Output variables to fragment shader
     v_corner = in_corner;
     v_landDirection = in_landDirection;
     v_extendedLand = in_extendedLand;
-    v_worldPos = vertexWorldPos;
-    v_worldPosA = vertexWorldPosA;
-    v_worldPosB = vertexWorldPosB;
-    v_worldPosC = tileWorldCenter;
-    v_worldPosAwing = vertexWorldPosAwing;
-    v_worldPosBwing = vertexWorldPosBwing;
+    v_worldPos = vertexWorldPos.xz;
+    v_worldPosA = vertexWorldPosA.xz;
+    v_worldPosB = vertexWorldPosB.xz;
+    v_worldPosC = tileWorldCenter.xz;
+    v_worldPosAwing = vertexWorldPosAwing.xz;
+    v_worldPosBwing = vertexWorldPosBwing.xz;
 
     // project to screen coordinates
     gl_Position = u_camera * vec4(vertexWorldPosOffset, 1.0);

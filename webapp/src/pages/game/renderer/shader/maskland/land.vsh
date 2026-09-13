@@ -31,7 +31,7 @@ void main() {
     vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition);
 
     // calculate world coordinate of each vertex
-    vec3 vertexWorldPos = tileWorldCenter + in_vertexPosition;
+    vec3 vertexWorldPos = tileWorldCenter + (in_vertexPosition * vec3(1.001, 1.0, 1.001));
 
     // introduce random offset (based on unscaled world position)
     vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_dbg_hexOffsetScale);
