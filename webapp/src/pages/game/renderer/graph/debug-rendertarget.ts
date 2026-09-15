@@ -53,10 +53,16 @@ export function debugVisRendertarget(
         shader: shader,
         geometry: geometry,
         inputs: {
-            "rendertarget": g.pickRendertargetAttachment({
+            "colorTexture": g.pickRendertargetAttachment({
                 rendertarget: rendertarget,
                 attachment: "color",
             }),
+            "depthTexture": g.pickRendertargetAttachment({
+                rendertarget: rendertarget,
+                attachment: "depth",
+            }),
         },
+        writeDepth: false,
+        testDepth: false,
     });
 }

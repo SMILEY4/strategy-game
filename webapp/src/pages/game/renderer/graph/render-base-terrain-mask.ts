@@ -97,6 +97,8 @@ export function renderBaseTerrainMask(
                 }),
             ) as DataRenderGraphNode<unknown>,
         },
+        writeDepth: false,
+        testDepth: false,
     });
 
     //======================  EDGES =========================================
@@ -219,6 +221,8 @@ export function renderBaseTerrainMask(
                 }),
             ) as DataRenderGraphNode<unknown>,
         },
+        writeDepth: false,
+        testDepth: false,
     });
 
     //======================  OUTPUT ========================================

@@ -13,6 +13,8 @@ export interface DrawRenderGraphNode extends RenderGraphNodeBase<"draw"> {
     readonly geometry: GeometryRenderGraphNode;
     readonly inputs: Record<string, DrawRenderGraphNodeInput>;
     readonly blend: null | ((gl: WebGL2RenderingContext) => void)
+    readonly writeDepth: boolean,
+    readonly testDepth: boolean,
 }
 
 export type DrawRenderGraphNodeInput =

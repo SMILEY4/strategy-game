@@ -10,7 +10,6 @@ export interface RendertargetRenderGraphNode<TKeys extends string> extends Rende
     readonly renderPasses: DrawRenderGraphNode[],
     readonly attachments: Record<TKeys, RendertargetAttachment>
     readonly clearColor: [number, number, number, number] | null,
-    readonly depthTesting: boolean,
 }
 
 export type RendertargetAttachment = RendertargetColorAttachment | RendertargetDepthAttachment

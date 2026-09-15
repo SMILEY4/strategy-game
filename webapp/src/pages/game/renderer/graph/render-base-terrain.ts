@@ -114,6 +114,8 @@ export function renderBaseTerrain(
                 attachment: "color",
             }),
         },
+        writeDepth: true,
+        testDepth: false,
     });
 
 
@@ -200,6 +202,8 @@ export function renderBaseTerrain(
                 attachment: "color",
             }),
         },
+        writeDepth: true,
+        testDepth: false,
     });
 
 

@@ -33,14 +33,17 @@ export type WebGlCommand =
     /** Set a uniform on the active shader program. */
     | { type: "SET_UNIFORM", shaderId: string, name: string, value: ValueEntry }
 
-    /** Enable or disable depth testing. */
-    | { type: "SET_DEPTH_TESTING", enabled: boolean }
+    /** Configure blending **/
+    | { type: "SET_BLENDING", blend: null | ((gl: WebGL2RenderingContext) => void) }
+
+    /** Configure depth handling **/
+    | { type: "SET_DEPTH_HANDLING", test: boolean, write: boolean }
 
     /** Issue a non-instanced draw call. */
-    | { type: "DRAW", vertexCountRef: string, mode: GLenum, blend: null | ((gl: WebGL2RenderingContext) => void) }
+    | { type: "DRAW", vertexCountRef: string, mode: GLenum }
 
     /** Issue an instanced draw call. */
-    | { type: "DRAW_INSTANCED", vertexCountRef: string, instanceCountRef: string, mode: GLenum, blend: null | ((gl: WebGL2RenderingContext) => void) }
+    | { type: "DRAW_INSTANCED", vertexCountRef: string, instanceCountRef: string, mode: GLenum }
 
     /** Fetch external data and store it in the {@link outputRef} resource. */
     | { type: "LOAD_EXTERNAL_DATA", outputRef: string, fetch: () => unknown, checkChanged: (prev: unknown) => boolean }

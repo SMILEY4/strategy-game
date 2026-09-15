@@ -56,7 +56,6 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     const renderTargetComposite = g.rendertarget({
         size: canvasSize,
         renderPasses: [drawWaterTiles, drawLandTiles],
-        depthTesting: false,
         attachments: {
             color: {
                 type: "color",
@@ -74,7 +73,6 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     g.canvas({
         renderPasses: [drawDebugVis],
-        depthTesting: false,
         clearColor: [0, 0, 0, 1],
     });
 

@@ -30,14 +30,12 @@ export class RenderGraphBuilder {
 
     public canvas(options: {
         renderPasses: DrawRenderGraphNode[],
-        depthTesting?: boolean,
         clearColor?: [number, number, number, number]
     }): CanvasRenderGraphNode {
         const node: CanvasRenderGraphNode = {
             type: "canvas",
             id: RenderGraphBuilder.generateNodeId(),
             renderPasses: options.renderPasses,
-            depthTesting: options.depthTesting ?? false,
             clearColor: options.clearColor ?? null,
         };
         this.nodes.push(node);
@@ -133,6 +131,8 @@ export class RenderGraphBuilder {
         geometry: GeometryRenderGraphNode
         inputs?: Record<string, DrawRenderGraphNodeInput>
         blend?: (gl: WebGL2RenderingContext) => void
+        writeDepth?: boolean,
+        testDepth?: boolean,
     }): DrawRenderGraphNode {
         const node: DrawRenderGraphNode = {
             type: "draw",
@@ -141,6 +141,8 @@ export class RenderGraphBuilder {
             geometry: options.geometry,
             inputs: options.inputs ?? {},
             blend: options.blend ?? null,
+            writeDepth: options.writeDepth ?? false,
+            testDepth: options.testDepth ?? false,
         };
         this.nodes.push(node);
         return node;
@@ -191,7 +193,6 @@ export class RenderGraphBuilder {
         sizeScale?: DataRenderGraphNode<number>,
         renderPasses: DrawRenderGraphNode[],
         attachments: Record<TKeys, RendertargetAttachment>,
-        depthTesting?: boolean,
         clearColor?: [number, number, number, number]
     }): RendertargetRenderGraphNode<TKeys> {
         const node: RendertargetRenderGraphNode<TKeys> = {
@@ -201,7 +202,6 @@ export class RenderGraphBuilder {
             sizeScale: options.sizeScale ?? null,
             renderPasses: options.renderPasses,
             attachments: options.attachments,
-            depthTesting: options.depthTesting ?? false,
             clearColor: options.clearColor ?? null,
         };
         this.nodes.push(node);
