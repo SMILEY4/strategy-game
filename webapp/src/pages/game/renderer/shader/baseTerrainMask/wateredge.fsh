@@ -13,9 +13,10 @@ flat in vec2 v_worldPosBwing; // Right vertex rotated one step right
 flat in vec3 v_landDirection; // [0]: Edge AB, [1]: Vertex A, [2]: Vertex C
 flat in vec2 v_extendedLand;  // [0]: Extended ray at A, [1]: Extended ray at B
 
-uniform float u_dbg_threshold;
-uniform float u_dbg_noiseScale;
-uniform float u_dbg_noiseAmplitude;
+uniform float u_dbg_noise1Scale;
+uniform float u_dbg_noise1Amplitude;
+uniform float u_dbg_noise2Scale;
+uniform float u_dbg_noise2Amplitude;
 
 out vec4 outColor;
 
@@ -157,11 +158,11 @@ void main() {
     float dist1 = computeDistance(v_landDirection, v_extendedLand, p1, a, b, c, aw, bw, m, dirMA, MAdotMC);
 
     // light warped distance 2
-    vec2 p2 = warpDomain(v_worldPos, u_dbg_noiseScale * 0.5, u_dbg_noiseAmplitude);
+    vec2 p2 = warpDomain(v_worldPos, u_dbg_noise1Scale, u_dbg_noise1Amplitude);
     float dist2 = computeDistance(v_landDirection, v_extendedLand, p2, a, b, c, aw, bw, m, dirMA, MAdotMC);
 
     // strong warped distance 3
-    vec2 p3 = warpDomain(v_worldPos, u_dbg_noiseScale, u_dbg_noiseAmplitude);
+    vec2 p3 = warpDomain(v_worldPos, u_dbg_noise2Scale, u_dbg_noise2Amplitude);
     float dist3 = computeDistance(v_landDirection, v_extendedLand, p3, a, b, c, aw, bw, m, dirMA, MAdotMC);
 
     outColor = vec4(dist1, dist2, dist3, 1.0);

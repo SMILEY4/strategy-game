@@ -136,15 +136,23 @@ export function gameGraphDataWorld(
     const calculateTileInstances = g.wasmOperation({
         wasmInputs: [wasmVisibleChunks, wasmAllTiles],
         dataInputs: [],
-        outputs: ["tileTerrainInstances", "waterEdgeInstances", "tileFogOfWarInstances", "mapDetailVertices"],
+        outputs: ["tileLandInstances", "tileWaterInstances", "waterEdgeInstances", "tileFogOfWarInstances", "mapDetailVertices"],
             func: () => wasmApi.operations.calculateTileInstances(),
     });
 
-    const wasmTileTerrainInstances = g.wasmData({
+    const wasmTileLandInstances = g.wasmData({
         source: {
             type: "wasm",
             operation: calculateTileInstances,
-            key: "tileTerrainInstances",
+            key: "tileLandInstances",
+        },
+    });
+
+    const wasmTileWaterInstances = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: calculateTileInstances,
+            key: "tileWaterInstances",
         },
     });
 
@@ -174,7 +182,8 @@ export function gameGraphDataWorld(
 
     return {
         wasmVisibleChunks: wasmVisibleChunks,
-        wasmTileTerrainInstances: wasmTileTerrainInstances,
+        warmTileLandInstances: wasmTileLandInstances,
+        wasmTileWaterInstances: wasmTileWaterInstances,
         wasmWaterEdgeInstances: wasmWaterEdgeInstances,
         wasmTileFogOfWarInstances: wasmTileFogOfWarInstances,
         wasmMapDetailVertices: wasmMapDetailVertices,

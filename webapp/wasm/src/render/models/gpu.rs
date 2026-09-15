@@ -6,6 +6,12 @@ pub struct TileTerrainLandInstance {
 
 #[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
+pub struct TileTerrainWaterInstance {
+    pub position: [f32; 2],
+}
+
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy)]
 pub struct WaterEdgeInstance {
     pub position: [f32; 2],// hex position (q,r)
     pub direction: u32, // the direction the edge/triangle is pointing (i.e. cw rotation, top-right = 0, right = 1, top-left = 7)

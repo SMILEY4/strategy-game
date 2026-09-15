@@ -4,6 +4,7 @@ import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transfor
 
 export interface RenderWasmApiDownload {
     getTileLandInstances: () => VertexDataResult;
+    getTileWaterInstances: () => VertexDataResult;
     getWaterEdgeInstances: () => VertexDataResult;
     getTileFogOfWarInstances: () => VertexDataResult;
     getMapDetailVertices: () => VertexDataResult;
@@ -20,6 +21,15 @@ export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownloa
                 return {
                     data: wasm.get_terrain_tile_land_instances(),
                     count: wasm.get_terrain_tile_land_instances_count(),
+                };
+            });
+        },
+
+        getTileWaterInstances: () => {
+            return tracer.span({name: "wasmapi-getTileWaterInstances"}, () => {
+                return {
+                    data: wasm.get_terrain_tile_water_instances(),
+                    count: wasm.get_terrain_tile_water_instances_count(),
                 };
             });
         },

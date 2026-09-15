@@ -2,13 +2,14 @@ use crate::js::models::{
     HexPosition, Tile, TILE_BIOME_GRASSLAND, TILE_BIOME_OCEAN, TILE_VISIBILITY_UNDISCOVERED,
 };
 use crate::render::models::gpu::{
-    TileFogOfWarInstance, TileTerrainLandInstance, WaterEdgeInstance,
+    TileFogOfWarInstance, TileTerrainLandInstance, TileTerrainWaterInstance, WaterEdgeInstance,
 };
 use crate::render::state_output::OutputState;
 use crate::render::state_render::RenderState;
 
 pub fn build_terrain_data(state: &RenderState, output: &mut OutputState) {
     output.terrain_land_instances.clear();
+    output.terrain_water_instances.clear();
     output.water_edge_instances.clear();
     output.fog_of_war_instances.clear();
 
@@ -20,7 +21,7 @@ pub fn build_terrain_data(state: &RenderState, output: &mut OutputState) {
 
             // create fog-of-war for at least discovered tiles
             if tile.visibility != TILE_VISIBILITY_UNDISCOVERED {
-                build_fog_of_war_instance(state, tile, output);
+                build_fog_of_war_instance(tile, output);
             }
 
             // undiscovered -> no terrain visible -> skip
@@ -30,19 +31,21 @@ pub fn build_terrain_data(state: &RenderState, output: &mut OutputState) {
 
             // build land instance
             if tile.terrain.biome == TILE_BIOME_GRASSLAND {
-                build_land_instance(state, tile, output);
+                build_land_instance(tile, output);
                 return;
             }
 
-            // build water edge instances
+            // build water & water edge instances
             if tile.terrain.biome == TILE_BIOME_OCEAN {
+                build_water_instance(tile, output);
                 build_water_edge_instances(state, tile.tile_position, output);
+                return;
             }
         })
     });
 }
 
-fn build_fog_of_war_instance(state: &RenderState, tile: Tile, output: &mut OutputState) {
+fn build_fog_of_war_instance(tile: Tile, output: &mut OutputState) {
     output.fog_of_war_instances.push(TileFogOfWarInstance {
         position: [tile.tile_position.q as f32, tile.tile_position.r as f32],
         visibility: tile.visibility,
@@ -50,10 +53,18 @@ fn build_fog_of_war_instance(state: &RenderState, tile: Tile, output: &mut Outpu
     });
 }
 
-fn build_land_instance(state: &RenderState, tile: Tile, output: &mut OutputState) {
+fn build_land_instance(tile: Tile, output: &mut OutputState) {
     output.terrain_land_instances.push(TileTerrainLandInstance {
         position: [tile.tile_position.q as f32, tile.tile_position.r as f32],
     });
+}
+
+fn build_water_instance(tile: Tile, output: &mut OutputState) {
+    output
+        .terrain_water_instances
+        .push(TileTerrainWaterInstance {
+            position: [tile.tile_position.q as f32, tile.tile_position.r as f32],
+        });
 }
 
 fn build_water_edge_instances(

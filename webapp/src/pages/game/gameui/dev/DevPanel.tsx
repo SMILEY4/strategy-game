@@ -20,27 +20,27 @@ export function useDevPanel() {
                 },
             })),
         },
-        "coastline": folder({
-            coastlineCornerSize: {
-                label: "noise scale",
-                value: initialDebugDataValues.renderer.coastline.noiseScale,
+        "land mask": folder({
+            landMaskNoise1Scale: {
+                label: "noise 1 scale",
+                value: initialDebugDataValues.renderer.landMask.noise1Scale,
                 min: 0,
-                max: 3,
+                max: 5,
                 transient: false,
                 onChange: it => DI.debugDatabase.update(data => ({
                     ...data,
                     renderer: {
                         ...data.renderer,
-                        coastline: {
-                            ...data.renderer.coastline,
-                            noiseScale: it,
+                        landMask: {
+                            ...data.renderer.landMask,
+                            noise1Scale: it,
                         },
                     },
                 })),
             },
-            coastlineCornerBulge: {
-                label: "noise amplitude",
-                value: initialDebugDataValues.renderer.coastline.noiseAmplitude,
+            landMaskNoise1Amplitude: {
+                label: "noise 1 amplitude",
+                value: initialDebugDataValues.renderer.landMask.noise1Amplitude,
                 min: 0,
                 max: 1,
                 transient: false,
@@ -48,16 +48,33 @@ export function useDevPanel() {
                     ...data,
                     renderer: {
                         ...data.renderer,
-                        coastline: {
-                            ...data.renderer.coastline,
-                            noiseAmplitude: it,
+                        landMask: {
+                            ...data.renderer.landMask,
+                            noise1Amplitude: it,
                         },
                     },
                 })),
             },
-            coastlineThreshold: {
-                label: "threshold",
-                value: initialDebugDataValues.renderer.coastline.threshold,
+            landMaskNoise2Scale: {
+                label: "noise 2 scale",
+                value: initialDebugDataValues.renderer.landMask.noise2Scale,
+                min: 0,
+                max: 5,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        landMask: {
+                            ...data.renderer.landMask,
+                            noise2Scale: it,
+                        },
+                    },
+                })),
+            },
+            landMaskNoise2Amplitude: {
+                label: "noise 2 amplitude",
+                value: initialDebugDataValues.renderer.landMask.noise2Amplitude,
                 min: 0,
                 max: 1,
                 transient: false,
@@ -65,13 +82,13 @@ export function useDevPanel() {
                     ...data,
                     renderer: {
                         ...data.renderer,
-                        coastline: {
-                            ...data.renderer.coastline,
-                            threshold: it,
+                        landMask: {
+                            ...data.renderer.landMask,
+                            noise2Amplitude: it,
                         },
                     },
                 })),
-            }
+            },
         }),
         "base terrain": folder({
             scaleBaseTerrain: {

@@ -4,13 +4,14 @@ import type {SingletonDatabase} from "@modules/gamedb/singleton/singleton-databa
 export type DebugData = {
     renderer: {
         randomHexOffsetScale: number,
+        landMask: {
+            noise1Scale: number,
+            noise1Amplitude: number,
+            noise2Scale: number,
+            noise2Amplitude: number,
+        },
         baseTerrain: {
             scale: number,
-        },
-        coastline: {
-            threshold: number,
-            noiseScale: number,
-            noiseAmplitude: number,
         },
         terrainMask: {
             scale: number,
@@ -37,13 +38,14 @@ export type DebugData = {
 export const initialDebugDataValues: DebugData = {
     renderer: {
         randomHexOffsetScale: 0.2,
+        landMask: {
+            noise1Scale: 1.45 * 0.5,
+            noise1Amplitude: 0.12,
+            noise2Scale: 1.45,
+            noise2Amplitude: 0.12,
+        },
         baseTerrain: {
             scale: 1.6,
-        },
-        coastline: {
-            threshold: 0.73,
-            noiseScale: 1.45,
-            noiseAmplitude: 0.12,
         },
         terrainMask: {
             scale: 1.62,

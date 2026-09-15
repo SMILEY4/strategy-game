@@ -1,12 +1,13 @@
-use crate::render::models::gpu::{
-    GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, MapDetailVertex,
-    TileFogOfWarInstance, TileTerrainLandInstance, WaterEdgeInstance,
-};
+use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, MapDetailVertex, TileFogOfWarInstance, TileTerrainLandInstance, TileTerrainWaterInstance, WaterEdgeInstance};
 use crate::render::Renderer;
 
 impl Renderer {
     pub fn get_terrain_land_instances(&self) -> &Vec<TileTerrainLandInstance> {
         &self.output.terrain_land_instances
+    }
+
+    pub fn get_terrain_water_instances(&self) -> &Vec<TileTerrainWaterInstance> {
+        &self.output.terrain_water_instances
     }
 
     pub fn get_water_edge_instances(&self) -> &Vec<WaterEdgeInstance> {

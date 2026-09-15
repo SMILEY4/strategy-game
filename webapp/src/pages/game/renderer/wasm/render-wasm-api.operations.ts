@@ -13,7 +13,8 @@ export interface RenderWasmApiOperations {
         visibleChunks: boolean
     }
     calculateTileInstances: () => {
-        tileTerrainInstances: boolean,
+        tileLandInstances: boolean,
+        tileWaterInstances: boolean,
         waterEdgeInstances: boolean,
         tileFogOfWarInstances: boolean,
         mapDetailVertices: boolean
@@ -51,7 +52,8 @@ export const renderWasmApiOperations = (wasm: WasmRenderApp): RenderWasmApiOpera
             return tracer.span({name: "wasmapi-calculateTileInstances"}, () => {
                 const changed = wasm.calculate_tile_instances();
                 return {
-                    tileTerrainInstances: changed,
+                    tileLandInstances: changed,
+                    tileWaterInstances: changed,
                     waterEdgeInstances: changed,
                     tileFogOfWarInstances: changed,
                     mapDetailVertices: changed,
