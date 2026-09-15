@@ -1,0 +1,150 @@
+import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
+import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
+import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
+import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
+import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
+import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
+import type {Camera} from "@app/features/game/models/camera.ts";
+import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
+import SHADER_MAPDETAILS_VERT from "@pages/game/renderer/shader/mapdetails/mapDetails.vsh";
+import SHADER_MAPDETAILS_FRAG from "@pages/game/renderer/shader/mapdetails/mapDetails.fsh";
+
+export function renderMapDetails(
+    g: RenderGraphBuilder,
+    wasmApi: RenderWasmApi,
+    inputs: {
+        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        camera: CameraRenderGraphNode,
+        cameraData: DataRenderGraphNode<VersionedContainer<Camera>>,
+        wasmMapDetailVertices: WasmDataRenderGraphNode,
+    },
+) {
+
+    const geometry = g.geometry({
+        sources: [
+            g.wasmGeometrySource({
+                source: inputs.wasmMapDetailVertices,
+                download: () => wasmApi.download.getMapDetailVertices(),
+                content: "vertices",
+                layout: [
+                    {
+                        name: "tilePosition",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    },
+                    {
+                        name: "vertexPosition",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 3,
+                    },
+                    {
+                        name: "offset",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    },
+                    {
+                        name: "textureCoordinates",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    },
+                    {
+                        name: "atlasId",
+                        type: GlAttributeType.U_INT,
+                        amountComponents: 1,
+                    },
+                    {
+                        name: "isPending",
+                        type: GlAttributeType.U_INT,
+                        amountComponents: 1,
+                    },
+                ],
+            }),
+        ],
+    });
+
+    const textureAtlasMountainsColor = g.texture({
+        url: "/sprites/mountains.color.png",
+    });
+    const textureAtlasMountainsOutline = g.texture({
+        url: "/sprites/mountains.outline.png",
+    });
+    const textureAtlasMountainsMask = g.texture({
+        url: "/sprites/empty8x8.png",
+    });
+
+    const textureAtlasHillsColor = g.texture({
+        url: "/sprites/hills.color.png",
+    });
+    const textureAtlasHillsOutline = g.texture({
+        url: "/sprites/hills.outline.png",
+    });
+    const textureAtlasHillsMask = g.texture({
+        url: "/sprites/hills.mask.png",
+    });
+
+    const textureAtlasTreesColor = g.texture({
+        url: "/sprites/trees.color.png",
+    });
+    const textureAtlasTreesOutline = g.texture({
+        url: "/sprites/trees.outline.png",
+    });
+    const textureAtlasTreesMask = g.texture({
+        url: "/sprites/empty8x8.png",
+    });
+
+    const textureAtlasBuildingsColor = g.texture({
+        url: "/sprites/buildings.color.png",
+    });
+    const textureAtlasBuildingsOutline = g.texture({
+        url: "/sprites/buildings.outline.png",
+    });
+    const textureAtlasBuildingsMask = g.texture({
+        url: "/sprites/empty8x8.png",
+    });
+
+    const cameraDirection = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.cameraData],
+            func: (data) => data.data.direction,
+        }),
+    );
+
+    const shader = g.shader({
+        srcVertex: SHADER_MAPDETAILS_VERT,
+        srcFragment: SHADER_MAPDETAILS_FRAG,
+        prefixUniforms: "u_",
+        prefixVertexAttributes: "in_",
+    });
+
+    const draw = g.draw({
+        shader: shader,
+        geometry: geometry,
+        inputs: {
+            "cameraDirection": cameraDirection as DataRenderGraphNode<unknown>,
+            "camera": inputs.camera,
+
+            "atlasMountainsColor": textureAtlasMountainsColor,
+            "atlasMountainsOutline": textureAtlasMountainsOutline,
+            "atlasMountainsMask": textureAtlasMountainsMask,
+
+            "atlasHillsColor": textureAtlasHillsColor,
+            "atlasHillsOutline": textureAtlasHillsOutline,
+            "atlasHillsMask": textureAtlasHillsMask,
+
+            "atlasTreesColor": textureAtlasTreesColor,
+            "atlasTreesOutline": textureAtlasTreesOutline,
+            "atlasTreesMask": textureAtlasTreesMask,
+
+            "atlasBuildingsColor": textureAtlasBuildingsColor,
+            "atlasBuildingsOutline": textureAtlasBuildingsOutline,
+            "atlasBuildingsMask": textureAtlasBuildingsMask,
+        },
+        writeDepth: true,
+        testDepth: true,
+    });
+
+    return {
+        drawMapDetails: draw
+    }
+}

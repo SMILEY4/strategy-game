@@ -57,10 +57,10 @@ export function debugVisRendertarget(
                 rendertarget: rendertarget,
                 attachment: "color",
             }),
-            "depthTexture": g.pickRendertargetAttachment({
-                rendertarget: rendertarget,
-                attachment: "depth",
-            }),
+            // "depthTexture": g.pickRendertargetAttachment({
+            //     rendertarget: rendertarget,
+            //     attachment: "depth",
+            // }),
         },
         writeDepth: false,
         testDepth: false,

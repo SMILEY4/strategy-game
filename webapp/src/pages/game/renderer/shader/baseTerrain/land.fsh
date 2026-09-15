@@ -29,7 +29,7 @@ void main() {
         discard;
     }
 
-    float variation = random(v_tilePosition);
+    float variation = (random(v_tilePosition) + 1.0) * 0.5;
     vec3 color = mix(colorLight, colorDark, variation);
 
     vec4 texture = texture(u_terrainSplat, v_textureCoordinates);

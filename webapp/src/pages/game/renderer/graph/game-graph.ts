@@ -9,6 +9,7 @@ import {renderBaseTerrainMask} from "@pages/game/renderer/graph/render-base-terr
 import {renderBaseTerrain} from "@pages/game/renderer/graph/render-base-terrain.ts";
 import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {debugVisRendertarget} from "@pages/game/renderer/graph/debug-rendertarget.ts";
+import {renderMapDetails} from "@pages/game/renderer/graph/render-map-details.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -26,6 +27,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         warmTileLandInstances,
         wasmTileWaterInstances,
         wasmWaterEdgeInstances,
+        wasmMapDetailVertices
     } = gameGraphDataWorld(g, dataProvider, wasmApi, {
         dataCamera: dataCamera,
     });
@@ -49,13 +51,22 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         renderTargetBaseTerrainMask: renderTargetBaseTerrainMask,
     });
 
+    //======================  MAP DETAILS ===================================
+
+    const {drawMapDetails} = renderMapDetails(g, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
+        cameraData: dataCamera,
+        wasmMapDetailVertices: wasmMapDetailVertices
+    })
+
     //======================  OUTPUT ========================================
 
     const canvasSize = g.canvasSize();
 
     const renderTargetComposite = g.rendertarget({
         size: canvasSize,
-        renderPasses: [drawWaterTiles, drawLandTiles],
+        renderPasses: [drawWaterTiles, drawLandTiles, drawMapDetails],
         attachments: {
             color: {
                 type: "color",
