@@ -14,6 +14,7 @@ import SHADER_MASK_LAND_VERT from "@pages/game/renderer/shader/baseTerrainMask/l
 import SHADER_MASK_LAND_FRAG from "@pages/game/renderer/shader/baseTerrainMask/land.fsh";
 import SHADER_MASK_WATEREDGE_VERT from "@pages/game/renderer/shader/baseTerrainMask/wateredge.vsh";
 import SHADER_MASK_WATEREDGE_FRAG from "@pages/game/renderer/shader/baseTerrainMask/wateredge.fsh";
+import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 
 export function renderBaseTerrainMask(
     g: RenderGraphBuilder,
@@ -98,7 +99,7 @@ export function renderBaseTerrainMask(
             ) as DataRenderGraphNode<unknown>,
         },
         writeDepth: false,
-        testDepth: false,
+        testDepth: DepthFunc.ALWAYS,
     });
 
     //======================  EDGES =========================================
@@ -222,7 +223,7 @@ export function renderBaseTerrainMask(
             ) as DataRenderGraphNode<unknown>,
         },
         writeDepth: false,
-        testDepth: false,
+        testDepth: DepthFunc.ALWAYS,
     });
 
     //======================  OUTPUT ========================================

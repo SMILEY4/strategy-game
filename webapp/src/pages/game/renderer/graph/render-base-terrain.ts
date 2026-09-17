@@ -12,6 +12,7 @@ import SHADER_LAND_FRAG from "@pages/game/renderer/shader/baseTerrain/land.fsh";
 import SHADER_WATER_VERT from "@pages/game/renderer/shader/baseTerrain/water.vsh";
 import SHADER_WATER_FRAG from "@pages/game/renderer/shader/baseTerrain/water.fsh";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
+import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 
 export function renderBaseTerrain(
     g: RenderGraphBuilder,
@@ -115,7 +116,7 @@ export function renderBaseTerrain(
             }),
         },
         writeDepth: true,
-        testDepth: false,
+        testDepth: DepthFunc.ALWAYS,
     });
 
 
@@ -203,7 +204,7 @@ export function renderBaseTerrain(
             }),
         },
         writeDepth: true,
-        testDepth: false,
+        testDepth: DepthFunc.ALWAYS,
     });
 
 

@@ -10,6 +10,7 @@ import {renderBaseTerrain} from "@pages/game/renderer/graph/render-base-terrain.
 import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {debugVisRendertarget} from "@pages/game/renderer/graph/debug-rendertarget.ts";
 import {renderMapDetails} from "@pages/game/renderer/graph/render-map-details.ts";
+import {renderOverlay} from "@pages/game/renderer/graph/render-overlay.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -24,10 +25,12 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
 
     const {
+        wasmVisibleChunks,
+        // wasmTileFogOfWarInstances,
         warmTileLandInstances,
         wasmTileWaterInstances,
         wasmWaterEdgeInstances,
-        wasmMapDetailVertices
+        wasmMapDetailVertices,
     } = gameGraphDataWorld(g, dataProvider, wasmApi, {
         dataCamera: dataCamera,
     });
@@ -41,7 +44,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         warmTileLandInstances: warmTileLandInstances,
     });
 
-    //======================  BASE TERRAIN ==================================
+    //====================== BASE TERRAIN ===================================
 
     const {drawWaterTiles, drawLandTiles} = renderBaseTerrain(g, wasmApi, {
         dataDebug: dataDebug,
@@ -51,14 +54,33 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         renderTargetBaseTerrainMask: renderTargetBaseTerrainMask,
     });
 
-    //======================  MAP DETAILS ===================================
+    //====================== MAP DETAILS ====================================
 
     const {drawMapDetails} = renderMapDetails(g, wasmApi, {
         dataDebug: dataDebug,
         camera: camera,
         cameraData: dataCamera,
-        wasmMapDetailVertices: wasmMapDetailVertices
-    })
+        wasmMapDetailVertices: wasmMapDetailVertices,
+    });
+
+    //====================== FOG OF WAR =====================================
+
+    // const renderTargetFogOfWarMask = renderFogOfWar(g, wasmApi, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
+    // })
+
+    //====================== OVERLAY ========================================
+
+    const {
+        drawOverlayFill,
+        drawOverlayBorder,
+    } = renderOverlay(g, dataProvider, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
+        visibleChunks: wasmVisibleChunks,
+    });
 
     //======================  OUTPUT ========================================
 
@@ -66,7 +88,13 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const renderTargetComposite = g.rendertarget({
         size: canvasSize,
-        renderPasses: [drawWaterTiles, drawLandTiles, drawMapDetails],
+        renderPasses: [
+            drawWaterTiles,
+            drawLandTiles,
+            drawMapDetails,
+            drawOverlayFill,
+            drawOverlayBorder,
+        ],
         attachments: {
             color: {
                 type: "color",

@@ -9,6 +9,7 @@ import type {Camera} from "@app/features/game/models/camera.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_MAPDETAILS_VERT from "@pages/game/renderer/shader/mapdetails/mapDetails.vsh";
 import SHADER_MAPDETAILS_FRAG from "@pages/game/renderer/shader/mapdetails/mapDetails.fsh";
+import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 
 export function renderMapDetails(
     g: RenderGraphBuilder,
@@ -141,7 +142,7 @@ export function renderMapDetails(
             "atlasBuildingsMask": textureAtlasBuildingsMask,
         },
         writeDepth: true,
-        testDepth: true,
+        testDepth: DepthFunc.LESS,
     });
 
     return {

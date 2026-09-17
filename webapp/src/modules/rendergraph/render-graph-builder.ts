@@ -1,5 +1,5 @@
 import type {CanvasRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas.ts";
-import type {DrawRenderGraphNode, DrawRenderGraphNodeInput} from "@modules/rendergraph/nodes/rg-node.draw.ts";
+import {DepthFunc, type DrawRenderGraphNode, type DrawRenderGraphNodeInput} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import type {RendertargetAttachment, RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import type {ShaderRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.shader.ts";
 import type {TextureRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.texture.ts";
@@ -132,7 +132,7 @@ export class RenderGraphBuilder {
         inputs?: Record<string, DrawRenderGraphNodeInput>
         blend?: (gl: WebGL2RenderingContext) => void
         writeDepth?: boolean,
-        testDepth?: boolean,
+        testDepth?: DepthFunc,
     }): DrawRenderGraphNode {
         const node: DrawRenderGraphNode = {
             type: "draw",
@@ -142,7 +142,7 @@ export class RenderGraphBuilder {
             inputs: options.inputs ?? {},
             blend: options.blend ?? null,
             writeDepth: options.writeDepth ?? false,
-            testDepth: options.testDepth ?? false,
+            testDepth: options.testDepth ?? DepthFunc.ALWAYS,
         };
         this.nodes.push(node);
         return node;

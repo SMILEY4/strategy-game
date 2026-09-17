@@ -9,6 +9,7 @@ import {subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
 import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 import {tracer} from "@modules/monitoring/tracer.ts";
+import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 
 /** Matrix that negates the clip-space Y axis (see CALCULATE_VIEW_PROJECTION). */
 const MATRIX_FLIP_Y = mat4.fromScaling(mat4.create(), vec3.fromValues(1, -1, 1));
@@ -92,13 +93,14 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
         case "SET_DEPTH_HANDLING": {
             const gl = context.getRenderingContext();
-            if (!command.test && !command.write) {
+
+            if (command.test == DepthFunc.ALWAYS && !command.write) {
                 gl.disable(gl.DEPTH_TEST);
                 gl.depthMask(false);
             } else {
                 gl.enable(gl.DEPTH_TEST);
+                gl.depthFunc(command.test.glEnum);
                 gl.depthMask(command.write);
-                gl.depthFunc(command.test ? gl.LESS : gl.ALWAYS);
             }
             return;
         }

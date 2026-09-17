@@ -1,7 +1,7 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import type {DrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.draw.ts";
+import {DepthFunc, type DrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import {buildFullscreenQuad} from "@pages/game/renderer/graph/build-fullscreen-quad.ts";
 
 import SHADER_VERT from "./../shader/debug/dbgRendertarget.vsh";
@@ -63,6 +63,6 @@ export function debugVisRendertarget(
             // }),
         },
         writeDepth: false,
-        testDepth: false,
+        testDepth: DepthFunc.ALWAYS,
     });
 }

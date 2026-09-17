@@ -14,7 +14,7 @@ export interface DrawRenderGraphNode extends RenderGraphNodeBase<"draw"> {
     readonly inputs: Record<string, DrawRenderGraphNodeInput>;
     readonly blend: null | ((gl: WebGL2RenderingContext) => void)
     readonly writeDepth: boolean,
-    readonly testDepth: boolean,
+    readonly testDepth: DepthFunc,
 }
 
 export type DrawRenderGraphNodeInput =
@@ -26,3 +26,20 @@ export type DrawRenderGraphNodeInput =
     | CameraRenderGraphNode
 
 
+export class DepthFunc {
+
+    public static readonly NEVER = new DepthFunc(WebGL2RenderingContext.NEVER)
+    public static readonly ALWAYS = new DepthFunc(WebGL2RenderingContext.ALWAYS)
+    public static readonly LESS = new DepthFunc(WebGL2RenderingContext.LESS)
+    public static readonly LESS_OR_EQUAL = new DepthFunc(WebGL2RenderingContext.LEQUAL)
+    public static readonly GREATER = new DepthFunc(WebGL2RenderingContext.GREATER)
+    public static readonly GREATER_OR_EQUAL = new DepthFunc(WebGL2RenderingContext.GEQUAL)
+    public static readonly EQUAL = new DepthFunc(WebGL2RenderingContext.EQUAL)
+    public static readonly NOT_EQUAL = new DepthFunc(WebGL2RenderingContext.NOTEQUAL)
+
+    readonly glEnum: GLenum;
+
+    private constructor(glEnum: GLenum) {
+        this.glEnum = glEnum;
+    }
+}

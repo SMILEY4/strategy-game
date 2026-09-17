@@ -54,6 +54,7 @@ internal class SpawnGenerationPass : GenerationPass {
 
             // use random location as fallback
             val selectedSpawn = spawnLocation ?: gameState.tiles.random().ref()
+            println("selectedSpawn: ${selectedSpawn.position.q}, ${selectedSpawn.position.r}")
 
             spawnLocations.add(selectedSpawn)
             realm.spawnLocation = HexPosition(selectedSpawn.position.q, selectedSpawn.position.r)

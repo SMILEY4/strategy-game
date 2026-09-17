@@ -2,6 +2,7 @@ import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transfor
 import type {vec3} from "gl-matrix";
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
 import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
+import type {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 
 /** A compiled WebGL command emitted by the render-graph compiler. */
 export type WebGlCommand =
@@ -37,7 +38,7 @@ export type WebGlCommand =
     | { type: "SET_BLENDING", blend: null | ((gl: WebGL2RenderingContext) => void) }
 
     /** Configure depth handling **/
-    | { type: "SET_DEPTH_HANDLING", test: boolean, write: boolean }
+    | { type: "SET_DEPTH_HANDLING", test: DepthFunc, write: boolean }
 
     /** Issue a non-instanced draw call. */
     | { type: "DRAW", vertexCountRef: string, mode: GLenum }
