@@ -19,8 +19,6 @@ void main() {
     // calculate world coordinate of each vertex
     float scale = 1.0; // todo: debug variable
     vec3 vertexWorldPos = tileWorldCenter + (in_vertexPosition * vec3(scale, 1.0, scale));
-    vertexWorldPos.y = 0.05;
-
     // project to screen coordinates
     gl_Position = u_camera * vec4(vertexWorldPos, 1.0);
 }

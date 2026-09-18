@@ -44,51 +44,10 @@ export function renderSelectedTile(
             },
         },
         func: () => {
-
-            const buffer = new ArrayBuffer(3 * 2 * (3 + 2) * GlAttributeType.FLOAT.bytes);
-            const view = new DataView(buffer);
-            let viewCounter = 0;
-
-            function pushFloat32(value: number) {
-                view.setFloat32(viewCounter, value, true);
-                viewCounter += GlAttributeType.FLOAT.bytes;
-            }
-
-            function pushFloat32Vec3(x: number, y: number, z: number) {
-                pushFloat32(x);
-                pushFloat32(y);
-                pushFloat32(z);
-            }
-
-            function pushFloat32Vec2(x: number, y: number) {
-                pushFloat32(x);
-                pushFloat32(y);
-            }
-
-            // first triangle
-            pushFloat32Vec3(-1, 0, -1);
-            pushFloat32Vec2(0, 0);
-
-            pushFloat32Vec3(+1, 0, -1);
-            pushFloat32Vec2(1, 0);
-
-            pushFloat32Vec3(+1, 0, +1);
-            pushFloat32Vec2(1, 1);
-
-            // second triangle
-            pushFloat32Vec3(-1, 0, -1);
-            pushFloat32Vec2(0, 0);
-
-            pushFloat32Vec3(-1, 0, +1);
-            pushFloat32Vec2(0, 1);
-
-            pushFloat32Vec3(+1, 0, +1);
-            pushFloat32Vec2(1, 1);
-
             return {
                 "mesh": {
-                    data: buffer,
-                    count: 3 * 2,
+                    data: createSelectedTileMesh(),
+                    count: 6 + DEFAULT_PILLAR_SEGMENTS * 9,
                 },
             };
 
@@ -192,4 +151,72 @@ export function renderSelectedTile(
         drawSelectedTileFront: drawFront,
         drawSelectedTileBack: drawBack
     }
+}
+
+
+
+const DEFAULT_PILLAR_RADIUS = 1;
+const DEFAULT_PILLAR_HEIGHT = 4;
+const DEFAULT_PILLAR_SEGMENTS = 16;
+
+function createSelectedTileMesh(): ArrayBuffer {
+    const vertices: number[] = [];
+
+    function pushVertex(x: number, y: number, z: number, u: number, v: number): void {
+        vertices.push(x, y, z, u, v);
+    }
+
+    function pushTriangle(
+        a: [number, number, number, number, number],
+        b: [number, number, number, number, number],
+        c: [number, number, number, number, number],
+    ): void {
+        pushVertex(...a);
+        pushVertex(...b);
+        pushVertex(...c);
+    }
+
+    function capUv(value: number): number {
+        return 0.5 + value / (2 * DEFAULT_PILLAR_RADIUS || 1);
+    }
+
+    // Selection texture on the ground plane.
+    pushTriangle(
+        [-1, 0, -1, 0, 0],
+        [1, 0, -1, 1, 0],
+        [1, 0, 1, 1, 1],
+    );
+    pushTriangle(
+        [-1, 0, -1, 0, 0],
+        [-1, 0, 1, 0, 1],
+        [1, 0, 1, 1, 1],
+    );
+
+    // Cylinder sides. U wraps once around the pillar and V runs bottom to top.
+    for (let segment = 0; segment < DEFAULT_PILLAR_SEGMENTS; segment++) {
+        const angleA = (segment / DEFAULT_PILLAR_SEGMENTS) * Math.PI * 2;
+        const angleB = ((segment + 1) / DEFAULT_PILLAR_SEGMENTS) * Math.PI * 2;
+        const uA = segment / DEFAULT_PILLAR_SEGMENTS;
+        const uB = (segment + 1) / DEFAULT_PILLAR_SEGMENTS;
+        const bottomA: [number, number, number, number, number] = [
+            Math.cos(angleA) * DEFAULT_PILLAR_RADIUS, 0, Math.sin(angleA) * DEFAULT_PILLAR_RADIUS, uA, 0,
+        ];
+        const bottomB: [number, number, number, number, number] = [
+            Math.cos(angleB) * DEFAULT_PILLAR_RADIUS, 0, Math.sin(angleB) * DEFAULT_PILLAR_RADIUS, uB, 0,
+        ];
+        const topA: [number, number, number, number, number] = [bottomA[0], DEFAULT_PILLAR_HEIGHT, bottomA[2], uA, 1];
+        const topB: [number, number, number, number, number] = [bottomB[0], DEFAULT_PILLAR_HEIGHT, bottomB[2], uB, 1];
+
+        pushTriangle(bottomB, bottomA, topA);
+        pushTriangle(bottomB, topA, topB);
+
+        // Top cap, mapped like a conventional circular texture.
+        pushTriangle(
+            [0, DEFAULT_PILLAR_HEIGHT, 0, 0.5, 0.5],
+            [topB[0], topB[1], topB[2], capUv(topB[0]), capUv(topB[2])],
+            [topA[0], topA[1], topA[2], capUv(topA[0]), capUv(topA[2])],
+        );
+    }
+
+    return new Float32Array(vertices).buffer;
 }
