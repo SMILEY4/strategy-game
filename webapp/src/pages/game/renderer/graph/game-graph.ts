@@ -12,6 +12,7 @@ import {debugVisRendertarget} from "@pages/game/renderer/graph/debug-rendertarge
 import {renderMapDetails} from "@pages/game/renderer/graph/render-map-details.ts";
 import {renderOverlay} from "@pages/game/renderer/graph/render-overlay.ts";
 import {renderSelectedTile} from "@pages/game/renderer/graph/render-selected-tile.ts";
+import {renderTileGrid} from "@pages/game/renderer/graph/render-tile-grid.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -72,6 +73,14 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     //     wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
     // })
 
+    //====================== TILE GRID ======================================
+
+    const {drawTileGrid} = renderTileGrid(g, dataProvider, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
+    })
+
+
     //====================== OVERLAY ========================================
 
     const {
@@ -83,6 +92,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         camera: camera,
         visibleChunks: wasmVisibleChunks,
     });
+
 
     //====================== SELECTED TILE ==================================
 
@@ -101,6 +111,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
             drawWaterTiles,
             drawLandTiles,
             drawMapDetails,
+            drawTileGrid,
             drawOverlayFill,
             drawOverlayBorderBack,
             drawOverlayBorderFront,

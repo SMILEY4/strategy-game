@@ -20,7 +20,7 @@ void main() {
     // calculate world coordinate of each vertex
     float scale = 1.0; // todo: debug variable
     vec3 vertexWorldPos = tileWorldCenter + (in_vertexPosition * vec3(scale, 1.0, scale));
-    vertexWorldPos.y += 0.1;
+    vertexWorldPos.y += 0.01;
 
     v_vertexWorldPos = vertexWorldPos;
 
