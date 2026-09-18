@@ -118,7 +118,7 @@ export function renderSelectedTile(
     });
 
     const texturePaintCircle = g.texture({
-        url: "/sprites/paint-circle.jpg",
+        url: "/sprites/paint-circle_v2.jpg",
     });
 
 
@@ -158,6 +158,10 @@ export function renderSelectedTile(
 const DEFAULT_PILLAR_RADIUS = 1;
 const DEFAULT_PILLAR_HEIGHT = 4;
 const DEFAULT_PILLAR_SEGMENTS = 16;
+const GROUND_U_MIN = 0;
+const GROUND_U_MAX = 0.5;
+const PILLAR_U_MIN = 0.5;
+const PILLAR_U_MAX = 1;
 
 function createSelectedTileMesh(): ArrayBuffer {
     const vertices: number[] = [];
@@ -177,27 +181,28 @@ function createSelectedTileMesh(): ArrayBuffer {
     }
 
     function capUv(value: number): number {
-        return 0.5 + value / (2 * DEFAULT_PILLAR_RADIUS || 1);
+        const normalized = 0.5 + value / (2 * DEFAULT_PILLAR_RADIUS || 1);
+        return PILLAR_U_MIN + normalized * (PILLAR_U_MAX - PILLAR_U_MIN);
     }
 
     // Selection texture on the ground plane.
     pushTriangle(
-        [-1, 0, -1, 0, 0],
-        [1, 0, -1, 1, 0],
-        [1, 0, 1, 1, 1],
+        [-1, 0, -1, GROUND_U_MIN, 0],
+        [1, 0, -1, GROUND_U_MAX, 0],
+        [1, 0, 1, GROUND_U_MAX, 1],
     );
     pushTriangle(
-        [-1, 0, -1, 0, 0],
-        [-1, 0, 1, 0, 1],
-        [1, 0, 1, 1, 1],
+        [-1, 0, -1, GROUND_U_MIN, 0],
+        [-1, 0, 1, GROUND_U_MIN, 1],
+        [1, 0, 1, GROUND_U_MAX, 1],
     );
 
     // Cylinder sides. U wraps once around the pillar and V runs bottom to top.
     for (let segment = 0; segment < DEFAULT_PILLAR_SEGMENTS; segment++) {
         const angleA = (segment / DEFAULT_PILLAR_SEGMENTS) * Math.PI * 2;
         const angleB = ((segment + 1) / DEFAULT_PILLAR_SEGMENTS) * Math.PI * 2;
-        const uA = segment / DEFAULT_PILLAR_SEGMENTS;
-        const uB = (segment + 1) / DEFAULT_PILLAR_SEGMENTS;
+        const uA = PILLAR_U_MIN + (segment / DEFAULT_PILLAR_SEGMENTS) * (PILLAR_U_MAX - PILLAR_U_MIN);
+        const uB = PILLAR_U_MIN + ((segment + 1) / DEFAULT_PILLAR_SEGMENTS) * (PILLAR_U_MAX - PILLAR_U_MIN);
         const bottomA: [number, number, number, number, number] = [
             Math.cos(angleA) * DEFAULT_PILLAR_RADIUS, 0, Math.sin(angleA) * DEFAULT_PILLAR_RADIUS, uA, 0,
         ];

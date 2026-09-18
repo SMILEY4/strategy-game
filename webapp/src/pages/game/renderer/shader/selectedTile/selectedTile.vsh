@@ -7,6 +7,7 @@ in vec2 in_tilePosition;
 uniform mat4 u_camera;
 
 out vec2 v_textureCoordinates;
+out vec3 v_vertexWorldPos;
 
 #include "./../utils/hex-to-world.glsl"
 
@@ -19,6 +20,10 @@ void main() {
     // calculate world coordinate of each vertex
     float scale = 1.0; // todo: debug variable
     vec3 vertexWorldPos = tileWorldCenter + (in_vertexPosition * vec3(scale, 1.0, scale));
+    vertexWorldPos.y += 0.1;
+
+    v_vertexWorldPos = vertexWorldPos;
+
     // project to screen coordinates
     gl_Position = u_camera * vec4(vertexWorldPos, 1.0);
 }

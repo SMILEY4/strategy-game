@@ -2,6 +2,7 @@
 precision mediump float;
 
 in vec2 v_textureCoordinates;
+in vec3 v_vertexWorldPos;
 
 uniform sampler2D u_paintCircle;
 uniform int u_side;
