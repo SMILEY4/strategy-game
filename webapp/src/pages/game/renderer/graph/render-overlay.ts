@@ -155,7 +155,6 @@ export function renderOverlay(
         testDepth: DepthFunc.ALWAYS,
     });
 
-
     //====================== DRAW BORDER ====================================
 
     const wasmOverlayBorderInstances = g.wasmData({
@@ -248,22 +247,37 @@ export function renderOverlay(
         url: "/sprites/paint-line_v2.jpg",
     });
 
-    const drawBorder = g.draw({
+    const drawBorderFront = g.draw({
         shader: shaderBorder,
         geometry: geometryBorder,
         inputs: {
             "camera": inputs.camera,
-            "paintLine": texturePaintLine
+            "paintLine": texturePaintLine,
+            "side": g.dataConst(1) as DataRenderGraphNode<unknown>,
         },
         writeDepth: false,
-        testDepth: DepthFunc.ALWAYS,
+        testDepth: DepthFunc.LESS_OR_EQUAL,
     });
+
+    const drawBorderBack = g.draw({
+        shader: shaderBorder,
+        geometry: geometryBorder,
+        inputs: {
+            "camera": inputs.camera,
+            "paintLine": texturePaintLine,
+            "side": g.dataConst(2) as DataRenderGraphNode<unknown>,
+        },
+        writeDepth: false,
+        testDepth: DepthFunc.GREATER,
+    });
+
 
     //====================== OUTPUT =========================================
 
     return {
         drawOverlayFill: drawFill,
-        drawOverlayBorder: drawBorder,
+        drawOverlayBorderBack: drawBorderBack,
+        drawOverlayBorderFront: drawBorderFront,
     };
 }
 

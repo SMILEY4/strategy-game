@@ -7,6 +7,7 @@ flat in uint v_style;
 in float v_thickness;
 
 uniform sampler2D u_paintLine;
+uniform int u_side;
 
 out vec4 outColor;
 
@@ -29,6 +30,11 @@ void main() {
     vec2 uv = vec2(v_corner.x, v_corner.z / v_thickness);
     vec4 texture = texture(u_paintLine, uv);
 
-    outColor = vec4(v_color.rgb, v_color.a * (1.0 - texture.r));
+    float sideAlpha = 1.0;
+    if(u_side == 2) {
+        sideAlpha = 0.3;
+    }
+
+    outColor = vec4(v_color.rgb, v_color.a * (1.0 - texture.r) * sideAlpha);
 }
 

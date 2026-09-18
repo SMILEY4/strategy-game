@@ -54,7 +54,7 @@ void main() {
 
     // introduce random offset (based on unscaled world position)
     vec2 offset = offsetVertexPosition(tileWorldCenter + rotatedVertexPosition, u_dbg_hexOffsetScale);
-    vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
+    vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.01, offset.y);
 
     // project to screen coordinates
     gl_Position = u_camera * vec4(vertexWorldPos, 1.0);

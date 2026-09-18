@@ -11,6 +11,7 @@ import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl
 import {debugVisRendertarget} from "@pages/game/renderer/graph/debug-rendertarget.ts";
 import {renderMapDetails} from "@pages/game/renderer/graph/render-map-details.ts";
 import {renderOverlay} from "@pages/game/renderer/graph/render-overlay.ts";
+import {renderSelectedTile} from "@pages/game/renderer/graph/render-selected-tile.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -75,11 +76,19 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const {
         drawOverlayFill,
-        drawOverlayBorder,
+        drawOverlayBorderBack,
+        drawOverlayBorderFront,
     } = renderOverlay(g, dataProvider, wasmApi, {
         dataDebug: dataDebug,
         camera: camera,
         visibleChunks: wasmVisibleChunks,
+    });
+
+    //====================== SELECTED TILE ==================================
+
+    const {drawSelectedTileBack, drawSelectedTileFront} = renderSelectedTile(g, dataProvider, {
+        dataDebug: dataDebug,
+        camera: camera,
     });
 
     //======================  OUTPUT ========================================
@@ -93,7 +102,10 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
             drawLandTiles,
             drawMapDetails,
             drawOverlayFill,
-            drawOverlayBorder,
+            drawOverlayBorderBack,
+            drawOverlayBorderFront,
+            drawSelectedTileBack,
+            drawSelectedTileFront,
         ],
         attachments: {
             color: {
