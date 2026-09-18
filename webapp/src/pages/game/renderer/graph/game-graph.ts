@@ -13,6 +13,7 @@ import {renderMapDetails} from "@pages/game/renderer/graph/render-map-details.ts
 import {renderOverlay} from "@pages/game/renderer/graph/render-overlay.ts";
 import {renderSelectedTile} from "@pages/game/renderer/graph/render-selected-tile.ts";
 import {renderTileGrid} from "@pages/game/renderer/graph/render-tile-grid.ts";
+import {gameGraphHtml} from "@pages/game/renderer/graph/html.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -101,7 +102,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         camera: camera,
     });
 
-    //======================  OUTPUT ========================================
+    //====================== WEBGL OUTPUT ===================================
 
     const canvasSize = g.canvasSize();
 
@@ -136,6 +137,17 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     g.canvas({
         renderPasses: [drawDebugVis],
         clearColor: [0, 0, 0, 1],
+    });
+
+    //====================== HTML OUTPUT ====================================
+
+    const {htmlDraw} = gameGraphHtml(g, dataProvider, {
+        dataCamera: dataCamera,
+    });
+
+    g.htmlContainer({
+        elementId: "game-overlay",
+        renderPasses: [htmlDraw],
     });
 
     return g.getNodes();
