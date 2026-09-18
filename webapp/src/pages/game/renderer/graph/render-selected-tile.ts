@@ -47,7 +47,7 @@ export function renderSelectedTile(
             return {
                 "mesh": {
                     data: createSelectedTileMesh(),
-                    count: 6 + DEFAULT_PILLAR_SEGMENTS * 9,
+                    count: 6 + DEFAULT_PILLAR_SEGMENTS * 6,
                 },
             };
 
@@ -155,13 +155,14 @@ export function renderSelectedTile(
 
 
 
-const DEFAULT_PILLAR_RADIUS = 1;
+const DEFAULT_PILLAR_RADIUS = 0.8;
 const DEFAULT_PILLAR_HEIGHT = 4;
 const DEFAULT_PILLAR_SEGMENTS = 16;
 const GROUND_U_MIN = 0;
 const GROUND_U_MAX = 0.5;
 const PILLAR_U_MIN = 0.5;
 const PILLAR_U_MAX = 1;
+const PILLAR_SEAM_ANGLE = Math.PI / 2;
 
 function createSelectedTileMesh(): ArrayBuffer {
     const vertices: number[] = [];
@@ -180,11 +181,6 @@ function createSelectedTileMesh(): ArrayBuffer {
         pushVertex(...c);
     }
 
-    function capUv(value: number): number {
-        const normalized = 0.5 + value / (2 * DEFAULT_PILLAR_RADIUS || 1);
-        return PILLAR_U_MIN + normalized * (PILLAR_U_MAX - PILLAR_U_MIN);
-    }
-
     // Selection texture on the ground plane.
     pushTriangle(
         [-1, 0, -1, GROUND_U_MIN, 0],
@@ -199,8 +195,8 @@ function createSelectedTileMesh(): ArrayBuffer {
 
     // Cylinder sides. U wraps once around the pillar and V runs bottom to top.
     for (let segment = 0; segment < DEFAULT_PILLAR_SEGMENTS; segment++) {
-        const angleA = (segment / DEFAULT_PILLAR_SEGMENTS) * Math.PI * 2;
-        const angleB = ((segment + 1) / DEFAULT_PILLAR_SEGMENTS) * Math.PI * 2;
+        const angleA = PILLAR_SEAM_ANGLE + (segment / DEFAULT_PILLAR_SEGMENTS) * Math.PI * 2;
+        const angleB = PILLAR_SEAM_ANGLE + ((segment + 1) / DEFAULT_PILLAR_SEGMENTS) * Math.PI * 2;
         const uA = PILLAR_U_MIN + (segment / DEFAULT_PILLAR_SEGMENTS) * (PILLAR_U_MAX - PILLAR_U_MIN);
         const uB = PILLAR_U_MIN + ((segment + 1) / DEFAULT_PILLAR_SEGMENTS) * (PILLAR_U_MAX - PILLAR_U_MIN);
         const bottomA: [number, number, number, number, number] = [
@@ -214,13 +210,6 @@ function createSelectedTileMesh(): ArrayBuffer {
 
         pushTriangle(bottomB, bottomA, topA);
         pushTriangle(bottomB, topA, topB);
-
-        // Top cap, mapped like a conventional circular texture.
-        pushTriangle(
-            [0, DEFAULT_PILLAR_HEIGHT, 0, 0.5, 0.5],
-            [topB[0], topB[1], topB[2], capUv(topB[0]), capUv(topB[2])],
-            [topA[0], topA[1], topA[2], capUv(topA[0]), capUv(topA[2])],
-        );
     }
 
     return new Float32Array(vertices).buffer;
