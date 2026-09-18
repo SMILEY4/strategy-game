@@ -69,3 +69,10 @@ pub const OVERLAY_EDGE_STYLE_DASHED: u32 = 1;
 
 pub const OVERLAY_FILL_STYLE_FILLED: u32 = 0;
 pub const OVERLAY_FILL_STYLE_STRIPED: u32 = 1;
+
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy)]
+pub struct RouteVertex {
+    pub vertex_position: [f32; 2],
+    pub texture_coords: [f32; 2],
+}

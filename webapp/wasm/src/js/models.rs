@@ -111,3 +111,11 @@ pub struct SpriteSheetEntry {
 pub const MAP_MODE_TERRAIN: u32 = 1;
 pub const MAP_MODE_POLITICAL: u32 = 2;
 pub const MAP_MODE_SETTLEMENT_LOCATIONS: u32 = 3;
+
+
+#[repr(C, packed)]
+#[derive(Copy, Clone, Debug)]
+pub struct RoutePoint {
+    pub route_id: u32, // id of the route this point belongs to
+    pub tile_position: HexPosition, // hex position of this point
+}

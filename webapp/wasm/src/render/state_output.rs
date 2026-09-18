@@ -1,4 +1,4 @@
-use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, MapDetailVertex, TileFogOfWarInstance, TileTerrainLandInstance, TileTerrainWaterInstance, WaterEdgeInstance};
+use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, MapDetailVertex, RouteVertex, TileFogOfWarInstance, TileTerrainLandInstance, TileTerrainWaterInstance, WaterEdgeInstance};
 
 #[derive(Default)]
 pub struct OutputState {
@@ -10,6 +10,8 @@ pub struct OutputState {
 
     pub map_detail_vertices: Vec<MapDetailVertex>,
 
+    pub route_vertices: Vec<RouteVertex>,
+    
     pub overlay_grid_instances: Vec<GridOverlayInstance>,
     pub overlay_fill_instances: Vec<GenericFillOverlayInstance>,
     pub overlay_edge_instances: Vec<GenericEdgeOverlayInstance>

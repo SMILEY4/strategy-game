@@ -1,4 +1,4 @@
-use crate::js::models::{Control, Entity, HexPosition, Tile};
+use crate::js::models::{Control, Entity, HexPosition, RoutePoint, Tile};
 use crate::render::models::chunk::Chunk;
 use rustc_hash::FxHashMap;
 use std::collections::HashSet;
@@ -8,6 +8,7 @@ pub struct RenderState {
     pub tiles: Vec<Tile>,
     pub controls: Vec<Control>,
     pub entities: Vec<Entity>,
+    pub routes_points: Vec<RoutePoint>,
     pub map_mode: u32,
     pub selected_settlement_id: Option<u32>,
     pub selected_entity_id: Option<u32>,
