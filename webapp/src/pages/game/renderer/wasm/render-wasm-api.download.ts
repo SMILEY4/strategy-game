@@ -11,6 +11,7 @@ export interface RenderWasmApiDownload {
     getOverlayGridInstances: () => VertexDataResult;
     getOverlayFillInstances: () => VertexDataResult;
     getOverlayEdgeInstances: () => VertexDataResult;
+    getRouteVertices: () => VertexDataResult;
 }
 
 export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownload => {
@@ -84,6 +85,15 @@ export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownloa
                 return {
                     data: wasm.get_overlay_edge_instances(),
                     count: wasm.get_overlay_edge_instances_count(),
+                };
+            });
+        },
+
+        getRouteVertices: () => {
+            return tracer.span({name: "wasmapi-getRouteVertices"}, () => {
+                return {
+                    data: wasm.get_route_vertices(),
+                    count: wasm.get_route_vertex_count(),
                 };
             });
         },

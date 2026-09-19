@@ -68,4 +68,12 @@ impl WasmRenderApp {
     pub fn get_overlay_edge_instances_count(&self) -> usize {
         self.renderer.get_overlay_edge_instances().len()
     }
+
+    pub fn get_route_vertices(&self) -> Uint8Array {
+        direct_buffer::as_js_buffer(self.renderer.get_route_vertices())
+    }
+
+    pub fn get_route_vertex_count(&self) -> usize {
+        self.renderer.get_route_vertices().len()
+    }
 }

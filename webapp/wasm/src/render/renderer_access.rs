@@ -1,4 +1,4 @@
-use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, MapDetailVertex, TileFogOfWarInstance, TileTerrainLandInstance, TileTerrainWaterInstance, WaterEdgeInstance};
+use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, GridOverlayInstance, MapDetailVertex, RouteVertex, TileFogOfWarInstance, TileTerrainLandInstance, TileTerrainWaterInstance, WaterEdgeInstance};
 use crate::render::Renderer;
 
 impl Renderer {
@@ -32,5 +32,9 @@ impl Renderer {
 
     pub fn get_overlay_edge_instances(&self) -> &Vec<GenericEdgeOverlayInstance> {
         &self.output.overlay_edge_instances
+    }
+
+    pub fn get_route_vertices(&self) -> &Vec<RouteVertex> {
+        &self.output.route_vertices
     }
 }

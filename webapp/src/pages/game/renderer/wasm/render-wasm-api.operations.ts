@@ -12,12 +12,13 @@ export interface RenderWasmApiOperations {
     calculateVisibleChunks: () => {
         visibleChunks: boolean
     }
-    calculateTileInstances: () => {
+    calculateWorldMesh: () => {
         tileLandInstances: boolean,
         tileWaterInstances: boolean,
         waterEdgeInstances: boolean,
         tileFogOfWarInstances: boolean,
-        mapDetailVertices: boolean
+        mapDetailVertices: boolean,
+        routeVertices: boolean,
     },
 }
 
@@ -48,15 +49,16 @@ export const renderWasmApiOperations = (wasm: WasmRenderApp): RenderWasmApiOpera
             });
         },
 
-        calculateTileInstances: () => {
-            return tracer.span({name: "wasmapi-calculateTileInstances"}, () => {
-                const changed = wasm.calculate_tile_instances();
+        calculateWorldMesh: () => {
+            return tracer.span({name: "wasmapi-calculate_world_mesh"}, () => {
+                const changed = wasm.calculate_world_mesh();
                 return {
                     tileLandInstances: changed,
                     tileWaterInstances: changed,
                     waterEdgeInstances: changed,
                     tileFogOfWarInstances: changed,
                     mapDetailVertices: changed,
+                    routeVertices: changed,
                 };
             });
         },

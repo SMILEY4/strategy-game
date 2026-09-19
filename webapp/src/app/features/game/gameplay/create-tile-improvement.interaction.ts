@@ -165,7 +165,7 @@ function selectAvailableAdministeringSettlements(position: HexPosition): { id: n
 }
 
 function chooseDefaultAdministeringSettlement(available: { id: number, amount: number }[]): number {
-    if (!available) {
+    if (!available || available.length === 0) {
         throw new Error("no available settlements");
     }
     let best = available[0];

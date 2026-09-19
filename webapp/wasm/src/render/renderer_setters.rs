@@ -1,4 +1,4 @@
-use crate::js::models::{Control, Entity, Tile};
+use crate::js::models::{Control, Entity, RoutePoint, Tile};
 use crate::render::Renderer;
 
 impl Renderer {
@@ -14,8 +14,7 @@ impl Renderer {
                 .insert(tile.tile_position, index);
         }
 
-        self.state.chunks.clear();
-        self.state.visible_chunks.clear();
+        self.invalidate_chunks()
     }
 
     pub fn set_tile_control_values(&mut self, controls: Vec<Control>) {
@@ -36,6 +35,14 @@ impl Renderer {
 
     pub fn set_entities(&mut self, entities: Vec<Entity>) {
         self.state.entities = entities;
+        self.invalidate_chunks()
+    }
+    
+    pub fn set_route_points(&mut self, route_points: Vec<RoutePoint>) {
+        self.state.routes_points = route_points;
+    }
+    
+    fn invalidate_chunks(&mut self) {
         self.state.chunks.clear();
         self.state.visible_chunks.clear();
     }

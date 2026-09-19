@@ -8,6 +8,7 @@ import type {Tile} from "@app/features/game/models/tile.ts";
 import type {Command} from "@app/features/game/models/command.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 import type {RenderEntity} from "@pages/game/renderer/data/render-entity.ts";
+import type {Route} from "@app/features/game/models/route.ts";
 
 
 export function gameGraphDataWorld(
@@ -103,6 +104,19 @@ export function gameGraphDataWorld(
         },
     });
 
+    const dataAllRoutes = g.dataExternal<VersionedContainer<Route[]>>(
+        prev => prev?.revId !== dataProvider.getRoutes().revId,
+        () => dataProvider.getRoutes().load(),
+    );
+
+    const wasmAllRoutes = g.wasmData({
+        source: {
+            type: "js",
+            data: dataAllRoutes,
+            upload: (routes: VersionedContainer<Route[]>) => wasmApi.upload.uploadRoutes(routes.data),
+        },
+    });
+
     const calculateAllChunks = g.wasmOperation({
         wasmInputs: [wasmAllTiles, wasmAllEntities],
         dataInputs: [],
@@ -133,17 +147,17 @@ export function gameGraphDataWorld(
         },
     });
 
-    const calculateTileInstances = g.wasmOperation({
-        wasmInputs: [wasmVisibleChunks, wasmAllTiles],
+    const calculateWorldMesh = g.wasmOperation({
+        wasmInputs: [wasmVisibleChunks, wasmAllTiles, wasmAllRoutes],
         dataInputs: [],
-        outputs: ["tileLandInstances", "tileWaterInstances", "waterEdgeInstances", "tileFogOfWarInstances", "mapDetailVertices"],
-            func: () => wasmApi.operations.calculateTileInstances(),
+        outputs: ["tileLandInstances", "tileWaterInstances", "waterEdgeInstances", "tileFogOfWarInstances", "mapDetailVertices", "routeVertices"],
+            func: () => wasmApi.operations.calculateWorldMesh(),
     });
 
     const wasmTileLandInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: calculateTileInstances,
+            operation: calculateWorldMesh,
             key: "tileLandInstances",
         },
     });
@@ -151,7 +165,7 @@ export function gameGraphDataWorld(
     const wasmTileWaterInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: calculateTileInstances,
+            operation: calculateWorldMesh,
             key: "tileWaterInstances",
         },
     });
@@ -159,7 +173,7 @@ export function gameGraphDataWorld(
     const wasmWaterEdgeInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: calculateTileInstances,
+            operation: calculateWorldMesh,
             key: "waterEdgeInstances",
         },
     });
@@ -167,7 +181,7 @@ export function gameGraphDataWorld(
     const wasmTileFogOfWarInstances = g.wasmData({
         source: {
             type: "wasm",
-            operation: calculateTileInstances,
+            operation: calculateWorldMesh,
             key: "tileFogOfWarInstances",
         },
     });
@@ -175,8 +189,17 @@ export function gameGraphDataWorld(
     const wasmMapDetailVertices = g.wasmData({
         source: {
             type: "wasm",
-            operation: calculateTileInstances,
+            operation: calculateWorldMesh,
             key: "mapDetailVertices",
+        },
+    });
+
+
+    const wasmRouteVertices = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: calculateWorldMesh,
+            key: "routeVertices",
         },
     });
 
@@ -187,5 +210,6 @@ export function gameGraphDataWorld(
         wasmWaterEdgeInstances: wasmWaterEdgeInstances,
         wasmTileFogOfWarInstances: wasmTileFogOfWarInstances,
         wasmMapDetailVertices: wasmMapDetailVertices,
+        wasmRouteVertices: wasmRouteVertices,
     };
 }

@@ -13,12 +13,15 @@ import type {Camera} from "@app/features/game/models/camera.ts";
 import type {Tile} from "@app/features/game/models/tile.ts";
 import type {Command} from "@app/features/game/models/command.ts";
 import {createVersionedLazy, type VersionedLazy} from "@pages/game/renderer/data/versioned-data.ts";
+import type {Route} from "@app/features/game/models/route.ts";
+import {type RouteDatabase, RouteQueries} from "@app/features/game/database/route.database.ts";
 
 export interface GameRendererDataProvider {
     getDebugData: () => VersionedLazy<DebugData>
     getCamera: () => VersionedLazy<Camera>,
     getTiles: () => VersionedLazy<Tile[]>,
     getEntities: () => VersionedLazy<Entity[]>,
+    getRoutes: () => VersionedLazy<Route[]>,
     getCommands: () => VersionedLazy<Command[]>,
     getPointerPosition: () => VersionedLazy<PointerPosition>
     getSelectedTilePosition: () => HexPosition | null
@@ -29,6 +32,7 @@ export interface GameRendererDataProvider {
 interface Dependencies {
     tileDb: TileDatabase;
     entityDb: EntityDatabase,
+    routeDb: RouteDatabase,
     commandDb: CommandDatabase,
     selectedTileDb: SelectedTileDatabase,
     mapModeDb: MapModeDatabase,
@@ -37,16 +41,19 @@ interface Dependencies {
     debugDb: DebugDatabase;
 }
 
-export const gameRendererDataProvider = ({
-                                             tileDb,
-                                             entityDb,
-                                             commandDb,
-                                             selectedTileDb,
-                                             mapModeDb,
-                                             cameraDb,
-                                             pointerPositionDb,
-                                             debugDb,
-                                         }: Dependencies): GameRendererDataProvider => {
+export const gameRendererDataProvider = (dependencies: Dependencies): GameRendererDataProvider => {
+
+    const {
+        tileDb,
+        entityDb,
+        routeDb,
+        commandDb,
+        selectedTileDb,
+        mapModeDb,
+        cameraDb,
+        pointerPositionDb,
+        debugDb,
+    } = dependencies;
 
     return {
 
@@ -68,6 +75,11 @@ export const gameRendererDataProvider = ({
         getEntities: () => createVersionedLazy<Entity[]>(
             entityDb.getRevId(),
             () => entityDb.queryMany(EntityQueries.ALL, undefined),
+        ),
+
+        getRoutes: () => createVersionedLazy<Route[]>(
+            routeDb.getRevId(),
+            () => routeDb.queryMany(RouteQueries.ALL, undefined),
         ),
 
         getCommands: () => createVersionedLazy<Command[]>(

@@ -14,6 +14,7 @@ import {renderOverlay} from "@pages/game/renderer/graph/render-overlay.ts";
 import {renderSelectedTile} from "@pages/game/renderer/graph/render-selected-tile.ts";
 import {renderTileGrid} from "@pages/game/renderer/graph/render-tile-grid.ts";
 import {gameGraphHtml} from "@pages/game/renderer/graph/html.ts";
+import {renderRoutes} from "@pages/game/renderer/graph/render-routes.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -34,6 +35,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         wasmTileWaterInstances,
         wasmWaterEdgeInstances,
         wasmMapDetailVertices,
+        wasmRouteVertices
     } = gameGraphDataWorld(g, dataProvider, wasmApi, {
         dataCamera: dataCamera,
     });
@@ -66,6 +68,13 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         wasmMapDetailVertices: wasmMapDetailVertices,
     });
 
+    //====================== ROUTES =========================================
+
+    const {drawRoutes} = renderRoutes(g, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
+        wasmRouteVertices: wasmRouteVertices,
+    });
     //====================== FOG OF WAR =====================================
 
     // const renderTargetFogOfWarMask = renderFogOfWar(g, wasmApi, {
@@ -112,6 +121,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
             drawWaterTiles,
             drawLandTiles,
             drawMapDetails,
+            drawRoutes,
             drawTileGrid,
             drawOverlayFill,
             drawOverlayBorderBack,

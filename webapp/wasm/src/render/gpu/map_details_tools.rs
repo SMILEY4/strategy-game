@@ -1,4 +1,3 @@
-use crate::js::imported::imported::console_log;
 use crate::js::models::{HexPosition, SpriteSheetEntry};
 use crate::math::random::Random;
 use crate::render::config::Config;
@@ -75,7 +74,6 @@ pub fn construct_sprite(
     atlas_id: u32,
     is_pending: bool,
 ) {
-    console_log(&format!(" ...constructing sprite"));
 
     // texture coordinates use the atlas-native V (v_min = sprite top). The fragment shader
     // inverts V (`1.0 - v`) and textures are uploaded with UNPACK_FLIP_Y_WEBGL, so emitting the

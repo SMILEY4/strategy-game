@@ -1,14 +1,17 @@
-import type {WasmRenderApp} from "wasm";
+import {type WasmRenderApp} from "wasm";
 import {tracer} from "@modules/monitoring/tracer.ts";
 import type {Tile} from "@app/features/game/models/tile.ts";
 import type {RenderEntity} from "@pages/game/renderer/data/render-entity.ts";
 import type {MapMode} from "@app/features/game/models/map-mode.ts";
 import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
 import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
+import type {Route} from "@app/features/game/models/route.ts";
+import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 
 export interface RenderWasmApiUpload {
     uploadTiles: (tiles: Tile[]) => void,
     uploadEntities: (entities: RenderEntity[]) => void,
+    uploadRoutes: (routes: Route[]) => void
     setMapMode: (mapMode: MapMode) => void,
     setSelectedEntityId: (entityId: number | null) => void,
     setSelectedSettlementId: (settlementId: number | null) => void,
@@ -26,6 +29,11 @@ type ControlUpload = {
     entityId: number,
     amount: number,
 };
+
+type RoutePoint = {
+    routeId: number,
+    position: HexPosition,
+}
 
 const tileSerializer = wasmSerializer<TileUpload>({
     "tile_position.q": {
@@ -163,6 +171,21 @@ const entitySerializer = wasmSerializer<RenderEntity>({
     },
 });
 
+const routePointSerializer = wasmSerializer<RoutePoint>({
+    "route_id": {
+        type: "u32",
+        provider: routePoint => routePoint.routeId,
+    },
+    "tile_position.q": {
+        provider: routePoint => routePoint.position.q,
+        type: "i32",
+    },
+    "tile_position.r": {
+        provider: routePoint => routePoint.position.r,
+        type: "i32",
+    },
+});
+
 const entityRenderTypeSerialisationMapping: Record<string, number> = {
     undefined: 0,
     "settlement": 1,
@@ -208,6 +231,25 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
                 const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
                 entitySerializer(buffer, entities);
                 wasm.upload_entities(memory.ptr, memory.len);
+            });
+        },
+
+        uploadRoutes: (routes: Route[]) => {
+            tracer.span({name: "wasmapi-uploadRoutes"}, () => {
+                const routePoints: RoutePoint[] = routes.flatMap(route =>
+                    route.path.map(point => ({
+                        routeId: route.id,
+                        position: {
+                            q: point.q,
+                            r: point.r,
+                        },
+                    })),
+                );
+
+                const memory = wasm.reserve_routes_memory(routePoints.length);
+                const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
+                routePointSerializer(buffer, routePoints);
+                wasm.upload_routes(memory.ptr, memory.len);
             });
         },
 

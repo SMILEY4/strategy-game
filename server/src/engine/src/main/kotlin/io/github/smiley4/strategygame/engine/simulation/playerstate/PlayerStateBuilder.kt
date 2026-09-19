@@ -160,13 +160,15 @@ class PlayerStateBuilder {
         "from" to route.from.id
         "to" to route.to.id
         "cost" to route.cost
-        "path" to route.tiles.map { tile ->
-            obj {
-                "id" to tile.id.id
-                "q" to tile.position.q
-                "r" to tile.position.r
+        "path" to arr[
+            route.tiles.map { tile ->
+                obj {
+                    "id" to tile.id.id
+                    "q" to tile.position.q
+                    "r" to tile.position.r
+                }
             }
-        }
+        ]
     }
 
     private fun hidden(visible: Boolean, value: () -> ObjectType?) = obj {
