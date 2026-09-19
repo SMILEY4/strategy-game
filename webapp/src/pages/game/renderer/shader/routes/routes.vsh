@@ -12,5 +12,5 @@ out float v_pathLength;
 void main() {
     v_textureCoordinates = in_textureCoordinates;
     v_pathLength = in_pathLength;
-    gl_Position = u_camera * vec4(in_vertexPosition.x, 0.02, in_vertexPosition.y, 1.0);
+    gl_Position = u_camera * vec4(in_vertexPosition.x, 0.04, in_vertexPosition.y, 1.0);
 }

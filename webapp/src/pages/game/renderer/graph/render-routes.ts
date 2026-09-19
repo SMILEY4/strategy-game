@@ -54,14 +54,19 @@ export function renderRoutes(
         prefixVertexAttributes: "in_",
     });
 
+    const texturePaintLine = g.texture({
+        url: "/sprites/paint-line_v2.jpg",
+    });
+
     const draw = g.draw({
         shader: shader,
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
+            "texture": texturePaintLine,
         },
         writeDepth: false,
-        testDepth: DepthFunc.ALWAYS,
+        testDepth: DepthFunc.LESS,
     });
 
     return {

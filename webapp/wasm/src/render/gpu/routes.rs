@@ -155,26 +155,76 @@ fn build_line_mesh(
         return;
     }
 
+    let half_width = width / 2.0;
+    let directions: Vec<[f32; 2]> = path
+        .windows(2)
+        .zip(&segment_lengths)
+        .map(|(segment, &length)| {
+            if length <= f32::EPSILON {
+                [0.0, 0.0]
+            } else {
+                [
+                    (segment[1][0] - segment[0][0]) / length,
+                    (segment[1][1] - segment[0][1]) / length,
+                ]
+            }
+        })
+        .collect();
+
+    let normals: Vec<[f32; 2]> = directions
+        .iter()
+        .map(|direction| [-direction[1], direction[0]])
+        .collect();
+
+    let offsets: Vec<[f32; 2]> = (0..path.len())
+        .map(|point_index| {
+            let normal = if point_index == 0 {
+                normals[0]
+            } else if point_index == path.len() - 1 {
+                normals[normals.len() - 1]
+            } else {
+                let previous = normals[point_index - 1];
+                let next = normals[point_index];
+                let miter = normalize([previous[0] + next[0], previous[1] + next[1]]);
+                let miter_scale = dot(miter, next);
+
+                if miter_scale.abs() <= f32::EPSILON {
+                    next
+                } else {
+                    [miter[0] / miter_scale, miter[1] / miter_scale]
+                }
+            };
+
+            [normal[0] * half_width, normal[1] * half_width]
+        })
+        .collect();
+
     let mut distance_along_path = 0.0;
-    for (segment, length) in path.windows(2).zip(segment_lengths) {
-        let start = segment[0];
-        let end = segment[1];
+    for (segment_index, (segment, length)) in path
+        .windows(2)
+        .zip(segment_lengths)
+        .enumerate()
+    {
         if length <= f32::EPSILON {
             continue;
         }
 
-        let direction = [
-            (end[0] - start[0]) / length,
-            (end[1] - start[1]) / length,
+        let left_start = [
+            segment[0][0] + offsets[segment_index][0],
+            segment[0][1] + offsets[segment_index][1],
         ];
-        let offset = [
-            -direction[1] * width / 2.0,
-            direction[0] * width / 2.0,
+        let right_start = [
+            segment[0][0] - offsets[segment_index][0],
+            segment[0][1] - offsets[segment_index][1],
         ];
-        let left_start = [start[0] + offset[0], start[1] + offset[1]];
-        let right_start = [start[0] - offset[0], start[1] - offset[1]];
-        let left_end = [end[0] + offset[0], end[1] + offset[1]];
-        let right_end = [end[0] - offset[0], end[1] - offset[1]];
+        let left_end = [
+            segment[1][0] + offsets[segment_index + 1][0],
+            segment[1][1] + offsets[segment_index + 1][1],
+        ];
+        let right_end = [
+            segment[1][0] - offsets[segment_index + 1][0],
+            segment[1][1] - offsets[segment_index + 1][1],
+        ];
         let start_u = distance_along_path / total_length;
         let end_u = (distance_along_path + length) / total_length;
 
@@ -188,5 +238,18 @@ fn build_line_mesh(
         ]);
 
         distance_along_path += length;
+    }
+}
+
+fn dot(a: [f32; 2], b: [f32; 2]) -> f32 {
+    a[0] * b[0] + a[1] * b[1]
+}
+
+fn normalize(vector: [f32; 2]) -> [f32; 2] {
+    let length = (vector[0] * vector[0] + vector[1] * vector[1]).sqrt();
+    if length <= f32::EPSILON {
+        [0.0, 0.0]
+    } else {
+        [vector[0] / length, vector[1] / length]
     }
 }
