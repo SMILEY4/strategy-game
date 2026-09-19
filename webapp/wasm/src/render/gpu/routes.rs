@@ -1,9 +1,9 @@
-use crate::js::models::RoutePoint;
-use crate::js::imported::imported::console_log;
+use crate::js::models::{HexPosition, RoutePoint};
 use crate::render::config::Config;
 use crate::render::models::gpu::RouteVertex;
 use crate::render::state_output::OutputState;
 use crate::render::state_render::RenderState;
+use crate::render::gpu::route_preprocessing::split_unique_routes;
 
 pub const ROUTE_WIDTH: f32 = 0.2;
 pub const ROUTE_SUBDIVISIONS_PER_SEGMENT: usize = 8;
@@ -11,7 +11,8 @@ pub const ROUTE_SUBDIVISIONS_PER_SEGMENT: usize = 8;
 pub fn build_routes(state: &RenderState, _config: &Config, output: &mut OutputState) {
     output.route_vertices.clear();
 
-    let routes = get_routes(&state.routes_points);
+    let grouped_routes = get_routes(&state.routes_points);
+    let routes = split_unique_routes(&grouped_routes);
 
     for route in routes {
         let raw_path = build_raw_path(&route);
@@ -47,7 +48,7 @@ fn get_routes(route_points: &[RoutePoint]) -> Vec<&[RoutePoint]> {
 }
 
 /// converts the route into a list of world positions
-fn build_raw_path(route: &[RoutePoint]) -> Vec<[f32; 2]> {
+fn build_raw_path(route: &[HexPosition]) -> Vec<[f32; 2]> {
 
     fn hex_to_world(q: i32, r: i32) -> [f32; 2] {
         let sqrt_3 = 3.0_f32.sqrt();
@@ -56,7 +57,7 @@ fn build_raw_path(route: &[RoutePoint]) -> Vec<[f32; 2]> {
 
     route
         .iter()
-        .map(|point| hex_to_world(point.tile_position.q, point.tile_position.r))
+        .map(|point| hex_to_world(point.q, point.r))
         .collect()
 }
 
