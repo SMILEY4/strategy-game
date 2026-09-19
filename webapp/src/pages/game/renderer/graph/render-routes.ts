@@ -37,6 +37,11 @@ export function renderRoutes(
                         type: GlAttributeType.FLOAT,
                         amountComponents: 2,
                     },
+                    {
+                        name: "pathLength",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 1,
+                    },
                 ],
             }),
         ],

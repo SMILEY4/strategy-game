@@ -75,4 +75,5 @@ pub const OVERLAY_FILL_STYLE_STRIPED: u32 = 1;
 pub struct RouteVertex {
     pub vertex_position: [f32; 2],
     pub texture_coords: [f32; 2],
+    pub path_length: f32,
 }
