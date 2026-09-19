@@ -15,6 +15,22 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
 
     override val commandType = PlayerCommand.CreateTileImprovement::class
 
+    val pathfinder = Pathfinder({ current, target ->
+        if (target.world.biome == Tile.Biome.OCEAN) {
+            return@Pathfinder 99999f
+        }
+        if (target.world.elevation == Tile.Elevation.MOUNTAINS) {
+            return@Pathfinder 5f
+        }
+        if (target.world.elevation == Tile.Elevation.HILLS) {
+            return@Pathfinder 3f
+        }
+        if (target.world.feature == Tile.Feature.FOREST) {
+            return@Pathfinder 1.25f
+        }
+        1f;
+    })
+
     override fun handle(gameState: GameStateContext, command: PlayerCommand.CreateTileImprovement) {
 
         val realm = gameState.realms.first { it.user == command.playerId }
@@ -27,7 +43,7 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
         }
 
         // find route to settlement
-        val pathResult = Pathfinder({ _, _ -> 1f }).find(
+        val pathResult = pathfinder.find(
             gameState.tiles,
             settlement.getComponent<EntityComponent.Position>().tile,
             targetTile.ref()
