@@ -37,4 +37,8 @@ impl Renderer {
     pub fn get_route_vertices(&self) -> &Vec<RouteVertex> {
         &self.output.route_vertices
     }
+
+    pub fn get_route_highlight_vertices(&self) -> &Vec<RouteVertex> {
+        &self.output.route_highlight_vertices
+    }
 }

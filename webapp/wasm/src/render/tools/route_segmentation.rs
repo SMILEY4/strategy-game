@@ -9,6 +9,7 @@ struct Edge {
     vertex_a: usize,
     vertex_b: usize,
     route_ids: Vec<u32>,
+    connected_entity_ids: Vec<u32>,
 }
 
 #[derive(Default)]
@@ -42,19 +43,33 @@ impl RouteGraph {
         for points in route_points.windows(2) {
             let route_id = points[0].route_id;
             let next_route_id = points[1].route_id;
+            let route_from = points[0].route_from;
+            let route_to = points[0].route_to;
             let start = points[0].tile_position;
             let end = points[1].tile_position;
             if route_id == next_route_id && start != end {
-                self.add_edge(start, end, route_id);
+                self.add_edge(start, end, route_id, route_from, route_to);
             }
         }
     }
 
     /// Adds or updates an undirected edge between two positions.
-    fn add_edge(&mut self, start: HexPosition, end: HexPosition, route_id: u32) {
+    fn add_edge(
+        &mut self,
+        start: HexPosition,
+        end: HexPosition,
+        route_id: u32,
+        route_from: u32,
+        route_to: u32,
+    ) {
         let key = edge_key(start, end);
         if let Some(&edge_index) = self.edge_indices.get(&key) {
             add_unique(&mut self.edges[edge_index].route_ids, route_id);
+            add_unique(
+                &mut self.edges[edge_index].connected_entity_ids,
+                route_from,
+            );
+            add_unique(&mut self.edges[edge_index].connected_entity_ids, route_to);
             return;
         }
 
@@ -66,6 +81,7 @@ impl RouteGraph {
             vertex_a,
             vertex_b,
             route_ids: vec![route_id],
+            connected_entity_ids: unique_ids([route_from, route_to]),
         });
         self.adjacency[vertex_a].push(edge_index);
         self.adjacency[vertex_b].push(edge_index);
@@ -179,6 +195,7 @@ impl RouteGraph {
     /// Builds one route segment and collects its participating route IDs.
     fn create_route_segment(&self, path: &[usize]) -> RouteSegment {
         let mut route_ids = Vec::new();
+        let mut connected_entity_ids = Vec::new();
         let edge_indices = path
             .windows(2)
             .map(|vertices| self.edge_between(vertices[0], vertices[1]));
@@ -186,11 +203,15 @@ impl RouteGraph {
             for &route_id in &self.edges[edge].route_ids {
                 add_unique(&mut route_ids, route_id);
             }
+            for &entity_id in &self.edges[edge].connected_entity_ids {
+                add_unique(&mut connected_entity_ids, entity_id);
+            }
         }
 
         RouteSegment {
             points: path.iter().map(|&vertex| self.vertices[vertex]).collect(),
             route_ids,
+            connected_entity_ids,
         }
     }
 
@@ -216,4 +237,13 @@ fn add_unique(route_ids: &mut Vec<u32>, route_id: u32) {
     if !route_ids.contains(&route_id) {
         route_ids.push(route_id);
     }
+}
+
+/// Creates a vector containing each supplied ID at most once.
+fn unique_ids(ids: [u32; 2]) -> Vec<u32> {
+    let mut unique = Vec::with_capacity(ids.len());
+    for id in ids {
+        add_unique(&mut unique, id);
+    }
+    unique
 }

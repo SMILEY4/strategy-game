@@ -32,6 +32,8 @@ type ControlUpload = {
 
 type RoutePoint = {
     routeId: number,
+    routeFrom: number,
+    routeTo: number,
     position: HexPosition,
 }
 
@@ -176,6 +178,14 @@ const routePointSerializer = wasmSerializer<RoutePoint>({
         type: "u32",
         provider: routePoint => routePoint.routeId,
     },
+    "route_from": {
+        type: "u32",
+        provider: routePoint => routePoint.routeFrom,
+    },
+    "route_to": {
+        type: "u32",
+        provider: routePoint => routePoint.routeTo,
+    },
     "tile_position.q": {
         provider: routePoint => routePoint.position.q,
         type: "i32",
@@ -239,6 +249,8 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
                 const routePoints: RoutePoint[] = routes.flatMap(route =>
                     route.path.map(point => ({
                         routeId: route.id,
+                        routeFrom: route.from,
+                        routeTo: route.to,
                         position: {
                             q: point.q,
                             r: point.r,

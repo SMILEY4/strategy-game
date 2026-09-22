@@ -97,6 +97,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         drawOverlayFill,
         drawOverlayBorderBack,
         drawOverlayBorderFront,
+        drawRouteHighlight,
     } = renderOverlay(g, dataProvider, wasmApi, {
         dataDebug: dataDebug,
         camera: camera,
@@ -126,6 +127,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
             drawOverlayFill,
             drawOverlayBorderBack,
             drawOverlayBorderFront,
+            drawRouteHighlight,
             drawSelectedTileBack,
             drawSelectedTileFront,
         ],

@@ -11,7 +11,8 @@ pub struct OutputState {
     pub map_detail_vertices: Vec<MapDetailVertex>,
 
     pub route_vertices: Vec<RouteVertex>,
-    
+    pub route_highlight_vertices: Vec<RouteVertex>,
+
     pub overlay_grid_instances: Vec<GridOverlayInstance>,
     pub overlay_fill_instances: Vec<GenericFillOverlayInstance>,
     pub overlay_edge_instances: Vec<GenericEdgeOverlayInstance>

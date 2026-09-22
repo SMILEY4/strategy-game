@@ -117,5 +117,7 @@ pub const MAP_MODE_SETTLEMENT_LOCATIONS: u32 = 3;
 #[derive(Copy, Clone, Debug)]
 pub struct RoutePoint {
     pub route_id: u32, // id of the route this point belongs to
+    pub route_from: u32, // entity at the start of this route
+    pub route_to: u32, // entity at the end of this route
     pub tile_position: HexPosition, // hex position of this point
 }

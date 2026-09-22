@@ -16,6 +16,8 @@ import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import {vec2} from "gl-matrix";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
+import SHADER_ROUTE_HIGHLIGHT_VERT from "@pages/game/renderer/shader/overlay/routeHighlight.vsh";
+import SHADER_ROUTE_HIGHLIGHT_FRAG from "@pages/game/renderer/shader/overlay/routeHighlight.fsh";
 
 export function renderOverlay(
     g: RenderGraphBuilder,
@@ -67,10 +69,9 @@ export function renderOverlay(
     const calculateOverlayInstances = g.wasmOperation({
         wasmInputs: [inputs.visibleChunks, wasmMapMode, wasmSelectedEntity],
         dataInputs: [],
-        outputs: ["overlayFillInstances", "overlayEdgeInstances"],
+        outputs: ["overlayFillInstances", "overlayEdgeInstances", "routeHighlightVertices"],
         func: () => wasmApi.operations.calculateOverlayInstances(),
     });
-
 
     //====================== DRAW FILL ======================================
 
@@ -271,6 +272,60 @@ export function renderOverlay(
         testDepth: DepthFunc.GREATER,
     });
 
+    //====================== DRAW ROUTE HIGHLIGHT ===========================
+
+    const wasmRouteHighlightVertices = g.wasmData({
+        source: {
+            type: "wasm",
+            operation: calculateOverlayInstances,
+            key: "routeHighlightVertices",
+        },
+    });
+
+    const geometryRouteHighlight = g.geometry({
+        sources: [
+            g.wasmGeometrySource({
+                source: wasmRouteHighlightVertices,
+                download: () => wasmApi.download.getRouteHighlightVertices(),
+                content: "vertices",
+                layout: [
+                    {
+                        name: "vertexPosition",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    },
+                    {
+                        name: "textureCoordinates",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    },
+                    {
+                        name: "pathLength",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 1,
+                    },
+                ],
+            }),
+        ],
+    });
+
+    const shader = g.shader({
+        srcVertex: SHADER_ROUTE_HIGHLIGHT_VERT,
+        srcFragment: SHADER_ROUTE_HIGHLIGHT_FRAG,
+        prefixUniforms: "u_",
+        prefixVertexAttributes: "in_",
+    });
+
+    const drawRouteHighlight = g.draw({
+        shader: shader,
+        geometry: geometryRouteHighlight,
+        inputs: {
+            "camera": inputs.camera,
+            "texture": texturePaintLine,
+        },
+        writeDepth: false,
+        testDepth: DepthFunc.ALWAYS,
+    });
 
     //====================== OUTPUT =========================================
 
@@ -278,6 +333,7 @@ export function renderOverlay(
         drawOverlayFill: drawFill,
         drawOverlayBorderBack: drawBorderBack,
         drawOverlayBorderFront: drawBorderFront,
+        drawRouteHighlight: drawRouteHighlight,
     };
 }
 
