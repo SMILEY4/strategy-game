@@ -7,6 +7,7 @@ import {Tabbar} from "@modules/uicomponents/tabbar/Tabbar.tsx";
 import {type QuickinfoViewModel, useQuickInfoViewModel} from "@pages/game/gameui/quickinfo/quickinfo.view.model.ts";
 import {QuickInfo_Tile} from "@pages/game/gameui/quickinfo/QuickInfo.Tile.tsx";
 import {QuickInfo_Settlement} from "@pages/game/gameui/quickinfo/QuickInfo.Settlement.tsx";
+import {QuickInfo_TileImprovement} from "@pages/game/gameui/quickinfo/QuickInfo.TileImprovement.tsx";
 
 export function QuickInfo(): ReactElement {
     const viewModel = useQuickInfoViewModel();
@@ -53,6 +54,7 @@ function InfoSelected(props: QuickinfoViewModel) {
                 </Tabbar.Root>
                 {activeTab === "tile" && (<QuickInfo_Tile {...props.tile!}/>)}
                 {activeTab === "settlement" && (<QuickInfo_Settlement {...props.settlement!}/>)}
+                {activeTab === "tile-improvement" &&  (<QuickInfo_TileImprovement {...props.tileImprovement!}/>)}
             </VerticalLayout>
         );
     }

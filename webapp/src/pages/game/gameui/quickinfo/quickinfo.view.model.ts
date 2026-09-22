@@ -10,9 +10,10 @@ import {useCreateTileImprovementValidation} from "@app/features/game/gameplay/cr
 import {CreateTileImprovementInteraction} from "@app/features/game/gameplay/create-tile-improvement.interaction.ts";
 
 export interface QuickinfoViewModel {
-    availableInfo: ("tile" | "settlement")[];
+    availableInfo: ("tile" | "settlement" | "tile-improvement")[];
     tile: null | QuickInfoTileViewModel;
     settlement: null | QuickInfoSettlementViewModel;
+    tileImprovement: null | QuickInfoTileImprovementViewModel;
 }
 
 export interface QuickInfoTileViewModel {
@@ -50,21 +51,34 @@ export interface QuickInfoSettlementViewModel {
     }
 }
 
+export interface QuickInfoTileImprovementViewModel {
+    id: number;
+    owner: number | null,
+    settlement: number,
+    type: string,
+    actions: {
+        focusCamera: () => void,
+    }
+}
+
 export function useQuickInfoViewModel(): QuickinfoViewModel {
 
     const selectedTileRef = useQuerySingleton(DI.selectedTileDatabase).selected;
 
     const tileQuickInfo = useBuildTileQuickInfo(selectedTileRef);
     const settlementQuickInfo = useSettlementQuickInfo(selectedTileRef);
+    const tileImprovementQuickInfo = useTileImprovementQuickInfo(selectedTileRef)
 
-    const availableInfo: ("tile" | "settlement")[] = [];
+    const availableInfo: ("tile" | "settlement" | "tile-improvement")[] = [];
     if (tileQuickInfo) availableInfo.push("tile");
     if (settlementQuickInfo) availableInfo.push("settlement");
+    if(tileImprovementQuickInfo) availableInfo.push("tile-improvement")
 
     return {
         availableInfo: availableInfo,
         tile: tileQuickInfo,
         settlement: settlementQuickInfo,
+        tileImprovement: tileImprovementQuickInfo,
     };
 }
 
@@ -129,6 +143,29 @@ function useSettlementQuickInfo(tileRef: HexPosition & { id: number } | null): Q
         isRealmCapital: settlementComponent.isRealmCapital,
         actions: {
             focusCamera: () => DI.cameraController.lookAt(settlementEntity.position),
+        },
+    };
+}
+
+
+function useTileImprovementQuickInfo(tileRef: HexPosition & { id: number } | null): QuickInfoTileImprovementViewModel | null {
+
+    const tileImprovementEntity = useQueryMultiple(DI.entityDatabase, EntityQueries.BY_POSITION, tileRef ?? INVALID_HEX_POSITION)
+        .find(it => EntityUtils.hasComponent(it, "tile-improvement"));
+
+    if (!tileRef || !tileImprovementEntity) {
+        return null;
+    }
+
+    const tileImprovementComponent = EntityUtils.getComponent(tileImprovementEntity, "tile-improvement")!;
+
+    return {
+        id: tileImprovementEntity.id,
+        owner: tileImprovementEntity.owner,
+        type: tileImprovementComponent.key,
+        settlement: tileImprovementComponent.administeringSettlement,
+        actions: {
+            focusCamera: () => DI.cameraController.lookAt(tileImprovementEntity.position),
         },
     };
 }
