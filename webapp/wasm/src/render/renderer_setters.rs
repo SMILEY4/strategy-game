@@ -1,5 +1,6 @@
 use crate::js::models::{Control, Entity, RoutePoint, Tile};
 use crate::render::Renderer;
+use crate::render::tools::route_segmentation::segment_routes;
 
 impl Renderer {
     pub fn set_tiles(&mut self, tiles: Vec<Tile>) {
@@ -39,7 +40,7 @@ impl Renderer {
     }
     
     pub fn set_route_points(&mut self, route_points: Vec<RoutePoint>) {
-        self.state.routes_points = route_points;
+        self.state.route_segments = segment_routes(&route_points);
     }
     
     fn invalidate_chunks(&mut self) {
