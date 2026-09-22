@@ -66,7 +66,7 @@ export function renderRoutes(
             "texture": texturePaintLine,
         },
         writeDepth: false,
-        testDepth: DepthFunc.LESS,
+        testDepth: DepthFunc.ALWAYS,
     });
 
     return {

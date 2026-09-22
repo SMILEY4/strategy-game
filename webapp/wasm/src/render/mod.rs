@@ -13,6 +13,7 @@ mod renderer_setters;
 mod renderer_operations;
 pub mod statial;
 pub mod gpu;
+pub mod tools;
 
 pub struct Renderer {
     config: Config,

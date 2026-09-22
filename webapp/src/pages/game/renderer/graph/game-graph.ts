@@ -120,8 +120,8 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         renderPasses: [
             drawWaterTiles,
             drawLandTiles,
-            drawMapDetails,
             drawRoutes,
+            drawMapDetails,
             drawTileGrid,
             drawOverlayFill,
             drawOverlayBorderBack,
