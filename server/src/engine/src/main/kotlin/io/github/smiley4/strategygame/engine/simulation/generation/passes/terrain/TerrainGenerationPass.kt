@@ -44,9 +44,7 @@ internal class TerrainGenerationPass : GenerationPass {
         val tilePositions = buildTilePositionsWithChunks(radius, chunkRadius)
 
         val tiles = tilePositions.mapIndexed { index, (tilePositions, chunkPosition) ->
-//            val height = noise.GetNoise(tilePositions.q.toFloat(), tilePositions.r.toFloat())
-            val height = if(tilePositions.q % 2 == 0//            val height = noise.GetNoise(tilePositions.q.toFloat(), tilePositions.r.toFloat())
-                && tilePositions.r % 2 == 0) 1 else -1
+            val height = noise.GetNoise(tilePositions.q.toFloat(), tilePositions.r.toFloat())
             Tile(
                 id = Tile.Id(index + 1),
                 position = tilePositions,

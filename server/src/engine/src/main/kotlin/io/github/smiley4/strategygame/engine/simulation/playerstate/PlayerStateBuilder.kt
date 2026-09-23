@@ -180,36 +180,33 @@ class PlayerStateBuilder {
 
 
     private fun getVisibilityAt(gameState: GameStateContext, entity: Entity, realm: Realm.Id): Visibility {
-        return Visibility.VISIBLE
-//        val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
-//        if (position == null) return Visibility.UNDISCOVERED
-//        return getVisibilityAt(gameState, position, realm)
+        val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
+        if (position == null) return Visibility.UNDISCOVERED
+        return getVisibilityAt(gameState, position, realm)
     }
 
     private fun getVisibilityAt(gameState: GameStateContext, positions: HexPosition, realm: Realm.Id): Visibility {
-        return Visibility.VISIBLE
-//        val tile = gameState.tiles.find { it.position == positions }
-//        if (tile == null) return Visibility.UNDISCOVERED
-//        return getVisibilityAt(gameState, tile, realm)
+        val tile = gameState.tiles.find { it.position == positions }
+        if (tile == null) return Visibility.UNDISCOVERED
+        return getVisibilityAt(gameState, tile, realm)
     }
 
     private fun getVisibilityAt(gameState: GameStateContext, tile: Tile, realm: Realm.Id): Visibility {
-        return Visibility.VISIBLE
-//        val hasDirectVision = gameState.entities
-//            .asSequence()
-//            .filter { it.owner == realm }
-//            .filter { it.hasComponent<EntityComponent.Vision>() }
-//            .filter { it.hasComponent<EntityComponent.Position>() }
-//            .any {
-//                val range = it.getComponent<EntityComponent.Vision>().radius
-//                val position = it.getComponent<EntityComponent.Position>().tile.position
-//                position.distance(tile.position) <= range
-//            }
-//        return when {
-//            hasDirectVision -> Visibility.VISIBLE
-//            tile.political.discoveredBy.contains(realm) -> Visibility.DISCOVERED
-//            else -> Visibility.UNDISCOVERED
-//        }
+        val hasDirectVision = gameState.entities
+            .asSequence()
+            .filter { it.owner == realm }
+            .filter { it.hasComponent<EntityComponent.Vision>() }
+            .filter { it.hasComponent<EntityComponent.Position>() }
+            .any {
+                val range = it.getComponent<EntityComponent.Vision>().radius
+                val position = it.getComponent<EntityComponent.Position>().tile.position
+                position.distance(tile.position) <= range
+            }
+        return when {
+            hasDirectVision -> Visibility.VISIBLE
+            tile.political.discoveredBy.contains(realm) -> Visibility.DISCOVERED
+            else -> Visibility.UNDISCOVERED
+        }
     }
 
 }
