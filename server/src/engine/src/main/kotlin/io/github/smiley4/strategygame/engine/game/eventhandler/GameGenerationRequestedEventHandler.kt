@@ -14,6 +14,10 @@ class GameGenerationRequestedEventHandler(
     private val eventBus: ReadableEventBus
 ) : DomainEventHandler() {
 
+    init {
+        launch()
+    }
+
     override suspend fun start() {
         eventBus.events
             .filterIsInstance<GameGenerationRequestedEvent>()

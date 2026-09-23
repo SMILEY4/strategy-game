@@ -15,6 +15,10 @@ class MatchDeletedEventHandler(
     private val eventBus: ReadableEventBus
 ) : DomainEventHandler() {
 
+    init {
+        launch()
+    }
+
     override suspend fun start() {
         eventBus.events
             .filterIsInstance<MatchDeletedEvent>()
