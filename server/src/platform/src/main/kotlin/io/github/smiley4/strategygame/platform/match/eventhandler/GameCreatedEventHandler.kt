@@ -14,6 +14,10 @@ internal class GameCreatedEventHandler(
     private val matchService: MatchService,
 ) : DomainEventHandler() {
 
+    init {
+        launch()
+    }
+
     override suspend fun start() {
         eventBus.events
             .filterIsInstance<GameCreatedEvent>()
