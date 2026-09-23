@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.engine.simulation.generation.passes.realms
 
+import io.github.smiley4.strategygame.engine.simulation.gamestate.Color
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
@@ -17,6 +18,7 @@ internal class RealmGenerationPass : GenerationPass {
                 Realm(
                     id = Realm.Id(),
                     user = player,
+                    color = Color.random(),
                     spawnLocation = HexPosition(0,0)
                 )
             )

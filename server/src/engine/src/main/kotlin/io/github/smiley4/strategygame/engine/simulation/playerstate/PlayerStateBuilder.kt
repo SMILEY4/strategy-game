@@ -50,6 +50,13 @@ class PlayerStateBuilder {
 
     fun realm(realm: Realm, povRealmId: Realm.Id) = obj {
         "id" to realm.id.id
+        "color" to arr[
+            listOf(
+                realm.color.red.toInt(),
+                realm.color.green.toInt(),
+                realm.color.blue.toInt(),
+            )
+        ]
         "owned" to (realm.id == povRealmId)
         "phase" to realm.phase.name
         "spawnLocation" to obj {
