@@ -4,7 +4,6 @@ import {type TileDatabase, TileQueries} from "@app/features/game/database/tile.d
 import {useWatchDatabases} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
 import {useHasInteraction} from "@modules/interaction/interaction.tools.ts";
-import {type RealmDatabase, RealmQueries} from "@app/features/game/database/realm.database.ts";
 
 export interface CreateTileImprovementValidation {
     validate: (args: {
@@ -12,27 +11,26 @@ export interface CreateTileImprovementValidation {
         hasInteraction: boolean,
         commandDb: CommandDatabase,
         tileDb: TileDatabase,
-        realmDb: RealmDatabase,
     }) => boolean;
 }
 
 export const createTileImprovementValidation = (): CreateTileImprovementValidation => ({
-    validate: ({hasInteraction, commandDb, tileDb, realmDb, position}) => {
+    validate: ({hasInteraction, commandDb, tileDb, position}) => {
         if (hasInteraction) return false;
 
+        // check: tile exists and can create tile improvement (backend validation)
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
         if (!tile || !tile.createTileImprovement.visible || !tile.createTileImprovement.value.validRealm || tile.createTileImprovement.value.availableImprovementKeys.length === 0) {
             return false;
         }
 
-        const realm = realmDb.querySingle(RealmQueries.OWNED, undefined);
-        if (!realm) return false;
-
+        // check: other pending "create tile improvement" commands allow new tile improvement
         const createTileImprovementCommands = commandDb.queryMany(CommandQueries.BY_TYPE, "create-tile-improvement");
         if (createTileImprovementCommands.some(cmd => cmd.location.q === position.q || cmd.location.r === position.r)) {
             return false;
         }
 
+        // check: other pending "create settlement" commands allow new tile improvement
         const createSettlementCommands = commandDb.queryMany(CommandQueries.BY_TYPE, "create-settlement");
         if (createSettlementCommands.some(cmd => cmd.location.q === position.q || cmd.location.r === position.r)) {
             return false;
@@ -56,7 +54,6 @@ export function useCreateTileImprovementValidation() {
             position,
             tileDb: DI.tileDatabase,
             commandDb: DI.commandDatabase,
-            realmDb: DI.realmDatabase,
             hasInteraction,
         }),
     };

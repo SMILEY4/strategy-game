@@ -66,6 +66,6 @@ internal object TileImprovementValidation {
         val control = tile.political.control
             .filter { it.realm == realm }
             .sumOf { it.amount.toDouble() }
-        return control >= REQUIRED_CONTROL
+        return control > REQUIRED_CONTROL
     }
 }
