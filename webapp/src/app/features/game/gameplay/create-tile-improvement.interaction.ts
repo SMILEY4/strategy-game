@@ -7,6 +7,8 @@ import {genCommandId} from "@app/features/game/models/command.ts";
 import {openWindowCreateTileImprovement} from "@pages/game/gameui/tileimprovement/create/CreateTileImprovementWindow.tsx";
 import {TileQueries} from "@app/features/game/database/tile.database.ts";
 import {RealmQueries} from "@app/features/game/database/realm.database.ts";
+import {type EntityDatabase, EntityQueries} from "@app/features/game/database/entity.database.ts";
+import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
 
 interface CreateTileImprovementInteractionInput {
     position: ExtendedHexPosition;
@@ -35,6 +37,7 @@ export type CreateTileImprovementInteractionEvent =
     | { type: "SELECT_IMPROVEMENT", improvementKey: string }
     | { type: "CONFIRM" }
     | { type: "ABORT" }
+    | { type: "CLICK_TILE", position: HexPosition }
 
 
 export const CreateTileImprovementInteraction = createInteractionDefinition<
@@ -46,11 +49,11 @@ export const CreateTileImprovementInteraction = createInteractionDefinition<
     initialState: () => "Prepare",
     initialContext: input => ({
         position: input.position,
-            availableSettlementEntityIds: [],
-            settlementEntityId: null,
-            availableImprovementKeys: [],
-            improvementKey: null,
-            createTileImprovementWindowId: null,
+        availableSettlementEntityIds: [],
+        settlementEntityId: null,
+        availableImprovementKeys: [],
+        improvementKey: null,
+        createTileImprovementWindowId: null,
     }),
     states: {
 
@@ -84,6 +87,9 @@ export const CreateTileImprovementInteraction = createInteractionDefinition<
                 target: "ConfiguringTileImprovement",
                 action: ({event}) => ({settlementEntityId: event.settlementEntityId}),
             },
+            PICK_SETTLEMENT: {
+                target: "PickingSettlement",
+            },
             SELECT_IMPROVEMENT: {
                 target: "ConfiguringTileImprovement",
                 action: ({event}) => ({improvementKey: event.improvementKey}),
@@ -98,11 +104,23 @@ export const CreateTileImprovementInteraction = createInteractionDefinition<
         },
 
         PickingSettlement: {
-            onEnter: () => {
-
+            CLICK_TILE: {
+                target: "ConfiguringTileImprovement",
+                guard: ({event, context}) => {
+                    return getValidSettlementAtLocation(DI.entityDatabase, event.position, context.availableSettlementEntityIds) != null;
+                },
+                action: ({event, context}) => {
+                    const settlement = getValidSettlementAtLocation(DI.entityDatabase, event.position, context.availableSettlementEntityIds);
+                    if (settlement) {
+                        gameAudio.CLICK_PRIMARY.play();
+                        return {settlementEntityId: settlement.id};
+                    } else {
+                        return;
+                    }
+                },
             },
-            onExit: () => {
-
+            ABORT: {
+                target: "Aborted",
             },
         },
 
@@ -182,4 +200,14 @@ function selectAvailableImprovementKeys(position: HexPosition): string[] {
     const tile = DI.tileDatabase.querySingle(TileQueries.BY_POSITION, position);
     if (!tile?.createTileImprovement.visible) return [];
     return tile.createTileImprovement.value.availableImprovementKeys;
+}
+
+function getValidSettlementAtLocation(db: EntityDatabase, position: HexPosition, validIds: number[]): Entity | null {
+    const entitiesAtLocation = db.queryMany(EntityQueries.BY_POSITION, position);
+    const settlement = entitiesAtLocation.find(entity => EntityUtils.hasComponent(entity, "settlement"));
+    if (settlement && validIds.includes(settlement.id)) {
+        return settlement;
+    } else {
+        return null;
+    }
 }

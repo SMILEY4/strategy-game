@@ -44,6 +44,7 @@ export function CreateTileImprovementWindow(props: CreateTileImprovementWindowPr
                 <HorizontalLayout verticalCenter horizontalStart>
 
                     <Selectbox.Root
+                        disabled={viewModel.improvement.disabled}
                         items={viewModel.improvement.available}
                         selectedItem={viewModel.improvement.selected}
                         onSelectedItemChange={viewModel.improvement.select}
@@ -55,6 +56,7 @@ export function CreateTileImprovementWindow(props: CreateTileImprovementWindowPr
 
                     <Selectbox.Root
                         className={styles["select-administering-settlement"]}
+                        disabled={viewModel.administeringSettlement.disabled}
                         items={viewModel.administeringSettlement.available}
                         selectedItem={viewModel.administeringSettlement.selected}
                         onSelectedItemChange={viewModel.administeringSettlement.select}
@@ -68,6 +70,7 @@ export function CreateTileImprovementWindow(props: CreateTileImprovementWindowPr
                         neutral
                         sizeM
                         onClick={viewModel.administeringSettlement.pick}
+                        disabled={viewModel.administeringSettlement.disabled}
                     >
                         Pick
                     </Button>
@@ -106,43 +109,47 @@ interface CreateTileImprovementWindowViewModel {
         available: { key: string }[]
         selected: { key: string } | null,
         select: (item: { key: string }) => void,
+        disabled: boolean,
     }
     administeringSettlement: {
         available: { key: number}[]
         selected: { key: number },
         select: (item: { key: number }) => void
         pick: () => void,
+        disabled: boolean,
     }
     cancel: {
         execute: () => void
     },
     create: {
         disabled: boolean
-        execute: () => void
+        execute: () => void,
     }
 }
 
 function useCreateTileImprovementWindowViewModel(): CreateTileImprovementWindowViewModel {
 
-    const [interactionContext, interactionEvents] = useInteraction(CreateTileImprovementInteraction);
+    const [interactionContext, interactionEvents, interactionState] = useInteraction(CreateTileImprovementInteraction);
 
     return {
         improvement: {
             available: interactionContext.availableImprovementKeys.map(key => ({key})),
             selected: interactionContext.improvementKey ? {key: interactionContext.improvementKey} : null,
             select: entry => interactionEvents.SELECT_IMPROVEMENT({improvementKey: entry.key}),
+            disabled: interactionState === "PickingSettlement",
         },
         administeringSettlement: {
             available: interactionContext.availableSettlementEntityIds.map(id => ({key: id})),
             selected: {key: interactionContext.settlementEntityId ?? -1},
             select: entry => interactionEvents.SELECT_SETTLEMENT({settlementEntityId: entry.key}),
-            pick: () => undefined, // todo
+            pick: () => interactionEvents.PICK_SETTLEMENT({}),
+            disabled: interactionState === "PickingSettlement"
         },
         cancel: {
             execute: () => interactionEvents.ABORT({}),
         },
         create: {
-            disabled: false,
+            disabled: interactionState === "PickingSettlement",
             execute: () => interactionEvents.CONFIRM({}),
         },
     };

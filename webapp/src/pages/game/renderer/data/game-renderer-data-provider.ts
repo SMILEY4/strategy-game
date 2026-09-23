@@ -15,6 +15,11 @@ import type {Command} from "@app/features/game/models/command.ts";
 import {createVersionedLazy, type VersionedLazy} from "@pages/game/renderer/data/versioned-data.ts";
 import type {Route} from "@app/features/game/models/route.ts";
 import {type RouteDatabase, RouteQueries} from "@app/features/game/database/route.database.ts";
+import {type InteractionDatabase} from "@app/features/game/database/interaction.database.ts";
+import {CreateTileImprovementInteraction} from "@app/features/game/gameplay/create-tile-improvement.interaction.ts";
+import {getInteractionContext, getInteractionState, isInteractionActive} from "@modules/interaction/interaction.tools.ts";
+
+export type RendererMapInteractionMode = "default" | "pick-tile"
 
 export interface GameRendererDataProvider {
     getDebugData: () => VersionedLazy<DebugData>
@@ -27,6 +32,8 @@ export interface GameRendererDataProvider {
     getSelectedTilePosition: () => HexPosition | null
     getSelectedEntity: () => Entity | null
     getMapMode: () => MapMode,
+    getSelectableTilePositions: () => VersionedLazy<HexPosition[]>
+    getInteractionMode: () => RendererMapInteractionMode
 }
 
 interface Dependencies {
@@ -38,6 +45,7 @@ interface Dependencies {
     mapModeDb: MapModeDatabase,
     cameraDb: CameraDatabase;
     pointerPositionDb: PointerPositionDatabase
+    interactionDb: InteractionDatabase,
     debugDb: DebugDatabase;
 }
 
@@ -52,6 +60,7 @@ export const gameRendererDataProvider = (dependencies: Dependencies): GameRender
         mapModeDb,
         cameraDb,
         pointerPositionDb,
+        interactionDb,
         debugDb,
     } = dependencies;
 
@@ -105,6 +114,33 @@ export const gameRendererDataProvider = (dependencies: Dependencies): GameRender
         getMapMode: () => {
             return mapModeDb.get();
         },
+
+        getInteractionMode: () => {
+            if (isInteractionActive(interactionDb, CreateTileImprovementInteraction)) {
+                const state = getInteractionState(interactionDb, CreateTileImprovementInteraction);
+                if (state === "PickingSettlement") {
+                    return "pick-tile";
+                }
+            }
+            return "default";
+        },
+
+        getSelectableTilePositions: () => createVersionedLazy<HexPosition[]>(
+            interactionDb.getRevId(),
+            () => {
+                if (isInteractionActive(interactionDb, CreateTileImprovementInteraction)) {
+                    const state = getInteractionState(interactionDb, CreateTileImprovementInteraction);
+                    if (state === "PickingSettlement") {
+                        const context = getInteractionContext(interactionDb, CreateTileImprovementInteraction);
+                        const availableSettlementIds = context?.availableSettlementEntityIds ?? [];
+                        return availableSettlementIds
+                            .map(id => entityDb.querySingle(EntityQueries.BY_ID, id))
+                            .map(entity => entity!.position);
+                    }
+                }
+                return [];
+            }
+        ),
 
     };
 };

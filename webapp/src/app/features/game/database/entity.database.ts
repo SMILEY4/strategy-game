@@ -34,6 +34,12 @@ export const EntityQueries = {
         },
     },
 
+    BY_ID: {
+        run: (storage: EntityStorageMapping, args: number) => {
+            return storage.primary.get(args);
+        },
+    },
+
     BY_POSITION: {
         run: (storage: EntityStorageMapping, args: { q: number, r: number }) => {
             return storage.byPosition.getByKey(`${args.q};${args.r}`);
@@ -43,4 +49,5 @@ export const EntityQueries = {
 } satisfies {
     ALL: EntityQuery<never>,
     BY_POSITION: EntityQuery<{ q: number, r: number }>,
+    BY_ID: EntityQuery<number>,
 };

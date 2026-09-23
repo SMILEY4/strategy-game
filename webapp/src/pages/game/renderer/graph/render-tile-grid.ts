@@ -8,16 +8,15 @@ import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
 import SHADER_COMPOSE_VERT from "../shader/tileGrid/tileGrid.vsh";
 import SHADER_COMPOSE_FRAG from "../shader/tileGrid/tileGrid.fsh";
-import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
-import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
 
 export function renderTileGrid(
     g: RenderGraphBuilder,
-    dataProvider: GameRendererDataProvider,
     wasmApi: RenderWasmApi,
     inputs: {
         camera: CameraRenderGraphNode,
         dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>
+        dataPointerWorldPosition: DataRenderGraphNode<[number, number]>
+        dataPointerHexPosition: DataRenderGraphNode<[number, number]>
     },
 ) {
 
@@ -109,32 +108,13 @@ export function renderTileGrid(
         }),
     );
 
-    const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
-        prev => prev?.revId !== dataProvider.getPointerPosition().revId,
-        () => dataProvider.getPointerPosition().load(),
-    );
-
-    const dataPointerHexPosition = g.dataTransformer(
-        g.transform({
-            inputs: [dataPointerPosition],
-            func: (data) => data.data.hex,
-        }),
-    );
-
-    const dataPointerWorldPosition = g.dataTransformer(
-        g.transform({
-            inputs: [dataPointerPosition],
-            func: (data) => data.data.world,
-        }),
-    );
-
     const draw = g.draw({
         shader: shader,
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
-            "pointerHexPosition": dataPointerHexPosition as DataRenderGraphNode<unknown>,
-            "pointerWorldPosition": dataPointerWorldPosition as DataRenderGraphNode<unknown>,
+            "pointerHexPosition": inputs.dataPointerHexPosition as DataRenderGraphNode<unknown>,
+            "pointerWorldPosition": inputs.dataPointerWorldPosition as DataRenderGraphNode<unknown>,
             "thickness": dataDebugThickness as DataRenderGraphNode<unknown>,
             "color": dataDebugColor as DataRenderGraphNode<unknown>,
         },

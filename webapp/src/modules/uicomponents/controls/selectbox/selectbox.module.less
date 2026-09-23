@@ -21,7 +21,7 @@
 .control {
 
 	cursor:            pointer;
-	outline: unset;
+	outline:           unset;
 
 	.control__inner {
 		width:           100%;
@@ -107,8 +107,9 @@
 		box-shadow: @shadow-element-inset;
 	}
 
-	&:has(.selectbox__input:disabled) {
+	&[data-disabled] {
 		background: @border-subtle-disabled-gradient;
+		cursor:     default;
 
 		.control__inner {
 			background: @element-fill-neutral-disabled-gradient;
@@ -144,12 +145,12 @@
 			display: grid;
 
 			> .control__content__item {
-				grid-area: 1/1;
+				grid-area:  1/1;
 				visibility: visible;
 			}
 
 			> .control__content__item--hidden {
-				grid-area: 1/1;
+				grid-area:  1/1;
 				visibility: hidden;
 			}
 		}

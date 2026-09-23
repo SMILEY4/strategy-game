@@ -25,6 +25,7 @@ export class GameRenderer {
             selectedTileDb: DI.selectedTileDatabase,
             mapModeDb: DI.mapModeDatabase,
             pointerPositionDb: DI.pointerPositionDatabase,
+            interactionDb: DI.interactionDatabase,
         });
         this.wasmApi = gameGraphWasmApiJsImplementation();
         this.renderGraph = tracer.span({ name: "rendergraph"}, () => WebGlRenderGraph.build(gameGraph(new RenderGraphBuilder(), this.dataProvider, this.wasmApi)));

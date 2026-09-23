@@ -276,7 +276,7 @@ export const DIConfig = {
     },
     gameActionClickTile: {
         scope: "singleton",
-        create: resolve => gameActionClickTile({tileDb: resolve.tileDatabase, selectedTileDb: resolve.selectedTileDatabase}),
+        create: resolve => gameActionClickTile({tileDb: resolve.tileDatabase, selectedTileDb: resolve.selectedTileDatabase, interactionManager: resolve.interactionManager}),
     },
     gameActionJoinedGame: {
         scope: "singleton",

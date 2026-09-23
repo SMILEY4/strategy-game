@@ -11,10 +11,11 @@ import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl
 import {debugVisRendertarget} from "@pages/game/renderer/graph/debug-rendertarget.ts";
 import {renderMapDetails} from "@pages/game/renderer/graph/render-map-details.ts";
 import {renderOverlay} from "@pages/game/renderer/graph/render-overlay.ts";
-import {renderSelectedTile} from "@pages/game/renderer/graph/render-selected-tile.ts";
+import {renderTileHighlight} from "@pages/game/renderer/graph/render-tile-highlight.ts";
 import {renderTileGrid} from "@pages/game/renderer/graph/render-tile-grid.ts";
 import {gameGraphHtml} from "@pages/game/renderer/graph/html.ts";
 import {renderRoutes} from "@pages/game/renderer/graph/render-routes.ts";
+import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -25,8 +26,26 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         () => dataProvider.getDebugData().load(),
     );
 
-
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
+
+    const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
+        prev => prev?.revId !== dataProvider.getPointerPosition().revId,
+        () => dataProvider.getPointerPosition().load(),
+    );
+
+    const dataPointerHexPosition = g.dataTransformer(
+        g.transform({
+            inputs: [dataPointerPosition],
+            func: (data) => data.data.hex,
+        }),
+    );
+
+    const dataPointerWorldPosition = g.dataTransformer(
+        g.transform({
+            inputs: [dataPointerPosition],
+            func: (data) => data.data.world,
+        }),
+    );
 
     const {
         wasmVisibleChunks,
@@ -85,9 +104,11 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     //====================== TILE GRID ======================================
 
-    const {drawTileGrid} = renderTileGrid(g, dataProvider, wasmApi, {
+    const {drawTileGrid} = renderTileGrid(g, wasmApi, {
         dataDebug: dataDebug,
         camera: camera,
+        dataPointerHexPosition: dataPointerHexPosition,
+        dataPointerWorldPosition: dataPointerWorldPosition,
     })
 
 
@@ -107,9 +128,10 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     //====================== SELECTED TILE ==================================
 
-    const {drawSelectedTileBack, drawSelectedTileFront} = renderSelectedTile(g, dataProvider, {
+    const {drawSelectedTileBack, drawSelectedTileFront} = renderTileHighlight(g, dataProvider, {
         dataDebug: dataDebug,
         camera: camera,
+        dataPointerHexPosition: dataPointerHexPosition,
     });
 
     //====================== WEBGL OUTPUT ===================================

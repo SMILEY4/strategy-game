@@ -3,13 +3,17 @@ precision mediump float;
 
 in vec2 v_textureCoordinates;
 in vec3 v_vertexWorldPos;
+flat in ivec2 v_tilePosition;
+flat in int v_type;
 
 uniform sampler2D u_paintCircle;
 uniform int u_side;
+uniform ivec2 u_pointerPosition;
 
 out vec4 outColor;
 
 void main() {
+
 
     vec4 texture = texture(u_paintCircle, v_textureCoordinates);
 
@@ -28,6 +32,20 @@ void main() {
         alphaPart = 0.4;
     }
 
-    outColor = vec4(vec3(1.0), (1.0 - texture.r) * alphaSide * alphaHeight * alphaPart);
+
+    vec3 color = vec3(1.0);
+    if(v_type == 1) {
+        color = vec3(1.0);
+    }
+    if(v_type == 2) {
+        if(u_pointerPosition.x == v_tilePosition.x && u_pointerPosition.y == v_tilePosition.y) {
+            color = vec3(1.0);
+        } else {
+            color = vec3(0.8, 0.8, 1.0);
+        }
+    }
+
+
+    outColor = vec4(color, (1.0 - texture.r) * alphaSide * alphaHeight * alphaPart);
 
 }
