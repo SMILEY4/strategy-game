@@ -1,6 +1,6 @@
 use super::WasmRenderApp;
 use crate::js::direct_buffer::{DirectBuffer, DirectMemoryHandle};
-use crate::js::models::{Control, Entity, Tile};
+use crate::js::models::{Control, Entity, RoutePoint, Tile};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
@@ -32,11 +32,24 @@ impl WasmRenderApp {
         self.renderer.set_entities(entities)
     }
 
+    pub fn reserve_routes_memory(&self, len: usize) -> DirectMemoryHandle {
+        DirectBuffer::reserve::<RoutePoint>(len)
+    }
+
+    pub fn upload_routes(&mut self, ptr: usize, len: usize) {
+        let routes_points = unsafe { DirectBuffer::upload::<RoutePoint>(ptr, len) };
+        self.renderer.set_route_points(routes_points)
+    }
+
     pub fn set_map_mode(&mut self, map_mode: u32) {
         self.renderer.set_map_mode(map_mode)
     }
 
     pub fn set_selected_entity_id(&mut self, entity_id: Option<u32>) {
         self.renderer.set_selected_entity_id(entity_id)
+    }
+
+    pub fn set_selected_settlement_id(&mut self, settlement_id: Option<u32>) {
+        self.renderer.set_selected_settlement_id(settlement_id)
     }
 }

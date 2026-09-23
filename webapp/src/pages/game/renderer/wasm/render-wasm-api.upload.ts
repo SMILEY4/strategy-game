@@ -1,16 +1,20 @@
-import type {WasmRenderApp} from "wasm";
+import {type WasmRenderApp} from "wasm";
 import {tracer} from "@modules/monitoring/tracer.ts";
 import type {Tile} from "@app/features/game/models/tile.ts";
 import type {RenderEntity} from "@pages/game/renderer/data/render-entity.ts";
 import type {MapMode} from "@app/features/game/models/map-mode.ts";
 import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
 import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
+import type {Route} from "@app/features/game/models/route.ts";
+import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 
 export interface RenderWasmApiUpload {
     uploadTiles: (tiles: Tile[]) => void,
     uploadEntities: (entities: RenderEntity[]) => void,
+    uploadRoutes: (routes: Route[]) => void
     setMapMode: (mapMode: MapMode) => void,
     setSelectedEntityId: (entityId: number | null) => void,
+    setSelectedSettlementId: (settlementId: number | null) => void,
 }
 
 type TileUpload = {
@@ -21,9 +25,17 @@ type TileUpload = {
 
 type ControlUpload = {
     realmId: number,
+    settlementId: number | null
     entityId: number,
     amount: number,
 };
+
+type RoutePoint = {
+    routeId: number,
+    routeFrom: number,
+    routeTo: number,
+    position: HexPosition,
+}
 
 const tileSerializer = wasmSerializer<TileUpload>({
     "tile_position.q": {
@@ -87,9 +99,22 @@ const tileSerializer = wasmSerializer<TileUpload>({
 });
 
 const controlSerializer = wasmSerializer<ControlUpload>({
-    "realm_id": {provider: control => control.realmId, type: "u32"},
-    "entity_id": {provider: control => control.entityId, type: "u32"},
-    "amount": {provider: control => control.amount, type: "f32"},
+    "realm_id": {
+        type: "u32",
+        provider: control => control.realmId,
+    },
+    "settlement_id": {
+        type: "u32",
+        provider: control => control.settlementId ?? -1,
+    },
+    "entity_id": {
+        type: "u32",
+        provider: control => control.entityId,
+    },
+    "amount": {
+        type: "f32",
+        provider: control => control.amount,
+    },
 });
 
 const visibilitySerialisationMapping: Record<string, number> = {
@@ -142,11 +167,39 @@ const entitySerializer = wasmSerializer<RenderEntity>({
         provider: entity => entity.isPending,
         type: "bool",
     },
+    "improvement_key": {
+        provider: entity => entity.tileImprovementType ?? "",
+        type: "string64",
+    },
+});
+
+const routePointSerializer = wasmSerializer<RoutePoint>({
+    "route_id": {
+        type: "u32",
+        provider: routePoint => routePoint.routeId,
+    },
+    "route_from": {
+        type: "u32",
+        provider: routePoint => routePoint.routeFrom,
+    },
+    "route_to": {
+        type: "u32",
+        provider: routePoint => routePoint.routeTo,
+    },
+    "tile_position.q": {
+        provider: routePoint => routePoint.position.q,
+        type: "i32",
+    },
+    "tile_position.r": {
+        provider: routePoint => routePoint.position.r,
+        type: "i32",
+    },
 });
 
 const entityRenderTypeSerialisationMapping: Record<string, number> = {
     undefined: 0,
     "settlement": 1,
+    "tile-improvement": 2,
 };
 
 
@@ -163,6 +216,7 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
                     const controlOffset = controls.length;
                     controls.push(...tileControls.map(control => ({
                         realmId: control.realm,
+                        settlementId: control.settlement,
                         entityId: control.entity,
                         amount: control.amount,
                     })));
@@ -190,6 +244,27 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
             });
         },
 
+        uploadRoutes: (routes: Route[]) => {
+            tracer.span({name: "wasmapi-uploadRoutes"}, () => {
+                const routePoints: RoutePoint[] = routes.flatMap(route =>
+                    route.path.map(point => ({
+                        routeId: route.id,
+                        routeFrom: route.from,
+                        routeTo: route.to,
+                        position: {
+                            q: point.q,
+                            r: point.r,
+                        },
+                    })),
+                );
+
+                const memory = wasm.reserve_routes_memory(routePoints.length);
+                const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
+                routePointSerializer(buffer, routePoints);
+                wasm.upload_routes(memory.ptr, memory.len);
+            });
+        },
+
         setMapMode: (mapMode: MapMode) => {
             tracer.span({name: "wasmapi-setMapMode"}, () => {
                 wasm.set_map_mode(mapMode.numericId);
@@ -199,6 +274,12 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
         setSelectedEntityId: (entityId: number | null) => {
             tracer.span({name: "wasmapi-setSelectedEntityId"}, () => {
                 wasm.set_selected_entity_id(entityId);
+            });
+        },
+
+        setSelectedSettlementId: (settlementId: number | null) => {
+            tracer.span({name: "wasmapi-setSelectedSettlementId"}, () => {
+                wasm.set_selected_settlement_id(settlementId);
             });
         },
 

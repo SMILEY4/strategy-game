@@ -10,6 +10,8 @@ import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.GameConn
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleMessage
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.handleOpen
+import io.github.smiley4.strategygame.engine.simulation.gamestate.Entity
+import io.github.smiley4.strategygame.engine.simulation.gamestate.TileImprovementKey
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.shared.infrastructure.AuthenticatedUserId
@@ -93,6 +95,7 @@ internal object GameWebsocketRoute : KoinComponent {
 
 }
 
+
 @Serializable
 internal sealed interface PlayerCommandDto {
 
@@ -114,6 +117,27 @@ internal sealed interface PlayerCommandDto {
                 r = this.r,
             ),
             name = this.name
+        )
+    }
+
+
+    @Serializable
+    @SerialName("CreateTileImprovement")
+    class CreateTileImprovement(
+        val q: Int,
+        val r: Int,
+        val settlementEntityId: Int,
+        val improvementKey: String,
+    ) : PlayerCommandDto {
+
+        override fun toDomain(user: UserId) = PlayerCommand.CreateTileImprovement(
+            playerId = user,
+            location = HexPosition(
+                q = this.q,
+                r = this.r,
+            ),
+            settlement = Entity.Id(this.settlementEntityId),
+            improvementKey = TileImprovementKey(this.improvementKey),
         )
     }
 

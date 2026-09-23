@@ -15,6 +15,7 @@ interface SubmitTurn extends GameWebsocketClientMessageBase {
 
 type MessageCommand =
     | { type: "CreateSettlement", q: number, r: number, name: string }
+    | { type: "CreateTileImprovement", q: number, r: number, settlementEntityId: number, improvementKey: string }
 
 
 /** Messages sent from server to client over the game WebSocket. */
@@ -61,6 +62,7 @@ interface GameState extends GameWebsocketServerMessageBase {
             political: HiddenType<{
                 control: ({
                     realm: number,
+                    settlement: number | null,
                     entity: number,
                     amount: number
                 })[]
@@ -68,6 +70,10 @@ interface GameState extends GameWebsocketServerMessageBase {
             createSettlement: HiddenType<{
                 validLocation: boolean,
                 validRealm: boolean,
+            }>
+            createTileImprovement: HiddenType<{
+                validRealm: boolean,
+                availableImprovementKeys: string[],
             }>
             meta: {
                 seed: number,
@@ -84,7 +90,15 @@ interface GameState extends GameWebsocketServerMessageBase {
             },
             components: (
                 | { type: "settlement", name: string, isRealmCapital: boolean }
+                | { type: "tile-improvement", key: string, administeringSettlement: number }
                 )[]
+        })[],
+        routes: ({
+            id: number,
+            from: number,
+            to: number,
+            cost: number,
+            path: ({ id: number, q: number, r: number })[]
         })[]
     }
 }

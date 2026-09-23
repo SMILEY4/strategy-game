@@ -2,6 +2,7 @@ import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transfor
 import type {vec3} from "gl-matrix";
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
 import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
+import type {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 
 /** A compiled WebGL command emitted by the render-graph compiler. */
 export type WebGlCommand =
@@ -33,14 +34,17 @@ export type WebGlCommand =
     /** Set a uniform on the active shader program. */
     | { type: "SET_UNIFORM", shaderId: string, name: string, value: ValueEntry }
 
-    /** Enable or disable depth testing. */
-    | { type: "SET_DEPTH_TESTING", enabled: boolean }
+    /** Configure blending **/
+    | { type: "SET_BLENDING", blend: null | ((gl: WebGL2RenderingContext) => void) }
+
+    /** Configure depth handling **/
+    | { type: "SET_DEPTH_HANDLING", test: DepthFunc, write: boolean }
 
     /** Issue a non-instanced draw call. */
-    | { type: "DRAW", vertexCountRef: string, mode: GLenum, blend: null | ((gl: WebGL2RenderingContext) => void) }
+    | { type: "DRAW", vertexCountRef: string, mode: GLenum }
 
     /** Issue an instanced draw call. */
-    | { type: "DRAW_INSTANCED", vertexCountRef: string, instanceCountRef: string, mode: GLenum, blend: null | ((gl: WebGL2RenderingContext) => void) }
+    | { type: "DRAW_INSTANCED", vertexCountRef: string, instanceCountRef: string, mode: GLenum }
 
     /** Fetch external data and store it in the {@link outputRef} resource. */
     | { type: "LOAD_EXTERNAL_DATA", outputRef: string, fetch: () => unknown, checkChanged: (prev: unknown) => boolean }

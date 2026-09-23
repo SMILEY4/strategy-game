@@ -8,9 +8,11 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponen
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
+import io.github.smiley4.strategygame.engine.simulation.gamestate.Route
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementValidation
 import io.github.smiley4.strategygame.shared.values.UserId
 
 /**
@@ -30,13 +32,18 @@ class PlayerStateBuilder {
                 game.realms.map { realm(it, povRealm.id) }
             ]
             "tiles" to arr[
-                    game.tiles.map { tile(game, it, povRealm.id) }
+                game.tiles.map { tile(game, it, povRealm.id) }
             ]
             "entities" to arr[
                 game.entities
                     .filter { getVisibilityAt(game, it, povRealm.id) != Visibility.UNDISCOVERED }
                     .filter { it.components.any { component -> component is EntityComponent.Position } }
                     .map { entity(game, it) }
+            ]
+            "routes" to arr[
+                    game.routes
+                        .filter { it.tiles.any { t -> getVisibilityAt(game, t.position, povRealm.id) != Visibility.UNDISCOVERED } }
+                        .map { route(it) }
             ]
         }
     }
@@ -53,6 +60,7 @@ class PlayerStateBuilder {
 
     fun tile(game: GameStateContext, tile: Tile, realm: Realm.Id) = obj {
         val settlementValidation = SettlementValidation.inspect(game, tile, realm)
+        val tileImprovementValidation = TileImprovementValidation.inspect(game, tile, realm)
         val visibility = getVisibilityAt(game, tile, realm)
         "id" to tile.id.id
         "visibility" to visibility.name
@@ -86,6 +94,7 @@ class PlayerStateBuilder {
                     tile.political.control.map {
                         obj {
                             "realm" to it.realm.id
+                            "settlement" to it.settlement?.id
                             "entity" to it.entity.id
                             "amount" to it.amount
                         }
@@ -97,6 +106,12 @@ class PlayerStateBuilder {
             obj {
                 "validLocation" to settlementValidation.validLocation
                 "validRealm" to settlementValidation.validRealm
+            }
+        }
+        "createTileImprovement" to hidden(visibility != Visibility.UNDISCOVERED) {
+            obj {
+                "validRealm" to tileImprovementValidation.validRealm
+                "availableImprovementKeys" to arr[tileImprovementValidation.availableImprovementKeys.map { it.value }]
             }
         }
         "meta" to obj {
@@ -120,16 +135,37 @@ class PlayerStateBuilder {
                 when (component) {
                     is EntityComponent.Position -> Unit
                     is EntityComponent.Vision -> Unit
-                    is EntityComponent.Settlement -> obj {
-                        "type" to "settlement"
-                        "name" to component.name
-                        "isRealmCapital" to component.isRealmCapital
-                    }
                     is EntityComponent.Control -> obj {
                         "type" to "control"
                         "radius" to component.radius
                         "amount" to component.amount
                     }
+                    is EntityComponent.Settlement -> obj {
+                        "type" to "settlement"
+                        "name" to component.name
+                        "isRealmCapital" to component.isRealmCapital
+                    }
+                    is EntityComponent.TileImprovement -> obj {
+                        "type" to "tile-improvement"
+                        "key" to component.key.value
+                        "administeringSettlement" to component.administeringSettlement.id
+                    }
+                }
+            }
+        ]
+    }
+
+    fun route(route: Route) = obj {
+        "id" to route.id.id
+        "from" to route.from.id
+        "to" to route.to.id
+        "cost" to route.cost
+        "path" to arr[
+            route.tiles.map { tile ->
+                obj {
+                    "id" to tile.id.id
+                    "q" to tile.position.q
+                    "r" to tile.position.r
                 }
             }
         ]

@@ -17,7 +17,7 @@ internal data class SettlementValidationResult(
 
 internal object SettlementValidation {
 
-    const val SETTLEMENT_REQUIRED_CONTROL = 3f
+    const val REQUIRED_CONTROL = 3f
 
     fun validate(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
         val tile = gameState.tiles.find { it.position == location } ?: return false
@@ -32,17 +32,16 @@ internal object SettlementValidation {
         )
     }
 
-    fun isTerrainSuitable(tile: Tile): Boolean {
-        return tile.world.biome != Tile.Biome.OCEAN && tile.world.elevation != Tile.Elevation.MOUNTAINS
-    }
-
     private fun isValidLocation(gameState: GameStateContext, tile: Tile): Boolean {
         if (!isTerrainSuitable(tile)) return false
 
         return gameState.entities.none {
-            it.hasComponent<EntityComponent.Settlement>() &&
-                it.getComponentOrNull<EntityComponent.Position>()?.tile?.id == tile.id
+            it.getComponentOrNull<EntityComponent.Position>()?.tile?.id == tile.id
         }
+    }
+
+    fun isTerrainSuitable(tile: Tile): Boolean {
+        return tile.world.biome != Tile.Biome.OCEAN && tile.world.elevation != Tile.Elevation.MOUNTAINS
     }
 
     private fun isValidRealm(
@@ -56,6 +55,6 @@ internal object SettlementValidation {
         val control = tile.political.control
             .filter { it.realm == realm }
             .sumOf { it.amount.toDouble() }
-        return control >= SETTLEMENT_REQUIRED_CONTROL
+        return control >= REQUIRED_CONTROL
     }
 }

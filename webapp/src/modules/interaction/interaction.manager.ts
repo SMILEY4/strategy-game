@@ -19,6 +19,8 @@ export interface InteractionManager {
     ) => InteractionEventHandlers<TEvent>;
 
     hasActive: () => boolean
+
+    isActive: (definition: InteractionDefinition<any, any, any, any>) => boolean
 }
 
 interface Dependencies {
@@ -83,6 +85,7 @@ export const interactionManager = ({getMachineState, setMachineState}: Dependenc
         start: start,
         stop: stop,
         events: events,
-        hasActive: () => !!activeMachine
+        hasActive: () => !!activeMachine,
+        isActive: definition => activeMachine?.getDefinition() === definition
     };
 };

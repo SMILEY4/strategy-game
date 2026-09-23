@@ -31,9 +31,10 @@ data class Tile(
     )
 
     data class ControlEntry(
-        val amount: Float,
         val realm: Realm.Id,
-        val entity: Entity.Id
+        val settlement: Entity.Id?,
+        val entity: Entity.Id,
+        val amount: Float,
     )
 
     enum class Elevation {

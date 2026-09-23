@@ -6,11 +6,14 @@ import {CreateSettlementInteraction} from "@app/features/game/gameplay/create-se
 import {useCreateSettlementValidation} from "@app/features/game/gameplay/create-settlement.validation.ts";
 import {EntityQueries} from "@app/features/game/database/entity.database.ts";
 import {EntityUtils} from "@app/features/game/models/entity.ts";
+import {useCreateTileImprovementValidation} from "@app/features/game/gameplay/create-tile-improvement.validation.ts";
+import {CreateTileImprovementInteraction} from "@app/features/game/gameplay/create-tile-improvement.interaction.ts";
 
 export interface QuickinfoViewModel {
-    availableInfo: ("tile" | "settlement")[];
+    availableInfo: ("tile" | "settlement" | "tile-improvement")[];
     tile: null | QuickInfoTileViewModel;
     settlement: null | QuickInfoSettlementViewModel;
+    tileImprovement: null | QuickInfoTileImprovementViewModel;
 }
 
 export interface QuickInfoTileViewModel {
@@ -29,6 +32,11 @@ export interface QuickInfoTileViewModel {
             valid: boolean,
             execute: () => void
         }
+        createTileImprovement: {
+            available: boolean,
+            valid: boolean,
+            execute: () => void
+        }
     }
 }
 
@@ -43,21 +51,34 @@ export interface QuickInfoSettlementViewModel {
     }
 }
 
+export interface QuickInfoTileImprovementViewModel {
+    id: number;
+    owner: number | null,
+    settlement: number,
+    type: string,
+    actions: {
+        focusCamera: () => void,
+    }
+}
+
 export function useQuickInfoViewModel(): QuickinfoViewModel {
 
     const selectedTileRef = useQuerySingleton(DI.selectedTileDatabase).selected;
 
     const tileQuickInfo = useBuildTileQuickInfo(selectedTileRef);
-    const settlementQuickInfo = useBuildSettlementQuickInfo(selectedTileRef);
+    const settlementQuickInfo = useSettlementQuickInfo(selectedTileRef);
+    const tileImprovementQuickInfo = useTileImprovementQuickInfo(selectedTileRef)
 
-    const availableInfo: ("tile" | "settlement")[] = [];
+    const availableInfo: ("tile" | "settlement" | "tile-improvement")[] = [];
     if (tileQuickInfo) availableInfo.push("tile");
     if (settlementQuickInfo) availableInfo.push("settlement");
+    if(tileImprovementQuickInfo) availableInfo.push("tile-improvement")
 
     return {
         availableInfo: availableInfo,
         tile: tileQuickInfo,
         settlement: settlementQuickInfo,
+        tileImprovement: tileImprovementQuickInfo,
     };
 }
 
@@ -66,7 +87,8 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: number } | null): Qu
 
     const tile = useQuerySingle(DI.tileDatabase, TileQueries.BY_ID, tileRef?.id);
 
-    const validate = useCreateSettlementValidation();
+    const validateCreateSettlement = useCreateSettlementValidation();
+    const validateCreateTileImprovement = useCreateTileImprovementValidation();
 
     if (!tile) {
         return null;
@@ -91,14 +113,19 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: number } | null): Qu
             focusCamera: () => DI.cameraController.lookAt(tile.position),
             foundSettlement: {
                 available: true,
-                valid: validate.settlement(tile.position),
+                valid: validateCreateSettlement.settlement(tile.position),
                 execute: () => void DI.interactionManager.start(CreateSettlementInteraction, {position: tile.position}),
             },
+            createTileImprovement: {
+                available: true,
+                valid: validateCreateTileImprovement.tileImprovement(tile.position),
+                execute: () => void DI.interactionManager.start(CreateTileImprovementInteraction, { position: tile.position }),
+            }
         },
     };
 }
 
-function useBuildSettlementQuickInfo(tileRef: HexPosition & { id: number } | null): QuickInfoSettlementViewModel | null {
+function useSettlementQuickInfo(tileRef: HexPosition & { id: number } | null): QuickInfoSettlementViewModel | null {
 
     const settlementEntity = useQueryMultiple(DI.entityDatabase, EntityQueries.BY_POSITION, tileRef ?? INVALID_HEX_POSITION)
         .find(it => EntityUtils.hasComponent(it, "settlement"));
@@ -116,6 +143,29 @@ function useBuildSettlementQuickInfo(tileRef: HexPosition & { id: number } | nul
         isRealmCapital: settlementComponent.isRealmCapital,
         actions: {
             focusCamera: () => DI.cameraController.lookAt(settlementEntity.position),
+        },
+    };
+}
+
+
+function useTileImprovementQuickInfo(tileRef: HexPosition & { id: number } | null): QuickInfoTileImprovementViewModel | null {
+
+    const tileImprovementEntity = useQueryMultiple(DI.entityDatabase, EntityQueries.BY_POSITION, tileRef ?? INVALID_HEX_POSITION)
+        .find(it => EntityUtils.hasComponent(it, "tile-improvement"));
+
+    if (!tileRef || !tileImprovementEntity) {
+        return null;
+    }
+
+    const tileImprovementComponent = EntityUtils.getComponent(tileImprovementEntity, "tile-improvement")!;
+
+    return {
+        id: tileImprovementEntity.id,
+        owner: tileImprovementEntity.owner,
+        type: tileImprovementComponent.key,
+        settlement: tileImprovementComponent.administeringSettlement,
+        actions: {
+            focusCamera: () => DI.cameraController.lookAt(tileImprovementEntity.position),
         },
     };
 }

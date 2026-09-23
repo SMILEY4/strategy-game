@@ -22,6 +22,7 @@ pub struct Tile {
 #[derive(Copy, Clone, Debug)]
 pub struct Control {
     pub realm_id: u32,
+    pub settlement_id: u32,
     pub entity_id: u32,
     pub amount: f32,
 }
@@ -51,6 +52,7 @@ pub const TILE_FEATURE_UNDEF: u8 = 0;
 pub const TILE_FEATURE_FOREST: u8 = 1;
 
 pub const ENTITY_TYPE_SETTLEMENT: u8 = 1;
+pub const ENTITY_TYPE_TILE_IMPROVEMENT: u8 = 2;
 
 #[repr(C, packed)]
 #[derive(Copy, Clone, Debug)]
@@ -59,6 +61,7 @@ pub struct Entity {
     pub chunk_position: HexPosition,
     pub render_type: u8,
     pub is_pending: bool,
+    pub improvement_key: [u8; 64],
 }
 
 #[repr(C, packed)]
@@ -98,6 +101,7 @@ pub struct Size {
 #[serde(rename_all = "camelCase")]
 pub struct SpriteSheetEntry {
     pub id: String,
+    pub name: String,
     pub uv_coords: UvRectangle,
     pub n_size: Size,
     pub scale: f32,
@@ -107,3 +111,13 @@ pub struct SpriteSheetEntry {
 pub const MAP_MODE_TERRAIN: u32 = 1;
 pub const MAP_MODE_POLITICAL: u32 = 2;
 pub const MAP_MODE_SETTLEMENT_LOCATIONS: u32 = 3;
+
+
+#[repr(C, packed)]
+#[derive(Copy, Clone, Debug)]
+pub struct RoutePoint {
+    pub route_id: u32, // id of the route this point belongs to
+    pub route_from: u32, // entity at the start of this route
+    pub route_to: u32, // entity at the end of this route
+    pub tile_position: HexPosition, // hex position of this point
+}

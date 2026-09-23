@@ -41,7 +41,8 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
         realm.phase = RealmPhase.ESTABLISHED
 
         // mark tiles as discovered
-        targetTile.position.iterateCircle(2) { pos ->
+        val vision = settlement.getComponent<EntityComponent.Vision>();
+        targetTile.position.iterateCircle(vision.radius) { pos ->
             gameState.tiles.find { it.position == pos }?.also {
                 it.political.discoveredBy.add(realm.id)
             }
@@ -54,6 +55,7 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
                 it.political.control.add(
                     Tile.ControlEntry(
                         realm = realm.id,
+                        settlement = settlement.id,
                         entity = settlement.id,
                         amount = control.amount * (1f - (it.position.distance(targetTile.position).toFloat() / control.radius.toFloat())),
                     )

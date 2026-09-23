@@ -2,7 +2,10 @@ use crate::js::models::{
     HexPosition, Tile, TILE_BIOME_GRASSLAND, TILE_BIOME_OCEAN, TILE_ELEVATION_MOUNTAINS,
     TILE_FEATURE_FOREST,
 };
-use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance, OVERLAY_EDGE_STYLE_DASHED, OVERLAY_EDGE_STYLE_FILLED, OVERLAY_FILL_STYLE_FILLED, OVERLAY_FILL_STYLE_STRIPED};
+use crate::render::models::gpu::{
+    GenericEdgeOverlayInstance, GenericFillOverlayInstance, OVERLAY_EDGE_STYLE_DASHED,
+    OVERLAY_EDGE_STYLE_FILLED, OVERLAY_FILL_STYLE_FILLED, OVERLAY_FILL_STYLE_STRIPED,
+};
 use crate::render::state_render::RenderState;
 
 const OCEAN_COLOR: [f32; 4] = [0.08, 0.35, 0.65, 0.35];
@@ -32,60 +35,67 @@ pub fn edges_entity_control(
     tiles_by_pos: &rustc_hash::FxHashMap<HexPosition, usize>,
     output: &mut Vec<GenericEdgeOverlayInstance>,
 ) {
-    let Some(entity_id) = state.selected_entity_id else {
-        return;
-    };
+    let entity_id = state.selected_entity_id;
+    let settlement_id = state.selected_settlement_id;
 
-    if control_amount(state, tile, entity_id) <= 0.0 {
+    if entity_id.is_none() && settlement_id.is_none() {
+        return;
+    }
+
+    let entity_amount = entity_id
+        .map(|entity_id| control_amount_by_entity(state, tile, entity_id))
+        .unwrap_or(0.0);
+
+    let settlement_amount = settlement_id
+        .map(|settlement_id| control_amount_by_settlement(state, tile, settlement_id))
+        .unwrap_or(0.0);
+
+    if entity_amount <= 0.0 && settlement_amount <= 0.0 {
         return;
     }
 
     for (direction, neighbour_position) in neighbour_directions(tile.tile_position) {
-        let neighbour_amount = tiles_by_pos
+        let neighbour_tile = tiles_by_pos
             .get(&neighbour_position)
-            .map(|index| control_amount(state, &state.tiles[*index], entity_id))
+            .map(|index| &state.tiles[*index]);
+
+        let neighbour_entity_amount = entity_id
+            .zip(neighbour_tile)
+            .map(|(entity_id, neighbour_tile)| {
+                control_amount_by_entity(state, neighbour_tile, entity_id)
+            })
             .unwrap_or(0.0);
 
-        if neighbour_amount <= 0.0 {
+        let neighbour_settlement_amount = settlement_id
+            .zip(neighbour_tile)
+            .map(|(settlement_id, neighbour_tile)| {
+                control_amount_by_settlement(state, neighbour_tile, settlement_id)
+            })
+            .unwrap_or(0.0);
+
+        let entity_boundary = entity_amount > 0.0 && neighbour_entity_amount <= 0.0;
+        let settlement_boundary = settlement_amount > 0.0 && neighbour_settlement_amount <= 0.0;
+
+        if entity_boundary && settlement_id != entity_id {
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
                 color: BORDER_COLOR,
                 style: OVERLAY_EDGE_STYLE_DASHED,
+                thickness: 0.05
+            });
+        }
+
+        if settlement_boundary {
+            output.push(GenericEdgeOverlayInstance {
+                position: position(tile),
+                direction,
+                color: BORDER_COLOR,
+                style: OVERLAY_EDGE_STYLE_DASHED,
+                thickness: 0.1
             });
         }
     }
-}
-
-//===== MAP MODE - TERRAIN =========================
-
-pub fn fill_mapmode_terrain(
-    _: &RenderState,
-    tile: &Tile,
-    output: &mut Vec<GenericFillOverlayInstance>,
-) {
-    let color = match tile.terrain.biome {
-        TILE_BIOME_OCEAN => OCEAN_COLOR,
-        TILE_BIOME_GRASSLAND => GRASSLAND_COLOR,
-        _ => return,
-    };
-
-    output.push(fill_instance(tile, color, OVERLAY_FILL_STYLE_FILLED));
-
-    if tile.terrain.elevation == TILE_ELEVATION_MOUNTAINS {
-        output.push(fill_instance(tile, MOUNTAINS_COLOR, OVERLAY_FILL_STYLE_STRIPED));
-    } else if tile.terrain.feature == TILE_FEATURE_FOREST {
-        output.push(fill_instance(tile, FOREST_COLOR, OVERLAY_FILL_STYLE_STRIPED));
-    }
-}
-
-pub fn edges_mapmode_terrain(
-    state: &RenderState,
-    tile: &Tile,
-    tiles_by_pos: &rustc_hash::FxHashMap<HexPosition, usize>,
-    output: &mut Vec<GenericEdgeOverlayInstance>,
-) {
-    edges_mapmode_political(state, tile, tiles_by_pos, output);
 }
 
 //===== MAP MODE - POLITICAL =======================
@@ -96,7 +106,11 @@ pub fn fill_mapmode_political(
     output: &mut Vec<GenericFillOverlayInstance>,
 ) {
     if total_control(state, tile) > 0.0 {
-        output.push(fill_instance(tile, POLITICAL_COLOR, OVERLAY_FILL_STYLE_FILLED));
+        output.push(fill_instance(
+            tile,
+            POLITICAL_COLOR,
+            OVERLAY_FILL_STYLE_FILLED,
+        ));
     }
 }
 
@@ -122,6 +136,7 @@ pub fn edges_mapmode_political(
                 direction,
                 color: BORDER_COLOR,
                 style: OVERLAY_EDGE_STYLE_FILLED,
+                thickness: 0.1
             });
         }
     }
@@ -135,9 +150,17 @@ pub fn fill_mapmode_settlement_locations(
     output: &mut Vec<GenericFillOverlayInstance>,
 ) {
     if tile.create_settlement_validity == 1 {
-        output.push(fill_instance(tile, [0.2, 0.6, 0.25, 0.35], OVERLAY_FILL_STYLE_STRIPED));
+        output.push(fill_instance(
+            tile,
+            [0.2, 0.6, 0.25, 0.35],
+            OVERLAY_FILL_STYLE_STRIPED,
+        ));
     } else if tile.create_settlement_validity == 2 {
-        output.push(fill_instance(tile, [0.2, 0.6, 0.25, 0.35], OVERLAY_FILL_STYLE_FILLED));
+        output.push(fill_instance(
+            tile,
+            [0.2, 0.6, 0.25, 0.35],
+            OVERLAY_FILL_STYLE_FILLED,
+        ));
     }
 }
 
@@ -164,13 +187,24 @@ fn fill_instance(tile: &Tile, color: [f32; 4], style: u32) -> GenericFillOverlay
 }
 
 fn total_control(state: &RenderState, tile: &Tile) -> f32 {
-    controls(state, tile).iter().map(|control| control.amount).sum()
+    controls(state, tile)
+        .iter()
+        .map(|control| control.amount)
+        .sum()
 }
 
-fn control_amount(state: &RenderState, tile: &Tile, entity_id: u32) -> f32 {
+fn control_amount_by_entity(state: &RenderState, tile: &Tile, entity_id: u32) -> f32 {
     controls(state, tile)
         .iter()
         .filter(|control| control.entity_id == entity_id)
+        .map(|control| control.amount)
+        .sum()
+}
+
+fn control_amount_by_settlement(state: &RenderState, tile: &Tile, settlement_id: u32) -> f32 {
+    controls(state, tile)
+        .iter()
+        .filter(|control| control.settlement_id == settlement_id)
         .map(|control| control.amount)
         .sum()
 }
@@ -185,11 +219,47 @@ fn controls<'a>(state: &'a RenderState, tile: &Tile) -> &'a [crate::js::models::
 
 fn neighbour_directions(position: HexPosition) -> [(u32, HexPosition); 6] {
     [
-        (0, HexPosition { q: position.q + 1, r: position.r }),
-        (1, HexPosition { q: position.q + 1, r: position.r - 1 }),
-        (2, HexPosition { q: position.q, r: position.r - 1 }),
-        (3, HexPosition { q: position.q - 1, r: position.r }),
-        (4, HexPosition { q: position.q - 1, r: position.r + 1 }),
-        (5, HexPosition { q: position.q, r: position.r + 1 }),
+        (
+            0,
+            HexPosition {
+                q: position.q + 1,
+                r: position.r,
+            },
+        ),
+        (
+            1,
+            HexPosition {
+                q: position.q + 1,
+                r: position.r - 1,
+            },
+        ),
+        (
+            2,
+            HexPosition {
+                q: position.q,
+                r: position.r - 1,
+            },
+        ),
+        (
+            3,
+            HexPosition {
+                q: position.q - 1,
+                r: position.r,
+            },
+        ),
+        (
+            4,
+            HexPosition {
+                q: position.q - 1,
+                r: position.r + 1,
+            },
+        ),
+        (
+            5,
+            HexPosition {
+                q: position.q,
+                r: position.r + 1,
+            },
+        ),
     ]
 }

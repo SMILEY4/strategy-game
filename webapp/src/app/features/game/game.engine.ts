@@ -10,6 +10,7 @@ import {RealmQueries, type RealmDatabase} from "@app/features/game/database/real
 import {databaseBatch} from "@modules/gamedb/subscribers/batch.ts";
 import {type GameActionJoinedGame} from "@app/features/game/gameplay/game-action.joined-game.ts";
 import type {PointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
+import {type RouteDatabase} from "@app/features/game/database/route.database.ts";
 
 /** Orchestrates the game lifecycle: connecting via WebSocket and routing messages to the database. */
 export interface GameEngine {
@@ -31,6 +32,7 @@ interface Dependencies {
     tileDb: TileDatabase,
     entityDb: EntityDatabase,
     realmDb: RealmDatabase,
+    routeDb: RouteDatabase,
     cameraController: CameraController
     actionClickTile: GameActionClickTile,
     actionJoinedGame: GameActionJoinedGame
@@ -46,6 +48,7 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
         tileDb,
         entityDb,
         realmDb,
+        routeDb,
         cameraController,
         actionClickTile,
         actionJoinedGame,
@@ -73,13 +76,15 @@ export const gameEngine = (dependencies: Dependencies): GameEngine => {
         onMessage: (message: GameWebsocketServerMessage) => {
             console.log("received message", message);
             if (message.type === "ServerGameMessage.GameState") {
-                databaseBatch([tileDb, entityDb, realmDb], () => {
+                databaseBatch([tileDb, entityDb, realmDb, routeDb], () => {
                     realmDb.deleteAll();
                     realmDb.insertMany(message.state.realms);
                     tileDb.deleteAll();
                     tileDb.insertMany(message.state.tiles);
                     entityDb.deleteAll();
                     entityDb.insertMany(message.state.entities);
+                    routeDb.deleteAll();
+                    routeDb.insertMany(message.state.routes);
                 });
                 if (repository.getState() === "loading") {
                     repository.setState("playing");

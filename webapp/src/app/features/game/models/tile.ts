@@ -20,6 +20,7 @@ export interface Tile {
     political: HiddenType<{
         control: ({
             realm: number,
+            settlement: number | null,
             entity: number,
             amount: number
         })[]
@@ -27,6 +28,10 @@ export interface Tile {
     createSettlement: HiddenType<{
         validLocation: boolean,
         validRealm: boolean,
+    }>
+    createTileImprovement: HiddenType<{
+        validRealm: boolean,
+        availableImprovementKeys: string[],
     }>
     meta: {
         seed: number,

@@ -14,6 +14,7 @@ export type RustType =
 // Floating-Point Numbers
     | "f32"
     | "f64"
+    | "string64"
 // Booleans & Characters
     | "bool"
     | "char"
@@ -85,6 +86,14 @@ export const wasmSerializer = <T>(description: WasmStructDescription<T>) => {
                     case "f64": {
                         dataView.setFloat64(pointer, propertyValue, true);
                         pointer += 8;
+                        break;
+                    }
+                    case "string64": {
+                        const bytes = new TextEncoder().encode(propertyValue);
+                        for (let index = 0; index < 64; index++) {
+                            dataView.setUint8(pointer + index, bytes[index] ?? 0);
+                        }
+                        pointer += 64;
                         break;
                     }
                     case "bool": {

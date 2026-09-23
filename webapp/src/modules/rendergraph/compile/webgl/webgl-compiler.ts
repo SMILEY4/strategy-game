@@ -88,7 +88,7 @@ function compileHtmlDraw(node: HtmlDrawRenderGraphNode, containerNode: HtmlConta
         const elements = resolveDataNode(node.elements, context);
         const instances = resolveDataNode(node.instances, context);
 
-        const cacheResourceKey = node.id
+        const cacheResourceKey = node.id;
 
         context.resources.push({
             type: "data",
@@ -99,14 +99,14 @@ function compileHtmlDraw(node: HtmlDrawRenderGraphNode, containerNode: HtmlConta
         context.commands.push({
             type: "UPDATE_HTML_ELEMENTS",
             elements: elements as ValueEntry<HtmlDrawElement[]>,
-            cacheRef: cacheResourceKey
+            cacheRef: cacheResourceKey,
         });
 
         context.commands.push({
             type: "RENDER_HTML_ELEMENTS",
             instances: instances as ValueEntry<HtmlDrawInstance[]>,
             cacheRef: cacheResourceKey,
-            containerId: containerNode.elementId
+            containerId: containerNode.elementId,
         });
 
     });
@@ -180,7 +180,6 @@ function switchToCanvasRenderTarget(canvas: CanvasRenderGraphNode, context: Comp
     if (canvas.clearColor) {
         context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: canvas.clearColor}});
     }
-    context.commands.push({type: "SET_DEPTH_TESTING", enabled: canvas.depthTesting});
 }
 
 
@@ -235,8 +234,6 @@ function switchToOffscreenRenderTarget(node: RendertargetRenderGraphNode<any>, c
     if (node.clearColor) {
         context.commands.push({type: "CLEAR_BUFFER", clearColor: {type: "const", value: node.clearColor}});
     }
-    context.commands.push({type: "SET_DEPTH_TESTING", enabled: node.depthTesting});
-
 }
 
 
@@ -385,8 +382,13 @@ function generateDrawCall(drawCallInfo: DrawCallInfo, context: CompileContext) {
         mode = WebGL2RenderingContext.LINES;
     }
 
+    if (vertexCountRef !== null) {
+        context.commands.push({type: "SET_DEPTH_HANDLING", test: drawCallInfo.drawNode.testDepth, write: drawCallInfo.drawNode.writeDepth});
+        context.commands.push({type: "SET_BLENDING", blend: drawCallInfo.drawNode.blend});
+    }
+
     if (vertexCountRef !== null && instanceCountRef === null) {
-        context.commands.push({type: "DRAW", vertexCountRef: vertexCountRef, mode: mode, blend: drawCallInfo.drawNode.blend});
+        context.commands.push({type: "DRAW", vertexCountRef: vertexCountRef, mode: mode});
     }
     if (vertexCountRef !== null && instanceCountRef !== null) {
         context.commands.push({
@@ -394,7 +396,6 @@ function generateDrawCall(drawCallInfo: DrawCallInfo, context: CompileContext) {
             vertexCountRef: vertexCountRef,
             instanceCountRef: instanceCountRef,
             mode: mode,
-            blend: drawCallInfo.drawNode.blend,
         });
     }
 }

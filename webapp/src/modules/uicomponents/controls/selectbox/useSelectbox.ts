@@ -14,7 +14,7 @@ import {
 import {useHover} from "@modules/uicomponents/hooks/useHover.ts";
 
 export interface SelectboxItem {
-    key: string;
+    key: string | number;
 }
 
 export interface SelectboxOptions {

@@ -1,5 +1,5 @@
 import type {CanvasRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas.ts";
-import type {DrawRenderGraphNode, DrawRenderGraphNodeInput} from "@modules/rendergraph/nodes/rg-node.draw.ts";
+import {DepthFunc, type DrawRenderGraphNode, type DrawRenderGraphNodeInput} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import type {RendertargetAttachment, RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import type {ShaderRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.shader.ts";
 import type {TextureRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.texture.ts";
@@ -30,14 +30,12 @@ export class RenderGraphBuilder {
 
     public canvas(options: {
         renderPasses: DrawRenderGraphNode[],
-        depthTesting?: boolean,
         clearColor?: [number, number, number, number]
     }): CanvasRenderGraphNode {
         const node: CanvasRenderGraphNode = {
             type: "canvas",
             id: RenderGraphBuilder.generateNodeId(),
             renderPasses: options.renderPasses,
-            depthTesting: options.depthTesting ?? false,
             clearColor: options.clearColor ?? null,
         };
         this.nodes.push(node);
@@ -133,6 +131,8 @@ export class RenderGraphBuilder {
         geometry: GeometryRenderGraphNode
         inputs?: Record<string, DrawRenderGraphNodeInput>
         blend?: (gl: WebGL2RenderingContext) => void
+        writeDepth?: boolean,
+        testDepth?: DepthFunc,
     }): DrawRenderGraphNode {
         const node: DrawRenderGraphNode = {
             type: "draw",
@@ -141,6 +141,8 @@ export class RenderGraphBuilder {
             geometry: options.geometry,
             inputs: options.inputs ?? {},
             blend: options.blend ?? null,
+            writeDepth: options.writeDepth ?? false,
+            testDepth: options.testDepth ?? DepthFunc.ALWAYS,
         };
         this.nodes.push(node);
         return node;
@@ -191,7 +193,6 @@ export class RenderGraphBuilder {
         sizeScale?: DataRenderGraphNode<number>,
         renderPasses: DrawRenderGraphNode[],
         attachments: Record<TKeys, RendertargetAttachment>,
-        depthTesting?: boolean,
         clearColor?: [number, number, number, number]
     }): RendertargetRenderGraphNode<TKeys> {
         const node: RendertargetRenderGraphNode<TKeys> = {
@@ -201,7 +202,6 @@ export class RenderGraphBuilder {
             sizeScale: options.sizeScale ?? null,
             renderPasses: options.renderPasses,
             attachments: options.attachments,
-            depthTesting: options.depthTesting ?? false,
             clearColor: options.clearColor ?? null,
         };
         this.nodes.push(node);

@@ -33,10 +33,14 @@ sealed interface EntityComponent {
 
     data class Position(val tile: Tile.Ref) : EntityComponent
 
-    data class Settlement(val name: String, val isRealmCapital: Boolean) : EntityComponent
-
     data class Vision(val radius: Int) : EntityComponent
 
     data class Control(val radius: Int, val amount: Float) : EntityComponent
 
+    data class Settlement(val name: String, val isRealmCapital: Boolean) : EntityComponent
+
+    data class TileImprovement(
+        val key: TileImprovementKey,
+        val administeringSettlement: Entity.Id,
+    ) : EntityComponent
 }

@@ -28,6 +28,15 @@ export function QuickInfo_Tile(props: QuickInfoTileViewModel) {
                     </Button>
                 )}
 
+                {props.actions.createTileImprovement.available && (
+                    <Button
+                        disabled={!props.actions.createTileImprovement.valid}
+                        onClick={props.actions.createTileImprovement.execute}
+                    >
+                        Create Tile Improvement
+                    </Button>
+                )}
+
             </HorizontalLayout>
 
             <VerticalLayout spacing3xs verticalStart horizontalStretch>
@@ -41,7 +50,7 @@ export function QuickInfo_Tile(props: QuickInfoTileViewModel) {
             <VerticalLayout spacing3xs verticalStart horizontalStretch>
                 <Txt.Line><Txt.String>Control: </Txt.String></Txt.Line>
                 {props.control.map(control => (
-                    <Txt.Line>
+                    <Txt.Line key={control.source}>
                         <Txt.String>{`* ${control.source}:` }</Txt.String>
                         <Txt.String>{`${control.amount}`}</Txt.String>
                     </Txt.Line>

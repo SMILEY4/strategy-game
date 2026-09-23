@@ -11,9 +11,11 @@ impl WasmRenderApp {
         self.renderer.calculate_visible_chunks()
     }
 
-    pub fn calculate_tile_instances(&mut self) -> bool {
+    pub fn calculate_world_mesh(&mut self) -> bool {
         self.renderer.build_terrain_instances();
         self.renderer.build_map_details_instances();
+        self.renderer.build_terrain_instances();
+        self.renderer.build_route_vertices();
         true
     }
 

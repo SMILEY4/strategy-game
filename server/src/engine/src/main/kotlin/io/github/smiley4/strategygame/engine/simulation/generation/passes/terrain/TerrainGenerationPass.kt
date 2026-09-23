@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.engine.simulation.generation.GenerationCon
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.GenerationPass
 import io.github.smiley4.strategygame.engine.simulation.generation.tools.FastNoiseLite
 import io.github.smiley4.strategygame.engine.simulation.generation.tools.TilemapPositionsProvider
+import javax.swing.Spring.height
 import kotlin.math.ceil
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -43,9 +44,9 @@ internal class TerrainGenerationPass : GenerationPass {
         val tilePositions = buildTilePositionsWithChunks(radius, chunkRadius)
 
         val tiles = tilePositions.mapIndexed { index, (tilePositions, chunkPosition) ->
-        val height = noise.GetNoise(tilePositions.q.toFloat(), tilePositions.r.toFloat())
+            val height = noise.GetNoise(tilePositions.q.toFloat(), tilePositions.r.toFloat())
             Tile(
-                id = Tile.Id(index+1),
+                id = Tile.Id(index + 1),
                 position = tilePositions,
                 world = Tile.WorldData(
                     biome = if (height < 0) Tile.Biome.OCEAN

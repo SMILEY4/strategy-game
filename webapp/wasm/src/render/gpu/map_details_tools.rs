@@ -34,6 +34,38 @@ pub fn splatter_details(
     }
 }
 
+pub fn sprite_details(
+    rng: &mut Random,
+    config: &Config,
+    out_vertices: &mut Vec<MapDetailVertex>,
+    position: &HexPosition,
+    group_config: &MapDetailSpriteGroupConfig,
+    sprite_name: &str,
+    is_pending: bool,
+) {
+    let atlas = config
+        .spritesheet_entries
+        .get(&group_config.atlas_id)
+        .unwrap();
+    let entry = atlas
+        .iter()
+        .find(|entry| entry.name == sprite_name)
+        .unwrap_or(&atlas[0]);
+
+    let mut offset = rng.point_in_circle_f32(group_config.radius, group_config.distribution);
+    offset[0] = offset[0] * group_config.squish;
+    offset[0] = offset[0] - group_config.push;
+
+    construct_sprite(
+        out_vertices,
+        position,
+        offset,
+        entry,
+        group_config.atlas_id as u32,
+        is_pending,
+    );
+}
+
 pub fn construct_sprite(
     out_vertices: &mut Vec<MapDetailVertex>,
     position: &HexPosition,
@@ -42,6 +74,7 @@ pub fn construct_sprite(
     atlas_id: u32,
     is_pending: bool,
 ) {
+
     // texture coordinates use the atlas-native V (v_min = sprite top). The fragment shader
     // inverts V (`1.0 - v`) and textures are uploaded with UNPACK_FLIP_Y_WEBGL, so emitting the
     // native V here makes the sprite render upright.

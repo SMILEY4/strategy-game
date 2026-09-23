@@ -9,6 +9,7 @@ import {subResourceKey} from "@modules/rendergraph/execute/webgl/webgl-constants
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
 import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 import {tracer} from "@modules/monitoring/tracer.ts";
+import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 
 /** Matrix that negates the clip-space Y axis (see CALCULATE_VIEW_PROJECTION). */
 const MATRIX_FLIP_Y = mat4.fromScaling(mat4.create(), vec3.fromValues(1, -1, 1));
@@ -18,8 +19,8 @@ const MATRIX_FLIP_Y = mat4.fromScaling(mat4.create(), vec3.fromValues(1, -1, 1))
 export function executeWebGlCommands(commands: WebGlCommand[], context: WebGlExecutionContext) {
     for (let i = 0, n = commands.length; i < n; i++) {
         try {
-            const command = commands[i]
-            tracer.span({ name: `webglcmd-${command.type}`, args: command}, () => execute(command, context));
+            const command = commands[i];
+            tracer.span({name: `webglcmd-${command.type}`, args: command}, () => execute(command, context));
         } catch (error) {
             console.error("Failed to execute webgl command", commands[i], context.getResources());
             throw error;
@@ -90,10 +91,22 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
             return;
         }
 
-        case "DRAW": {
+        case "SET_DEPTH_HANDLING": {
             const gl = context.getRenderingContext();
-            const vertexCount = context.getVertexBufferElementCount(command.vertexCountRef);
 
+            if (command.test == DepthFunc.ALWAYS && !command.write) {
+                gl.disable(gl.DEPTH_TEST);
+                gl.depthMask(false);
+            } else {
+                gl.enable(gl.DEPTH_TEST);
+                gl.depthFunc(command.test.glEnum);
+                gl.depthMask(command.write);
+            }
+            return;
+        }
+
+        case "SET_BLENDING": {
+            const gl = context.getRenderingContext();
             if (command.blend === null) {
                 gl.enable(gl.BLEND);
                 gl.blendFuncSeparate(
@@ -106,7 +119,12 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 gl.enable(gl.BLEND);
                 command.blend(gl);
             }
+            return;
+        }
 
+        case "DRAW": {
+            const gl = context.getRenderingContext();
+            const vertexCount = context.getVertexBufferElementCount(command.vertexCountRef);
             gl.drawArrays(command.mode, 0, vertexCount);
             GlError.check(gl, "drawArrays", "drawing");
             return;
@@ -114,20 +132,6 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
 
         case "DRAW_INSTANCED": {
             const gl = context.getRenderingContext();
-
-            if (command.blend === null) {
-                gl.enable(gl.BLEND);
-                gl.blendFuncSeparate(
-                    gl.SRC_ALPHA,
-                    gl.ONE_MINUS_SRC_ALPHA,
-                    gl.ONE,
-                    gl.ONE_MINUS_SRC_ALPHA,
-                );
-            } else {
-                gl.enable(gl.BLEND);
-                command.blend(gl);
-            }
-
             const vertexCount = context.getVertexBufferElementCount(command.vertexCountRef);
             const instanceCount = context.getVertexBufferElementCount(command.instanceCountRef);
             gl.drawArraysInstanced(command.mode, 0, vertexCount, instanceCount);
@@ -332,16 +336,6 @@ function execute(command: WebGlCommand, context: WebGlExecutionContext) {
                 : context.getData<[number, number, number, number]>(command.clearColor.ref);
             gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-            return;
-        }
-
-        case "SET_DEPTH_TESTING": {
-            const gl = context.getRenderingContext();
-            if (command.enabled) {
-                gl.enable(gl.DEPTH_TEST);
-            } else {
-                gl.disable(gl.DEPTH_TEST);
-            }
             return;
         }
 

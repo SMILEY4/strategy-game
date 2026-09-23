@@ -10,3 +10,4 @@ export function interactionDatabase(): InteractionDatabase {
         .withInitialValue({state: null})
         .build();
 }
+

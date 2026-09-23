@@ -5,11 +5,14 @@ import type {VertexDataResult} from "@modules/rendergraph/nodes/rg-node.transfor
 export interface RenderWasmApiDownload {
     getTileLandInstances: () => VertexDataResult;
     getTileWaterInstances: () => VertexDataResult;
+    getWaterEdgeInstances: () => VertexDataResult;
     getTileFogOfWarInstances: () => VertexDataResult;
     getMapDetailVertices: () => VertexDataResult;
     getOverlayGridInstances: () => VertexDataResult;
     getOverlayFillInstances: () => VertexDataResult;
     getOverlayEdgeInstances: () => VertexDataResult;
+    getRouteVertices: () => VertexDataResult;
+    getRouteHighlightVertices: () => VertexDataResult;
 }
 
 export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownload => {
@@ -29,6 +32,15 @@ export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownloa
                 return {
                     data: wasm.get_terrain_tile_water_instances(),
                     count: wasm.get_terrain_tile_water_instances_count(),
+                };
+            });
+        },
+
+        getWaterEdgeInstances: () => {
+            return tracer.span({name: "wasmapi-getWaterEdgeInstances"}, () => {
+                return {
+                    data: wasm.get_water_edge_instances(),
+                    count: wasm.get_water_edge_instances_count(),
                 };
             });
         },
@@ -74,6 +86,25 @@ export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownloa
                 return {
                     data: wasm.get_overlay_edge_instances(),
                     count: wasm.get_overlay_edge_instances_count(),
+                };
+            });
+        },
+
+        getRouteVertices: () => {
+            return tracer.span({name: "wasmapi-getRouteVertices"}, () => {
+                return {
+                    data: wasm.get_route_vertices(),
+                    count: wasm.get_route_vertex_count(),
+                };
+            });
+        },
+
+        getRouteHighlightVertices: () => {
+            return tracer.span({name: "wasmapi-getRouteHighlightVertices"}, () => {
+                console.log("do getRouteHighlightVertices")
+                return {
+                    data: wasm.get_route_highlight_vertices(),
+                    count: wasm.get_route_highlight_vertex_count(),
                 };
             });
         },

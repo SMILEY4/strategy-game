@@ -10,5 +10,6 @@ class GameStateContext(
     var turn: Int,
     val realms: MutableList<Realm>,
     val tiles: MutableList<Tile>,
-    val entities: MutableList<Entity>
+    val entities: MutableList<Entity>,
+    val routes: MutableList<Route>
 )

@@ -1,105 +1,183 @@
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
-import {gameGraphPassCoastline} from "@pages/game/renderer/graph/game-graph.pass-coastline.ts";
-import {gameGraphPassTerrain} from "@pages/game/renderer/graph/game-graph.pass-terrain.ts";
-import {gameGraphPassCompose} from "@pages/game/renderer/graph/game-graph.pass-compose.ts";
-import {gameGraphDataWorld} from "@pages/game/renderer/graph/game-graph.data-world.ts";
-import {gameGraphDataCamera} from "@pages/game/renderer/graph/game-graph.data-camera.ts";
-import {gameGraphPassFogOfWar} from "@pages/game/renderer/graph/game-graph.pass-fog-of-war.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import {gameGraphPassSelectedTile} from "@pages/game/renderer/graph/game-graph.pass-selected-tile.ts";
-import {gameGraphPassMapDetails} from "@pages/game/renderer/graph/game-graph.pass-map-details.ts";
-import {gameGraphHtml} from "@pages/game/renderer/graph/game-graph.html.ts";
-import {gameGraphPassTileGrid} from "@pages/game/renderer/graph/game-graph.tile-grid.ts";
-import {gameGraphPassOverlay} from "@pages/game/renderer/graph/game-graph.overlay.ts";
-import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
+import {gameGraphDataCamera} from "@pages/game/renderer/graph/camera-data.ts";
+import {gameGraphDataWorld} from "@pages/game/renderer/graph/world-data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-
+import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import {renderBaseTerrainMask} from "@pages/game/renderer/graph/render-base-terrain-mask.ts";
+import {renderBaseTerrain} from "@pages/game/renderer/graph/render-base-terrain.ts";
+import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import {debugVisRendertarget} from "@pages/game/renderer/graph/debug-rendertarget.ts";
+import {renderMapDetails} from "@pages/game/renderer/graph/render-map-details.ts";
+import {renderOverlay} from "@pages/game/renderer/graph/render-overlay.ts";
+import {renderTileHighlight} from "@pages/game/renderer/graph/render-tile-highlight.ts";
+import {renderTileGrid} from "@pages/game/renderer/graph/render-tile-grid.ts";
+import {gameGraphHtml} from "@pages/game/renderer/graph/html.ts";
+import {renderRoutes} from "@pages/game/renderer/graph/render-routes.ts";
+import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
+
+    //======================  COMMON ========================================
 
     const dataDebug = g.dataExternal<VersionedContainer<DebugData>>(
         (prev) => prev?.revId !== dataProvider.getDebugData().revId,
         () => dataProvider.getDebugData().load(),
     );
 
+    const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
+
     const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
         prev => prev?.revId !== dataProvider.getPointerPosition().revId,
         () => dataProvider.getPointerPosition().load(),
     );
 
-    const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
+    const dataPointerHexPosition = g.dataTransformer(
+        g.transform({
+            inputs: [dataPointerPosition],
+            func: (data) => data.data.hex,
+        }),
+    );
+
+    const dataPointerWorldPosition = g.dataTransformer(
+        g.transform({
+            inputs: [dataPointerPosition],
+            func: (data) => data.data.world,
+        }),
+    );
 
     const {
-        wasmTileTerrainInstances,
-        wasmTileFogOfWarInstances,
-        wasmMapDetailVertices,
         wasmVisibleChunks,
+        // wasmTileFogOfWarInstances,
+        warmTileLandInstances,
+        wasmTileWaterInstances,
+        wasmWaterEdgeInstances,
+        wasmMapDetailVertices,
+        wasmRouteVertices
     } = gameGraphDataWorld(g, dataProvider, wasmApi, {
         dataCamera: dataCamera,
     });
 
-    const {layerBaseTerrain} = gameGraphPassTerrain(g, wasmApi, {
-        wasmTileInstances: wasmTileTerrainInstances,
-        camera: camera,
+    //======================  BASE TERRAIN MASK =============================
+
+    const renderTargetBaseTerrainMask = renderBaseTerrainMask(g, wasmApi, {
         dataDebug: dataDebug,
+        camera: camera,
+        wasmWaterEdgeInstances: wasmWaterEdgeInstances,
+        warmTileLandInstances: warmTileLandInstances,
     });
 
-    const {layerCoastlineMask} = gameGraphPassCoastline(g, wasmApi, {
-        wasmTileInstances: wasmTileTerrainInstances,
-        camera: camera,
+    //====================== BASE TERRAIN ===================================
+
+    const {drawWaterTiles, drawLandTiles} = renderBaseTerrain(g, wasmApi, {
         dataDebug: dataDebug,
+        camera: camera,
+        warmTileLandInstances: warmTileLandInstances,
+        wasmTileWaterInstances: wasmTileWaterInstances,
+        renderTargetBaseTerrainMask: renderTargetBaseTerrainMask,
     });
 
-    const {layerFogOfWar} = gameGraphPassFogOfWar(g, wasmApi, {
-        wasmTileInstances: wasmTileFogOfWarInstances,
-        camera: camera,
-        dataDebug: dataDebug,
-    });
+    //====================== MAP DETAILS ====================================
 
-    const {layerMapDetails} = gameGraphPassMapDetails(g, wasmApi, {
-        wasmMapDetailVertices: wasmMapDetailVertices,
+    const {drawMapDetails} = renderMapDetails(g, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
         cameraData: dataCamera,
-        camera: camera,
-        dataDebug: dataDebug,
+        wasmMapDetailVertices: wasmMapDetailVertices,
     });
 
-    const {layerOverlay} = gameGraphPassOverlay(g, dataProvider, wasmApi, {
+    //====================== ROUTES =========================================
+
+    const {drawRoutes} = renderRoutes(g, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
+        wasmRouteVertices: wasmRouteVertices,
+        renderTargetBaseTerrainMask: renderTargetBaseTerrainMask
+    });
+    //====================== FOG OF WAR =====================================
+
+    // const renderTargetFogOfWarMask = renderFogOfWar(g, wasmApi, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
+    // })
+
+    //====================== TILE GRID ======================================
+
+    const {drawTileGrid} = renderTileGrid(g, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
+        dataPointerHexPosition: dataPointerHexPosition,
+        dataPointerWorldPosition: dataPointerWorldPosition,
+    })
+
+
+    //====================== OVERLAY ========================================
+
+    const {
+        drawOverlayFill,
+        drawOverlayBorderBack,
+        drawOverlayBorderFront,
+        drawRouteHighlight,
+    } = renderOverlay(g, dataProvider, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
         visibleChunks: wasmVisibleChunks,
-        camera: camera,
-        dataDebug: dataDebug,
     });
 
-    const {layerTileGrid} = gameGraphPassTileGrid(g, wasmApi, {
-        camera: camera,
-        dataPointerPosition: dataPointerPosition,
+
+    //====================== SELECTED TILE ==================================
+
+    const {drawSelectedTileBack, drawSelectedTileFront} = renderTileHighlight(g, dataProvider, {
         dataDebug: dataDebug,
+        camera: camera,
+        dataPointerHexPosition: dataPointerHexPosition,
     });
 
-    const {drawCompose} = gameGraphPassCompose(g, {
-        layerBaseTerrain: layerBaseTerrain,
-        layerCoastlineMask: layerCoastlineMask,
-        layerFogOfWar: layerFogOfWar,
-        layerMapDetails: layerMapDetails,
-        layerTileGrid: layerTileGrid,
-        layerOverlay: layerOverlay,
-        dataDebug: dataDebug,
+    //====================== WEBGL OUTPUT ===================================
+
+    const canvasSize = g.canvasSize();
+
+    const renderTargetComposite = g.rendertarget({
+        size: canvasSize,
+        renderPasses: [
+            drawWaterTiles,
+            drawLandTiles,
+            drawRoutes,
+            drawMapDetails,
+            drawTileGrid,
+            drawOverlayFill,
+            drawOverlayBorderBack,
+            drawOverlayBorderFront,
+            drawRouteHighlight,
+            drawSelectedTileBack,
+            drawSelectedTileFront,
+        ],
+        attachments: {
+            color: {
+                type: "color",
+                format: GLColorStoreFormat.RGBA_8,
+            },
+            depth: {
+                type: "depth",
+                format: GLDepthStoreFormat.DEPTH_COMPONENT32F,
+            },
+        },
+        clearColor: [0, 0, 0, 0],
     });
 
-    const {drawSelectedTile} = gameGraphPassSelectedTile(g, dataProvider, {
-        camera: camera,
-        dataDebug: dataDebug,
+    const drawDebugVis = debugVisRendertarget(g, renderTargetComposite);
+
+    g.canvas({
+        renderPasses: [drawDebugVis],
+        clearColor: [0, 0, 0, 1],
     });
+
+    //====================== HTML OUTPUT ====================================
 
     const {htmlDraw} = gameGraphHtml(g, dataProvider, {
         dataCamera: dataCamera,
-    });
-
-    g.canvas({
-        renderPasses: [drawCompose, drawSelectedTile],
-        depthTesting: false,
-        clearColor: [0, 0, 0, 1],
     });
 
     g.htmlContainer({
@@ -107,7 +185,6 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         renderPasses: [htmlDraw],
     });
 
-    console.log("RG_NODES", g.getNodes());
-
     return g.getNodes();
 }
+

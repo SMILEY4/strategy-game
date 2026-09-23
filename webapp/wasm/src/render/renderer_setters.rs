@@ -1,5 +1,6 @@
-use crate::js::models::{Control, Entity, Tile};
+use crate::js::models::{Control, Entity, RoutePoint, Tile};
 use crate::render::Renderer;
+use crate::render::tools::route_segmentation::segment_routes;
 
 impl Renderer {
     pub fn set_tiles(&mut self, tiles: Vec<Tile>) {
@@ -14,8 +15,7 @@ impl Renderer {
                 .insert(tile.tile_position, index);
         }
 
-        self.state.chunks.clear();
-        self.state.visible_chunks.clear();
+        self.invalidate_chunks()
     }
 
     pub fn set_tile_control_values(&mut self, controls: Vec<Control>) {
@@ -30,8 +30,20 @@ impl Renderer {
         self.state.selected_entity_id = entity_id;
     }
 
+    pub fn set_selected_settlement_id(&mut self, settlement_id: Option<u32>) {
+        self.state.selected_settlement_id = settlement_id;
+    }
+
     pub fn set_entities(&mut self, entities: Vec<Entity>) {
         self.state.entities = entities;
+        self.invalidate_chunks()
+    }
+    
+    pub fn set_route_points(&mut self, route_points: Vec<RoutePoint>) {
+        self.state.route_segments = segment_routes(&route_points);
+    }
+    
+    fn invalidate_chunks(&mut self) {
         self.state.chunks.clear();
         self.state.visible_chunks.clear();
     }

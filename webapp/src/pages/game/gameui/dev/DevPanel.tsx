@@ -16,10 +16,80 @@ export function useDevPanel() {
                 ...data,
                 renderer: {
                     ...data.renderer,
-                    randomHexOffsetScale: it
-                }
-            }))
+                    randomHexOffsetScale: it,
+                },
+            })),
         },
+        "land mask": folder({
+            landMaskNoise1Scale: {
+                label: "noise 1 scale",
+                value: initialDebugDataValues.renderer.landMask.noise1Scale,
+                min: 0,
+                max: 5,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        landMask: {
+                            ...data.renderer.landMask,
+                            noise1Scale: it,
+                        },
+                    },
+                })),
+            },
+            landMaskNoise1Amplitude: {
+                label: "noise 1 amplitude",
+                value: initialDebugDataValues.renderer.landMask.noise1Amplitude,
+                min: 0,
+                max: 1,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        landMask: {
+                            ...data.renderer.landMask,
+                            noise1Amplitude: it,
+                        },
+                    },
+                })),
+            },
+            landMaskNoise2Scale: {
+                label: "noise 2 scale",
+                value: initialDebugDataValues.renderer.landMask.noise2Scale,
+                min: 0,
+                max: 5,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        landMask: {
+                            ...data.renderer.landMask,
+                            noise2Scale: it,
+                        },
+                    },
+                })),
+            },
+            landMaskNoise2Amplitude: {
+                label: "noise 2 amplitude",
+                value: initialDebugDataValues.renderer.landMask.noise2Amplitude,
+                min: 0,
+                max: 1,
+                transient: false,
+                onChange: it => DI.debugDatabase.update(data => ({
+                    ...data,
+                    renderer: {
+                        ...data.renderer,
+                        landMask: {
+                            ...data.renderer.landMask,
+                            noise2Amplitude: it,
+                        },
+                    },
+                })),
+            },
+        }),
         "base terrain": folder({
             scaleBaseTerrain: {
                 label: "scale",
@@ -33,10 +103,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         baseTerrain: {
                             ...data.renderer.baseTerrain,
-                            scale: it
-                        }
-                    }
-                }))
+                            scale: it,
+                        },
+                    },
+                })),
             },
         }),
         "terrain mask": folder({
@@ -52,10 +122,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         terrainMask: {
                             ...data.renderer.terrainMask,
-                            scale: it
-                        }
-                    }
-                }))
+                            scale: it,
+                        },
+                    },
+                })),
             },
             cutoffTerrainMask: {
                 label: "cutoff",
@@ -69,10 +139,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         terrainMask: {
                             ...data.renderer.terrainMask,
-                            cutoff: it
-                        }
-                    }
-                }))
+                            cutoff: it,
+                        },
+                    },
+                })),
             },
         }),
         "fog of war": folder({
@@ -88,10 +158,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         fogOfWar: {
                             ...data.renderer.fogOfWar,
-                            scale: it
-                        }
-                    }
-                }))
+                            scale: it,
+                        },
+                    },
+                })),
             },
         }),
         "map details": folder({
@@ -105,11 +175,11 @@ export function useDevPanel() {
                         ...data.renderer,
                         mapDetails: {
                             ...data.renderer.mapDetails,
-                            msaa: it
-                        }
-                    }
-                }))
-            }
+                            msaa: it,
+                        },
+                    },
+                })),
+            },
         }),
         "selected tile": folder({
             thicknessSelectedTile: {
@@ -124,10 +194,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         selectedTile: {
                             ...data.renderer.selectedTile,
-                            thickness: it
-                        }
-                    }
-                }))
+                            thickness: it,
+                        },
+                    },
+                })),
             },
             softnessSelectedTile: {
                 label: "softness",
@@ -141,10 +211,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         selectedTile: {
                             ...data.renderer.selectedTile,
-                            softness: it
-                        }
-                    }
-                }))
+                            softness: it,
+                        },
+                    },
+                })),
             },
             colorSelectedTile: {
                 label: "color",
@@ -165,11 +235,11 @@ export function useDevPanel() {
                                 it.r / 255,
                                 it.g / 255,
                                 it.b / 255,
-                                it.a
-                            ]
-                        }
-                    }
-                }))
+                                it.a,
+                            ],
+                        },
+                    },
+                })),
             },
         }),
 
@@ -186,10 +256,10 @@ export function useDevPanel() {
                         ...data.renderer,
                         grid: {
                             ...data.renderer.grid,
-                            thickness: it
-                        }
-                    }
-                }))
+                            thickness: it,
+                        },
+                    },
+                })),
             },
             colorGrid: {
                 label: "color",
@@ -210,13 +280,13 @@ export function useDevPanel() {
                                 it.r / 255,
                                 it.g / 255,
                                 it.b / 255,
-                                it.a
-                            ]
-                        }
-                    }
-                }))
+                                it.a,
+                            ],
+                        },
+                    },
+                })),
             },
-        })
+        }),
 
     });
 

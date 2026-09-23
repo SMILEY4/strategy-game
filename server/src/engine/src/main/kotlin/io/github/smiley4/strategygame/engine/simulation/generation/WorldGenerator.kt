@@ -25,6 +25,7 @@ internal class WorldGenerator {
             realms = mutableListOf(),
             tiles = mutableListOf(),
             entities = mutableListOf(),
+            routes = mutableListOf()
         )
         generationPasses.forEach { it.execute(gameState, generationContext) }
         return gameState
