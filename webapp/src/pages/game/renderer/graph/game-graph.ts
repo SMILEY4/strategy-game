@@ -93,6 +93,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         dataDebug: dataDebug,
         camera: camera,
         wasmRouteVertices: wasmRouteVertices,
+        renderTargetBaseTerrainMask: renderTargetBaseTerrainMask
     });
     //====================== FOG OF WAR =====================================
 

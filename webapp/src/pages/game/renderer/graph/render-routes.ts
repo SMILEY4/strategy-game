@@ -9,6 +9,7 @@ import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_ROUTES_VERT from "@pages/game/renderer/shader/routes/routes.vsh";
 import SHADER_ROUTES_FRAG from "@pages/game/renderer/shader/routes/routes.fsh";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
+import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 
 export function renderRoutes(
     g: RenderGraphBuilder,
@@ -17,6 +18,7 @@ export function renderRoutes(
         dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
         camera: CameraRenderGraphNode,
         wasmRouteVertices: WasmDataRenderGraphNode,
+        renderTargetBaseTerrainMask: RendertargetRenderGraphNode<"color">
     },
 ) {
 
@@ -58,12 +60,19 @@ export function renderRoutes(
         url: "/sprites/paint-line_v2.jpg",
     });
 
+    const canvasSize = g.canvasSize();
+
     const draw = g.draw({
         shader: shader,
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
+            "resolution": canvasSize,
             "texture": texturePaintLine,
+            "terrainMask": g.pickRendertargetAttachment({
+                rendertarget: inputs.renderTargetBaseTerrainMask,
+                attachment: "color",
+            }),
         },
         writeDepth: false,
         testDepth: DepthFunc.ALWAYS,
