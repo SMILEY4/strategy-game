@@ -1,22 +1,66 @@
-import {type MouseEvent, useRef, type WheelEvent} from "react";
+import {type MouseEvent, type RefObject, useRef, type WheelEvent} from "react";
+
+export function toDrawingBufferCoordinates(
+    x: number,
+    y: number,
+    rect: DOMRect,
+    drawingBufferWidth: number,
+    drawingBufferHeight: number,
+): [number, number] {
+    return [
+        x * drawingBufferWidth / rect.width,
+        y * drawingBufferHeight / rect.height,
+    ];
+}
 
 /** Hook that translates DOM mouse events into structured callbacks for the canvas. */
 export function useCanvasInteractions(options: {
+    canvasRef: RefObject<HTMLCanvasElement | null>;
     onMouseMove?: (mx: number, my: number, x: number, y: number, buttons: number) => void
     onMouseScroll?: (scroll: number, x: number, y: number) => void
     onMouseClick?: (x: number, y: number) => void
 }) {
 
+    function getDrawingBufferSize(canvas: HTMLCanvasElement): [number, number] {
+        const gl = canvas.getContext("webgl2");
+        return gl
+            ? [gl.drawingBufferWidth, gl.drawingBufferHeight]
+            : [canvas.clientWidth, canvas.clientHeight];
+    }
+
+    function getCanvasCoordinates(e: MouseEvent | WheelEvent): {
+        x: number,
+        y: number,
+        scaleX: number,
+        scaleY: number,
+    } {
+        const canvas = options.canvasRef.current;
+        const rect = canvas?.getBoundingClientRect() ?? e.currentTarget.getBoundingClientRect();
+        const [drawingBufferWidth, drawingBufferHeight] = canvas
+            ? getDrawingBufferSize(canvas)
+            : [rect.width, rect.height];
+        const scaleX = drawingBufferWidth / rect.width;
+        const scaleY = drawingBufferHeight / rect.height;
+        const [x, y] = toDrawingBufferCoordinates(
+            e.clientX - rect.left,
+            e.clientY - rect.top,
+            rect,
+            drawingBufferWidth,
+            drawingBufferHeight,
+        );
+        return {x, y, scaleX, scaleY};
+    }
+
     const refMouseDownInCanvas = useRef<boolean>(false);
     const refTimestampMouseDown = useRef<number>(0);
 
     function mouseMove(e: MouseEvent) {
-        const rect = e.currentTarget.getBoundingClientRect();
+        const {x, y, scaleX, scaleY} = getCanvasCoordinates(e);
         options.onMouseMove?.(
-            e.movementX,
-            e.movementY,
-            e.clientX - rect.left,
-            e.clientY - rect.top,
+            e.movementX * scaleX,
+            e.movementY * scaleY,
+            x,
+            y,
             e.buttons,
         );
     }
@@ -37,14 +81,14 @@ export function useCanvasInteractions(options: {
     }
 
     function scroll(e: WheelEvent) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        options.onMouseScroll?.(e.deltaY, e.clientX - rect.left, e.clientY - rect.top);
+        const {x, y} = getCanvasCoordinates(e);
+        options.onMouseScroll?.(e.deltaY, x, y);
     }
 
     function click(duration: number, e: MouseEvent) {
         if (duration < 150) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            options.onMouseClick?.(e.clientX - rect.left, e.clientY - rect.top);
+            const {x, y} = getCanvasCoordinates(e);
+            options.onMouseClick?.(x, y);
         }
     }
 

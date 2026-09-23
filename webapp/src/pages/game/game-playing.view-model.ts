@@ -25,8 +25,8 @@ export function useGamePlayingViewModel(): GamePlayingViewModel {
     };
 
     const onResize = (canvas: HTMLCanvasElement) => {
-        DI.gameEngine.onResize(canvas.width, canvas.height);
-        renderer.resize(canvas)
+        const [width, height] = renderer.resize(canvas);
+        DI.gameEngine.onResize(width, height);
     };
 
     const onMouseMove = DI.gameEngine.onMouseMove;

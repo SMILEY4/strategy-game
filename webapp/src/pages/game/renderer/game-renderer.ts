@@ -45,8 +45,8 @@ export class GameRenderer {
         );
     }
 
-    public resize(canvas: HTMLCanvasElement): void {
-        this.renderGraph.onResizeCanvas(canvas);
+    public resize(canvas: HTMLCanvasElement): [number, number] {
+        return this.renderGraph.onResizeCanvas(canvas);
     }
 
     public dispose(): void {

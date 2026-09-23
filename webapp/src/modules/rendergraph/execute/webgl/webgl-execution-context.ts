@@ -238,6 +238,10 @@ export class WebGlExecutionContext {
         return this.gl;
     }
 
+    getDrawingBufferSize(): [number, number] {
+        return [this.gl.drawingBufferWidth, this.gl.drawingBufferHeight];
+    }
+
     getProgram(id: string): GlProgram {
         const resource = this.resources.get(id);
         if (!resource || resource.type !== "program" || !resource.resource) {

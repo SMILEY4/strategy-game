@@ -40,17 +40,21 @@ export class WebGlRenderGraph implements RenderGraph {
         this.dispose()
         if (canvas) {
             this.executionContext = this.executionContextFactory(canvas);
-            this.executionContext.setData(KEY_CANVAS_SIZE, [canvas.width, canvas.height])
+            this.executionContext.setData(KEY_CANVAS_SIZE, this.executionContext.getDrawingBufferSize())
             this.executionContext.setAllDirty(true)
         } else {
             this.executionContext = null;
         }
     }
 
-    public onResizeCanvas(canvas: HTMLCanvasElement | null) {
+    public onResizeCanvas(canvas: HTMLCanvasElement | null): [number, number] {
         if(this.executionContext && canvas) {
-            this.executionContext.setData(KEY_CANVAS_SIZE, [canvas.width, canvas.height])
+            const size = this.executionContext.getDrawingBufferSize();
+            this.executionContext.setData(KEY_CANVAS_SIZE, size)
             this.executionContext.setDirty(KEY_CANVAS_SIZE)
+            return size
+        } else {
+            return [0,0]
         }
     }
 

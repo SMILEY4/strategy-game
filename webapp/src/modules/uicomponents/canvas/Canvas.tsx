@@ -21,8 +21,8 @@ interface CanvasProps {
 /** A canvas wrapper component that manages WebGL lifecycle and mouse interactions. */
 export function Canvas(props: CanvasProps): ReactElement {
 
-    const interactions = useCanvasInteractions({...props});
     const lifecycle = useCanvasLifecycle({...props});
+    const interactions = useCanvasInteractions({...props, canvasRef: lifecycle.canvasRef});
 
     return (
         <div
