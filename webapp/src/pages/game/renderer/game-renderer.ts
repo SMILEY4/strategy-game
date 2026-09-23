@@ -20,6 +20,7 @@ export class GameRenderer {
             cameraDb: DI.cameraDatabase,
             entityDb: DI.entityDatabase,
             routeDb: DI.routeDatabase,
+            realmDb: DI.realmDatabase,
             commandDb: DI.commandDatabase,
             debugDb: DI.debugDatabase,
             selectedTileDb: DI.selectedTileDatabase,
