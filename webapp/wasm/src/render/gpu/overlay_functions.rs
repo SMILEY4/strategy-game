@@ -7,13 +7,16 @@ use crate::render::models::gpu::{
     OVERLAY_EDGE_STYLE_FILLED, OVERLAY_FILL_STYLE_FILLED, OVERLAY_FILL_STYLE_STRIPED,
 };
 use crate::render::state_render::RenderState;
+use crate::render::state_render::RealmColor;
 
-const OCEAN_COLOR: [f32; 4] = [0.08, 0.35, 0.65, 0.35];
-const GRASSLAND_COLOR: [f32; 4] = [0.2, 0.6, 0.25, 0.35];
-const MOUNTAINS_COLOR: [f32; 4] = [0.45, 0.45, 0.45, 0.55];
-const FOREST_COLOR: [f32; 4] = [0.05, 0.3, 0.1, 0.55];
-const POLITICAL_COLOR: [f32; 4] = [0.55, 0.08, 0.18, 0.35];
-const BORDER_COLOR: [f32; 4] = [1.0, 1.0, 1.0, 1.0];
+const NEUTRAL_COLOR: RealmColor = RealmColor {
+    red: 0.5,
+    green: 0.5,
+    blue: 0.5,
+};
+
+const POLITICAL_FILL_ALPHA: f32 = 0.35;
+
 
 //===== NO-OP ======================================
 
@@ -80,7 +83,7 @@ pub fn edges_entity_control(
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
-                color: BORDER_COLOR,
+                color: [1.0, 1.0, 1.0, 1.0],
                 style: OVERLAY_EDGE_STYLE_DASHED,
                 thickness: 0.05
             });
@@ -90,7 +93,7 @@ pub fn edges_entity_control(
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
-                color: BORDER_COLOR,
+                color: [1.0, 1.0, 1.0, 1.0],
                 style: OVERLAY_EDGE_STYLE_DASHED,
                 thickness: 0.1
             });
@@ -105,10 +108,15 @@ pub fn fill_mapmode_political(
     tile: &Tile,
     output: &mut Vec<GenericFillOverlayInstance>,
 ) {
-    if total_control(state, tile) > 0.0 {
+    if let Some(realm_id) = dominant_realm(state, tile) {
+        let color = state
+            .realm_colors
+            .get(&realm_id)
+            .copied()
+            .unwrap_or(NEUTRAL_COLOR);
         output.push(fill_instance(
             tile,
-            POLITICAL_COLOR,
+            color.with_alpha(POLITICAL_FILL_ALPHA),
             OVERLAY_FILL_STYLE_FILLED,
         ));
     }
@@ -120,21 +128,25 @@ pub fn edges_mapmode_political(
     tiles_by_pos: &rustc_hash::FxHashMap<HexPosition, usize>,
     output: &mut Vec<GenericEdgeOverlayInstance>,
 ) {
-    if total_control(state, tile) <= 0.0 {
+    let Some(realm_id) = dominant_realm(state, tile) else {
         return;
-    }
+    };
+    let color = state
+        .realm_colors
+        .get(&realm_id)
+        .copied()
+        .unwrap_or(NEUTRAL_COLOR);
 
     for (direction, neighbour_position) in neighbour_directions(tile.tile_position) {
-        let neighbour_control = tiles_by_pos
+        let neighbour_realm = tiles_by_pos
             .get(&neighbour_position)
-            .map(|index| total_control(state, &state.tiles[*index]))
-            .unwrap_or(0.0);
+            .and_then(|index| dominant_realm(state, &state.tiles[*index]));
 
-        if neighbour_control <= 0.0 {
+        if neighbour_realm != Some(realm_id) {
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
-                color: BORDER_COLOR,
+                color: color.with_alpha(1.0),
                 style: OVERLAY_EDGE_STYLE_FILLED,
                 thickness: 0.1
             });
@@ -186,11 +198,18 @@ fn fill_instance(tile: &Tile, color: [f32; 4], style: u32) -> GenericFillOverlay
     }
 }
 
-fn total_control(state: &RenderState, tile: &Tile) -> f32 {
+fn dominant_realm(state: &RenderState, tile: &Tile) -> Option<u32> {
     controls(state, tile)
         .iter()
-        .map(|control| control.amount)
-        .sum()
+        .filter(|control| control.amount > 0.0)
+        .max_by(|left, right| {
+            let left_amount = left.amount;
+            let right_amount = right.amount;
+            left_amount
+                .partial_cmp(&right_amount)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+        .map(|control| control.realm_id)
 }
 
 fn control_amount_by_entity(state: &RenderState, tile: &Tile, entity_id: u32) -> f32 {

@@ -7,11 +7,13 @@ import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
 import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
 import type {Route} from "@app/features/game/models/route.ts";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
+import type {Realm} from "@app/features/game/models/realm.ts";
 
 export interface RenderWasmApiUpload {
     uploadTiles: (tiles: Tile[]) => void,
     uploadEntities: (entities: RenderEntity[]) => void,
     uploadRoutes: (routes: Route[]) => void
+    uploadRealmColors: (realms: Realm[]) => void,
     setMapMode: (mapMode: MapMode) => void,
     setSelectedEntityId: (entityId: number | null) => void,
     setSelectedSettlementId: (settlementId: number | null) => void,
@@ -262,6 +264,15 @@ export const renderWasmApiUpload = (wasm: WasmRenderApp): RenderWasmApiUpload =>
                 const buffer = new Uint8Array(wasmMemory.buffer, memory.ptr, memory.len * memory.item_size);
                 routePointSerializer(buffer, routePoints);
                 wasm.upload_routes(memory.ptr, memory.len);
+            });
+        },
+
+        uploadRealmColors: (realms: Realm[]) => {
+            tracer.span({name: "wasmapi-uploadRealmColors"}, () => {
+                wasm.clear_realm_colors();
+                realms.forEach(realm => {
+                    wasm.set_realm_color(realm.id, realm.color[0], realm.color[1], realm.color[2]);
+                });
             });
         },
 

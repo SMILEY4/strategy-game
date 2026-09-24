@@ -1,5 +1,6 @@
 use crate::js::models::{Control, Entity, RoutePoint, Tile};
 use crate::render::Renderer;
+use crate::render::state_render::RealmColor;
 use crate::render::tools::route_segmentation::segment_routes;
 
 impl Renderer {
@@ -20,6 +21,17 @@ impl Renderer {
 
     pub fn set_tile_control_values(&mut self, controls: Vec<Control>) {
         self.state.controls = controls;
+    }
+
+    pub fn clear_realm_colors(&mut self) {
+        self.state.realm_colors.clear();
+    }
+
+    pub fn set_realm_color(&mut self, realm_id: u32, red: u8, green: u8, blue: u8) {
+        self.state.realm_colors.insert(
+            realm_id,
+            RealmColor::from_rgb(red, green, blue),
+        );
     }
 
     pub fn set_map_mode(&mut self, map_mode: u32) {

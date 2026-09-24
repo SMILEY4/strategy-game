@@ -6,6 +6,7 @@ import SHADER_OVERLAY_FILL_FRAG from "@pages/game/renderer/shader/overlay/overla
 import SHADER_OVERLAY_BORDER_VERT from "@pages/game/renderer/shader/overlay/overlayBorder.vsh";
 import SHADER_OVERLAY_BORDER_FRAG from "@pages/game/renderer/shader/overlay/overlayBorder.fsh";
 import type {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {Realm} from "@app/features/game/models/realm.ts";
 import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
@@ -37,6 +38,11 @@ export function renderOverlay(
         () => dataProvider.getMapMode(),
     );
 
+    const dataRealms = g.dataExternal<VersionedContainer<Realm[]>>(
+        prev => prev?.revId !== dataProvider.getRealms().revId,
+        () => dataProvider.getRealms().load(),
+    );
+
     const dataSelectedEntity = g.dataExternal<Entity | null>(
         prev => prev?.id !== dataProvider.getSelectedEntity()?.id,
         () => dataProvider.getSelectedEntity(),
@@ -47,6 +53,14 @@ export function renderOverlay(
             type: "js",
             data: dataMapMode,
             upload: (mode: MapMode) => wasmApi.upload.setMapMode(mode),
+        },
+    });
+
+    const wasmRealmColors = g.wasmData({
+        source: {
+            type: "js",
+            data: dataRealms,
+            upload: (realms: VersionedContainer<Realm[]>) => wasmApi.upload.uploadRealmColors(realms.data),
         },
     });
 
@@ -67,7 +81,7 @@ export function renderOverlay(
     });
 
     const calculateOverlayInstances = g.wasmOperation({
-        wasmInputs: [inputs.visibleChunks, wasmMapMode, wasmSelectedEntity],
+        wasmInputs: [inputs.visibleChunks, wasmMapMode, wasmSelectedEntity, wasmRealmColors],
         dataInputs: [],
         outputs: ["overlayFillInstances", "overlayEdgeInstances", "routeHighlightVertices"],
         func: () => wasmApi.operations.calculateOverlayInstances(),

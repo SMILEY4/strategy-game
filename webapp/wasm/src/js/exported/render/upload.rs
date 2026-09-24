@@ -23,6 +23,14 @@ impl WasmRenderApp {
         self.renderer.set_tile_control_values(controls)
     }
 
+    pub fn clear_realm_colors(&mut self) {
+        self.renderer.clear_realm_colors()
+    }
+
+    pub fn set_realm_color(&mut self, realm_id: u32, red: u8, green: u8, blue: u8) {
+        self.renderer.set_realm_color(realm_id, red, green, blue)
+    }
+
     pub fn reserve_entities_memory(&self, len: usize) -> DirectMemoryHandle {
         DirectBuffer::reserve::<Entity>(len)
     }
