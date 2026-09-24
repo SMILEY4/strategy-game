@@ -6,6 +6,7 @@ import io.github.smiley4.strategygame.engine.game.GameService
 import io.github.smiley4.strategygame.engine.game.SubmitTurnError
 import io.github.smiley4.strategygame.engine.game.domain.GameRepository
 import io.github.smiley4.strategygame.engine.simulation.GameStateRepository
+import io.github.smiley4.strategygame.engine.simulation.playerstate.PlayerStateBuilder
 import io.github.smiley4.strategygame.engine.testScope
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.MatchId
@@ -17,6 +18,7 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
 
 class GameManagementTests : FreeSpec({
 
@@ -40,10 +42,19 @@ class GameManagementTests : FreeSpec({
                     it.pendingCommands shouldBe emptyMap()
                     it.players shouldContainExactlyInAnyOrder setOf(user1, user2)
                 }
-                gameStateRepository.load(gameId1).also {
-                    it shouldNotBe null
-                    it!!.turn shouldBe 0
-                    it.tiles.size shouldBeGreaterThan 0
+                val gameState = gameStateRepository.load(gameId1)
+                gameState shouldNotBe null
+                gameState!!.also { state ->
+                    state.turn shouldBe 0
+                    state.tiles.size shouldBeGreaterThan 0
+                    state.realms.map { realm -> realm.color }.toSet() shouldHaveSize state.realms.size
+                    state.realms.forEach { realm ->
+                        realm.color.red.toInt() in 0..255 shouldBe true
+                        realm.color.green.toInt() in 0..255 shouldBe true
+                        realm.color.blue.toInt() in 0..255 shouldBe true
+                    }
+
+                    get<PlayerStateBuilder>().build(state, user1).pretty(3) shouldContain "\"color\""
                 }
 
                 gameRepository.findById(gameId2) shouldNotBe null

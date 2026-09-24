@@ -6,6 +6,7 @@ import kotlin.random.Random
 data class Realm(
     val id: Id,
     val user: UserId,
+    val color: Color,
     var phase: RealmPhase = RealmPhase.FOUNDING,
     var spawnLocation: HexPosition,
 ) {

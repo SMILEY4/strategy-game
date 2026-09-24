@@ -29,7 +29,6 @@ export const renderWasmApiOperations = (wasm: WasmRenderApp): RenderWasmApiOpera
         calculateOverlayInstances: () => {
             return tracer.span({name: "wasmapi-calculateOverlayInstances"}, () => {
                 const changed = wasm.calculate_overlay_instances();
-                console.log("do calculateOverlayInstances", changed)
                 return {
                     overlayEdgeInstances: changed,
                     overlayFillInstances: changed,

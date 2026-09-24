@@ -101,7 +101,6 @@ export const renderWasmApiDownload = (wasm: WasmRenderApp): RenderWasmApiDownloa
 
         getRouteHighlightVertices: () => {
             return tracer.span({name: "wasmapi-getRouteHighlightVertices"}, () => {
-                console.log("do getRouteHighlightVertices")
                 return {
                     data: wasm.get_route_highlight_vertices(),
                     count: wasm.get_route_highlight_vertex_count(),

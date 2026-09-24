@@ -9,7 +9,10 @@ import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes
 import {SettlementLabel, TileImprovementLabel} from "@pages/game/overlay/SettlementLabel.ts";
 import {mat4, vec3, vec4} from "gl-matrix";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
+import type {Realm} from "@app/features/game/models/realm.ts";
 
+const NEUTRAL_REALM_COLOR: string = "gray";
+const OWNED_REALM_KEY: number = -999;
 
 export function gameGraphHtml(
     g: RenderGraphBuilder,
@@ -29,23 +32,53 @@ export function gameGraphHtml(
         () => dataProvider.getCommands().load(),
     );
 
-    const elementsTransformer = g.transform<[VersionedContainer<Entity[]>, VersionedContainer<Command[]>], HtmlDrawElement[]>({
-        inputs: [dataAllEntities, dataAllCommands],
-        func: (entities, commands) => {
+    const dataAllRealms = g.dataExternal<VersionedContainer<Realm[]>>(
+        prev => prev?.revId !== dataProvider.getRealms().revId,
+        () => dataProvider.getRealms().load(),
+    );
+
+    const dataRealmColors = g.dataTransformer(
+        g.transform({
+            inputs: [dataAllRealms],
+            func: (realms) => {
+                const mapping = new Map<number | null, string>();
+                realms.data.forEach(realm => {
+                    mapping.set(realm.id, `rgb(${realm.color.join(", ")})`);
+                    if(realm.owned) {
+                        mapping.set(OWNED_REALM_KEY, `rgb(${realm.color.join(", ")})`)
+                    }
+                });
+                mapping.set(null, NEUTRAL_REALM_COLOR);
+                return mapping;
+            },
+        }),
+    );
+
+    const elementsTransformer = g.transform<[VersionedContainer<Entity[]>, VersionedContainer<Command[]>, Map<number | null, string>], HtmlDrawElement[]>({
+        inputs: [dataAllEntities, dataAllCommands, dataRealmColors],
+        func: (entities, commands, realmColors) => {
             return [
                 ...entities.data.map(entity => {
                     const settlementComponent = EntityUtils.getComponent(entity, "settlement");
                     if (settlementComponent) {
                         return {
                             key: "entity/" + entity.id,
-                            element: SettlementLabel({name: settlementComponent.name, pending: false}),
+                            element: SettlementLabel({
+                                name: settlementComponent.name,
+                                pending: false,
+                                color: realmColors.get(entity.owner) ?? NEUTRAL_REALM_COLOR,
+                            }),
                         } satisfies HtmlDrawElement;
                     }
                     const tileImprovementComponent = EntityUtils.getComponent(entity, "tile-improvement");
                     if (tileImprovementComponent) {
                         return {
                             key: "entity/" + entity.id,
-                            element: TileImprovementLabel({name: tileImprovementComponent.key, pending: false}),
+                            element: TileImprovementLabel({
+                                name: tileImprovementComponent.key,
+                                pending: false,
+                                color: realmColors.get(entity.owner) ?? NEUTRAL_REALM_COLOR,
+                            }),
                         } satisfies HtmlDrawElement;
                     }
                     return null;
@@ -54,13 +87,21 @@ export function gameGraphHtml(
                     if (command.type === "create-settlement") {
                         return {
                             key: "command/" + command.id,
-                            element: SettlementLabel({name: command.name, pending: true}),
+                            element: SettlementLabel({
+                                name: command.name,
+                                pending: true,
+                                color: realmColors.get(OWNED_REALM_KEY) ?? NEUTRAL_REALM_COLOR,
+                            }),
                         } satisfies  HtmlDrawElement;
                     }
                     if (command.type === "create-tile-improvement") {
                         return {
                             key: "command/" + command.id,
-                            element: TileImprovementLabel({name: command.improvementKey, pending: true}),
+                            element: TileImprovementLabel({
+                                name: command.improvementKey,
+                                pending: true,
+                                color: realmColors.get(OWNED_REALM_KEY) ?? NEUTRAL_REALM_COLOR,
+                            }),
                         } satisfies  HtmlDrawElement;
                     }
                     return null;

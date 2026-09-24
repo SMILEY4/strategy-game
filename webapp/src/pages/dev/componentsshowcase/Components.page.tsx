@@ -102,7 +102,8 @@ export function ComponentsPage(): ReactElement {
                             create={SettlementLabel}
                             props={{
                                 name: "Settlement",
-                                pending: false
+                                pending: false,
+                                color: "red"
                             }}
                         />
 
@@ -110,7 +111,8 @@ export function ComponentsPage(): ReactElement {
                             create={SettlementLabel}
                             props={{
                                 name: "Settlement",
-                                pending: true
+                                pending: true,
+                                color: "red"
                             }}
                         />
 

@@ -14,7 +14,9 @@ import type {Tile} from "@app/features/game/models/tile.ts";
 import type {Command} from "@app/features/game/models/command.ts";
 import {createVersionedLazy, type VersionedLazy} from "@pages/game/renderer/data/versioned-data.ts";
 import type {Route} from "@app/features/game/models/route.ts";
+import type {Realm} from "@app/features/game/models/realm.ts";
 import {type RouteDatabase, RouteQueries} from "@app/features/game/database/route.database.ts";
+import {type RealmDatabase, RealmQueries} from "@app/features/game/database/realm.database.ts";
 import {type InteractionDatabase} from "@app/features/game/database/interaction.database.ts";
 import {CreateTileImprovementInteraction} from "@app/features/game/gameplay/create-tile-improvement.interaction.ts";
 import {getInteractionContext, getInteractionState, isInteractionActive} from "@modules/interaction/interaction.tools.ts";
@@ -27,6 +29,7 @@ export interface GameRendererDataProvider {
     getTiles: () => VersionedLazy<Tile[]>,
     getEntities: () => VersionedLazy<Entity[]>,
     getRoutes: () => VersionedLazy<Route[]>,
+    getRealms: () => VersionedLazy<Realm[]>,
     getCommands: () => VersionedLazy<Command[]>,
     getPointerPosition: () => VersionedLazy<PointerPosition>
     getSelectedTilePosition: () => HexPosition | null
@@ -40,6 +43,7 @@ interface Dependencies {
     tileDb: TileDatabase;
     entityDb: EntityDatabase,
     routeDb: RouteDatabase,
+    realmDb: RealmDatabase,
     commandDb: CommandDatabase,
     selectedTileDb: SelectedTileDatabase,
     mapModeDb: MapModeDatabase,
@@ -55,6 +59,7 @@ export const gameRendererDataProvider = (dependencies: Dependencies): GameRender
         tileDb,
         entityDb,
         routeDb,
+        realmDb,
         commandDb,
         selectedTileDb,
         mapModeDb,
@@ -89,6 +94,11 @@ export const gameRendererDataProvider = (dependencies: Dependencies): GameRender
         getRoutes: () => createVersionedLazy<Route[]>(
             routeDb.getRevId(),
             () => routeDb.queryMany(RouteQueries.ALL, undefined),
+        ),
+
+        getRealms: () => createVersionedLazy<Realm[]>(
+            realmDb.getRevId(),
+            () => realmDb.queryMany(RealmQueries.ALL, undefined),
         ),
 
         getCommands: () => createVersionedLazy<Command[]>(

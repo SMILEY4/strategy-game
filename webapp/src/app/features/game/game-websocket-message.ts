@@ -34,6 +34,7 @@ interface GameState extends GameWebsocketServerMessageBase {
         },
         realms: ({
             id: number,
+            color: [number, number, number],
             owned: boolean,
             phase: "FOUNDING" | "ESTABLISHED",
             spawnLocation: { q: number, r: number },

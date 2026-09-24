@@ -49,7 +49,7 @@ pub struct GridOverlayInstance {
 pub struct GenericFillOverlayInstance {
     // instance of a hex-mesh filling in a complete tile
     pub position: [f32; 2], // hex position (q,r)
-    pub color: [f32; 4],    //  color as rgba
+    pub color: [f32; 4],    // color as rgba
     pub style: u32,         // fill style: 0 = solid, 1 = striped
 }
 
