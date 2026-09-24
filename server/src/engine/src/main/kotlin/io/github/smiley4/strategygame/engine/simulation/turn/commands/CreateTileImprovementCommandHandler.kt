@@ -87,5 +87,8 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
             }
         }
 
+        // mark tile immediately as owned
+        targetTile.political.ownerRealm = realm.id
+
     }
 }

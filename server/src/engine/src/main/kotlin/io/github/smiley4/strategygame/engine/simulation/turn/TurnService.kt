@@ -7,6 +7,7 @@ import io.github.smiley4.strategygame.engine.simulation.turn.commands.CreateSett
 import io.github.smiley4.strategygame.engine.simulation.turn.commands.CreateTileImprovementCommandHandler
 import io.github.smiley4.strategygame.engine.simulation.turn.systems.GameSystem
 import io.github.smiley4.strategygame.engine.simulation.turn.systems.UpdateControlSystem
+import io.github.smiley4.strategygame.engine.simulation.turn.systems.UpdateTerritorySystem
 
 /*
 
@@ -46,7 +47,8 @@ internal class TurnService {
     )
 
     private val systems = listOf<GameSystem>(
-        UpdateControlSystem()
+        UpdateControlSystem(),
+        UpdateTerritorySystem(),
     )
 
     fun execute(gameState: GameStateContext, commands: Collection<PlayerCommand>) {

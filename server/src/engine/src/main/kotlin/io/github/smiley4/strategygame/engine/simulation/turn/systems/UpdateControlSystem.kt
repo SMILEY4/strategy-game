@@ -36,7 +36,7 @@ internal class UpdateControlSystem : GameSystem {
         val sourceTile = tilesByPosition[positionComponent.tile.position] ?: return
         val sourceSettlement = entity.getComponentOrNull<EntityComponent.TileImprovement>()?.administeringSettlement
             ?: if(entity.hasComponent<EntityComponent.Settlement>()) entity.id else null
-        
+
         val queue = ArrayDeque<Pair<Tile, Float>>()
         val visited = mutableMapOf<Tile.Id, Float>()
 

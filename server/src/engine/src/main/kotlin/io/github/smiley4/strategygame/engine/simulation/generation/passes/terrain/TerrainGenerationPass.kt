@@ -65,7 +65,9 @@ internal class TerrainGenerationPass : GenerationPass {
                 ),
                 political = Tile.PoliticalData(
                     discoveredBy = mutableSetOf(),
-                    control = mutableMapOf()
+                    control = mutableMapOf(),
+                    ownerRealm = null,
+                    conversion = null,
                 ),
                 meta = Tile.Metadata(
                     seed = random.nextInt(),

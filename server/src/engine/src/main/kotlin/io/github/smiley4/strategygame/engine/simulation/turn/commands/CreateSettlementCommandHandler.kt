@@ -48,6 +48,8 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
             }
         }
 
+        // mark tile immediately as owned
+        targetTile.political.ownerRealm = realm.id
 
     }
 }
