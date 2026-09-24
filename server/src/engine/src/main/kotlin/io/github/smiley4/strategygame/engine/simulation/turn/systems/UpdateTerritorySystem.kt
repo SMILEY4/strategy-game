@@ -10,7 +10,7 @@ class UpdateTerritorySystem : GameSystem {
         /**
          * if control of owner is less than this value -> start to lose tile
          */
-        private const val LOOSE_CONTROL_THRESHOLD = 1f
+        private const val LOSE_CONTROL_THRESHOLD = 1f
 
 
         /**
@@ -26,72 +26,56 @@ class UpdateTerritorySystem : GameSystem {
     }
 
     private fun update(tile: Tile) {
-        if (tile.political.ownerRealm == null) {
-            updateUnclaimed(tile)
-        } else {
-            updateClaimed(tile)
-        }
-        if (tile.political.conversion != null && (tile.political.conversion?.progress ?: 0f) >= 1f) {
-            tile.political.ownerRealm = tile.political.conversion?.targetRealm
-            tile.political.conversion = null
-        }
+        tile.political.ownerRealm
+            ?.let { ownerRealm -> updateClaimed(tile, ownerRealm) }
+            ?: updateUnclaimed(tile)
+        tile.political.conversion
+            ?.takeIf { it.progress >= 1f }
+            ?.let { conversion ->
+                tile.political.ownerRealm = conversion.targetRealm
+                tile.political.conversion = null
+            }
     }
 
     private fun updateUnclaimed(tile: Tile) {
-        val candidateRealm = getControlByRealm(tile).entries
-            .filter { it.value >= CLAIM_REQUIRED_CONTROL }
-            .maxByOrNull { it.value }
-        if (candidateRealm != null) {
-            if (tile.political.conversion != null && tile.political.conversion?.targetRealm == candidateRealm.key) {
-                tile.political.conversion!!.progress += 0.25f
-            } else {
-                tile.political.conversion = Tile.TileConversion(
-                    targetRealm = candidateRealm.key,
-                    progress = 0f,
-                )
-            }
-        } else {
+        val claimingRealm = findClaimingRealm(getControlByRealm(tile))
+        if (claimingRealm == null) {
             tile.political.conversion = null
+        } else {
+            updateConversion(tile, claimingRealm)
         }
     }
 
-    private fun updateClaimed(tile: Tile) {
+    private fun updateClaimed(tile: Tile, ownerRealm: Realm.Id) {
         val controlByRealm = getControlByRealm(tile)
-        val ownerControl = controlByRealm[tile.political.ownerRealm] ?: -1f
-        if (ownerControl < LOOSE_CONTROL_THRESHOLD) {
-            val candidateRealm = getControlByRealm(tile).entries
-                .filter { it.value >= CLAIM_REQUIRED_CONTROL }
-                .maxByOrNull { it.value }
-            if (candidateRealm != null) {
-                if (tile.political.conversion != null && tile.political.conversion?.targetRealm == candidateRealm.key) {
-                    tile.political.conversion!!.progress += 0.25f
-                } else {
-                    tile.political.conversion = Tile.TileConversion(
-                        targetRealm = candidateRealm.key,
-                        progress = 0f,
-                    )
-                }
-            } else {
-                if (tile.political.conversion != null && tile.political.conversion?.targetRealm == null) {
-                    tile.political.conversion!!.progress += 0.25f
-                } else {
-                    tile.political.conversion = Tile.TileConversion(
-                        targetRealm = null,
-                        progress = 0f,
-                    )
-                }
-            }
+        val ownerControl = controlByRealm[ownerRealm] ?: -1f
+        if (ownerControl < LOSE_CONTROL_THRESHOLD) {
+            updateConversion(tile, findClaimingRealm(controlByRealm))
+        }
+    }
+
+    private fun updateConversion(tile: Tile, targetRealm: Realm.Id?) {
+        val conversion = tile.political.conversion
+        if (conversion != null && conversion.targetRealm == targetRealm) {
+            conversion.progress += 0.25f
+        } else {
+            tile.political.conversion = Tile.TileConversion(
+                targetRealm = targetRealm,
+                progress = 0f,
+            )
         }
     }
 
     private fun getControlByRealm(tile: Tile): Map<Realm.Id, Float> {
-        return tile.political.control.values
-            .groupBy(
-                keySelector = { it.realm },
-                valueTransform = { it.amount }
-            )
-            .mapValues { (_, amounts) -> amounts.sum() }
+        return tile.political.control.values.groupingBy { it.realm }
+            .fold(0f) { total, control -> total + control.amount }
+    }
+
+    private fun findClaimingRealm(controlByRealm: Map<Realm.Id, Float>): Realm.Id? {
+        return controlByRealm
+            .filterValues { it >= CLAIM_REQUIRED_CONTROL }
+            .maxByOrNull { it.value }
+            ?.key
     }
 
 }
-
