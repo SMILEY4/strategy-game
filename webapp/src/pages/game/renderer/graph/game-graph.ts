@@ -16,6 +16,7 @@ import {renderTileGrid} from "@pages/game/renderer/graph/render-tile-grid.ts";
 import {gameGraphHtml} from "@pages/game/renderer/graph/html.ts";
 import {renderRoutes} from "@pages/game/renderer/graph/render-routes.ts";
 import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
+import {renderFogOfWar} from "@pages/game/renderer/graph/render-fog-of-war.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -49,7 +50,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const {
         wasmVisibleChunks,
-        // wasmTileFogOfWarInstances,
+        wasmTileFogOfWarInstances,
         warmTileLandInstances,
         wasmTileWaterInstances,
         wasmWaterEdgeInstances,
@@ -97,11 +98,11 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     });
     //====================== FOG OF WAR =====================================
 
-    // const renderTargetFogOfWarMask = renderFogOfWar(g, wasmApi, {
-    //     dataDebug: dataDebug,
-    //     camera: camera,
-    //     wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
-    // })
+    const drawFogOfWar = renderFogOfWar(g, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
+        wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
+    })
 
     //====================== TILE GRID ======================================
 
@@ -146,6 +147,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
             drawLandTiles,
             drawRoutes,
             drawMapDetails,
+            drawFogOfWar,
             drawTileGrid,
             drawOverlayFill,
             drawOverlayBorderBack,

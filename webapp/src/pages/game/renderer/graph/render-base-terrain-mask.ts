@@ -240,7 +240,7 @@ export function renderBaseTerrainMask(
                 format: GLColorStoreFormat.RGBA_8,
             },
         },
-        clearColor: [1, 1, 1, 1],
+        clearColor: [0, 0, 0, 0],
     });
 }
 

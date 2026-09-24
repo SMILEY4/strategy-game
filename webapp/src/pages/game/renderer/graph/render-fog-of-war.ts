@@ -7,10 +7,13 @@ import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.cam
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
-import SHADER_FOG_OF_WAR_VERT from "@pages/game/renderer/shader/fogofwar/fogOfWar.vsh";
-import SHADER_FOG_OF_WAR_FRAG from "@pages/game/renderer/shader/fogofwar/fogOfWar.fsh";
+import SHADER_FOG_OF_WAR_MASK_VERT from "@pages/game/renderer/shader/fogofwar/fogOfWarMask.vsh";
+import SHADER_FOG_OF_WAR_MASK_FRAG from "@pages/game/renderer/shader/fogofwar/fogOfWarMask.fsh";
+import SHADER_FOG_OF_WAR_OVERLAY_VERT from "@pages/game/renderer/shader/fogofwar/fogOfWarOverlay.vsh";
+import SHADER_FOG_OF_WAR_OVERLAY_FRAG from "@pages/game/renderer/shader/fogofwar/fogOfWarOverlay.fsh";
 import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
+import {buildFullscreenQuad} from "@pages/game/renderer/graph/build-fullscreen-quad.ts";
 
 export function renderFogOfWar(
     g: RenderGraphBuilder,
@@ -21,6 +24,8 @@ export function renderFogOfWar(
         wasmTileFogOfWarInstances: WasmDataRenderGraphNode,
     },
 ) {
+
+    //====================== FoW MASK =======================================
 
     const fogTileMeshTransformer = g.transformVertexOut({
         inputs: [],
@@ -83,8 +88,8 @@ export function renderFogOfWar(
     });
 
     const shaderFogOfWarTiles = g.shader({
-        srcVertex: SHADER_FOG_OF_WAR_VERT,
-        srcFragment: SHADER_FOG_OF_WAR_FRAG,
+        srcVertex: SHADER_FOG_OF_WAR_MASK_VERT,
+        srcFragment: SHADER_FOG_OF_WAR_MASK_FRAG,
         prefixUniforms: "u_",
         prefixVertexAttributes: "in_",
     });
@@ -102,7 +107,7 @@ export function renderFogOfWar(
             "dbg_scale": g.dataTransformer(
                 g.transform({
                     inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.baseTerrain.scale,
+                    func: (data) => data.data.renderer.fogOfWar.scale,
                 }),
             ) as DataRenderGraphNode<unknown>,
             "dbg_hexOffsetScale": g.dataTransformer(
@@ -126,7 +131,7 @@ export function renderFogOfWar(
 
     const canvasSize = g.canvasSize();
 
-    return g.rendertarget({
+    const fogOfWarMask =  g.rendertarget({
         size: canvasSize,
         sizeScale: g.dataConst(1),
         renderPasses: [drawFogOfWarTiles],
@@ -143,4 +148,56 @@ export function renderFogOfWar(
         clearColor: [1, 0, 0, 1],
     });
 
+    //====================== FoW OVERLAY ====================================
+
+
+    const fullscreenMeshTransformer = g.transformVertexOut({
+        inputs: [],
+        outputs: {
+            mesh: {
+                content: "vertices",
+                layout: [
+                    {
+                        name: "vertexPosition",
+                        type: GlAttributeType.FLOAT,
+                        amountComponents: 2,
+                    },
+                ],
+            },
+        },
+        func: () => {
+            return {
+                "mesh": buildFullscreenQuad()
+            };
+        },
+    });
+
+    const overlayGeometry = g.geometry({
+        sources: [
+            g.geometrySource({
+                source: fullscreenMeshTransformer,
+                output: "mesh",
+            }),
+        ],
+    });
+
+    const shaderOverlay = g.shader({
+        srcVertex: SHADER_FOG_OF_WAR_OVERLAY_VERT,
+        srcFragment: SHADER_FOG_OF_WAR_OVERLAY_FRAG,
+        prefixUniforms: "u_",
+        prefixVertexAttributes: "in_",
+    });
+
+    return g.draw({
+        shader: shaderOverlay,
+        geometry: overlayGeometry,
+        inputs: {
+            "mask": g.pickRendertargetAttachment({
+                rendertarget: fogOfWarMask,
+                attachment: "color",
+            }),
+        },
+        writeDepth: false,
+        testDepth: DepthFunc.ALWAYS,
+    });
 }
