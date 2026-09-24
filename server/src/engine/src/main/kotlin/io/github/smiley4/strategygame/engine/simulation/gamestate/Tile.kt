@@ -27,7 +27,7 @@ data class Tile(
 
     data class PoliticalData(
         val discoveredBy: MutableSet<Realm.Id>,
-        val control: MutableSet<ControlEntry>
+        val control: MutableMap<Entity.Id, ControlEntry>
     )
 
     data class ControlEntry(

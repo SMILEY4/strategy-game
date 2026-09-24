@@ -63,9 +63,10 @@ internal object TileImprovementValidation {
         if (realm !in tile.political.discoveredBy) return false
         if (phase != RealmPhase.ESTABLISHED) return false
 
-        val control = tile.political.control
+        val realmControl = tile.political.control.values
             .filter { it.realm == realm }
             .sumOf { it.amount.toDouble() }
-        return control > REQUIRED_CONTROL
+
+        return realmControl > REQUIRED_CONTROL
     }
 }

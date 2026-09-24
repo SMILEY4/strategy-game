@@ -17,7 +17,7 @@ internal data class SettlementValidationResult(
 
 internal object SettlementValidation {
 
-    const val REQUIRED_CONTROL = 3f
+    const val REQUIRED_CONTROL = 0f
 
     fun validate(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
         val tile = gameState.tiles.find { it.position == location } ?: return false
@@ -52,9 +52,10 @@ internal object SettlementValidation {
         if (realm !in tile.political.discoveredBy) return false
         if (phase == RealmPhase.FOUNDING) return true
 
-        val control = tile.political.control
+        val realmControl = tile.political.control.values
             .filter { it.realm == realm }
             .sumOf { it.amount.toDouble() }
-        return control >= REQUIRED_CONTROL
+
+        return realmControl >= REQUIRED_CONTROL
     }
 }

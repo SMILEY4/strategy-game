@@ -32,7 +32,7 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
                 EntityComponent.Position(tile = targetTile.ref()),
                 EntityComponent.Settlement(name = command.name.trim(), isRealmCapital = true),
                 EntityComponent.Vision(radius = 2),
-                EntityComponent.Control(radius = 4, amount = 10f)
+                EntityComponent.Control(amount = 6f)
             )
         )
         gameState.entities.add(settlement)
@@ -48,20 +48,6 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
             }
         }
 
-        // add control to tiles
-        val control = settlement.getComponent<EntityComponent.Control>();
-        targetTile.position.iterateCircle(control.radius) { pos ->
-            gameState.tiles.find { it.position == pos }?.also {
-                it.political.control.add(
-                    Tile.ControlEntry(
-                        realm = realm.id,
-                        settlement = settlement.id,
-                        entity = settlement.id,
-                        amount = control.amount * (1f - (it.position.distance(targetTile.position).toFloat() / control.radius.toFloat())),
-                    )
-                )
-            }
-        }
 
     }
 }

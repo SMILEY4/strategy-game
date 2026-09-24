@@ -97,13 +97,13 @@ class PlayerStateBuilder {
         }
         "political" to hidden(visibility != Visibility.UNDISCOVERED) {
             obj {
-                "control" to arr[ // todo: if source is not discovered -> show entries as unknown source
-                    tile.political.control.map {
+                "control" to arr[
+                    tile.political.control.map { (_, control) ->
                         obj {
-                            "realm" to it.realm.id
-                            "settlement" to it.settlement?.id
-                            "entity" to it.entity.id
-                            "amount" to it.amount
+                            "realm" to control.realm.id
+                            "entity" to control.entity.id
+                            "settlement" to control.settlement?.id
+                            "amount" to control.amount
                         }
                     }
                 ]
@@ -142,11 +142,7 @@ class PlayerStateBuilder {
                 when (component) {
                     is EntityComponent.Position -> Unit
                     is EntityComponent.Vision -> Unit
-                    is EntityComponent.Control -> obj {
-                        "type" to "control"
-                        "radius" to component.radius
-                        "amount" to component.amount
-                    }
+                    is EntityComponent.Control -> Unit
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
                         "name" to component.name

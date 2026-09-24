@@ -59,3 +59,18 @@ fun HexPosition.iterateCircle(radius: Int, consumer: (position: HexPosition) -> 
         }
     }
 }
+
+fun HexPosition.iterateNeighbours(consumer: (position: HexPosition) -> Unit) {
+    for (offset in NEIGHBOUR_OFFSETS) {
+        consumer(this + offset)
+    }
+}
+
+private val NEIGHBOUR_OFFSETS = arrayOf(
+    HexPosition(1, 0),
+    HexPosition(1, -1),
+    HexPosition(0, -1),
+    HexPosition(-1, 0),
+    HexPosition(-1, 1),
+    HexPosition(0, 1),
+)

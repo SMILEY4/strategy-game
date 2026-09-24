@@ -59,7 +59,7 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
             components = listOf(
                 EntityComponent.Position(tile = targetTile.ref()),
                 EntityComponent.Vision(radius = 2),
-                EntityComponent.Control(radius = 2, amount = 3f),
+                EntityComponent.Control(amount = 2f),
                 EntityComponent.TileImprovement(
                     key = command.improvementKey,
                     administeringSettlement = settlement.id,
@@ -86,22 +86,6 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
                 it.political.discoveredBy.add(realm.id)
             }
         }
-
-        // add control to tiles
-        val control = tileImprovement.getComponent<EntityComponent.Control>();
-        targetTile.position.iterateCircle(control.radius) { pos ->
-            gameState.tiles.find { it.position == pos }?.also {
-                it.political.control.add(
-                    Tile.ControlEntry(
-                        realm = realm.id,
-                        settlement = settlement.id,
-                        entity = tileImprovement.id,
-                        amount = control.amount * (1f - (it.position.distance(targetTile.position).toFloat() / control.radius.toFloat())),
-                    )
-                )
-            }
-        }
-
 
     }
 }
