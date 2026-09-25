@@ -5,12 +5,11 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponen
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.gamestate.RealmPhase
-import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
-import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
-import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
 
-internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.CreateSettlement> {
+internal class CreateSettlementCommandHandler(
+    private val settlementValidation: SettlementValidation,
+) : CommandHandler<PlayerCommand.CreateSettlement> {
 
     override val commandType = PlayerCommand.CreateSettlement::class
 
@@ -20,8 +19,9 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
         val targetTile = gameState.tiles.first { it.position == command.location }
 
         // validate
-        if (!SettlementValidation.validate(gameState, command.location, realm.id)) {
-            throw IllegalArgumentException("Invalid settlement command")
+        val validationResult = settlementValidation.validate(gameState, command.location, realm.id)
+        if (validationResult != null) {
+            throw IllegalArgumentException("Invalid settlement command : $validationResult")
         }
 
         // create settlement
@@ -31,8 +31,7 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
             components = listOf(
                 EntityComponent.Position(tile = targetTile.ref()),
                 EntityComponent.Settlement(name = command.name.trim(), isRealmCapital = true),
-                EntityComponent.Vision(radius = 2),
-                EntityComponent.Control(radius = 4, amount = 10f)
+                EntityComponent.Control(amount = 6f)
             )
         )
         gameState.entities.add(settlement)
@@ -40,28 +39,8 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
         // set realm phase
         realm.phase = RealmPhase.ESTABLISHED
 
-        // mark tiles as discovered
-        val vision = settlement.getComponent<EntityComponent.Vision>();
-        targetTile.position.iterateCircle(vision.radius) { pos ->
-            gameState.tiles.find { it.position == pos }?.also {
-                it.political.discoveredBy.add(realm.id)
-            }
-        }
-
-        // add control to tiles
-        val control = settlement.getComponent<EntityComponent.Control>();
-        targetTile.position.iterateCircle(control.radius) { pos ->
-            gameState.tiles.find { it.position == pos }?.also {
-                it.political.control.add(
-                    Tile.ControlEntry(
-                        realm = realm.id,
-                        settlement = settlement.id,
-                        entity = settlement.id,
-                        amount = control.amount * (1f - (it.position.distance(targetTile.position).toFloat() / control.radius.toFloat())),
-                    )
-                )
-            }
-        }
+        // mark tile immediately as owned
+        targetTile.political.ownerRealm = realm.id
 
     }
 }

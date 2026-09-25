@@ -1,17 +1,18 @@
 package io.github.smiley4.strategygame.engine.simulation.turn.commands
 
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Entity
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Route
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
-import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
-import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.Pathfinder
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementValidation
 
-internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerCommand.CreateTileImprovement> {
+internal class CreateTileImprovementCommandHandler(
+    private val tileImprovementValidation: TileImprovementValidation,
+) : CommandHandler<PlayerCommand.CreateTileImprovement> {
 
     override val commandType = PlayerCommand.CreateTileImprovement::class
 
@@ -38,8 +39,9 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
         val settlement = gameState.entities.first { it.id == command.settlement && it.hasComponent<EntityComponent.Settlement>() }
 
         // validate
-        if (!TileImprovementValidation.validate(gameState, command.location, realm.id, command.improvementKey)) {
-            throw IllegalArgumentException("Invalid tile-improvement command")
+        val validationResult = tileImprovementValidation.validate(gameState, command.location, realm.id, command.improvementKey)
+        if (validationResult != null) {
+            throw IllegalArgumentException("Invalid tile-improvement command: $validationResult")
         }
 
         // find route to settlement
@@ -58,8 +60,7 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
             owner = realm.id,
             components = listOf(
                 EntityComponent.Position(tile = targetTile.ref()),
-                EntityComponent.Vision(radius = 2),
-                EntityComponent.Control(radius = 2, amount = 3f),
+                EntityComponent.Control(amount = 2f),
                 EntityComponent.TileImprovement(
                     key = command.improvementKey,
                     administeringSettlement = settlement.id,
@@ -79,29 +80,8 @@ internal class CreateTileImprovementCommandHandler : CommandHandler<PlayerComman
             )
         )
 
-        // mark tiles as discovered
-        val vision = tileImprovement.getComponent<EntityComponent.Vision>();
-        targetTile.position.iterateCircle(vision.radius) { pos ->
-            gameState.tiles.find { it.position == pos }?.also {
-                it.political.discoveredBy.add(realm.id)
-            }
-        }
-
-        // add control to tiles
-        val control = tileImprovement.getComponent<EntityComponent.Control>();
-        targetTile.position.iterateCircle(control.radius) { pos ->
-            gameState.tiles.find { it.position == pos }?.also {
-                it.political.control.add(
-                    Tile.ControlEntry(
-                        realm = realm.id,
-                        settlement = settlement.id,
-                        entity = tileImprovement.id,
-                        amount = control.amount * (1f - (it.position.distance(targetTile.position).toFloat() / control.radius.toFloat())),
-                    )
-                )
-            }
-        }
-
+        // mark tile immediately as owned
+        targetTile.political.ownerRealm = realm.id
 
     }
 }

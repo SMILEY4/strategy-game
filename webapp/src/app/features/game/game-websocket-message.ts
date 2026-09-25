@@ -66,14 +66,19 @@ interface GameState extends GameWebsocketServerMessageBase {
                     settlement: number | null,
                     entity: number,
                     amount: number
-                })[]
+                })[],
+                ownerRealm: number | null,
+                conversion: {
+                    targetRealm: null,
+                    progress: number
+                } | null
             }>
             createSettlement: HiddenType<{
-                validLocation: boolean,
-                validRealm: boolean,
+                valid: boolean,
+                validTerrain: boolean,
             }>
             createTileImprovement: HiddenType<{
-                validRealm: boolean,
+                validLocation: boolean,
                 availableImprovementKeys: string[],
             }>
             meta: {

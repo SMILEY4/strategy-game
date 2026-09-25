@@ -72,8 +72,16 @@ const tileSerializer = wasmSerializer<TileUpload>({
         provider: tile => tile.tile.world.visible ? (tileFeatureSerialisationMapping[tile.tile.world.value.feature] ?? 0) : 0,
         type: "u8",
     },
-    "meta.seed": {
-        provider: tile => tile.tile.meta.seed,
+    "owner_realm": {
+        provider: tile => tile.tile.political.visible ? (tile.tile.political.value.ownerRealm ?? 0) : 0,
+        type: "u32",
+    },
+    "conversion_active": {
+        provider: tile => tile.tile.political.visible ? (tile.tile.political.value.conversion != null || tile.tile.political.value.conversion != undefined) : false,
+        type: "bool",
+    },
+    "converting_realm": {
+        provider: tile => tile.tile.political.visible ? (tile.tile.political.value.conversion?.targetRealm ?? 0) : 0,
         type: "u32",
     },
     "control_offset": {
@@ -87,16 +95,15 @@ const tileSerializer = wasmSerializer<TileUpload>({
     "create_settlement_validity": {
         provider: tile => {
             if (!tile.tile.createSettlement.visible) return 0;
-            let validity = 0;
-            if (tile.tile.createSettlement.value.validLocation) {
-                validity = 1;
-                if (tile.tile.createSettlement.value.validRealm) {
-                    validity = 2;
-                }
-            }
-            return validity;
+            if (tile.tile.createSettlement.value.valid) return 2;
+            if (tile.tile.createSettlement.value.validTerrain) return 1;
+            return 0;
         },
         type: "u8",
+    },
+    "meta.seed": {
+        provider: tile => tile.tile.meta.seed,
+        type: "u32",
     },
 });
 

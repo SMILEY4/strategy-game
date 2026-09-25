@@ -108,16 +108,23 @@ pub fn fill_mapmode_political(
     tile: &Tile,
     output: &mut Vec<GenericFillOverlayInstance>,
 ) {
-    if let Some(realm_id) = dominant_realm(state, tile) {
-        let color = state
-            .realm_colors
-            .get(&realm_id)
-            .copied()
-            .unwrap_or(NEUTRAL_COLOR);
+    if let Some(realm_id) = owner_realm(tile) {
         output.push(fill_instance(
             tile,
-            color.with_alpha(POLITICAL_FILL_ALPHA),
-            OVERLAY_FILL_STYLE_FILLED,
+            realm_color(state, realm_id).with_alpha(POLITICAL_FILL_ALPHA),
+            if tile.conversion_active && tile.converting_realm == 0 {
+                OVERLAY_FILL_STYLE_STRIPED
+            } else {
+                OVERLAY_FILL_STYLE_FILLED
+            },
+        ));
+    }
+
+    if let Some(realm_id) = converting_realm(tile) {
+        output.push(fill_instance(
+            tile,
+            realm_color(state, realm_id).with_alpha(POLITICAL_FILL_ALPHA),
+            OVERLAY_FILL_STYLE_STRIPED,
         ));
     }
 }
@@ -128,7 +135,7 @@ pub fn edges_mapmode_political(
     tiles_by_pos: &rustc_hash::FxHashMap<HexPosition, usize>,
     output: &mut Vec<GenericEdgeOverlayInstance>,
 ) {
-    let Some(realm_id) = dominant_realm(state, tile) else {
+    let Some(realm_id) = owner_realm(tile) else {
         return;
     };
     let color = state
@@ -140,7 +147,7 @@ pub fn edges_mapmode_political(
     for (direction, neighbour_position) in neighbour_directions(tile.tile_position) {
         let neighbour_realm = tiles_by_pos
             .get(&neighbour_position)
-            .and_then(|index| dominant_realm(state, &state.tiles[*index]));
+            .and_then(|index| owner_realm(&state.tiles[*index]));
 
         if neighbour_realm != Some(realm_id) {
             output.push(GenericEdgeOverlayInstance {
@@ -198,18 +205,20 @@ fn fill_instance(tile: &Tile, color: [f32; 4], style: u32) -> GenericFillOverlay
     }
 }
 
-fn dominant_realm(state: &RenderState, tile: &Tile) -> Option<u32> {
-    controls(state, tile)
-        .iter()
-        .filter(|control| control.amount > 0.0)
-        .max_by(|left, right| {
-            let left_amount = left.amount;
-            let right_amount = right.amount;
-            left_amount
-                .partial_cmp(&right_amount)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        })
-        .map(|control| control.realm_id)
+fn owner_realm(tile: &Tile) -> Option<u32> {
+    (tile.owner_realm != 0).then_some(tile.owner_realm)
+}
+
+fn converting_realm(tile: &Tile) -> Option<u32> {
+    (tile.conversion_active && tile.converting_realm != 0).then_some(tile.converting_realm)
+}
+
+fn realm_color(state: &RenderState, realm_id: u32) -> RealmColor {
+    state
+        .realm_colors
+        .get(&realm_id)
+        .copied()
+        .unwrap_or(NEUTRAL_COLOR)
 }
 
 fn control_amount_by_entity(state: &RenderState, tile: &Tile, entity_id: u32) -> f32 {

@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.engine.simulation.generation.passes.spawns
 
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
@@ -14,13 +15,10 @@ import io.github.smiley4.strategygame.shared.utils.repeatUntil
 /**
  * Picks realm spawn locations
  */
-internal class SpawnGenerationPass : GenerationPass {
-
-    companion object {
-        private const val SPAWN_RADIUS = 3
-        private const val MAX_ATTEMPTS_HIGH_QUALITY = 5
-        private const val MAX_ATTEMPTS_LOW_QUALITY = 5
-    }
+internal class SpawnGenerationPass(
+    private val settlementValidation: SettlementValidation,
+    private val settings: GameSettings
+) : GenerationPass {
 
     override fun execute(gameState: GameStateContext, generationContext: GenerationContext) {
         val spawnLocations = mutableListOf<Tile.Ref>()
@@ -29,9 +27,9 @@ internal class SpawnGenerationPass : GenerationPass {
             var spawnLocation: Tile.Ref? = null
 
             // attempt to find high quality location
-            repeatUntil(MAX_ATTEMPTS_HIGH_QUALITY) {
+            repeatUntil(settings.worldGenerationSettings.maxAttemptsHighQualitySpawn) {
                 val location = gameState.tiles.random().ref()
-                val score = rankSpawn(location, SPAWN_RADIUS, gameState, spawnLocations)
+                val score = rankSpawn(location, settings.worldGenerationSettings.spawnRadius, gameState, spawnLocations)
                 if (score >= 5) {
                     spawnLocation = location
                     return@repeatUntil true
@@ -41,9 +39,9 @@ internal class SpawnGenerationPass : GenerationPass {
 
             // attempt to find low quality location
             if (spawnLocation == null) {
-                repeatUntil(MAX_ATTEMPTS_LOW_QUALITY) {
+                repeatUntil(settings.worldGenerationSettings.maxAttemptsLowQualitySpawn) {
                     val location = gameState.tiles.random().ref()
-                    val score = rankSpawn(location, SPAWN_RADIUS, gameState, spawnLocations)
+                    val score = rankSpawn(location, settings.worldGenerationSettings.spawnRadius, gameState, spawnLocations)
                     if (score >= 3) {
                         spawnLocation = location
                         return@repeatUntil true
@@ -60,7 +58,7 @@ internal class SpawnGenerationPass : GenerationPass {
             realm.spawnLocation = HexPosition(selectedSpawn.position.q, selectedSpawn.position.r)
             gameState.tiles
                 .asSequence()
-                .filter { it.position.distance(selectedSpawn.position) <= SPAWN_RADIUS }
+                .filter { it.position.distance(selectedSpawn.position) <= settings.worldGenerationSettings.spawnRadius }
                 .forEach { tile -> tile.political.discoveredBy.add(realm.id) }
         }
     }
@@ -85,7 +83,8 @@ internal class SpawnGenerationPass : GenerationPass {
                 if (tile.world.biome != Tile.Biome.OCEAN) {
                     countLand++
                 }
-                if (SettlementValidation.isTerrainSuitable(tile)) {
+
+                if (settlementValidation.validateTerrain(tile) == null) {
                     countValid++
                 }
             }

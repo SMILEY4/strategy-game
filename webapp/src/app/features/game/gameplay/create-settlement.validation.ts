@@ -4,7 +4,7 @@ import {type TileDatabase, TileQueries} from "@app/features/game/database/tile.d
 import {useWatchDatabases} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
 import {useHasInteraction} from "@modules/interaction/interaction.tools.ts";
-import {RealmQueries, type RealmDatabase} from "@app/features/game/database/realm.database.ts";
+import {type RealmDatabase, RealmQueries} from "@app/features/game/database/realm.database.ts";
 
 export interface CreateSettlementValidation {
     validate: (args: {
@@ -20,16 +20,21 @@ export const createSettlementValidation = (): CreateSettlementValidation => ({
     validate: ({hasInteraction, commandDb, tileDb, realmDb, position}) => {
         if (hasInteraction) return false;
 
-        // check: tile exists and can create settlement (backend validation)
+        // check: tile exists and visible
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
-        if (!tile || !tile.createSettlement.visible || !tile.createSettlement.value.validLocation || !tile.createSettlement.value.validRealm) {
+        if (!tile || !tile.createSettlement.visible) {
+            return false;
+        }
+
+        // check valid location for settlement (backend validation)
+        if (!tile.createSettlement.value.valid) {
             return false;
         }
 
         // check: other pending "create tile improvement" commands allow new settlement
         const createTileImprovementCommands = commandDb.queryMany(CommandQueries.BY_TYPE, "create-tile-improvement");
-        if(createTileImprovementCommands.some(cmd => cmd.location.q === position.q || cmd.location.r === position.r)) {
-            return false
+        if (createTileImprovementCommands.some(cmd => cmd.location.q === position.q || cmd.location.r === position.r)) {
+            return false;
         }
 
         // check: other pending "create settlement" commands allow new settlement

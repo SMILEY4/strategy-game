@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.engine.simulation.playerstate
 import com.lectra.koson.ObjectType
 import com.lectra.koson.arr
 import com.lectra.koson.obj
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Entity
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
@@ -10,7 +11,6 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Route
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
-import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementValidation
 import io.github.smiley4.strategygame.shared.values.UserId
@@ -18,7 +18,11 @@ import io.github.smiley4.strategygame.shared.values.UserId
 /**
  * Builds the game state snapshot visible to a specific player.
  */
-class PlayerStateBuilder {
+internal class PlayerStateBuilder(
+    private val settings: GameSettings,
+    private val tileImprovementValidation: TileImprovementValidation,
+    private val settlementValidation: SettlementValidation,
+) {
 
     fun build(game: GameStateContext, player: UserId): ObjectType {
 
@@ -41,9 +45,9 @@ class PlayerStateBuilder {
                     .map { entity(game, it) }
             ]
             "routes" to arr[
-                    game.routes
-                        .filter { it.tiles.any { t -> getVisibilityAt(game, t.position, povRealm.id) != Visibility.UNDISCOVERED } }
-                        .map { route(it) }
+                game.routes
+                    .filter { it.tiles.any { t -> getVisibilityAt(game, t.position, povRealm.id) != Visibility.UNDISCOVERED } }
+                    .map { route(it) }
             ]
         }
     }
@@ -66,9 +70,15 @@ class PlayerStateBuilder {
     }
 
     fun tile(game: GameStateContext, tile: Tile, realm: Realm.Id) = obj {
-        val settlementValidation = SettlementValidation.inspect(game, tile, realm)
-        val tileImprovementValidation = TileImprovementValidation.inspect(game, tile, realm)
-        val visibility = getVisibilityAt(game, tile, realm)
+
+        val visibility = getVisibilityAt(tile, realm)
+
+        val tileImprovementLocationValidationResult = tileImprovementValidation.validateConstructionLocation(game, tile, realm)
+        val tileImprovementAvailableKeys = tileImprovementValidation.getValidForTile(tile)
+
+        val settlementTerrainValidationResult = settlementValidation.validateTerrain(tile)
+        val settlementValidationResult = settlementValidation.validate(game, tile, realm)
+
         "id" to tile.id.id
         "visibility" to visibility.name
         "position" to obj {
@@ -97,28 +107,36 @@ class PlayerStateBuilder {
         }
         "political" to hidden(visibility != Visibility.UNDISCOVERED) {
             obj {
-                "control" to arr[ // todo: if source is not discovered -> show entries as unknown source
-                    tile.political.control.map {
+                "control" to arr[
+                    tile.political.control.map { (_, control) ->
                         obj {
-                            "realm" to it.realm.id
-                            "settlement" to it.settlement?.id
-                            "entity" to it.entity.id
-                            "amount" to it.amount
+                            "realm" to control.realm.id
+                            "entity" to control.entity.id
+                            "settlement" to control.settlement?.id
+                            "amount" to control.amount
                         }
                     }
                 ]
+                "ownerRealm" to tile.political.ownerRealm?.id
+                "conversion" to tile.political.conversion?.let { conversion ->
+                    obj {
+                        "targetRealm" to conversion.targetRealm?.id
+                        "progress" to conversion.progress
+                    }
+                }
             }
         }
         "createSettlement" to hidden(visibility != Visibility.UNDISCOVERED) {
             obj {
-                "validLocation" to settlementValidation.validLocation
-                "validRealm" to settlementValidation.validRealm
+                "valid" to (settlementValidationResult == null)
+                "validTerrain" to (settlementTerrainValidationResult == null
+                        && settlementValidationResult != SettlementValidation.FailureReason.ALREADY_OCCUPIED)
             }
         }
         "createTileImprovement" to hidden(visibility != Visibility.UNDISCOVERED) {
             obj {
-                "validRealm" to tileImprovementValidation.validRealm
-                "availableImprovementKeys" to arr[tileImprovementValidation.availableImprovementKeys.map { it.value }]
+                "validLocation" to (tileImprovementLocationValidationResult == null)
+                "availableImprovementKeys" to arr[tileImprovementAvailableKeys.map { it.value }]
             }
         }
         "meta" to obj {
@@ -141,12 +159,7 @@ class PlayerStateBuilder {
             entity.components.map { component ->
                 when (component) {
                     is EntityComponent.Position -> Unit
-                    is EntityComponent.Vision -> Unit
-                    is EntityComponent.Control -> obj {
-                        "type" to "control"
-                        "radius" to component.radius
-                        "amount" to component.amount
-                    }
+                    is EntityComponent.Control -> Unit
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
                         "name" to component.name
@@ -188,32 +201,34 @@ class PlayerStateBuilder {
 
     private fun getVisibilityAt(gameState: GameStateContext, entity: Entity, realm: Realm.Id): Visibility {
         val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
-        if (position == null) return Visibility.UNDISCOVERED
+            ?: return Visibility.UNDISCOVERED
         return getVisibilityAt(gameState, position, realm)
     }
 
     private fun getVisibilityAt(gameState: GameStateContext, positions: HexPosition, realm: Realm.Id): Visibility {
         val tile = gameState.tiles.find { it.position == positions }
-        if (tile == null) return Visibility.UNDISCOVERED
-        return getVisibilityAt(gameState, tile, realm)
+            ?: return Visibility.UNDISCOVERED
+        return getVisibilityAt(tile, realm)
     }
 
-    private fun getVisibilityAt(gameState: GameStateContext, tile: Tile, realm: Realm.Id): Visibility {
-        val hasDirectVision = gameState.entities
-            .asSequence()
-            .filter { it.owner == realm }
-            .filter { it.hasComponent<EntityComponent.Vision>() }
-            .filter { it.hasComponent<EntityComponent.Position>() }
-            .any {
-                val range = it.getComponent<EntityComponent.Vision>().radius
-                val position = it.getComponent<EntityComponent.Position>().tile.position
-                position.distance(tile.position) <= range
-            }
-        return when {
-            hasDirectVision -> Visibility.VISIBLE
-            tile.political.discoveredBy.contains(realm) -> Visibility.DISCOVERED
-            else -> Visibility.UNDISCOVERED
+    private fun getVisibilityAt(tile: Tile, realm: Realm.Id): Visibility {
+        if (tile.political.ownerRealm == realm) {
+            return Visibility.VISIBLE
         }
+
+        val realmControl = tile.political.control.values
+            .filter { it.realm == realm }
+            .sumOf { it.amount.toDouble() }
+
+        if (realmControl >= settings.visionRequiredControl) {
+            return Visibility.VISIBLE
+        }
+
+        if (realm in tile.political.discoveredBy) {
+            return Visibility.DISCOVERED
+        }
+
+        return Visibility.UNDISCOVERED
     }
 
 }

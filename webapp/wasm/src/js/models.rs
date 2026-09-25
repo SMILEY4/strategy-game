@@ -12,10 +12,13 @@ pub struct Tile {
     pub chunk_position: HexPosition,
     pub visibility: u8,
     pub terrain: TileTerrain,
-    pub rng_seed: u32,
+    pub owner_realm: u32,
+    pub conversion_active: bool,
+    pub converting_realm: u32,
     pub control_offset: u32,
     pub control_count: u32,
-    pub create_settlement_validity: u8,
+    pub create_settlement_validity: u8, // 0 = invalid, 1 = only valid terrain, 2 = completly valid
+    pub rng_seed: u32,
 }
 
 #[repr(C, packed)]

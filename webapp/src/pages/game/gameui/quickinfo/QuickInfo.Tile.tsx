@@ -40,11 +40,16 @@ export function QuickInfo_Tile(props: QuickInfoTileViewModel) {
             </HorizontalLayout>
 
             <VerticalLayout spacing3xs verticalStart horizontalStretch>
+                <Txt.Line><Txt.String>Id: </Txt.String><Txt.String>{`${props.id}`}</Txt.String></Txt.Line>
                 <Txt.Line><Txt.String>Position: </Txt.String><Txt.String>{`${props.position.q},${props.position.r}`}</Txt.String></Txt.Line>
                 <Txt.Line><Txt.String>Elevation: </Txt.String><Txt.String>{`${props.terrain?.elevation}`}</Txt.String></Txt.Line>
                 <Txt.Line><Txt.String>Biome: </Txt.String><Txt.String>{`${props.terrain?.biome}`}</Txt.String></Txt.Line>
                 <Txt.Line><Txt.String>Feature: </Txt.String><Txt.String>{`${props.terrain?.feature}`}</Txt.String></Txt.Line>
-                <Txt.Line><Txt.String>Id: </Txt.String><Txt.String>{`${props.id}`}</Txt.String></Txt.Line>
+            </VerticalLayout>
+
+            <VerticalLayout spacing3xs verticalStart horizontalStretch>
+                <Txt.Line><Txt.String>Owner: </Txt.String><Txt.String>{`${props.owner}`}</Txt.String></Txt.Line>
+                <Txt.Line><Txt.String>Converting: </Txt.String><Txt.String>{`${props.conversion}`}</Txt.String></Txt.Line>
             </VerticalLayout>
 
             <VerticalLayout spacing3xs verticalStart horizontalStretch>
