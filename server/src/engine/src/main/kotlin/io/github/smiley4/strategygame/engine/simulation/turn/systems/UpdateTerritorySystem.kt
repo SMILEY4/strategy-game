@@ -1,23 +1,12 @@
 package io.github.smiley4.strategygame.engine.simulation.turn.systems
 
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 
-class UpdateTerritorySystem : GameSystem {
+internal class UpdateTerritorySystem(private val settings: GameSettings) : GameSystem {
 
-    companion object {
-        /**
-         * if control of owner is less than this value -> start to lose tile
-         */
-        private const val LOSE_CONTROL_THRESHOLD = 1f
-
-
-        /**
-         * if control in (unclaimed/available) tile is more than this value -> start to convert tile.
-         */
-        private const val CLAIM_REQUIRED_CONTROL = 3f
-    }
 
     override fun execute(gameState: GameStateContext) {
         gameState.tiles.forEach { tile ->
@@ -49,7 +38,7 @@ class UpdateTerritorySystem : GameSystem {
     private fun updateClaimed(tile: Tile, ownerRealm: Realm.Id) {
         val controlByRealm = getControlByRealm(tile)
         val ownerControl = controlByRealm[ownerRealm] ?: -1f
-        if (ownerControl < LOSE_CONTROL_THRESHOLD) {
+        if (ownerControl < settings.territoryLooseControlThreshold) {
             updateConversion(tile, findClaimingRealm(controlByRealm))
         }
     }
@@ -73,7 +62,7 @@ class UpdateTerritorySystem : GameSystem {
 
     private fun findClaimingRealm(controlByRealm: Map<Realm.Id, Float>): Realm.Id? {
         return controlByRealm
-            .filterValues { it >= CLAIM_REQUIRED_CONTROL }
+            .filterValues { it >= settings.territoryClaimControlThreshold }
             .maxByOrNull { it.value }
             ?.key
     }

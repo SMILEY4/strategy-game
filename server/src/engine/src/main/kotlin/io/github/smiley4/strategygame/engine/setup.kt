@@ -14,6 +14,7 @@ import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.GameConn
 import io.github.smiley4.strategygame.engine.routing.GameWebsocketRoute.ServerGameMessage
 import io.github.smiley4.strategygame.engine.routing.routeGameWebsocket
 import io.github.smiley4.strategygame.engine.routing.routeRequestSettlementName
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.GameStateRepository
 import io.github.smiley4.strategygame.engine.simulation.SimulationService
 import io.github.smiley4.strategygame.engine.simulation.generation.NameGenerator
@@ -36,6 +37,8 @@ fun Module.dependenciesEngine() {
 
     single<WebSocketContext<GameConnection, ServerGameMessage>> { WebSocketContext.create<GameConnection, ServerGameMessage>() }
 
+    single<GameSettings> { GameSettings() }
+
     single<GameService> { GameServiceImpl(get(), get(), get(), get()) }
     single<GameNotificationService> { WebsocketNotificationService(get()) }
     single<GameRepository> { InMemoryGameRepository() }
@@ -47,9 +50,9 @@ fun Module.dependenciesEngine() {
     single<SimulationService> { SimulationService(get(), get(), get(), get()) }
     single<GameStateRepository> { InMemoryGameStateRepository() }
 
-    single<PlayerStateBuilder> { PlayerStateBuilder() }
+    single<PlayerStateBuilder> { PlayerStateBuilder(get()) }
 
-    single<WorldGenerator> { WorldGenerator() }
+    single<WorldGenerator> { WorldGenerator(get()) }
     single<NameGenerator> { NameGenerator() }
 
 }

@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.engine.simulation.turn.tools
 
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
@@ -18,24 +19,24 @@ internal data class TileImprovementValidationResult(
 
 internal object TileImprovementValidation {
 
-    const val REQUIRED_CONTROL = 0f
     private val registry = TileImprovementRegistry()
 
     fun validate(
+        settings: GameSettings,
         gameState: GameStateContext,
         location: HexPosition,
         realm: Realm.Id,
         improvementKey: TileImprovementKey,
     ): Boolean {
         val tile = gameState.tiles.find { it.position == location } ?: return false
-        return inspect(gameState, tile, realm).let { result ->
+        return inspect(settings, gameState, tile, realm).let { result ->
             result.validRealm && improvementKey in result.availableImprovementKeys
         }
     }
 
-    fun inspect(gameState: GameStateContext, tile: Tile, realm: Realm.Id): TileImprovementValidationResult {
+    fun inspect(settings: GameSettings, gameState: GameStateContext, tile: Tile, realm: Realm.Id): TileImprovementValidationResult {
         val phase = gameState.realms.first { it.id == realm }.phase
-        val validRealm = isValidRealm(tile, realm, phase)
+        val validRealm = isValidRealm(settings, tile, realm, phase)
         val availableImprovementKeys = if (isOccupied(gameState, tile)) {
             emptyList()
         } else {
@@ -56,6 +57,7 @@ internal object TileImprovementValidation {
     }
 
     private fun isValidRealm(
+        settings: GameSettings,
         tile: Tile,
         realm: Realm.Id,
         phase: RealmPhase,
@@ -67,6 +69,6 @@ internal object TileImprovementValidation {
             .filter { it.realm == realm }
             .sumOf { it.amount.toDouble() }
 
-        return realmControl > REQUIRED_CONTROL
+        return realmControl >= settings.tileImprovementRequiredControl
     }
 }

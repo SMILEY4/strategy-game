@@ -5,9 +5,6 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponen
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.gamestate.RealmPhase
-import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
-import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
-import io.github.smiley4.strategygame.engine.simulation.gamestate.iterateCircle
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
 
 internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.CreateSettlement> {
@@ -31,7 +28,6 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
             components = listOf(
                 EntityComponent.Position(tile = targetTile.ref()),
                 EntityComponent.Settlement(name = command.name.trim(), isRealmCapital = true),
-                EntityComponent.Vision(radius = 2),
                 EntityComponent.Control(amount = 6f)
             )
         )
@@ -39,14 +35,6 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
 
         // set realm phase
         realm.phase = RealmPhase.ESTABLISHED
-
-        // mark tiles as discovered
-        val vision = settlement.getComponent<EntityComponent.Vision>();
-        targetTile.position.iterateCircle(vision.radius) { pos ->
-            gameState.tiles.find { it.position == pos }?.also {
-                it.political.discoveredBy.add(realm.id)
-            }
-        }
 
         // mark tile immediately as owned
         targetTile.political.ownerRealm = realm.id

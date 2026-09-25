@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.engine.simulation.playerstate
 import com.lectra.koson.ObjectType
 import com.lectra.koson.arr
 import com.lectra.koson.obj
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Entity
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
@@ -17,11 +18,7 @@ import io.github.smiley4.strategygame.shared.values.UserId
 /**
  * Builds the game state snapshot visible to a specific player.
  */
-class PlayerStateBuilder {
-
-    companion object {
-        private const val VISION_CONTROL_THRESHOLD = 5f;
-    }
+internal class PlayerStateBuilder(private val settings: GameSettings) {
 
     fun build(game: GameStateContext, player: UserId): ObjectType {
 
@@ -70,7 +67,7 @@ class PlayerStateBuilder {
 
     fun tile(game: GameStateContext, tile: Tile, realm: Realm.Id) = obj {
         val settlementValidation = SettlementValidation.inspect(game, tile, realm)
-        val tileImprovementValidation = TileImprovementValidation.inspect(game, tile, realm)
+        val tileImprovementValidation = TileImprovementValidation.inspect(settings, game, tile, realm)
         val visibility = getVisibilityAt(tile, realm)
         "id" to tile.id.id
         "visibility" to visibility.name
@@ -212,7 +209,7 @@ class PlayerStateBuilder {
             .filter { it.realm == realm }
             .sumOf { it.amount.toDouble() }
 
-        if (realmControl >= VISION_CONTROL_THRESHOLD) {
+        if (realmControl >= settings.visionRequiredControl) {
             return Visibility.VISIBLE
         }
 

@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.engine.simulation.turn.tools
 
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponent
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
@@ -17,18 +18,16 @@ internal data class SettlementValidationResult(
 
 internal object SettlementValidation {
 
-    const val REQUIRED_CONTROL = 0f
-
-    fun validate(gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
+    fun validate(settings: GameSettings, gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
         val tile = gameState.tiles.find { it.position == location } ?: return false
-        return inspect(gameState, tile, realm).valid
+        return inspect(settings, gameState, tile, realm).valid
     }
 
-    fun inspect(gameState: GameStateContext, tile: Tile, realm: Realm.Id): SettlementValidationResult {
+    fun inspect(settings: GameSettings, gameState: GameStateContext, tile: Tile, realm: Realm.Id): SettlementValidationResult {
         val phase = gameState.realms.first { it.id == realm }.phase
         return SettlementValidationResult(
             validLocation = isValidLocation(gameState, tile),
-            validRealm = isValidRealm(tile, realm, phase),
+            validRealm = isValidRealm(settings, tile, realm, phase),
         )
     }
 
@@ -45,6 +44,7 @@ internal object SettlementValidation {
     }
 
     private fun isValidRealm(
+        settings: GameSettings,
         tile: Tile,
         realm: Realm.Id,
         phase: RealmPhase,
@@ -56,6 +56,6 @@ internal object SettlementValidation {
             .filter { it.realm == realm }
             .sumOf { it.amount.toDouble() }
 
-        return realmControl >= REQUIRED_CONTROL
+        return realmControl >= settings.settlementRequiredControl
     }
 }

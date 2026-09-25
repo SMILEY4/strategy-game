@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.engine.simulation.generation.passes.terrain
 
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
@@ -8,7 +9,6 @@ import io.github.smiley4.strategygame.engine.simulation.generation.GenerationCon
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.GenerationPass
 import io.github.smiley4.strategygame.engine.simulation.generation.tools.FastNoiseLite
 import io.github.smiley4.strategygame.engine.simulation.generation.tools.TilemapPositionsProvider
-import javax.swing.Spring.height
 import kotlin.math.ceil
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -16,9 +16,7 @@ import kotlin.random.nextInt
 /**
  * Builds the map terrain and tiles
  */
-internal class TerrainGenerationPass : GenerationPass {
-
-    private val chunkRadius = 30
+internal class TerrainGenerationPass(private val settings: GameSettings) : GenerationPass {
 
     private val noise = FastNoiseLite().apply {
         this.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2)
@@ -31,7 +29,7 @@ internal class TerrainGenerationPass : GenerationPass {
     }
 
     override fun execute(gameState: GameStateContext, generationContext: GenerationContext) {
-        val tiles = generateTiles(50, Random.nextInt())
+        val tiles = generateTiles(settings.worldGenerationSettings.worldRadius, Random.nextInt())
         gameState.tiles.clear()
         gameState.tiles.addAll(tiles)
     }
@@ -41,7 +39,7 @@ internal class TerrainGenerationPass : GenerationPass {
         noise.SetSeed(seed)
         val random = Random(seed)
 
-        val tilePositions = buildTilePositionsWithChunks(radius, chunkRadius)
+        val tilePositions = buildTilePositionsWithChunks(radius, settings.worldGenerationSettings.chunkRadius)
 
         val tiles = tilePositions.mapIndexed { index, (tilePositions, chunkPosition) ->
             val height = noise.GetNoise(tilePositions.q.toFloat(), tilePositions.r.toFloat())

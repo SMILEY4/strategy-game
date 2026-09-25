@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.engine.simulation.generation
 
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.realms.RealmGenerationPass
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.spawns.SpawnGenerationPass
@@ -7,12 +8,12 @@ import io.github.smiley4.strategygame.engine.simulation.generation.passes.terrai
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
 
-internal class WorldGenerator {
+internal class WorldGenerator(private val settings: GameSettings) {
 
     private val generationPasses = listOf(
-        TerrainGenerationPass(),
+        TerrainGenerationPass(settings),
         RealmGenerationPass(),
-        SpawnGenerationPass()
+        SpawnGenerationPass(settings)
     )
 
     fun generate(id: GameId, players: Collection<UserId>): GameStateContext {
