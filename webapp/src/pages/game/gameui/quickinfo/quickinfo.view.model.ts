@@ -24,7 +24,9 @@ export interface QuickInfoTileViewModel {
         biome: string,
         feature: string,
     }
-    control: ({ source: string, amount: number })[]
+    control: ({ source: string, amount: number })[],
+    owner: number | null,
+    conversion: null | string,
     actions: {
         focusCamera: () => void,
         foundSettlement: {
@@ -67,12 +69,12 @@ export function useQuickInfoViewModel(): QuickinfoViewModel {
 
     const tileQuickInfo = useBuildTileQuickInfo(selectedTileRef);
     const settlementQuickInfo = useSettlementQuickInfo(selectedTileRef);
-    const tileImprovementQuickInfo = useTileImprovementQuickInfo(selectedTileRef)
+    const tileImprovementQuickInfo = useTileImprovementQuickInfo(selectedTileRef);
 
     const availableInfo: ("tile" | "settlement" | "tile-improvement")[] = [];
     if (tileQuickInfo) availableInfo.push("tile");
     if (settlementQuickInfo) availableInfo.push("settlement");
-    if(tileImprovementQuickInfo) availableInfo.push("tile-improvement")
+    if (tileImprovementQuickInfo) availableInfo.push("tile-improvement");
 
     return {
         availableInfo: availableInfo,
@@ -109,6 +111,16 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: number } | null): Qu
                 amount: it.amount,
             }))
             : [],
+        owner: tile.political.visible
+            ? tile.political.value.ownerRealm
+            : null,
+        conversion: tile.political.visible
+            ? (
+                tile.political.value.conversion
+                    ? `${tile.political.value.conversion.targetRealm} (${tile.political.value.conversion.progress})`
+                    : null
+            )
+            : null,
         actions: {
             focusCamera: () => DI.cameraController.lookAt(tile.position),
             foundSettlement: {
@@ -119,8 +131,8 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: number } | null): Qu
             createTileImprovement: {
                 available: true,
                 valid: validateCreateTileImprovement.tileImprovement(tile.position),
-                execute: () => void DI.interactionManager.start(CreateTileImprovementInteraction, { position: tile.position }),
-            }
+                execute: () => void DI.interactionManager.start(CreateTileImprovementInteraction, {position: tile.position}),
+            },
         },
     };
 }

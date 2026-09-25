@@ -41,9 +41,9 @@ class PlayerStateBuilder {
                     .map { entity(game, it) }
             ]
             "routes" to arr[
-                    game.routes
-                        .filter { it.tiles.any { t -> getVisibilityAt(game, t.position, povRealm.id) != Visibility.UNDISCOVERED } }
-                        .map { route(it) }
+                game.routes
+                    .filter { it.tiles.any { t -> getVisibilityAt(game, t.position, povRealm.id) != Visibility.UNDISCOVERED } }
+                    .map { route(it) }
             ]
         }
     }
@@ -107,6 +107,13 @@ class PlayerStateBuilder {
                         }
                     }
                 ]
+                "ownerRealm" to tile.political.ownerRealm?.id
+                "conversion" to tile.political.conversion?.let { conversion ->
+                    obj {
+                        "targetRealm" to conversion.targetRealm?.id
+                        "progress" to conversion.progress
+                    }
+                }
             }
         }
         "createSettlement" to hidden(visibility != Visibility.UNDISCOVERED) {

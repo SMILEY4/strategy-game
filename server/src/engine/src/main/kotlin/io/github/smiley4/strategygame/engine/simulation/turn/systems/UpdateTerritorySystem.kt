@@ -16,7 +16,7 @@ class UpdateTerritorySystem : GameSystem {
         /**
          * if control in (unclaimed/available) tile is more than this value -> start to convert tile.
          */
-        private const val CLAIM_REQUIRED_CONTROL = 5f
+        private const val CLAIM_REQUIRED_CONTROL = 3f
     }
 
     override fun execute(gameState: GameStateContext) {
