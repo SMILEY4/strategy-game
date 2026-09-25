@@ -10,7 +10,6 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.HexPosition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Route
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
-import io.github.smiley4.strategygame.engine.simulation.gamestate.distance
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementValidation
 import io.github.smiley4.strategygame.shared.values.UserId
@@ -19,6 +18,10 @@ import io.github.smiley4.strategygame.shared.values.UserId
  * Builds the game state snapshot visible to a specific player.
  */
 class PlayerStateBuilder {
+
+    companion object {
+        private const val VISION_CONTROL_THRESHOLD = 5f;
+    }
 
     fun build(game: GameStateContext, player: UserId): ObjectType {
 
@@ -68,7 +71,7 @@ class PlayerStateBuilder {
     fun tile(game: GameStateContext, tile: Tile, realm: Realm.Id) = obj {
         val settlementValidation = SettlementValidation.inspect(game, tile, realm)
         val tileImprovementValidation = TileImprovementValidation.inspect(game, tile, realm)
-        val visibility = getVisibilityAt(game, tile, realm)
+        val visibility = getVisibilityAt(tile, realm)
         "id" to tile.id.id
         "visibility" to visibility.name
         "position" to obj {
@@ -148,7 +151,6 @@ class PlayerStateBuilder {
             entity.components.map { component ->
                 when (component) {
                     is EntityComponent.Position -> Unit
-                    is EntityComponent.Vision -> Unit
                     is EntityComponent.Control -> Unit
                     is EntityComponent.Settlement -> obj {
                         "type" to "settlement"
@@ -191,32 +193,34 @@ class PlayerStateBuilder {
 
     private fun getVisibilityAt(gameState: GameStateContext, entity: Entity, realm: Realm.Id): Visibility {
         val position = entity.getComponentOrNull<EntityComponent.Position>()?.tile?.position
-        if (position == null) return Visibility.UNDISCOVERED
+            ?: return Visibility.UNDISCOVERED
         return getVisibilityAt(gameState, position, realm)
     }
 
     private fun getVisibilityAt(gameState: GameStateContext, positions: HexPosition, realm: Realm.Id): Visibility {
         val tile = gameState.tiles.find { it.position == positions }
-        if (tile == null) return Visibility.UNDISCOVERED
-        return getVisibilityAt(gameState, tile, realm)
+            ?: return Visibility.UNDISCOVERED
+        return getVisibilityAt(tile, realm)
     }
 
-    private fun getVisibilityAt(gameState: GameStateContext, tile: Tile, realm: Realm.Id): Visibility {
-        val hasDirectVision = gameState.entities
-            .asSequence()
-            .filter { it.owner == realm }
-            .filter { it.hasComponent<EntityComponent.Vision>() }
-            .filter { it.hasComponent<EntityComponent.Position>() }
-            .any {
-                val range = it.getComponent<EntityComponent.Vision>().radius
-                val position = it.getComponent<EntityComponent.Position>().tile.position
-                position.distance(tile.position) <= range
-            }
-        return when {
-            hasDirectVision -> Visibility.VISIBLE
-            tile.political.discoveredBy.contains(realm) -> Visibility.DISCOVERED
-            else -> Visibility.UNDISCOVERED
+    private fun getVisibilityAt(tile: Tile, realm: Realm.Id): Visibility {
+        if (tile.political.ownerRealm == realm) {
+            return Visibility.VISIBLE
         }
+
+        val realmControl = tile.political.control.values
+            .filter { it.realm == realm }
+            .sumOf { it.amount.toDouble() }
+
+        if (realmControl >= VISION_CONTROL_THRESHOLD) {
+            return Visibility.VISIBLE
+        }
+
+        if (realm in tile.political.discoveredBy) {
+            return Visibility.DISCOVERED
+        }
+
+        return Visibility.UNDISCOVERED
     }
 
 }
