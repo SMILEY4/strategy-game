@@ -5,15 +5,16 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateConte
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.realms.RealmGenerationPass
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.spawns.SpawnGenerationPass
 import io.github.smiley4.strategygame.engine.simulation.generation.passes.terrain.TerrainGenerationPass
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
 import io.github.smiley4.strategygame.shared.values.GameId
 import io.github.smiley4.strategygame.shared.values.UserId
 
-internal class WorldGenerator(private val settings: GameSettings) {
+internal class WorldGenerator(settlementValidation: SettlementValidation, settings: GameSettings) {
 
     private val generationPasses = listOf(
         TerrainGenerationPass(settings),
         RealmGenerationPass(),
-        SpawnGenerationPass(settings)
+        SpawnGenerationPass(settlementValidation, settings)
     )
 
     fun generate(id: GameId, players: Collection<UserId>): GameStateContext {

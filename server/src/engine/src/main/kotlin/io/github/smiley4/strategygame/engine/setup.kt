@@ -22,6 +22,9 @@ import io.github.smiley4.strategygame.engine.simulation.generation.WorldGenerato
 import io.github.smiley4.strategygame.engine.simulation.infrastructure.InMemoryGameStateRepository
 import io.github.smiley4.strategygame.engine.simulation.playerstate.PlayerStateBuilder
 import io.github.smiley4.strategygame.engine.simulation.turn.TurnService
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementRegistry
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementValidation
 import io.github.smiley4.strategygame.shared.infrastructure.RoutingAuthConstants
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
@@ -46,13 +49,18 @@ fun Module.dependenciesEngine() {
     single { GameGenerationRequestedEventHandler(get(), get()) }.withOptions { createdAtStart() }
     single { MatchDeletedEventHandler(get(), get()) }.withOptions { createdAtStart() }
 
-    single<TurnService> { TurnService() }
+    single<TileImprovementRegistry> { TileImprovementRegistry() }
+
+    single<SettlementValidation> { SettlementValidation(get()) }
+    single<TileImprovementValidation> { TileImprovementValidation(get(), get()) }
+
+    single<TurnService> { TurnService(get(), get(), get()) }
     single<SimulationService> { SimulationService(get(), get(), get(), get()) }
     single<GameStateRepository> { InMemoryGameStateRepository() }
 
-    single<PlayerStateBuilder> { PlayerStateBuilder(get()) }
+    single<PlayerStateBuilder> { PlayerStateBuilder(get(), get(), get()) }
 
-    single<WorldGenerator> { WorldGenerator(get()) }
+    single<WorldGenerator> { WorldGenerator(get(), get()) }
     single<NameGenerator> { NameGenerator() }
 
 }

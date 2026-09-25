@@ -11,7 +11,7 @@ import io.github.smiley4.strategygame.engine.simulation.turn.tools.Pathfinder
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementValidation
 
 internal class CreateTileImprovementCommandHandler(
-    private val settings: GameSettings
+    private val tileImprovementValidation: TileImprovementValidation,
 ) : CommandHandler<PlayerCommand.CreateTileImprovement> {
 
     override val commandType = PlayerCommand.CreateTileImprovement::class
@@ -39,8 +39,9 @@ internal class CreateTileImprovementCommandHandler(
         val settlement = gameState.entities.first { it.id == command.settlement && it.hasComponent<EntityComponent.Settlement>() }
 
         // validate
-        if (!TileImprovementValidation.validate(settings, gameState, command.location, realm.id, command.improvementKey)) {
-            throw IllegalArgumentException("Invalid tile-improvement command")
+        val validationResult = tileImprovementValidation.validate(gameState, command.location, realm.id, command.improvementKey)
+        if (validationResult != null) {
+            throw IllegalArgumentException("Invalid tile-improvement command: $validationResult")
         }
 
         // find route to settlement

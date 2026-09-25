@@ -7,7 +7,9 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.gamestate.RealmPhase
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
 
-internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.CreateSettlement> {
+internal class CreateSettlementCommandHandler(
+    private val settlementValidation: SettlementValidation,
+) : CommandHandler<PlayerCommand.CreateSettlement> {
 
     override val commandType = PlayerCommand.CreateSettlement::class
 
@@ -17,8 +19,9 @@ internal class CreateSettlementCommandHandler : CommandHandler<PlayerCommand.Cre
         val targetTile = gameState.tiles.first { it.position == command.location }
 
         // validate
-        if (!SettlementValidation.validate(gameState, command.location, realm.id)) {
-            throw IllegalArgumentException("Invalid settlement command")
+        val validationResult = settlementValidation.validate(gameState, command.location, realm.id)
+        if (validationResult != null) {
+            throw IllegalArgumentException("Invalid settlement command : $validationResult")
         }
 
         // create settlement

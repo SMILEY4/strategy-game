@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.engine.simulation.turn
 
+import io.github.smiley4.strategygame.engine.simulation.GameSettings
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.PlayerCommand
 import io.github.smiley4.strategygame.engine.simulation.turn.commands.CommandHandler
@@ -8,6 +9,8 @@ import io.github.smiley4.strategygame.engine.simulation.turn.commands.CreateTile
 import io.github.smiley4.strategygame.engine.simulation.turn.systems.GameSystem
 import io.github.smiley4.strategygame.engine.simulation.turn.systems.UpdateControlSystem
 import io.github.smiley4.strategygame.engine.simulation.turn.systems.UpdateTerritorySystem
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.SettlementValidation
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.TileImprovementValidation
 
 /*
 
@@ -39,16 +42,20 @@ basis
 		- ...
  */
 
-internal class TurnService {
+internal class TurnService(
+    settings: GameSettings,
+    settlementValidation: SettlementValidation,
+    tileImprovementValidation: TileImprovementValidation,
+) {
 
     private val commandHandlers = listOf(
-        CreateSettlementCommandHandler(),
-        CreateTileImprovementCommandHandler()
+        CreateSettlementCommandHandler(settlementValidation),
+        CreateTileImprovementCommandHandler(tileImprovementValidation)
     )
 
     private val systems = listOf<GameSystem>(
         UpdateControlSystem(),
-        UpdateTerritorySystem(),
+        UpdateTerritorySystem(settings),
     )
 
     fun execute(gameState: GameStateContext, commands: Collection<PlayerCommand>) {

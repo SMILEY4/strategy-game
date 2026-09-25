@@ -15,7 +15,10 @@ import io.github.smiley4.strategygame.shared.utils.repeatUntil
 /**
  * Picks realm spawn locations
  */
-internal class SpawnGenerationPass(private val settings: GameSettings) : GenerationPass {
+internal class SpawnGenerationPass(
+    private val settlementValidation: SettlementValidation,
+    private val settings: GameSettings
+) : GenerationPass {
 
     override fun execute(gameState: GameStateContext, generationContext: GenerationContext) {
         val spawnLocations = mutableListOf<Tile.Ref>()
@@ -80,7 +83,8 @@ internal class SpawnGenerationPass(private val settings: GameSettings) : Generat
                 if (tile.world.biome != Tile.Biome.OCEAN) {
                     countLand++
                 }
-                if (SettlementValidation.isTerrainSuitable(tile)) {
+
+                if (settlementValidation.validateTerrain(tile) == null) {
                     countValid++
                 }
             }

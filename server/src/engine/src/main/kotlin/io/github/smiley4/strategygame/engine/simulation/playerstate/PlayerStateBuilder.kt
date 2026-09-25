@@ -18,7 +18,11 @@ import io.github.smiley4.strategygame.shared.values.UserId
 /**
  * Builds the game state snapshot visible to a specific player.
  */
-internal class PlayerStateBuilder(private val settings: GameSettings) {
+internal class PlayerStateBuilder(
+    private val settings: GameSettings,
+    private val tileImprovementValidation: TileImprovementValidation,
+    private val settlementValidation: SettlementValidation,
+) {
 
     fun build(game: GameStateContext, player: UserId): ObjectType {
 
@@ -66,9 +70,15 @@ internal class PlayerStateBuilder(private val settings: GameSettings) {
     }
 
     fun tile(game: GameStateContext, tile: Tile, realm: Realm.Id) = obj {
-        val settlementValidation = SettlementValidation.inspect(game, tile, realm)
-        val tileImprovementValidation = TileImprovementValidation.inspect(settings, game, tile, realm)
+
         val visibility = getVisibilityAt(tile, realm)
+
+        val tileImprovementLocationValidationResult = tileImprovementValidation.validateConstructionLocation(game, tile, realm)
+        val tileImprovementAvailableKeys = tileImprovementValidation.getValidForTile(tile)
+
+        val settlementTerrainValidationResult = settlementValidation.validateTerrain(tile)
+        val settlementValidationResult = settlementValidation.validate(game, tile, realm)
+
         "id" to tile.id.id
         "visibility" to visibility.name
         "position" to obj {
@@ -118,14 +128,14 @@ internal class PlayerStateBuilder(private val settings: GameSettings) {
         }
         "createSettlement" to hidden(visibility != Visibility.UNDISCOVERED) {
             obj {
-                "validLocation" to settlementValidation.validLocation
-                "validRealm" to settlementValidation.validRealm
+                "valid" to (settlementValidationResult == null)
+                "validTerrain" to (settlementTerrainValidationResult == null)
             }
         }
         "createTileImprovement" to hidden(visibility != Visibility.UNDISCOVERED) {
             obj {
-                "validRealm" to tileImprovementValidation.validRealm
-                "availableImprovementKeys" to arr[tileImprovementValidation.availableImprovementKeys.map { it.value }]
+                "validLocation" to (tileImprovementLocationValidationResult == null)
+                "availableImprovementKeys" to arr[tileImprovementAvailableKeys.map { it.value }]
             }
         }
         "meta" to obj {

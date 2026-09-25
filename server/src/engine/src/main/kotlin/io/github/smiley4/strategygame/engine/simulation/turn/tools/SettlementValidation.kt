@@ -8,54 +8,68 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.Realm
 import io.github.smiley4.strategygame.engine.simulation.gamestate.RealmPhase
 import io.github.smiley4.strategygame.engine.simulation.gamestate.Tile
 
-internal data class SettlementValidationResult(
-    val validLocation: Boolean,
-    val validRealm: Boolean,
-) {
-    val valid: Boolean
-        get() = validLocation && validRealm
-}
+internal class SettlementValidation(private val settings: GameSettings) {
 
-internal object SettlementValidation {
-
-    fun validate(settings: GameSettings, gameState: GameStateContext, location: HexPosition, realm: Realm.Id): Boolean {
-        val tile = gameState.tiles.find { it.position == location } ?: return false
-        return inspect(settings, gameState, tile, realm).valid
+    enum class FailureReason {
+        TILE_NOT_DISCOVERED,
+        INSUFFICIENT_CONTROL,
+        INVALID_TERRITORY,
+        ALREADY_OCCUPIED,
+        INVALID_TERRAIN,
     }
 
-    fun inspect(settings: GameSettings, gameState: GameStateContext, tile: Tile, realm: Realm.Id): SettlementValidationResult {
-        val phase = gameState.realms.first { it.id == realm }.phase
-        return SettlementValidationResult(
-            validLocation = isValidLocation(gameState, tile),
-            validRealm = isValidRealm(settings, tile, realm, phase),
-        )
-    }
+    fun validate(gameState: GameStateContext, position: HexPosition, realm: Realm.Id) =
+        validate(gameState, gameState.tiles.find { it.position == position }!!, realm)
 
-    private fun isValidLocation(gameState: GameStateContext, tile: Tile): Boolean {
-        if (!isTerrainSuitable(tile)) return false
+    fun validate(gameState: GameStateContext, tile: Tile, realm: Realm.Id): FailureReason? {
 
-        return gameState.entities.none {
-            it.getComponentOrNull<EntityComponent.Position>()?.tile?.id == tile.id
+        // tile must be discovered
+        if (realm !in tile.political.discoveredBy) {
+            return FailureReason.TILE_NOT_DISCOVERED
         }
+
+        // tile must not be in foreign territory
+        if (tile.political.ownerRealm != null && tile.political.ownerRealm != realm) {
+            return FailureReason.INVALID_TERRITORY
+        }
+
+        if (gameState.realms.find { it.id == realm }!!.phase == RealmPhase.ESTABLISHED) {
+
+            val realmControl = tile.political.control.values
+                .filter { it.realm == realm }
+                .sumOf { it.amount.toDouble() }
+
+            // realm must have sufficient control in neutral tile (only in "established" phase"
+            if (tile.political.ownerRealm == null && realmControl < settings.settlementRequiredControl) {
+                return FailureReason.INSUFFICIENT_CONTROL
+            }
+        }
+
+        // tile must not be occupied already
+        val isOccupied = gameState.entities
+            .mapNotNull { it.getComponentOrNull<EntityComponent.Position>() }
+            .any { it.tile.id == tile.id }
+        if (isOccupied) {
+            return FailureReason.ALREADY_OCCUPIED
+        }
+
+        // terrain must be valid
+        val terrainValidation = validateTerrain(tile)
+        if (terrainValidation != null) {
+            return terrainValidation
+        }
+
+        return null
     }
 
-    fun isTerrainSuitable(tile: Tile): Boolean {
-        return tile.world.biome != Tile.Biome.OCEAN && tile.world.elevation != Tile.Elevation.MOUNTAINS
+    fun validateTerrain(tile: Tile): FailureReason? {
+        if (tile.world.biome == Tile.Biome.OCEAN) {
+            return FailureReason.INVALID_TERRAIN
+        }
+        if (tile.world.elevation == Tile.Elevation.MOUNTAINS) {
+            return FailureReason.INVALID_TERRAIN
+        }
+        return null
     }
 
-    private fun isValidRealm(
-        settings: GameSettings,
-        tile: Tile,
-        realm: Realm.Id,
-        phase: RealmPhase,
-    ): Boolean {
-        if (realm !in tile.political.discoveredBy) return false
-        if (phase == RealmPhase.FOUNDING) return true
-
-        val realmControl = tile.political.control.values
-            .filter { it.realm == realm }
-            .sumOf { it.amount.toDouble() }
-
-        return realmControl >= settings.settlementRequiredControl
-    }
 }
