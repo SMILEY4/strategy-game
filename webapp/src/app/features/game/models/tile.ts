@@ -31,11 +31,11 @@ export interface Tile {
         } | null
     }>
     createSettlement: HiddenType<{
-        validLocation: boolean,
-        validRealm: boolean,
+        valid: boolean,
+        validTerrain: boolean,
     }>
     createTileImprovement: HiddenType<{
-        validRealm: boolean,
+        validLocation: boolean,
         availableImprovementKeys: string[],
     }>
     meta: {

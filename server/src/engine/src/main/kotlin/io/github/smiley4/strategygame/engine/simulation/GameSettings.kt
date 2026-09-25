@@ -3,8 +3,8 @@ package io.github.smiley4.strategygame.engine.simulation
 
 internal data class GameSettings(
     val worldGenerationSettings: WorldGenerationSettings = WorldGenerationSettings(),
-    val tileImprovementRequiredControl: Float = 0f,
-    val settlementRequiredControl: Float = 0f,
+    val tileImprovementRequiredControl: Float = 0.000000001f,
+    val settlementRequiredControl: Float = 0.000000001f,
     val visionRequiredControl: Float = 5f,
     val territoryClaimControlThreshold: Float = 3f,
     val territoryLooseControlThreshold: Float = 1f

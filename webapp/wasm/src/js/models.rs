@@ -17,7 +17,7 @@ pub struct Tile {
     pub converting_realm: u32,
     pub control_offset: u32,
     pub control_count: u32,
-    pub create_settlement_validity: u8,
+    pub create_settlement_validity: u8, // 0 = invalid, 1 = only valid terrain, 2 = completly valid
     pub rng_seed: u32,
 }
 

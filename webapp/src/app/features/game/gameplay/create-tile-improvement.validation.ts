@@ -18,9 +18,14 @@ export const createTileImprovementValidation = (): CreateTileImprovementValidati
     validate: ({hasInteraction, commandDb, tileDb, position}) => {
         if (hasInteraction) return false;
 
-        // check: tile exists and can create tile improvement (backend validation)
+        // check: tile exists and visible
         const tile = tileDb.querySingle(TileQueries.BY_POSITION, position);
-        if (!tile || !tile.createTileImprovement.visible || !tile.createTileImprovement.value.validRealm || tile.createTileImprovement.value.availableImprovementKeys.length === 0) {
+        if(!tile || !tile.createTileImprovement.visible) {
+            return false
+        }
+
+        // check valid location for at least one tile improvement (backend validation)
+        if (!tile.createTileImprovement.value.validLocation || tile.createTileImprovement.value.availableImprovementKeys.length === 0) {
             return false;
         }
 

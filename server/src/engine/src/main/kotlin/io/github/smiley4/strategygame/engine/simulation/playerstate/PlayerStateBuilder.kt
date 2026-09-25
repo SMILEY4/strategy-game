@@ -129,7 +129,8 @@ internal class PlayerStateBuilder(
         "createSettlement" to hidden(visibility != Visibility.UNDISCOVERED) {
             obj {
                 "valid" to (settlementValidationResult == null)
-                "validTerrain" to (settlementTerrainValidationResult == null)
+                "validTerrain" to (settlementTerrainValidationResult == null
+                        && settlementValidationResult != SettlementValidation.FailureReason.ALREADY_OCCUPIED)
             }
         }
         "createTileImprovement" to hidden(visibility != Visibility.UNDISCOVERED) {
