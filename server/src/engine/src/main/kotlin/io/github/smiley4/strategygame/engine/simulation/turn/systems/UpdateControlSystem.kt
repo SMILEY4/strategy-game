@@ -12,12 +12,15 @@ import java.util.ArrayDeque
 internal class UpdateControlSystem : GameSystem {
 
     override fun execute(gameState: GameStateContext) {
-        clear(gameState)
+
         val tilesByPosition = gameState.tiles.associateBy { it.position }
+        val routeTiles = gameState.routes.flatMap { it.tiles }.map { it.id }.toSet()
+
+        clear(gameState)
         for (entity in gameState.entities) {
             if (entity.owner == null) continue
             entity.getComponentsOrNull<EntityComponent.Control, EntityComponent.Position>()?.also { (control, position) ->
-                update(entity, entity.owner, control, position, tilesByPosition)
+                update(entity, entity.owner, control, position, tilesByPosition, routeTiles)
             }
         }
     }
@@ -32,10 +35,11 @@ internal class UpdateControlSystem : GameSystem {
         controlComponent: EntityComponent.Control,
         positionComponent: EntityComponent.Position,
         tilesByPosition: Map<HexPosition, Tile>,
+        routeTiles: Set<Tile.Id>
     ) {
         val sourceTile = tilesByPosition[positionComponent.tile.position] ?: return
         val sourceSettlement = entity.getComponentOrNull<EntityComponent.TileImprovement>()?.administeringSettlement
-            ?: if(entity.hasComponent<EntityComponent.Settlement>()) entity.id else null
+            ?: if (entity.hasComponent<EntityComponent.Settlement>()) entity.id else null
 
         val queue = ArrayDeque<Pair<Tile, Float>>()
         val visited = mutableMapOf<Tile.Id, Float>()
@@ -57,7 +61,7 @@ internal class UpdateControlSystem : GameSystem {
 
             current.position.iterateNeighbours { neighbourPosition ->
                 val neighbour = tilesByPosition[neighbourPosition] ?: return@iterateNeighbours
-                val remainingAmount = currentAmount - getCostTo(neighbour)
+                val remainingAmount = currentAmount - getCostTo(neighbour, routeTiles)
                 if (remainingAmount <= 0) {
                     return@iterateNeighbours
                 }
@@ -70,7 +74,10 @@ internal class UpdateControlSystem : GameSystem {
         }
     }
 
-    private fun getCostTo(to: Tile): Float {
+    private fun getCostTo(to: Tile, routeTiles: Set<Tile.Id>): Float {
+        if (to.id in routeTiles) {
+            return 0.7f
+        }
         return when {
             (to.world.biome == Tile.Biome.OCEAN) -> Float.POSITIVE_INFINITY
             (to.world.elevation == Tile.Elevation.MOUNTAINS) -> 5f
