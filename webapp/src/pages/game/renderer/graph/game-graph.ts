@@ -17,6 +17,7 @@ import {gameGraphHtml} from "@pages/game/renderer/graph/html.ts";
 import {renderRoutes} from "@pages/game/renderer/graph/render-routes.ts";
 import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
 import {renderFogOfWar} from "@pages/game/renderer/graph/render-fog-of-war.ts";
+import {renderTestPlane} from "@pages/game/renderer/graph/render-test-plane.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -98,7 +99,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     });
     //====================== FOG OF WAR =====================================
 
-    const drawFogOfWar = renderFogOfWar(g, wasmApi, {
+    const fogOfWarMask = renderFogOfWar(g, wasmApi, {
         dataDebug: dataDebug,
         camera: camera,
         wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
@@ -136,6 +137,14 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         dataPointerHexPosition: dataPointerHexPosition,
     });
 
+    //====================== TEST PLANE =====================================
+
+    const {drawTestPlane1, drawTestPlane2} = renderTestPlane(g, {
+        camera: camera,
+        cameraData: dataCamera,
+        fogOfWarMask: fogOfWarMask,
+    })
+
     //====================== WEBGL OUTPUT ===================================
 
     const canvasSize = g.canvasSize();
@@ -143,11 +152,20 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     const renderTargetComposite = g.rendertarget({
         size: canvasSize,
         renderPasses: [
+
+            // world
             drawWaterTiles,
             drawLandTiles,
             drawRoutes,
             drawMapDetails,
-            drawFogOfWar,
+
+            // // fog
+            // drawFogOfWar,
+
+            drawTestPlane1,
+            drawTestPlane2,
+
+            // overlay
             drawTileGrid,
             drawOverlayFill,
             drawOverlayBorderBack,
