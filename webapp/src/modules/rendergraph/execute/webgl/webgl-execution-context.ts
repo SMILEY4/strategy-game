@@ -14,6 +14,7 @@ import type {
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
+import {GLTextureAttachment} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 
 /** Factory function that creates a [WebGlExecutionContext] for a given canvas element. */
 export type WebglExecutionContextFactory = (canvas: HTMLCanvasElement) => WebGlExecutionContext
@@ -93,21 +94,15 @@ export class WebGlExecutionContext {
                 width: resource.initialSize[0],
                 height: resource.initialSize[1],
                 attachments: Object.entries(resource.attachments).map(([name, attachment]) => {
-                    if(attachment.type === "color") {
-                        return {
-                            type: "color",
-                            name: name,
-                            format: attachment.format,
-                        }
+                    return {
+                        name: name,
+                        attachment: GLTextureAttachment.create(
+                            gl,
+                            resource.initialSize[0],
+                            resource.initialSize[1],
+                            attachment.format,
+                        )
                     }
-                    if(attachment.type === "depth") {
-                        return {
-                            type: "depth",
-                            name: name,
-                            format: attachment.format,
-                        }
-                    }
-                    assertExhaustive(attachment)
                 }),
             });
             return;

@@ -10,7 +10,7 @@ import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import {vec2} from "gl-matrix";
-import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 import SHADER_MASK_LAND_VERT from "@pages/game/renderer/shader/baseTerrainMask/land.vsh";
 import SHADER_MASK_LAND_FRAG from "@pages/game/renderer/shader/baseTerrainMask/land.fsh";
 import SHADER_MASK_WATEREDGE_VERT from "@pages/game/renderer/shader/baseTerrainMask/wateredge.vsh";

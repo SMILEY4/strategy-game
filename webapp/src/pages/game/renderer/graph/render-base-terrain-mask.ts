@@ -8,7 +8,7 @@ import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.cam
 import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
-import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import SHADER_MASK_LAND_VERT from "@pages/game/renderer/shader/baseTerrainMask/land.vsh";
 import SHADER_MASK_LAND_FRAG from "@pages/game/renderer/shader/baseTerrainMask/land.fsh";

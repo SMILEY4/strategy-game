@@ -12,8 +12,8 @@ import type {Camera} from "@app/features/game/models/camera.ts";
 import {renderMapDetails} from "@pages/game/renderer/graph/world/render.map-details.ts";
 import {renderRoutes} from "@pages/game/renderer/graph/world/render.routes.ts";
 import {renderFogOfWar} from "@pages/game/renderer/graph/world/render.fog-of-war.ts";
-import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
+import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 
 export function graphWorld(
     g: RenderGraphBuilder,

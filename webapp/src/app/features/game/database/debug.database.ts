@@ -52,7 +52,7 @@ export const initialDebugDataValues: DebugData = {
             cutoff: 0.85,
         },
         fogOfWar: {
-            scale: 1.30,
+            scale: 1.32,
         },
         mapDetails: {
             msaa: 2,

@@ -9,7 +9,7 @@ import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
 import SHADER_FOG_OF_WAR_MASK_VERT from "@pages/game/renderer/shader/fogofwar/fogOfWarMask.vsh";
 import SHADER_FOG_OF_WAR_MASK_FRAG from "@pages/game/renderer/shader/fogofwar/fogOfWarMask.fsh";
-import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 
 export function renderFogOfWar(

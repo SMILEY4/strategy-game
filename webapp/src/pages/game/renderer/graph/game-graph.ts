@@ -5,19 +5,8 @@ import {gameGraphDataCamera} from "@pages/game/renderer/graph/camera-data.ts";
 import {gameGraphDataWorld} from "@pages/game/renderer/graph/world-data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import {renderBaseTerrainMask} from "@pages/game/renderer/graph/render-base-terrain-mask.ts";
-import {renderBaseTerrain} from "@pages/game/renderer/graph/render-base-terrain.ts";
-import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 import {debugVisRendertarget} from "@pages/game/renderer/graph/debug-rendertarget.ts";
-import {renderMapDetails} from "@pages/game/renderer/graph/render-map-details.ts";
-import {renderOverlay} from "@pages/game/renderer/graph/render-overlay.ts";
-import {renderTileHighlight} from "@pages/game/renderer/graph/render-tile-highlight.ts";
-import {renderTileGrid} from "@pages/game/renderer/graph/render-tile-grid.ts";
-import {gameGraphHtml} from "@pages/game/renderer/graph/html.ts";
-import {renderRoutes} from "@pages/game/renderer/graph/render-routes.ts";
-import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
-import {renderFogOfWar} from "@pages/game/renderer/graph/render-fog-of-war.ts";
-import {renderTestPlane} from "@pages/game/renderer/graph/render-test-plane.ts";
 import {graphWorld} from "@pages/game/renderer/graph/world/graph.world.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
@@ -31,33 +20,33 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
 
-    const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
-        prev => prev?.revId !== dataProvider.getPointerPosition().revId,
-        () => dataProvider.getPointerPosition().load(),
-    );
+    // const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
+    //     prev => prev?.revId !== dataProvider.getPointerPosition().revId,
+    //     () => dataProvider.getPointerPosition().load(),
+    // );
 
-    const dataPointerHexPosition = g.dataTransformer(
-        g.transform({
-            inputs: [dataPointerPosition],
-            func: (data) => data.data.hex,
-        }),
-    );
-
-    const dataPointerWorldPosition = g.dataTransformer(
-        g.transform({
-            inputs: [dataPointerPosition],
-            func: (data) => data.data.world,
-        }),
-    );
+    // const dataPointerHexPosition = g.dataTransformer(
+    //     g.transform({
+    //         inputs: [dataPointerPosition],
+    //         func: (data) => data.data.hex,
+    //     }),
+    // );
+    //
+    // const dataPointerWorldPosition = g.dataTransformer(
+    //     g.transform({
+    //         inputs: [dataPointerPosition],
+    //         func: (data) => data.data.world,
+    //     }),
+    // );
 
     const {
-        wasmVisibleChunks,
+        // wasmVisibleChunks,
         wasmTileFogOfWarInstances,
         warmTileLandInstances,
         wasmTileWaterInstances,
         wasmWaterEdgeInstances,
         wasmMapDetailVertices,
-        wasmRouteVertices
+        wasmRouteVertices,
     } = gameGraphDataWorld(g, dataProvider, wasmApi, {
         dataCamera: dataCamera,
     });
@@ -72,7 +61,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         wasmTileWaterInstances: wasmTileWaterInstances,
         wasmMapDetailVertices: wasmMapDetailVertices,
         wasmRouteVertices: wasmRouteVertices,
-    })
+    });
 
     // //======================  BASE TERRAIN MASK =============================
     //
@@ -166,7 +155,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         size: canvasSize,
         renderPasses: [
 
-            debugVisRendertarget(g, world)
+            debugVisRendertarget(g, world),
 
             // // world
             // drawWaterTiles,
