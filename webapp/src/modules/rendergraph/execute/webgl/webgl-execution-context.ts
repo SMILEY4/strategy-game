@@ -59,7 +59,7 @@ export class WebGlExecutionContext {
                 return;
             }
             if (resource.type === "framebuffer") {
-                loadFramebuffer(this.gl, resource);
+                loadFramebuffer(this.gl, resource, this.resources);
                 return;
             }
             if (resource.type === "program") {
@@ -89,19 +89,40 @@ export class WebGlExecutionContext {
             });
         }
 
-        function loadFramebuffer(gl: WebGL2RenderingContext, resource: WebGlFramebufferResource) {
+        function loadFramebuffer(gl: WebGL2RenderingContext, resource: WebGlFramebufferResource, resources: Map<string, WebGlResource>) {
+            if (resource.resource) return;
             resource.resource = GlFramebuffer.create(gl, {
                 width: resource.initialSize[0],
                 height: resource.initialSize[1],
                 attachments: Object.entries(resource.attachments).map(([name, attachment]) => {
-                    return {
-                        name: name,
-                        attachment: GLTextureAttachment.create(
-                            gl,
-                            resource.initialSize[0],
-                            resource.initialSize[1],
-                            attachment.format,
-                        )
+                    if (attachment.type === "ref") {
+
+                        const srcRendertargetResource = resources.get(attachment.source.id);
+                        if (!srcRendertargetResource || srcRendertargetResource.type !== "framebuffer") {
+                            throw new Error("Could not find referenced rendertarget resource");
+                        }
+
+                        loadFramebuffer(gl, srcRendertargetResource, resources);
+
+                        const srcFramebuffer = srcRendertargetResource.resource;
+                        if (!srcFramebuffer) {
+                            throw new Error("Could not find loaded referenced framebuffer");
+                        }
+
+                        return {
+                            name: name,
+                            attachment: srcFramebuffer.getAttachment(attachment.sourceAttachmentName),
+                        };
+                    } else {
+                        return {
+                            name: name,
+                            attachment: GLTextureAttachment.create(
+                                gl,
+                                resource.initialSize[0],
+                                resource.initialSize[1],
+                                attachment.format,
+                            ),
+                        };
                     }
                 }),
             });

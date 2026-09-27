@@ -178,15 +178,12 @@ class GlFramebuffer implements GlDisposable {
      * @param textureUnit the target texture unit
      */
     public bindTexture(attachmentName: string, textureUnit: number) {
-        const attachment = this.attachments[this.attachmentMapping.get(attachmentName) ?? -1];
-        if (!attachment) {
-            throw new Error(`Framebuffer has no attachment with name: '${attachmentName}'`);
-        }
+        const attachment = this.getAttachment(attachmentName)
 
         this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
         GlError.check(this.gl, "activeTexture", "set active texture unit");
 
-        this.gl.bindTexture(this.gl.TEXTURE_2D, attachment.attachment.getHandle());
+        this.gl.bindTexture(this.gl.TEXTURE_2D, attachment.getHandle());
         GlError.check(this.gl, "bindTexture", "binding texture");
     }
 
@@ -196,6 +193,15 @@ class GlFramebuffer implements GlDisposable {
         this.attachments.forEach(attachment => {
             attachment.attachment.dispose(); // todo: how to handle shared attachments? configure with "allowDispose" flag?
         });
+    }
+
+
+    public getAttachment(attachmentName: string): GLTextureAttachment {
+        const attachment = this.attachments[this.attachmentMapping.get(attachmentName) ?? -1];
+        if (!attachment) {
+            throw new Error(`Framebuffer has no attachment with name: '${attachmentName}'`);
+        }
+        return attachment.attachment
     }
 }
 

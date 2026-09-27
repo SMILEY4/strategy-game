@@ -12,7 +12,7 @@ export interface RendertargetRenderGraphNode<TKeys extends string> extends Rende
     readonly clearColor: [number, number, number, number] | null,
 }
 
-export type RendertargetAttachment = RendertargetColorAttachment | RendertargetDepthAttachment
+export type RendertargetAttachment = RendertargetColorAttachment | RendertargetDepthAttachment | RendertargetRefAttachment
 
 export interface RendertargetColorAttachment {
     type: "color"
@@ -22,4 +22,10 @@ export interface RendertargetColorAttachment {
 export interface RendertargetDepthAttachment {
     type: "depth"
     format: GLDepthStoreFormat
+}
+
+export interface RendertargetRefAttachment {
+    type: "ref"
+    source: RendertargetRenderGraphNode<string>,
+    sourceAttachmentName: string
 }
