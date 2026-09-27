@@ -18,6 +18,7 @@ import {renderRoutes} from "@pages/game/renderer/graph/render-routes.ts";
 import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
 import {renderFogOfWar} from "@pages/game/renderer/graph/render-fog-of-war.ts";
 import {renderTestPlane} from "@pages/game/renderer/graph/render-test-plane.ts";
+import {graphWorld} from "@pages/game/renderer/graph/world/graph.world.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -61,89 +62,101 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         dataCamera: dataCamera,
     });
 
-    //======================  BASE TERRAIN MASK =============================
-
-    const renderTargetBaseTerrainMask = renderBaseTerrainMask(g, wasmApi, {
+    const world = graphWorld(g, wasmApi, {
         dataDebug: dataDebug,
         camera: camera,
+        cameraData: dataCamera,
         wasmWaterEdgeInstances: wasmWaterEdgeInstances,
         warmTileLandInstances: warmTileLandInstances,
-    });
-
-    //====================== BASE TERRAIN ===================================
-
-    const {drawWaterTiles, drawLandTiles} = renderBaseTerrain(g, wasmApi, {
-        dataDebug: dataDebug,
-        camera: camera,
-        warmTileLandInstances: warmTileLandInstances,
+        wasmTileFogOfWarInstances: wasmTileFogOfWarInstances,
         wasmTileWaterInstances: wasmTileWaterInstances,
-        renderTargetBaseTerrainMask: renderTargetBaseTerrainMask,
-    });
-
-    //====================== MAP DETAILS ====================================
-
-    const {drawMapDetails} = renderMapDetails(g, wasmApi, {
-        dataDebug: dataDebug,
-        camera: camera,
-        cameraData: dataCamera,
         wasmMapDetailVertices: wasmMapDetailVertices,
-    });
-
-    //====================== ROUTES =========================================
-
-    const {drawRoutes} = renderRoutes(g, wasmApi, {
-        dataDebug: dataDebug,
-        camera: camera,
         wasmRouteVertices: wasmRouteVertices,
-        renderTargetBaseTerrainMask: renderTargetBaseTerrainMask
-    });
-    //====================== FOG OF WAR =====================================
-
-    const fogOfWarMask = renderFogOfWar(g, wasmApi, {
-        dataDebug: dataDebug,
-        camera: camera,
-        wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
     })
 
-    //====================== TILE GRID ======================================
-
-    const {drawTileGrid} = renderTileGrid(g, wasmApi, {
-        dataDebug: dataDebug,
-        camera: camera,
-        dataPointerHexPosition: dataPointerHexPosition,
-        dataPointerWorldPosition: dataPointerWorldPosition,
-    })
-
-
-    //====================== OVERLAY ========================================
-
-    const {
-        drawOverlayFill,
-        drawOverlayBorderBack,
-        drawOverlayBorderFront,
-        drawRouteHighlight,
-    } = renderOverlay(g, dataProvider, wasmApi, {
-        dataDebug: dataDebug,
-        camera: camera,
-        visibleChunks: wasmVisibleChunks,
-    });
-
-
-    //====================== SELECTED TILE ==================================
-
-    const {drawSelectedTileBack, drawSelectedTileFront} = renderTileHighlight(g, dataProvider, {
-        dataDebug: dataDebug,
-        camera: camera,
-        dataPointerHexPosition: dataPointerHexPosition,
-    });
-
-    //====================== TEST PLANE =====================================
-
-    const {drawTestPlane1, drawTestPlane2} = renderTestPlane(g, {
-        camera: camera,
-        cameraData: dataCamera,
-        fogOfWarMask: fogOfWarMask,
-    })
+    // //======================  BASE TERRAIN MASK =============================
+    //
+    // const renderTargetBaseTerrainMask = renderBaseTerrainMask(g, wasmApi, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     wasmWaterEdgeInstances: wasmWaterEdgeInstances,
+    //     warmTileLandInstances: warmTileLandInstances,
+    // });
+    //
+    // //====================== BASE TERRAIN ===================================
+    //
+    // const {drawWaterTiles, drawLandTiles} = renderBaseTerrain(g, wasmApi, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     warmTileLandInstances: warmTileLandInstances,
+    //     wasmTileWaterInstances: wasmTileWaterInstances,
+    //     renderTargetBaseTerrainMask: renderTargetBaseTerrainMask,
+    // });
+    //
+    // //====================== MAP DETAILS ====================================
+    //
+    // const {drawMapDetails} = renderMapDetails(g, wasmApi, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     cameraData: dataCamera,
+    //     wasmMapDetailVertices: wasmMapDetailVertices,
+    // });
+    //
+    // //====================== ROUTES =========================================
+    //
+    // const {drawRoutes} = renderRoutes(g, wasmApi, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     wasmRouteVertices: wasmRouteVertices,
+    //     renderTargetBaseTerrainMask: renderTargetBaseTerrainMask
+    // });
+    // //====================== FOG OF WAR =====================================
+    //
+    // const fogOfWarMask = renderFogOfWar(g, wasmApi, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
+    // })
+    //
+    // //====================== TILE GRID ======================================
+    //
+    // const {drawTileGrid} = renderTileGrid(g, wasmApi, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     dataPointerHexPosition: dataPointerHexPosition,
+    //     dataPointerWorldPosition: dataPointerWorldPosition,
+    // })
+    //
+    //
+    // //====================== OVERLAY ========================================
+    //
+    // const {
+    //     drawOverlayFill,
+    //     drawOverlayBorderBack,
+    //     drawOverlayBorderFront,
+    //     drawRouteHighlight,
+    // } = renderOverlay(g, dataProvider, wasmApi, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     visibleChunks: wasmVisibleChunks,
+    // });
+    //
+    //
+    // //====================== SELECTED TILE ==================================
+    //
+    // const {drawSelectedTileBack, drawSelectedTileFront} = renderTileHighlight(g, dataProvider, {
+    //     dataDebug: dataDebug,
+    //     camera: camera,
+    //     dataPointerHexPosition: dataPointerHexPosition,
+    // });
+    //
+    // //====================== TEST PLANE =====================================
+    //
+    // const {drawTestPlane1, drawTestPlane2} = renderTestPlane(g, {
+    //     camera: camera,
+    //     cameraData: dataCamera,
+    //     fogOfWarMask: fogOfWarMask,
+    // })
 
     //====================== WEBGL OUTPUT ===================================
 
@@ -153,26 +166,28 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         size: canvasSize,
         renderPasses: [
 
-            // world
-            drawWaterTiles,
-            drawLandTiles,
-            drawRoutes,
-            drawMapDetails,
+            debugVisRendertarget(g, world)
 
-            // // fog
-            // drawFogOfWar,
-
-            drawTestPlane1,
-            drawTestPlane2,
-
-            // overlay
-            drawTileGrid,
-            drawOverlayFill,
-            drawOverlayBorderBack,
-            drawOverlayBorderFront,
-            drawRouteHighlight,
-            drawSelectedTileBack,
-            drawSelectedTileFront,
+            // // world
+            // drawWaterTiles,
+            // drawLandTiles,
+            // drawRoutes,
+            // drawMapDetails,
+            //
+            // // // fog
+            // // drawFogOfWar,
+            //
+            // drawTestPlane1,
+            // drawTestPlane2,
+            //
+            // // overlay
+            // drawTileGrid,
+            // drawOverlayFill,
+            // drawOverlayBorderBack,
+            // drawOverlayBorderFront,
+            // drawRouteHighlight,
+            // drawSelectedTileBack,
+            // drawSelectedTileFront,
         ],
         attachments: {
             color: {
@@ -196,14 +211,14 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     //====================== HTML OUTPUT ====================================
 
-    const {htmlDraw} = gameGraphHtml(g, dataProvider, {
-        dataCamera: dataCamera,
-    });
-
-    g.htmlContainer({
-        elementId: "game-overlay",
-        renderPasses: [htmlDraw],
-    });
+    // const {htmlDraw} = gameGraphHtml(g, dataProvider, {
+    //     dataCamera: dataCamera,
+    // });
+    //
+    // g.htmlContainer({
+    //     elementId: "game-overlay",
+    //     renderPasses: [htmlDraw],
+    // });
 
     return g.getNodes();
 }

@@ -1,16 +1,16 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
+import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {Camera} from "@app/features/game/models/camera.ts";
+import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {buildFullscreenQuad} from "@pages/game/renderer/graph/build-fullscreen-quad.ts";
 import SHADER_VERT from "@pages/game/renderer/shader/fogofwar/fogOfWar.vsh";
 import SHADER_FRAG from "@pages/game/renderer/shader/fogofwar/fogOfWar.fsh";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
-import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 
-export function renderTestPlane(
+export function renderFogOfWar(
     g: RenderGraphBuilder,
     inputs: {
         camera: CameraRenderGraphNode,
@@ -19,7 +19,7 @@ export function renderTestPlane(
     },
 ) {
 
-    const fullscreenMeshTransformer = g.transformVertexOut({
+    const mesh = g.transformVertexOut({
         inputs: [],
         outputs: {
             mesh: {
@@ -35,7 +35,7 @@ export function renderTestPlane(
         },
         func: () => {
             return {
-                "mesh": buildFullscreenQuad()
+                "mesh": buildFullscreenQuad(),
             };
         },
     });
@@ -43,7 +43,7 @@ export function renderTestPlane(
     const geometry = g.geometry({
         sources: [
             g.geometrySource({
-                source: fullscreenMeshTransformer,
+                source: mesh,
                 output: "mesh",
             }),
         ],
@@ -56,9 +56,7 @@ export function renderTestPlane(
         prefixVertexAttributes: "in_",
     });
 
-    const canvasSize = g.canvasSize();
-
-    const draw1 = g.draw({
+    const drawLayer1 = g.draw({
         shader: shader,
         geometry: geometry,
         inputs: {
@@ -75,7 +73,7 @@ export function renderTestPlane(
                     func: (data) => data.data.far,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "resolution": canvasSize,
+            "resolution": g.canvasSize(),
             "mask": g.pickRendertargetAttachment({
                 rendertarget: inputs.fogOfWarMask,
                 attachment: "color",
@@ -86,7 +84,7 @@ export function renderTestPlane(
         testDepth: DepthFunc.ALWAYS,
     });
 
-    const draw2 = g.draw({
+    const drawLayer2 = g.draw({
         shader: shader,
         geometry: geometry,
         inputs: {
@@ -103,7 +101,7 @@ export function renderTestPlane(
                     func: (data) => data.data.far,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "resolution": canvasSize,
+            "resolution": g.canvasSize(),
             "mask": g.pickRendertargetAttachment({
                 rendertarget: inputs.fogOfWarMask,
                 attachment: "color",
@@ -115,7 +113,7 @@ export function renderTestPlane(
     });
 
     return {
-        drawTestPlane1: draw1,
-        drawTestPlane2: draw2
-    }
+        drawFogOfWarLayer1: drawLayer1,
+        drawFogOfWarLayer2: drawLayer2,
+    };
 }
