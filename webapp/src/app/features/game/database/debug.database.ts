@@ -1,6 +1,8 @@
 import {DatabaseBuilder} from "@modules/gamedb/database-builder.ts";
 import type {SingletonDatabase} from "@modules/gamedb/singleton/singleton-database.ts";
 
+export type DebugColor = [number, number, number, number];
+
 export type DebugData = {
     renderer: {
         randomHexOffsetScale: number,
@@ -13,27 +15,37 @@ export type DebugData = {
         baseTerrain: {
             scale: number,
         },
-        terrainMask: {
-            scale: number,
-            cutoff: number
-        },
         fogOfWar: {
             scale: number,
         },
-        mapDetails: {
-            msaa: number,
-        }
-        selectedTile: {
-            thickness: number,
-            softness: number,
-            color: [number, number, number, number]
+        highlights: {
+            selectedTile: {
+                color: DebugColor,
+            },
+            availableTiles: {
+                defaultColor: DebugColor,
+                hoverColor: DebugColor,
+            },
         },
         grid: {
             thickness: number,
-            color: [number, number, number, number]
-        }
-    }
-}
+            color: DebugColor,
+        },
+        colorGrading: {
+            exposure: number,
+            temperature: number,
+            tint: number,
+            brightness: number,
+            contrast: number,
+            blacks: number,
+            whites: number,
+            shadows: number,
+            highlights: number,
+            vibrance: number,
+            saturation: number,
+        },
+    },
+};
 
 export const initialDebugDataValues: DebugData = {
     renderer: {
@@ -47,24 +59,34 @@ export const initialDebugDataValues: DebugData = {
         baseTerrain: {
             scale: 1.6,
         },
-        terrainMask: {
-            scale: 1.62,
-            cutoff: 0.85,
-        },
         fogOfWar: {
             scale: 1.32,
         },
-        mapDetails: {
-            msaa: 2,
-        },
-        selectedTile: {
-            thickness: 0.1,
-            softness: 0.02,
-            color: [0.9294117647058824, 0.7764705882352941, 0.39215686274509803, 0.77],
+        highlights: {
+            selectedTile: {
+                color: [1, 1, 1, 1],
+            },
+            availableTiles: {
+                defaultColor: [0.8, 0.8, 1, 1],
+                hoverColor: [1, 1, 1, 1],
+            },
         },
         grid: {
             thickness: 0.02,
             color: [0.9294117647058824, 0.7764705882352941, 0.39215686274509803, 0.3],
+        },
+        colorGrading: {
+            exposure: 0,
+            temperature: 0,
+            tint: 0,
+            brightness: 0,
+            contrast: 0,
+            blacks: 0,
+            whites: 0,
+            shadows: 0,
+            highlights: 0,
+            vibrance: 0,
+            saturation: 0,
         },
     },
 };
