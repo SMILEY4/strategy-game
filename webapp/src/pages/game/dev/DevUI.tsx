@@ -4,7 +4,7 @@ import {useDevUIPopup} from "./useDevUIPopup.ts";
 import "./dev-ui.less";
 
 export function DevUI() {
-    const {root, open, close} = useDevUIPopup();
+    const {root, open} = useDevUIPopup();
 
     return (
         <>
@@ -13,7 +13,7 @@ export function DevUI() {
                     DEV
                 </button>
             )}
-            {root && createPortal(<DevUIPane onClose={close}/>, root)}
+            {root && createPortal(<DevUIPane/>, root)}
         </>
     );
 }
