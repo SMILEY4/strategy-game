@@ -6,8 +6,8 @@ import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
-import SHADER_COMPOSE_VERT from "../shader/tileGrid/tileGrid.vsh";
-import SHADER_COMPOSE_FRAG from "../shader/tileGrid/tileGrid.fsh";
+import SHADER_COMPOSE_VERT from "../../shader/tileGrid/tileGrid.vsh";
+import SHADER_COMPOSE_FRAG from "../../shader/tileGrid/tileGrid.fsh";
 
 export function renderTileGrid(
     g: RenderGraphBuilder,

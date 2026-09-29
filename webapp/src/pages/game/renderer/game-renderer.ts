@@ -2,7 +2,7 @@ import {WebGlRenderGraph} from "@modules/rendergraph/render-graph.ts";
 import {gameGraph} from "@pages/game/renderer/graph/game-graph.ts";
 import {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import {gameRendererDataProvider, type GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
-import {type RenderWasmApi, gameGraphWasmApiJsImplementation} from "@pages/game/renderer/wasm/render-wasm-api.ts";
+import {gameGraphWasmApiJsImplementation, type RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import {DI} from "@app/app.ts";
 import {tracer} from "@modules/monitoring/tracer.ts";
 
@@ -29,7 +29,7 @@ export class GameRenderer {
             interactionDb: DI.interactionDatabase,
         });
         this.wasmApi = gameGraphWasmApiJsImplementation();
-        this.renderGraph = tracer.span({ name: "rendergraph"}, () => WebGlRenderGraph.build(gameGraph(new RenderGraphBuilder(), this.dataProvider, this.wasmApi)));
+        this.renderGraph = tracer.span({name: "rendergraph"}, () => WebGlRenderGraph.build(gameGraph(new RenderGraphBuilder(), this.dataProvider, this.wasmApi)));
     }
 
     public initialize(canvas: HTMLCanvasElement): void {

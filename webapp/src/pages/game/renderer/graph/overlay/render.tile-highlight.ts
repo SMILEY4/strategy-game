@@ -1,9 +1,9 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
-import type {GameRendererDataProvider, RendererMapInteractionMode} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
+import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
+import type {GameRendererDataProvider, RendererMapInteractionMode} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_TILE_HIGHLIGHT_VERT from "@pages/game/renderer/shader/tileHighlight/tileHighlight.vsh";
@@ -16,7 +16,7 @@ export function renderTileHighlight(
     inputs: {
         dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
         camera: CameraRenderGraphNode,
-        dataPointerHexPosition: DataRenderGraphNode<[number, number]>
+        dataPointerHexPosition: DataRenderGraphNode<[number, number]>,
     },
 ) {
 
@@ -34,6 +34,7 @@ export function renderTileHighlight(
         prev => prev?.revId != dataProvider.getSelectableTilePositions().revId,
         () => dataProvider.getSelectableTilePositions().load(),
     );
+
 
     const dataHighlightedTiles = g.dataTransformer(
         g.transform({
@@ -67,7 +68,8 @@ export function renderTileHighlight(
         }),
     );
 
-    const meshTransformer = g.transformVertexOut({
+
+    const mesh = g.transformVertexOut({
         inputs: [],
         outputs: {
             mesh: {
@@ -97,7 +99,7 @@ export function renderTileHighlight(
         },
     });
 
-    const instanceTransformer = g.transformVertexOut({
+    const instances = g.transformVertexOut({
         inputs: [dataHighlightedTiles],
         outputs: {
             instances: {
@@ -154,11 +156,11 @@ export function renderTileHighlight(
     const geometry = g.geometry({
         sources: [
             g.geometrySource({
-                source: meshTransformer,
+                source: mesh,
                 output: "mesh",
             }),
             g.geometrySource({
-                source: instanceTransformer,
+                source: instances,
                 output: "instances",
             }),
         ],
@@ -174,7 +176,6 @@ export function renderTileHighlight(
     const texturePaintCircle = g.texture({
         url: "/sprites/paint-circle_v2.jpg",
     });
-
 
     const drawFront = g.draw({
         shader: shader,
@@ -204,11 +205,10 @@ export function renderTileHighlight(
 
 
     return {
-        drawSelectedTileFront: drawFront,
-        drawSelectedTileBack: drawBack,
+        drawTileHighlightsFront: drawFront,
+        drawTileHighlightsBack: drawBack,
     };
 }
-
 
 const DEFAULT_PILLAR_RADIUS = 0.8;
 const DEFAULT_PILLAR_HEIGHT = 4;

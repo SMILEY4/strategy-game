@@ -28,6 +28,11 @@ export class WebGlExecutionContext {
         if (!gl) {
             throw new Error("webgl2 is not supported!");
         }
+
+        if (!gl.getExtension("EXT_color_buffer_float")) {
+            console.error("EXT_color_buffer_float is not supported on this device/browser.");
+        }
+
         return new WebGlExecutionContext(resources, gl);
     }
 

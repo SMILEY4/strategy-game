@@ -5,13 +5,17 @@ import {gameGraphDataCamera} from "@pages/game/renderer/graph/camera-data.ts";
 import {gameGraphDataWorld} from "@pages/game/renderer/graph/world-data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 import type {DebugData} from "@app/features/game/database/debug.database.ts";
-import {GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
+import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 import {debugVisRendertarget} from "@pages/game/renderer/graph/debug-rendertarget.ts";
-import {graphWorld} from "@pages/game/renderer/graph/world/graph.world.ts";
+import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
+import {renderPassWorld} from "@pages/game/renderer/graph/world/render-pass.world.ts";
+import {renderWorldPostProcess} from "@pages/game/renderer/graph/world/render.world-post-process.ts";
+import {renderTileHighlight} from "@pages/game/renderer/graph/overlay/render.tile-highlight.ts";
+import {renderOverlay} from "@pages/game/renderer/graph/overlay/render.overlay.ts";
+import {renderTileGrid} from "@pages/game/renderer/graph/overlay/render.tile-grid.ts";
+import {gameGraphHtml} from "@pages/game/renderer/graph/html.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
-
-    //======================  COMMON ========================================
 
     const dataDebug = g.dataExternal<VersionedContainer<DebugData>>(
         (prev) => prev?.revId !== dataProvider.getDebugData().revId,
@@ -20,27 +24,27 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
 
-    // const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
-    //     prev => prev?.revId !== dataProvider.getPointerPosition().revId,
-    //     () => dataProvider.getPointerPosition().load(),
-    // );
+    const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
+        prev => prev?.revId !== dataProvider.getPointerPosition().revId,
+        () => dataProvider.getPointerPosition().load(),
+    );
 
-    // const dataPointerHexPosition = g.dataTransformer(
-    //     g.transform({
-    //         inputs: [dataPointerPosition],
-    //         func: (data) => data.data.hex,
-    //     }),
-    // );
-    //
-    // const dataPointerWorldPosition = g.dataTransformer(
-    //     g.transform({
-    //         inputs: [dataPointerPosition],
-    //         func: (data) => data.data.world,
-    //     }),
-    // );
+    const dataPointerHexPosition = g.dataTransformer(
+        g.transform({
+            inputs: [dataPointerPosition],
+            func: (data) => data.data.hex,
+        }),
+    );
+
+    const dataPointerWorldPosition = g.dataTransformer(
+        g.transform({
+            inputs: [dataPointerPosition],
+            func: (data) => data.data.world,
+        }),
+    );
 
     const {
-        // wasmVisibleChunks,
+        wasmVisibleChunks,
         wasmTileFogOfWarInstances,
         warmTileLandInstances,
         wasmTileWaterInstances,
@@ -51,7 +55,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         dataCamera: dataCamera,
     });
 
-    const world = graphWorld(g, wasmApi, {
+    const renderTargetWorld = renderPassWorld(g, wasmApi, {
         dataDebug: dataDebug,
         camera: camera,
         cameraData: dataCamera,
@@ -63,151 +67,82 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         wasmRouteVertices: wasmRouteVertices,
     });
 
-    // //======================  BASE TERRAIN MASK =============================
-    //
-    // const renderTargetBaseTerrainMask = renderBaseTerrainMask(g, wasmApi, {
-    //     dataDebug: dataDebug,
-    //     camera: camera,
-    //     wasmWaterEdgeInstances: wasmWaterEdgeInstances,
-    //     warmTileLandInstances: warmTileLandInstances,
-    // });
-    //
-    // //====================== BASE TERRAIN ===================================
-    //
-    // const {drawWaterTiles, drawLandTiles} = renderBaseTerrain(g, wasmApi, {
-    //     dataDebug: dataDebug,
-    //     camera: camera,
-    //     warmTileLandInstances: warmTileLandInstances,
-    //     wasmTileWaterInstances: wasmTileWaterInstances,
-    //     renderTargetBaseTerrainMask: renderTargetBaseTerrainMask,
-    // });
-    //
-    // //====================== MAP DETAILS ====================================
-    //
-    // const {drawMapDetails} = renderMapDetails(g, wasmApi, {
-    //     dataDebug: dataDebug,
-    //     camera: camera,
-    //     cameraData: dataCamera,
-    //     wasmMapDetailVertices: wasmMapDetailVertices,
-    // });
-    //
-    // //====================== ROUTES =========================================
-    //
-    // const {drawRoutes} = renderRoutes(g, wasmApi, {
-    //     dataDebug: dataDebug,
-    //     camera: camera,
-    //     wasmRouteVertices: wasmRouteVertices,
-    //     renderTargetBaseTerrainMask: renderTargetBaseTerrainMask
-    // });
-    // //====================== FOG OF WAR =====================================
-    //
-    // const fogOfWarMask = renderFogOfWar(g, wasmApi, {
-    //     dataDebug: dataDebug,
-    //     camera: camera,
-    //     wasmTileFogOfWarInstances: wasmTileFogOfWarInstances
-    // })
-    //
-    // //====================== TILE GRID ======================================
-    //
-    // const {drawTileGrid} = renderTileGrid(g, wasmApi, {
-    //     dataDebug: dataDebug,
-    //     camera: camera,
-    //     dataPointerHexPosition: dataPointerHexPosition,
-    //     dataPointerWorldPosition: dataPointerWorldPosition,
-    // })
-    //
-    //
-    // //====================== OVERLAY ========================================
-    //
-    // const {
-    //     drawOverlayFill,
-    //     drawOverlayBorderBack,
-    //     drawOverlayBorderFront,
-    //     drawRouteHighlight,
-    // } = renderOverlay(g, dataProvider, wasmApi, {
-    //     dataDebug: dataDebug,
-    //     camera: camera,
-    //     visibleChunks: wasmVisibleChunks,
-    // });
-    //
-    //
-    // //====================== SELECTED TILE ==================================
-    //
-    // const {drawSelectedTileBack, drawSelectedTileFront} = renderTileHighlight(g, dataProvider, {
-    //     dataDebug: dataDebug,
-    //     camera: camera,
-    //     dataPointerHexPosition: dataPointerHexPosition,
-    // });
-    //
-    // //====================== TEST PLANE =====================================
-    //
-    // const {drawTestPlane1, drawTestPlane2} = renderTestPlane(g, {
-    //     camera: camera,
-    //     cameraData: dataCamera,
-    //     fogOfWarMask: fogOfWarMask,
-    // })
+    const { drawWorldPostProcess } = renderWorldPostProcess(g, {
+        dataDebug: dataDebug,
+        camera: camera,
+        dataPointerHexPosition: dataPointerHexPosition,
+        world: renderTargetWorld,
+    })
 
-    //====================== WEBGL OUTPUT ===================================
+    const { drawTileHighlightsFront, drawTileHighlightsBack } = renderTileHighlight(g, dataProvider, {
+        dataDebug: dataDebug,
+        camera: camera,
+        dataPointerHexPosition: dataPointerHexPosition,
+    })
 
-    const canvasSize = g.canvasSize();
+    const {
+        drawOverlayFill,
+        drawOverlayBorderBack,
+        drawOverlayBorderFront,
+        drawRouteHighlight,
+    } = renderOverlay(g, dataProvider, wasmApi, {
+        dataDebug: dataDebug,
+        camera: camera,
+        visibleChunks: wasmVisibleChunks
+    })
 
-    const renderTargetComposite = g.rendertarget({
-        size: canvasSize,
-        renderPasses: [
+    const { drawTileGrid} = renderTileGrid(g, wasmApi, {
+        camera: camera,
+        dataDebug: dataDebug,
+        dataPointerWorldPosition: dataPointerWorldPosition,
+        dataPointerHexPosition: dataPointerHexPosition,
+    })
 
-            debugVisRendertarget(g, world),
-
-            // // world
-            // drawWaterTiles,
-            // drawLandTiles,
-            // drawRoutes,
-            // drawMapDetails,
-            //
-            // // // fog
-            // // drawFogOfWar,
-            //
-            // drawTestPlane1,
-            // drawTestPlane2,
-            //
-            // // overlay
-            // drawTileGrid,
-            // drawOverlayFill,
-            // drawOverlayBorderBack,
-            // drawOverlayBorderFront,
-            // drawRouteHighlight,
-            // drawSelectedTileBack,
-            // drawSelectedTileFront,
-        ],
+    const renderTargetWorldCombined = g.rendertarget({
+        size: g.canvasSize(),
+        sizeScale: g.dataConst(1),
         attachments: {
             color: {
                 type: "color",
-                format: GLColorStoreFormat.RGBA_8,
+                format: GLColorStoreFormat.RGBA_16F,
             },
             depth: {
-                type: "depth",
-                format: GLDepthStoreFormat.DEPTH_COMPONENT32F,
+                type: "ref",
+                source: renderTargetWorld,
+                sourceAttachmentName: "depth",
             },
         },
+        renderPasses: [
+            drawWorldPostProcess,
+
+            drawOverlayFill,
+            drawOverlayBorderBack,
+            drawOverlayBorderFront,
+
+            drawRouteHighlight,
+
+            drawTileGrid,
+            drawTileHighlightsFront,
+            drawTileHighlightsBack,
+        ],
         clearColor: [0, 0, 0, 0],
     });
 
-    const drawDebugVis = debugVisRendertarget(g, renderTargetComposite);
+    const drawDebugVis = debugVisRendertarget(g, renderTargetWorldCombined);
 
     g.canvas({
         renderPasses: [drawDebugVis],
         clearColor: [0, 0, 0, 1],
     });
 
-    //====================== HTML OUTPUT ====================================
+    const {htmlDraw} = gameGraphHtml(g, dataProvider, {
+        dataCamera: dataCamera,
+    });
 
-    // const {htmlDraw} = gameGraphHtml(g, dataProvider, {
-    //     dataCamera: dataCamera,
-    // });
-    //
-    // g.htmlContainer({
-    //     elementId: "game-overlay",
-    //     renderPasses: [htmlDraw],
-    // });
+    g.htmlContainer({
+        elementId: "game-overlay",
+        renderPasses: [htmlDraw],
+    });
 
     return g.getNodes();
 }

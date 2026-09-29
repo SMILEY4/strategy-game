@@ -86,11 +86,11 @@ export function renderPassWorld(
         attachments: {
             color: {
                 type: "color",
-                format: GLColorStoreFormat.RGBA_8,
+                format: GLColorStoreFormat.RGBA_16F,
             },
             depth: {
                 type: "depth",
-                format: GLDepthStoreFormat.DEPTH_COMPONENT32F,
+                format: GLDepthStoreFormat.DEPTH_COMPONENT24,
             },
         },
         clearColor: [0, 0, 0, 0],
