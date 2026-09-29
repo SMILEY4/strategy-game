@@ -140,7 +140,7 @@ export function createDebugPane(container: HTMLElement, onClose: () => void): ()
     addRendererBindings(pane, state);
     pane.addButton({title: "Close"}).on("click", onClose);
 
-    const paneSubscription = pane.on("change", () => database.set(toDebugData(state)));
+    pane.on("change", () => database.set(toDebugData(state)));
     const databaseSubscription = database.subscribe(debugData => {
         syncObject(state.renderer, debugData.renderer);
         state.colors.selectedTile = colorToHex(debugData.renderer.highlights.selectedTile.color);
@@ -150,8 +150,10 @@ export function createDebugPane(container: HTMLElement, onClose: () => void): ()
         pane.refresh();
     });
 
+    let disposed = false;
     return () => {
-        paneSubscription.dispose();
+        if (disposed) return;
+        disposed = true;
         database.unsubscribe(databaseSubscription);
         pane.dispose();
     };

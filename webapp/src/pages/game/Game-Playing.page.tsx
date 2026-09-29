@@ -16,13 +16,13 @@ export function GamePlayingPage() {
             <div className="game-stage">
                 <Canvas
                     className="game-canvas"
-                    onInitialize={canvas => viewModel.onInitialize(canvas)}
-                    onUpdate={() => viewModel.onUpdate()}
-                    onResize={canvas => viewModel.onResize(canvas)}
-                    onDispose={() => viewModel.onDispose()}
-                    onMouseMove={(mx, my, x, y, buttons) => viewModel.onMouseMove(mx, my, x, y, buttons)}
-                    onMouseClick={(x, y) => viewModel.onMouseClick(x, y)}
-                    onMouseScroll={(delta, x, y) => viewModel.onMouseScroll(delta, x, y)}
+                    onInitialize={viewModel.onInitialize}
+                    onUpdate={viewModel.onUpdate}
+                    onResize={viewModel.onResize}
+                    onDispose={viewModel.onDispose}
+                    onMouseMove={viewModel.onMouseMove}
+                    onMouseClick={viewModel.onMouseClick}
+                    onMouseScroll={viewModel.onMouseScroll}
                 />
 
                 <div className="game-overlay" id="game-overlay"/>
