@@ -6,6 +6,7 @@ out vec4 outColor;
 uniform vec2 u_resolution;
 uniform sampler2D u_mask;
 uniform int u_pass;
+uniform float u_discoveredOpacity;
 
 void main() {
 
@@ -13,7 +14,7 @@ void main() {
     vec3 mask = texture(u_mask, uv).rgb;
 
     if(u_pass == 1) {
-        float opacity = (1.0-mask.b)*0.5;
+        float opacity = (1.0-mask.b)*u_discoveredOpacity;
         outColor = vec4(0.0, 0.0, 0.0, opacity);
     }
     if(u_pass == 2) {

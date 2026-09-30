@@ -1,6 +1,6 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import SHADER_OVERLAY_FILL_VERT from "@pages/game/renderer/shader/overlay/overlayFill.vsh";
 import SHADER_OVERLAY_FILL_FRAG from "@pages/game/renderer/shader/overlay/overlayFill.fsh";
 import SHADER_OVERLAY_BORDER_VERT from "@pages/game/renderer/shader/overlay/overlayBorder.vsh";
@@ -19,13 +19,14 @@ import {vec2} from "gl-matrix";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import SHADER_ROUTE_HIGHLIGHT_VERT from "@pages/game/renderer/shader/overlay/routeHighlight.vsh";
 import SHADER_ROUTE_HIGHLIGHT_FRAG from "@pages/game/renderer/shader/overlay/routeHighlight.fsh";
+import {developerSetting, hexToUniformColor} from "@pages/game/renderer/graph/developer-settings.ts";
 
 export function renderOverlay(
     g: RenderGraphBuilder,
     dataProvider: GameRendererDataProvider,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         visibleChunks: WasmDataRenderGraphNode,
     },
@@ -159,12 +160,29 @@ export function renderOverlay(
         prefixVertexAttributes: "in_",
     });
 
+    const geometryHexOffsetScale = g.dataTransformer(
+        g.transform({
+            inputs: [inputs.dataDeveloperSettings],
+            func: data => data.data.renderer.geometry.hexOffsetScale,
+        }),
+    ) as DataRenderGraphNode<unknown>;
+    const fillNoiseScale = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.noiseScale);
+    const fillNoiseStrength = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.noiseStrength);
+    const fillDashCount = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.dashCount);
+    const borderDashCount = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.border.dashCount);
+    const borderBackOpacity = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.border.backOpacity);
+    const routeColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.overlays.route.color));
+    const routeOpacity = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.route.opacity);
 
     const drawFill = g.draw({
         shader: shaderFill,
         geometry: geometryFill,
         inputs: {
             "camera": inputs.camera,
+            "hexOffsetScale": geometryHexOffsetScale,
+            "noiseScale": fillNoiseScale,
+            "noiseStrength": fillNoiseStrength,
+            "dashCount": fillDashCount,
         },
         writeDepth: false,
         testDepth: DepthFunc.ALWAYS,
@@ -269,6 +287,9 @@ export function renderOverlay(
             "camera": inputs.camera,
             "paintLine": texturePaintLine,
             "side": g.dataConst(1) as DataRenderGraphNode<unknown>,
+            "hexOffsetScale": geometryHexOffsetScale,
+            "dashCount": borderDashCount,
+            "backOpacity": borderBackOpacity,
         },
         writeDepth: false,
         testDepth: DepthFunc.LESS_OR_EQUAL,
@@ -281,6 +302,9 @@ export function renderOverlay(
             "camera": inputs.camera,
             "paintLine": texturePaintLine,
             "side": g.dataConst(2) as DataRenderGraphNode<unknown>,
+            "hexOffsetScale": geometryHexOffsetScale,
+            "dashCount": borderDashCount,
+            "backOpacity": borderBackOpacity,
         },
         writeDepth: false,
         testDepth: DepthFunc.GREATER,
@@ -336,6 +360,8 @@ export function renderOverlay(
         inputs: {
             "camera": inputs.camera,
             "texture": texturePaintLine,
+            "color": routeColor,
+            "opacity": routeOpacity,
         },
         writeDepth: false,
         testDepth: DepthFunc.ALWAYS,

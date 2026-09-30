@@ -6,7 +6,7 @@ in vec4 in_color;
 in uint in_style;
 
 uniform mat4 u_camera;
-uniform float u_dbg_hexOffsetScale;
+uniform float u_hexOffsetScale;
 
 out vec4 v_color;
 flat out uint v_style;
@@ -38,7 +38,7 @@ void main() {
     vec3 vertexWorldPos = tileWorldCenter + in_vertexPosition;
 
     // introduce random offset (based on unscaled world position)
-    vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_dbg_hexOffsetScale);
+    vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_hexOffsetScale);
     vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.01, offset.y);
 
     v_worldPos = vertexWorldPos.xz;

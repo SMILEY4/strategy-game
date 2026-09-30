@@ -2,7 +2,7 @@ import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
@@ -20,7 +20,7 @@ export function renderPassTerrainMask(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         wasmWaterEdgeInstances: WasmDataRenderGraphNode,
         warmTileLandInstances: WasmDataRenderGraphNode,
@@ -48,7 +48,7 @@ function renderTiles(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         wasmWaterEdgeInstances: WasmDataRenderGraphNode,
         warmTileLandInstances: WasmDataRenderGraphNode,
@@ -117,10 +117,10 @@ function renderTiles(
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
-            "dbg_hexOffsetScale": g.dataTransformer(
+            "hexOffsetScale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.randomHexOffsetScale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.geometry.hexOffsetScale,
                 }),
             ) as DataRenderGraphNode<unknown>,
         },
@@ -133,7 +133,7 @@ function renderEdges(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         wasmWaterEdgeInstances: WasmDataRenderGraphNode,
         warmTileLandInstances: WasmDataRenderGraphNode,
@@ -227,34 +227,34 @@ function renderEdges(
         geometry: geometry,
         inputs: {
             "camera": inputs.camera,
-            "dbg_hexOffsetScale": g.dataTransformer(
+            "hexOffsetScale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.randomHexOffsetScale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.geometry.hexOffsetScale,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "dbg_noise1Scale": g.dataTransformer(
+            "noise1Scale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.landMask.noise1Scale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.terrain.landMask.noise1Scale,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "dbg_noise1Amplitude": g.dataTransformer(
+            "noise1Amplitude": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.landMask.noise1Amplitude,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.terrain.landMask.noise1Amplitude,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "dbg_noise2Scale": g.dataTransformer(
+            "noise2Scale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.landMask.noise2Scale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.terrain.landMask.noise2Scale,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "dbg_noise2Amplitude": g.dataTransformer(
+            "noise2Amplitude": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.landMask.noise2Amplitude,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.terrain.landMask.noise2Amplitude,
                 }),
             ) as DataRenderGraphNode<unknown>,
         },

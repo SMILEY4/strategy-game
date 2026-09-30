@@ -2,7 +2,7 @@ import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder
 import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import {renderPassTerrainMask} from "@pages/game/renderer/graph/world/render-pass.terrain-mask.ts";
@@ -19,7 +19,7 @@ export function renderPassWorld(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         cameraData: DataRenderGraphNode<VersionedContainer<Camera>>,
         wasmWaterEdgeInstances: WasmDataRenderGraphNode,
@@ -32,20 +32,20 @@ export function renderPassWorld(
 ): RendertargetRenderGraphNode<"color" | "depth"> {
 
     const terrainMask = renderPassTerrainMask(g, wasmApi, {
-        dataDebug: inputs.dataDebug,
+        dataDeveloperSettings: inputs.dataDeveloperSettings,
         camera: inputs.camera,
         wasmWaterEdgeInstances: inputs.wasmWaterEdgeInstances,
         warmTileLandInstances: inputs.warmTileLandInstances,
     });
 
     const fogOfWarMask = renderPassFogOfWar(g, wasmApi, {
-        dataDebug: inputs.dataDebug,
+        dataDeveloperSettings: inputs.dataDeveloperSettings,
         camera: inputs.camera,
         wasmTileFogOfWarInstances: inputs.wasmTileFogOfWarInstances,
     });
 
     const {drawTerrainWater, drawTerrainLand} = renderTerrain(g, wasmApi, {
-        dataDebug: inputs.dataDebug,
+        dataDeveloperSettings: inputs.dataDeveloperSettings,
         camera: inputs.camera,
         warmTileLandInstances: inputs.warmTileLandInstances,
         wasmTileWaterInstances: inputs.wasmTileWaterInstances,
@@ -53,20 +53,21 @@ export function renderPassWorld(
     });
 
     const {drawMapDetails} = renderMapDetails(g, wasmApi, {
-        dataDebug: inputs.dataDebug,
+        dataDeveloperSettings: inputs.dataDeveloperSettings,
         camera: inputs.camera,
         cameraData: inputs.cameraData,
         wasmMapDetailVertices: inputs.wasmMapDetailVertices,
     });
 
     const {drawRoutes} = renderRoutes(g, wasmApi, {
-        dataDebug: inputs.dataDebug,
+        dataDeveloperSettings: inputs.dataDeveloperSettings,
         camera: inputs.camera,
         wasmRouteVertices: inputs.wasmRouteVertices,
         renderTargetBaseTerrainMask: terrainMask,
     });
 
     const {drawFogOfWarLayer1, drawFogOfWarLayer2} = renderFogOfWar(g, {
+        dataDeveloperSettings: inputs.dataDeveloperSettings,
         camera: inputs.camera,
         cameraData: inputs.cameraData,
         fogOfWarMask: fogOfWarMask,

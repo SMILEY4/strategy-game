@@ -135,7 +135,7 @@ export class WebGlExecutionContext {
         }
 
         function loadProgram(gl: WebGL2RenderingContext, resource: WebGlProgramResource) {
-            resource.resource = GlProgram.create(gl, resource.srcVertex, resource.srcFragment);
+            resource.resource = GlProgram.create(gl, resource.srcVertex, resource.srcFragment, resource.key);
         }
 
         function loadVertexBuffer(gl: WebGL2RenderingContext, resource: WebGlVertexBufferResource) {

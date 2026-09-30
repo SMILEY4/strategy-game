@@ -7,13 +7,14 @@ import SHADER_WORLD_PP_VERT from "@pages/game/renderer/shader/worldPostProcess/w
 import SHADER_WORLD_PP_FRAG from "@pages/game/renderer/shader/worldPostProcess/worldPostProcess.fsh";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
+import {developerSetting} from "@pages/game/renderer/graph/developer-settings.ts";
 
 export function renderWorldPostProcess(
     g: RenderGraphBuilder,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         dataPointerHexPosition: DataRenderGraphNode<[number, number]>,
         world: RendertargetRenderGraphNode<"color" | "depth">
@@ -66,6 +67,17 @@ export function renderWorldPostProcess(
                 rendertarget: inputs.world,
                 attachment: "color",
             }),
+            "exposure": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.exposure),
+            "temperature": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.temperature),
+            "tint": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.tint),
+            "brightness": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.brightness),
+            "contrast": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.contrast),
+            "blacks": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.blacks),
+            "whites": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.whites),
+            "shadows": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.shadows),
+            "highlights": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.highlights),
+            "vibrance": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.vibrance),
+            "saturation": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.colorGrading.saturation),
         },
         writeDepth: false,
         testDepth: DepthFunc.ALWAYS,

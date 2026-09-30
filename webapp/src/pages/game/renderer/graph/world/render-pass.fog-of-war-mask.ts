@@ -5,7 +5,7 @@ import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import SHADER_FOG_OF_WAR_MASK_VERT from "@pages/game/renderer/shader/fogofwar/fogOfWarMask.vsh";
@@ -17,7 +17,7 @@ export function renderPassFogOfWar(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         wasmTileFogOfWarInstances: WasmDataRenderGraphNode,
     },
@@ -100,16 +100,16 @@ export function renderPassFogOfWar(
         inputs: {
             "camera": inputs.camera,
             "terrainSplat": textureTerrainSplat,
-            "dbg_scale": g.dataTransformer(
+            "tileScale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.fogOfWar.scale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.fogOfWar.tileScale,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "dbg_hexOffsetScale": g.dataTransformer(
+            "hexOffsetScale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.randomHexOffsetScale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.geometry.hexOffsetScale,
                 }),
             ) as DataRenderGraphNode<unknown>,
         },
@@ -142,4 +142,3 @@ export function renderPassFogOfWar(
         clearColor: [1, 0, 0, 1],
     });
 }
-

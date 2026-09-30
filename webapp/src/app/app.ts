@@ -22,7 +22,7 @@ import {gameRepository} from "@app/features/game/game.repository.ts";
 import {tileDatabase} from "@app/features/game/database/tile.database.ts";
 import {cameraControllerPlayer} from "@app/features/game/gameplay/camera/camera-controller.player.ts";
 import {cameraDatabase} from "@app/features/game/database/camera.database.ts";
-import {debugDatabase} from "@app/features/game/database/debug.database.ts";
+import {developerSettingsDatabase} from "@app/features/game/database/developer-settings.database.ts";
 import {gameActionClickTile} from "@app/features/game/gameplay/game-action.click-tile.ts";
 import {selectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
 import {commandDatabase} from "@app/features/game/database/command.database.ts";
@@ -94,7 +94,7 @@ interface DIShape {
     realmDatabase: ReturnType<typeof realmDatabase>
     commandDatabase: ReturnType<typeof commandDatabase>
     cameraDatabase: ReturnType<typeof cameraDatabase>
-    debugDatabase: ReturnType<typeof debugDatabase>
+    developerSettingsDatabase: ReturnType<typeof developerSettingsDatabase>
     selectedTileDatabase: ReturnType<typeof selectedTileDatabase>
     gameActionEndTurn: ReturnType<typeof gameActionEndTurn>
     gameActionClickTile: ReturnType<typeof gameActionClickTile>
@@ -262,9 +262,9 @@ export const DIConfig = {
         scope: "singleton",
         create: () => cameraDatabase(),
     },
-    debugDatabase: {
+    developerSettingsDatabase: {
         scope: "singleton",
-        create: () => debugDatabase(),
+        create: () => developerSettingsDatabase(),
     },
     selectedTileDatabase: {
         scope: "singleton",

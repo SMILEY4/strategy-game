@@ -5,8 +5,8 @@ in vec2 in_textureCoordinates;
 in vec2 in_tilePosition;
 
 uniform mat4 u_camera;
-uniform float u_dbg_scale;
-uniform float u_dbg_hexOffsetScale;
+uniform float u_scale;
+uniform float u_hexOffsetScale;
 
 out vec2 v_textureCoordinates;
 flat out vec2 v_tilePosition;
@@ -32,11 +32,11 @@ void main() {
     vec3 tileWorldCenter = hexToWorldCenter(in_tilePosition);
 
     // calculate world coordinate of each vertex
-    float scale = u_dbg_scale;
+    float scale = u_scale;
     vec3 vertexWorldPos = tileWorldCenter + (in_vertexPosition * vec3(scale, 1.0, scale));
 
     // introduce random offset (based on unscaled world position)
-    vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_dbg_hexOffsetScale);
+    vec2 offset = offsetVertexPosition(tileWorldCenter + in_vertexPosition, u_hexOffsetScale);
     vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
 
     // project to screen coordinates

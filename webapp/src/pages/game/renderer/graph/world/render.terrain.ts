@@ -2,7 +2,7 @@ import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder
 import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
@@ -13,12 +13,13 @@ import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import SHADER_LAND_VERT from "@pages/game/renderer/shader/baseTerrain/land.vsh";
 import SHADER_LAND_FRAG from "@pages/game/renderer/shader/baseTerrain/land.fsh";
+import {developerSetting, hexToUniformColor} from "@pages/game/renderer/graph/developer-settings.ts";
 
 export function renderTerrain(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         warmTileLandInstances: WasmDataRenderGraphNode,
         wasmTileWaterInstances: WasmDataRenderGraphNode,
@@ -36,7 +37,7 @@ function renderWater(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         wasmTileWaterInstances: WasmDataRenderGraphNode,
         renderTargetBaseTerrainMask: RendertargetRenderGraphNode<"color">
@@ -110,18 +111,22 @@ function renderWater(
         inputs: {
             "camera": inputs.camera,
             "resolution": g.canvasSize(),
-            "dbg_scale": g.dataTransformer(
+            "scale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.baseTerrain.scale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.terrain.base.scale,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "dbg_hexOffsetScale": g.dataTransformer(
+            "hexOffsetScale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.randomHexOffsetScale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.geometry.hexOffsetScale,
                 }),
             ) as DataRenderGraphNode<unknown>,
+            "waterLightColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.terrain.base.waterLightColor)),
+            "waterDarkColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.terrain.base.waterDarkColor)),
+            "edgeThreshold": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.terrain.coastline.edgeThreshold),
+            "edgeSoftness": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.terrain.coastline.edgeSoftness),
             "terrainSplat": textureTerrainSplat,
             "terrainMask": g.pickRendertargetAttachment({
                 rendertarget: inputs.renderTargetBaseTerrainMask,
@@ -139,7 +144,7 @@ function renderLand(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         warmTileLandInstances: WasmDataRenderGraphNode,
         renderTargetBaseTerrainMask: RendertargetRenderGraphNode<"color">
@@ -213,18 +218,22 @@ function renderLand(
         inputs: {
             "camera": inputs.camera,
             "resolution": g.canvasSize(),
-            "dbg_scale": g.dataTransformer(
+            "scale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.baseTerrain.scale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.terrain.base.scale,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "dbg_hexOffsetScale": g.dataTransformer(
+            "hexOffsetScale": g.dataTransformer(
                 g.transform({
-                    inputs: [inputs.dataDebug],
-                    func: (data) => data.data.renderer.randomHexOffsetScale,
+                    inputs: [inputs.dataDeveloperSettings],
+                     func: (data) => data.data.renderer.geometry.hexOffsetScale,
                 }),
             ) as DataRenderGraphNode<unknown>,
+            "landLightColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.terrain.base.landLightColor)),
+            "landDarkColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.terrain.base.landDarkColor)),
+            "edgeThreshold": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.terrain.coastline.edgeThreshold),
+            "edgeSoftness": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.terrain.coastline.edgeSoftness),
             "terrainSplat": textureTerrainSplat,
             "terrainMask": g.pickRendertargetAttachment({
                 rendertarget: inputs.renderTargetBaseTerrainMask,

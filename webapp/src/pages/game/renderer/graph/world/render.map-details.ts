@@ -2,7 +2,7 @@ import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder
 import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {Camera} from "@app/features/game/models/camera.ts";
 import type {WasmDataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.wasm-data.ts";
@@ -15,7 +15,7 @@ export function renderMapDetails(
     g: RenderGraphBuilder,
     wasmApi: RenderWasmApi,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         cameraData: DataRenderGraphNode<VersionedContainer<Camera>>,
         wasmMapDetailVertices: WasmDataRenderGraphNode,

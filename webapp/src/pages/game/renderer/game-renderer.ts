@@ -22,7 +22,7 @@ export class GameRenderer {
             routeDb: DI.routeDatabase,
             realmDb: DI.realmDatabase,
             commandDb: DI.commandDatabase,
-            debugDb: DI.debugDatabase,
+            developerSettingsDatabase: DI.developerSettingsDatabase,
             selectedTileDb: DI.selectedTileDatabase,
             mapModeDb: DI.mapModeDatabase,
             pointerPositionDb: DI.pointerPositionDatabase,

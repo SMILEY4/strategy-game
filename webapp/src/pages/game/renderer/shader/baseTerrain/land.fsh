@@ -7,6 +7,10 @@ flat in vec2 v_tilePosition;
 uniform vec2 u_resolution;
 uniform sampler2D u_terrainSplat;
 uniform sampler2D u_terrainMask;
+uniform vec4 u_landLightColor;
+uniform vec4 u_landDarkColor;
+uniform float u_edgeThreshold;
+uniform float u_edgeSoftness;
 
 out vec4 outColor;
 
@@ -14,23 +18,20 @@ out vec4 outColor;
 
 void main() {
 
-    vec3 colorLight = vec3(103.0, 140.0, 52.0) / 255.0;
-    vec3 colorDark = vec3(90.0, 127.0, 39.0) / 255.0;
-
     vec2 screenUV = gl_FragCoord.xy / u_resolution;
     vec4 mask = texture(u_terrainMask, screenUV);
 
-    if(mask.b > 0.05 && mask.b < 0.15) {
-        outColor = vec4(0.0, 0.0, 0.0, 1.0);
+    if(mask.b > u_edgeThreshold - u_edgeSoftness && mask.b < u_edgeThreshold) {
+        outColor = vec4(0.0, 0.0, 0.0, u_landLightColor.a);
         return;
     }
 
-    if (mask.b > 0.15) {
+    if (mask.b > u_edgeThreshold) {
         discard;
     }
 
     float variation = (random(v_tilePosition) + 1.0) * 0.5;
-    vec3 color = mix(colorLight, colorDark, variation);
+    vec3 color = mix(u_landLightColor.rgb, u_landDarkColor.rgb, variation);
 
     vec4 texture = texture(u_terrainSplat, v_textureCoordinates);
     outColor = vec4(color, texture.a);

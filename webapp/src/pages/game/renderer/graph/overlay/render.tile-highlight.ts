@@ -2,19 +2,20 @@ import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
-import type {DebugData} from "@app/features/game/database/debug.database.ts";
+import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import type {GameRendererDataProvider, RendererMapInteractionMode} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_TILE_HIGHLIGHT_VERT from "@pages/game/renderer/shader/tileHighlight/tileHighlight.vsh";
 import SHADER_TILE_HIGHLIGHT_FRAG from "@pages/game/renderer/shader/tileHighlight/tileHighlight.fsh";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
+import {developerSetting, hexToUniformColor} from "@pages/game/renderer/graph/developer-settings.ts";
 
 export function renderTileHighlight(
     g: RenderGraphBuilder,
     dataProvider: GameRendererDataProvider,
     inputs: {
-        dataDebug: DataRenderGraphNode<VersionedContainer<DebugData>>,
+        dataDeveloperSettings: DataRenderGraphNode<VersionedContainer<DeveloperSettings>>,
         camera: CameraRenderGraphNode,
         dataPointerHexPosition: DataRenderGraphNode<[number, number]>,
     },
@@ -177,6 +178,13 @@ export function renderTileHighlight(
         url: "/sprites/paint-circle_v2.jpg",
     });
 
+    const selectedScale = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.tileHighlights.selected.scale);
+    const selectedHeight = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.tileHighlights.selected.height);
+    const sideOpacity = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.tileHighlights.selected.sideOpacity);
+    const selectedColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.tileHighlights.selected.color));
+    const availableColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.tileHighlights.available.color));
+    const availableHoverColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.tileHighlights.available.hoverColor));
+
     const drawFront = g.draw({
         shader: shader,
         geometry: geometry,
@@ -184,7 +192,13 @@ export function renderTileHighlight(
             "camera": inputs.camera,
             "paintCircle": texturePaintCircle,
             "side": g.dataConst(1) as DataRenderGraphNode<unknown>,
-            "pointerPosition": inputs.dataPointerHexPosition as DataRenderGraphNode<unknown>
+            "pointerPosition": inputs.dataPointerHexPosition as DataRenderGraphNode<unknown>,
+            "scale": selectedScale as DataRenderGraphNode<unknown>,
+            "height": selectedHeight as DataRenderGraphNode<unknown>,
+            "sideOpacity": sideOpacity as DataRenderGraphNode<unknown>,
+            "selectedColor": selectedColor as DataRenderGraphNode<unknown>,
+            "availableColor": availableColor as DataRenderGraphNode<unknown>,
+            "availableHoverColor": availableHoverColor as DataRenderGraphNode<unknown>,
         },
         writeDepth: false,
         testDepth: DepthFunc.LESS_OR_EQUAL,
@@ -197,7 +211,13 @@ export function renderTileHighlight(
             "camera": inputs.camera,
             "paintCircle": texturePaintCircle,
             "side": g.dataConst(2) as DataRenderGraphNode<unknown>,
-            "pointerPosition": inputs.dataPointerHexPosition as DataRenderGraphNode<unknown>
+            "pointerPosition": inputs.dataPointerHexPosition as DataRenderGraphNode<unknown>,
+            "scale": selectedScale as DataRenderGraphNode<unknown>,
+            "height": selectedHeight as DataRenderGraphNode<unknown>,
+            "sideOpacity": sideOpacity as DataRenderGraphNode<unknown>,
+            "selectedColor": selectedColor as DataRenderGraphNode<unknown>,
+            "availableColor": availableColor as DataRenderGraphNode<unknown>,
+            "availableHoverColor": availableHoverColor as DataRenderGraphNode<unknown>,
         },
         writeDepth: false,
         testDepth: DepthFunc.GREATER,

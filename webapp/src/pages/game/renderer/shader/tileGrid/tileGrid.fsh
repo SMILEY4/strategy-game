@@ -4,6 +4,7 @@ precision mediump float;
 uniform vec2 u_pointerWorldPosition;
 uniform vec4 u_color;
 uniform float u_thickness;
+uniform float u_fadeDistance;
 
 
 in vec2 v_worldPosition;
@@ -13,7 +14,7 @@ out vec4 outColor;
 
 void main() {
 
-    float maxDistance = 4.0;
+    float maxDistance = u_fadeDistance;
     float distance = distance(v_worldPosition, u_pointerWorldPosition);
     if(distance > maxDistance) {
         discard;
