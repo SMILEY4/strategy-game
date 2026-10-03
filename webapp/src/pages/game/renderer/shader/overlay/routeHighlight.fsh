@@ -6,7 +6,6 @@ in float v_pathLength;
 
 uniform sampler2D u_texture;
 uniform vec4 u_color;
-uniform float u_opacity;
 
 out vec4 outColor;
 
@@ -19,5 +18,5 @@ void main() {
 
     float texture = 1.0 - texture(u_texture, uv).r;
 
-    outColor = vec4(u_color.rgb, texture * u_color.a * u_opacity);
+    outColor = vec4(u_color.rgb, texture * u_color.a);
 }

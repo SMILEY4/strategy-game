@@ -4,7 +4,7 @@ import type {RenderWasmApi} from "@pages/game/renderer/wasm/render-wasm-api.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
-import {developerSetting, hexToUniformColor} from "@pages/game/renderer/graph/developer-settings.ts";
+import {developerSetting, hexToRGBAColorArray} from "@pages/game/renderer/graph/utils/developer-settings.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import {createUnitHexagonMesh} from "@modules/utilities/hex-geometry.ts";
 import SHADER_COMPOSE_VERT from "../../shader/tileGrid/tileGrid.vsh";
@@ -98,7 +98,7 @@ export function renderTileGrid(
     const dataDeveloperSettingsColor = developerSetting(
         g,
         inputs.dataDeveloperSettings,
-        settings => hexToUniformColor(settings.renderer.tileGrid.color),
+        settings => hexToRGBAColorArray(settings.renderer.tileGrid.color),
     );
     const dataDeveloperSettingsThickness = developerSetting(
         g,

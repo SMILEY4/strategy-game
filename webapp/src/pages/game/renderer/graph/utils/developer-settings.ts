@@ -3,7 +3,6 @@ import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 
-export type UniformColor = [number, number, number, number];
 
 export function developerSetting(
     g: RenderGraphBuilder,
@@ -18,7 +17,9 @@ export function developerSetting(
     ) as DataRenderGraphNode<unknown>;
 }
 
-export function hexToUniformColor(hex: string): UniformColor {
+export type RGBAColorArray = [number, number, number, number];
+
+export function hexToRGBAColorArray(hex: string): RGBAColorArray {
     const value = hex.replace("#", "");
     const normalized = value.length === 3
         ? value.split("").map(channel => channel + channel).join("")

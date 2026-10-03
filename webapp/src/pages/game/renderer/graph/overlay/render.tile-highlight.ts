@@ -9,7 +9,7 @@ import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
 import SHADER_TILE_HIGHLIGHT_VERT from "@pages/game/renderer/shader/tileHighlight/tileHighlight.vsh";
 import SHADER_TILE_HIGHLIGHT_FRAG from "@pages/game/renderer/shader/tileHighlight/tileHighlight.fsh";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
-import {developerSetting, hexToUniformColor} from "@pages/game/renderer/graph/developer-settings.ts";
+import {developerSetting, hexToRGBAColorArray} from "@pages/game/renderer/graph/utils/developer-settings.ts";
 
 export function renderTileHighlight(
     g: RenderGraphBuilder,
@@ -180,10 +180,10 @@ export function renderTileHighlight(
 
     const selectedScale = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.tileHighlights.selected.scale);
     const selectedHeight = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.tileHighlights.selected.height);
-    const sideOpacity = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.tileHighlights.selected.sideOpacity);
-    const selectedColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.tileHighlights.selected.color));
-    const availableColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.tileHighlights.available.color));
-    const availableHoverColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.tileHighlights.available.hoverColor));
+    const sideOpacity = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.tileHighlights.selected.concealedOpacity);
+    const selectedColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToRGBAColorArray(settings.renderer.tileHighlights.selected.color));
+    const availableColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToRGBAColorArray(settings.renderer.tileHighlights.available.color));
+    const availableHoverColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToRGBAColorArray(settings.renderer.tileHighlights.available.hoverColor));
 
     const drawFront = g.draw({
         shader: shader,

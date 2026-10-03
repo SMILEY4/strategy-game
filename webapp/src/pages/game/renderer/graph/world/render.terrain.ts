@@ -13,7 +13,7 @@ import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import SHADER_LAND_VERT from "@pages/game/renderer/shader/baseTerrain/land.vsh";
 import SHADER_LAND_FRAG from "@pages/game/renderer/shader/baseTerrain/land.fsh";
-import {developerSetting, hexToUniformColor} from "@pages/game/renderer/graph/developer-settings.ts";
+import {developerSetting, hexToRGBAColorArray} from "@pages/game/renderer/graph/utils/developer-settings.ts";
 
 export function renderTerrain(
     g: RenderGraphBuilder,
@@ -123,8 +123,8 @@ function renderWater(
                      func: (data) => data.data.renderer.geometry.hexOffsetScale,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "waterLightColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.terrain.base.waterLightColor)),
-            "waterDarkColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.terrain.base.waterDarkColor)),
+            "waterLightColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToRGBAColorArray(settings.renderer.terrain.base.waterLightColor)),
+            "waterDarkColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToRGBAColorArray(settings.renderer.terrain.base.waterDarkColor)),
             "edgeThreshold": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.terrain.coastline.edgeThreshold),
             "edgeSoftness": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.terrain.coastline.edgeSoftness),
             "terrainSplat": textureTerrainSplat,
@@ -230,8 +230,8 @@ function renderLand(
                      func: (data) => data.data.renderer.geometry.hexOffsetScale,
                 }),
             ) as DataRenderGraphNode<unknown>,
-            "landLightColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.terrain.base.landLightColor)),
-            "landDarkColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.terrain.base.landDarkColor)),
+            "landLightColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToRGBAColorArray(settings.renderer.terrain.base.landLightColor)),
+            "landDarkColor": developerSetting(g, inputs.dataDeveloperSettings, settings => hexToRGBAColorArray(settings.renderer.terrain.base.landDarkColor)),
             "edgeThreshold": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.terrain.coastline.edgeThreshold),
             "edgeSoftness": developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.terrain.coastline.edgeSoftness),
             "terrainSplat": textureTerrainSplat,

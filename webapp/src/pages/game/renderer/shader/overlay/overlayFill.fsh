@@ -10,18 +10,19 @@ out vec4 outColor;
 
 uniform float u_noiseScale;
 uniform float u_noiseStrength;
-uniform float u_dashCount;
 
 #include "../utils/noise.glsl"
 
 
 void main() {
 
+    float dashCount = 5.0;
+
     float noise = (domainNoise2D(vec2(v_worldPos) * u_noiseScale).x + 1.0) * 0.5;
     noise = noise * u_noiseStrength + (1.0 - u_noiseStrength);
 
     float alpha = v_vertexPosition.b;
-    if(v_style == 1u && step(fract(alpha * u_dashCount), 0.5) < 0.5) {
+    if(v_style == 1u && step(fract(alpha * dashCount), 0.5) < 0.5) {
         discard;
     }
 

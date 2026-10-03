@@ -34,7 +34,7 @@ export type DeveloperSettings = {
                 color: string,
                 scale: number,
                 height: number,
-                sideOpacity: number,
+                concealedOpacity: number,
             },
             available: {
                 color: string,
@@ -50,15 +50,12 @@ export type DeveloperSettings = {
             fill: {
                 noiseScale: number,
                 noiseStrength: number,
-                dashCount: number,
             },
             border: {
-                dashCount: number,
-                backOpacity: number,
+                concealedOpacity: number,
             },
             route: {
                 color: string,
-                opacity: number,
             },
         },
         colorGrading: {
@@ -107,18 +104,18 @@ export const initialDeveloperSettings: DeveloperSettings = {
         },
         tileHighlights: {
             selected: {
-                color: "#ffffff",
+                color: "#ffffffff",
                 scale: 1,
                 height: 4,
-                sideOpacity: 0.4,
+                concealedOpacity: 0.4,
             },
             available: {
-                color: "#ccccff",
-                hoverColor: "#ffffff",
+                color: "#ccccffff",
+                hoverColor: "#ffffffff",
             },
         },
         tileGrid: {
-            color: "#edc663",
+            color: "#ecc5627f",
             thickness: 0.02,
             fadeDistance: 4,
         },
@@ -126,15 +123,12 @@ export const initialDeveloperSettings: DeveloperSettings = {
             fill: {
                 noiseScale: 0.8,
                 noiseStrength: 0.5,
-                dashCount: 7,
             },
             border: {
-                dashCount: 5,
-                backOpacity: 0.3,
+                concealedOpacity: 0.3,
             },
             route: {
                 color: "#ffffff",
-                opacity: 1,
             },
         },
         colorGrading: {

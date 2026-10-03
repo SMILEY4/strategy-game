@@ -6,7 +6,7 @@ import {gameGraphDataWorld} from "@pages/game/renderer/graph/world-data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import {GLColorStoreFormat} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
-import {debugVisRendertarget} from "@pages/game/renderer/graph/debug-rendertarget.ts";
+import {debugVisRendertarget} from "@pages/game/renderer/graph/utils/debug-rendertarget.ts";
 import type {PointerPosition} from "@app/features/game/database/pointer-position.database.ts";
 import {renderPassWorld} from "@pages/game/renderer/graph/world/render-pass.world.ts";
 import {renderWorldPostProcess} from "@pages/game/renderer/graph/world/render.world-post-process.ts";

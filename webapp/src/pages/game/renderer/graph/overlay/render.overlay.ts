@@ -19,7 +19,7 @@ import {vec2} from "gl-matrix";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import SHADER_ROUTE_HIGHLIGHT_VERT from "@pages/game/renderer/shader/overlay/routeHighlight.vsh";
 import SHADER_ROUTE_HIGHLIGHT_FRAG from "@pages/game/renderer/shader/overlay/routeHighlight.fsh";
-import {developerSetting, hexToUniformColor} from "@pages/game/renderer/graph/developer-settings.ts";
+import {developerSetting, hexToRGBAColorArray} from "@pages/game/renderer/graph/utils/developer-settings.ts";
 
 export function renderOverlay(
     g: RenderGraphBuilder,
@@ -87,6 +87,12 @@ export function renderOverlay(
         outputs: ["overlayFillInstances", "overlayEdgeInstances", "routeHighlightVertices"],
         func: () => wasmApi.operations.calculateOverlayInstances(),
     });
+
+    const geometryHexOffsetScale = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.geometry.hexOffsetScale);
+    const fillNoiseScale = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.noiseScale);
+    const fillNoiseStrength = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.noiseStrength);
+    const borderBackOpacity = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.border.concealedOpacity);
+    const routeColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToRGBAColorArray(settings.renderer.overlays.route.color));
 
     //====================== DRAW FILL ======================================
 
@@ -160,20 +166,6 @@ export function renderOverlay(
         prefixVertexAttributes: "in_",
     });
 
-    const geometryHexOffsetScale = g.dataTransformer(
-        g.transform({
-            inputs: [inputs.dataDeveloperSettings],
-            func: data => data.data.renderer.geometry.hexOffsetScale,
-        }),
-    ) as DataRenderGraphNode<unknown>;
-    const fillNoiseScale = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.noiseScale);
-    const fillNoiseStrength = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.noiseStrength);
-    const fillDashCount = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.dashCount);
-    const borderDashCount = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.border.dashCount);
-    const borderBackOpacity = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.border.backOpacity);
-    const routeColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToUniformColor(settings.renderer.overlays.route.color));
-    const routeOpacity = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.route.opacity);
-
     const drawFill = g.draw({
         shader: shaderFill,
         geometry: geometryFill,
@@ -182,7 +174,6 @@ export function renderOverlay(
             "hexOffsetScale": geometryHexOffsetScale,
             "noiseScale": fillNoiseScale,
             "noiseStrength": fillNoiseStrength,
-            "dashCount": fillDashCount,
         },
         writeDepth: false,
         testDepth: DepthFunc.ALWAYS,
@@ -288,7 +279,6 @@ export function renderOverlay(
             "paintLine": texturePaintLine,
             "side": g.dataConst(1) as DataRenderGraphNode<unknown>,
             "hexOffsetScale": geometryHexOffsetScale,
-            "dashCount": borderDashCount,
             "backOpacity": borderBackOpacity,
         },
         writeDepth: false,
@@ -303,7 +293,6 @@ export function renderOverlay(
             "paintLine": texturePaintLine,
             "side": g.dataConst(2) as DataRenderGraphNode<unknown>,
             "hexOffsetScale": geometryHexOffsetScale,
-            "dashCount": borderDashCount,
             "backOpacity": borderBackOpacity,
         },
         writeDepth: false,
@@ -361,7 +350,6 @@ export function renderOverlay(
             "camera": inputs.camera,
             "texture": texturePaintLine,
             "color": routeColor,
-            "opacity": routeOpacity,
         },
         writeDepth: false,
         testDepth: DepthFunc.ALWAYS,

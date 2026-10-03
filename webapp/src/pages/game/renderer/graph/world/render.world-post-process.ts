@@ -1,7 +1,7 @@
 import type {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import {buildFullscreenQuad} from "@pages/game/renderer/graph/build-fullscreen-quad.ts";
+import {buildFullscreenQuad} from "@pages/game/renderer/graph/utils/build-fullscreen-quad.ts";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import SHADER_WORLD_PP_VERT from "@pages/game/renderer/shader/worldPostProcess/worldPostProcess.vsh";
 import SHADER_WORLD_PP_FRAG from "@pages/game/renderer/shader/worldPostProcess/worldPostProcess.fsh";
@@ -9,7 +9,7 @@ import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
-import {developerSetting} from "@pages/game/renderer/graph/developer-settings.ts";
+import {developerSetting} from "@pages/game/renderer/graph/utils/developer-settings.ts";
 
 export function renderWorldPostProcess(
     g: RenderGraphBuilder,

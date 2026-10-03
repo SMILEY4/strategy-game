@@ -35,8 +35,6 @@ void main() {
     grade.highlights = u_highlights;
     grade.vibrance = u_vibrance;
     grade.saturation = u_saturation;
-    outColor = vec4(applyGrade16F(color.rgb, grade), color.a);
 
-//    float colorGrayscale = (color.r + color.g + color.b) / 3.0;
-//    outColor = vec4(colorGrayscale, colorGrayscale, colorGrayscale, color.a);
+    outColor = vec4(applyGrade16F(color.rgb, grade), color.a);
 }

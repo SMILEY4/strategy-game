@@ -4,7 +4,7 @@ import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.
 import type {Camera} from "@app/features/game/models/camera.ts";
 import type {RendertargetRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.rendertarget.ts";
 import {GlAttributeType} from "@modules/rendergraph/webgl/gl-program.ts";
-import {buildFullscreenQuad} from "@pages/game/renderer/graph/build-fullscreen-quad.ts";
+import {buildFullscreenQuad} from "@pages/game/renderer/graph/utils/build-fullscreen-quad.ts";
 import SHADER_VERT from "@pages/game/renderer/shader/fogofwar/fogOfWar.vsh";
 import SHADER_FRAG from "@pages/game/renderer/shader/fogofwar/fogOfWar.fsh";
 import {DepthFunc} from "@modules/rendergraph/nodes/rg-node.draw.ts";

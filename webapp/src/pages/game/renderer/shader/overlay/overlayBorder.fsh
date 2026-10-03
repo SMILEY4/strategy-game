@@ -8,7 +8,6 @@ in float v_thickness;
 
 uniform sampler2D u_paintLine;
 uniform int u_side;
-uniform float u_dashCount;
 uniform float u_backOpacity;
 
 out vec4 outColor;
@@ -18,13 +17,15 @@ out vec4 outColor;
 
 void main() {
 
+    float dashCount = 5.0;
+
     float dist = v_corner.z;
     if(dist > v_thickness) {
         discard;
     }
 
     float alpha = v_corner.x;
-    if(v_style == 1u && step(fract(alpha * u_dashCount), 0.5) < 0.5) {
+    if(v_style == 1u && step(fract(alpha * dashCount), 0.5) < 0.5) {
         discard;
     }
 

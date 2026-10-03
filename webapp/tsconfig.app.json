@@ -27,8 +27,8 @@
       "@app/*": ["./src/app/*"],
       "@renderer/*": ["./src/renderer/*"],
       "@pages/*": ["./src/pages/*"],
-      "@modules/*": ["./src/modules/*"]
+      "@modules/*": ["./src/modules/*"],
     }
   },
-  "include": ["src"]
+  "include": ["src"],
 }
