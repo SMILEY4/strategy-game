@@ -1,6 +1,9 @@
 import {useEffect, useRef} from "react";
 import {twPane} from "@modules/uicomponents/tweakpane/tweakpane-builder.ts";
 import {DI} from "@app/app.ts";
+import {downloadRenderGraphAsGraphviz} from "@modules/rendergraph/tools/graphviz.ts";
+import {gameGraph} from "@pages/game/renderer/graph/game-graph.ts";
+import {RenderGraphBuilder} from "@modules/rendergraph/render-graph-builder.ts";
 
 export function DevUIPane() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -20,6 +23,16 @@ function createDevPanel(container: HTMLElement): () => void {
 
     const pane = twPane(container, "Developer Settings", pane => {
         pane.onChange(() => database.set(structuredClone(state)))
+
+        pane.folder("Tools", tools => {
+            tools.button("Download .dot", it => {
+                it.setLabel("Render Graph")
+                it.onClick(() => {
+                    const graph = gameGraph(new RenderGraphBuilder(), null as any, null as any);
+                    void downloadRenderGraphAsGraphviz(graph)
+                })
+            })
+        })
 
         pane.folder("World Geometry", geometry => {
             geometry.number("Hex Offset Scale", it => {

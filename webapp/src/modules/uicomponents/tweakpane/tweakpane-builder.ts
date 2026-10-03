@@ -76,7 +76,7 @@ class TwPaneBuilder {
 class TwFolderBuilder {
 
     private title: string = "Folder";
-    private children: (TwFolderBuilder | TwNumberBuilder | TwColorBuilder)[] = [];
+    private children: (TwFolderBuilder | TwButtonBuilder | TwNumberBuilder | TwColorBuilder)[] = [];
 
 
     public setTitle(title: string) {
@@ -85,6 +85,13 @@ class TwFolderBuilder {
 
     public folder(title: string, build: (folder: TwFolderBuilder) => void) {
         const builder = new TwFolderBuilder();
+        builder.setTitle(title);
+        build(builder);
+        this.children.push(builder);
+    }
+
+    public button(title: string, build: (button: TwButtonBuilder) => void) {
+        const builder = new TwButtonBuilder();
         builder.setTitle(title);
         build(builder);
         this.children.push(builder);
@@ -115,12 +122,44 @@ class TwFolderBuilder {
                 child._build(folder);
                 continue;
             }
+            if (child instanceof TwButtonBuilder) {
+                child._build(folder);
+                continue;
+            }
             if (child instanceof TwColorBuilder) {
                 child._build(folder);
                 continue;
             }
             assertExhaustive(child);
         }
+    }
+
+}
+
+class TwButtonBuilder {
+
+    private title: string = "Click Me!";
+    private label: string | undefined = undefined;
+    private onClickAction: () => void = () => undefined
+
+    public setTitle(title: string) {
+        this.title = title
+    }
+
+    public setLabel(label: string | undefined) {
+        this.label = label
+    }
+
+    public onClick(action: () => void) {
+        this.onClickAction = action
+    }
+
+    public _build(parent: FolderApi) {
+        const button = parent.addButton({
+            title: this.title,
+            label: this.label,
+        })
+        button.on("click", this.onClickAction);
     }
 
 }

@@ -44,5 +44,6 @@ export type RenderGraphNodeId = string
 /** Base interface for all render graph nodes, carrying a type discriminator and unique id. */
 export interface RenderGraphNodeBase<TypeIdentifier extends string> {
     readonly type: TypeIdentifier,
-    readonly id: RenderGraphNodeId
+    readonly id: RenderGraphNodeId,
+    readonly debugName: string | undefined
 }

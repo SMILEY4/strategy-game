@@ -12,7 +12,7 @@ interface GamePlayingViewModel {
     onDispose: () => void
 }
 
-const renderer = new GameRenderer()
+export const renderer = new GameRenderer()
 
 export function useGamePlayingViewModel(): GamePlayingViewModel {
 
