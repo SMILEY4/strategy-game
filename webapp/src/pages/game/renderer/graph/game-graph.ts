@@ -13,7 +13,7 @@ import {renderWorldPostProcess} from "@pages/game/renderer/graph/world/render.wo
 import {renderTileHighlight} from "@pages/game/renderer/graph/overlay/render.tile-highlight.ts";
 import {renderOverlay} from "@pages/game/renderer/graph/overlay/render.overlay.ts";
 import {renderTileGrid} from "@pages/game/renderer/graph/overlay/render.tile-grid.ts";
-import {gameGraphHtml} from "@pages/game/renderer/graph/html.ts";
+import {gameGraphHtml} from "@pages/game/renderer/graph/html/html.ts";
 
 export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataProvider, wasmApi: RenderWasmApi) {
 
@@ -140,14 +140,14 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         clearColor: [0, 0, 0, 1],
     });
 
-    const {htmlDraw} = gameGraphHtml(g, dataProvider, {
+    const drawHtml = gameGraphHtml(g, dataProvider, {
         dataCamera: dataCamera,
     });
 
     g.htmlContainer({
         debugName: "game HTML overlay",
         elementId: "game-overlay",
-        renderPasses: [htmlDraw],
+        renderPasses: drawHtml,
     });
 
     return g.getNodes();

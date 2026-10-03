@@ -3,7 +3,7 @@ import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-rend
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 import type {Camera} from "@app/features/game/models/camera.ts";
-import {type Entity, EntityUtils} from "@/app/features/game/models/entity";
+import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
 import type {Command} from "@app/features/game/models/command.ts";
 import type {HtmlDrawElement, HtmlDrawInstance} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 import {SettlementLabel, TileImprovementLabel} from "@pages/game/overlay/SettlementLabel.ts";
@@ -14,7 +14,7 @@ import type {Realm} from "@app/features/game/models/realm.ts";
 const NEUTRAL_REALM_COLOR: string = "gray";
 const OWNED_REALM_KEY: number = -999;
 
-export function gameGraphHtml(
+export function gameGraphHtmlEntities(
     g: RenderGraphBuilder,
     dataProvider: GameRendererDataProvider,
     inputs: {
@@ -158,7 +158,7 @@ export function gameGraphHtml(
     });
 
     return {
-        htmlDraw: draw,
+        htmlDrawEntities: draw,
     };
 }
 

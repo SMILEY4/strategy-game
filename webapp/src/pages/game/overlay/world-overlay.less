@@ -5,7 +5,6 @@
 
 .game-overlay {
 
-
 	.settlement-label {
 
 		box-sizing:        border-box;
@@ -127,6 +126,30 @@
 
 		&.tileimprovement-label--pending {
 			filter: saturate(20%) brightness(150%);
+		}
+
+	}
+
+	.resource-label {
+		width: 40px;
+		aspect-ratio: 1/1;
+		border-radius: 50%;
+		background-size: contain;
+
+		&.resource-label--STONE {
+			background-image: url("/sprites/resources/STONE.png");
+		}
+
+		&.resource-label--WOOD {
+			background-image: url("/sprites/resources/TIMBER.png");
+		}
+
+		&.resource-label--METAL {
+			background-image: url("/sprites/resources/METAL.png");
+		}
+
+		&.resource-label--FISH {
+			background-image: url("/sprites/resources/FISH.png");
 		}
 
 	}
