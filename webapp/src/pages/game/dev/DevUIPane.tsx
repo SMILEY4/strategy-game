@@ -170,6 +170,55 @@ function createDevPanel(container: HTMLElement): () => void {
                 });
             });
         });
+
+        pane.folder("World Color Grading", worldCC => {
+            worldCC.number("exposure", it => {
+                it.bind(state.renderer.colorGrading, "exposure");
+                it.setRange(-4, 4)
+            });
+            worldCC.number("temperature", it => {
+                it.bind(state.renderer.colorGrading, "temperature");
+                it.setRange(-2, 2)
+            });
+            worldCC.number("tint", it => {
+                it.bind(state.renderer.colorGrading, "tint");
+                it.setRange(-2, 2)
+            });
+            worldCC.number("brightness", it => {
+                it.bind(state.renderer.colorGrading, "brightness");
+                it.setRange(-2, 2)
+            });
+            worldCC.number("contrast", it => {
+                it.bind(state.renderer.colorGrading, "contrast");
+                it.setRange(-2, 2)
+            });
+            worldCC.number("blacks", it => {
+                it.bind(state.renderer.colorGrading, "blacks");
+                it.setRange(-2, 2)
+            });
+            worldCC.number("whites", it => {
+                it.bind(state.renderer.colorGrading, "whites");
+                it.setRange(-2, 2)
+            });
+            worldCC.number("shadows", it => {
+                it.bind(state.renderer.colorGrading, "shadows");
+                it.setRange(-2, 2)
+            });
+            worldCC.number("whites", it => {
+                it.bind(state.renderer.colorGrading, "highlights");
+                it.setRange(-2, 2)
+            });
+            worldCC.number("vibrance", it => {
+                it.bind(state.renderer.colorGrading, "vibrance");
+                it.setRange(-1, 1)
+            });
+            worldCC.number("saturation", it => {
+                it.bind(state.renderer.colorGrading, "saturation");
+                it.setRange(-1, 1)
+            });
+
+
+        });
     });
 
     return () => pane.dispose();

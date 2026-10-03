@@ -100,7 +100,7 @@ export const initialDeveloperSettings: DeveloperSettings = {
         },
         fogOfWar: {
             tileScale: 1.32,
-            discoveredOpacity: 0.5,
+            discoveredOpacity: 0.65,
         },
         tileHighlights: {
             selected: {

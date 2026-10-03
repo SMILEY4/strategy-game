@@ -9,7 +9,6 @@ in uint in_style;
 in float in_thickness;
 
 uniform mat4 u_camera;
-uniform float u_hexOffsetScale;
 
 out vec3 v_corner;
 out vec4 v_color;
@@ -53,7 +52,7 @@ void main() {
     vec3 vertexWorldPos = tileWorldCenter + rotatedVertexPosition;
 
     // introduce random offset (based on unscaled world position)
-    vec2 offset = offsetVertexPosition(tileWorldCenter + rotatedVertexPosition, u_hexOffsetScale);
+    vec2 offset = offsetVertexPosition(tileWorldCenter + rotatedVertexPosition, 0.0);
     vertexWorldPos = vertexWorldPos + vec3(offset.x, 0.01, offset.y);
 
     // project to screen coordinates

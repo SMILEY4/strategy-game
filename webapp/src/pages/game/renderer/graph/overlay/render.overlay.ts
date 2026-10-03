@@ -92,7 +92,6 @@ export function renderOverlay(
         func: () => wasmApi.operations.calculateOverlayInstances(),
     });
 
-    const geometryHexOffsetScale = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.geometry.hexOffsetScale);
     const fillNoiseScale = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.noiseScale);
     const fillNoiseStrength = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.fill.noiseStrength);
     const borderBackOpacity = developerSetting(g, inputs.dataDeveloperSettings, settings => settings.renderer.overlays.border.concealedOpacity);
@@ -180,7 +179,6 @@ export function renderOverlay(
         geometry: geometryFill,
         inputs: {
             "camera": inputs.camera,
-            "hexOffsetScale": geometryHexOffsetScale,
             "noiseScale": fillNoiseScale,
             "noiseStrength": fillNoiseStrength,
         },
@@ -293,7 +291,6 @@ export function renderOverlay(
             "camera": inputs.camera,
             "paintLine": texturePaintLine,
             "side": g.dataConst(1) as DataRenderGraphNode<unknown>,
-            "hexOffsetScale": geometryHexOffsetScale,
             "backOpacity": borderBackOpacity,
         },
         writeDepth: false,
@@ -308,7 +305,6 @@ export function renderOverlay(
             "camera": inputs.camera,
             "paintLine": texturePaintLine,
             "side": g.dataConst(2) as DataRenderGraphNode<unknown>,
-            "hexOffsetScale": geometryHexOffsetScale,
             "backOpacity": borderBackOpacity,
         },
         writeDepth: false,
