@@ -70,7 +70,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         wasmRouteVertices: wasmRouteVertices,
     });
 
-    const {drawWorldPostProcess} = renderWorldPostProcess(g, {
+    const {drawWorldPostProcess} = renderWorldPostProcess(g, dataProvider, {
         dataDeveloperSettings: dataDeveloperSettings,
         camera: camera,
         dataPointerHexPosition: dataPointerHexPosition,
