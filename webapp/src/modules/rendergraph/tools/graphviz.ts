@@ -4,10 +4,11 @@ import type {RenderGraphNode} from "@modules/rendergraph/nodes/rg-node.ts";
  * Downloads a render graph as a Graphviz `.dot` file.
  */
 export const downloadRenderGraphAsGraphviz = (
-    roots: readonly RenderGraphNode[],
+    nodes: readonly RenderGraphNode[],
     filename = "render-graph.dot",
+    options: GraphvizExportOptions = {},
 ): void => {
-    const blob = new Blob([exportRenderGraphAsGraphviz(roots)], {type: "text/vnd.graphviz"});
+    const blob = new Blob([exportRenderGraphAsGraphviz(nodes, options)], {type: "text/vnd.graphviz"});
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -19,12 +20,17 @@ export const downloadRenderGraphAsGraphviz = (
 /**
  * Copies a render graph's Graphviz DOT representation to the clipboard.
  */
-export const copyRenderGraphAsGraphviz = async (roots: readonly RenderGraphNode[]): Promise<void> => {
-    await navigator.clipboard.writeText(exportRenderGraphAsGraphviz(roots));
+export const copyRenderGraphAsGraphviz = async (
+    nodes: readonly RenderGraphNode[],
+    options: GraphvizExportOptions = {},
+): Promise<void> => {
+    await navigator.clipboard.writeText(exportRenderGraphAsGraphviz(nodes, options));
 };
 
 export interface GraphvizExportOptions {
     name?: string,
+    /** Whether regular and WASM data nodes should be included in the output. */
+    includeDataNodes?: boolean,
     /** Replaces the default label content. Returned strings become separate lines in the node. */
     nodeLabel?: (node: RenderGraphNode) => readonly string[],
 }
@@ -33,18 +39,19 @@ export interface GraphvizExportOptions {
  * Creates a Graphviz DOT representation of render nodes and their dependencies.
  */
 export const exportRenderGraphAsGraphviz = (
-    roots: readonly RenderGraphNode[],
+    nodesToExport: readonly RenderGraphNode[],
     options: GraphvizExportOptions = {},
 ): string => {
     const nodes = new Map<string, RenderGraphNode>();
     const edgeLabels = new Map<string, Set<string>>();
     const visitedNodes = new Set<string>();
-    const visitedObjects = new WeakSet<object>();
+    const visitedObjectsByConsumer = new WeakMap<RenderGraphNode, WeakSet<object>>();
 
     const visitNode = (node: RenderGraphNode): void => {
         nodes.set(node.id, node);
         if (visitedNodes.has(node.id)) return;
         visitedNodes.add(node.id);
+        visitedObjectsByConsumer.set(node, new WeakSet<object>());
 
         for (const [key, value] of Object.entries(node)) {
             if (key === "type" || key === "id" || typeof value === "function") continue;
@@ -62,17 +69,23 @@ export const exportRenderGraphAsGraphviz = (
             visitNode(value);
             return;
         }
-        if (typeof value !== "object" || value === null || visitedObjects.has(value)) return;
+        if (typeof value !== "object" || value === null) return;
+        const visitedObjects = visitedObjectsByConsumer.get(consumer);
+        if (visitedObjects === undefined || visitedObjects.has(value)) return;
         visitedObjects.add(value);
         for (const [key, child] of Object.entries(value)) {
             if (typeof child !== "function") visitValue(child, consumer, `${path}.${key}`);
         }
     };
 
-    for (const root of roots) visitNode(root);
+    for (const node of nodesToExport) visitNode(node);
 
+    const includedNodes = [...nodes.values()].filter(node =>
+        options.includeDataNodes !== false || (node.type !== "data" && node.type !== "wasm-data"),
+    );
+    const includedNodeIds = new Set(includedNodes.map(node => node.id));
     const dotIds = new Map<string, string>();
-    [...nodes.keys()].forEach((id, index) => dotIds.set(id, `node${index}`));
+    includedNodes.forEach((node, index) => dotIds.set(node.id, `node${index}`));
     const graphName = dotEscape(options.name ?? "render_graph");
     const lines = [
         `digraph "${graphName}" {`,
@@ -81,7 +94,7 @@ export const exportRenderGraphAsGraphviz = (
         "    edge [color=\"#64748b\", fontname=\"Arial\", fontsize=8, arrowsize=0.7];",
     ];
 
-    for (const node of nodes.values()) {
+    for (const node of includedNodes) {
         const label = options.nodeLabel
             ? `label="${options.nodeLabel(node).map(dotEscape).join("\\n")}"`
             : `label=<${defaultHtmlNodeLabel(node)}>`;
@@ -89,6 +102,7 @@ export const exportRenderGraphAsGraphviz = (
     }
     for (const [edgeKey, labels] of edgeLabels) {
         const [dependencyId, consumerId] = edgeKey.split("->");
+        if (!includedNodeIds.has(dependencyId) || !includedNodeIds.has(consumerId)) continue;
         const label = [...labels].join(", ");
         lines.push(`    ${dotIds.get(dependencyId)} -> ${dotIds.get(consumerId)} [label="${dotEscape(label)}"];`);
     }
