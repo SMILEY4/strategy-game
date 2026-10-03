@@ -19,7 +19,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
 
     const dataDeveloperSettings = g.dataExternal<VersionedContainer<DeveloperSettings>>(
         (prev) => prev?.revId !== dataProvider.getDeveloperSettings().revId,
-        () => dataProvider.getDeveloperSettings().load(),
+        () => dataProvider.getDeveloperSettings().load(), "developer settings",
     );
 
     const {dataCamera, camera} = gameGraphDataCamera(g, dataProvider);
@@ -27,12 +27,14 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     const dataPointerPosition = g.dataExternal<VersionedContainer<PointerPosition>>(
         prev => prev?.revId !== dataProvider.getPointerPosition().revId,
         () => dataProvider.getPointerPosition().load(),
+        "pointer position",
     );
 
     const dataPointerHexPosition = g.dataTransformer(
         g.transform({
             inputs: [dataPointerPosition],
             func: (data) => data.data.hex,
+            debugName: "pointer hex position",
         }),
     );
 
@@ -40,6 +42,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         g.transform({
             inputs: [dataPointerPosition],
             func: (data) => data.data.world,
+            debugName: "pointer world position",
         }),
     );
 
@@ -67,18 +70,18 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
         wasmRouteVertices: wasmRouteVertices,
     });
 
-    const { drawWorldPostProcess } = renderWorldPostProcess(g, {
+    const {drawWorldPostProcess} = renderWorldPostProcess(g, {
         dataDeveloperSettings: dataDeveloperSettings,
         camera: camera,
         dataPointerHexPosition: dataPointerHexPosition,
         world: renderTargetWorld,
-    })
+    });
 
-    const { drawTileHighlightsFront, drawTileHighlightsBack } = renderTileHighlight(g, dataProvider, {
+    const {drawTileHighlightsFront, drawTileHighlightsBack} = renderTileHighlight(g, dataProvider, {
         dataDeveloperSettings: dataDeveloperSettings,
         camera: camera,
         dataPointerHexPosition: dataPointerHexPosition,
-    })
+    });
 
     const {
         drawOverlayFill,
@@ -88,19 +91,20 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     } = renderOverlay(g, dataProvider, wasmApi, {
         dataDeveloperSettings: dataDeveloperSettings,
         camera: camera,
-        visibleChunks: wasmVisibleChunks
-    })
+        visibleChunks: wasmVisibleChunks,
+    });
 
-    const { drawTileGrid} = renderTileGrid(g, wasmApi, {
+    const {drawTileGrid} = renderTileGrid(g, wasmApi, {
         camera: camera,
         dataDeveloperSettings: dataDeveloperSettings,
         dataPointerWorldPosition: dataPointerWorldPosition,
         dataPointerHexPosition: dataPointerHexPosition,
-    })
+    });
 
     const renderTargetWorldCombined = g.rendertarget({
-        size: g.canvasSize(),
-        sizeScale: g.dataConst(1),
+        debugName: "world combined render target",
+        size: g.canvasSize("world combined canvas size"),
+        sizeScale: g.dataConst(1, "world combined scale"),
         attachments: {
             color: {
                 type: "color",
@@ -131,6 +135,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     const drawDebugVis = debugVisRendertarget(g, renderTargetWorldCombined);
 
     g.canvas({
+        debugName: "game canvas",
         renderPasses: [drawDebugVis],
         clearColor: [0, 0, 0, 1],
     });
@@ -140,6 +145,7 @@ export function gameGraph(g: RenderGraphBuilder, dataProvider: GameRendererDataP
     });
 
     g.htmlContainer({
+        debugName: "game HTML overlay",
         elementId: "game-overlay",
         renderPasses: [htmlDraw],
     });

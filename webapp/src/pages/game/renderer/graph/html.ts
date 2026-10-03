@@ -24,17 +24,17 @@ export function gameGraphHtml(
 
     const dataAllEntities = g.dataExternal<VersionedContainer<Entity[]>>(
         prev => prev?.revId !== dataProvider.getEntities().revId,
-        () => dataProvider.getEntities().load(),
+        () => dataProvider.getEntities().load(), "HTML entities",
     );
 
     const dataAllCommands = g.dataExternal<VersionedContainer<Command[]>>(
         prev => prev?.revId !== dataProvider.getCommands().revId,
-        () => dataProvider.getCommands().load(),
+        () => dataProvider.getCommands().load(), "HTML commands",
     );
 
     const dataAllRealms = g.dataExternal<VersionedContainer<Realm[]>>(
         prev => prev?.revId !== dataProvider.getRealms().revId,
-        () => dataProvider.getRealms().load(),
+        () => dataProvider.getRealms().load(), "HTML realms",
     );
 
     const dataRealmColors = g.dataTransformer(

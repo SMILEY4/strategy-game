@@ -82,9 +82,10 @@ export const exportRenderGraphAsGraphviz = (
     ];
 
     for (const node of nodes.values()) {
-        const labelLines = options.nodeLabel?.(node) ?? [node.type, ...defaultNodeLabel(node)];
-        const label = labelLines.map(dotEscape).join("\\n");
-        lines.push(`    ${dotIds.get(node.id)} [label="${label}", fillcolor="${colors[node.type] ?? "#f8fafc"}"];`);
+        const label = options.nodeLabel
+            ? `label="${options.nodeLabel(node).map(dotEscape).join("\\n")}"`
+            : `label=<${defaultHtmlNodeLabel(node)}>`;
+        lines.push(`    ${dotIds.get(node.id)} [${label}, fillcolor="${colors[node.type] ?? "#f8fafc"}"];`);
     }
     for (const [edgeKey, labels] of edgeLabels) {
         const [dependencyId, consumerId] = edgeKey.split("->");
@@ -107,11 +108,16 @@ const dotEscape = (value: string): string => value
     .replaceAll("\n", "\\n")
     .replaceAll("\r", "");
 
+const htmlEscape = (value: string): string => value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+const shortNodeId = (id: string): string => id.length > 8 ? `${id.slice(0, 8)}...` : id;
+
 const defaultNodeLabel = (node: RenderGraphNode): string[] => {
-    const id = `id: ${node.id}`;
     const identity = (...details: string[]): string[] => [
-        id,
-        ...(node.debugName === undefined ? [] : [`name: ${node.debugName}`]),
         ...details,
     ];
     switch (node.type) {
@@ -152,6 +158,22 @@ const defaultNodeLabel = (node: RenderGraphNode): string[] => {
         case "wasm-operation":
             return identity(`wasm inputs: ${node.wasmInputs.length}`, `data inputs: ${node.dataInputs.length}`, `outputs: ${node.outputs.join(", ")}`);
     }
+};
+
+const defaultHtmlNodeLabel = (node: RenderGraphNode): string => {
+    const title = node.debugName
+        ? `<B>${htmlEscape(node.debugName)}</B> <FONT POINT-SIZE="8"><I>${htmlEscape(shortNodeId(node.id))}</I></FONT>`
+        : `<B>${htmlEscape(shortNodeId(node.id))}</B>`;
+    const details = defaultNodeLabel(node)
+        .map(detail => `<TR><TD ALIGN="LEFT">${htmlEscape(detail)}</TD></TR>`)
+        .join("");
+
+    return `<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="2">` +
+        `<TR><TD ALIGN="LEFT">${title}</TD></TR>` +
+        `<TR><TD ALIGN="LEFT">${htmlEscape(node.type)}</TD></TR>` +
+        `<TR><TD HEIGHT="8"></TD></TR>` +
+        details +
+        `</TABLE>`;
 };
 
 const nodeTypes = new Set([

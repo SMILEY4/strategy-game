@@ -23,17 +23,17 @@ export function renderTileHighlight(
 
     const dataInteractionMode = g.dataExternal<RendererMapInteractionMode>(
         prev => prev != dataProvider.getInteractionMode(),
-        () => dataProvider.getInteractionMode(),
+        () => dataProvider.getInteractionMode(), "interaction mode",
     );
 
     const dataSelectedTile = g.dataExternal<HexPosition | null>(
         prev => prev?.q != dataProvider.getSelectedTilePosition()?.q || prev?.r != dataProvider.getSelectedTilePosition()?.r,
-        () => dataProvider.getSelectedTilePosition(),
+        () => dataProvider.getSelectedTilePosition(), "selected tile",
     );
 
     const dataSelectableTiles = g.dataExternal<VersionedContainer<HexPosition[]>>(
         prev => prev?.revId != dataProvider.getSelectableTilePositions().revId,
-        () => dataProvider.getSelectableTilePositions().load(),
+        () => dataProvider.getSelectableTilePositions().load(), "selectable tiles",
     );
 
 
@@ -71,6 +71,7 @@ export function renderTileHighlight(
 
 
     const mesh = g.transformVertexOut({
+        debugName: "tile highlight mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -101,6 +102,7 @@ export function renderTileHighlight(
     });
 
     const instances = g.transformVertexOut({
+        debugName: "tile highlight instances",
         inputs: [dataHighlightedTiles],
         outputs: {
             instances: {
@@ -155,6 +157,7 @@ export function renderTileHighlight(
     });
 
     const geometry = g.geometry({
+        debugName: "tile highlight geometry",
         sources: [
             g.geometrySource({
                 source: mesh,
@@ -168,6 +171,7 @@ export function renderTileHighlight(
     });
 
     const shader = g.shader({
+        debugName: "tile highlight shader",
         srcVertex: SHADER_TILE_HIGHLIGHT_VERT,
         srcFragment: SHADER_TILE_HIGHLIGHT_FRAG,
         prefixUniforms: "u_",
@@ -175,6 +179,7 @@ export function renderTileHighlight(
     });
 
     const texturePaintCircle = g.texture({
+        debugName: "tile highlight texture",
         url: "/sprites/paint-circle_v2.jpg",
     });
 
@@ -186,6 +191,7 @@ export function renderTileHighlight(
     const availableHoverColor = developerSetting(g, inputs.dataDeveloperSettings, settings => hexToRGBAColorArray(settings.renderer.tileHighlights.available.hoverColor));
 
     const drawFront = g.draw({
+        debugName: "tile highlights front draw",
         shader: shader,
         geometry: geometry,
         inputs: {
@@ -205,6 +211,7 @@ export function renderTileHighlight(
     });
 
     const drawBack = g.draw({
+        debugName: "tile highlights back draw",
         shader: shader,
         geometry: geometry,
         inputs: {

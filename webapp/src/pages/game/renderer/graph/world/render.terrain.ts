@@ -45,6 +45,7 @@ function renderWater(
 ) {
 
     const mesh = g.transformVertexOut({
+        debugName: "water hex mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -74,6 +75,7 @@ function renderWater(
     });
 
     const geometry = g.geometry({
+        debugName: "water geometry",
         sources: [
             g.geometrySource({
                 source: mesh,
@@ -95,10 +97,12 @@ function renderWater(
     });
 
     const textureTerrainSplat = g.texture({
+        debugName: "terrain splat texture",
         url: "/sprites/base_terrain_shape.png",
     });
 
     const shader = g.shader({
+        debugName: "water terrain shader",
         srcVertex: SHADER_WATER_VERT,
         srcFragment: SHADER_WATER_FRAG,
         prefixUniforms: "u_",
@@ -106,6 +110,7 @@ function renderWater(
     });
 
     return g.draw({
+        debugName: "water terrain draw",
         shader: shader,
         geometry: geometry,
         inputs: {
@@ -113,12 +118,14 @@ function renderWater(
             "resolution": g.canvasSize(),
             "scale": g.dataTransformer(
                 g.transform({
+                    debugName: "water scale transform",
                     inputs: [inputs.dataDeveloperSettings],
                      func: (data) => data.data.renderer.terrain.base.scale,
                 }),
             ) as DataRenderGraphNode<unknown>,
             "hexOffsetScale": g.dataTransformer(
                 g.transform({
+                    debugName: "water hex offset scale transform",
                     inputs: [inputs.dataDeveloperSettings],
                      func: (data) => data.data.renderer.geometry.hexOffsetScale,
                 }),
@@ -152,6 +159,7 @@ function renderLand(
 ) {
 
     const mesh = g.transformVertexOut({
+        debugName: "land hex mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -181,6 +189,7 @@ function renderLand(
     });
 
     const geometry = g.geometry({
+        debugName: "land geometry",
         sources: [
             g.geometrySource({
                 source: mesh,
@@ -202,10 +211,12 @@ function renderLand(
     });
 
     const textureTerrainSplat = g.texture({
+        debugName: "terrain splat texture",
         url: "/sprites/base_terrain_shape.png",
     });
 
     const shader = g.shader({
+        debugName: "land terrain shader",
         srcVertex: SHADER_LAND_VERT,
         srcFragment: SHADER_LAND_FRAG,
         prefixUniforms: "u_",
@@ -213,6 +224,7 @@ function renderLand(
     });
 
     return g.draw({
+        debugName: "land terrain draw",
         shader: shader,
         geometry: geometry,
         inputs: {
@@ -220,12 +232,14 @@ function renderLand(
             "resolution": g.canvasSize(),
             "scale": g.dataTransformer(
                 g.transform({
+                    debugName: "land scale transform",
                     inputs: [inputs.dataDeveloperSettings],
                      func: (data) => data.data.renderer.terrain.base.scale,
                 }),
             ) as DataRenderGraphNode<unknown>,
             "hexOffsetScale": g.dataTransformer(
                 g.transform({
+                    debugName: "land hex offset scale transform",
                     inputs: [inputs.dataDeveloperSettings],
                      func: (data) => data.data.renderer.geometry.hexOffsetScale,
                 }),

@@ -27,6 +27,7 @@ export function renderPassTerrainMask(
     },
 ): RendertargetRenderGraphNode<"color"> {
     return g.rendertarget({
+        debugName: "base terrain mask",
         size: g.canvasSize(),
         sizeScale: g.dataConst(1),
         renderPasses: [
@@ -56,6 +57,7 @@ function renderTiles(
 ) {
 
     const mesh = g.transformVertexOut({
+        debugName: "terrain mask tile mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -85,6 +87,7 @@ function renderTiles(
     });
 
     const geometry = g.geometry({
+        debugName: "terrain mask tile geometry",
         sources: [
             g.geometrySource({
                 source: mesh,
@@ -106,6 +109,7 @@ function renderTiles(
     });
 
     const shader = g.shader({
+        debugName: "terrain mask tile shader",
         srcVertex: SHADER_MASK_LAND_VERT,
         srcFragment: SHADER_MASK_LAND_FRAG,
         prefixUniforms: "u_",
@@ -113,6 +117,7 @@ function renderTiles(
     });
 
     return g.draw({
+        debugName: "terrain mask tile draw",
         shader: shader,
         geometry: geometry,
         inputs: {
@@ -141,6 +146,7 @@ function renderEdges(
 ) {
 
     const mesh = g.transformVertexOut({
+        debugName: "terrain edge mask mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -180,6 +186,7 @@ function renderEdges(
     });
 
     const geometry = g.geometry({
+        debugName: "terrain edge mask geometry",
         sources: [
             g.geometrySource({
                 source: mesh,
@@ -216,6 +223,7 @@ function renderEdges(
     });
 
     const shader = g.shader({
+        debugName: "terrain edge mask shader",
         srcVertex: SHADER_MASK_WATEREDGE_VERT,
         srcFragment: SHADER_MASK_WATEREDGE_FRAG,
         prefixUniforms: "u_",
@@ -223,6 +231,7 @@ function renderEdges(
     });
 
     return g.draw({
+        debugName: "terrain edge mask draw",
         shader: shader,
         geometry: geometry,
         inputs: {

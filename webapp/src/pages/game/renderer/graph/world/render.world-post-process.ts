@@ -22,6 +22,7 @@ export function renderWorldPostProcess(
 ) {
 
     const mesh = g.transformVertexOut({
+        debugName: "post-process fullscreen mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -44,6 +45,7 @@ export function renderWorldPostProcess(
 
 
     const geometry = g.geometry({
+        debugName: "post-process geometry",
         sources: [
             g.geometrySource({
                 source: mesh,
@@ -53,6 +55,7 @@ export function renderWorldPostProcess(
     });
 
     const shader = g.shader({
+        debugName: "world post-process shader",
         srcVertex: SHADER_WORLD_PP_VERT,
         srcFragment: SHADER_WORLD_PP_FRAG,
         prefixUniforms: "u_",
@@ -60,6 +63,7 @@ export function renderWorldPostProcess(
     });
 
     const draw = g.draw({
+        debugName: "world post-process draw",
         shader: shader,
         geometry: geometry,
         inputs: {

@@ -23,6 +23,7 @@ export function renderMapDetails(
 ) {
 
     const geometry = g.geometry({
+        debugName: "map details geometry",
         sources: [
             g.wasmGeometrySource({
                 source: inputs.wasmMapDetailVertices,
@@ -65,42 +66,54 @@ export function renderMapDetails(
     });
 
     const textureAtlasMountainsColor = g.texture({
+        debugName: "mountains color atlas",
         url: "/sprites/mountains.color.png",
     });
     const textureAtlasMountainsOutline = g.texture({
+        debugName: "mountains outline atlas",
         url: "/sprites/mountains.outline.png",
     });
     const textureAtlasMountainsMask = g.texture({
+        debugName: "mountains mask atlas",
         url: "/sprites/empty8x8.png",
     });
 
     const textureAtlasHillsColor = g.texture({
+        debugName: "hills color atlas",
         url: "/sprites/hills.color.png",
     });
     const textureAtlasHillsOutline = g.texture({
+        debugName: "hills outline atlas",
         url: "/sprites/hills.outline.png",
     });
     const textureAtlasHillsMask = g.texture({
+        debugName: "hills mask atlas",
         url: "/sprites/hills.mask.png",
     });
 
     const textureAtlasTreesColor = g.texture({
+        debugName: "trees color atlas",
         url: "/sprites/trees.color.png",
     });
     const textureAtlasTreesOutline = g.texture({
+        debugName: "trees outline atlas",
         url: "/sprites/trees.outline.png",
     });
     const textureAtlasTreesMask = g.texture({
+        debugName: "trees mask atlas",
         url: "/sprites/empty8x8.png",
     });
 
     const textureAtlasBuildingsColor = g.texture({
+        debugName: "buildings color atlas",
         url: "/sprites/buildings.color.png",
     });
     const textureAtlasBuildingsOutline = g.texture({
+        debugName: "buildings outline atlas",
         url: "/sprites/buildings.outline.png",
     });
     const textureAtlasBuildingsMask = g.texture({
+        debugName: "buildings mask atlas",
         url: "/sprites/empty8x8.png",
     });
 
@@ -112,6 +125,7 @@ export function renderMapDetails(
     );
 
     const shader = g.shader({
+        debugName: "map details shader",
         srcVertex: SHADER_MAPDETAILS_VERT,
         srcFragment: SHADER_MAPDETAILS_FRAG,
         prefixUniforms: "u_",
@@ -119,6 +133,7 @@ export function renderMapDetails(
     });
 
     const draw = g.draw({
+        debugName: "map details draw",
         shader: shader,
         geometry: geometry,
         inputs: {

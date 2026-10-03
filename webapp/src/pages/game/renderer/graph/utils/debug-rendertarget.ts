@@ -13,6 +13,7 @@ export function debugVisRendertarget(
 ): DrawRenderGraphNode {
 
     const fullscreenMeshTransformer = g.transformVertexOut({
+        debugName: "debug target fullscreen mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -34,6 +35,7 @@ export function debugVisRendertarget(
     });
 
     const geometry = g.geometry({
+        debugName: "debug target geometry",
         sources: [
             g.geometrySource({
                 source: fullscreenMeshTransformer,
@@ -43,6 +45,7 @@ export function debugVisRendertarget(
     });
 
     const shader = g.shader({
+        debugName: "debug target shader",
         srcVertex: SHADER_VERT,
         srcFragment: SHADER_FRAG,
         prefixUniforms: "u_",
@@ -50,6 +53,7 @@ export function debugVisRendertarget(
     });
 
     return g.draw({
+        debugName: "debug target draw",
         shader: shader,
         geometry: geometry,
         inputs: {

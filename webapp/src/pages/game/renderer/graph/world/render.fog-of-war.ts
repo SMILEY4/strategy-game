@@ -22,6 +22,7 @@ export function renderFogOfWar(
 ) {
 
     const mesh = g.transformVertexOut({
+        debugName: "fog of war fullscreen mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -43,6 +44,7 @@ export function renderFogOfWar(
     });
 
     const geometry = g.geometry({
+        debugName: "fog of war geometry",
         sources: [
             g.geometrySource({
                 source: mesh,
@@ -52,6 +54,7 @@ export function renderFogOfWar(
     });
 
     const shader = g.shader({
+        debugName: "fog of war shader",
         srcVertex: SHADER_VERT,
         srcFragment: SHADER_FRAG,
         prefixUniforms: "u_",
@@ -59,6 +62,7 @@ export function renderFogOfWar(
     });
 
     const drawLayer1 = g.draw({
+        debugName: "fog of war discovered layer",
         shader: shader,
         geometry: geometry,
         inputs: {
@@ -93,6 +97,7 @@ export function renderFogOfWar(
     });
 
     const drawLayer2 = g.draw({
+        debugName: "fog of war hidden layer",
         shader: shader,
         geometry: geometry,
         inputs: {

@@ -22,6 +22,7 @@ export function renderTileGrid(
 ) {
 
     const gridMeshTransformer = g.transformVertexOut({
+        debugName: "tile grid mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -52,6 +53,7 @@ export function renderTileGrid(
 
 
     const buildGridInstances = g.wasmOperation({
+        debugName: "build tile grid instances",
         wasmInputs: [],
         dataInputs: [],
         outputs: ["gridInstances"],
@@ -59,6 +61,7 @@ export function renderTileGrid(
     });
 
     const wasmGridInstances = g.wasmData({
+        debugName: "WASM tile grid instances",
         source: {
             type: "wasm",
             operation: buildGridInstances,
@@ -67,6 +70,7 @@ export function renderTileGrid(
     });
 
     const geometry = g.geometry({
+        debugName: "tile grid geometry",
         sources: [
             g.geometrySource({
                 source: gridMeshTransformer,
@@ -89,6 +93,7 @@ export function renderTileGrid(
 
 
     const shader = g.shader({
+        debugName: "tile grid shader",
         srcVertex: SHADER_COMPOSE_VERT,
         srcFragment: SHADER_COMPOSE_FRAG,
         prefixUniforms: "u_",
@@ -112,6 +117,7 @@ export function renderTileGrid(
     );
 
     const draw = g.draw({
+        debugName: "tile grid draw",
         shader: shader,
         geometry: geometry,
         inputs: {

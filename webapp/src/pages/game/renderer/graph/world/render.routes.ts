@@ -23,6 +23,7 @@ export function renderRoutes(
 ) {
 
     const geometry = g.geometry({
+        debugName: "routes geometry",
         sources: [
             g.wasmGeometrySource({
                 source: inputs.wasmRouteVertices,
@@ -50,6 +51,7 @@ export function renderRoutes(
     });
 
     const shader = g.shader({
+        debugName: "routes shader",
         srcVertex: SHADER_ROUTES_VERT,
         srcFragment: SHADER_ROUTES_FRAG,
         prefixUniforms: "u_",
@@ -57,11 +59,13 @@ export function renderRoutes(
     });
 
     const texturePaintLine = g.texture({
+        debugName: "route paint texture",
         url: "/sprites/paint-line_v2.jpg",
     });
 
 
     const draw = g.draw({
+        debugName: "routes draw",
         shader: shader,
         geometry: geometry,
         inputs: {

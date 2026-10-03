@@ -22,10 +22,11 @@ export function gameGraphDataWorld(
 
     const dataAllTiles = g.dataExternal<VersionedContainer<Tile[]>>(
         prev => prev?.revId !== dataProvider.getTiles().revId,
-        () => dataProvider.getTiles().load(),
+        () => dataProvider.getTiles().load(), "all tiles",
     );
 
     const wasmAllTiles = g.wasmData({
+        debugName: "WASM all tiles",
         source: {
             type: "js",
             data: dataAllTiles,
@@ -35,15 +36,16 @@ export function gameGraphDataWorld(
 
     const dataAllEntities = g.dataExternal<VersionedContainer<Entity[]>>(
         prev => prev?.revId !== dataProvider.getEntities().revId,
-        () => dataProvider.getEntities().load(),
+        () => dataProvider.getEntities().load(), "all entities",
     );
 
     const dataAllCommands = g.dataExternal<VersionedContainer<Command[]>>(
         prev => prev?.revId !== dataProvider.getCommands().revId,
-        () => dataProvider.getCommands().load(),
+        () => dataProvider.getCommands().load(), "all commands",
     );
 
     const renderEntityTransformer = g.transform<[VersionedContainer<Entity[]>, VersionedContainer<Command[]>], RenderEntity[]>({
+        debugName: "render entities",
         inputs: [dataAllEntities, dataAllCommands],
         func: (entities, commands) => {
             return [
@@ -94,9 +96,10 @@ export function gameGraphDataWorld(
         },
     });
 
-    const dataRenderEntities = g.dataTransformer(renderEntityTransformer);
+    const dataRenderEntities = g.dataTransformer(renderEntityTransformer, "render entities data");
 
     const wasmAllEntities = g.wasmData({
+        debugName: "WASM all render entities",
         source: {
             type: "js",
             data: dataRenderEntities,
@@ -106,10 +109,11 @@ export function gameGraphDataWorld(
 
     const dataAllRoutes = g.dataExternal<VersionedContainer<Route[]>>(
         prev => prev?.revId !== dataProvider.getRoutes().revId,
-        () => dataProvider.getRoutes().load(),
+        () => dataProvider.getRoutes().load(), "all routes",
     );
 
     const wasmAllRoutes = g.wasmData({
+        debugName: "WASM all routes",
         source: {
             type: "js",
             data: dataAllRoutes,
@@ -118,6 +122,7 @@ export function gameGraphDataWorld(
     });
 
     const calculateAllChunks = g.wasmOperation({
+        debugName: "calculate all chunks",
         wasmInputs: [wasmAllTiles, wasmAllEntities],
         dataInputs: [],
         outputs: ["allChunks"],
@@ -125,6 +130,7 @@ export function gameGraphDataWorld(
     });
 
     const wasmAllChunks = g.wasmData({
+        debugName: "WASM all chunks",
         source: {
             type: "wasm",
             operation: calculateAllChunks,
@@ -133,6 +139,7 @@ export function gameGraphDataWorld(
     });
 
     const calculateVisibleChunks = g.wasmOperation({
+        debugName: "calculate visible chunks",
         wasmInputs: [wasmAllChunks],
         dataInputs: [inputs.dataCamera],
         outputs: ["visibleChunks"],
@@ -140,6 +147,7 @@ export function gameGraphDataWorld(
     });
 
     const wasmVisibleChunks = g.wasmData({
+        debugName: "WASM visible chunks",
         source: {
             type: "wasm",
             operation: calculateVisibleChunks,
@@ -148,6 +156,7 @@ export function gameGraphDataWorld(
     });
 
     const calculateWorldMesh = g.wasmOperation({
+        debugName: "calculate world mesh",
         wasmInputs: [wasmVisibleChunks, wasmAllTiles, wasmAllRoutes],
         dataInputs: [],
         outputs: ["tileLandInstances", "tileWaterInstances", "waterEdgeInstances", "tileFogOfWarInstances", "mapDetailVertices", "routeVertices"],
@@ -155,6 +164,7 @@ export function gameGraphDataWorld(
     });
 
     const wasmTileLandInstances = g.wasmData({
+        debugName: "WASM tile land instances",
         source: {
             type: "wasm",
             operation: calculateWorldMesh,
@@ -163,6 +173,7 @@ export function gameGraphDataWorld(
     });
 
     const wasmTileWaterInstances = g.wasmData({
+        debugName: "WASM tile water instances",
         source: {
             type: "wasm",
             operation: calculateWorldMesh,
@@ -171,6 +182,7 @@ export function gameGraphDataWorld(
     });
 
     const wasmWaterEdgeInstances = g.wasmData({
+        debugName: "WASM water edge instances",
         source: {
             type: "wasm",
             operation: calculateWorldMesh,
@@ -179,6 +191,7 @@ export function gameGraphDataWorld(
     });
 
     const wasmTileFogOfWarInstances = g.wasmData({
+        debugName: "WASM tile fog of war instances",
         source: {
             type: "wasm",
             operation: calculateWorldMesh,
@@ -187,6 +200,7 @@ export function gameGraphDataWorld(
     });
 
     const wasmMapDetailVertices = g.wasmData({
+        debugName: "WASM map detail vertices",
         source: {
             type: "wasm",
             operation: calculateWorldMesh,
@@ -196,6 +210,7 @@ export function gameGraphDataWorld(
 
 
     const wasmRouteVertices = g.wasmData({
+        debugName: "WASM route vertices",
         source: {
             type: "wasm",
             operation: calculateWorldMesh,

@@ -24,6 +24,7 @@ export function renderPassFogOfWar(
 ): RendertargetRenderGraphNode<"color"> {
 
     const mesh = g.transformVertexOut({
+        debugName: "fog mask hex mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -53,6 +54,7 @@ export function renderPassFogOfWar(
     });
 
     const geometry = g.geometry({
+        debugName: "fog mask geometry",
         sources: [
             g.geometrySource({
                 source: mesh,
@@ -84,10 +86,12 @@ export function renderPassFogOfWar(
     });
 
     const textureTerrainSplat = g.texture({
+        debugName: "fog mask terrain texture",
         url: "/sprites/base_terrain_shape.png",
     });
 
     const shader = g.shader({
+        debugName: "fog mask shader",
         srcVertex: SHADER_FOG_OF_WAR_MASK_VERT,
         srcFragment: SHADER_FOG_OF_WAR_MASK_FRAG,
         prefixUniforms: "u_",
@@ -95,6 +99,7 @@ export function renderPassFogOfWar(
     });
 
     const drawFogOfWarTiles = g.draw({
+        debugName: "fog mask draw",
         shader: shader,
         geometry: geometry,
         inputs: {
@@ -126,6 +131,7 @@ export function renderPassFogOfWar(
     });
 
     return g.rendertarget({
+        debugName: "fog of war mask",
         size: g.canvasSize(),
         sizeScale: g.dataConst(1),
         renderPasses: [drawFogOfWarTiles],

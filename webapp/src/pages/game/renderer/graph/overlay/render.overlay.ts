@@ -36,20 +36,21 @@ export function renderOverlay(
 
     const dataMapMode = g.dataExternal<MapMode>(
         prev => prev.id !== dataProvider.getMapMode().id,
-        () => dataProvider.getMapMode(),
+        () => dataProvider.getMapMode(), "map mode",
     );
 
     const dataRealms = g.dataExternal<VersionedContainer<Realm[]>>(
         prev => prev?.revId !== dataProvider.getRealms().revId,
-        () => dataProvider.getRealms().load(),
+        () => dataProvider.getRealms().load(), "overlay realms",
     );
 
     const dataSelectedEntity = g.dataExternal<Entity | null>(
         prev => prev?.id !== dataProvider.getSelectedEntity()?.id,
-        () => dataProvider.getSelectedEntity(),
+        () => dataProvider.getSelectedEntity(), "selected entity",
     );
 
     const wasmMapMode = g.wasmData({
+        debugName: "WASM map mode",
         source: {
             type: "js",
             data: dataMapMode,
@@ -58,6 +59,7 @@ export function renderOverlay(
     });
 
     const wasmRealmColors = g.wasmData({
+        debugName: "WASM realm colors",
         source: {
             type: "js",
             data: dataRealms,
@@ -66,6 +68,7 @@ export function renderOverlay(
     });
 
     const wasmSelectedEntity = g.wasmData({
+        debugName: "WASM selected entity",
         source: {
             type: "js",
             data: dataSelectedEntity,
@@ -82,6 +85,7 @@ export function renderOverlay(
     });
 
     const calculateOverlayInstances = g.wasmOperation({
+        debugName: "calculate overlay instances",
         wasmInputs: [inputs.visibleChunks, wasmMapMode, wasmSelectedEntity, wasmRealmColors],
         dataInputs: [],
         outputs: ["overlayFillInstances", "overlayEdgeInstances", "routeHighlightVertices"],
@@ -97,6 +101,7 @@ export function renderOverlay(
     //====================== DRAW FILL ======================================
 
     const wasmOverlayFillInstances = g.wasmData({
+        debugName: "WASM overlay fill instances",
         source: {
             type: "wasm",
             operation: calculateOverlayInstances,
@@ -105,6 +110,7 @@ export function renderOverlay(
     });
 
     const meshTransformerFill = g.transformVertexOut({
+        debugName: "overlay fill mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -129,6 +135,7 @@ export function renderOverlay(
     });
 
     const geometryFill = g.geometry({
+        debugName: "overlay fill geometry",
         sources: [
             g.geometrySource({
                 source: meshTransformerFill,
@@ -160,6 +167,7 @@ export function renderOverlay(
     });
 
     const shaderFill = g.shader({
+        debugName: "overlay fill shader",
         srcVertex: SHADER_OVERLAY_FILL_VERT,
         srcFragment: SHADER_OVERLAY_FILL_FRAG,
         prefixUniforms: "u_",
@@ -167,6 +175,7 @@ export function renderOverlay(
     });
 
     const drawFill = g.draw({
+        debugName: "overlay fill draw",
         shader: shaderFill,
         geometry: geometryFill,
         inputs: {
@@ -182,6 +191,7 @@ export function renderOverlay(
     //====================== DRAW BORDER ====================================
 
     const wasmOverlayBorderInstances = g.wasmData({
+        debugName: "WASM overlay border instances",
         source: {
             type: "wasm",
             operation: calculateOverlayInstances,
@@ -190,6 +200,7 @@ export function renderOverlay(
     });
 
     const meshTransformerBorder = g.transformVertexOut({
+        debugName: "overlay border mesh",
         inputs: [],
         outputs: {
             mesh: {
@@ -219,6 +230,7 @@ export function renderOverlay(
     });
 
     const geometryBorder = g.geometry({
+        debugName: "overlay border geometry",
         sources: [
             g.geometrySource({
                 source: meshTransformerBorder,
@@ -260,6 +272,7 @@ export function renderOverlay(
     });
 
     const shaderBorder = g.shader({
+        debugName: "overlay border shader",
         srcVertex: SHADER_OVERLAY_BORDER_VERT,
         srcFragment: SHADER_OVERLAY_BORDER_FRAG,
         prefixUniforms: "u_",
@@ -268,10 +281,12 @@ export function renderOverlay(
 
 
     const texturePaintLine = g.texture({
+        debugName: "overlay paint line texture",
         url: "/sprites/paint-line_v2.jpg",
     });
 
     const drawBorderFront = g.draw({
+        debugName: "overlay border front draw",
         shader: shaderBorder,
         geometry: geometryBorder,
         inputs: {
@@ -286,6 +301,7 @@ export function renderOverlay(
     });
 
     const drawBorderBack = g.draw({
+        debugName: "overlay border back draw",
         shader: shaderBorder,
         geometry: geometryBorder,
         inputs: {
@@ -302,6 +318,7 @@ export function renderOverlay(
     //====================== DRAW ROUTE HIGHLIGHT ===========================
 
     const wasmRouteHighlightVertices = g.wasmData({
+        debugName: "WASM route highlight vertices",
         source: {
             type: "wasm",
             operation: calculateOverlayInstances,
@@ -310,6 +327,7 @@ export function renderOverlay(
     });
 
     const geometryRouteHighlight = g.geometry({
+        debugName: "route highlight geometry",
         sources: [
             g.wasmGeometrySource({
                 source: wasmRouteHighlightVertices,
@@ -337,6 +355,7 @@ export function renderOverlay(
     });
 
     const shader = g.shader({
+        debugName: "route highlight shader",
         srcVertex: SHADER_ROUTE_HIGHLIGHT_VERT,
         srcFragment: SHADER_ROUTE_HIGHLIGHT_FRAG,
         prefixUniforms: "u_",
@@ -344,6 +363,7 @@ export function renderOverlay(
     });
 
     const drawRouteHighlight = g.draw({
+        debugName: "route highlight draw",
         shader: shader,
         geometry: geometryRouteHighlight,
         inputs: {
