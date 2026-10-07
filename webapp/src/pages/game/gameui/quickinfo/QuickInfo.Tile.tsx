@@ -40,6 +40,15 @@ export function QuickInfo_Tile(props: QuickInfoTileViewModel) {
             </HorizontalLayout>
 
             <VerticalLayout spacing3xs verticalStart horizontalStretch>
+                <Txt.Line><Txt.String>Resources: </Txt.String></Txt.Line>
+                {props.resources.map(resource => (
+                    <Txt.Line>
+                        <Txt.String>{` - ${resource.type} ${resource.amount}x / ${resource.maxAmount} (+${resource.changeRate} -> ${resource.removeOnDeplete})`}</Txt.String>
+                    </Txt.Line>
+                ))}
+            </VerticalLayout>
+
+            <VerticalLayout spacing3xs verticalStart horizontalStretch>
                 <Txt.Line><Txt.String>Id: </Txt.String><Txt.String>{`${props.id}`}</Txt.String></Txt.Line>
                 <Txt.Line><Txt.String>Position: </Txt.String><Txt.String>{`${props.position.q},${props.position.r}`}</Txt.String></Txt.Line>
                 <Txt.Line><Txt.String>Elevation: </Txt.String><Txt.String>{`${props.terrain?.elevation}`}</Txt.String></Txt.Line>
@@ -56,7 +65,7 @@ export function QuickInfo_Tile(props: QuickInfoTileViewModel) {
                 <Txt.Line><Txt.String>Control: </Txt.String></Txt.Line>
                 {props.control.map(control => (
                     <Txt.Line key={control.source}>
-                        <Txt.String>{`* ${control.source}:` }</Txt.String>
+                        <Txt.String>{`* ${control.source}:`}</Txt.String>
                         <Txt.String>{`${control.amount}`}</Txt.String>
                     </Txt.Line>
                 ))}
