@@ -2,7 +2,9 @@ import { Icon } from "@/modules/uicomponents/icon/Icon";
 import type {ColorGrading} from "@app/features/game/models/color-grading.ts";
 import type {ReactElement} from "react";
 
-export type MapModeIcon = "Mountain" | "Flag" | "HouseFlag";
+export type MapModeTileElements = {
+    readonly resourceIcons: boolean;
+}
 
 const COLOR_GRADING_NORMAL: ColorGrading = {
     exposure: 0,
@@ -30,6 +32,7 @@ export class MapMode {
         numericId: 1,
         icon: () => <Icon.Mountain/>,
         colorGrading: COLOR_GRADING_NORMAL,
+        tileElements: {resourceIcons: true},
     });
 
     public static readonly POLITICAL = new MapMode({
@@ -37,6 +40,7 @@ export class MapMode {
         numericId: 2,
         icon: () => <Icon.Flag/>,
         colorGrading: COLOR_GRADING_NORMAL,
+        tileElements: {resourceIcons: false},
     });
 
     public static readonly SETTLEMENT_LOCATIONS = new MapMode({
@@ -44,6 +48,7 @@ export class MapMode {
         numericId: 3,
         icon: () => <Icon.HouseFlag/>,
         colorGrading: COLOR_GRADING_GRAYSCALE,
+        tileElements: {resourceIcons: false},
     });
 
 
@@ -57,11 +62,19 @@ export class MapMode {
     readonly numericId: number;
     readonly icon: () => ReactElement;
     readonly colorGrading: ColorGrading;
+    readonly tileElements: MapModeTileElements;
 
-    constructor(props: { id: string, numericId: number, icon: () => ReactElement, colorGrading: ColorGrading }) {
+    constructor(props: {
+        id: string,
+        numericId: number,
+        icon: () => ReactElement,
+        colorGrading: ColorGrading,
+        tileElements: MapModeTileElements,
+    }) {
         this.id = props.id;
         this.numericId = props.numericId;
         this.icon = props.icon;
         this.colorGrading = props.colorGrading;
+        this.tileElements = props.tileElements;
     }
 }

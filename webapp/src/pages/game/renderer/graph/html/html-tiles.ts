@@ -8,6 +8,7 @@ import {mat4, vec3, vec4} from "gl-matrix";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import type {Tile} from "@app/features/game/models/tile.ts";
 import {ResourceLabel} from "@pages/game/overlay/ResourceLabel.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.tsx";
 
 export function gameGraphHtmlTiles(
     g: RenderGraphBuilder,
@@ -17,26 +18,33 @@ export function gameGraphHtmlTiles(
     },
 ) {
 
+    const dataMapMode = g.dataExternal<MapMode>( // todo: reuse
+        prev => prev.id !== dataProvider.getMapMode().id,
+        () => dataProvider.getMapMode(), "map mode",
+    );
+
     const dataAllTiles = g.dataExternal<VersionedContainer<Tile[]>>( // todo: reuse from world-data.ts
         prev => prev?.revId !== dataProvider.getTiles().revId,
         () => dataProvider.getTiles().load(), "all tiles",
     );
 
-    const elementsTransformer = g.transform<[VersionedContainer<Tile[]>], HtmlDrawElement[]>({
-        inputs: [dataAllTiles],
-        func: (tiles) => {
-            return tiles.data
-                .flatMap(tile => buildResourceIconElements(tile))
-                .filter(it => !!it);
+    const elementsTransformer = g.transform<[VersionedContainer<Tile[]>, MapMode], HtmlDrawElement[]>({
+        inputs: [dataAllTiles, dataMapMode],
+        func: (tiles, mapMode) => {
+            if (mapMode.tileElements.resourceIcons) {
+                return tiles.data.flatMap(tile => buildResourceIconElements(tile));
+            }
+            return [];
         },
     });
 
-    const instancesTransformer = g.transform<[VersionedContainer<Tile[]>, VersionedContainer<Camera>], HtmlDrawInstance[]>({
-        inputs: [dataAllTiles, inputs.dataCamera],
-        func: (tiles, camera) => {
-            return tiles.data
-                .flatMap(tile => buildResourceIconInstances(tile, camera.data))
-                .filter(it => !!it);
+    const instancesTransformer = g.transform<[VersionedContainer<Tile[]>, MapMode, VersionedContainer<Camera>], HtmlDrawInstance[]>({
+        inputs: [dataAllTiles, dataMapMode, inputs.dataCamera],
+        func: (tiles, mapMode, camera) => {
+            if (mapMode.tileElements.resourceIcons) {
+                return tiles.data.flatMap(tile => buildResourceIconInstances(tile, camera.data));
+            }
+            return [];
         },
     });
 
@@ -50,9 +58,9 @@ export function gameGraphHtmlTiles(
     };
 }
 
-function buildResourceIconElements(tile: Tile): null | HtmlDrawElement[] {
+function buildResourceIconElements(tile: Tile): HtmlDrawElement[] {
     if (!tile.world.visible) {
-        return null;
+        return [];
     }
     const elements: HtmlDrawElement[] = [];
 
@@ -69,9 +77,9 @@ function buildResourceIconElements(tile: Tile): null | HtmlDrawElement[] {
     return elements;
 }
 
-function buildResourceIconInstances(tile: Tile, camera: Camera): HtmlDrawInstance[] | null {
+function buildResourceIconInstances(tile: Tile, camera: Camera): HtmlDrawInstance[] {
     if (!tile.world.visible) {
-        return null;
+        return [];
     }
     const elements: HtmlDrawInstance[] = [];
 
