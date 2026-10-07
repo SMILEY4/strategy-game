@@ -1,13 +1,15 @@
 use rustc_hash::FxHashMap;
 use crate::js::models::{HexPosition, Tile, TileVisibility};
 use crate::render::gpu::overlay_functions;
+use crate::render::config::Config;
 use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance};
 use crate::render::{OverlayEdge, OverlayFill};
 use crate::render::state_output::OutputState;
 use crate::render::state_render::RenderState;
 
-pub fn build_overlay_data(state: &RenderState, output: &mut OutputState) {
+pub fn build_overlay_data(state: &RenderState, config: &Config, output: &mut OutputState) {
     let overlay_behavior = state.map_mode.overlay_behavior();
+    let overlay_config = &config.overlays;
     let has_selected_entity = state.selected_entity_id.is_some();
 
     // function for creating tile fill instances (combines multiple functions for different overlay sources)
@@ -18,10 +20,15 @@ pub fn build_overlay_data(state: &RenderState, output: &mut OutputState) {
                     overlay_functions::fill_none(state, tile, output)
                 }
                 OverlayFill::Political => {
-                    overlay_functions::fill_mapmode_political(state, tile, output)
+                    overlay_functions::fill_mapmode_political(state, tile, overlay_config, output)
                 }
                 OverlayFill::SettlementLocations => {
-                    overlay_functions::fill_mapmode_settlement_locations(state, tile, output)
+                    overlay_functions::fill_mapmode_settlement_locations(
+                        state,
+                        tile,
+                        overlay_config,
+                        output,
+                    )
                 }
             }
         };
@@ -40,11 +47,12 @@ pub fn build_overlay_data(state: &RenderState, output: &mut OutputState) {
                     state,
                     tile,
                     tiles_by_pos,
+                    overlay_config,
                     output,
                 ),
             }
             if has_selected_entity && overlay_behavior.show_entity_control {
-                overlay_functions::edges_entity_control(state, tile, tiles_by_pos, output)
+                overlay_functions::edges_entity_control(state, tile, tiles_by_pos, overlay_config, output)
             }
         };
 

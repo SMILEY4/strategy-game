@@ -3,12 +3,9 @@ use crate::render::models::gpu::{
     GenericEdgeOverlayInstance, GenericFillOverlayInstance, OVERLAY_EDGE_STYLE_DASHED,
     OVERLAY_EDGE_STYLE_FILLED, OVERLAY_FILL_STYLE_FILLED, OVERLAY_FILL_STYLE_STRIPED,
 };
-use crate::render::models::realm_color::RealmColor;
 use crate::render::state_render::RenderState;
-
-const POLITICAL_FILL_ALPHA: f32 = 0.35;
-
-
+use crate::render::config::OverlayConfig;
+use crate::render::models::realm_color::RealmColor;
 //===== NO-OP ======================================
 
 pub fn fill_none(_: &RenderState, _: &Tile, _: &mut Vec<GenericFillOverlayInstance>) {}
@@ -27,6 +24,7 @@ pub fn edges_entity_control(
     state: &RenderState,
     tile: &Tile,
     tiles_by_pos: &rustc_hash::FxHashMap<HexPosition, usize>,
+    config: &OverlayConfig,
     output: &mut Vec<GenericEdgeOverlayInstance>,
 ) {
     let entity_id = state.selected_entity_id;
@@ -74,9 +72,9 @@ pub fn edges_entity_control(
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
-                color: [1.0, 1.0, 1.0, 1.0],
+                color: config.entity_control_color,
                 style: OVERLAY_EDGE_STYLE_DASHED,
-                thickness: 0.05
+                thickness: config.entity_control_entity_thickness
             });
         }
 
@@ -84,9 +82,9 @@ pub fn edges_entity_control(
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
-                color: [1.0, 1.0, 1.0, 1.0],
+                color: config.entity_control_color,
                 style: OVERLAY_EDGE_STYLE_DASHED,
-                thickness: 0.1
+                thickness: config.entity_control_settlement_thickness
             });
         }
     }
@@ -97,12 +95,13 @@ pub fn edges_entity_control(
 pub fn fill_mapmode_political(
     state: &RenderState,
     tile: &Tile,
+    config: &OverlayConfig,
     output: &mut Vec<GenericFillOverlayInstance>,
 ) {
     if let Some(realm_id) = owner_realm(tile) {
         output.push(fill_instance(
             tile,
-            realm_color(state, realm_id).with_alpha(POLITICAL_FILL_ALPHA),
+            realm_color(state, realm_id).with_alpha(config.political_fill_alpha),
             if tile.conversion_active && tile.converting_realm == 0 {
                 OVERLAY_FILL_STYLE_STRIPED
             } else {
@@ -114,7 +113,7 @@ pub fn fill_mapmode_political(
     if let Some(realm_id) = converting_realm(tile) {
         output.push(fill_instance(
             tile,
-            realm_color(state, realm_id).with_alpha(POLITICAL_FILL_ALPHA),
+            realm_color(state, realm_id).with_alpha(config.political_fill_alpha),
             OVERLAY_FILL_STYLE_STRIPED,
         ));
     }
@@ -124,6 +123,7 @@ pub fn edges_mapmode_political(
     state: &RenderState,
     tile: &Tile,
     tiles_by_pos: &rustc_hash::FxHashMap<HexPosition, usize>,
+    config: &OverlayConfig,
     output: &mut Vec<GenericEdgeOverlayInstance>,
 ) {
     let Some(realm_id) = owner_realm(tile) else {
@@ -144,9 +144,9 @@ pub fn edges_mapmode_political(
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
-                color: color.with_alpha(1.0),
+                color: color.with_alpha(config.political_edge_alpha),
                 style: OVERLAY_EDGE_STYLE_FILLED,
-                thickness: 0.1
+                thickness: config.political_edge_thickness
             });
         }
     }
@@ -157,18 +157,19 @@ pub fn edges_mapmode_political(
 pub fn fill_mapmode_settlement_locations(
     _: &RenderState,
     tile: &Tile,
+    config: &OverlayConfig,
     output: &mut Vec<GenericFillOverlayInstance>,
 ) {
     if tile.create_settlement_validity == CreateSettlementValidity::ValidTerrain {
         output.push(fill_instance(
             tile,
-            [0.2, 0.6, 0.25, 0.35],
+            config.settlement_location_color,
             OVERLAY_FILL_STYLE_STRIPED,
         ));
     } else if tile.create_settlement_validity == CreateSettlementValidity::Valid {
         output.push(fill_instance(
             tile,
-            [0.2, 0.6, 0.25, 0.35],
+            config.settlement_location_color,
             OVERLAY_FILL_STYLE_FILLED,
         ));
     }

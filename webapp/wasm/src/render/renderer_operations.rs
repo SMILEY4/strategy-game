@@ -26,7 +26,7 @@ impl Renderer {
     }
 
     pub fn build_overlay_instances(&mut self) {
-        build_overlay_data(&self.state, &mut self.output);
+        build_overlay_data(&self.state, &self.config, &mut self.output);
     }
 
     pub fn build_grid_instances(&mut self) {

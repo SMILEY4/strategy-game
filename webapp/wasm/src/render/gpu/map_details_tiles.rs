@@ -3,9 +3,6 @@ use crate::math::random::Random;
 use crate::render::config::Config;
 use crate::render::gpu::map_details_tools::splatter_details;
 use crate::render::models::gpu::MapDetailVertex;
-use crate::render::models::sprite_sheet::{SPRITE_GROUP_CONFIG_HILLS,
-                                          SPRITE_GROUP_CONFIG_MOUNTAINS, SPRITE_GROUP_CONFIG_TREES,
-};
 
 pub fn build_tile_details(
     rng: &mut Random,
@@ -22,7 +19,7 @@ pub fn build_tile_details(
                 config,
                 out_vertices,
                 &tile.tile_position,
-                &SPRITE_GROUP_CONFIG_HILLS,
+                &config.map_details.hills,
                 false,
             );
         }
@@ -32,7 +29,7 @@ pub fn build_tile_details(
                 config,
                 out_vertices,
                 &tile.tile_position,
-                &SPRITE_GROUP_CONFIG_MOUNTAINS,
+                &config.map_details.mountains,
                 false,
             );
         }
@@ -46,7 +43,7 @@ pub fn build_tile_details(
                 config,
                 out_vertices,
                 &tile.tile_position,
-                &SPRITE_GROUP_CONFIG_TREES,
+                &config.map_details.trees,
                 false,
             );
         }
