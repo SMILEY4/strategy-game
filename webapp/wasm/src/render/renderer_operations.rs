@@ -3,8 +3,8 @@ use crate::render::gpu::overlay::build_overlay_data;
 use crate::render::gpu::routes::{build_route_highlights, build_routes};
 use crate::render::gpu::terrain::build_terrain_data;
 use crate::render::gpu::tile_grid::build_tile_grid_data;
-use crate::render::statial::chunk_visibility::calculate_visible_chunks;
-use crate::render::statial::spatial_indexing::{calculate_chunks, check_changes};
+use crate::render::spatial::chunk_visibility::calculate_visible_chunks;
+use crate::render::spatial::spatial_indexing::{calculate_chunks, check_changes};
 use crate::render::Renderer;
 
 impl Renderer {
@@ -26,8 +26,7 @@ impl Renderer {
     }
 
     pub fn build_overlay_instances(&mut self) {
-        build_overlay_data(&self.state, &mut self.output);
-        build_route_highlights(&self.state, &self.config, &mut self.output);
+        build_overlay_data(&self.state, &self.config, &mut self.output);
     }
 
     pub fn build_grid_instances(&mut self) {

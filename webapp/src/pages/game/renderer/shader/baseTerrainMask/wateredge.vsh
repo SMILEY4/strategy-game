@@ -10,7 +10,7 @@ in vec3 in_vertexPositionA; // vertex position of vertex a / 1
 in vec3 in_vertexPositionB; // vertex position of vertex b / 2
 
 uniform mat4 u_camera;
-uniform float u_dbg_hexOffsetScale;
+uniform float u_hexOffsetScale;
 
 out vec2 v_worldPos;
 flat out vec2 v_worldPosA;
@@ -70,7 +70,7 @@ void main() {
     vec3 vertexWorldPosBwing = tileWorldCenter + rotatedVertexPositionBwing;
 
     // introduce random offset (based on unscaled world position)
-    vec2 offset = offsetVertexPosition(tileWorldCenter + rotatedVertexPosition, u_dbg_hexOffsetScale);
+    vec2 offset = offsetVertexPosition(tileWorldCenter + rotatedVertexPosition, u_hexOffsetScale);
     vec3 vertexWorldPosOffset = vertexWorldPos + vec3(offset.x, 0.0, offset.y);
 
     // Output variables to fragment shader

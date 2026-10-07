@@ -2,6 +2,15 @@ use crate::js::models::HexPosition;
 
 impl HexPosition {
 
+    /// Converts axial coordinates to the world-space coordinates used by the renderer.
+    pub fn to_world(self) -> [f32; 2] {
+        let sqrt_3 = 3.0_f32.sqrt();
+        [
+            sqrt_3 * self.q as f32 + (sqrt_3 / 2.0) * self.r as f32,
+            1.5 * self.r as f32,
+        ]
+    }
+
     /// Derived third cube coordinate: s = -q - r
     #[inline]
     pub fn s(&self) -> i32 {
@@ -9,6 +18,7 @@ impl HexPosition {
     }
 
     /// Distance between two hex positions
+    #[inline]
     pub fn distance(&self, other: &HexPosition) -> i32 {
         self.distance_qr(other.q, other.r)
     }
@@ -22,6 +32,7 @@ impl HexPosition {
     }
 
     /// Distance from the origin (0, 0, 0)
+    #[inline]
     pub fn length(&self) -> i32 {
         (self.q.abs() + self.r.abs() + self.s().abs()) / 2
     }

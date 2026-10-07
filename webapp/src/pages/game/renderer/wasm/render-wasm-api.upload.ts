@@ -2,7 +2,7 @@ import {type WasmRenderApp} from "wasm";
 import {tracer} from "@modules/monitoring/tracer.ts";
 import type {Tile} from "@app/features/game/models/tile.ts";
 import type {RenderEntity} from "@pages/game/renderer/data/render-entity.ts";
-import type {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.tsx";
 import {wasmSerializer} from "@modules/utilities/wasm-serializer.ts";
 import {memory as wasmMemory} from "wasm/wasm_bg.wasm";
 import type {Route} from "@app/features/game/models/route.ts";

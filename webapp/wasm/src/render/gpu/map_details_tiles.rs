@@ -1,13 +1,8 @@
-use crate::js::models::{Tile,
-                        TILE_ELEVATION_HILLS, TILE_ELEVATION_MOUNTAINS, TILE_FEATURE_FOREST,
-};
+use crate::js::models::{Tile, TileElevation, TileFeature};
 use crate::math::random::Random;
 use crate::render::config::Config;
 use crate::render::gpu::map_details_tools::splatter_details;
 use crate::render::models::gpu::MapDetailVertex;
-use crate::render::models::sprite_sheet::{SPRITE_GROUP_CONFIG_HILLS,
-                                          SPRITE_GROUP_CONFIG_MOUNTAINS, SPRITE_GROUP_CONFIG_TREES,
-};
 
 pub fn build_tile_details(
     rng: &mut Random,
@@ -18,23 +13,23 @@ pub fn build_tile_details(
     rng.set_seed(tile.rng_seed as u64);
 
     match tile.terrain.elevation {
-        TILE_ELEVATION_HILLS => {
+        TileElevation::Hills => {
             splatter_details(
                 rng,
                 config,
                 out_vertices,
                 &tile.tile_position,
-                &SPRITE_GROUP_CONFIG_HILLS,
+                &config.map_details.hills,
                 false,
             );
         }
-        TILE_ELEVATION_MOUNTAINS => {
+        TileElevation::Mountains => {
             splatter_details(
                 rng,
                 config,
                 out_vertices,
                 &tile.tile_position,
-                &SPRITE_GROUP_CONFIG_MOUNTAINS,
+                &config.map_details.mountains,
                 false,
             );
         }
@@ -42,13 +37,13 @@ pub fn build_tile_details(
     };
 
     match tile.terrain.feature {
-        TILE_FEATURE_FOREST => {
+        TileFeature::Forest => {
             splatter_details(
                 rng,
                 config,
                 out_vertices,
                 &tile.tile_position,
-                &SPRITE_GROUP_CONFIG_TREES,
+                &config.map_details.trees,
                 false,
             );
         }

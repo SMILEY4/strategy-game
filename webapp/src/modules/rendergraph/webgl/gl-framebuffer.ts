@@ -1,67 +1,20 @@
 import {GlError} from "./gl-error.ts";
 import type {GlDisposable} from "@modules/rendergraph/webgl/gl-disposable.ts";
+import {GLTextureAttachment} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 
 export type GLFramebufferConfig = {
     width: number,
     height: number,
-    attachments: GLFramebufferAttachmentConfig[]
+    attachments: ({
+        name: string,
+        attachment: GLTextureAttachment
+    })[]
 }
 
-export type GLFramebufferAttachmentConfig = GLFramebufferColorAttachmentConfig | GLFramebufferDepthAttachmentConfig
-
-type GLFramebufferColorAttachmentConfig = {
-    type: "color",
+interface InternalFramebufferAttachment {
     name: string,
-    format: GLColorStoreFormat
-}
-
-type GLFramebufferDepthAttachmentConfig = {
-    type: "depth",
-    name: string,
-    format: GLDepthStoreFormat
-}
-
-export class GLColorStoreFormat {
-    public static readonly RGBA_8 = new GLColorStoreFormat(WebGL2RenderingContext.RGBA8);
-    public static readonly RGB_8 = new GLColorStoreFormat(WebGL2RenderingContext.RGB8);
-    public static readonly RGBA_16F = new GLColorStoreFormat(WebGL2RenderingContext.RGBA16F);
-    public static readonly RGBA_32F = new GLColorStoreFormat(WebGL2RenderingContext.RGBA32F);
-    public static readonly R_8 = new GLColorStoreFormat(WebGL2RenderingContext.R8);
-    public static readonly R_16F = new GLColorStoreFormat(WebGL2RenderingContext.R16F);
-    public static readonly R_32F = new GLColorStoreFormat(WebGL2RenderingContext.R32F);
-
-    readonly id: GLint;
-
-    private constructor(id: GLint) {
-        this.id = id;
-    }
-}
-
-export class GLDepthStoreFormat {
-    public static readonly DEPTH_COMPONENT24 = new GLDepthStoreFormat(WebGL2RenderingContext.DEPTH_COMPONENT24);
-    public static readonly DEPTH_COMPONENT32F = new GLDepthStoreFormat(WebGL2RenderingContext.DEPTH_COMPONENT32F);
-    public static readonly DEPTH24_STENCIL8 = new GLDepthStoreFormat(WebGL2RenderingContext.DEPTH24_STENCIL8);
-
-    readonly id: GLint;
-
-    private constructor(id: GLint) {
-        this.id = id;
-    }
-}
-
-type GLFramebufferAttachment = GLFramebufferColorAttachment | GLFramebufferDepthAttachment
-
-interface GLFramebufferColorAttachment {
-    type: "color"
-    config: GLFramebufferColorAttachmentConfig
-    handle: WebGLTexture,
+    attachment: GLTextureAttachment,
     attachmentSlot: number
-}
-
-interface GLFramebufferDepthAttachment {
-    type: "depth"
-    config: GLFramebufferDepthAttachmentConfig
-    handle: WebGLTexture,
 }
 
 /**
@@ -84,10 +37,10 @@ class GlFramebuffer implements GlDisposable {
      * @param config the configuration of the framebuffer
      */
     public static create(gl: WebGL2RenderingContext, config: GLFramebufferConfig) {
-        const { width, height, attachments } = config;
+        const {width, height, attachments} = config;
 
-        if (attachments.filter(it => it.type === "depth").length > 1) {
-            throw new Error("Could not create framebuffer: too many depth attachments defined");
+        if (attachments.filter(it => it.attachment.getFormat().isDepth()).length > 1) {
+            throw new Error("Could not create framebuffer: more than one depth-attachment defined");
         }
 
         const fb = gl.createFramebuffer();
@@ -99,57 +52,33 @@ class GlFramebuffer implements GlDisposable {
         gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
         GlError.check(gl, "bindFramebuffer", "binding framebuffer");
 
-        const fbAttachments: GLFramebufferAttachment[] = [];
-
+        const internalAttachments: InternalFramebufferAttachment[] = [];
         let colorAttachmentSlot = 0;
-        attachments.forEach(attachment => {
-            const textureHandle = gl.createTexture();
-            GlError.check(gl, "createTexture", "creating framebuffer attachment");
-            if (!textureHandle) {
-                throw new Error("Could not create framebuffer attachment");
-            }
+        attachments.forEach(attachmentConfig => {
 
-            gl.bindTexture(gl.TEXTURE_2D, textureHandle);
-            GlError.check(gl, "bindTexture", "binding framebuffer attachment");
+            const attachmentPoint = GlFramebuffer.getAttachmentPoint(gl, attachmentConfig.attachment, colorAttachmentSlot)
 
-            const filter = attachment.type === "depth" ? gl.NEAREST : gl.LINEAR;
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            GlError.check(gl, "texParameteri", "setting parameters of framebuffer attachment");
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, attachmentConfig.attachment.getHandle(), 0);
 
-            gl.texStorage2D(gl.TEXTURE_2D, 1, attachment.format.id, width, height);
-            GlError.check(gl, "texStorage2D", "reserving memory for framebuffer attachment");
-
-            const attachmentPoint = attachment.type === "depth"
-                ? (attachment.format.id === WebGL2RenderingContext.DEPTH24_STENCIL8
-                    ? gl.DEPTH_STENCIL_ATTACHMENT
-                    : gl.DEPTH_ATTACHMENT)
-                : gl.COLOR_ATTACHMENT0 + colorAttachmentSlot;
-
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, textureHandle, 0);
-
-            if (attachment.type === "color") {
-                fbAttachments.push({
-                    type: "color",
-                    config: attachment as GLFramebufferColorAttachmentConfig,
-                    handle: textureHandle,
+            if (attachmentConfig.attachment.getFormat().isColor()) {
+                internalAttachments.push({
+                    name: attachmentConfig.name,
+                    attachment: attachmentConfig.attachment,
                     attachmentSlot: colorAttachmentSlot,
                 });
                 colorAttachmentSlot++;
             } else {
-                fbAttachments.push({
-                    type: "depth",
-                    config: attachment as GLFramebufferDepthAttachmentConfig,
-                    handle: textureHandle,
+                internalAttachments.push({
+                    name: attachmentConfig.name,
+                    attachment: attachmentConfig.attachment,
+                    attachmentSlot: -1,
                 });
             }
         });
 
         // Enable drawBuffers whenever there is 1 or more color buffers
-        const drawBuffers: GLenum[] = fbAttachments
-            .filter((att): att is GLFramebufferColorAttachment => att.type === "color")
+        const drawBuffers: GLenum[] = internalAttachments
+            .filter(att => att.attachment.getFormat().isColor())
             .map(att => gl.COLOR_ATTACHMENT0 + att.attachmentSlot);
 
         if (drawBuffers.length > 0) {
@@ -168,12 +97,22 @@ class GlFramebuffer implements GlDisposable {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         GlError.check(gl, "bindFramebuffer", "unbinding framebuffer");
 
-        return new GlFramebuffer(gl, width, height, fb, fbAttachments);
+        return new GlFramebuffer(gl, width, height, fb, internalAttachments);
+    }
+
+    private static getAttachmentPoint(gl: WebGL2RenderingContext, attachment: GLTextureAttachment, slot: number) {
+        return attachment.getFormat().isDepth()
+            ? (
+                attachment.getFormat().getId() === WebGL2RenderingContext.DEPTH24_STENCIL8
+                    ? gl.DEPTH_STENCIL_ATTACHMENT
+                    : gl.DEPTH_ATTACHMENT
+            )
+            : gl.COLOR_ATTACHMENT0 + slot;
     }
 
     private readonly gl: WebGL2RenderingContext;
     private readonly handle: WebGLFramebuffer;
-    private readonly attachments: GLFramebufferAttachment[];
+    private readonly attachments: InternalFramebufferAttachment[];
     private readonly attachmentMapping = new Map<string, number>();
     private width: number;
     private height: number;
@@ -183,7 +122,7 @@ class GlFramebuffer implements GlDisposable {
         width: number,
         height: number,
         handle: WebGLFramebuffer,
-        attachments: GLFramebufferAttachment[],
+        attachments: InternalFramebufferAttachment[],
     ) {
         this.gl = gl;
         this.handle = handle;
@@ -191,7 +130,7 @@ class GlFramebuffer implements GlDisposable {
         this.height = height;
         this.attachments = attachments;
         attachments.forEach((attachment, index) => {
-            this.attachmentMapping.set(attachment.config.name, index);
+            this.attachmentMapping.set(attachment.name, index);
         });
     }
 
@@ -211,39 +150,11 @@ class GlFramebuffer implements GlDisposable {
         }
 
         this.attachments.forEach(attachment => {
-            // Delete old immutable texture handle
-            this.gl.deleteTexture(attachment.handle);
-
-            // Re-create new texture handle
-            const newTexture = this.gl.createTexture();
-            if (!newTexture) {
-                throw new Error("Failed to re-allocate texture during framebuffer resize");
-            }
-
-            const filter = attachment.type === "depth" ? this.gl.NEAREST : this.gl.LINEAR;
-            this.gl.bindTexture(this.gl.TEXTURE_2D, newTexture);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, filter);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, filter);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-
-            // Allocate fresh immutable storage with new dimensions
-            this.gl.texStorage2D(this.gl.TEXTURE_2D, 1, attachment.config.format.id, width, height);
-
-            const attachmentPoint = attachment.type === "depth"
-                ? (attachment.config.format.id === WebGL2RenderingContext.DEPTH24_STENCIL8
-                    ? this.gl.DEPTH_STENCIL_ATTACHMENT
-                    : this.gl.DEPTH_ATTACHMENT)
-                : this.gl.COLOR_ATTACHMENT0 + attachment.attachmentSlot;
-
-            // Re-attach to FBO
-            this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, attachmentPoint, this.gl.TEXTURE_2D, newTexture, 0);
-
-            // Update local object reference
-            attachment.handle = newTexture;
+            attachment.attachment.resize(width, height);
+            const attachmentPoint = GlFramebuffer.getAttachmentPoint(this.gl, attachment.attachment, attachment.attachmentSlot)
+            this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, attachmentPoint, this.gl.TEXTURE_2D, attachment.attachment.getHandle(), 0);
         });
 
-        // check status
         const status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
         if (status !== this.gl.FRAMEBUFFER_COMPLETE) {
             throw new Error(`Framebuffer incomplete after resize: ${status}`);
@@ -267,15 +178,12 @@ class GlFramebuffer implements GlDisposable {
      * @param textureUnit the target texture unit
      */
     public bindTexture(attachmentName: string, textureUnit: number) {
-        const attachment = this.attachments[this.attachmentMapping.get(attachmentName) ?? -1];
-        if (!attachment) {
-            throw new Error(`Framebuffer has no attachment with name: '${attachmentName}'`);
-        }
+        const attachment = this.getAttachment(attachmentName)
 
         this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
         GlError.check(this.gl, "activeTexture", "set active texture unit");
 
-        this.gl.bindTexture(this.gl.TEXTURE_2D, attachment.handle);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, attachment.getHandle());
         GlError.check(this.gl, "bindTexture", "binding texture");
     }
 
@@ -283,9 +191,17 @@ class GlFramebuffer implements GlDisposable {
         this.gl.deleteFramebuffer(this.handle);
         GlError.check(this.gl, "deleteFramebuffer", "disposing framebuffer");
         this.attachments.forEach(attachment => {
-            this.gl.deleteTexture(attachment.handle);
-            GlError.check(this.gl, "deleteTexture", `disposing framebuffer attachment: ${attachment.config.name}`);
+            attachment.attachment.dispose(); // todo: how to handle shared attachments? configure with "allowDispose" flag?
         });
+    }
+
+
+    public getAttachment(attachmentName: string): GLTextureAttachment {
+        const attachment = this.attachments[this.attachmentMapping.get(attachmentName) ?? -1];
+        if (!attachment) {
+            throw new Error(`Framebuffer has no attachment with name: '${attachmentName}'`);
+        }
+        return attachment.attachment
     }
 }
 

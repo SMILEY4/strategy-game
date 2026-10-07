@@ -3,6 +3,7 @@ import {GameUi} from "@pages/game/gameui/GameUi.tsx";
 import {useGamePlayingViewModel} from "@pages/game/game-playing.view-model.ts";
 import {Canvas} from "@modules/uicomponents/canvas/Canvas.tsx";
 import {WindowStack} from "@modules/uicomponents/window/WindowStack.tsx";
+import {DevUI} from "@pages/game/dev/DevUI.tsx";
 
 export function GamePlayingPage() {
 
@@ -10,25 +11,28 @@ export function GamePlayingPage() {
 
     return (
         <div className="game">
+            <DevUI/>
 
-            <Canvas
-                className="game-canvas"
-                onInitialize={canvas => viewModel.onInitialize(canvas)}
-                onUpdate={() => viewModel.onUpdate()}
-                onResize={canvas => viewModel.onResize(canvas)}
-                onDispose={() => viewModel.onDispose()}
-                onMouseMove={(mx, my, x, y, buttons) => viewModel.onMouseMove(mx, my, x, y, buttons)}
-                onMouseClick={(x, y) => viewModel.onMouseClick(x, y)}
-                onMouseScroll={(delta, x, y) => viewModel.onMouseScroll(delta, x, y)}
-            />
+            <div className="game-stage">
+                <Canvas
+                    className="game-canvas"
+                    onInitialize={viewModel.onInitialize}
+                    onUpdate={viewModel.onUpdate}
+                    onResize={viewModel.onResize}
+                    onDispose={viewModel.onDispose}
+                    onMouseMove={viewModel.onMouseMove}
+                    onMouseClick={viewModel.onMouseClick}
+                    onMouseScroll={viewModel.onMouseScroll}
+                />
 
-            <div className="game-overlay" id="game-overlay"/>
+                <div className="game-overlay" id="game-overlay"/>
 
-            <div className="game-interface">
-                <GameUi/>
+                <div className="game-interface">
+                    <GameUi/>
+                </div>
+
+                <WindowStack className={"game-window-stack"}/>
             </div>
-
-            <WindowStack className={"game-window-stack"}/>
 
         </div>
     );

@@ -1,5 +1,6 @@
 import {DI} from "@app/app.ts";
 import {GameRenderer} from "@pages/game/renderer/game-renderer.ts";
+import {useCallback} from "react";
 
 interface GamePlayingViewModel {
     onInitialize: (canvas: HTMLCanvasElement) => void;
@@ -11,23 +12,23 @@ interface GamePlayingViewModel {
     onDispose: () => void
 }
 
-const renderer = new GameRenderer()
+export const renderer = new GameRenderer()
 
 export function useGamePlayingViewModel(): GamePlayingViewModel {
 
-    const onInitialize = (canvas: HTMLCanvasElement) => {
+    const onInitialize = useCallback((canvas: HTMLCanvasElement) => {
         renderer.initialize(canvas)
-    };
+    }, []);
 
-    const onUpdate = () => {
+    const onUpdate = useCallback(() => {
         DI.gameEngine.onUpdate()
         renderer.update()
-    };
+    }, []);
 
-    const onResize = (canvas: HTMLCanvasElement) => {
+    const onResize = useCallback((canvas: HTMLCanvasElement) => {
         DI.gameEngine.onResize(canvas.width, canvas.height);
         renderer.resize(canvas)
-    };
+    }, []);
 
     const onMouseMove = DI.gameEngine.onMouseMove;
 
@@ -35,7 +36,7 @@ export function useGamePlayingViewModel(): GamePlayingViewModel {
 
     const onMouseScroll = DI.gameEngine.onScroll;
 
-    const onDispose = renderer.dispose
+    const onDispose = useCallback(() => renderer.dispose(), []);
 
     return {
         onInitialize: onInitialize,

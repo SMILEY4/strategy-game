@@ -1,23 +1,11 @@
-use crate::js::models::{
-    HexPosition, Tile, TILE_BIOME_GRASSLAND, TILE_BIOME_OCEAN, TILE_ELEVATION_MOUNTAINS,
-    TILE_FEATURE_FOREST,
-};
+use crate::js::models::{CreateSettlementValidity, HexPosition, Tile};
 use crate::render::models::gpu::{
     GenericEdgeOverlayInstance, GenericFillOverlayInstance, OVERLAY_EDGE_STYLE_DASHED,
     OVERLAY_EDGE_STYLE_FILLED, OVERLAY_FILL_STYLE_FILLED, OVERLAY_FILL_STYLE_STRIPED,
 };
 use crate::render::state_render::RenderState;
-use crate::render::state_render::RealmColor;
-
-const NEUTRAL_COLOR: RealmColor = RealmColor {
-    red: 0.5,
-    green: 0.5,
-    blue: 0.5,
-};
-
-const POLITICAL_FILL_ALPHA: f32 = 0.35;
-
-
+use crate::render::config::OverlayConfig;
+use crate::render::models::realm_color::RealmColor;
 //===== NO-OP ======================================
 
 pub fn fill_none(_: &RenderState, _: &Tile, _: &mut Vec<GenericFillOverlayInstance>) {}
@@ -36,6 +24,7 @@ pub fn edges_entity_control(
     state: &RenderState,
     tile: &Tile,
     tiles_by_pos: &rustc_hash::FxHashMap<HexPosition, usize>,
+    config: &OverlayConfig,
     output: &mut Vec<GenericEdgeOverlayInstance>,
 ) {
     let entity_id = state.selected_entity_id;
@@ -83,9 +72,9 @@ pub fn edges_entity_control(
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
-                color: [1.0, 1.0, 1.0, 1.0],
+                color: config.entity_control_color,
                 style: OVERLAY_EDGE_STYLE_DASHED,
-                thickness: 0.05
+                thickness: config.entity_control_entity_thickness
             });
         }
 
@@ -93,9 +82,9 @@ pub fn edges_entity_control(
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
-                color: [1.0, 1.0, 1.0, 1.0],
+                color: config.entity_control_color,
                 style: OVERLAY_EDGE_STYLE_DASHED,
-                thickness: 0.1
+                thickness: config.entity_control_settlement_thickness
             });
         }
     }
@@ -106,12 +95,13 @@ pub fn edges_entity_control(
 pub fn fill_mapmode_political(
     state: &RenderState,
     tile: &Tile,
+    config: &OverlayConfig,
     output: &mut Vec<GenericFillOverlayInstance>,
 ) {
     if let Some(realm_id) = owner_realm(tile) {
         output.push(fill_instance(
             tile,
-            realm_color(state, realm_id).with_alpha(POLITICAL_FILL_ALPHA),
+            realm_color(state, realm_id).with_alpha(config.political_fill_alpha),
             if tile.conversion_active && tile.converting_realm == 0 {
                 OVERLAY_FILL_STYLE_STRIPED
             } else {
@@ -123,7 +113,7 @@ pub fn fill_mapmode_political(
     if let Some(realm_id) = converting_realm(tile) {
         output.push(fill_instance(
             tile,
-            realm_color(state, realm_id).with_alpha(POLITICAL_FILL_ALPHA),
+            realm_color(state, realm_id).with_alpha(config.political_fill_alpha),
             OVERLAY_FILL_STYLE_STRIPED,
         ));
     }
@@ -133,6 +123,7 @@ pub fn edges_mapmode_political(
     state: &RenderState,
     tile: &Tile,
     tiles_by_pos: &rustc_hash::FxHashMap<HexPosition, usize>,
+    config: &OverlayConfig,
     output: &mut Vec<GenericEdgeOverlayInstance>,
 ) {
     let Some(realm_id) = owner_realm(tile) else {
@@ -142,7 +133,7 @@ pub fn edges_mapmode_political(
         .realm_colors
         .get(&realm_id)
         .copied()
-        .unwrap_or(NEUTRAL_COLOR);
+        .unwrap_or(RealmColor::NEUTRAL);
 
     for (direction, neighbour_position) in neighbour_directions(tile.tile_position) {
         let neighbour_realm = tiles_by_pos
@@ -153,9 +144,9 @@ pub fn edges_mapmode_political(
             output.push(GenericEdgeOverlayInstance {
                 position: position(tile),
                 direction,
-                color: color.with_alpha(1.0),
+                color: color.with_alpha(config.political_edge_alpha),
                 style: OVERLAY_EDGE_STYLE_FILLED,
-                thickness: 0.1
+                thickness: config.political_edge_thickness
             });
         }
     }
@@ -166,29 +157,22 @@ pub fn edges_mapmode_political(
 pub fn fill_mapmode_settlement_locations(
     _: &RenderState,
     tile: &Tile,
+    config: &OverlayConfig,
     output: &mut Vec<GenericFillOverlayInstance>,
 ) {
-    if tile.create_settlement_validity == 1 {
+    if tile.create_settlement_validity == CreateSettlementValidity::ValidTerrain {
         output.push(fill_instance(
             tile,
-            [0.2, 0.6, 0.25, 0.35],
+            config.settlement_location_color,
             OVERLAY_FILL_STYLE_STRIPED,
         ));
-    } else if tile.create_settlement_validity == 2 {
+    } else if tile.create_settlement_validity == CreateSettlementValidity::Valid {
         output.push(fill_instance(
             tile,
-            [0.2, 0.6, 0.25, 0.35],
+            config.settlement_location_color,
             OVERLAY_FILL_STYLE_FILLED,
         ));
     }
-}
-
-pub fn edges_mapmode_settlement_locations(
-    _: &RenderState,
-    _: &Tile,
-    _: &rustc_hash::FxHashMap<HexPosition, usize>,
-    _: &mut Vec<GenericEdgeOverlayInstance>,
-) {
 }
 
 //===== UTILITIES ==================================
@@ -218,7 +202,7 @@ fn realm_color(state: &RenderState, realm_id: u32) -> RealmColor {
         .realm_colors
         .get(&realm_id)
         .copied()
-        .unwrap_or(NEUTRAL_COLOR)
+        .unwrap_or(RealmColor::NEUTRAL)
 }
 
 fn control_amount_by_entity(state: &RenderState, tile: &Tile, entity_id: u32) -> f32 {

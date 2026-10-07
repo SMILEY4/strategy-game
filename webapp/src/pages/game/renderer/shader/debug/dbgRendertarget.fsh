@@ -18,6 +18,11 @@ void main() {
     float depth = linearizeDepth(texture(u_depthTexture, v_textureCoordinates).r, 0.1, 400.0);
 
 //    outColor = vec4(vec3(depth), 1.0);
-    outColor = vec4(color);
+    outColor = vec4(
+        clamp(color.r, 0.0, 1.0),
+        clamp(color.g, 0.0, 1.0),
+        clamp(color.b, 0.0, 1.0),
+        clamp(color.a, 0.0, 1.0)
+    );
 
 }

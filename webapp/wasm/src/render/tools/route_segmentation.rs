@@ -1,6 +1,6 @@
 use crate::js::models::{HexPosition, RoutePoint};
-use crate::render::models::RouteSegment::RouteSegment;
-use std::collections::HashMap;
+use crate::render::models::route_segment::RouteSegment;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq)]
 struct EdgeKey(HexPosition, HexPosition);
@@ -196,15 +196,21 @@ impl RouteGraph {
     fn create_route_segment(&self, path: &[usize]) -> RouteSegment {
         let mut route_ids = Vec::new();
         let mut connected_entity_ids = Vec::new();
+        let mut route_id_set = HashSet::new();
+        let mut connected_entity_id_set = HashSet::new();
         let edge_indices = path
             .windows(2)
             .map(|vertices| self.edge_between(vertices[0], vertices[1]));
         for edge in edge_indices {
             for &route_id in &self.edges[edge].route_ids {
-                add_unique(&mut route_ids, route_id);
+                if route_id_set.insert(route_id) {
+                    route_ids.push(route_id);
+                }
             }
             for &entity_id in &self.edges[edge].connected_entity_ids {
-                add_unique(&mut connected_entity_ids, entity_id);
+                if connected_entity_id_set.insert(entity_id) {
+                    connected_entity_ids.push(entity_id);
+                }
             }
         }
 

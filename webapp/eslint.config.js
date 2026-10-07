@@ -25,7 +25,14 @@ export default defineConfig([
             ],
             "@typescript-eslint/no-explicit-any": "off",
             'react-refresh/only-export-components': 'off',
-            'react-hooks/refs': 'off'
+            'react-hooks/refs': 'off',
+            '@typescript-eslint/consistent-type-imports': [
+                'error',
+                {
+                    prefer: 'type-imports',
+                    fixStyle: 'separate-type-imports',
+                },
+            ],
         },
         languageOptions: {
             globals: globals.browser,

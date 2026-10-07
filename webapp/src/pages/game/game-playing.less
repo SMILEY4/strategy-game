@@ -1,8 +1,17 @@
 .game {
+	display: flex;
 	width:  100%;
 	height: 100%;
+	position: relative;
+	overflow: hidden;
 
-	> .game-canvas {
+	> .game-stage {
+		position: relative;
+		flex: 1 1 auto;
+		min-width: 0;
+		height: 100%;
+
+		> .game-canvas {
 		position: absolute;
 		top:      0;
 		bottom:   0;
@@ -16,40 +25,40 @@
 			width:            100%;
 			height:           100%;
 		}
-	}
-
-	> .game-overlay {
-		position:       absolute;
-		top:            0;
-		bottom:         0;
-		left:           0;
-		right:          0;
-		pointer-events: none;
-	}
-
-	> .game-interface {
-		position:       absolute;
-		top:            0;
-		bottom:         0;
-		left:           0;
-		right:          0;
-
-		overflow:       hidden;
-		pointer-events: none;
-
-		> * {
-			pointer-events: all;
 		}
 
-	}
+		> .game-overlay {
+			position:       absolute;
+			top:            0;
+			bottom:         0;
+			left:           0;
+			right:          0;
+			pointer-events: none;
+		}
 
-	> .game-window-stack {
-		position: absolute;
-		top:      0;
-		bottom:   0;
-		left:     0;
-		right:    0;
+		> .game-interface {
+			position:       absolute;
+			top:            0;
+			bottom:         0;
+			left:           0;
+			right:          0;
+
+			overflow:       hidden;
+			pointer-events: none;
+
+			> * {
+				pointer-events: all;
+			}
+
+		}
+
+		> .game-window-stack {
+			position: absolute;
+			top:      0;
+			bottom:   0;
+			left:     0;
+			right:    0;
+		}
 	}
 
 }
-

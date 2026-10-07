@@ -1,7 +1,8 @@
 use crate::js::models::{Control, Entity, RoutePoint, Tile};
 use crate::render::Renderer;
-use crate::render::state_render::RealmColor;
 use crate::render::tools::route_segmentation::segment_routes;
+use crate::render::MapMode;
+use crate::render::models::realm_color::RealmColor;
 
 impl Renderer {
     pub fn set_tiles(&mut self, tiles: Vec<Tile>) {
@@ -35,7 +36,7 @@ impl Renderer {
     }
 
     pub fn set_map_mode(&mut self, map_mode: u32) {
-        self.state.map_mode = map_mode;
+        self.state.map_mode = MapMode::from_numeric_id(map_mode);
     }
 
     pub fn set_selected_entity_id(&mut self, entity_id: Option<u32>) {

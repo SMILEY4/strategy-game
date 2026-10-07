@@ -50,7 +50,7 @@ impl DirectBuffer {
     }
 }
 
-pub fn as_js_buffer<T>(vertices: &Vec<T>) -> Uint8Array {
+pub fn as_js_buffer<T>(vertices: &[T]) -> Uint8Array {
     let byte_len = vertices.len() * size_of::<T>();
     let ptr = vertices.as_ptr() as *const u8;
     unsafe { Uint8Array::view(std::slice::from_raw_parts(ptr, byte_len)) }

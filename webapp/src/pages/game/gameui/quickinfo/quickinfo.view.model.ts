@@ -24,6 +24,13 @@ export interface QuickInfoTileViewModel {
         biome: string,
         feature: string,
     }
+    resources: ({
+        type: string,
+        amount: number,
+        maxAmount: number,
+        changeRate: number,
+        removeOnDeplete: number
+    })[],
     control: ({ source: string, amount: number })[],
     owner: number | null,
     conversion: null | string,
@@ -105,6 +112,9 @@ function useBuildTileQuickInfo(tileRef: HexPosition & { id: number } | null): Qu
                 feature: tile.world.value.feature,
             }
             : null,
+        resources: tile.world.visible
+            ? tile.world.value.resources
+            : [],
         control: tile.political.visible
             ? tile.political.value.control.map(it => ({
                 source: it.realm + "/" + it.entity,

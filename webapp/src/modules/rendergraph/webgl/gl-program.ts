@@ -216,10 +216,10 @@ export class GlProgram implements GlDisposable {
      * @param srcVertex the complete source code of the vertex shader
      * @param srcFragment the complete source code of the fragment shader
      */
-    public static create(gl: WebGL2RenderingContext, srcVertex: string, srcFragment: string) {
+    public static create(gl: WebGL2RenderingContext, srcVertex: string, srcFragment: string, name?: string) {
         const shaderVertex = GlProgram.createShader(gl, GLShaderType.VERTEX, srcVertex);
         const shaderFragment = GlProgram.createShader(gl, GLShaderType.FRAGMENT, srcFragment);
-        const program = GlProgram.createProgram(gl, shaderVertex, shaderFragment);
+        const program = GlProgram.createProgram(gl, shaderVertex, shaderFragment, name);
         const uniforms = GlProgram.getUniforms(gl, program);
         const attributes = GlProgram.getAttributes(gl, program);
         const information = {uniforms: uniforms, attributes: attributes};
@@ -269,7 +269,7 @@ export class GlProgram implements GlDisposable {
      * @param shaderFragment the fragment shader
      * @private
      */
-    private static createProgram(gl: WebGL2RenderingContext, shaderVertex: WebGLShader, shaderFragment: WebGLShader): WebGLProgram {
+    private static createProgram(gl: WebGL2RenderingContext, shaderVertex: WebGLShader, shaderFragment: WebGLShader, name?: string): WebGLProgram {
         // create new program handle
         const program = gl.createProgram();
         GlError.check(gl, "createProgram", "creating program");
@@ -291,13 +291,15 @@ export class GlProgram implements GlDisposable {
         if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
             return program;
         } else {
+            const linkLog = gl.getProgramInfoLog(program);
+            console.error("Error during shader-program linking", {name, linkLog});
             gl.deleteShader(shaderVertex)
             GlError.check(gl, "deleteShader", "deleting vertex shader after failed program");
             gl.deleteShader(shaderFragment);
             GlError.check(gl, "deleteShader", "deleting fragment shader after failed program");
             gl.deleteProgram(program);
             GlError.check(gl, "deleteProgram", "deleting failed program");
-            throw new Error("Error during shader-program creation");
+            throw new Error(`Error during shader-program creation (${name ?? "unnamed"}): ${linkLog ?? "unknown link error"}`);
         }
     }
 

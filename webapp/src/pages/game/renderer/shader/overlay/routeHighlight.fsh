@@ -5,6 +5,7 @@ in vec2 v_textureCoordinates;
 in float v_pathLength;
 
 uniform sampler2D u_texture;
+uniform vec4 u_color;
 
 out vec4 outColor;
 
@@ -17,7 +18,5 @@ void main() {
 
     float texture = 1.0 - texture(u_texture, uv).r;
 
-    vec3 color = vec3(1.0);
-
-    outColor = vec4(color, texture);
+    outColor = vec4(u_color.rgb, texture * u_color.a);
 }

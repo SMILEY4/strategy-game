@@ -2,7 +2,7 @@ import type {RenderGraphNodeBase} from "@modules/rendergraph/nodes/rg-node.ts";
 import type {DrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.draw.ts";
 import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.ts";
 import type {CanvasSizeRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.canvas-size.ts";
-import {type GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-framebuffer.ts";
+import {type GLColorStoreFormat, GLDepthStoreFormat} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 
 export interface RendertargetRenderGraphNode<TKeys extends string> extends RenderGraphNodeBase<"rendertarget"> {
     readonly size: DataRenderGraphNode<[number, number]> | CanvasSizeRenderGraphNode;
@@ -12,7 +12,7 @@ export interface RendertargetRenderGraphNode<TKeys extends string> extends Rende
     readonly clearColor: [number, number, number, number] | null,
 }
 
-export type RendertargetAttachment = RendertargetColorAttachment | RendertargetDepthAttachment
+export type RendertargetAttachment = RendertargetColorAttachment | RendertargetDepthAttachment | RendertargetRefAttachment
 
 export interface RendertargetColorAttachment {
     type: "color"
@@ -22,4 +22,10 @@ export interface RendertargetColorAttachment {
 export interface RendertargetDepthAttachment {
     type: "depth"
     format: GLDepthStoreFormat
+}
+
+export interface RendertargetRefAttachment {
+    type: "ref"
+    source: RendertargetRenderGraphNode<string>,
+    sourceAttachmentName: string
 }

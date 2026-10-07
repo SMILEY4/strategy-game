@@ -1,27 +1,32 @@
 use crate::js::models::{Control, Entity, HexPosition, Tile};
 use crate::render::models::chunk::Chunk;
-use crate::render::models::RouteSegment::RouteSegment;
+use crate::render::models::route_segment::RouteSegment;
+use crate::render::MapMode;
 use rustc_hash::FxHashMap;
 use std::collections::HashSet;
+use crate::render::models::realm_color::RealmColor;
 
-#[derive(Clone, Copy)]
-pub struct RealmColor {
-    pub red: f32,
-    pub green: f32,
-    pub blue: f32,
-}
-
-impl RealmColor {
-    pub fn from_rgb(red: u8, green: u8, blue: u8) -> Self {
-        Self {
-            red: red as f32 / 255.0,
-            green: green as f32 / 255.0,
-            blue: blue as f32 / 255.0,
-        }
+impl RenderState {
+    pub fn visible_tile_indices(&self) -> impl Iterator<Item = usize> + '_ {
+        self.visible_chunks
+            .iter()
+            .filter_map(|chunk_key| self.chunks.get(chunk_key))
+            .flat_map(|chunk| chunk.tiles.iter().copied())
     }
 
-    pub fn with_alpha(self, alpha: f32) -> [f32; 4] {
-        [self.red, self.green, self.blue, alpha]
+    pub fn visible_tiles(&self) -> impl Iterator<Item = Tile> + '_ {
+        self.visible_tile_indices().map(|index| self.tiles[index])
+    }
+
+    pub fn visible_entity_indices(&self) -> impl Iterator<Item = usize> + '_ {
+        self.visible_chunks
+            .iter()
+            .filter_map(|chunk_key| self.chunks.get(chunk_key))
+            .flat_map(|chunk| chunk.entities.iter().copied())
+    }
+
+    pub fn visible_entities(&self) -> impl Iterator<Item = Entity> + '_ {
+        self.visible_entity_indices().map(|index| self.entities[index])
     }
 }
 
@@ -32,7 +37,7 @@ pub struct RenderState {
     pub realm_colors: FxHashMap<u32, RealmColor>,
     pub entities: Vec<Entity>,
     pub route_segments: Vec<RouteSegment>,
-    pub map_mode: u32,
+    pub map_mode: MapMode,
     pub selected_settlement_id: Option<u32>,
     pub selected_entity_id: Option<u32>,
     pub tiles_by_position: FxHashMap<HexPosition, usize>,

@@ -1,12 +1,12 @@
 import {type TileDatabase, TileQueries} from "@app/features/game/database/tile.database.ts";
 import type {CameraDatabase} from "@app/features/game/database/camera.database.ts";
-import type {DebugData, DebugDatabase} from "@app/features/game/database/debug.database.ts";
+import type {DeveloperSettings, DeveloperSettingsDatabase} from "@app/features/game/database/developer-settings.database.ts";
 import type {HexPosition} from "@app/features/game/models/hex-position.ts";
 import type {SelectedTileDatabase} from "@app/features/game/database/selected-tile.database.ts";
 import {type EntityDatabase, EntityQueries} from "@app/features/game/database/entity.database.ts";
 import {type CommandDatabase, CommandQueries} from "@app/features/game/database/command.database.ts";
 import type {PointerPosition, PointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
-import type {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.tsx";
 import type {Entity} from "@app/features/game/models/entity.ts";
 import type {MapModeDatabase} from "@app/features/game/database/mapmode.database.ts";
 import type {Camera} from "@app/features/game/models/camera.ts";
@@ -24,7 +24,7 @@ import {getInteractionContext, getInteractionState, isInteractionActive} from "@
 export type RendererMapInteractionMode = "default" | "pick-tile"
 
 export interface GameRendererDataProvider {
-    getDebugData: () => VersionedLazy<DebugData>
+    getDeveloperSettings: () => VersionedLazy<DeveloperSettings>
     getCamera: () => VersionedLazy<Camera>,
     getTiles: () => VersionedLazy<Tile[]>,
     getEntities: () => VersionedLazy<Entity[]>,
@@ -50,7 +50,7 @@ interface Dependencies {
     cameraDb: CameraDatabase;
     pointerPositionDb: PointerPositionDatabase
     interactionDb: InteractionDatabase,
-    debugDb: DebugDatabase;
+    developerSettingsDatabase: DeveloperSettingsDatabase;
 }
 
 export const gameRendererDataProvider = (dependencies: Dependencies): GameRendererDataProvider => {
@@ -66,14 +66,14 @@ export const gameRendererDataProvider = (dependencies: Dependencies): GameRender
         cameraDb,
         pointerPositionDb,
         interactionDb,
-        debugDb,
+        developerSettingsDatabase,
     } = dependencies;
 
     return {
 
-        getDebugData: () => createVersionedLazy<DebugData>(
-            debugDb.getRevId(),
-            () => debugDb.get(),
+        getDeveloperSettings: () => createVersionedLazy<DeveloperSettings>(
+            developerSettingsDatabase.getRevId(),
+            () => developerSettingsDatabase.get(),
         ),
 
         getCamera: () => createVersionedLazy<Camera>(

@@ -14,6 +14,7 @@ import type {
 import {assertExhaustive} from "@modules/utilities/assert-exhaustive.ts";
 
 import type {ValueEntry} from "@modules/rendergraph/compile/value-entry.ts";
+import {GLTextureAttachment} from "@modules/rendergraph/webgl/gl-texture-attachment.ts";
 
 /** Factory function that creates a [WebGlExecutionContext] for a given canvas element. */
 export type WebglExecutionContextFactory = (canvas: HTMLCanvasElement) => WebGlExecutionContext
@@ -27,6 +28,11 @@ export class WebGlExecutionContext {
         if (!gl) {
             throw new Error("webgl2 is not supported!");
         }
+
+        if (!gl.getExtension("EXT_color_buffer_float")) {
+            console.error("EXT_color_buffer_float is not supported on this device/browser.");
+        }
+
         return new WebGlExecutionContext(resources, gl);
     }
 
@@ -58,7 +64,7 @@ export class WebGlExecutionContext {
                 return;
             }
             if (resource.type === "framebuffer") {
-                loadFramebuffer(this.gl, resource);
+                loadFramebuffer(this.gl, resource, this.resources);
                 return;
             }
             if (resource.type === "program") {
@@ -88,33 +94,48 @@ export class WebGlExecutionContext {
             });
         }
 
-        function loadFramebuffer(gl: WebGL2RenderingContext, resource: WebGlFramebufferResource) {
+        function loadFramebuffer(gl: WebGL2RenderingContext, resource: WebGlFramebufferResource, resources: Map<string, WebGlResource>) {
+            if (resource.resource) return;
             resource.resource = GlFramebuffer.create(gl, {
                 width: resource.initialSize[0],
                 height: resource.initialSize[1],
                 attachments: Object.entries(resource.attachments).map(([name, attachment]) => {
-                    if(attachment.type === "color") {
-                        return {
-                            type: "color",
-                            name: name,
-                            format: attachment.format,
+                    if (attachment.type === "ref") {
+
+                        const srcRendertargetResource = resources.get(attachment.source.id);
+                        if (!srcRendertargetResource || srcRendertargetResource.type !== "framebuffer") {
+                            throw new Error("Could not find referenced rendertarget resource");
                         }
-                    }
-                    if(attachment.type === "depth") {
-                        return {
-                            type: "depth",
-                            name: name,
-                            format: attachment.format,
+
+                        loadFramebuffer(gl, srcRendertargetResource, resources);
+
+                        const srcFramebuffer = srcRendertargetResource.resource;
+                        if (!srcFramebuffer) {
+                            throw new Error("Could not find loaded referenced framebuffer");
                         }
+
+                        return {
+                            name: name,
+                            attachment: srcFramebuffer.getAttachment(attachment.sourceAttachmentName),
+                        };
+                    } else {
+                        return {
+                            name: name,
+                            attachment: GLTextureAttachment.create(
+                                gl,
+                                resource.initialSize[0],
+                                resource.initialSize[1],
+                                attachment.format,
+                            ),
+                        };
                     }
-                    assertExhaustive(attachment)
                 }),
             });
             return;
         }
 
         function loadProgram(gl: WebGL2RenderingContext, resource: WebGlProgramResource) {
-            resource.resource = GlProgram.create(gl, resource.srcVertex, resource.srcFragment);
+            resource.resource = GlProgram.create(gl, resource.srcVertex, resource.srcFragment, resource.key);
         }
 
         function loadVertexBuffer(gl: WebGL2RenderingContext, resource: WebGlVertexBufferResource) {

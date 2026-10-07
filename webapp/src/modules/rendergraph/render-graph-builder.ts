@@ -23,6 +23,8 @@ import type {PickRenderTargetAttachmentRenderGraphNode} from "@modules/rendergra
 import type {HtmlContainerRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-container.ts";
 import type {HtmlDrawElement, HtmlDrawInstance, HtmlDrawRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.html-draw.ts";
 
+type RenderGraphNodeOptions = {debugName?: string};
+
 /** Builder for constructing a render graph by declaring nodes and their connections. */
 export class RenderGraphBuilder {
 
@@ -31,10 +33,11 @@ export class RenderGraphBuilder {
     public canvas(options: {
         renderPasses: DrawRenderGraphNode[],
         clearColor?: [number, number, number, number]
-    }): CanvasRenderGraphNode {
+    } & RenderGraphNodeOptions): CanvasRenderGraphNode {
         const node: CanvasRenderGraphNode = {
             type: "canvas",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "canvas",
             renderPasses: options.renderPasses,
             clearColor: options.clearColor ?? null,
         };
@@ -43,10 +46,11 @@ export class RenderGraphBuilder {
     }
 
 
-    public canvasSize(): CanvasSizeRenderGraphNode {
+    public canvasSize(debugName?: string): CanvasSizeRenderGraphNode {
         const node: CanvasSizeRenderGraphNode = {
             type: "canvas-size",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: debugName ?? "canvas size",
         };
         this.nodes.push(node);
         return node;
@@ -55,10 +59,11 @@ export class RenderGraphBuilder {
     public htmlContainer(options: {
         elementId: string,
         renderPasses: HtmlDrawRenderGraphNode[],
-    }): HtmlContainerRenderGraphNode {
+    } & RenderGraphNodeOptions): HtmlContainerRenderGraphNode {
         const node: HtmlContainerRenderGraphNode = {
             type: "html-container",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "html container",
             elementId: options.elementId,
             renderPasses: options.renderPasses,
         };
@@ -70,10 +75,11 @@ export class RenderGraphBuilder {
     public htmlDraw(options: {
         elements: DataRenderGraphNode<HtmlDrawElement[]>;
         instances: DataRenderGraphNode<HtmlDrawInstance[]>;
-    }): HtmlDrawRenderGraphNode {
+    } & RenderGraphNodeOptions): HtmlDrawRenderGraphNode {
         const node: HtmlDrawRenderGraphNode = {
             type: "html-draw",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "html draw",
             elements: options.elements,
             instances: options.instances,
         };
@@ -88,18 +94,20 @@ export class RenderGraphBuilder {
             | { type: "transform", transformer: TransformRenderGraphNode<any, TData> }
             | { type: "transform-multi-out", key: string, transformer: TransformMultiOutRenderGraphNode<any, Record<string, any | null>> }
             | { type: "wasm", value: WasmDataRenderGraphNode, download: () => TData }
-    }): DataRenderGraphNode<TData> {
+    } & RenderGraphNodeOptions): DataRenderGraphNode<TData> {
         const node: DataRenderGraphNode<TData> = {
             type: "data",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "data",
             source: options.source,
         };
         this.nodes.push(node);
         return node;
     }
 
-    public dataConst<TData>(value: TData): DataRenderGraphNode<TData> {
+    public dataConst<TData>(value: TData, debugName?: string): DataRenderGraphNode<TData> {
         return this.data<TData>({
+            debugName: debugName,
             source: {
                 type: "constant",
                 value: value,
@@ -107,8 +115,9 @@ export class RenderGraphBuilder {
         });
     }
 
-    public dataExternal<TData>(checkChanged: (prev: TData) => boolean, fetch: () => TData): DataRenderGraphNode<TData> {
+    public dataExternal<TData>(checkChanged: (prev: TData) => boolean, fetch: () => TData, debugName?: string): DataRenderGraphNode<TData> {
         return this.data<TData>({
+            debugName: debugName,
             source: {
                 type: "external",
                 fetch: fetch,
@@ -117,8 +126,9 @@ export class RenderGraphBuilder {
         });
     }
 
-    public dataTransformer<TData>(transformer: TransformRenderGraphNode<any[], TData>): DataRenderGraphNode<TData> {
+    public dataTransformer<TData>(transformer: TransformRenderGraphNode<any[], TData>, debugName?: string): DataRenderGraphNode<TData> {
         return this.data<TData>({
+            debugName: debugName,
             source: {
                 type: "transform",
                 transformer: transformer,
@@ -133,10 +143,11 @@ export class RenderGraphBuilder {
         blend?: (gl: WebGL2RenderingContext) => void
         writeDepth?: boolean,
         testDepth?: DepthFunc,
-    }): DrawRenderGraphNode {
+    } & RenderGraphNodeOptions): DrawRenderGraphNode {
         const node: DrawRenderGraphNode = {
             type: "draw",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "draw",
             shader: options.shader,
             geometry: options.geometry,
             inputs: options.inputs ?? {},
@@ -151,10 +162,11 @@ export class RenderGraphBuilder {
     public geometry(options: {
         sources: (GeometrySource<string> | WasmGeometrySource)[];
         primitives?: "triangles" | "lines"
-    }): GeometryRenderGraphNode {
+    } & RenderGraphNodeOptions): GeometryRenderGraphNode {
         const node: GeometryRenderGraphNode = {
             type: "geometry",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "geometry",
             primitiveTypes: options.primitives ?? "triangles",
             sources: options.sources,
         };
@@ -194,10 +206,11 @@ export class RenderGraphBuilder {
         renderPasses: DrawRenderGraphNode[],
         attachments: Record<TKeys, RendertargetAttachment>,
         clearColor?: [number, number, number, number]
-    }): RendertargetRenderGraphNode<TKeys> {
+    } & RenderGraphNodeOptions): RendertargetRenderGraphNode<TKeys> {
         const node: RendertargetRenderGraphNode<TKeys> = {
             type: "rendertarget",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "render target",
             size: options.size,
             sizeScale: options.sizeScale ?? null,
             renderPasses: options.renderPasses,
@@ -211,10 +224,11 @@ export class RenderGraphBuilder {
     public pickRendertargetAttachment<TKeys extends string>(options: {
         rendertarget: RendertargetRenderGraphNode<TKeys>,
         attachment: TKeys
-    }): PickRenderTargetAttachmentRenderGraphNode<TKeys> {
+    } & RenderGraphNodeOptions): PickRenderTargetAttachmentRenderGraphNode<TKeys> {
         const node: PickRenderTargetAttachmentRenderGraphNode<TKeys> = {
             type: "pick-rendertarget-attachment",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "pick render target attachment",
             rendertarget: options.rendertarget,
             attachment: options.attachment,
         };
@@ -226,10 +240,11 @@ export class RenderGraphBuilder {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         options: Record<TKeys, TextureRenderGraphNode>,
         selector: (...args: TIn) => TKeys
-    }): SelectTextureRenderGraphNode<TIn, TKeys> {
+    } & RenderGraphNodeOptions): SelectTextureRenderGraphNode<TIn, TKeys> {
         const node: SelectTextureRenderGraphNode<TIn, TKeys> = {
             type: "select-texture",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "select texture",
             inputs: options.inputs,
             options: options.options,
             selector: options.selector,
@@ -243,10 +258,11 @@ export class RenderGraphBuilder {
         srcFragment: string,
         prefixVertexAttributes?: string,
         prefixUniforms?: string,
-    }): ShaderRenderGraphNode {
+    } & RenderGraphNodeOptions): ShaderRenderGraphNode {
         const node: ShaderRenderGraphNode = {
             type: "shader",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "shader",
             srcVertex: options.srcVertex,
             srcFragment: options.srcFragment,
             prefixVertexAttributes: options.prefixVertexAttributes ?? null,
@@ -262,10 +278,11 @@ export class RenderGraphBuilder {
         wrap?: "repeat" | "clamp-to-edge" | "mirrored-repeat",
         filterMin?: "linear" | "nearest" | "nearest-mipmap-nearest" | "linear-mipmap-nearest" | "nearest-mipmap-linear" | "linear-mipmap-linear",
         filterMag?: "linear" | "nearest"
-    }): TextureRenderGraphNode {
+    } & RenderGraphNodeOptions): TextureRenderGraphNode {
         const node: TextureRenderGraphNode = {
             type: "texture",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "texture",
             url: options.url,
             wrap: options.wrap ?? "repeat",
             filterMin: options.filterMin ?? "nearest-mipmap-linear",
@@ -279,10 +296,11 @@ export class RenderGraphBuilder {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         func: (...args: TIn) => TOut | null,
         checkChanged?: (prev: TOut, next: TOut) => boolean
-    }): TransformRenderGraphNode<TIn, TOut> {
+    } & RenderGraphNodeOptions): TransformRenderGraphNode<TIn, TOut> {
         const node: TransformRenderGraphNode<TIn, TOut> = {
             type: "transform",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "transform",
             inputs: options.inputs,
             func: options.func,
             checkChanged: options.checkChanged ?? ((prev, next) => prev !== next),
@@ -295,10 +313,11 @@ export class RenderGraphBuilder {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         outputs: (keyof TOut)[]
         func: (...args: TIn) => TOut
-    }): TransformMultiOutRenderGraphNode<TIn, TOut> {
+    } & RenderGraphNodeOptions): TransformMultiOutRenderGraphNode<TIn, TOut> {
         const node: TransformMultiOutRenderGraphNode<TIn, TOut> = {
             type: "transform-multi-out",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "multi-output transform",
             inputs: options.inputs,
             outputs: options.outputs,
             func: options.func,
@@ -311,10 +330,11 @@ export class RenderGraphBuilder {
         inputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         outputs: Record<TKeys, VertexDataOutput>
         func: (...args: TIn) => Record<TKeys, VertexDataResult | null>
-    }): TransformVertexOutRenderGraphNode<TIn, TKeys> {
+    } & RenderGraphNodeOptions): TransformVertexOutRenderGraphNode<TIn, TKeys> {
         const node: TransformVertexOutRenderGraphNode<TIn, TKeys> = {
             type: "transform-vertex-out",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "vertex-output transform",
             inputs: options.inputs,
             outputs: options.outputs,
             func: options.func,
@@ -331,10 +351,11 @@ export class RenderGraphBuilder {
         fov: DataRenderGraphNode<number>;
         near: DataRenderGraphNode<number>;
         far: DataRenderGraphNode<number>;
-    }): CameraRenderGraphNode {
+    } & RenderGraphNodeOptions): CameraRenderGraphNode {
         const node: CameraRenderGraphNode = {
             type: "camera",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "perspective camera",
             renderTargetSize: options.renderTargetSize,
             data: {
                 type: "perspective",
@@ -357,10 +378,11 @@ export class RenderGraphBuilder {
         direction: DataRenderGraphNode<[number, number, number]>;
         near: DataRenderGraphNode<number>;
         far: DataRenderGraphNode<number>;
-    }): CameraRenderGraphNode {
+    } & RenderGraphNodeOptions): CameraRenderGraphNode {
         const node: CameraRenderGraphNode = {
             type: "camera",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "orthographic camera",
             renderTargetSize: options.renderTargetSize,
             data: {
                 type: "orthographic",
@@ -379,10 +401,11 @@ export class RenderGraphBuilder {
         source:
             | { type: "wasm", key?: string, operation: WasmOperationRenderGraphNode<any, any> }
             | { type: "js", data: DataRenderGraphNode<any>, upload: (args: any) => void }; // todo: any args
-    }) {
+    } & RenderGraphNodeOptions) {
         const node: WasmDataRenderGraphNode = {
             type: "wasm-data",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "WASM data",
             source: options.source,
         };
         this.nodes.push(node);
@@ -394,10 +417,11 @@ export class RenderGraphBuilder {
         dataInputs: { [K in keyof TIn]: DataRenderGraphNode<TIn[K]> },
         outputs: (keyof TOut)[]
         func: (...args: TIn) => TOut;
-    }) {
+    } & RenderGraphNodeOptions) {
         const node: WasmOperationRenderGraphNode<TIn, TOut> = {
             type: "wasm-operation",
             id: RenderGraphBuilder.generateNodeId(),
+            debugName: options.debugName ?? "WASM operation",
             wasmInputs: options.wasmInputs,
             dataInputs: options.dataInputs,
             outputs: options.outputs,
