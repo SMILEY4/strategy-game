@@ -3,7 +3,7 @@ use crate::js::models::{Entity, HexPosition, Tile};
 use crate::render::models::chunk::Chunk;
 
 // Calculate the list of all chunks associated with the given tiles and entities
-pub fn calculate_chunks(tiles: &Vec<Tile>, entities: &Vec<Entity>) -> FxHashMap<HexPosition, Chunk> {
+pub fn calculate_chunks(tiles: &[Tile], entities: &[Entity]) -> FxHashMap<HexPosition, Chunk> {
     let mut chunks: FxHashMap<HexPosition, Chunk> = FxHashMap::default();
 
     // create (missing) chunks from tiles; link with associated tiles
@@ -11,7 +11,6 @@ pub fn calculate_chunks(tiles: &Vec<Tile>, entities: &Vec<Entity>) -> FxHashMap<
         chunks
             .entry(tile.chunk_position)
             .or_insert_with(|| Chunk {
-                chunk_position: tile.chunk_position,
                 tiles: Vec::new(),
                 entities: Vec::new(),
             })
@@ -24,7 +23,6 @@ pub fn calculate_chunks(tiles: &Vec<Tile>, entities: &Vec<Entity>) -> FxHashMap<
         chunks
             .entry(entity.chunk_position)
             .or_insert_with(|| Chunk {
-                chunk_position: entity.chunk_position,
                 tiles: Vec::new(),
                 entities: Vec::new(),
             })

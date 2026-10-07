@@ -14,7 +14,6 @@ impl WasmRenderApp {
     pub fn calculate_world_mesh(&mut self) -> bool {
         self.renderer.build_terrain_instances();
         self.renderer.build_map_details_instances();
-        self.renderer.build_terrain_instances();
         self.renderer.build_route_vertices();
         true
     }

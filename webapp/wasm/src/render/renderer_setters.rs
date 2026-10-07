@@ -1,8 +1,8 @@
 use crate::js::models::{Control, Entity, RoutePoint, Tile};
 use crate::render::Renderer;
-use crate::render::state_render::RealmColor;
 use crate::render::tools::route_segmentation::segment_routes;
 use crate::render::MapMode;
+use crate::render::models::realm_color::RealmColor;
 
 impl Renderer {
     pub fn set_tiles(&mut self, tiles: Vec<Tile>) {

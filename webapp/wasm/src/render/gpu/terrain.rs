@@ -1,6 +1,4 @@
-use crate::js::models::{
-    HexPosition, Tile, TILE_BIOME_GRASSLAND, TILE_BIOME_OCEAN, TILE_VISIBILITY_UNDISCOVERED,
-};
+use crate::js::models::{HexPosition, Tile, TileBiome, TileVisibility};
 use crate::render::models::gpu::{
     TileFogOfWarInstance, TileTerrainLandInstance, TileTerrainWaterInstance, WaterEdgeInstance,
 };
@@ -14,41 +12,37 @@ pub fn build_terrain_data(state: &RenderState, output: &mut OutputState) {
     output.fog_of_war_instances.clear();
 
     // for each (visible) tile
-    state.visible_chunks.iter().for_each(|chunk_key| {
-        let chunk = state.chunks.get(chunk_key).unwrap();
-        chunk.tiles.iter().for_each(|tile_index| {
-            let tile = state.tiles[*tile_index];
+    state.visible_tiles().for_each(|tile| {
 
-            // create fog-of-war for at least discovered tiles
-            if tile.visibility != TILE_VISIBILITY_UNDISCOVERED {
-                build_fog_of_war_instance(tile, output);
-            }
+        // create fog-of-war for at least discovered tiles
+        if tile.visibility != TileVisibility::Undiscovered {
+            build_fog_of_war_instance(tile, output);
+        }
 
-            // undiscovered -> no terrain visible -> skip
-            if tile.visibility == TILE_VISIBILITY_UNDISCOVERED {
-                return;
-            }
+        // undiscovered -> no terrain visible -> skip
+        if tile.visibility == TileVisibility::Undiscovered {
+            return;
+        }
 
-            // build land instance
-            if tile.terrain.biome == TILE_BIOME_GRASSLAND {
-                build_land_instance(tile, output);
-                return;
-            }
+        // build land instance
+        if tile.terrain.biome == TileBiome::Grassland {
+            build_land_instance(tile, output);
+            return;
+        }
 
-            // build water & water edge instances
-            if tile.terrain.biome == TILE_BIOME_OCEAN {
-                build_water_instance(tile, output);
-                build_water_edge_instances(state, tile.tile_position, output);
-                return;
-            }
-        })
+        // build water & water edge instances
+        if tile.terrain.biome == TileBiome::Ocean {
+            build_water_instance(tile, output);
+            build_water_edge_instances(state, tile.tile_position, output);
+            return;
+        }
     });
 }
 
 fn build_fog_of_war_instance(tile: Tile, output: &mut OutputState) {
     output.fog_of_war_instances.push(TileFogOfWarInstance {
         position: [tile.tile_position.q as f32, tile.tile_position.r as f32],
-        visibility: tile.visibility,
+        visibility: tile.visibility as u8,
         _padding: [0, 0, 0],
     });
 }
@@ -135,5 +129,5 @@ fn build_water_edge_instances(
 
 fn land_neighbour(state: &RenderState, position: HexPosition) -> Option<HexPosition> {
     let tile_index = state.tiles_by_position.get(&position)?;
-    (state.tiles[*tile_index].terrain.biome == TILE_BIOME_GRASSLAND).then_some(position)
+    (state.tiles[*tile_index].terrain.biome == TileBiome::Grassland).then_some(position)
 }

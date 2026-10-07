@@ -12,7 +12,7 @@ mod renderer_configure;
 mod renderer_setters;
 mod renderer_operations;
 mod map_mode;
-pub mod statial;
+pub mod spatial;
 pub mod gpu;
 pub mod tools;
 

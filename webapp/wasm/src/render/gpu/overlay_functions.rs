@@ -1,19 +1,10 @@
-use crate::js::models::{
-    HexPosition, Tile, TILE_BIOME_GRASSLAND, TILE_BIOME_OCEAN, TILE_ELEVATION_MOUNTAINS,
-    TILE_FEATURE_FOREST,
-};
+use crate::js::models::{CreateSettlementValidity, HexPosition, Tile};
 use crate::render::models::gpu::{
     GenericEdgeOverlayInstance, GenericFillOverlayInstance, OVERLAY_EDGE_STYLE_DASHED,
     OVERLAY_EDGE_STYLE_FILLED, OVERLAY_FILL_STYLE_FILLED, OVERLAY_FILL_STYLE_STRIPED,
 };
+use crate::render::models::realm_color::RealmColor;
 use crate::render::state_render::RenderState;
-use crate::render::state_render::RealmColor;
-
-const NEUTRAL_COLOR: RealmColor = RealmColor {
-    red: 0.5,
-    green: 0.5,
-    blue: 0.5,
-};
 
 const POLITICAL_FILL_ALPHA: f32 = 0.35;
 
@@ -142,7 +133,7 @@ pub fn edges_mapmode_political(
         .realm_colors
         .get(&realm_id)
         .copied()
-        .unwrap_or(NEUTRAL_COLOR);
+        .unwrap_or(RealmColor::NEUTRAL);
 
     for (direction, neighbour_position) in neighbour_directions(tile.tile_position) {
         let neighbour_realm = tiles_by_pos
@@ -168,13 +159,13 @@ pub fn fill_mapmode_settlement_locations(
     tile: &Tile,
     output: &mut Vec<GenericFillOverlayInstance>,
 ) {
-    if tile.create_settlement_validity == 1 {
+    if tile.create_settlement_validity == CreateSettlementValidity::ValidTerrain {
         output.push(fill_instance(
             tile,
             [0.2, 0.6, 0.25, 0.35],
             OVERLAY_FILL_STYLE_STRIPED,
         ));
-    } else if tile.create_settlement_validity == 2 {
+    } else if tile.create_settlement_validity == CreateSettlementValidity::Valid {
         output.push(fill_instance(
             tile,
             [0.2, 0.6, 0.25, 0.35],
@@ -210,7 +201,7 @@ fn realm_color(state: &RenderState, realm_id: u32) -> RealmColor {
         .realm_colors
         .get(&realm_id)
         .copied()
-        .unwrap_or(NEUTRAL_COLOR)
+        .unwrap_or(RealmColor::NEUTRAL)
 }
 
 fn control_amount_by_entity(state: &RenderState, tile: &Tile, entity_id: u32) -> f32 {

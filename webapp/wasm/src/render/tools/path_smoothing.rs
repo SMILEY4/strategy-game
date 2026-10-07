@@ -1,3 +1,5 @@
+use crate::math::vector::distance_2d;
+
 /// Smooths a path with centripetal Catmull-Rom interpolation.
 pub fn smooth_path(path: &[[f32; 2]], subdivisions_per_segment: usize) -> Vec<[f32; 2]> {
     if path.len() < 2 {
@@ -19,9 +21,9 @@ pub fn smooth_path(path: &[[f32; 2]], subdivisions_per_segment: usize) -> Vec<[f
         };
 
         let t0 = 0.0;
-        let t1 = t0 + distance(p0, p1).sqrt();
-        let t2 = t1 + distance(p1, p2).sqrt();
-        let t3 = t2 + distance(p2, p3).sqrt();
+        let t1 = t0 + distance_2d(p0, p1).sqrt();
+        let t2 = t1 + distance_2d(p1, p2).sqrt();
+        let t3 = t2 + distance_2d(p2, p3).sqrt();
 
         for subdivision in 0..subdivisions_per_segment {
             let t = t1 + (t2 - t1) * subdivision as f32 / subdivisions_per_segment as f32;
@@ -31,13 +33,6 @@ pub fn smooth_path(path: &[[f32; 2]], subdivisions_per_segment: usize) -> Vec<[f
 
     smooth_path.push(*path.last().unwrap());
     smooth_path
-}
-
-/// Calculates the Euclidean distance between two points.
-fn distance(a: [f32; 2], b: [f32; 2]) -> f32 {
-    let dx = b[0] - a[0];
-    let dy = b[1] - a[1];
-    (dx * dx + dy * dy).sqrt()
 }
 
 /// Interpolates a point using centripetal Catmull-Rom interpolation.

@@ -1,3 +1,5 @@
+use crate::math::vector::distance_2d;
+
 /// Builds a triangle-list line mesh from world-space waypoints.
 ///
 /// The factory converts each generated position and texture coordinate into
@@ -50,7 +52,7 @@ where
 /// Calculates the length of each line segment.
 fn segment_lengths(path: &[[f32; 2]]) -> Vec<f32> {
     path.windows(2)
-        .map(|segment| distance(segment[0], segment[1]))
+        .map(|segment| distance_2d(segment[0], segment[1]))
         .collect()
 }
 
@@ -108,13 +110,6 @@ fn offset_point(point: [f32; 2], offset: [f32; 2]) -> [f32; 2] {
 /// Negates a two-dimensional vector.
 fn negate(vector: [f32; 2]) -> [f32; 2] {
     [-vector[0], -vector[1]]
-}
-
-/// Calculates the Euclidean distance between two points.
-fn distance(a: [f32; 2], b: [f32; 2]) -> f32 {
-    let dx = b[0] - a[0];
-    let dy = b[1] - a[1];
-    (dx * dx + dy * dy).sqrt()
 }
 
 /// Calculates the dot product of two vectors.

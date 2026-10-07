@@ -1,5 +1,5 @@
 use crate::js::imported::imported::console_log;
-use crate::js::models::{Entity, ENTITY_TYPE_SETTLEMENT, ENTITY_TYPE_TILE_IMPROVEMENT};
+use crate::js::models::{Entity, EntityType};
 use crate::math::random::Random;
 use crate::render::config::Config;
 use crate::render::gpu::map_details_tools::{sprite_details, splatter_details};
@@ -12,7 +12,7 @@ pub fn build_entity_details(
     config: &Config,
     out_vertices: &mut Vec<MapDetailVertex>,
 ) {
-    if entity.render_type == ENTITY_TYPE_SETTLEMENT {
+    if entity.render_type == EntityType::Settlement {
         splatter_details(
             rng,
             config,
@@ -22,7 +22,7 @@ pub fn build_entity_details(
             entity.is_pending,
         );
     }
-    if entity.render_type == ENTITY_TYPE_TILE_IMPROVEMENT {
+    if entity.render_type == EntityType::TileImprovement {
         let improvement_key = String::from_utf8_lossy(&entity.improvement_key);
         let improvement_key = improvement_key.trim_end_matches('\0');
 

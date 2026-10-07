@@ -1,7 +1,7 @@
 use crate::js::models::HexPosition;
 use crate::render::config::Config;
 use crate::render::models::gpu::RouteVertex;
-use crate::render::models::RouteSegment::RouteSegment;
+use crate::render::models::route_segment::RouteSegment;
 use crate::render::state_output::OutputState;
 use crate::render::state_render::RenderState;
 use crate::render::tools::line_mesh::build_line_mesh;
@@ -47,15 +47,5 @@ fn build_route_segment(route_segment: &RouteSegment, width: f32, output: &mut Ve
 
 /// Converts route tile positions into world positions.
 fn build_raw_path(route: &[HexPosition]) -> Vec<[f32; 2]> {
-    fn hex_to_world(q: i32, r: i32) -> [f32; 2] { // todo: extract "hex to world" as own tool in future
-        let sqrt_3 = 3.0_f32.sqrt();
-        [
-            sqrt_3 * q as f32 + (sqrt_3 / 2.0) * r as f32,
-            1.5 * r as f32,
-        ]
-    }
-    route
-        .iter()
-        .map(|point| hex_to_world(point.q, point.r))
-        .collect()
+    route.iter().copied().map(HexPosition::to_world).collect()
 }

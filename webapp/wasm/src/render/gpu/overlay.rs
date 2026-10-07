@@ -1,5 +1,5 @@
 use rustc_hash::FxHashMap;
-use crate::js::models::{HexPosition, Tile, TILE_VISIBILITY_UNDISCOVERED};
+use crate::js::models::{HexPosition, Tile, TileVisibility};
 use crate::render::gpu::overlay_functions;
 use crate::render::models::gpu::{GenericEdgeOverlayInstance, GenericFillOverlayInstance};
 use crate::render::{OverlayEdge, OverlayFill};
@@ -53,17 +53,11 @@ pub fn build_overlay_data(state: &RenderState, output: &mut OutputState) {
     output.overlay_fill_instances.clear();
 
     // create overlay fill and edge instances for each relevant tile
-    state.visible_chunks.iter().for_each(|chunk_key| {
-        let chunk = state.chunks.get(chunk_key).unwrap();
-        chunk.tiles.iter().for_each(|tile_index| {
-            let tile = state.tiles[*tile_index];
-
-            if tile.visibility == TILE_VISIBILITY_UNDISCOVERED {
-                return;
-            }
-
-            create_fill(state, &tile, &mut output.overlay_fill_instances);
-            create_edge(state, &tile, &state.tiles_by_position, &mut output.overlay_edge_instances);
-        })
+    state.visible_tiles().for_each(|tile| {
+        if tile.visibility == TileVisibility::Undiscovered {
+            return;
+        }
+        create_fill(state, &tile, &mut output.overlay_fill_instances);
+        create_edge(state, &tile, &state.tiles_by_position, &mut output.overlay_edge_instances);
     });
 }

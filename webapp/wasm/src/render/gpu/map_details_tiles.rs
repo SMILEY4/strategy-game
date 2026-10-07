@@ -1,6 +1,4 @@
-use crate::js::models::{Tile,
-                        TILE_ELEVATION_HILLS, TILE_ELEVATION_MOUNTAINS, TILE_FEATURE_FOREST,
-};
+use crate::js::models::{Tile, TileElevation, TileFeature};
 use crate::math::random::Random;
 use crate::render::config::Config;
 use crate::render::gpu::map_details_tools::splatter_details;
@@ -18,7 +16,7 @@ pub fn build_tile_details(
     rng.set_seed(tile.rng_seed as u64);
 
     match tile.terrain.elevation {
-        TILE_ELEVATION_HILLS => {
+        TileElevation::Hills => {
             splatter_details(
                 rng,
                 config,
@@ -28,7 +26,7 @@ pub fn build_tile_details(
                 false,
             );
         }
-        TILE_ELEVATION_MOUNTAINS => {
+        TileElevation::Mountains => {
             splatter_details(
                 rng,
                 config,
@@ -42,7 +40,7 @@ pub fn build_tile_details(
     };
 
     match tile.terrain.feature {
-        TILE_FEATURE_FOREST => {
+        TileFeature::Forest => {
             splatter_details(
                 rng,
                 config,
