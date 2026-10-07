@@ -5,7 +5,7 @@ import SHADER_OVERLAY_FILL_VERT from "@pages/game/renderer/shader/overlay/overla
 import SHADER_OVERLAY_FILL_FRAG from "@pages/game/renderer/shader/overlay/overlayFill.fsh";
 import SHADER_OVERLAY_BORDER_VERT from "@pages/game/renderer/shader/overlay/overlayBorder.vsh";
 import SHADER_OVERLAY_BORDER_FRAG from "@pages/game/renderer/shader/overlay/overlayBorder.fsh";
-import type {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.tsx";
 import type {Realm} from "@app/features/game/models/realm.ts";
 import {type Entity, EntityUtils} from "@app/features/game/models/entity.ts";
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";

@@ -9,50 +9,9 @@ import type {DataRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.data.
 import type {VersionedContainer} from "@pages/game/renderer/data/versioned-data.ts";
 import type {DeveloperSettings} from "@app/features/game/database/developer-settings.database.ts";
 import type {CameraRenderGraphNode} from "@modules/rendergraph/nodes/rg-node.camera.ts";
-import {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.tsx";
 import type {GameRendererDataProvider} from "@pages/game/renderer/data/game-renderer-data-provider.ts";
-
-type ColorGrading = {
-    exposure: number,
-    temperature: number,
-    tint: number,
-    brightness: number,
-    contrast: number,
-    blacks: number,
-    whites: number,
-    shadows: number,
-    highlights: number,
-    vibrance: number,
-    saturation: number,
-}
-
-const colorGradingNormal: ColorGrading = {
-    exposure: 0,
-    temperature: 0,
-    tint: 0,
-    brightness: 0,
-    contrast: 0,
-    blacks: 0,
-    whites: 0,
-    shadows: 0,
-    highlights: 0,
-    vibrance: 0,
-    saturation: 0,
-}
-
-const colorGradingGrayscale: ColorGrading = {
-    exposure: 0,
-    temperature: 0,
-    tint: 0,
-    brightness: 0,
-    contrast: 0,
-    blacks: 0,
-    whites: 0,
-    shadows: 0,
-    highlights: 0,
-    vibrance: 0,
-    saturation: -1,
-}
+import type {ColorGrading} from "@app/features/game/models/color-grading.ts";
 
 export function renderWorldPostProcess(
     g: RenderGraphBuilder,
@@ -73,13 +32,7 @@ export function renderWorldPostProcess(
     const colorGrading = g.dataTransformer<ColorGrading>(
         g.transform({
             inputs: [dataMapMode],
-            func: (mapMode) => {
-                if(mapMode === MapMode.TERRAIN) {
-                    return colorGradingNormal
-                } else {
-                    return colorGradingGrayscale
-                }
-            },
+            func: (mapMode) => mapMode.colorGrading,
         }),
     );
 

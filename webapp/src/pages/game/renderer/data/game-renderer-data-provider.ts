@@ -6,7 +6,7 @@ import type {SelectedTileDatabase} from "@app/features/game/database/selected-ti
 import {type EntityDatabase, EntityQueries} from "@app/features/game/database/entity.database.ts";
 import {type CommandDatabase, CommandQueries} from "@app/features/game/database/command.database.ts";
 import type {PointerPosition, PointerPositionDatabase} from "@app/features/game/database/pointer-position.database.ts";
-import type {MapMode} from "@app/features/game/models/map-mode.ts";
+import type {MapMode} from "@app/features/game/models/map-mode.tsx";
 import type {Entity} from "@app/features/game/models/entity.ts";
 import type {MapModeDatabase} from "@app/features/game/database/mapmode.database.ts";
 import type {Camera} from "@app/features/game/models/camera.ts";

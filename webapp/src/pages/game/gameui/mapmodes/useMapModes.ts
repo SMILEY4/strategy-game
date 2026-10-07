@@ -1,4 +1,4 @@
-import {MapMode} from "@app/features/game/models/map-mode.ts";
+import {MapMode} from "@app/features/game/models/map-mode.tsx";
 import {useQuerySingleton} from "@modules/gamedb/adapters/use-database.ts";
 import {DI} from "@app/app.ts";
 
