@@ -183,14 +183,6 @@ pub fn fill_mapmode_settlement_locations(
     }
 }
 
-pub fn edges_mapmode_settlement_locations(
-    _: &RenderState,
-    _: &Tile,
-    _: &rustc_hash::FxHashMap<HexPosition, usize>,
-    _: &mut Vec<GenericEdgeOverlayInstance>,
-) {
-}
-
 //===== UTILITIES ==================================
 
 fn position(tile: &Tile) -> [f32; 2] {

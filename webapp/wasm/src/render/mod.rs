@@ -11,9 +11,12 @@ mod models;
 mod renderer_configure;
 mod renderer_setters;
 mod renderer_operations;
+mod map_mode;
 pub mod statial;
 pub mod gpu;
 pub mod tools;
+
+pub use map_mode::{MapMode, OverlayBehavior, OverlayEdge, OverlayFill};
 
 pub struct Renderer {
     config: Config,
