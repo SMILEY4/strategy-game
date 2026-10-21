@@ -1,17 +1,25 @@
 package io.github.smiley4.strategygame.engine.simulation.gamestate
 
+import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.DefinitionRegistry
+import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.StructureDefinition
 import kotlin.random.Random
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.typeOf
 
 data class Entity(
     val id: Id,
+    val primaryClassification: PrimaryClassification,
     val components: List<EntityComponent>,
     val owner: Realm.Id?
 ) {
 
     @JvmInline
     value class Id(val id: Int = Random.nextInt(from = 1, until = Int.MAX_VALUE))
+
+    enum class PrimaryClassification {
+        SETTLEMENT,
+        TILE_IMPROVEMENT
+    }
 
     inline fun <reified T : EntityComponent> hasComponent(): Boolean {
         return components.any { it is T }
@@ -60,10 +68,18 @@ sealed interface EntityComponent {
 
     data class Control(val amount: Float) : EntityComponent
 
-    data class Settlement(val name: String, val isRealmCapital: Boolean) : EntityComponent
+    data class Name(val name: String) : EntityComponent
 
-    data class TileImprovement(
-        val key: TileImprovementKey,
-        val administeringSettlement: Entity.Id,
+    data class RealmHierarchy(
+        val isCapital: Boolean,
+        val administeredBy: Entity.Id?
     ) : EntityComponent
+
+    data class Population(
+        val count: Map<DefinitionRegistry.PopulationClassKeys, Int>
+    ) : EntityComponent
+
+    data class Structures(
+        val entries: List<StructureDefinition>
+    )
 }

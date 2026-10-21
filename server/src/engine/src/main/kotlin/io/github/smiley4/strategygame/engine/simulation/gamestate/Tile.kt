@@ -1,5 +1,7 @@
 package io.github.smiley4.strategygame.engine.simulation.gamestate
 
+import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.Resource
+
 data class Tile(
     /** The id of this tile */
     val id: Id,
@@ -83,10 +85,6 @@ data class Tile(
         val changeRate: Float,
         val removeOnDeplete: Boolean,
     )
-
-    enum class Resource {
-        STONE, WOOD, METAL, FISH
-    }
 
     data class Metadata(
         val seed: Int,
