@@ -1,7 +1,8 @@
 package io.github.smiley4.strategygame.engine.simulation.gamestate
 
-import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.DefinitionRegistry
+import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.PopulationClassDefinition
 import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.StructureDefinition
+import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.StructureModuleDefinition
 import kotlin.random.Random
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.typeOf
@@ -66,8 +67,6 @@ sealed interface EntityComponent {
 
     data class Position(val tile: Tile.Ref) : EntityComponent
 
-    data class Control(val amount: Float) : EntityComponent
-
     data class Name(val name: String) : EntityComponent
 
     data class RealmHierarchy(
@@ -75,11 +74,26 @@ sealed interface EntityComponent {
         val administeredBy: Entity.Id?
     ) : EntityComponent
 
+    data class Control(val amount: Float) : EntityComponent
+
     data class Population(
-        val count: Map<DefinitionRegistry.PopulationClassKeys, Int>
+        val groups: List<PopulationGroup>
     ) : EntityComponent
 
     data class Structures(
-        val entries: List<StructureDefinition>
-    )
+        val instances: List<StructureInstance>
+    ) : EntityComponent
 }
+
+
+
+
+data class PopulationGroup(
+    val classDefinition: PopulationClassDefinition.Key,
+    val amount: Int,
+)
+
+data class StructureInstance(
+    val definition: StructureDefinition.Key,
+    val modules: Set<StructureModuleDefinition.Key>
+)

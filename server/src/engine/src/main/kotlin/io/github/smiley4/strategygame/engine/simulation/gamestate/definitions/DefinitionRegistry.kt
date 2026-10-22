@@ -17,15 +17,15 @@ class DefinitionRegistry {
     }
 
     object TileImprovementKeys {
-        val FARMSTEAD = TileImprovementDefinition.Key("farmstead")
-        val MINE = TileImprovementDefinition.Key("mine")
-        val QUARRY = TileImprovementDefinition.Key("quarry")
-        val WOODCUTTER_CAMP = TileImprovementDefinition.Key("woodcutter-camp")
+        val FARMSTEAD = StructureDefinition.Key("farmstead")
+        val MINE = StructureDefinition.Key("mine")
+        val QUARRY = StructureDefinition.Key("quarry")
+        val WOODCUTTER_CAMP = StructureDefinition.Key("woodcutter-camp")
     }
 
     object BuildingKeys {
-        val SMITHY = BuildingDefinition.Key("smithy")
-        val CLOTHMAKER = BuildingDefinition.Key("clothmaker")
+        val SMITHY = StructureDefinition.Key("smithy")
+        val CLOTHMAKER = StructureDefinition.Key("clothmaker")
     }
 
     private val populationClasses = listOf(
@@ -34,9 +34,14 @@ class DefinitionRegistry {
             needs = listOf(
                 PopulationClassNeedDefinition.Resource(
                     resource = ResourceKeys.FOOD,
-                    stableAmountLower = 0.2,
-                    stableAmountUpper = 0.4,
+                    amount = 0.2,
                     consumptionPass = ConsumptionPassKey.PASS_0,
+                    mode = ConsumptionMode.PARTIAL
+                ),
+                PopulationClassNeedDefinition.Resource(
+                    resource = ResourceKeys.FOOD,
+                    amount = 0.2,
+                    consumptionPass = ConsumptionPassKey.PASS_1,
                     mode = ConsumptionMode.PARTIAL
                 ),
             )
@@ -46,15 +51,19 @@ class DefinitionRegistry {
             needs = listOf(
                 PopulationClassNeedDefinition.Resource(
                     resource = ResourceKeys.FOOD,
-                    stableAmountLower = 0.2,
-                    stableAmountUpper = 0.4,
+                    amount = 0.2,
                     consumptionPass = ConsumptionPassKey.PASS_0,
                     mode = ConsumptionMode.PARTIAL
                 ),
                 PopulationClassNeedDefinition.Resource(
+                    resource = ResourceKeys.FOOD,
+                    amount = 0.2,
+                    consumptionPass = ConsumptionPassKey.PASS_1,
+                    mode = ConsumptionMode.PARTIAL
+                ),
+                PopulationClassNeedDefinition.Resource(
                     resource = ResourceKeys.SIMPLE_CLOTHES,
-                    stableAmountLower = 0.1,
-                    stableAmountUpper = 0.1,
+                    amount = 0.1,
                     consumptionPass = ConsumptionPassKey.PASS_1,
                     mode = ConsumptionMode.PARTIAL
                 ),
@@ -64,7 +73,7 @@ class DefinitionRegistry {
     ).associateBy { it.key }
 
     private val tileImprovements = listOf(
-        TileImprovementDefinition(
+        StructureDefinition(
             key = TileImprovementKeys.FARMSTEAD,
             modules = listOf(
                 StructureModuleDefinition(
@@ -113,7 +122,7 @@ class DefinitionRegistry {
                 )
             ),
         ),
-        TileImprovementDefinition(
+        StructureDefinition(
             key = TileImprovementKeys.MINE,
             modules = listOf(
                 StructureModuleDefinition(
@@ -162,7 +171,7 @@ class DefinitionRegistry {
                 )
             ),
         ),
-        TileImprovementDefinition(
+        StructureDefinition(
             key = TileImprovementKeys.QUARRY,
             modules = listOf(
                 StructureModuleDefinition(
@@ -211,7 +220,7 @@ class DefinitionRegistry {
                 )
             ),
         ),
-        TileImprovementDefinition(
+        StructureDefinition(
             key = TileImprovementKeys.WOODCUTTER_CAMP,
             modules = listOf(
                 StructureModuleDefinition(
@@ -263,7 +272,7 @@ class DefinitionRegistry {
     ).associateBy { it.key }
 
     private val buildings = listOf(
-        BuildingDefinition(
+        StructureDefinition(
             key = BuildingKeys.SMITHY,
             modules = listOf(
                 StructureModuleDefinition(
@@ -321,7 +330,7 @@ class DefinitionRegistry {
                 ),
             ),
         ),
-        BuildingDefinition(
+        StructureDefinition(
             key = BuildingKeys.CLOTHMAKER,
             modules = listOf(
                 StructureModuleDefinition(
@@ -381,15 +390,11 @@ class DefinitionRegistry {
     ).associateBy { it.key }
 
 
-    fun get(key: TileImprovementDefinition.Key): TileImprovementDefinition {
-        return tileImprovements[key] ?: throw IllegalArgumentException("No tile improvement definition for $key")
+    fun get(key: StructureDefinition.Key): StructureDefinition {
+        return buildings[key] ?: throw IllegalArgumentException("No building definition for $key")
     }
 
     fun getTileImprovementKeys() = tileImprovements.keys
-
-    fun get(key: BuildingDefinition.Key): BuildingDefinition {
-        return buildings[key] ?: throw IllegalArgumentException("No building definition for $key")
-    }
 
     fun getBuildingKeys() = buildings.keys
 

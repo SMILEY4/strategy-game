@@ -14,23 +14,23 @@ class PopulationClassDefinition(
 
 }
 
-sealed interface PopulationClassNeedDefinition {
+sealed class PopulationClassNeedDefinition(
+    val key: Key
+) {
+
+    data class Key(val value: String)
 
     class Resource(
+
+        key: Key,
+
         /** The resource type */
         val resource: ResourceDefinition.Key,
 
         /**
-         * The lower amount of that resources needed per pop unit (for a stable population count).
-         * Less and the population may decline.
+         * The amount of that resource needed per pop unit.
          */
-        val stableAmountLower: Double,
-
-        /**
-         * The upper amount of that resources needed per pop unit (for a stable population count)
-         * More and the population may grow.
-         */
-        val stableAmountUpper: Double,
+        val amount: Double,
 
         /** In which pass the population will consume the resources. Lower passes/value consume first. */
         val consumptionPass: ConsumptionPassKey,
@@ -38,9 +38,9 @@ sealed interface PopulationClassNeedDefinition {
         /** The consumption behavior of the need */
         val mode: ConsumptionMode
 
-    ) : PopulationClassNeedDefinition
+    ) : PopulationClassNeedDefinition(key)
 
-    class Workplace : PopulationClassNeedDefinition
+    class Workplace(key: Key) : PopulationClassNeedDefinition(key)
 
 
 }
