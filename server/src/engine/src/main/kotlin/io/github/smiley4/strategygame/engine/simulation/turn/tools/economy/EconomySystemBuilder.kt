@@ -48,7 +48,7 @@ class EconomySystemBuilder(private val definitionRegistry: DefinitionRegistry) {
                                         mode = need.mode,
                                         pass = need.consumptionPass
                                     ),
-                                    production = null
+                                    production = null,
                                 )
                             )
                             is PopulationClassNeedDefinition.Workplace -> Unit
@@ -67,6 +67,16 @@ class EconomySystemBuilder(private val definitionRegistry: DefinitionRegistry) {
                         val moduleDefinition = structureDefinition.modules.first { it.key == module }
                         activities.add(
                             EconomicActivity(
+                                dependsOn = moduleDefinition.moduleDependency?.let { dependency ->
+                                    activities
+                                        .find {
+                                            it.source is EconomicSource.StructureModule
+                                                    && (it.source.entity == member.id
+                                                    && it.source.structure == structureDefinition.key
+                                                    && it.source.module == dependency)
+                                        }
+                                        ?.id
+                                },
                                 source = EconomicSource.StructureModule(
                                     entity = member.id,
                                     structure = structure.definition,
@@ -79,7 +89,7 @@ class EconomySystemBuilder(private val definitionRegistry: DefinitionRegistry) {
                                         pass = it.consumptionPass
                                     )
                                 },
-                                production = null
+                                production = null,
                             )
                         )
                     }

@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.engine.simulation.turn.systems
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.ConsumptionMode
 import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.ResourceDefinition
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.economy.EconomicActivity
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.economy.EconomySystemBuilder
 import kotlin.math.min
 
@@ -12,35 +13,71 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
 
         val economyRegions = economyBuilder.buildRegions(gameState)
 
+        // for each economic region
         economyRegions.forEach { region ->
 
             val activities = economyBuilder.buildActivities(region)
 
+            // iterate consumption passes
             activities.getConsumptionPassKeys().forEach { consumptionPass ->
 
+                // consume all or nothing for this pass
                 activities.get(consumptionPass, ConsumptionMode.ALL_OR_NOTHING).forEach { activity ->
-                    // todo: handle condition: "requires another activity to have consumed"
-                    activity.consumption?.also { consumption ->
-                        val hasConsumed = takeAll(region.storedResources, consumption.resources)
-                        TODO("handle hasConsumed")
+
+                    // check if dependencies are fulfilled
+                    val activityPreconditionFulfilled = activity.dependsOn
+                        ?.let { activities.get(it) }
+                        ?.let { it.consumptionResult is EconomicActivity.ResultConsumption.Success }
+                        ?: true
+
+                    // try to consume
+                    if (activityPreconditionFulfilled) {
+                        activity.consumption?.also { consumption ->
+                            val hasConsumed = takeAll(region.storedResources, consumption.resources)
+                            activity.consumptionResult = if (hasConsumed) {
+                                EconomicActivity.ResultConsumption.Success(consumption.resources.toMap())
+                            } else {
+                                EconomicActivity.ResultConsumption.Failed()
+                            }
+                        }
                     }
+
                 }
 
+                // consume partial for this pass
+                // todo: distribute resources evenly among partial consumptions
                 activities.get(consumptionPass, ConsumptionMode.PARTIAL).forEach { activity ->
-                    // todo: handle condition: "requires another activity to have consumed"
-                    activity.consumption?.also { consumption ->
-                        val consumedResources = takePartial(region.storedResources, consumption.resources)
-                        TODO("handle consumedResources")
+
+                    // check if dependencies are fulfilled
+                    val activityPreconditionFulfilled = activity.dependsOn
+                        ?.let { activities.get(it) }
+                        ?.let { it.consumptionResult is EconomicActivity.ResultConsumption.Success }
+                        ?: true
+
+                    // try to consume
+                    if (activityPreconditionFulfilled) {
+                        activity.consumption?.also { consumption ->
+                            val consumedResources = takePartial(region.storedResources, consumption.resources)
+                            activity.consumptionResult = if (consumedResources.isNotEmpty()) {
+                                EconomicActivity.ResultConsumption.Success(consumedResources)
+                            } else {
+                                EconomicActivity.ResultConsumption.Failed()
+                            }
+                        }
                     }
                 }
 
             }
 
+            // produce
             activities.get().forEach { activity ->
-                // todo: handle condition: "has consumed"
-                activity.production?.also { production ->
-                    put(region.storedResources, production.resources)
+                // todo: handle production for activities that do not NEED to consume
+                if (activity.consumptionResult is EconomicActivity.ResultConsumption.Success) {
+                    activity.production?.also { production ->
+                        put(region.storedResources, production.resources)
+                    }
                 }
+
             }
 
         }

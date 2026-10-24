@@ -29,6 +29,9 @@ class StructureModuleDefinition(
     /** The required workforce to run this module at full efficiency */
     val workforceRequirement: WorkforceRequirementDefinition,
 
+    /** Depend on another module within the same structure. */
+    val moduleDependency: Key?,
+
     /** The things this module needs to consume each turn to be active. */
     val consumptionRequirement: ConsumptionRequirementDefinition?,
 

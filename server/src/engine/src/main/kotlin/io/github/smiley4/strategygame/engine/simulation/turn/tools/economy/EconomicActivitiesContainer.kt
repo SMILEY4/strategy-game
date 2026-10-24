@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.engine.simulation.turn.tools.economy
 
 import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.ConsumptionMode
 import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.ConsumptionPassKey
+import kotlin.uuid.Uuid
 
 class EconomicActivitiesContainer {
 
@@ -24,7 +25,11 @@ class EconomicActivitiesContainer {
     }
 
     fun get(): List<EconomicActivity> {
-        return entries
+        return entries.toList()
+    }
+
+    fun get(activityId: Uuid): EconomicActivity {
+        return entries.first() { it.id == activityId }
     }
 
     fun get(consumptionPass: ConsumptionPassKey, mode: ConsumptionMode): List<EconomicActivity> {
@@ -33,6 +38,9 @@ class EconomicActivitiesContainer {
             .sortedBy { createSortKey(it) }
     }
 
+    fun find(predicate: (activity: EconomicActivity) -> Boolean): EconomicActivity? {
+        return this.entries.find(predicate)
+    }
 
     private fun createSortKey(activity: EconomicActivity): String {
         return when (activity.source) {
