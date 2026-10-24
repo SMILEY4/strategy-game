@@ -44,7 +44,7 @@ class EconomySystemBuilder(private val definitionRegistry: DefinitionRegistry) {
                                         popNeed = need.key,
                                     ),
                                     consumption = EconomicActivity.Consumption(
-                                        resources = mapOf(need.resource to need.amount.toFloat()),
+                                        resources = mapOf(need.resource to need.amountPerPop.toFloat() * group.amount),
                                         mode = need.mode,
                                         pass = need.consumptionPass
                                     ),
@@ -65,20 +65,22 @@ class EconomySystemBuilder(private val definitionRegistry: DefinitionRegistry) {
 
                     structure.modules.forEach { module ->
                         val moduleDefinition = structureDefinition.modules.first { it.key == module }
-                        EconomicActivity(
-                            source = EconomicSource.StructureModule(
-                                entity = member.id,
-                                structure = structure.definition,
-                                module = module,
-                            ),
-                            consumption = moduleDefinition.consumptionRequirement?.let {
-                                EconomicActivity.Consumption(
-                                    resources = it.resources.mapValues { v -> v.value.toFloat() },
-                                    mode = it.mode,
-                                    pass = it.consumptionPass
-                                )
-                            },
-                            production = null
+                        activities.add(
+                            EconomicActivity(
+                                source = EconomicSource.StructureModule(
+                                    entity = member.id,
+                                    structure = structure.definition,
+                                    module = module,
+                                ),
+                                consumption = moduleDefinition.consumptionRequirement?.let {
+                                    EconomicActivity.Consumption(
+                                        resources = it.resources.mapValues { v -> v.value.toFloat() },
+                                        mode = it.mode,
+                                        pass = it.consumptionPass
+                                    )
+                                },
+                                production = null
+                            )
                         )
                     }
                 }

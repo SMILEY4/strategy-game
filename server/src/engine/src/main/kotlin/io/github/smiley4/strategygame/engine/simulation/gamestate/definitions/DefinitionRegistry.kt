@@ -34,13 +34,13 @@ class DefinitionRegistry {
             needs = listOf(
                 PopulationClassNeedDefinition.Resource(
                     resource = ResourceKeys.FOOD,
-                    amount = 0.2,
+                    amountPerPop = 0.2,
                     consumptionPass = ConsumptionPassKey.PASS_0,
                     mode = ConsumptionMode.PARTIAL
                 ),
                 PopulationClassNeedDefinition.Resource(
                     resource = ResourceKeys.FOOD,
-                    amount = 0.2,
+                    amountPerPop = 0.2,
                     consumptionPass = ConsumptionPassKey.PASS_1,
                     mode = ConsumptionMode.PARTIAL
                 ),
@@ -51,19 +51,19 @@ class DefinitionRegistry {
             needs = listOf(
                 PopulationClassNeedDefinition.Resource(
                     resource = ResourceKeys.FOOD,
-                    amount = 0.2,
+                    amountPerPop = 0.2,
                     consumptionPass = ConsumptionPassKey.PASS_0,
                     mode = ConsumptionMode.PARTIAL
                 ),
                 PopulationClassNeedDefinition.Resource(
                     resource = ResourceKeys.FOOD,
-                    amount = 0.2,
+                    amountPerPop = 0.2,
                     consumptionPass = ConsumptionPassKey.PASS_1,
                     mode = ConsumptionMode.PARTIAL
                 ),
                 PopulationClassNeedDefinition.Resource(
                     resource = ResourceKeys.SIMPLE_CLOTHES,
-                    amount = 0.1,
+                    amountPerPop = 0.1,
                     consumptionPass = ConsumptionPassKey.PASS_1,
                     mode = ConsumptionMode.PARTIAL
                 ),

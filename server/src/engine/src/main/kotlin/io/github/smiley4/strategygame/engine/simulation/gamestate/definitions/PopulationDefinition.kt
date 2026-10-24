@@ -30,7 +30,7 @@ sealed class PopulationClassNeedDefinition(
         /**
          * The amount of that resource needed per pop unit.
          */
-        val amount: Double,
+        val amountPerPop: Double,
 
         /** In which pass the population will consume the resources. Lower passes/value consume first. */
         val consumptionPass: ConsumptionPassKey,
