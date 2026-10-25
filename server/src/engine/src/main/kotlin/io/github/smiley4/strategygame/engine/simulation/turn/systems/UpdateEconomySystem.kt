@@ -45,8 +45,15 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
                 }
 
                 // consume partial for this pass
-                // todo: distribute resources evenly among partial consumptions
-                activities.get(consumptionPass, ConsumptionMode.PARTIAL).forEach { activity ->
+                val partialConsumptionActivities = activities.get(consumptionPass, ConsumptionMode.PARTIAL)
+
+                val totalRequired = partialConsumptionActivities
+                    .mapNotNull { it.consumption?.resources }
+                    .let { sum(it) }
+
+                val availabilityRatios = calculateAvailabilityRatios(region.storedResources, totalRequired)
+
+                partialConsumptionActivities.forEach { activity ->
 
                     // check if dependencies are fulfilled
                     val activityPreconditionFulfilled = activity.dependsOn
@@ -57,7 +64,7 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
                     // try to consume
                     if (activityPreconditionFulfilled) {
                         activity.consumption?.also { consumption ->
-                            val consumedResources = takePartial(region.storedResources, consumption.resources)
+                            val consumedResources = takePartial(region.storedResources, consumption.resources, availabilityRatios)
                             activity.consumptionResult = if (consumedResources.isNotEmpty()) {
                                 EconomicActivity.ResultConsumption.Success(consumedResources)
                             } else {
@@ -69,15 +76,22 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
 
             }
 
+            // handle all that do not need to consume
+            activities.get()
+                .filter { it.consumptionResult is EconomicActivity.ResultConsumption.NotEvaluated }
+                .forEach { activity ->
+                    if (activity.consumption == null) {
+                        activity.consumptionResult = EconomicActivity.ResultConsumption.Success(emptyMap())
+                    }
+                }
+
             // produce
             activities.get().forEach { activity ->
-                // todo: handle production for activities that do not NEED to consume
                 if (activity.consumptionResult is EconomicActivity.ResultConsumption.Success) {
                     activity.production?.also { production ->
                         put(region.storedResources, production.resources)
                     }
                 }
-
             }
 
         }
@@ -97,13 +111,15 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
 
     private fun takePartial(
         available: MutableMap<ResourceDefinition.Key, Float>,
-        required: Map<ResourceDefinition.Key, Float>
+        required: Map<ResourceDefinition.Key, Float>,
+        availabilityRatios: Map<ResourceDefinition.Key, Float>
     ): Map<ResourceDefinition.Key, Float> {
         val consumed = mutableMapOf<ResourceDefinition.Key, Float>()
         required.forEach { (resourceKey, amountRequired) ->
             val amountAvailable = available[resourceKey] ?: 0f
-            if (amountAvailable > 0) {
-                val amountConsume = min(amountAvailable, amountRequired)
+            val ratioAvailability = availabilityRatios[resourceKey] ?: 0f
+            if (amountAvailable > 0 && ratioAvailability > 0) {
+                val amountConsume = min(amountAvailable, amountRequired * ratioAvailability)
                 available[resourceKey] = amountAvailable - amountConsume
                 consumed[resourceKey] = amountConsume
             }
@@ -114,6 +130,26 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
     private fun put(available: MutableMap<ResourceDefinition.Key, Float>, additional: Map<ResourceDefinition.Key, Float>) {
         additional.forEach { (resourceKey, amountAdd) ->
             available[resourceKey] = (available[resourceKey] ?: 0f) + amountAdd
+        }
+    }
+
+    private fun sum(resourcePackages: List<Map<ResourceDefinition.Key, Float>>): Map<ResourceDefinition.Key, Float> {
+        val sum = mutableMapOf<ResourceDefinition.Key, Float>()
+        resourcePackages.forEach { resources ->
+            resources.forEach { (resource, amount) ->
+                sum[resource] = amount + (sum[resource] ?: 0f)
+            }
+        }
+        return sum
+    }
+
+    private fun calculateAvailabilityRatios(
+        available: Map<ResourceDefinition.Key, Float>,
+        required: Map<ResourceDefinition.Key, Float>
+    ): Map<ResourceDefinition.Key, Float> {
+        return required.mapValues { (resource, amountRequired) ->
+            val amountAvailable = available[resource] ?: 0f
+            (amountAvailable / amountRequired).coerceIn(0f, 1f)
         }
     }
 
