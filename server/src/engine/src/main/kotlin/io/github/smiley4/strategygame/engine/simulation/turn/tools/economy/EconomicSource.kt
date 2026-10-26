@@ -14,6 +14,11 @@ sealed interface EconomicSource {
         val popNeed: PopulationClassNeedDefinition.Key
     ) : EconomicSource
 
+    data class SubsistenceFarming(
+        val entity: Entity.Id,
+        val popClass: PopulationClassDefinition.Key,
+    ) : EconomicSource
+
     data class StructureModule(
         val entity: Entity.Id,
         val structure: StructureDefinition.Key,

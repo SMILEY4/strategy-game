@@ -51,6 +51,9 @@ class EconomicActivitiesContainer {
             is EconomicSource.PopulationGroupNeed -> {
                 "${activity.source.entity.id}-${activity.source.popClass.value}-${activity.source.popNeed.value}"
             }
+            is EconomicSource.SubsistenceFarming -> {
+                "${activity.source.entity.id}-${activity.source.popClass.value}-subsistence-farming"
+            }
             is EconomicSource.StructureModule -> {
                 "${activity.source.entity.id}-${activity.source.structure.value}-${activity.source.module.value}"
             }

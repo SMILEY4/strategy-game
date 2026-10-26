@@ -6,8 +6,10 @@ class PopulationClassDefinition(
     val key: Key,
 
     /** The list of needs of this population class*/
-    val needs: List<PopulationClassNeedDefinition>
+    val needs: List<PopulationClassNeedDefinition>,
 
+    /** The list of resources produced be unemployed pop units */
+    val subsistenceFarming: Map<ResourceDefinition.Key, Float>
 ) {
 
     data class Key(val value: String)

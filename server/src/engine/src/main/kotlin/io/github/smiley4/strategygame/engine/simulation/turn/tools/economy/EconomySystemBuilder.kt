@@ -56,6 +56,23 @@ class EconomySystemBuilder(private val definitionRegistry: DefinitionRegistry) {
                         }
                     }
 
+                    if (populationClassDefinition.subsistenceFarming.isNotEmpty()) {
+                        activities.add(
+                            EconomicActivity(
+                                source = EconomicSource.SubsistenceFarming(
+                                    entity = member.id,
+                                    popClass = group.classDefinition,
+                                ),
+                                consumption = null,
+                                production = EconomicActivity.Production(
+                                    resources = populationClassDefinition.subsistenceFarming.mapValues { (_, baseAmount) ->
+                                        baseAmount * group.amount.toFloat() // todo: only include "unemployed" pop
+                                    }
+                                ),
+                            )
+                        )
+                    }
+
                 }
             }
 
