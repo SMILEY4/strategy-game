@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.engine.simulation.gamestate.EntityComponen
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.DefinitionRegistry
 import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.PopulationClassNeedDefinition
+import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.ResourceDefinition
 
 class EconomySystemBuilder(private val definitionRegistry: DefinitionRegistry) {
 
@@ -100,5 +101,35 @@ class EconomySystemBuilder(private val definitionRegistry: DefinitionRegistry) {
 
         return activities
     }
+
+    fun buildRegionStorageCapacity(region: EconomicRegion): Map<ResourceDefinition.Key, Float> {
+
+        val storageCapacity = mutableMapOf<ResourceDefinition.Key, Float>()
+
+        region.members.forEach { member ->
+
+            member.getComponentOrNull<EntityComponent.Structures>()?.also { componentStructures ->
+
+                componentStructures.instances.forEach { structure ->
+                    val structureDefinition = definitionRegistry.get(structure.definition)
+
+                    structure.modules.forEach { module ->
+                        val moduleDefinition = structureDefinition.modules.first { it.key == module }
+
+                        moduleDefinition.storageCapacity.forEach { (resource, capacity) ->
+                            storageCapacity[resource] = (storageCapacity[resource] ?: 0f) + capacity
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        return storageCapacity
+    }
+
 
 }

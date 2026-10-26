@@ -32,7 +32,11 @@ class EconomicActivitiesContainer {
         return entries.first() { it.id == activityId }
     }
 
-    fun get(consumptionPass: ConsumptionPassKey, mode: ConsumptionMode): List<EconomicActivity> {
+    fun get(consumptionPass: ConsumptionPassKey): List<EconomicActivity> {
+        return (entriesByConsumptionPass[consumptionPass] ?: emptyList())
+    }
+
+    fun getSorted(consumptionPass: ConsumptionPassKey, mode: ConsumptionMode): List<EconomicActivity> {
         return (entriesByConsumptionPass[consumptionPass] ?: emptyList())
             .filter { it.consumption?.mode == mode }
             .sortedBy { createSortKey(it) }

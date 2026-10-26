@@ -3,8 +3,10 @@ package io.github.smiley4.strategygame.engine.simulation.turn.systems
 import io.github.smiley4.strategygame.engine.simulation.gamestate.GameStateContext
 import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.ConsumptionMode
 import io.github.smiley4.strategygame.engine.simulation.gamestate.definitions.ResourceDefinition
+import io.github.smiley4.strategygame.engine.simulation.turn.tools.economy.EconomicActivitiesContainer
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.economy.EconomicActivity
 import io.github.smiley4.strategygame.engine.simulation.turn.tools.economy.EconomySystemBuilder
+import kotlin.math.max
 import kotlin.math.min
 
 internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuilder) : GameSystem {
@@ -18,20 +20,28 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
 
             val activities = economyBuilder.buildActivities(region)
 
+            activities.get()
+                .filter { it.consumption == null }
+                .forEach { activity ->
+                    activity.consumptionResult = EconomicActivity.ResultConsumption.Success(emptyMap())
+                }
+
             // iterate consumption passes
             activities.getConsumptionPassKeys().forEach { consumptionPass ->
 
+                // check for and mark blocked activities
+                activities.get(consumptionPass)
+                    .filterNot { activity -> dependenciesFulfilled(activity, activities) }
+                    .forEach { activity ->
+                        activity.consumptionResult = EconomicActivity.ResultConsumption.Blocked()
+                    }
+
                 // consume all or nothing for this pass
-                activities.get(consumptionPass, ConsumptionMode.ALL_OR_NOTHING).forEach { activity ->
+                activities.getSorted(consumptionPass, ConsumptionMode.ALL_OR_NOTHING)
+                    .filterNot { it.consumptionResult is EconomicActivity.ResultConsumption.Blocked }
+                    .forEach { activity ->
 
-                    // check if dependencies are fulfilled
-                    val activityPreconditionFulfilled = activity.dependsOn
-                        ?.let { activities.get(it) }
-                        ?.let { it.consumptionResult is EconomicActivity.ResultConsumption.Success }
-                        ?: true
-
-                    // try to consume
-                    if (activityPreconditionFulfilled) {
+                        // try to consume
                         activity.consumption?.also { consumption ->
                             val hasConsumed = takeAll(region.storedResources, consumption.resources)
                             activity.consumptionResult = if (hasConsumed) {
@@ -40,50 +50,28 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
                                 EconomicActivity.ResultConsumption.Failed()
                             }
                         }
+
                     }
 
-                }
-
                 // consume partial for this pass
-                val partialConsumptionActivities = activities.get(consumptionPass, ConsumptionMode.PARTIAL)
+                val eligiblePartialConsumptionActivities = activities
+                    .getSorted(consumptionPass, ConsumptionMode.PARTIAL)
+                    .filter { activity -> dependenciesFulfilled(activity, activities) }
 
-                val totalRequired = partialConsumptionActivities
+                val totalRequired = eligiblePartialConsumptionActivities
                     .mapNotNull { it.consumption?.resources }
                     .let { sum(it) }
 
                 val availabilityRatios = calculateAvailabilityRatios(region.storedResources, totalRequired)
 
-                partialConsumptionActivities.forEach { activity ->
-
-                    // check if dependencies are fulfilled
-                    val activityPreconditionFulfilled = activity.dependsOn
-                        ?.let { activities.get(it) }
-                        ?.let { it.consumptionResult is EconomicActivity.ResultConsumption.Success }
-                        ?: true
-
-                    // try to consume
-                    if (activityPreconditionFulfilled) {
-                        activity.consumption?.also { consumption ->
-                            val consumedResources = takePartial(region.storedResources, consumption.resources, availabilityRatios)
-                            activity.consumptionResult = if (consumedResources.isNotEmpty()) {
-                                EconomicActivity.ResultConsumption.Success(consumedResources)
-                            } else {
-                                EconomicActivity.ResultConsumption.Failed()
-                            }
-                        }
+                eligiblePartialConsumptionActivities.forEach { activity ->
+                    activity.consumption?.also { consumption ->
+                        val consumedResources = takePartial(region.storedResources, consumption.resources, availabilityRatios)
+                        activity.consumptionResult = EconomicActivity.ResultConsumption.Success(consumedResources)
                     }
                 }
 
             }
-
-            // handle all that do not need to consume
-            activities.get()
-                .filter { it.consumptionResult is EconomicActivity.ResultConsumption.NotEvaluated }
-                .forEach { activity ->
-                    if (activity.consumption == null) {
-                        activity.consumptionResult = EconomicActivity.ResultConsumption.Success(emptyMap())
-                    }
-                }
 
             // produce
             activities.get().forEach { activity ->
@@ -94,8 +82,22 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
                 }
             }
 
+            // limit to storage capacity
+            val regionStorageCapacity = economyBuilder.buildRegionStorageCapacity(region)
+            region.storedResources.forEach { (resource, amount) ->
+                region.storedResources[resource] = min(amount, regionStorageCapacity[resource] ?: 0f)
+            }
         }
 
+    }
+
+    private fun dependenciesFulfilled(
+        activity: EconomicActivity,
+        activities: EconomicActivitiesContainer,
+    ): Boolean {
+        return activity.dependsOn
+            ?.let { activities.get(it).consumptionResult is EconomicActivity.ResultConsumption.Success }
+            ?: true
     }
 
 
@@ -154,5 +156,3 @@ internal class UpdateEconomySystem(private val economyBuilder: EconomySystemBuil
     }
 
 }
-
-

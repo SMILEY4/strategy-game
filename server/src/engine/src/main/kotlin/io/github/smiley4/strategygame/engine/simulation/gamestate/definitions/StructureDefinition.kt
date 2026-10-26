@@ -38,7 +38,8 @@ class StructureModuleDefinition(
     /** The things this module produces each turn when active */
     val production: ProductionDefinition,
 
-    ) {
+    val storageCapacity: Map<ResourceDefinition.Key, Float>
+) {
     data class Key(val value: String)
 }
 

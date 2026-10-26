@@ -34,6 +34,8 @@ data class EconomicActivity(
 
         class Failed : ResultConsumption
 
+        class Blocked : ResultConsumption
+
     }
 
 }
