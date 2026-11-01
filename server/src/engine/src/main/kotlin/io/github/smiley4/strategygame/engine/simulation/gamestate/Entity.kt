@@ -94,6 +94,7 @@ data class PopulationGroup(
 )
 
 data class StructureInstance(
+    // todo: add instance id to allow duplicate structures -> ensure id is used in game systems
     val definition: StructureDefinition.Key,
     val modules: Set<StructureModuleDefinition.Key>
 )

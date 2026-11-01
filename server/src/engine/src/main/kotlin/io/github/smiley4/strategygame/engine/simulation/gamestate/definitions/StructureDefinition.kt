@@ -27,7 +27,7 @@ class StructureModuleDefinition(
     val constructionCost: ConstructionCostDefinition,
 
     /** The required workforce to run this module at full efficiency */
-    val workforceRequirement: WorkforceRequirementDefinition,
+    val workforceRequirement: WorkforceRequirementDefinition?,
 
     /** Depend on another module within the same structure. */
     val moduleDependency: Key?,
