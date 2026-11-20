@@ -9,6 +9,13 @@ plugins {
 
 dependencies {
 
+    constraints {
+        implementation("io.github.smiley4:schema-kenerator-core:2.7.2")
+        implementation("io.github.smiley4:schema-kenerator-reflection:2.7.2")
+        implementation("io.github.smiley4:schema-kenerator-serialization:2.7.2")
+        implementation("io.github.smiley4:schema-kenerator-swagger:2.7.2")
+    }
+
     implementation(project(":src:shared"))
     implementation(project(":src:identity"))
     implementation(project(":src:platform"))
